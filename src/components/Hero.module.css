@@ -1,0 +1,249 @@
+.hero {
+  overflow-x: hidden;
+  min-height: 80vh;
+  color: var(--color-text);
+  background-color: var(--color-warm-bg);
+  background-image: radial-gradient(var(--color-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border-bottom: 1px solid var(--color-grid-line);
+  font-family: var(--font-accent);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  min-height: 80vh;
+  width: min(80rem, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.grid {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
+  gap: 3rem;
+  align-items: end;
+  width: 100%;
+  padding-bottom: 3rem;
+}
+
+.content,
+.panelWrap {
+  animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+.panelWrap {
+  animation-delay: 0.4s;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dotWrap {
+  position: relative;
+  display: flex;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.dotPulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--color-primary-300);
+  opacity: 0.75;
+  animation: ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.dot {
+  position: relative;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--color-primary);
+}
+
+.eyebrowText {
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0 0 2.5rem;
+  color: var(--color-black);
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 12vw, 10rem);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  font-family: "gf_DM_Serif_Display variant0", Tofu;
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  font-optical-sizing: auto;
+}
+
+.titleOutline {
+  text-align: start;
+  transition-property: opacity, transform;
+  /* font-family: "gf_DM_Serif_Display variant0", Tofu; */
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  font-optical-sizing: auto;
+  line-height: initial;
+  opacity: 1;
+  transition-duration: 350ms;
+  -webkit-text-stroke-color: black;
+  color: transparent;
+  -webkit-text-stroke-width: 1px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 48px;
+  border-radius: 9999px;
+  background: var(--color-primary-700);
+  color: var(--color-text-strong);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s ease, box-shadow 0.4s ease;
+}
+
+.primaryButton:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 30px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.22);
+}
+
+.credit {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.creditDivider {
+  display: block;
+  width: 1px;
+  height: 3rem;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.creditLabel,
+.creditValue {
+  display: block;
+}
+
+.creditLabel {
+  margin-bottom: 0.25rem;
+  color: var(--color-gray-500);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.creditValue {
+  color: var(--color-gray-800);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.panel {
+  padding: 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+  background: var(--color-surface-elevated);
+  backdrop-filter: blur(12px);
+}
+
+.panelCopy {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 1.125rem;
+  font-weight: 300;
+  line-height: 1.75rem;
+}
+
+.panelDots {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.panelDotsLong,
+.panelDotsShort,
+.panelDotsFaint {
+  height: 0.25rem;
+  border-radius: 999px;
+}
+
+.panelDotsLong {
+  width: 2rem;
+  background: var(--color-primary);
+}
+
+.panelDotsShort {
+  width: 0.5rem;
+  background: var(--color-primary);
+}
+
+.panelDotsFaint {
+  width: 0.5rem;
+  background: var(--color-primary);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ping {
+
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .inner {
+    padding-top: 6rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .creditDivider {
+    display: none;
+  }
+}

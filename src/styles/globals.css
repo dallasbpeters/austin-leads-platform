@@ -1,0 +1,104 @@
+:root {
+  --color-primary-h: 14;
+  --color-primary-s: 88%;
+  --color-primary-l: 65%;
+  --color-secondary-h: 190;
+  --color-secondary-s: 61%;
+  --color-secondary-l: 15%;
+
+  --color-primary-700: hsl(var(--color-primary-h) var(--color-primary-s) 53%);
+  --color-primary: hsl(var(--color-primary-h) var(--color-primary-s) var(--color-primary-l));
+  --color-primary-300: hsl(var(--color-primary-h) 84% 74%);
+  --color-primary-200: hsl(var(--color-primary-h) 72% 88%);
+  --color-primary-100: hsl(var(--color-primary-h) 70% 95%);
+  --color-primary-alt: hsl(calc(var(--color-primary-h) + 16) 86% 67%);
+
+  --color-secondary-950: hsl(var(--color-secondary-h) 64% 13%);
+  --color-secondary: hsl(var(--color-secondary-h) var(--color-secondary-s) var(--color-secondary-l));
+  --color-secondary-700: hsl(var(--color-secondary-h) 50% 28%);
+  --color-secondary-500: hsl(var(--color-secondary-h) 64% 63%);
+  --color-secondary-300: hsl(var(--color-secondary-h) 60% 76%);
+  --color-secondary-100: hsl(var(--color-secondary-h) 28% 95%);
+
+  --color-warm-bg: hsl(calc(var(--color-primary-h) - 2) 54% 199%);
+  --color-surface: hsl(calc(var(--color-primary-h) - 2) 34% 95%);
+  --color-surface-elevated: hsl(0 0% 100%);
+  --color-grid: hsl(calc(var(--color-primary-h) - 2) 18% 82%);
+  --color-grid-line: hsl(calc(var(--color-primary-h) - 2) 18% 88%);
+  --color-border: hsl(calc(var(--color-primary-h) - 2) 20% 82%);
+  --color-border-strong: hsl(calc(var(--color-primary-h) - 2) 18% 74%);
+  --color-text-strong: hsl(var(--color-secondary-h) 28% 14%);
+  --color-text: hsl(var(--color-secondary-h) 18% 37%);
+  --color-text-muted: hsl(var(--color-secondary-h) 12% 52%);
+
+  --color-slate-950: var(--color-text-strong);
+  --color-slate-900: var(--color-text-strong);
+  --color-slate-700: hsl(var(--color-secondary-h) 18% 28%);
+  --color-slate-600: var(--color-text);
+  --color-slate-500: var(--color-text-muted);
+  --color-slate-400: hsl(var(--color-secondary-h) 12% 68%);
+  --color-gray-900: var(--color-text-strong);
+  --color-gray-800: hsl(var(--color-secondary-h) 16% 38%);
+  --color-gray-500: var(--color-text-muted);
+  --color-neutral-900: var(--color-text-strong);
+  --color-neutral-800: hsl(var(--color-secondary-h) 18% 22%);
+  --color-neutral-500: var(--color-text-muted);
+  --color-neutral-400: hsl(var(--color-secondary-h) 10% 62%);
+  --color-cyan-950: var(--color-secondary-950);
+  --color-cyan-900: var(--color-secondary);
+  --color-cyan-800: var(--color-secondary-700);
+  --color-cyan-300: var(--color-secondary-300);
+  --color-sky-900: var(--color-secondary-700);
+  --color-orange-600: var(--color-primary-700);
+  --color-orange-500: var(--color-primary);
+  --color-orange-400: var(--color-primary-300);
+  --color-amber-400: var(--color-primary-alt);
+  --color-yellow-500: var(--color-primary-alt);
+  --color-blue-400: var(--color-secondary-500);
+  --color-white: #ffffff;
+  --color-black: var(--color-text-strong);
+  --font-sans: "Inter", sans-serif;
+  --font-display: "DM Serif Display", serif;
+  --font-accent: "Manrope", sans-serif;
+  --shadow-xl: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-warm-bg);
+  color: var(--color-slate-600);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+#app {
+  min-height: 100vh;
+}

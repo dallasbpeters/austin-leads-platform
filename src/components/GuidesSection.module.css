@@ -1,0 +1,112 @@
+.section {
+  padding: 6rem 1.5rem;
+  background-color: var(--color-warm-bg);
+  background-image:
+    linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.inner {
+  width: min(80rem, calc(100% - 3rem));
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-secondary);
+  font-family: var(--font-accent);
+  font-size: clamp(1.875rem, 4vw, 2.25rem);
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  color: var(--color-white);
+}
+
+.cardPrimary {
+  background: var(--color-primary);
+}
+
+.cardGold {
+  background: var(--color-amber-400);
+}
+
+.cardSky {
+  background: var(--color-blue-400);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.number {
+  font-family: var(--font-accent);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.cardTitle {
+  margin: 1rem 0 0;
+  font-family: var(--font-accent);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.cardCopy {
+  margin: 0.5rem 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.imageFrame {
+  overflow: hidden;
+  margin-top: 1.5rem;
+  border-radius: 1rem;
+}
+
+.image {
+  width: 100%;
+  height: 14rem;
+  object-fit: cover;
+}
+
+.cardFooter {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

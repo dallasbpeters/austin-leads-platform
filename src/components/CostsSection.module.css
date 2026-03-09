@@ -1,0 +1,123 @@
+.section {
+  display: grid;
+  place-content: center;
+  padding: 6rem 1.5rem;
+  border: 1px solid #f5f5f4;
+  background: var(--color-warm-bg);
+}
+
+.inner {
+  width: min(80rem, calc(100% - 3rem));
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0 0 2rem;
+  color: var(--color-cyan-900);
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0 0 1.5rem;
+  color: var(--color-slate-900);
+  font-family: var(--font-accent);
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.copy,
+.detail,
+.paybackCopy {
+  color: var(--color-neutral-500);
+  font-family: var(--font-accent);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+}
+
+.copy span,
+.detail span {
+  color: var(--color-neutral-900);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3rem;
+  margin: 4rem 0 5rem;
+}
+
+.value {
+  margin: 0 0 0.75rem;
+  color: var(--color-neutral-900);
+  font-family: var(--font-accent);
+  font-size: 3rem;
+  font-weight: 600;
+}
+
+.label {
+  margin: 0 0 0.75rem;
+  color: var(--color-cyan-800);
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.detail {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.divider {
+  margin-bottom: 3rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.payback {
+  display: flex;
+  gap: 2rem;
+  align-items: baseline;
+}
+
+.paybackEyebrow {
+  flex-shrink: 0;
+  margin: 0;
+  padding-top: 0.25rem;
+  color: var(--color-neutral-400);
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.paybackTitle {
+  margin: 0;
+  color: var(--color-neutral-900);
+  font-family: var(--font-accent);
+  font-size: clamp(1.5rem, 4vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.paybackCopy {
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payback {
+    flex-direction: column;
+  }
+}
