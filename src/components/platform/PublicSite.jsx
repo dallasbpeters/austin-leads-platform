@@ -122,6 +122,8 @@ function CardGridSection({ section }) {
 }
 
 function GuideGridSection({ section }) {
+  const palette = ['bg-[var(--site-primary)] text-white', 'bg-[var(--color-amber-400)] text-white', 'bg-[var(--site-secondary)] text-white', 'bg-[var(--color-primary-700)] text-white', 'bg-[var(--color-blue-400)] text-white', 'bg-[var(--color-amber-400))] text-white']
+
   const cards = (section.items || []).slice(0, 6).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
@@ -137,7 +139,7 @@ function GuideGridSection({ section }) {
         <div className="mb-8 max-w-3xl">
           <h2 className="text-3xl text-foreground md:text-4xl">{section.title}</h2>
         </div>
-        <GuideCardGrid cards={cards} columnsClassName="md:grid-cols-2 xl:grid-cols-3" />
+        <GuideCardGrid cards={cards} columnsClassName="md:grid-cols-2 xl:grid-cols-3" palette={palette} />
       </div>
     </section>
   )
