@@ -59,13 +59,13 @@ export default function CalculatorSection() {
   const results = useMemo(() => calculate(bill), [bill])
 
   return (
-    <section className="relative overflow-hidden bg-[var(--color-warm-bg)] px-6 py-24">
+    <section className="bg-solar-warm relative overflow-hidden   py-24">
       <div className="absolute right-0 top-0 h-[60rem] w-[32rem] translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(var(--color-primary-h) var(--color-primary-s) 72% / 0.1)' }}></div>
       <div className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)' }}></div>
       <div className="relative z-[1] mx-auto w-[min(72rem,calc(100%-3rem))]">
         <div className="mb-14 text-center">
           <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] type-display font-extrabold text-foreground">See what solar could save&nbsp;you</h2>
-          <p className="mx-auto mt-3 max-w-[32rem] text-base text-[var(--color-slate-500)]">Enter your average monthly electric bill and we&apos;ll estimate your system size, potential savings, and likely payback period.</p>
+          <p className="text-solar-slate-500 mx-auto mt-3 max-w-[32rem] text-base">Enter your average monthly electric bill and we&apos;ll estimate your system size, potential savings, and likely payback period.</p>
         </div>
 
         <Card className="grid overflow-hidden max-[900px]:grid-cols-1 [grid-template-columns:minmax(280px,2fr)_minmax(320px,3fr)]" variant="surfaceStrong" radius="lg">
@@ -101,7 +101,7 @@ export default function CalculatorSection() {
               <Button href="#estimate" size="md" pill className="w-full max-w-72">
                 Talk to a solar pro →
               </Button>
-              <span className="text-xs text-[var(--color-slate-400)]">Free estimate · No commitment · Takes 2 minutes</span>
+              <span className="text-solar-slate-400 text-xs">Free estimate · No commitment · Takes 2 minutes</span>
             </div>
           </div>
         </Card>
@@ -120,13 +120,13 @@ export default function CalculatorSection() {
 function ResultCard({ title, value, prefix = '', suffix = '', detail, accent = false }) {
   return (
     <Card className="bg-card p-5">
-      <span className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--color-slate-400)]">{title}</span>
+      <span className="text-solar-slate-400 text-xs font-bold uppercase tracking-[0.08em]">{title}</span>
       <div className="mt-2 flex items-baseline gap-1 text-[1.875rem] font-bold text-foreground">
-        {prefix ? <span className="text-sm font-medium text-[var(--color-slate-400)]">{prefix}</span> : null}
+        {prefix ? <span className="text-solar-slate-400 text-sm font-medium">{prefix}</span> : null}
         <span>{value}</span>
-        {suffix ? <span className="text-sm font-medium text-[var(--color-slate-400)]">{suffix}</span> : null}
+        {suffix ? <span className="text-solar-slate-400 text-sm font-medium">{suffix}</span> : null}
       </div>
-      <p className="mt-1.5 text-xs text-[var(--color-slate-400)]">{detail}</p>
+      <p className="text-solar-slate-400 mt-1.5 text-xs">{detail}</p>
     </Card>
   )
 }

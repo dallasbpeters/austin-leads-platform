@@ -9,7 +9,7 @@ const items = [
 
 export default function SnapshotSection() {
   return (
-    <section className="bg-solar-cyan-950 relative overflow-hidden px-6 py-24 text-white">
+    <section className="bg-solar-cyan-950 relative overflow-hidden   py-24 text-white">
       <div className="pointer-events-none absolute inset-0 opacity-10">
         <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 24 24" className="absolute left-[10%] top-10 h-[400px] w-[400px]">
           <g fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -21,13 +21,9 @@ export default function SnapshotSection() {
 
       <div className="relative z-[1] mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
-          <p className="type-accent text-solar-primary mb-4 text-sm font-semibold uppercase tracking-[0.2em]">
-            Austin Snapshot
-          </p>
+          <p className="type-accent text-solar-primary mb-4 text-sm font-semibold uppercase tracking-[0.2em]">Austin Snapshot</p>
           <h2 className="mb-4 text-[clamp(1.875rem,4vw,2.25rem)] font-semibold">The numbers people usually ask for.</h2>
-          <p className="type-accent m-0 text-base font-semibold text-white/70">
-            These are directional homeowner benchmarks, not a replacement for a roof-specific production model.
-          </p>
+          <p className="type-accent m-0 text-base font-semibold text-white/70">These are directional homeowner benchmarks, not a replacement for a roof-specific production model.</p>
         </div>
 
         <div className="grid gap-6 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1 md:grid-cols-4">

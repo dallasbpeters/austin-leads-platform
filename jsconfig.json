@@ -4,5 +4,20 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "include": [
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "sanity.config.js",
+    "sanity.cli.js",
+    "next.config.mjs",
+    "proxy.js"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    ".vercel",
+    "dist",
+    ".pnpm-store"
+  ]
 }

@@ -1,5 +1,6 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
 @import 'tw-animate-css';
+@source "../";
 
 :root {
   --color-primary-h: 14;
@@ -184,6 +185,14 @@ a {
 img {
   display: block;
   max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h3,
+h5 {
+  line-height: 1.1;
 }
 
 #app {

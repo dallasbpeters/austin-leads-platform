@@ -19,7 +19,7 @@ export default function Hero() {
           backgroundSize: '24px 24px',
         }}
       />
-      <div className="mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center p-6">
+      <div className="mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-4 py-30">
         <div className="relative z-10 grid w-full items-end gap-12 pb-12 lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]">
           <div className="solar-fade-up">
             <div className="mb-8 inline-flex items-center gap-4">
@@ -30,7 +30,7 @@ export default function Hero() {
               <span className="text-solar-primary text-[12px] font-bold uppercase tracking-[0.4em]">Austin averages 228 sunny days a year</span>
             </div>
 
-            <h1 className="type-display mb-10 text-[clamp(3.5rem,12vw,10rem)] font-semibold leading-[0.85] tracking-[-0.04em] text-black">
+            <h1 className="type-display mb-10 text-[clamp(4.5rem,12vw,10rem)] font-semibold leading-[0.85] tracking-[-0.04em] text-black">
               Solar,
               <br />
               <span className="text-transparent [-webkit-text-stroke-color:black] [-webkit-text-stroke-width:1px]">simplified.</span>
