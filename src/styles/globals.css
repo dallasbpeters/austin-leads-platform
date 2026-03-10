@@ -181,12 +181,6 @@ a {
   text-decoration: none;
 }
 
-button,
-input,
-textarea {
-  font: inherit;
-}
-
 img {
   display: block;
   max-width: 100%;
@@ -194,10 +188,6 @@ img {
 
 #app {
   min-height: 100vh;
-}
-
-* {
-  border-color: var(--border);
 }
 
 @layer components {
@@ -238,7 +228,7 @@ img {
 
   .btn--primary {
     background-color: var(--color-primary-700);
-    color: var(--color-text-strong);
+    color: var(--color-white);
     box-shadow: 0 10px 24px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.2);
   }
 
@@ -314,9 +304,11 @@ img {
   }
 
   .card--dark-glass {
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid;
+    border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.05);
     color: white;
+    box-shadow: none;
     transition: background-color 150ms ease;
   }
 
@@ -394,6 +386,9 @@ img {
 
   .bg-solar-warm {
     background-color: var(--color-warm-bg);
+  }
+  .bg-solar-gradient {
+    background: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
   }
 
   .bg-solar-surface {
