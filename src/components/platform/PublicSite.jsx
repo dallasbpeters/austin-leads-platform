@@ -122,7 +122,7 @@ function CardGridSection({ section }) {
 }
 
 function GuideGridSection({ section }) {
-  const palette = ['bg-[var(--site-primary)] text-white', 'bg-[var(--color-amber-400)] text-white', 'bg-[var(--site-secondary)] text-white', 'bg-[var(--color-primary-700)] text-white', 'bg-[var(--color-blue-400)] text-white', 'bg-[var(--color-amber-400))] text-white']
+  const palette = ['bg-[var(--site-primary)] text-white', 'bg-[var(--color-amber-400)] text-white', 'bg-blue-400 text-white', 'bg-[var(--color-primary-700)] text-white', 'bg-[var(--site-secondary)] text-white', 'bg-[var(--color-amber-400))] text-white']
 
   const cards = (section.items || []).slice(0, 6).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
