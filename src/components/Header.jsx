@@ -17,10 +17,10 @@ export default function Header() {
   return (
     <nav className="fixed -inset-x-3 top-3 z-50 text-sm font-medium">
       <div className="shadow-solar-xl border-solar mx-auto flex w-[min(80rem,calc(100%-3rem))] items-center justify-between gap-4 rounded-full border bg-white px-6 py-4">
-        <div className="grid grid-flow-col items-center gap-2">
+        <a href="/" title="Austin Solar Pros" className="grid grid-flow-col items-center gap-2">
           <Logo />
           <div className="type-accent text-solar-slate-950 text-base font-semibold leading-none">Austin Solar Pros</div>
-        </div>
+        </a>
 
         <div className="hidden gap-8 md:flex">
           {links.map((link) => (

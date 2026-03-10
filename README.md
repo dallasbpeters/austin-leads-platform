@@ -29,7 +29,6 @@ The goal is not "one website." The goal is one engine that can serve many domain
   - `/analytics`
   - `/publish`
   - `/domains`
-  - `/studio`
 - Auth is implemented with Auth.js v5 beta.
 - The sign-in page is `/sign-in`.
 - Admin layout and shell live in:
@@ -53,8 +52,8 @@ The goal is not "one website." The goal is one engine that can serve many domain
 
 Important caveat:
 
-- `/studio` is currently a CMS setup/launch page, not a live embedded Sanity Studio UI.
-- The embedded Studio runtime was failing the Next 16 production build, so this was intentionally downgraded to a stable placeholder page until compatibility is resolved.
+- The canonical Studio is the Sanity-hosted deployment, configured by `NEXT_PUBLIC_SANITY_STUDIO_URL`.
+- Local and Vercel `/studio` routes redirect to that canonical Studio so there is only one editor surface.
 
 ### Analytics
 

@@ -217,9 +217,7 @@ function CtaBannerSection({ section }) {
     <section className="border-b border-border/60 bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white">
       <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
         <div className="space-y-4">
-          {section.eyebrow ? (
-            <p className="text-sm uppercase tracking-[0.22em] text-white/58">{section.eyebrow}</p>
-          ) : null}
+          {section.eyebrow ? <p className="text-sm uppercase tracking-[0.22em] text-white/58">{section.eyebrow}</p> : null}
           <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">{section.title}</h2>
           <p className="max-w-2xl text-base leading-8 text-white/78">{section.body}</p>
         </div>

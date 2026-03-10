@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { useHeroPagesManager } from '@/hooks/useHeroPagesManager'
+import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 import { cn } from '@/lib/utils'
 
 function ResultCard({ photo, onSelect, saving, canSelect }) {
@@ -167,6 +168,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                 heroSites.map((site) => {
                   const page = pages.find((entry) => entry.site?.id === site.id)
                   const active = site.id === selectedSiteId
+                  const hasHeroMedia = hasImageSource(page?.heroSection?.heroAsset, page?.heroSection?.heroImage)
 
                   return (
                     <button className={cn('w-full rounded-xl border px-4 py-4 text-left transition-colors', active ? 'shadow-theme-sm border-primary bg-primary/8 ring-1 ring-primary/15' : 'border-border bg-background hover:border-border/90 hover:bg-muted/40')} key={site.id} onClick={() => selectSite(site)} type="button">
@@ -179,7 +181,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                       </div>
                       <div className="mt-3 flex flex-wrap gap-2">
                         <Badge variant={page ? 'secondary' : 'outline'}>{page ? 'Homepage created' : 'Needs homepage'}</Badge>
-                        <Badge variant={page?.heroSection?.heroImage ? 'secondary' : 'outline'}>{page?.heroSection?.heroImage ? 'Image set' : 'No image'}</Badge>
+                        <Badge variant={hasHeroMedia ? 'secondary' : 'outline'}>{hasHeroMedia ? 'Image set' : 'No image'}</Badge>
                       </div>
                     </button>
                   )
@@ -341,20 +343,36 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
               </div>
 
               <Card className="overflow-hidden border-border/70 bg-background">
-                {selectedPage?.heroSection?.heroImage?.urls?.regular ? (
+                {hasImageSource(selectedPage?.heroSection?.heroAsset, selectedPage?.heroSection?.heroImage) ? (
                   <>
                     <div className="aspect-[4/3] bg-muted">
-                      <img alt={selectedPage.heroSection.heroImage.alt} className="h-full w-full object-cover" src={selectedPage.heroSection.heroImage.urls.regular || selectedPage.heroSection.heroImage.urls.small} />
+                      <img
+                        alt={getImageAlt(
+                          selectedPage?.heroSection?.heroAsset,
+                          selectedPage?.heroSection?.heroImage,
+                          selectedPage?.title || selectedSite?.name || 'Hero image',
+                        )}
+                        className="h-full w-full object-cover"
+                        src={getImageUrl(selectedPage?.heroSection?.heroAsset, selectedPage?.heroSection?.heroImage)}
+                      />
                     </div>
                     <CardContent className="space-y-3 p-4">
                       <div>
                         <div className="text-sm font-medium text-foreground">Current hero image</div>
-                        <div className="mt-1 text-xs text-muted-foreground">Photo by {selectedPage.heroSection.heroImage.creditName} on Unsplash</div>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {selectedPage?.heroSection?.heroAsset?.asset?.url
+                            ? 'Using uploaded Sanity asset'
+                            : selectedPage?.heroSection?.heroImage?.creditName
+                              ? `Photo by ${selectedPage.heroSection.heroImage.creditName} on Unsplash`
+                              : 'Using external image'}
+                        </div>
                       </div>
-                      <a className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground" href={selectedPage.heroSection.heroImage.unsplashUrl} rel="noreferrer" target="_blank">
-                        View source
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
+                      {selectedPage?.heroSection?.heroImage?.unsplashUrl ? (
+                        <a className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground" href={selectedPage.heroSection.heroImage.unsplashUrl} rel="noreferrer" target="_blank">
+                          View source
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      ) : null}
                     </CardContent>
                   </>
                 ) : (

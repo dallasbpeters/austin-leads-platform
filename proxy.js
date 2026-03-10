@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { auth } from "./src/auth";
 import { getAllSites } from "./src/lib/platform/content";
 
-const protectedPaths = ["/dashboard", "/analytics", "/publish", "/domains", "/studio", "/hero-pages"];
+const protectedPaths = ["/dashboard", "/analytics", "/publish", "/domains", "/hero-pages"];
 const protectedApiPrefixes = ["/api/domains", "/api/publish-jobs", "/api/analytics", "/api/hero-pages", "/api/unsplash", "/api/launch-checklist"];
 
 function normalizeHost(host) {

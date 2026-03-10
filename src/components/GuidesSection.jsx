@@ -3,7 +3,7 @@ import Link from 'next/link'
 import GuideCardGrid from './GuideCardGrid'
 import { getFeaturedSolarGuideCards } from '@/lib/platform/guides'
 
-const guides = getFeaturedSolarGuideCards(6)
+const guides = getFeaturedSolarGuideCards(3)
 
 export default function GuidesSection() {
   return (

@@ -88,7 +88,8 @@ Do not treat this as a generic marketing site repo.
 
 ### Admin behavior
 
-- `/dashboard`, `/analytics`, `/publish`, `/domains`, and `/studio` are protected routes.
+- `/dashboard`, `/analytics`, `/publish`, and `/domains` are protected routes.
+- `/studio` should resolve to the single canonical Sanity-hosted Studio, not a separate embedded editor.
 - Do not remove auth checks from admin routes or admin APIs.
 - The admin UI should stay neutral and not inherit the orange public-site palette.
 
@@ -96,7 +97,8 @@ Do not treat this as a generic marketing site repo.
 
 - Sanity is the intended CMS.
 - Fixture data exists as a development fallback, not the long-term content source of truth.
-- `/studio` is currently a stable placeholder/setup route, not a fully embedded Studio runtime.
+- The only Studio we use is the Sanity-hosted deployment.
+- Local and Vercel `/studio` routes should redirect to that canonical Studio URL.
 
 ### Analytics behavior
 
