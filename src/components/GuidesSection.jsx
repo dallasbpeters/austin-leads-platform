@@ -36,7 +36,7 @@ export default function GuidesSection() {
     >
       <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mb-8">
-          <h2 className="type-accent text-solar-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)] font-semibold">Go Deeper</h2>
+          <h2 className="type-accent text-solar-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">Go Deeper</h2>
         </div>
         <div className="grid gap-3 max-[900px]:grid-cols-1 md:grid-cols-3">
           {guides.map((guide) => (
@@ -45,7 +45,7 @@ export default function GuidesSection() {
                 <ArrowIcon />
                 <span className="text-[2rem] font-semibold">{guide.number}</span>
               </div>
-              <h3 className="mt-4 text-[2rem] font-semibold leading-[1.1]">{guide.title}</h3>
+              <h3 className="mt-4 text-[2rem] leading-[1.1]">{guide.title}</h3>
               <p className="mt-2 text-[0.95rem] font-semibold leading-6 text-white/90">{guide.copy}</p>
               <div className="mt-6 overflow-hidden rounded-2xl">
                 <img src={guide.image} alt={guide.title} className="h-56 w-full object-cover" />

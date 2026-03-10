@@ -22,7 +22,7 @@ export default function SnapshotSection() {
       <div className="relative z-[1] mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <p className="type-accent text-solar-primary mb-4 text-sm font-semibold uppercase tracking-[0.2em]">Austin Snapshot</p>
-          <h2 className="mb-4 text-[clamp(1.875rem,4vw,2.25rem)] font-semibold">The numbers people usually ask for.</h2>
+          <h2 className="mb-4 text-[clamp(1.875rem,4vw,2.25rem)]">The numbers people usually ask for.</h2>
           <p className="type-accent m-0 text-base font-semibold text-white/70">These are directional homeowner benchmarks, not a replacement for a roof-specific production model.</p>
         </div>
 

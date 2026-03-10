@@ -3,7 +3,7 @@ export default function CostsSection() {
     <section className="bg-solar-gradient grid place-content-center border-t border-stone-100   py-24" id="costs">
       <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
         <p className="type-accent text-solar-cyan-900 mb-8 text-sm font-semibold uppercase tracking-[0.2em]">Costs &amp; Incentives</p>
-        <h2 className="text-solar-slate-900 mb-6 text-[clamp(2.25rem,5vw,3.5rem)] font-bold leading-[1.1]">
+        <h2 className="text-solar-slate-900 mb-6 text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.1]">
           What Does Solar
           <br />
           Actually Cost in Austin?

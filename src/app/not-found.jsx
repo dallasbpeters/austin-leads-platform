@@ -7,7 +7,7 @@ export default function NotFound() {
     <main className="flex min-h-screen items-center justify-center bg-background px-6">
       <div className="max-w-xl text-center">
         <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">404</p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-foreground">
+        <h1 className="mt-4 text-4xl tracking-tight text-foreground">
           This page does not exist on the current domain.
         </h1>
         <p className="mt-4 text-base leading-8 text-muted-foreground">

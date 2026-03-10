@@ -19,3 +19,5 @@ export const sanityWriteClient =
         useCdn: false,
       })
     : null;
+
+export const sanityServerClient = sanityWriteClient || sanityClient;

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition } from "react";
 import { CheckCircle2, Clock3, LoaderCircle, RefreshCcw, XCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,14 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-
-const statusTone = {
-  queued: "secondary",
-  draft_ready: "default",
-  approved: "default",
-  rejected: "destructive",
-  published: "default",
-};
+import { usePublishManager } from "@/hooks/usePublishManager";
+import { publishStatusTone } from "@/services/admin/publish";
 
 const statusIcon = {
   queued: Clock3,
@@ -28,27 +22,11 @@ const statusIcon = {
   published: CheckCircle2,
 };
 
-async function request(url, init) {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Request failed.");
-  }
-
-  return response.json();
-}
-
 function JobStatus({ status }) {
   const Icon = statusIcon[status] || LoaderCircle;
 
   return (
-    <Badge variant={statusTone[status] || "outline"} className="inline-flex items-center gap-1.5">
+    <Badge variant={publishStatusTone[status] || "outline"} className="inline-flex items-center gap-1.5">
       <Icon className="h-3.5 w-3.5" />
       {status.replace(/_/g, " ")}
     </Badge>
@@ -56,81 +34,17 @@ function JobStatus({ status }) {
 }
 
 export default function PublishClient({ initialJobs, sites }) {
-  const [jobs, setJobs] = useState(initialJobs);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    siteSlug: sites[0]?.slug || "",
-    contentType: "post",
-    title: "",
-    prompt: "",
-    provider: "placeholder-openai",
-    model: "gpt-4.1",
-    sources: "",
+  const { form, jobs, loading, changeJob, refreshJobs, setForm, submitJob } = usePublishManager({
+    initialJobs,
+    sites,
   });
-
-  async function refreshJobs() {
-    setLoading(true);
-
-    try {
-      const data = await request("/api/publish-jobs");
-      setJobs(data.jobs);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    setJobs(initialJobs);
-  }, [initialJobs]);
-
-  async function submitJob(event) {
-    event.preventDefault();
-    setLoading(true);
-
-    try {
-      await request("/api/publish-jobs", {
-        method: "POST",
-        body: JSON.stringify({
-          ...form,
-          sources: form.sources
-            .split("\n")
-            .map((source) => source.trim())
-            .filter(Boolean),
-        }),
-      });
-
-      setForm((current) => ({
-        ...current,
-        title: "",
-        prompt: "",
-        sources: "",
-      }));
-      await refreshJobs();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function changeJob(jobId, action) {
-    setLoading(true);
-
-    try {
-      await request(`/api/publish-jobs/${jobId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ action }),
-      });
-      await refreshJobs();
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="space-y-8 p-6 lg:p-10">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">AI publishing</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+          <h1 className="mt-2 text-3xl tracking-tight text-foreground">
             Queue-assisted content drafting
           </h1>
           <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">

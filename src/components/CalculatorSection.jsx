@@ -64,7 +64,7 @@ export default function CalculatorSection() {
       <div className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)' }}></div>
       <div className="relative z-[1] mx-auto w-[min(72rem,calc(100%-3rem))]">
         <div className="mb-14 text-center">
-          <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] type-display font-extrabold text-foreground">See what solar could save&nbsp;you</h2>
+          <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] type-display text-foreground">See what solar could save&nbsp;you</h2>
           <p className="text-solar-slate-500 mx-auto mt-3 max-w-[32rem] text-base">Enter your average monthly electric bill and we&apos;ll estimate your system size, potential savings, and likely payback period.</p>
         </div>
 

@@ -28,13 +28,13 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
+            <h1 className="text-2xl tracking-tight text-foreground">Dashboard</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Manage content, workflows, and infrastructure for Austin Leads.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <select className="cursor-pointer appearance-none rounded-md border border-border bg-background px-3 py-1.5 pr-8 text-sm text-muted-foreground shadow-sm outline-none focus:ring-2 focus:ring-foreground">
+            <select className="shadow-theme-sm cursor-pointer appearance-none rounded-md border border-border bg-background px-3 py-1.5 pr-8 text-sm text-muted-foreground outline-none focus:ring-2 focus:ring-foreground">
               <option>Last 30 days</option>
               <option>Last 7 days</option>
               <option>All time</option>
@@ -47,7 +47,7 @@ export default function DashboardPage() {
             const Icon = metric.icon;
 
             return (
-              <Card key={metric.key} className="shadow-sm">
+              <Card key={metric.key} className="shadow-theme-sm">
                 <CardHeader className="flex flex-row items-start justify-between pb-4">
                   <span className="text-sm font-medium text-muted-foreground">{metric.label}</span>
                   <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
@@ -56,7 +56,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-baseline gap-2">
-                    <h2 className="text-3xl font-semibold tracking-tight text-foreground">
+                    <h2 className="text-3xl tracking-tight text-foreground">
                       {counts[metric.key]}
                     </h2>
                     <span className="text-xs font-medium text-muted-foreground">
@@ -76,10 +76,10 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="lg:col-span-2 flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-semibold text-foreground">Publishing Workflow</h3>
+              <h3 className="text-base text-foreground">Publishing Workflow</h3>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            <div className="shadow-theme-sm overflow-hidden rounded-xl border border-border bg-card">
               <div className="grid grid-cols-12 gap-4 border-b border-border bg-muted/40 px-5 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 <div className="col-span-6 md:col-span-5">Title</div>
                 <div className="col-span-3 hidden md:block">Site</div>
@@ -111,7 +111,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <Card className="shadow-sm">
+            <Card className="shadow-theme-sm">
               <CardHeader>
                 <CardTitle className="text-base">Analytics</CardTitle>
               </CardHeader>
@@ -135,7 +135,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-sm">
+            <Card className="shadow-theme-sm">
               <CardHeader>
                 <CardTitle className="text-base">Infrastructure</CardTitle>
               </CardHeader>

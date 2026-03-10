@@ -6,6 +6,7 @@ import PublicSite from "@/components/platform/PublicSite";
 import {
   createJsonLd,
   getNavigationForSite,
+  getHeroHomepageForSite,
   getPageForRequest,
   getPrimaryUrl,
   resolveSiteByHost,
@@ -51,7 +52,10 @@ export default async function PublicCatchAllPage({ params }) {
   const site = await resolveSiteByHost(host);
 
   if (site.slug === "austin-solar-pros" && slug.length === 0) {
-    return <App />;
+    const heroHomepage = await getHeroHomepageForSite(site.slug);
+    const heroSection = heroHomepage?.heroSection ?? null;
+
+    return <App heroSection={heroSection} />;
   }
 
   const page = await getPageForRequest(site, slug);

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition } from "react";
 import { Globe2, RefreshCcw } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -10,22 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-
-async function request(url, init) {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Request failed.");
-  }
-
-  return response.json();
-}
+import { useDomainsManager } from "@/hooks/useDomainsManager";
 
 function DomainStatus({ status }) {
   const tone =
@@ -35,68 +20,15 @@ function DomainStatus({ status }) {
 }
 
 export default function DomainsClient({ initialDomains, sites, vercelEnabled }) {
-  const [domains, setDomains] = useState(initialDomains);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    domain: "",
-    siteSlug: sites[0]?.slug || "",
-    redirectTarget: "",
-  });
-
-  useEffect(() => {
-    setDomains(initialDomains);
-  }, [initialDomains]);
-
-  async function refreshDomains() {
-    setLoading(true);
-
-    try {
-      const data = await request("/api/domains");
-      setDomains(data.domains);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function addDomain(event) {
-    event.preventDefault();
-    setLoading(true);
-
-    try {
-      await request("/api/domains", {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
-      setForm({
-        domain: "",
-        siteSlug: sites[0]?.slug || "",
-        redirectTarget: "",
-      });
-      await refreshDomains();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function verifyDomain(domain) {
-    setLoading(true);
-
-    try {
-      await request(`/api/domains/${domain}/verify`, {
-        method: "POST",
-      });
-      await refreshDomains();
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { domains, form, loading, addDomain, refreshDomains, setForm, verifyDomain } =
+    useDomainsManager({ initialDomains, sites });
 
   return (
     <div className="space-y-8 p-6 lg:p-10">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">Domain operations</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+          <h1 className="mt-2 text-3xl tracking-tight text-foreground">
             Connect and verify domains on Vercel
           </h1>
           <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">

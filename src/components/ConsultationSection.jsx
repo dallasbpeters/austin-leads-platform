@@ -1,10 +1,11 @@
 import Button from './Button'
 import Card from './Card'
+import Gradient from './Gradient'
 
 export default function ConsultationSection() {
   return (
     <section
-      className="bg-solar-warm border-solar-grid relative overflow-hidden border-t   py-24"
+      className="border-solar-grid relative overflow-hidden border-t py-24"
       id="estimate"
       style={{
         backgroundImage: 'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
@@ -15,9 +16,9 @@ export default function ConsultationSection() {
         <div className="border-solar-secondary absolute right-[-2.5rem] top-40 h-[600px] w-[600px] rounded-full border"></div>
       </div>
 
-      <div className="mx-auto grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2">
+      <div className="mx-auto z-5 grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2">
         <div>
-          <h2 className="type-display text-solar-secondary mb-4 font-bold text-[clamp(1.875rem,6vw,3.75rem)] leading-[1.05]">
+          <h2 className="type-display text-solar-secondary mb-4 text-[clamp(1.875rem,6vw,3.75rem)] leading-[1.05]">
             Talk to a
             <br />
             Austin Solar Pro
@@ -56,6 +57,7 @@ export default function ConsultationSection() {
           </form>
         </Card>
       </div>
+      <Gradient />
     </section>
   )
 }

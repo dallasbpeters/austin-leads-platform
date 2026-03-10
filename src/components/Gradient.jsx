@@ -7,6 +7,7 @@ const style = {
   inset: 0,
   width: '100%',
   height: '100%',
+  zIndex: -1,
 }
 
 const UnicornScene = dynamic(() => import('unicornstudio-react'), { ssr: false })

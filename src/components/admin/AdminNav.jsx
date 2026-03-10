@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Bot, Globe2, LayoutDashboard, PenSquare, TrendingUp } from "lucide-react";
+import { Bot, Globe2, ImagePlus, LayoutDashboard, PenSquare, TrendingUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/analytics", label: "Analytics", icon: TrendingUp },
+  { href: "/hero-pages", label: "Hero Pages", icon: ImagePlus },
   { href: "/publish", label: "Publish", icon: PenSquare },
   { href: "/domains", label: "Domains", icon: Globe2 },
   { href: "/studio", label: "Studio", icon: Bot },

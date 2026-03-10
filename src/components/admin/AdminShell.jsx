@@ -13,7 +13,7 @@ export default function AdminShell({ children, user }) {
             <div className="border-b border-border p-4">
               <button className="group flex w-full items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-border hover:bg-muted/40">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-7 w-7 items-center justify-center rounded bg-primary text-xs font-semibold tracking-tight text-primary-foreground shadow-sm">
+                  <div className="shadow-theme-sm flex h-7 w-7 items-center justify-center rounded bg-primary text-xs font-semibold tracking-tight text-primary-foreground">
                     AL
                   </div>
                   <div className="flex flex-col items-start">

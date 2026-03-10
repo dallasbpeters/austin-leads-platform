@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition } from "react";
 import { Gauge, RefreshCcw, Settings2, Target, TrendingUp } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -10,101 +10,19 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-
-async function request(url, init) {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Request failed.");
-  }
-
-  return response.json();
-}
-
-function number(value) {
-  return new Intl.NumberFormat("en-US").format(value);
-}
+import { useAnalyticsManager } from "@/hooks/useAnalyticsManager";
+import { formatAnalyticsNumber } from "@/services/admin/analytics";
 
 export default function AnalyticsClient({ overview, providers, goals, sites }) {
-  const [goalList, setGoalList] = useState(goals);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    scope: "site",
-    siteSlug: sites[0]?.slug || "all",
-    eventName: "",
-    targetValue: "",
-    interval: "monthly",
-    owner: "Platform Ops",
-    notes: "",
-  });
-
-  useEffect(() => {
-    setGoalList(goals);
-  }, [goals]);
-
-  async function refreshGoals() {
-    setLoading(true);
-
-    try {
-      const data = await request("/api/analytics/goals");
-      setGoalList(data.goals);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function submitGoal(event) {
-    event.preventDefault();
-    setLoading(true);
-
-    try {
-      await request("/api/analytics/goals", {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
-      setForm({
-        name: "",
-        scope: "site",
-        siteSlug: sites[0]?.slug || "all",
-        eventName: "",
-        targetValue: "",
-        interval: "monthly",
-        owner: "Platform Ops",
-        notes: "",
-      });
-      await refreshGoals();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function updateGoal(goalId, status) {
-    setLoading(true);
-
-    try {
-      await request(`/api/analytics/goals/${goalId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
-      await refreshGoals();
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { form, goalList, loading, refreshGoals, setForm, submitGoal, updateGoal } =
+    useAnalyticsManager({ goals, sites });
 
   return (
     <div className="p-4 md:p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Analytics</h1>
+            <h1 className="text-2xl tracking-tight text-foreground">Analytics</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Manage provider connectivity, instrumentation readiness, and KPI definitions.
             </p>
@@ -117,15 +35,15 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
 
         <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: "Connected providers", value: number(overview.connectedProviders), icon: TrendingUp },
-            { label: "Active goals", value: number(overview.configuredGoals), icon: Target },
-            { label: "Protected admin APIs", value: number(overview.protectedAdminApis), icon: Settings2 },
-            { label: "Instrumented custom events", value: number(overview.eventsInstrumented), icon: Gauge },
+            { label: "Connected providers", value: formatAnalyticsNumber(overview.connectedProviders), icon: TrendingUp },
+            { label: "Active goals", value: formatAnalyticsNumber(overview.configuredGoals), icon: Target },
+            { label: "Protected admin APIs", value: formatAnalyticsNumber(overview.protectedAdminApis), icon: Settings2 },
+            { label: "Instrumented custom events", value: formatAnalyticsNumber(overview.eventsInstrumented), icon: Gauge },
           ].map((metric) => {
             const Icon = metric.icon;
 
             return (
-              <Card key={metric.label} className="shadow-sm">
+              <Card key={metric.label} className="shadow-theme-sm">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">{metric.label}</CardTitle>
                   <Icon className="h-4 w-4 text-muted-foreground" />
@@ -139,7 +57,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
         </div>
 
         <div className="mb-8 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <Card className="shadow-sm">
+          <Card className="shadow-theme-sm">
             <CardHeader>
               <CardTitle>Provider status</CardTitle>
             </CardHeader>
@@ -170,7 +88,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow-theme-sm">
             <CardHeader>
               <CardTitle>Instrumentation notes</CardTitle>
             </CardHeader>
@@ -189,7 +107,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
-          <Card className="shadow-sm">
+          <Card className="shadow-theme-sm">
             <CardHeader>
               <CardTitle>Create analytics goal</CardTitle>
             </CardHeader>
@@ -291,7 +209,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          <Card className="shadow-theme-sm">
             <CardHeader>
               <CardTitle>Managed goals</CardTitle>
             </CardHeader>
@@ -317,7 +235,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
                         {goal.scope} · {goal.siteSlug}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {number(goal.targetValue)} / {goal.interval}
+                        {formatAnalyticsNumber(goal.targetValue)} / {goal.interval}
                       </TableCell>
                       <TableCell>
                         <Badge variant={goal.status === "active" ? "default" : "outline"}>

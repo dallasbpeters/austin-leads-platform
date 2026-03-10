@@ -22,7 +22,7 @@ export default async function SignInPage({ searchParams }) {
       <div className="grid w-full max-w-5xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-5">
           <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">Platform security</p>
-          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+          <h1 className="max-w-2xl text-4xl tracking-tight text-foreground md:text-5xl">
             Keep the operator side private while the public domains stay indexable.
           </h1>
           <p className="max-w-2xl text-base leading-8 text-muted-foreground">

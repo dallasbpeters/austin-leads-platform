@@ -43,7 +43,7 @@ export default function SignInForm({ callbackUrl = "/dashboard" }) {
   }
 
   return (
-    <Card className="w-full max-w-md border-border/80 shadow-lg shadow-black/5">
+    <Card className="shadow-theme-glass-soft w-full max-w-md border-border/80">
       <CardHeader className="space-y-4">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
           <LockKeyhole className="h-5 w-5" />

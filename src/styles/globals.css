@@ -64,8 +64,14 @@
   --font-sans: 'Manrope', sans-serif;
   --font-display: 'gf_DM_Serif_Display variant0', serif;
   --font-accent: 'Manrope', sans-serif;
-  --shadow-xl: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow-sm: 0 4px 10px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 12px 28px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --shadow-glass: 0 18px 40px rgba(0, 0, 0, 0.2);
+  --shadow-glass-soft: 0 18px 40px rgba(15, 23, 42, 0.05);
+  --shadow-brand: 0 10px 24px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.2);
+  --shadow-brand-hover: 0 0 30px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.22);
   --radius: 0.75rem;
 
   --background: var(--color-warm-bg);
@@ -112,7 +118,7 @@
   --muted-foreground: hsl(0 0% 45%);
   --accent: hsl(0 0% 96%);
   --accent-foreground: hsl(0 0% 11%);
-  --border: hsl(0 0% 89%);
+  --border: hsl(0 0% 92%);
   --input: hsl(0 0% 89%);
   --ring: hsl(0 0% 11%);
   --sidebar: hsl(0 0% 100%);
@@ -123,6 +129,12 @@
   --sidebar-accent-foreground: hsl(0 0% 11%);
   --sidebar-border: hsl(0 0% 89%);
   --sidebar-ring: hsl(0 0% 11%);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 8px 18px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 18px 34px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 24px 44px rgba(0, 0, 0, 0.08);
+  --shadow-glass: 0 18px 40px rgba(0, 0, 0, 0.16);
+  --shadow-glass-soft: 0 18px 40px rgba(0, 0, 0, 0.05);
 }
 
 @theme inline {
@@ -193,6 +205,7 @@ h3,
 h3,
 h5 {
   line-height: 1.1;
+  font-weight: 800;
 }
 
 #app {
@@ -238,11 +251,11 @@ h5 {
   .btn--primary {
     background-color: var(--color-primary-700);
     color: var(--color-white);
-    box-shadow: 0 10px 24px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.2);
+    box-shadow: var(--shadow-brand);
   }
 
   .btn--primary:hover {
-    box-shadow: 0 0 30px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.22);
+    box-shadow: var(--shadow-brand-hover);
   }
 
   .btn--secondary {
@@ -301,7 +314,7 @@ h5 {
     overflow: hidden;
     border: 1px solid var(--color-border);
     background-color: var(--color-surface-elevated);
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-lg);
   }
 
   .card--media {
@@ -457,15 +470,47 @@ h5 {
   }
 
   .shadow-solar-xl {
-    box-shadow: var(--shadow-xl);
+    box-shadow: var(--shadow-lg);
   }
 
   .shadow-solar-primary {
-    box-shadow: 0 10px 24px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.2);
+    box-shadow: var(--shadow-brand);
   }
 
   .hover-shadow-solar-primary:hover {
-    box-shadow: 0 0 30px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.22);
+    box-shadow: var(--shadow-brand-hover);
+  }
+
+  .shadow-theme-xs {
+    box-shadow: var(--shadow-xs);
+  }
+
+  .shadow-theme-sm {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shadow-theme-md {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-theme-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .shadow-theme-glass {
+    box-shadow: var(--shadow-glass);
+  }
+
+  .shadow-theme-glass-soft {
+    box-shadow: var(--shadow-glass-soft);
+  }
+
+  .shadow-theme-brand {
+    box-shadow: var(--shadow-brand);
+  }
+
+  .hover-shadow-theme-brand:hover {
+    box-shadow: var(--shadow-brand-hover);
   }
 
   .bg-solar-button-secondary {

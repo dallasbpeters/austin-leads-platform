@@ -10,12 +10,12 @@ import ResourcesSection from "./components/ResourcesSection";
 import ConsultationSection from "./components/ConsultationSection";
 import Footer from "./components/Footer";
 
-export default function App() {
+export default function App({ heroSection = null }) {
   return (
     <>
       <Header />
       <main>
-        <Hero />
+        <Hero heroSection={heroSection} />
         <StorySection />
         <CalculatorSection />
         <CostsSection />

@@ -14,7 +14,7 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
         <SliderPrimitive.Range data-slot="slider-range" className={cn('absolute bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full')} />
       </SliderPrimitive.Track>
       {Array.from({ length: _values.length }, (_, index) => (
-        <SliderPrimitive.Thumb data-slot="slider-thumb" key={index} className="block size-4 shrink-0 rounded-full border border-primary bg-primary shadow-sm ring-primary/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50" />
+        <SliderPrimitive.Thumb data-slot="slider-thumb" key={index} className="shadow-theme-sm block size-4 shrink-0 rounded-full border border-primary bg-primary ring-primary/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50" />
       ))}
     </SliderPrimitive.Root>
   )

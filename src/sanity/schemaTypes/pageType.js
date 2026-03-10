@@ -3,6 +3,46 @@ const sectionFields = [
   { name: "eyebrow", title: "Eyebrow", type: "string" },
   { name: "title", title: "Title", type: "string" },
   { name: "body", title: "Body", type: "text" },
+  { name: "heroTextColor", title: "Hero text color", type: "string" },
+  { name: "heroOverlayColor", title: "Hero overlay color", type: "string" },
+  { name: "heroOverlayStartColor", title: "Hero overlay start color", type: "string" },
+  { name: "heroOverlayEndColor", title: "Hero overlay end color", type: "string" },
+  { name: "heroOverlayDirection", title: "Hero overlay direction", type: "string" },
+  { name: "heroOverlayStartOpacity", title: "Hero overlay start opacity", type: "number" },
+  { name: "heroOverlayEndOpacity", title: "Hero overlay end opacity", type: "number" },
+  { name: "heroOverlayOpacity", title: "Hero overlay opacity", type: "number" },
+  {
+    name: "heroImage",
+    title: "Hero image",
+    type: "object",
+    fields: [
+      { name: "source", title: "Source", type: "string" },
+      { name: "unsplashId", title: "Unsplash ID", type: "string" },
+      { name: "alt", title: "Alt text", type: "string" },
+      { name: "description", title: "Description", type: "text" },
+      { name: "color", title: "Color", type: "string" },
+      { name: "blurHash", title: "BlurHash", type: "string" },
+      { name: "width", title: "Width", type: "number" },
+      { name: "height", title: "Height", type: "number" },
+      { name: "creditName", title: "Photographer name", type: "string" },
+      { name: "creditUsername", title: "Photographer username", type: "string" },
+      { name: "creditUrl", title: "Photographer URL", type: "url" },
+      { name: "unsplashUrl", title: "Unsplash photo URL", type: "url" },
+      { name: "downloadLocation", title: "Download location", type: "url" },
+      {
+        name: "urls",
+        title: "Image URLs",
+        type: "object",
+        fields: [
+          { name: "raw", title: "Raw", type: "url" },
+          { name: "full", title: "Full", type: "url" },
+          { name: "regular", title: "Regular", type: "url" },
+          { name: "small", title: "Small", type: "url" },
+          { name: "thumb", title: "Thumb", type: "url" },
+        ],
+      },
+    ],
+  },
   {
     name: "metrics",
     title: "Metrics",
@@ -65,7 +105,24 @@ const baseFields = [
     name: "sections",
     title: "Sections",
     type: "array",
-    of: [{ type: "object", fields: sectionFields }],
+    of: [
+      {
+        type: "object",
+        fields: sectionFields,
+        preview: {
+          select: {
+            title: "title",
+            subtitle: "type",
+          },
+          prepare({ title, subtitle }) {
+            return {
+              title: title || "Untitled section",
+              subtitle: subtitle || "section",
+            };
+          },
+        },
+      },
+    ],
   },
 ];
 

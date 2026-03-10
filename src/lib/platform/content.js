@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { groq } from "next-sanity";
 
-import { sanityClient, sanityWriteClient } from "@/sanity/client";
+import { sanityServerClient, sanityWriteClient } from "@/sanity/client";
 import { pages, sites } from "./fixtures";
 
 function normalizeHost(host) {
@@ -16,8 +16,52 @@ export function getAllRenderableSites() {
   return sites.filter((site) => site.tier !== "redirect");
 }
 
+export function getHeroSites() {
+  return sites.filter((site) => site.tier === "hero");
+}
+
+export function getSiteById(siteId) {
+  return sites.find((site) => site.id === siteId) ?? null;
+}
+
 export function getSiteBySlug(siteSlug) {
   return sites.find((site) => site.slug === siteSlug) ?? null;
+}
+
+export async function resolveSiteBySlug(siteSlug) {
+  const localSite = getSiteBySlug(siteSlug);
+
+  if (!sanityServerClient) {
+    return localSite;
+  }
+
+  try {
+    const site = await sanityServerClient.fetch(
+      groq`*[_type == "site" && slug.current == $siteSlug][0]{
+        _id,
+        "id": _id,
+        "slug": slug.current,
+        name,
+        shortName,
+        category,
+        categoryLabel,
+        tier,
+        primaryDomain,
+        aliases,
+        redirectTarget,
+        leadForm,
+        seo,
+        brand,
+        organization
+      }`,
+      { siteSlug },
+      { cache: "no-store" },
+    );
+
+    return site ?? localSite ?? null;
+  } catch {
+    return localSite ?? null;
+  }
 }
 
 export function getPageKey(slugParts = []) {
@@ -36,6 +80,28 @@ export function getPageForSite(siteSlug, slugParts = []) {
   return (
     pages.find((page) => page.siteSlug === siteSlug && page.slug === getPageKey(slugParts)) ?? null
   );
+}
+
+function toHeroPageRecord(page, site) {
+  if (!page || !site || site.tier !== "hero" || page.templateLevel !== "hero") {
+    return null;
+  }
+
+  return {
+    id: page.id,
+    title: page.title,
+    slug: page.slug,
+    pageType: page.pageType,
+    templateLevel: page.templateLevel,
+    site: {
+      id: site.id,
+      slug: site.slug,
+      name: site.name,
+      primaryDomain: site.primaryDomain,
+      tier: site.tier,
+    },
+    heroSection: page.sections?.find((section) => section.type === "hero") ?? null,
+  };
 }
 
 export function getNavigationForSite(siteSlug) {
@@ -58,16 +124,16 @@ export async function resolveSiteByHost(host) {
         (normalizedHost.endsWith(".vercel.app") && site.slug === "austin-solar-pros"),
     ) ?? null;
 
-  if (!sanityClient) {
+  if (!sanityServerClient) {
     return localSite ?? getSiteBySlug("austin-solar-pros");
   }
 
   try {
-    const site = await sanityClient.fetch(
+    const site = await sanityServerClient.fetch(
       groq`*[_type == "site" && ($host == primaryDomain || $host in aliases)][0]{
         _id,
         "id": _id,
-        slug,
+        "slug": slug.current,
         name,
         shortName,
         category,
@@ -101,12 +167,12 @@ export async function resolveCurrentSite() {
 export async function getPageForRequest(site, slugParts = []) {
   const localPage = getPageForSite(site.slug, slugParts);
 
-  if (!sanityClient) {
+  if (!sanityServerClient) {
     return localPage;
   }
 
   try {
-    const page = await sanityClient.fetch(
+    const page = await sanityServerClient.fetch(
       groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current == $siteSlug && slug.current == $slug][0]{
         _id,
         "id": _id,
@@ -130,6 +196,123 @@ export async function getPageForRequest(site, slugParts = []) {
   } catch {}
 
   return localPage;
+}
+
+export async function getHeroPages() {
+  const localHeroPages = pages
+    .map((page) => toHeroPageRecord(page, getSiteBySlug(page.siteSlug)))
+    .filter(Boolean);
+
+  if (!sanityServerClient) {
+    return localHeroPages;
+  }
+
+  try {
+    const heroPages = await sanityServerClient.fetch(
+      groq`*[
+        _type in ["page", "servicePage", "locationPage"] &&
+        templateLevel == "hero" &&
+        defined(site) &&
+        site->tier == "hero"
+      ] | order(site->name asc, title asc) {
+        _id,
+        "id": _id,
+        title,
+        pageType,
+        templateLevel,
+        "slug": select(slug.current == "/" => "", slug.current),
+        site->{
+          _id,
+          "id": _id,
+          "slug": slug.current,
+          name,
+          primaryDomain,
+          tier
+        },
+        "heroSection": sections[type == "hero"][0]{
+          _key,
+          type,
+          eyebrow,
+          title,
+          body,
+          heroTextColor,
+          heroOverlayColor,
+          heroOverlayStartColor,
+          heroOverlayEndColor,
+          heroOverlayDirection,
+          heroOverlayStartOpacity,
+          heroOverlayEndOpacity,
+          heroOverlayOpacity,
+          metrics,
+          items,
+          ctaLabel,
+          ctaHref,
+          heroImage
+        }
+      }`,
+      {},
+      { cache: "no-store" },
+    );
+
+    return Array.isArray(heroPages) ? heroPages : localHeroPages;
+  } catch {
+    return localHeroPages;
+  }
+}
+
+export async function getHeroHomepageForSite(siteSlug) {
+  const heroPages = await getHeroPages();
+  const sitePages = heroPages.filter((page) => page.site?.slug === siteSlug);
+
+  const isHomepage = (page) => page.pageType === "home" || page.slug === "" || page.slug === "/";
+  const hasHeroImage = (page) => Boolean(page?.heroSection?.heroImage?.urls?.regular || page?.heroSection?.heroImage?.urls?.small);
+
+  return (
+    sitePages.find((page) => isHomepage(page) && hasHeroImage(page)) ||
+    sitePages.find((page) => hasHeroImage(page)) ||
+    sitePages.find((page) => isHomepage(page)) ||
+    sitePages[0] ||
+    null
+  );
+}
+
+export async function getHeroSitesForAdmin() {
+  const localHeroSites = getHeroSites().map((site) => ({
+    id: site.id,
+    slug: site.slug,
+    name: site.name,
+    primaryDomain: site.primaryDomain,
+    tier: site.tier,
+    source: "fixture",
+  }));
+
+  if (!sanityServerClient) {
+    return localHeroSites;
+  }
+
+  try {
+    const heroSites = await sanityServerClient.fetch(
+      groq`*[_type == "site" && tier == "hero"] | order(name asc) {
+        _id,
+        "id": _id,
+        "slug": slug.current,
+        name,
+        primaryDomain,
+        tier
+      }`,
+      {},
+      { cache: "no-store" },
+    );
+
+    if (Array.isArray(heroSites) && heroSites.length) {
+      return heroSites.map((site) => ({
+        ...site,
+        source: "sanity",
+      }));
+    }
+  } catch {}
+
+  return localHeroSites;
 }
 
 export function getPrimaryUrl(site, pathname = "/") {

@@ -36,7 +36,7 @@ export default function ResourcesSection() {
     >
       <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
-          <h2 className="type-accent text-solar-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)] font-semibold">Key Austin solar resources</h2>
+          <h2 className="type-accent text-solar-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">Key Austin solar resources</h2>
         </div>
 
         <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
