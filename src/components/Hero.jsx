@@ -14,7 +14,7 @@ export default function Hero({ heroSection = null }) {
 
   return (
     <section
-      className="type-accent text-solar-body border-solar-grid relative min-h-[80vh] overflow-x-hidden border-b"
+      className="type-accent text-solar-body relative min-h-[80vh] overflow-x-hidden"
       style={{
         backgroundImage: 'radial-gradient(var(--color-grid) 1px, transparent 1px)',
         backgroundSize: '24px 24px',

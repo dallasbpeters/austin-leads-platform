@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 const defaultBandColors = ['var(--color-secondary-950)', 'var(--color-secondary)', 'var(--color-secondary-700)', 'var(--color-primary-700)', 'var(--color-primary)', 'var(--color-primary-alt)', 'var(--color-primary-300)', 'var(--color-secondary-300)']
 
-export default function Band({ colors = defaultBandColors, tint = 'var(--color-secondary-950)', minHeight = 2, maxHeight = 40, rotate = false, scrollStart = 0, scrollEnd = 0.8, reverse = false, autoAnimate = false, speed = 1, amplitude = 10, className = '', style }) {
+export default function Band({ colors = defaultBandColors, tint = 'var(--color-secondary-950)', minHeight = 2, maxHeight = 24, rotate = false, scrollStart = 0, scrollEnd = 0.8, reverse = false, autoAnimate = false, speed = 1, amplitude = 10, className = '', style }) {
   const ref = useRef(null)
   const rectRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)

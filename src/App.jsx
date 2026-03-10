@@ -17,6 +17,7 @@ export default function App({ heroSection = null }) {
       <Header />
       <main>
         <Hero heroSection={heroSection} />
+        <Band colors={['#2660AE', '#1C447F', '#0C333A', 'var(--color-amber-400)', 'var(--color-amber-600)']} tint="#1C2432" />
         <StorySection />
         <CalculatorSection />
         <CostsSection />
