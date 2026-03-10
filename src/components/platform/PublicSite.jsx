@@ -6,11 +6,14 @@ import Header from '@/components/Header'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
+import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 
-function HeroSection({ section }) {
-  const heroImageUrl = section.heroImage?.urls?.regular || section.heroImage?.urls?.small
-  const hasHeroImage = Boolean(heroImageUrl)
+function HeroSection({ page, section }) {
+  const heroImageUrl = getImageUrl(section.heroAsset, section.heroImage)
+  const hasHeroImage = hasImageSource(section.heroAsset, section.heroImage)
+  const heroTitle = page?.pageType === 'post' ? page.title : section.title
   const heroTextColor = section.heroTextColor || (hasHeroImage ? '#ffffff' : '')
   const { overlayStyle } = getHeroOverlayAppearance(section)
   const heroMutedColor = heroTextColor ? hexToRgba(heroTextColor, 0.82) : undefined
@@ -29,7 +32,7 @@ function HeroSection({ section }) {
       {hasHeroImage ? (
         <>
           <div className="absolute inset-0">
-            <img alt={section.heroImage.alt || section.title} className="h-full w-full object-cover" src={heroImageUrl} />
+            <img alt={getImageAlt(section.heroAsset, section.heroImage, heroTitle)} className="h-full w-full object-cover" src={heroImageUrl} />
           </div>
           <div className="absolute inset-0" style={overlayStyle} />
         </>
@@ -41,7 +44,7 @@ function HeroSection({ section }) {
           </Badge>
           <div className="space-y-4">
             <h1 className="max-w-4xl text-4xl tracking-tight text-foreground md:text-6xl" style={heroTextStyle}>
-              {section.title}
+              {heroTitle}
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-muted-foreground" style={heroMutedStyle}>
               {section.body}
@@ -122,15 +125,15 @@ function CardGridSection({ section }) {
 }
 
 function GuideGridSection({ section }) {
-  const palette = ['bg-[var(--site-primary)] text-white', 'bg-[var(--color-amber-400)] text-white', 'bg-blue-400 text-white', 'bg-[var(--color-primary-700)] text-white', 'bg-[var(--site-secondary)] text-white', 'bg-[var(--color-amber-400))] text-white']
+  const palette = ['bg-[var(--site-primary)] text-white', 'bg-[var(--color-amber-400)] text-white', 'bg-blue-400 text-white', 'bg-[var(--site-secondary)] text-white', 'bg-blue-200 text-foreground', 'bg-[var(--color-amber-400)] text-white']
 
   const cards = (section.items || []).slice(0, 6).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
     copy: item.body || item.answer,
     href: item.href,
-    image: item.image?.urls?.regular || item.image?.urls?.small,
-    imageAlt: item.image?.alt || item.title || item.question,
+    image: getImageUrl(item.imageAsset, item.image),
+    imageAlt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
   }))
 
   return (
@@ -209,6 +212,37 @@ function CtaSection({ section }) {
   )
 }
 
+function CtaBannerSection({ section }) {
+  return (
+    <section className="border-b border-border/60 bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white">
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
+        <div className="space-y-4">
+          {section.eyebrow ? (
+            <p className="text-sm uppercase tracking-[0.22em] text-white/58">{section.eyebrow}</p>
+          ) : null}
+          <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <p className="max-w-2xl text-base leading-8 text-white/78">{section.body}</p>
+        </div>
+        <Card className="gap-0 border-white/12 bg-white/6 text-white backdrop-blur">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl text-white">Get matched with a roofing pro</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form className="grid gap-4">
+              <Input className="border-white/16 bg-white/6 text-white placeholder:text-white/48" placeholder="Full name" type="text" />
+              <Input className="border-white/16 bg-white/6 text-white placeholder:text-white/48" placeholder="Email address" type="email" />
+              <Input className="border-white/16 bg-white/6 text-white placeholder:text-white/48" placeholder="Phone number" type="tel" />
+              <Button className="mt-2" size="lg" type="button">
+                {section.ctaLabel || 'Request a roofing intro'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  )
+}
+
 const sectionRenderers = {
   hero: HeroSection,
   story: StorySection,
@@ -217,6 +251,7 @@ const sectionRenderers = {
   faq: FaqSection,
   steps: StepsSection,
   cta: CtaSection,
+  ctaBanner: CtaBannerSection,
 }
 
 export default function PublicSite({ site, page, pathname, navigation, jsonLd }) {
@@ -267,7 +302,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
             return null
           }
 
-          return <Component key={`${section.type}-${index}`} section={section} pathname={pathname} />
+          return <Component key={`${section.type}-${index}`} page={page} section={section} pathname={pathname} />
         })}
       </main>
 

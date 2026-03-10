@@ -12,6 +12,7 @@
 
   --color-primary-700: hsl(var(--color-primary-h) var(--color-primary-s) 53%);
   --color-primary: hsl(var(--color-primary-h) var(--color-primary-s) var(--color-primary-l));
+  --color-primary-400: hsl(var(--color-primary-h) 84% 64%);
   --color-primary-300: hsl(var(--color-primary-h) 84% 74%);
   --color-primary-200: hsl(var(--color-primary-h) 72% 88%);
   --color-primary-100: hsl(var(--color-primary-h) 70% 95%);

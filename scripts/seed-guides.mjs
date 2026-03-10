@@ -83,13 +83,102 @@ function toSanityDocument(page, siteId, existingId) {
   };
 }
 
+function mergeSeedSections(seedSections, existingSections = []) {
+  const keyedExistingSections = new Map(
+    (existingSections || []).map((section) => [section.type, section]),
+  );
+
+  return withSectionKeys(
+    (seedSections || []).map((section) => {
+      const existingSection = keyedExistingSections.get(section.type);
+
+      if (!existingSection) {
+        return section;
+      }
+
+      const mergedSection = {
+        ...section,
+        heroAsset: existingSection.heroAsset || section.heroAsset,
+        heroImage: existingSection.heroImage || section.heroImage,
+        heroTextColor: existingSection.heroTextColor || section.heroTextColor,
+        heroOverlayColor: existingSection.heroOverlayColor || section.heroOverlayColor,
+        heroOverlayStartColor:
+          existingSection.heroOverlayStartColor || section.heroOverlayStartColor,
+        heroOverlayEndColor:
+          existingSection.heroOverlayEndColor || section.heroOverlayEndColor,
+        heroOverlayDirection:
+          existingSection.heroOverlayDirection || section.heroOverlayDirection,
+        heroOverlayStartOpacity:
+          existingSection.heroOverlayStartOpacity ?? section.heroOverlayStartOpacity,
+        heroOverlayEndOpacity:
+          existingSection.heroOverlayEndOpacity ?? section.heroOverlayEndOpacity,
+        heroOverlayOpacity:
+          existingSection.heroOverlayOpacity ?? section.heroOverlayOpacity,
+      };
+
+      if (!Array.isArray(section.items) || !Array.isArray(existingSection.items)) {
+        return mergedSection;
+      }
+
+      const existingItemsByTitle = new Map(
+        existingSection.items.map((item) => [item.title || item.question, item]),
+      );
+
+      return {
+        ...mergedSection,
+        items: section.items.map((item) => {
+          const existingItem = existingItemsByTitle.get(item.title || item.question);
+
+          if (!existingItem) {
+            return item;
+          }
+
+          return {
+            ...item,
+            imageAsset: existingItem.imageAsset || item.imageAsset,
+            image: existingItem.image || item.image,
+          };
+        }),
+      };
+    }),
+  );
+}
+
 async function upsertPage(page, siteId) {
   const existing = await client.fetch(
-    `*[_type in ["page", "post"] && site->slug.current == $siteSlug && slug.current == $slug][0]{_id}`,
+    `*[_type in ["page", "post"] && site->slug.current == $siteSlug && slug.current == $slug][0]{
+      _id,
+      sections[]{
+        type,
+        heroAsset,
+        heroImage,
+        heroTextColor,
+        heroOverlayColor,
+        heroOverlayStartColor,
+        heroOverlayEndColor,
+        heroOverlayDirection,
+        heroOverlayStartOpacity,
+        heroOverlayEndOpacity,
+        heroOverlayOpacity,
+        items[]{
+          title,
+          question,
+          image,
+          imageAsset
+        }
+      }
+    }`,
     { siteSlug, slug: page.slug || "/" },
   );
 
-  const document = toSanityDocument(page, siteId, existing?._id);
+  const document = toSanityDocument(
+    {
+      ...page,
+      sections: mergeSeedSections(page.sections, existing?.sections),
+    },
+    siteId,
+    existing?._id,
+  );
   await client.createOrReplace(document);
 }
 

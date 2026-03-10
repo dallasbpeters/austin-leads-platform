@@ -18,8 +18,22 @@ const query = `*[_type in ["page", "post"] && slug.current == $slug][0]{
   sections[]{
     type,
     title,
+    heroImage,
+    heroAsset{
+      alt,
+      asset->{
+        url
+      }
+    },
     items[]{
-      title
+      title,
+      image,
+      imageAsset{
+        alt,
+        asset->{
+          url
+        }
+      }
     }
   }
 }`;

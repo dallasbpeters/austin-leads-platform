@@ -51,6 +51,24 @@ const heroImageType = {
   },
 };
 
+const uploadedImageType = {
+  name: "uploadedImage",
+  title: "Uploaded Image",
+  type: "image",
+  options: {
+    hotspot: true,
+    ...canvasExclude,
+  },
+  fields: [
+    {
+      name: "alt",
+      title: "Alt text",
+      type: "string",
+      options: canvasExclude,
+    },
+  ],
+};
+
 const pageMetricType = {
   name: "pageMetric",
   title: "Metric",
@@ -136,6 +154,12 @@ const pageItemType = {
       type: "heroImage",
       options: canvasExclude,
     },
+    {
+      name: "imageAsset",
+      title: "Uploaded image",
+      type: "uploadedImage",
+      options: canvasExclude,
+    },
   ],
   preview: {
     select: {
@@ -186,6 +210,7 @@ const pageSectionType = {
     { name: "heroOverlayEndOpacity", title: "Hero overlay end opacity", type: "number", options: canvasExclude },
     { name: "heroOverlayOpacity", title: "Hero overlay opacity", type: "number", options: canvasExclude },
     { name: "heroImage", title: "Hero image", type: "heroImage", options: canvasExclude },
+    { name: "heroAsset", title: "Uploaded hero image", type: "uploadedImage", options: canvasExclude },
     {
       name: "metrics",
       title: "Metrics",
@@ -326,6 +351,7 @@ const pageDocuments = [
 export default [
   heroImageUrlsType,
   heroImageType,
+  uploadedImageType,
   pageMetricType,
   pageItemType,
   pageSectionType,

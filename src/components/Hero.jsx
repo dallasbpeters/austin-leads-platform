@@ -2,10 +2,11 @@ import Button from './Button'
 import Card from './Card'
 import Image from 'next/image'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
+import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 
 export default function Hero({ heroSection = null }) {
-  const heroImageUrl = heroSection?.heroImage?.urls?.regular || heroSection?.heroImage?.urls?.small
-  const hasHeroImage = Boolean(heroImageUrl)
+  const heroImageUrl = getImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
+  const hasHeroImage = hasImageSource(heroSection?.heroAsset, heroSection?.heroImage)
   const heroTextColor = heroSection?.heroTextColor || (hasHeroImage ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
   const softTextColor = heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined
@@ -22,7 +23,7 @@ export default function Hero({ heroSection = null }) {
     >
       {hasHeroImage ? (
         <>
-          <img src={heroImageUrl} alt={heroSection?.heroImage?.alt || ''} className="absolute inset-0 z-0 h-full w-full object-cover object-center" />
+          <img src={heroImageUrl} alt={getImageAlt(heroSection?.heroAsset, heroSection?.heroImage, '')} className="absolute inset-0 z-0 h-full w-full object-cover object-center" />
           <div className="absolute inset-0 z-10" style={overlayStyle} />
         </>
       ) : (

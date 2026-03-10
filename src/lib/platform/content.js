@@ -4,7 +4,63 @@ import { groq } from "next-sanity";
 import { sanityServerClient, sanityWriteClient } from "@/sanity/client";
 import { pages, sites } from "./fixtures";
 import { defaultLaunchChecklist } from "./launchChecklist";
+import { hasImageSource } from "./imageSource";
 import { withSectionKeys } from "@/lib/sanity/keys";
+
+const sectionProjection = `
+  _key,
+  type,
+  eyebrow,
+  title,
+  body,
+  heroTextColor,
+  heroOverlayColor,
+  heroOverlayStartColor,
+  heroOverlayEndColor,
+  heroOverlayDirection,
+  heroOverlayStartOpacity,
+  heroOverlayEndOpacity,
+  heroOverlayOpacity,
+  heroImage,
+  heroAsset{
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  metrics,
+  items[]{
+    _key,
+    number,
+    eyebrow,
+    title,
+    body,
+    question,
+    answer,
+    href,
+    image,
+    imageAsset{
+      alt,
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    }
+  },
+  ctaLabel,
+  ctaHref
+`;
 
 function normalizeHost(host) {
   return (host || "").replace(/^https?:\/\//, "").replace(/:\d+$/, "").toLowerCase();
@@ -183,7 +239,9 @@ export async function getPageForRequest(site, slugParts = []) {
         pageType,
         templateLevel,
         "slug": slug.current,
-        sections
+        sections[]{
+          ${sectionProjection}
+        }
       }`,
       { siteSlug: site.slug, slug: getPageKey(slugParts) || "/" },
       { cache: "no-store" },
@@ -232,24 +290,7 @@ export async function getHeroPages() {
           tier
         },
         "heroSection": sections[type == "hero"][0]{
-          _key,
-          type,
-          eyebrow,
-          title,
-          body,
-          heroTextColor,
-          heroOverlayColor,
-          heroOverlayStartColor,
-          heroOverlayEndColor,
-          heroOverlayDirection,
-          heroOverlayStartOpacity,
-          heroOverlayEndOpacity,
-          heroOverlayOpacity,
-          metrics,
-          items,
-          ctaLabel,
-          ctaHref,
-          heroImage
+          ${sectionProjection}
         }
       }`,
       {},
@@ -260,6 +301,16 @@ export async function getHeroPages() {
   } catch {
     return localHeroPages;
   }
+}
+
+export async function getPageBySlug(siteSlug, slug) {
+  const site = getSiteBySlug(siteSlug);
+
+  if (!site) {
+    return null;
+  }
+
+  return getPageForRequest(site, slug === "/" ? [] : slug.split("/").filter(Boolean));
 }
 
 export async function getLaunchChecklist() {
@@ -302,7 +353,7 @@ export async function getHeroHomepageForSite(siteSlug) {
   const sitePages = heroPages.filter((page) => page.site?.slug === siteSlug);
 
   const isHomepage = (page) => page.pageType === "home" || page.slug === "" || page.slug === "/";
-  const hasHeroImage = (page) => Boolean(page?.heroSection?.heroImage?.urls?.regular || page?.heroSection?.heroImage?.urls?.small);
+  const hasHeroImage = (page) => hasImageSource(page?.heroSection?.heroAsset, page?.heroSection?.heroImage);
 
   return (
     sitePages.find((page) => isHomepage(page) && hasHeroImage(page)) ||
