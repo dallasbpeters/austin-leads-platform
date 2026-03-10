@@ -1,43 +1,47 @@
-import { useMemo, useState } from "react";
-import styles from "./CalculatorSection.module.css";
+'use client'
 
-const DEFAULT_BILL = 200;
-const MIN_BILL = 50;
-const MAX_BILL = 800;
+import { useMemo, useState } from 'react'
+import Button from './Button'
+import Card from './Card'
+import { Slider } from '@/components/ui/slider'
+
+const DEFAULT_BILL = 200
+const MIN_BILL = 50
+const MAX_BILL = 800
 
 function clampBill(value) {
-  const parsed = Number(value);
+  const parsed = Number(value)
 
   if (!Number.isFinite(parsed)) {
-    return DEFAULT_BILL;
+    return DEFAULT_BILL
   }
 
-  return Math.min(MAX_BILL, Math.max(MIN_BILL, parsed));
+  return Math.min(MAX_BILL, Math.max(MIN_BILL, parsed))
 }
 
 function calculate(rawBill) {
-  const bill = clampBill(rawBill);
-  const rate = 0.11;
-  const offset = 0.85;
-  const sunHours = 5.5;
-  const performanceRatio = 0.8;
-  const monthlyKwh = bill / rate;
-  const annualKwh = monthlyKwh * 12 * offset;
-  const systemKw = annualKwh / (sunHours * 365 * performanceRatio);
-  const panels = Math.ceil(systemKw / 0.4);
-  const costPerWatt = systemKw >= 10 ? 2.45 : systemKw >= 7 ? 2.6 : systemKw >= 5 ? 2.75 : 2.95;
-  const fixedCosts = 1800;
-  const grossCost = systemKw * 1000 * costPerWatt + fixedCosts;
-  const localRebate = systemKw >= 8 ? 2500 : systemKw >= 6 ? 1800 : 1200;
-  const federalCredit = grossCost * 0.3;
-  const netCost = Math.max(grossCost - federalCredit - localRebate, 0);
-  const year1Savings = annualKwh * rate;
-  const monthlySavings = year1Savings / 12;
-  const payback = year1Savings > 0 ? netCost / year1Savings : 0;
+  const bill = clampBill(rawBill)
+  const rate = 0.11
+  const offset = 0.85
+  const sunHours = 5.5
+  const performanceRatio = 0.8
+  const monthlyKwh = bill / rate
+  const annualKwh = monthlyKwh * 12 * offset
+  const systemKw = annualKwh / (sunHours * 365 * performanceRatio)
+  const panels = Math.ceil(systemKw / 0.4)
+  const costPerWatt = systemKw >= 10 ? 2.45 : systemKw >= 7 ? 2.6 : systemKw >= 5 ? 2.75 : 2.95
+  const fixedCosts = 1800
+  const grossCost = systemKw * 1000 * costPerWatt + fixedCosts
+  const localRebate = systemKw >= 8 ? 2500 : systemKw >= 6 ? 1800 : 1200
+  const federalCredit = grossCost * 0.3
+  const netCost = Math.max(grossCost - federalCredit - localRebate, 0)
+  const year1Savings = annualKwh * rate
+  const monthlySavings = year1Savings / 12
+  const payback = year1Savings > 0 ? netCost / year1Savings : 0
 
-  let lifetime = 0;
+  let lifetime = 0
   for (let year = 0; year < 25; year += 1) {
-    lifetime += year1Savings * Math.pow(1.025, year) * Math.pow(0.995, year);
+    lifetime += year1Savings * Math.pow(1.025, year) * Math.pow(0.995, year)
   }
 
   return {
@@ -47,101 +51,82 @@ function calculate(rawBill) {
     monthly: `$${Math.round(monthlySavings)}`,
     lifetime: Math.round(lifetime).toLocaleString(),
     payback: payback.toFixed(1),
-  };
+  }
 }
 
 export default function CalculatorSection() {
-  const [bill, setBill] = useState(DEFAULT_BILL);
-  const results = useMemo(() => calculate(bill), [bill]);
+  const [bill, setBill] = useState(DEFAULT_BILL)
+  const results = useMemo(() => calculate(bill), [bill])
 
   return (
-    <section className={styles.section}>
-      <div className={styles.accentTop}></div>
-      <div className={styles.accentBottom}></div>
-      <div className={styles.inner}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>See what solar could save&nbsp;you</h2>
-          <p className={styles.copy}>
-            Enter your average monthly electric bill and we&apos;ll estimate your system size, potential savings, and
-            likely payback period.
-          </p>
+    <section className="relative overflow-hidden bg-[var(--color-warm-bg)] px-6 py-24">
+      <div className="absolute right-0 top-0 h-[60rem] w-[32rem] translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(var(--color-primary-h) var(--color-primary-s) 72% / 0.1)' }}></div>
+      <div className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)' }}></div>
+      <div className="relative z-[1] mx-auto w-[min(72rem,calc(100%-3rem))]">
+        <div className="mb-14 text-center">
+          <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] type-display font-extrabold text-foreground">See what solar could save&nbsp;you</h2>
+          <p className="mx-auto mt-3 max-w-[32rem] text-base text-[var(--color-slate-500)]">Enter your average monthly electric bill and we&apos;ll estimate your system size, potential savings, and likely payback period.</p>
         </div>
 
-        <div className={styles.shell}>
-          <div className={styles.controls}>
-            <label htmlFor="calc-bill" className={styles.label}>
+        <Card className="grid overflow-hidden max-[900px]:grid-cols-1 [grid-template-columns:minmax(280px,2fr)_minmax(320px,3fr)]" variant="surfaceStrong" radius="lg">
+          <div className="flex flex-col justify-center bg-[linear-gradient(to_bottom_right,var(--color-cyan-950),var(--color-cyan-900))] p-8 text-white">
+            <label htmlFor="calc-bill" className="mb-3 block text-xs font-bold uppercase tracking-[0.15em] text-[rgba(103,232,249,0.7)]">
               Your Monthly Electric Bill
             </label>
-            <div className={styles.inputWrap}>
-              <span className={styles.currency}>$</span>
-              <input
-                id="calc-bill"
-                type="number"
-                min={MIN_BILL}
-                max={MAX_BILL}
-                value={bill}
-                onChange={(event) => setBill(clampBill(event.target.value))}
-                className={styles.input}
-              />
+            <div className="relative mb-6">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-semibold text-white/60">$</span>
+              <input id="calc-bill" type="number" min={MIN_BILL} max={MAX_BILL} value={bill} onChange={(event) => setBill(clampBill(event.target.value))} className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-4 pl-10 text-[1.875rem] font-semibold text-white outline-none" />
             </div>
-            <input
-              type="range"
-              min={MIN_BILL}
-              max={MAX_BILL}
-              step="10"
-              value={bill}
-              onChange={(event) => setBill(clampBill(event.target.value))}
-              className={styles.range}
-            />
-            <div className={styles.rangeLabels}>
+            <Slider min={MIN_BILL} max={MAX_BILL} step={10} value={[bill]} onValueChange={([nextBill]) => setBill(clampBill(nextBill))} className="mb-4" />
+            <div className="flex justify-between text-xs font-medium text-[rgba(103,232,249,0.5)]">
               <span>$50</span>
               <span>$800</span>
             </div>
 
-            <div className={styles.note}>
-              <svg className={styles.noteIcon} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <div className="mt-8 flex items-center gap-2 border-t border-white/10 pt-6 text-xs text-[rgba(103,232,249,0.6)]">
+              <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"></path>
               </svg>
               Based on average Austin Energy rates and 5.5 peak sun hours per day
             </div>
           </div>
 
-          <div className={styles.results}>
+          <div className="grid grid-cols-2 gap-6 p-8 max-sm:grid-cols-1">
             <ResultCard title="System Size" value={results.systemKw} suffix="kW" detail={`~${results.panels} panels on your roof`} />
             <ResultCard title="Year 1 Savings" value={results.year1} prefix="$" detail={`Avg ${results.monthly}/mo back in your pocket`} />
             <ResultCard title="25-Year Savings" value={results.lifetime} prefix="$" detail="With 2.5% annual rate increase" accent />
-            <ResultCard
-              title="Payback Period"
-              value={results.payback}
-              suffix="years"
-              detail="After federal credit and a typical local rebate"
-              accent
-            />
+            <ResultCard title="Payback Period" value={results.payback} suffix="years" detail="After federal credit and a typical local rebate" accent />
 
-            <div className={styles.cta}>
-              <a href="#estimate" className={styles.ctaButton}>
+            <div className="col-span-full mt-2 flex flex-wrap items-center gap-4">
+              <Button href="#estimate" size="md" pill className="w-full max-w-72">
                 Talk to a solar pro →
-              </a>
-              <span className={styles.ctaMeta}>Free estimate · No commitment · Takes 2 minutes</span>
+              </Button>
+              <span className="text-xs text-[var(--color-slate-400)]">Free estimate · No commitment · Takes 2 minutes</span>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
-      <div className={styles.gridPattern}></div>
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: 'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      ></div>
     </section>
-  );
+  )
 }
 
-function ResultCard({ title, value, prefix = "", suffix = "", detail, accent = false }) {
+function ResultCard({ title, value, prefix = '', suffix = '', detail, accent = false }) {
   return (
-    <div className={`${styles.card} ${accent ? styles.card : ""}`}>
-      <span className={styles.cardTitle}>{title}</span>
-      <div className={styles.cardValue}>
-        {prefix ? <span className={styles.cardSmall}>{prefix}</span> : null}
+    <Card className="bg-card p-5">
+      <span className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--color-slate-400)]">{title}</span>
+      <div className="mt-2 flex items-baseline gap-1 text-[1.875rem] font-bold text-foreground">
+        {prefix ? <span className="text-sm font-medium text-[var(--color-slate-400)]">{prefix}</span> : null}
         <span>{value}</span>
-        {suffix ? <span className={styles.cardSmall}>{suffix}</span> : null}
+        {suffix ? <span className="text-sm font-medium text-[var(--color-slate-400)]">{suffix}</span> : null}
       </div>
-      <p className={styles.cardDetail}>{detail}</p>
-    </div>
-  );
+      <p className="mt-1.5 text-xs text-[var(--color-slate-400)]">{detail}</p>
+    </Card>
+  )
 }

@@ -1,4 +1,4 @@
-import styles from "./GuidesSection.module.css";
+import Card from "./Card";
 
 const guides = [
   {
@@ -8,7 +8,7 @@ const guides = [
       "Panels, inverters, grid connection — explained in plain English. Plus Austin-specific details like buyback rates and system sizing.",
     image:
       "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/7c81dc6c-677b-458c-9c27-a3d6ff08395d_1600w.png",
-    cardClass: styles.cardPrimary,
+    cardClass: "bg-solar-primary",
   },
   {
     number: "02",
@@ -16,41 +16,51 @@ const guides = [
     copy: "Real numbers behind solar costs in Austin, how financing works, and when you're likely to break even.",
     image:
       "https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/1619b254-4925-4861-ae23-ae515f16291f_1600w.png",
-    cardClass: styles.cardGold,
+    cardClass: "bg-solar-amber-400",
   },
   {
     number: "03",
     title: "Austin Solar Incentives",
     copy: "Federal tax credit, Austin Energy rebates, property tax exemptions — and how to stack them all.",
     image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1200&auto=format&fit=crop",
-    cardClass: styles.cardSky,
+    cardClass: "bg-solar-blue-400",
   },
 ];
 
 export default function GuidesSection() {
   return (
-    <section className={styles.section} id="go-deeper">
-      <div className={styles.inner}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Go Deeper</h2>
+    <section
+      className="bg-solar-warm px-6 py-24"
+      id="go-deeper"
+      style={{
+        backgroundImage:
+          "linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
+      }}
+    >
+      <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
+        <div className="mb-8">
+          <h2 className="type-accent text-solar-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)] font-semibold">
+            Go Deeper
+          </h2>
         </div>
-        <div className={styles.grid}>
+        <div className="grid gap-3 max-[900px]:grid-cols-1 md:grid-cols-3">
           {guides.map((guide) => (
-            <article key={guide.title} className={`${styles.card} ${guide.cardClass}`}>
-              <div className={styles.cardTop}>
+            <Card as="article" key={guide.title} className={`flex min-h-[380px] flex-col p-5 ${guide.cardClass}`} variant="color">
+              <div className="flex items-center justify-between text-white/90">
                 <ArrowIcon />
-                <span className={styles.number}>{guide.number}</span>
+                <span className="text-[2rem] font-semibold">{guide.number}</span>
               </div>
-              <h3 className={styles.cardTitle}>{guide.title}</h3>
-              <p className={styles.cardCopy}>{guide.copy}</p>
-              <div className={styles.imageFrame}>
-                <img src={guide.image} alt={guide.title} className={styles.image} />
+              <h3 className="mt-4 text-[2rem] font-semibold leading-[1.1]">{guide.title}</h3>
+              <p className="mt-2 text-[0.95rem] font-semibold leading-6 text-white/90">{guide.copy}</p>
+              <div className="mt-6 overflow-hidden rounded-2xl">
+                <img src={guide.image} alt={guide.title} className="h-56 w-full object-cover" />
               </div>
-              <div className={styles.cardFooter}>
+              <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-white/90">
                 <SunIcon />
                 <span>Read the Guide</span>
               </div>
-            </article>
+            </Card>
           ))}
         </div>
       </div>

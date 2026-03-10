@@ -1,0 +1,60 @@
+export default {
+  name: "site",
+  title: "Site",
+  type: "document",
+  fields: [
+    { name: "name", title: "Name", type: "string", validation: (Rule) => Rule.required() },
+    { name: "shortName", title: "Short name", type: "string" },
+    { name: "category", title: "Category", type: "string", validation: (Rule) => Rule.required() },
+    { name: "categoryLabel", title: "Category label", type: "string" },
+    { name: "tier", title: "Tier", type: "string", options: { list: ["hero", "landing", "redirect"] } },
+    { name: "slug", title: "Slug", type: "slug", options: { source: "name" }, validation: (Rule) => Rule.required() },
+    { name: "primaryDomain", title: "Primary domain", type: "string", validation: (Rule) => Rule.required() },
+    { name: "aliases", title: "Aliases", type: "array", of: [{ type: "string" }] },
+    { name: "redirectTarget", title: "Redirect target", type: "string" },
+    {
+      name: "brand",
+      title: "Brand",
+      type: "object",
+      fields: [
+        { name: "eyebrow", title: "Eyebrow", type: "string" },
+        { name: "primary", title: "Primary color", type: "string" },
+        { name: "secondary", title: "Secondary color", type: "string" },
+        { name: "accent", title: "Accent color", type: "string" },
+        { name: "surface", title: "Surface color", type: "string" },
+        { name: "heroTone", title: "Hero tone", type: "string" },
+      ],
+    },
+    {
+      name: "seo",
+      title: "SEO",
+      type: "object",
+      fields: [
+        { name: "title", title: "Default title", type: "string" },
+        { name: "description", title: "Default description", type: "text" },
+      ],
+    },
+    {
+      name: "leadForm",
+      title: "Lead form",
+      type: "object",
+      fields: [
+        { name: "title", title: "Title", type: "string" },
+        { name: "description", title: "Description", type: "text" },
+        { name: "ctaLabel", title: "CTA label", type: "string" },
+      ],
+    },
+    {
+      name: "organization",
+      title: "Organization",
+      type: "object",
+      fields: [
+        { name: "name", title: "Name", type: "string" },
+        { name: "type", title: "Schema type", type: "string" },
+        { name: "phone", title: "Phone", type: "string" },
+        { name: "email", title: "Email", type: "string" },
+        { name: "serviceArea", title: "Service area", type: "array", of: [{ type: "string" }] },
+      ],
+    },
+  ],
+};
