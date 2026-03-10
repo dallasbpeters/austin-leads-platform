@@ -32,6 +32,10 @@ export default function DomainsClient({ initialDomains, sites, vercelEnabled }) 
         </div>
       </div>
 
+      <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm leading-7 text-muted-foreground">
+        <span className="font-medium text-foreground">How to connect a domain:</span> add the domain below, copy the DNS record Vercel returns, create that record at your registrar, then come back here and click <span className="font-medium text-foreground">Verify</span>. A domain is only fully connected when its status shows <span className="font-medium text-foreground">active</span>.
+      </div>
+
       <Card className="overflow-hidden border border-border bg-card/70">
         <CardContent className="p-4">
           <form className="space-y-4" onSubmit={addDomain}>

@@ -48,7 +48,7 @@ export default function ResourcesSection() {
                 <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]">
                   <iconify-icon icon={item.icon} class="text-lg"></iconify-icon>
                 </div>
-                <div className="type-accent text-[1.875rem] font-semibold leading-[1.1]">{item.title}</div>
+                <div className="type-accent text-[1.875rem] font-bold leading-[1.1]">{item.title}</div>
                 <div className="mt-1 text-sm font-semibold text-white/70">{item.copy}</div>
               </div>
             </Card>

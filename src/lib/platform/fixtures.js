@@ -5,263 +5,149 @@ const categories = {
   homeServices: "Home Services",
 };
 
-const generateRedirectDomains = () => {
-  const names = [
-    ["austinsolarquotes.com", "austin-solar-pros", "solar"],
-    ["texassolarhomes.com", "austin-solar-pros", "solar"],
-    ["austinsolarrebates.com", "austin-solar-pros", "solar"],
-    ["roofrepairaustin.net", "roof-pros-of-austin", "roofing"],
-    ["atxroofquote.com", "roof-pros-of-austin", "roofing"],
-    ["texasroofpros.online", "roof-pros-of-austin", "roofing"],
-    ["weddingsinaustin.net", "austin-wedding-vendors", "weddings"],
-    ["texasweddingguide.online", "austin-wedding-vendors", "weddings"],
-    ["austinhomepro.co", "austin-home-services", "homeServices"],
-    ["austinremodelquote.com", "austin-home-services", "homeServices"],
-    ["texashandymanpros.com", "austin-home-services", "homeServices"],
-    ["roundrocksolarhomes.com", "austin-solar-pros", "solar"],
-    ["cedarparksolarquote.com", "austin-solar-pros", "solar"],
-    ["pflugervilleroofpros.com", "roof-pros-of-austin", "roofing"],
-    ["drippingspringsweddings.com", "austin-wedding-vendors", "weddings"],
-    ["southaustinhomepros.com", "austin-home-services", "homeServices"],
-  ];
-
-  return names.map(([domain, redirectTarget, category], index) => ({
-    id: `redirect-${index + 1}`,
-    slug: domain.replace(/\./g, "-"),
-    name: domain,
-    category,
-    categoryLabel: categories[category],
-    tier: "redirect",
-    primaryDomain: domain,
-    aliases: [`www.${domain}`],
-    redirectTarget,
-    leadForm: null,
-    vercelStatus: "redirect-only",
-  }));
+const tierMap = {
+  Hero: "hero",
+  Mid: "landing",
+  Redirect: "redirect",
 };
 
-export const sites = [
-  {
-    id: "site-austin-solar-pros",
-    slug: "austin-solar-pros",
-    name: "Austin Solar Pros",
-    shortName: "Solar",
-    category: "solar",
-    categoryLabel: categories.solar,
-    tier: "hero",
-    primaryDomain: "austinsolarpros.com",
-    aliases: ["www.austinsolarpros.com", "localhost", "127.0.0.1"],
-    redirectTarget: null,
-    leadForm: {
-      title: "Request a solar plan",
-      description: "Tell us the bill size, roof type, and service area so the right installer workflow can follow up.",
-      ctaLabel: "Request my solar plan",
-    },
-    seo: {
-      title: "Austin Solar Pros",
-      description:
-        "A multi-page Austin solar site focused on cost, incentives, installer education, and high-intent lead capture.",
-    },
-    brand: {
-      eyebrow: "Hero Site",
-      primary: "hsl(14 88% 65%)",
-      secondary: "hsl(190 61% 15%)",
-      accent: "hsl(190 64% 63%)",
-      surface: "hsl(20 50% 97%)",
-      heroTone: "warm",
-    },
-    organization: {
-      name: "Austin Solar Pros",
-      type: "LocalBusiness",
-      serviceArea: ["Austin", "Round Rock", "Cedar Park", "Pflugerville"],
-      phone: "(512) 555-0147",
-      email: "hello@austinsolarpros.com",
-    },
+const brandByCategory = {
+  solar: {
+    primary: "hsl(14 88% 65%)",
+    secondary: "hsl(190 61% 15%)",
+    accent: "hsl(190 64% 63%)",
+    surface: "hsl(20 50% 97%)",
+    heroTone: "warm",
   },
-  {
-    id: "site-roof-pros",
-    slug: "roof-pros-of-austin",
-    name: "Roof Pros of Austin",
-    shortName: "Roofing",
-    category: "roofing",
-    categoryLabel: categories.roofing,
-    tier: "hero",
-    primaryDomain: "roofprosofaustin.com",
-    aliases: ["www.roofprosofaustin.com"],
-    redirectTarget: null,
-    leadForm: {
-      title: "Book a roofing callback",
-      description: "Capture inspection requests, storm damage questions, and quote intent from Austin homeowners.",
-      ctaLabel: "Request roofing quote",
-    },
-    seo: {
-      title: "Roof Pros of Austin",
-      description:
-        "An Austin roofing hero site ready for service pages, financing content, and inspection-focused lead flows.",
-    },
-    brand: {
-      eyebrow: "Hero Site",
-      primary: "hsl(18 78% 58%)",
-      secondary: "hsl(210 50% 14%)",
-      accent: "hsl(24 85% 62%)",
-      surface: "hsl(24 40% 97%)",
-      heroTone: "dark",
-    },
-    organization: {
-      name: "Roof Pros of Austin",
-      type: "RoofingContractor",
-      serviceArea: ["Austin", "Lakeway", "Bee Cave", "Leander"],
-      phone: "(512) 555-0191",
-      email: "roofing@roofprosofaustin.com",
-    },
+  roofing: {
+    primary: "hsl(18 78% 58%)",
+    secondary: "hsl(210 50% 14%)",
+    accent: "hsl(24 85% 62%)",
+    surface: "hsl(24 40% 97%)",
+    heroTone: "dark",
   },
-  {
-    id: "site-weddings",
-    slug: "austin-wedding-vendors",
-    name: "Austin Wedding Vendors",
-    shortName: "Weddings",
-    category: "weddings",
-    categoryLabel: categories.weddings,
-    tier: "hero",
-    primaryDomain: "austinweddingvendors.com",
-    aliases: ["www.austinweddingvendors.com"],
-    redirectTarget: null,
-    leadForm: {
-      title: "Plan your shortlist",
-      description: "Collect venue, planner, and date preferences and route them into a curated vendor workflow.",
-      ctaLabel: "Start vendor matching",
-    },
-    seo: {
-      title: "Austin Wedding Vendors",
-      description:
-        "An Austin wedding planning hero site with venue guides, vendor directories, and lead capture for planning inquiries.",
-    },
-    brand: {
-      eyebrow: "Hero Site",
-      primary: "hsl(348 68% 64%)",
-      secondary: "hsl(216 34% 18%)",
-      accent: "hsl(32 90% 70%)",
-      surface: "hsl(0 0% 98%)",
-      heroTone: "light",
-    },
-    organization: {
-      name: "Austin Wedding Vendors",
-      type: "ProfessionalService",
-      serviceArea: ["Austin", "Dripping Springs", "Hill Country"],
-      phone: "(512) 555-0114",
-      email: "events@austinweddingvendors.com",
-    },
+  weddings: {
+    primary: "hsl(348 68% 64%)",
+    secondary: "hsl(216 34% 18%)",
+    accent: "hsl(32 90% 70%)",
+    surface: "hsl(0 0% 98%)",
+    heroTone: "light",
   },
-  {
-    id: "site-solar-homes",
-    slug: "austin-solar-homes",
-    name: "Austin Solar Homes",
-    shortName: "Solar Homes",
-    category: "solar",
-    categoryLabel: categories.solar,
-    tier: "landing",
-    primaryDomain: "austinsolarhomes.com",
-    aliases: ["www.austinsolarhomes.com"],
-    redirectTarget: null,
-    leadForm: {
-      title: "Compare solar-ready homes",
-      description: "A focused landing page for homeowners who want solar pricing and home-value context.",
-      ctaLabel: "See solar-ready options",
-    },
-    seo: {
-      title: "Austin Solar Homes",
-      description: "Landing page for solar-ready home buyers and Austin homeowners researching solar value.",
-    },
-    brand: {
-      eyebrow: "Landing Page",
-      primary: "hsl(20 90% 66%)",
-      secondary: "hsl(198 58% 17%)",
-      accent: "hsl(190 66% 62%)",
-      surface: "hsl(28 48% 97%)",
-      heroTone: "warm",
-    },
-    organization: {
-      name: "Austin Solar Homes",
-      type: "ProfessionalService",
-      serviceArea: ["Austin", "Georgetown", "Buda"],
-      phone: "(512) 555-0130",
-      email: "homes@austinsolarhomes.com",
-    },
+  homeServices: {
+    primary: "hsl(28 70% 58%)",
+    secondary: "hsl(204 38% 17%)",
+    accent: "hsl(192 46% 58%)",
+    surface: "hsl(34 42% 97%)",
+    heroTone: "light",
   },
-  {
-    id: "site-home-services",
-    slug: "austin-home-services",
-    name: "Austin Home Services",
-    shortName: "Home Services",
-    category: "homeServices",
-    categoryLabel: categories.homeServices,
-    tier: "landing",
-    primaryDomain: "austinhomeserviceshub.com",
-    aliases: ["www.austinhomeserviceshub.com"],
-    redirectTarget: null,
-    leadForm: {
-      title: "Book a home services consult",
-      description: "A landing page for general home service demand until category-specific hero sites expand.",
-      ctaLabel: "Request service match",
-    },
-    seo: {
-      title: "Austin Home Services Hub",
-      description: "Landing page for general Austin home services demand and routed lead capture.",
-    },
-    brand: {
-      eyebrow: "Landing Page",
-      primary: "hsl(28 70% 58%)",
-      secondary: "hsl(204 38% 17%)",
-      accent: "hsl(192 46% 58%)",
-      surface: "hsl(34 42% 97%)",
-      heroTone: "light",
-    },
-    organization: {
-      name: "Austin Home Services Hub",
-      type: "ProfessionalService",
-      serviceArea: ["Austin", "Round Rock", "Kyle"],
-      phone: "(512) 555-0183",
-      email: "support@austinhomeserviceshub.com",
-    },
-  },
-  {
-    id: "site-austin-roof-repair",
-    slug: "austin-roof-repair",
-    name: "Austin Roof Repair",
-    shortName: "Roof Repair",
-    category: "roofing",
-    categoryLabel: categories.roofing,
-    tier: "landing",
-    primaryDomain: "austinroofrepairpros.com",
-    aliases: ["www.austinroofrepairpros.com"],
-    redirectTarget: null,
-    leadForm: {
-      title: "Request roof repair pricing",
-      description: "Landing page for storm-damage and urgent roof repair demand.",
-      ctaLabel: "Request repair pricing",
-    },
-    seo: {
-      title: "Austin Roof Repair Pros",
-      description: "Focused landing page for Austin roof repair and storm-damage inquiries.",
-    },
-    brand: {
-      eyebrow: "Landing Page",
-      primary: "hsl(15 74% 55%)",
-      secondary: "hsl(212 36% 17%)",
-      accent: "hsl(24 90% 64%)",
-      surface: "hsl(20 46% 97%)",
-      heroTone: "dark",
-    },
-    organization: {
-      name: "Austin Roof Repair Pros",
-      type: "RoofingContractor",
-      serviceArea: ["Austin", "Manor", "Pflugerville"],
-      phone: "(512) 555-0168",
-      email: "repair@austinroofrepairpros.com",
-    },
-  },
-  ...generateRedirectDomains(),
+};
+
+const portfolioDomains = [
+  { domain: "austinsolarpros.com", seoScore: 100, tier: "Hero", category: "solar", slug: "austin-solar-pros" },
+  { domain: "austinweddingvendors.com", seoScore: 100, tier: "Hero", category: "weddings", slug: "austin-wedding-vendors" },
+  { domain: "roofprosofaustin.com", seoScore: 100, tier: "Hero", category: "roofing", slug: "roof-pros-of-austin" },
+  { domain: "solarpanelsatx.com", seoScore: 100, tier: "Hero", category: "solar", slug: "solar-panels-atx" },
+  { domain: "austinsolarsolutions.com", seoScore: 100, tier: "Hero", category: "solar", slug: "austin-solar-solutions" },
+  { domain: "austinsolarhomes.com", seoScore: 40, tier: "Mid", category: "solar", slug: "austin-solar-homes" },
+  { domain: "austinweddingsandevents.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "austin-weddings-and-events" },
+  { domain: "sanantonioweddingplanners.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "san-antonio-wedding-planners" },
+  { domain: "eliteweddingsaustin.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "elite-weddings-austin" },
+  { domain: "roofsfortexas.com", seoScore: 40, tier: "Mid", category: "roofing", slug: "roofs-for-texas" },
+  { domain: "austinsolarenergy.net", seoScore: 40, tier: "Mid", category: "solar", slug: "austin-solar-energy" },
+  { domain: "renewableenergytexas.com", seoScore: 40, tier: "Mid", category: "solar", slug: "renewable-energy-texas" },
+  { domain: "solarroofstexas.com", seoScore: 40, tier: "Mid", category: "roofing", slug: "solar-roofs-texas" },
+  { domain: "eliteeventsaustin.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "elite-events-austin" },
+  { domain: "texasplanners.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "texas-planners" },
+  { domain: "austinseliteweddings.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "austins-elite-weddings" },
+  { domain: "austinweddings.net", seoScore: 40, tier: "Mid", category: "weddings", slug: "austin-weddings" },
+  { domain: "austinshomebuilders.com", seoScore: 40, tier: "Mid", category: "homeServices", slug: "austins-home-builders" },
+  { domain: "solarpanelstexashomes.com", seoScore: 10, tier: "Redirect", category: "solar" },
+  { domain: "buildsolarforyourhome.com", seoScore: 10, tier: "Redirect", category: "solar" },
+  { domain: "austinsweddingofficiants.com", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "singingspringsfarms.com", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "texascountrymusicscene.com", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "corporateaustin.com", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "austinweddings.events", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "austinweddings.online", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "austinweddings.us", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "austinweddingsandspecialevents.com", seoScore: 10, tier: "Redirect", category: "weddings" },
+  { domain: "kathielovessolar.com", seoScore: 10, tier: "Redirect", category: "solar" },
+  { domain: "solarpanels-texas.com", seoScore: 10, tier: "Redirect", category: "solar" },
+  { domain: "texas-solarroofs.com", seoScore: 10, tier: "Redirect", category: "solar" },
 ];
+
+const redirectTargetByCategory = {
+  solar: "austin-solar-pros",
+  roofing: "roof-pros-of-austin",
+  weddings: "austin-wedding-vendors",
+  homeServices: "austin-solar-pros",
+};
+
+function fallbackSlug(domain) {
+  return domain
+    .replace(/\.[^.]+$/, "")
+    .replace(/[^a-z0-9]+/gi, "-")
+    .toLowerCase()
+    .replace(/^-|-$/g, "");
+}
+
+function titleizeDomain(domain) {
+  return domain
+    .replace(/\.[^.]+$/, "")
+    .split(/[^a-z0-9]+/i)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function buildLeadForm(domain, categoryLabel) {
+  return {
+    title: `Request information from ${titleizeDomain(domain)}`,
+    description: `Capture high-intent ${categoryLabel.toLowerCase()} demand for ${domain}.`,
+    ctaLabel: `Request ${categoryLabel.toLowerCase()} info`,
+  };
+}
+
+export const sites = portfolioDomains.map((entry, index) => {
+  const tier = tierMap[entry.tier];
+  const brand = brandByCategory[entry.category];
+  const slug = entry.slug || fallbackSlug(entry.domain);
+  const title = titleizeDomain(entry.domain);
+
+  return {
+    id: `site-${slug}`,
+    slug,
+    name: title,
+    shortName: categories[entry.category],
+    category: entry.category,
+    categoryLabel: categories[entry.category],
+    tier,
+    seoScore: entry.seoScore,
+    primaryDomain: entry.domain,
+    aliases:
+      entry.domain === "austinsolarpros.com"
+        ? [`www.${entry.domain}`, "localhost", "127.0.0.1"]
+        : [`www.${entry.domain}`],
+    redirectTarget: tier === "redirect" ? redirectTargetByCategory[entry.category] : null,
+    leadForm: tier === "redirect" ? null : buildLeadForm(entry.domain, categories[entry.category]),
+    seo: {
+      title,
+      description: `${title} is an owned ${entry.tier.toLowerCase()} domain in the Austin Leads platform portfolio.`,
+    },
+    brand: {
+      eyebrow:
+        tier === "hero" ? "Hero Site" : tier === "landing" ? "Landing Page" : "Redirect Domain",
+      ...brand,
+    },
+    organization: {
+      name: title,
+      type: entry.category === "roofing" ? "RoofingContractor" : "ProfessionalService",
+      serviceArea: ["Austin", "Texas"],
+      phone: `(512) 555-${String(1100 + index).padStart(4, "0")}`,
+      email: `hello@${entry.domain}`,
+    },
+  };
+});
 
 const solarHomeSections = [
   {
@@ -560,38 +446,6 @@ export const pages = [
     sections: solarHomeSections,
   },
   {
-    id: "page-home-services",
-    siteSlug: "austin-home-services",
-    slug: "",
-    title: "Austin Home Services Hub",
-    description: "Landing page used for broad home-services demand until deeper category sites are ready.",
-    pageType: "landingPage",
-    templateLevel: "landing",
-    sections: [
-      {
-        type: "hero",
-        eyebrow: "Landing page",
-        title: "Use a broad services domain as a lead filter, not a bloated site.",
-        body:
-          "This landing page is intentionally simple. It captures general demand, qualifies the category, and routes people into the right downstream sales workflow.",
-        metrics: [
-          { label: "Intent", value: "Mixed" },
-          { label: "Depth", value: "3-5 pages" },
-          { label: "Role", value: "Support" },
-        ],
-      },
-      {
-        type: "highlights",
-        title: "Best use cases",
-        items: [
-          { title: "General demand capture", body: "Catch top-of-funnel visitors who know the problem but not the category-specific site." },
-          { title: "Rapid iteration", body: "Launch fast while the hero properties absorb most of the content investment." },
-          { title: "Shared forms", body: "Reuse routing logic and lead forms without duplicating the platform." },
-        ],
-      },
-    ],
-  },
-  {
     id: "page-roofing-home",
     siteSlug: "roof-pros-of-austin",
     slug: "",
@@ -767,34 +621,6 @@ export const initialAnalyticsSnapshots = [
     avgEngagementSeconds: 98,
     topPages: [{ path: "/", sessions: 1120, conversionRate: 2.41 }],
     topQueries: ["austin solar homes", "solar ready homes austin", "solar home value austin"],
-  },
-  {
-    siteSlug: "austin-home-services",
-    sessions: 860,
-    uniqueVisitors: 690,
-    leads: 18,
-    conversionRate: 2.09,
-    aiReferrals: 6,
-    organicSessions: 520,
-    directSessions: 220,
-    paidSessions: 90,
-    avgEngagementSeconds: 86,
-    topPages: [{ path: "/", sessions: 860, conversionRate: 2.09 }],
-    topQueries: ["austin home services", "home service quotes austin", "austin contractor leads"],
-  },
-  {
-    siteSlug: "austin-roof-repair",
-    sessions: 740,
-    uniqueVisitors: 610,
-    leads: 16,
-    conversionRate: 2.16,
-    aiReferrals: 4,
-    organicSessions: 470,
-    directSessions: 190,
-    paidSessions: 80,
-    avgEngagementSeconds: 92,
-    topPages: [{ path: "/", sessions: 740, conversionRate: 2.16 }],
-    topQueries: ["austin roof repair", "roof leak repair austin", "emergency roof repair austin"],
   },
 ];
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { startTransition } from 'react'
-import { Gauge, RefreshCcw, Settings2, Target, TrendingUp } from 'lucide-react'
+import { DatabaseZap, RefreshCcw, Target, TriangleAlert, Waypoints } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -32,10 +32,10 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
 
         <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: 'Connected providers', value: formatAnalyticsNumber(overview.connectedProviders), icon: TrendingUp },
+            { label: 'Connected providers', value: formatAnalyticsNumber(overview.connectedProviders), icon: Waypoints },
             { label: 'Active goals', value: formatAnalyticsNumber(overview.configuredGoals), icon: Target },
-            { label: 'Protected admin APIs', value: formatAnalyticsNumber(overview.protectedAdminApis), icon: Settings2 },
-            { label: 'Instrumented custom events', value: formatAnalyticsNumber(overview.eventsInstrumented), icon: Gauge },
+            { label: 'Live reporting feeds', value: formatAnalyticsNumber(overview.liveReportingSources), icon: DatabaseZap },
+            { label: 'Providers needing action', value: formatAnalyticsNumber(overview.providersNeedingAction), icon: TriangleAlert },
           ].map((metric) => {
             const Icon = metric.icon
 
@@ -53,57 +53,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
           })}
         </div>
 
-        <div className="mb-8 grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <Card className="shadow-theme-sm">
-            <CardHeader>
-              <CardTitle>Provider status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Provider</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Source</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {providers.map((provider) => (
-                    <TableRow key={provider.id}>
-                      <TableCell>
-                        <div className="font-medium text-foreground">{provider.name}</div>
-                        <div className="text-xs text-muted-foreground">{provider.description}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={provider.connected ? 'default' : 'outline'}>{provider.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{provider.source}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-theme-sm">
-            <CardHeader>
-              <CardTitle>Instrumentation notes</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                'Vercel Web Analytics and Speed Insights are mounted in the root layout, so telemetry begins once the app is deployed on Vercel.',
-                'This page no longer invents sessions, leads, or conversion rates. It shows real provider readiness and the KPI definitions your team actually controls.',
-                'Add GA4 or Search Console environment variables when you want a second reporting source layered onto Vercel telemetry.',
-              ].map((text) => (
-                <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm leading-7 text-muted-foreground" key={text}>
-                  {text}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
+        <div className="grid gap-6">
           <Card className="shadow-theme-sm">
             <CardHeader>
               <CardTitle>Create analytics goal</CardTitle>

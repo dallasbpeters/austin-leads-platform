@@ -147,11 +147,13 @@ export function getAnalyticsGoal(goalId) {
 }
 
 export function getAnalyticsOverview() {
+  const providers = getAnalyticsProviders();
+
   return {
-    connectedProviders: getAnalyticsProviders().filter((provider) => provider.connected).length,
+    connectedProviders: providers.filter((provider) => provider.connected).length,
     configuredGoals: analyticsGoals.filter((goal) => goal.status === "active").length,
-    protectedAdminApis: 7,
-    eventsInstrumented: 0,
+    liveReportingSources: providers.filter((provider) => provider.readAccess === "available").length,
+    providersNeedingAction: providers.filter((provider) => !provider.connected).length,
   };
 }
 
@@ -163,8 +165,10 @@ export function getAnalyticsProviders() {
       connected: process.env.VERCEL === "1",
       status: process.env.VERCEL === "1" ? "connected" : "ready",
       description:
-        "Installed in the root layout with @vercel/analytics. It begins collecting page analytics on Vercel deployments.",
+        "Installed in the root layout with @vercel/analytics. It records page analytics when the app runs on Vercel.",
       source: "Runtime package",
+      readAccess: "unavailable",
+      nextStep: "Use the Vercel dashboard for reporting. There is no general-purpose project analytics feed wired into this admin yet.",
     },
     {
       id: "vercel-speed-insights",
@@ -174,6 +178,8 @@ export function getAnalyticsProviders() {
       description:
         "Installed in the root layout with @vercel/speed-insights for Core Web Vitals monitoring on deployment.",
       source: "Runtime package",
+      readAccess: "unavailable",
+      nextStep: "Use the Vercel dashboard for reporting. There is no direct admin ingestion path configured here.",
     },
     {
       id: "ga4",
@@ -183,6 +189,10 @@ export function getAnalyticsProviders() {
       description:
         "Optional secondary analytics provider for campaign attribution and custom event reporting.",
       source: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "Add NEXT_PUBLIC_GA_MEASUREMENT_ID",
+      readAccess: "not wired",
+      nextStep: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+        ? "Add a server-side reporting integration if you want GA4 numbers surfaced in this admin."
+        : "Configure NEXT_PUBLIC_GA_MEASUREMENT_ID to enable client-side GA4 instrumentation.",
     },
     {
       id: "search-console",
@@ -192,6 +202,10 @@ export function getAnalyticsProviders() {
       description:
         "Recommended for indexing, query, and sitemap visibility across the domain portfolio.",
       source: process.env.GOOGLE_SITE_VERIFICATION || "Add GOOGLE_SITE_VERIFICATION",
+      readAccess: "not wired",
+      nextStep: process.env.GOOGLE_SITE_VERIFICATION
+        ? "Add a Search Console data integration if you want query and indexing data inside this admin."
+        : "Set GOOGLE_SITE_VERIFICATION so the domains can be verified with Google.",
     },
   ];
 }
