@@ -3,6 +3,8 @@ import { groq } from "next-sanity";
 
 import { sanityServerClient, sanityWriteClient } from "@/sanity/client";
 import { pages, sites } from "./fixtures";
+import { defaultLaunchChecklist } from "./launchChecklist";
+import { withSectionKeys } from "@/lib/sanity/keys";
 
 function normalizeHost(host) {
   return (host || "").replace(/^https?:\/\//, "").replace(/:\d+$/, "").toLowerCase();
@@ -260,6 +262,41 @@ export async function getHeroPages() {
   }
 }
 
+export async function getLaunchChecklist() {
+  if (!sanityServerClient) {
+    return defaultLaunchChecklist;
+  }
+
+  try {
+    const checklist = await sanityServerClient.fetch(
+      groq`*[_type == "launchChecklist"] | order(_updatedAt desc)[0]{
+        _id,
+        title,
+        summary,
+        sections[]{
+          _key,
+          title,
+          description,
+          tasks[]{
+            _key,
+            title,
+            notes,
+            status,
+            owner,
+            priority
+          }
+        }
+      }`,
+      {},
+      { cache: "no-store" },
+    );
+
+    return checklist ?? defaultLaunchChecklist;
+  } catch {
+    return defaultLaunchChecklist;
+  }
+}
+
 export async function getHeroHomepageForSite(siteSlug) {
   const heroPages = await getHeroPages();
   const sitePages = heroPages.filter((page) => page.site?.slug === siteSlug);
@@ -394,7 +431,7 @@ export async function publishPageToSanity(job) {
       _type: "slug",
       current: job.contentType === "post" ? `blog/${slug}` : slug,
     },
-    sections: [
+    sections: withSectionKeys([
       {
         _type: "object",
         type: "hero",
@@ -402,7 +439,7 @@ export async function publishPageToSanity(job) {
         title: job.title,
         body: job.output || job.prompt,
       },
-    ],
+    ]),
   };
 
   const result = await sanityWriteClient.create(document);

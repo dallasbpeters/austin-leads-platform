@@ -36,7 +36,7 @@ export default function Header() {
       </div>
 
       {open ? (
-        <div className="shadow-solar-xl mx-auto mt-3 flex w-[min(80rem,calc(100%-3rem))] flex-col gap-3 rounded-2xl bg-white p-4 md:hidden">
+        <div className="shadow-solar-xl mx-auto mt-3 flex w-[min(80rem,calc(100%-3rem))] flex-col gap-3 rounded-lg bg-white p-4 md:hidden">
           {links.map((link) => (
             <a key={link.label} href={link.href} className="type-accent hover-text-solar-primary text-solar-slate-950 font-semibold transition-colors duration-150" onClick={() => setOpen(false)}>
               {link.label}

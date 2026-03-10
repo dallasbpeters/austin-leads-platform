@@ -47,7 +47,7 @@ export default function GuidesSection() {
               </div>
               <h3 className="mt-4 text-[2rem]">{guide.title}</h3>
               <p className="mt-2 text-[0.95rem] font-semibold leading-6 text-white/90">{guide.copy}</p>
-              <div className="mt-6 overflow-hidden rounded-2xl">
+              <div className="mt-6 overflow-hidden rounded-lg">
                 <img src={guide.image} alt={guide.title} className="h-56 w-full object-cover" />
               </div>
               <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-white/90">

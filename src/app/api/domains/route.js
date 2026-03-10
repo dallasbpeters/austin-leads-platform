@@ -1,16 +1,89 @@
 import { NextResponse } from "next/server";
 
 import { requireAdminRequest } from "@/lib/auth/guards";
+import { getAllSites } from "@/lib/platform/content";
 import { listDomainRecords, upsertDomainRecord } from "@/lib/platform/store";
-import { addDomainToVercel } from "@/lib/platform/vercel";
+import { addDomainToVercel, isVercelConfigured, listProjectDomainsOnVercel } from "@/lib/platform/vercel";
 
 export const runtime = "nodejs";
+
+function inferSiteSlug(domain, sites, existing) {
+  if (existing?.siteSlug) {
+    return existing.siteSlug;
+  }
+
+  const site = sites.find(
+    (candidate) => candidate.primaryDomain === domain || candidate.aliases?.includes(domain),
+  );
+
+  return site?.slug || "unassigned";
+}
+
+function inferTier(record, existing) {
+  if (existing?.tier) {
+    return existing.tier;
+  }
+
+  return record.redirectTarget ? "redirect" : "landing";
+}
 
 export async function GET() {
   const unauthorized = await requireAdminRequest();
   if (unauthorized) return unauthorized;
 
-  return NextResponse.json({ domains: listDomainRecords() });
+  const localDomains = listDomainRecords();
+
+  if (!isVercelConfigured()) {
+    return NextResponse.json({ domains: localDomains, source: "local" });
+  }
+
+  const sites = getAllSites();
+  const localByDomain = new Map(localDomains.map((record) => [record.domain, record]));
+  const vercelDomains = await listProjectDomainsOnVercel();
+
+  const syncedDomains = vercelDomains.map((record) => {
+    const existing = localByDomain.get(record.domain);
+
+    return upsertDomainRecord({
+      ...existing,
+      domain: record.domain,
+      siteSlug: inferSiteSlug(record.domain, sites, existing),
+      tier: inferTier(record, existing),
+      redirectTarget: record.redirectTarget ?? existing?.redirectTarget ?? null,
+      projectId: record.projectId ?? existing?.projectId ?? null,
+      verified: record.verified,
+      verificationStatus: record.verificationStatus,
+      dnsInstructions: record.dnsInstructions,
+      apexName: record.apexName ?? existing?.apexName ?? null,
+      gitBranch: record.gitBranch ?? existing?.gitBranch ?? null,
+      source: existing ? "merged" : "vercel",
+    });
+  });
+
+  const localOnly = localDomains
+    .filter((record) => !vercelDomains.some((domain) => domain.domain === record.domain))
+    .map((record) => ({
+      ...record,
+      verified: false,
+      verificationStatus: record.tier === "redirect" ? "redirect-only" : "not-added",
+      source: record.source || "local",
+      dnsInstructions:
+        record.tier === "redirect"
+          ? []
+          : [
+              {
+                type: "INFO",
+                domain: record.domain,
+                value: "Not currently attached to the configured Vercel project.",
+                reason: "Add the domain from this screen to create it in Vercel.",
+              },
+            ],
+    }));
+
+  return NextResponse.json({
+    domains: [...syncedDomains, ...localOnly].sort((a, b) => a.domain.localeCompare(b.domain)),
+    source: "vercel",
+  });
 }
 
 export async function POST(request) {

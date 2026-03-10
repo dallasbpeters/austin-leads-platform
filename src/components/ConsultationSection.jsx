@@ -30,17 +30,17 @@ export default function ConsultationSection() {
           <form className="flex flex-col gap-6">
             <div>
               <label className="text-solar-slate-500 mb-2 block text-xs font-semibold">Full Name</label>
-              <input type="text" placeholder="e.g. Jane Doe" className="border-solar-grid placeholder:text-solar-slate-400 focus:border-primary w-full border-0 border-b bg-transparent px-0 py-2 text-sm text-foreground outline-none" />
+              <input type="text" placeholder="e.g. Jane Doe" className="border-solar-grid placeholder:text-solar-slate-700 focus:border-primary w-full border-0 border-b bg-transparent px-0 py-2 text-sm text-foreground outline-none" />
             </div>
 
             <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-2">
               <div>
                 <label className="text-solar-slate-500 mb-2 block text-xs font-semibold">Email Address</label>
-                <input type="email" placeholder="jane@example.com" className="border-solar-grid placeholder:text-solar-slate-400 focus:border-primary w-full border-0 border-b bg-transparent px-0 py-2 text-sm text-foreground outline-none" />
+                <input type="email" placeholder="jane@example.com" className="border-solar-grid placeholder:text-solar-slate-700 focus:border-primary w-full border-0 border-b bg-transparent px-0 py-2 text-sm text-foreground outline-none" />
               </div>
               <div>
                 <label className="text-solar-slate-500 mb-2 block text-xs font-semibold">Phone Number</label>
-                <input type="tel" placeholder="(512) 000-0000" className="border-solar-grid placeholder:text-solar-slate-400 focus:border-primary w-full border-0 border-b bg-transparent px-0 py-2 text-sm text-foreground outline-none" />
+                <input type="tel" placeholder="(512) 000-0000" className="border-solar-grid placeholder:text-solar-slate-700 focus:border-primary w-full border-0 border-b bg-transparent px-0 py-2 text-sm text-foreground outline-none" />
               </div>
             </div>
 

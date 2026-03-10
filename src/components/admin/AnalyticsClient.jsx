@@ -1,21 +1,20 @@
-"use client";
+'use client'
 
-import { startTransition } from "react";
-import { Gauge, RefreshCcw, Settings2, Target, TrendingUp } from "lucide-react";
+import { startTransition } from 'react'
+import { Gauge, RefreshCcw, Settings2, Target, TrendingUp } from 'lucide-react'
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
-import { useAnalyticsManager } from "@/hooks/useAnalyticsManager";
-import { formatAnalyticsNumber } from "@/services/admin/analytics";
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Textarea } from '@/components/ui/textarea'
+import { useAnalyticsManager } from '@/hooks/useAnalyticsManager'
+import { formatAnalyticsNumber } from '@/services/admin/analytics'
 
 export default function AnalyticsClient({ overview, providers, goals, sites }) {
-  const { form, goalList, loading, refreshGoals, setForm, submitGoal, updateGoal } =
-    useAnalyticsManager({ goals, sites });
+  const { form, goalList, loading, refreshGoals, setForm, submitGoal, updateGoal } = useAnalyticsManager({ goals, sites })
 
   return (
     <div className="p-4 md:p-8">
@@ -23,9 +22,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-2xl tracking-tight text-foreground">Analytics</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Manage provider connectivity, instrumentation readiness, and KPI definitions.
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Manage provider connectivity, instrumentation readiness, and KPI definitions.</p>
           </div>
           <Button variant="outline" onClick={() => startTransition(refreshGoals)} disabled={loading}>
             <RefreshCcw className="mr-2 h-4 w-4" />
@@ -35,12 +32,12 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
 
         <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: "Connected providers", value: formatAnalyticsNumber(overview.connectedProviders), icon: TrendingUp },
-            { label: "Active goals", value: formatAnalyticsNumber(overview.configuredGoals), icon: Target },
-            { label: "Protected admin APIs", value: formatAnalyticsNumber(overview.protectedAdminApis), icon: Settings2 },
-            { label: "Instrumented custom events", value: formatAnalyticsNumber(overview.eventsInstrumented), icon: Gauge },
+            { label: 'Connected providers', value: formatAnalyticsNumber(overview.connectedProviders), icon: TrendingUp },
+            { label: 'Active goals', value: formatAnalyticsNumber(overview.configuredGoals), icon: Target },
+            { label: 'Protected admin APIs', value: formatAnalyticsNumber(overview.protectedAdminApis), icon: Settings2 },
+            { label: 'Instrumented custom events', value: formatAnalyticsNumber(overview.eventsInstrumented), icon: Gauge },
           ].map((metric) => {
-            const Icon = metric.icon;
+            const Icon = metric.icon
 
             return (
               <Card key={metric.label} className="shadow-theme-sm">
@@ -52,7 +49,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
                   <div className="text-3xl font-semibold tracking-tight text-foreground">{metric.value}</div>
                 </CardContent>
               </Card>
-            );
+            )
           })}
         </div>
 
@@ -78,7 +75,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
                         <div className="text-xs text-muted-foreground">{provider.description}</div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={provider.connected ? "default" : "outline"}>{provider.status}</Badge>
+                        <Badge variant={provider.connected ? 'default' : 'outline'}>{provider.status}</Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{provider.source}</TableCell>
                     </TableRow>
@@ -94,11 +91,11 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
             </CardHeader>
             <CardContent className="space-y-4">
               {[
-                "Vercel Web Analytics and Speed Insights are mounted in the root layout, so telemetry begins once the app is deployed on Vercel.",
-                "This page no longer invents sessions, leads, or conversion rates. It shows real provider readiness and the KPI definitions your team actually controls.",
-                "Add GA4 or Search Console environment variables when you want a second reporting source layered onto Vercel telemetry.",
+                'Vercel Web Analytics and Speed Insights are mounted in the root layout, so telemetry begins once the app is deployed on Vercel.',
+                'This page no longer invents sessions, leads, or conversion rates. It shows real provider readiness and the KPI definitions your team actually controls.',
+                'Add GA4 or Search Console environment variables when you want a second reporting source layered onto Vercel telemetry.',
               ].map((text) => (
-                <div className="rounded-2xl border border-border bg-muted/30 p-4 text-sm leading-7 text-muted-foreground" key={text}>
+                <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm leading-7 text-muted-foreground" key={text}>
                   {text}
                 </div>
               ))}
@@ -115,11 +112,7 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
               <form className="grid gap-4" onSubmit={submitGoal}>
                 <div className="grid gap-2">
                   <label className="text-sm font-medium text-foreground">Goal name</label>
-                  <Input
-                    value={form.name}
-                    onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-                    placeholder="Hero site lead form submit"
-                  />
+                  <Input value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} placeholder="Hero site lead form submit" />
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="grid gap-2">
@@ -154,21 +147,11 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-foreground">Event name</label>
-                    <Input
-                      value={form.eventName}
-                      onChange={(event) => setForm((current) => ({ ...current, eventName: event.target.value }))}
-                      placeholder="lead_form_submitted"
-                    />
+                    <Input value={form.eventName} onChange={(event) => setForm((current) => ({ ...current, eventName: event.target.value }))} placeholder="lead_form_submitted" />
                   </div>
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-foreground">Target value</label>
-                    <Input
-                      value={form.targetValue}
-                      onChange={(event) =>
-                        setForm((current) => ({ ...current, targetValue: event.target.value }))
-                      }
-                      placeholder="180"
-                    />
+                    <Input value={form.targetValue} onChange={(event) => setForm((current) => ({ ...current, targetValue: event.target.value }))} placeholder="180" />
                   </div>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -187,20 +170,12 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
                   </div>
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-foreground">Owner</label>
-                    <Input
-                      value={form.owner}
-                      onChange={(event) => setForm((current) => ({ ...current, owner: event.target.value }))}
-                    />
+                    <Input value={form.owner} onChange={(event) => setForm((current) => ({ ...current, owner: event.target.value }))} />
                   </div>
                 </div>
                 <div className="grid gap-2">
                   <label className="text-sm font-medium text-foreground">Notes</label>
-                  <Textarea
-                    rows={4}
-                    value={form.notes}
-                    onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))}
-                    placeholder="Why this KPI matters and how it should be interpreted."
-                  />
+                  <Textarea rows={4} value={form.notes} onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))} placeholder="Why this KPI matters and how it should be interpreted." />
                 </div>
                 <Button disabled={loading || !form.name || !form.eventName} type="submit">
                   Save goal
@@ -238,18 +213,11 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
                         {formatAnalyticsNumber(goal.targetValue)} / {goal.interval}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={goal.status === "active" ? "default" : "outline"}>
-                          {goal.status}
-                        </Badge>
+                        <Badge variant={goal.status === 'active' ? 'default' : 'outline'}>{goal.status}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={loading}
-                          onClick={() => updateGoal(goal.id, goal.status === "active" ? "paused" : "active")}
-                        >
-                          {goal.status === "active" ? "Pause" : "Resume"}
+                        <Button size="sm" variant="outline" disabled={loading} onClick={() => updateGoal(goal.id, goal.status === 'active' ? 'paused' : 'active')}>
+                          {goal.status === 'active' ? 'Pause' : 'Resume'}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -261,5 +229,5 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
         </div>
       </div>
     </div>
-  );
+  )
 }

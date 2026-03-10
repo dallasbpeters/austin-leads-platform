@@ -681,11 +681,10 @@ export const initialDomainRecords = sites.map((site, index) => ({
   category: site.category,
   redirectTarget: site.redirectTarget,
   projectId: process.env.VERCEL_PROJECT_ID ?? "local-project",
-  verificationStatus:
-    site.tier === "redirect" ? "redirect-only" : index < 4 ? "active" : "pending",
-  verified: index < 4,
+  verificationStatus: site.tier === "redirect" ? "redirect-only" : "pending",
+  verified: false,
   dnsInstructions:
-    index < 4
+    site.tier === "redirect"
       ? []
       : [
           {

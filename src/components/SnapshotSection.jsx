@@ -32,7 +32,7 @@ export default function SnapshotSection() {
               <div className="bg-solar-orange-soft text-solar-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full">
                 <iconify-icon icon={item.icon} class="text-xl"></iconify-icon>
               </div>
-              <div className="type-accent mb-2 text-[1.875rem] font-semibold">{item.value}</div>
+              <div className="type-accent mb-2 text-[1.875rem] font-bold">{item.value}</div>
               <div className="type-accent text-sm font-semibold leading-6 text-white/60">{item.copy}</div>
             </Card>
           ))}

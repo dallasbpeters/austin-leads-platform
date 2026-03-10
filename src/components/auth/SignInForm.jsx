@@ -1,51 +1,51 @@
-"use client";
+'use client'
 
-import { useState, useTransition } from "react";
-import { AlertCircle, LockKeyhole } from "lucide-react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition } from 'react'
+import { AlertCircle, LockKeyhole } from 'lucide-react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
-export default function SignInForm({ callbackUrl = "/dashboard" }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState("");
+export default function SignInForm({ callbackUrl = '/dashboard' }) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState('')
 
   async function handleSubmit(event) {
-    event.preventDefault();
-    setError("");
+    event.preventDefault()
+    setError('')
 
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get("email");
-    const password = formData.get("password");
+    const formData = new FormData(event.currentTarget)
+    const email = formData.get('email')
+    const password = formData.get('password')
 
     startTransition(async () => {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
         callbackUrl,
-      });
+      })
 
       if (result?.error) {
-        setError("The admin credentials were not accepted.");
-        return;
+        setError('The admin credentials were not accepted.')
+        return
       }
 
-      router.push(result?.url || callbackUrl);
-      router.refresh();
-    });
+      router.push(result?.url || callbackUrl)
+      router.refresh()
+    })
   }
 
   return (
     <Card className="shadow-theme-glass-soft w-full max-w-md border-border/80">
       <CardHeader className="space-y-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <LockKeyhole className="h-5 w-5" />
         </div>
         <div>
@@ -70,10 +70,10 @@ export default function SignInForm({ callbackUrl = "/dashboard" }) {
             </Alert>
           ) : null}
           <Button disabled={isPending} type="submit">
-            {isPending ? "Signing in..." : "Sign in"}
+            {isPending ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
       </CardContent>
     </Card>
-  );
+  )
 }

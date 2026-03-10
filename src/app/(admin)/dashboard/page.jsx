@@ -1,7 +1,8 @@
 import { FileText, Globe2, Server, SquarePen } from "lucide-react";
 
+import LaunchChecklistCard from "@/components/admin/LaunchChecklistCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllRenderableSites, getAllSites } from "@/lib/platform/content";
+import { getAllRenderableSites, getAllSites, getLaunchChecklist } from "@/lib/platform/content";
 import { getAnalyticsOverview, listDomainRecords, listPublishJobs } from "@/lib/platform/store";
 
 const statCards = [
@@ -10,12 +11,13 @@ const statCards = [
   { label: "Active Domains", key: "domains", icon: Server },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const sites = getAllSites();
   const liveSites = getAllRenderableSites();
   const domains = listDomainRecords();
   const jobs = listPublishJobs();
   const analytics = getAnalyticsOverview();
+  const checklist = await getLaunchChecklist();
 
   const counts = {
     jobs: jobs.length,
@@ -108,6 +110,8 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
+
+            <LaunchChecklistCard checklist={checklist} />
           </div>
 
           <div className="flex flex-col gap-6">

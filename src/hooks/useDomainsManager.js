@@ -9,14 +9,23 @@ import {
   verifyDomainRecord,
 } from "@/services/admin/domains"
 
-export function useDomainsManager({ initialDomains, sites }) {
+export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   const [domains, setDomains] = useState(initialDomains)
   const [loading, setLoading] = useState(false)
+  const [query, setQuery] = useState("")
   const [form, setForm] = useState(buildDefaultDomainForm(sites))
 
   useEffect(() => {
     setDomains(initialDomains)
   }, [initialDomains])
+
+  useEffect(() => {
+    if (!vercelEnabled) {
+      return
+    }
+
+    refreshDomains()
+  }, [vercelEnabled])
 
   async function refreshDomains() {
     setLoading(true)
@@ -57,8 +66,10 @@ export function useDomainsManager({ initialDomains, sites }) {
     domains,
     form,
     loading,
+    query,
     addDomain,
     refreshDomains,
+    setQuery,
     setForm,
     verifyDomain,
   }

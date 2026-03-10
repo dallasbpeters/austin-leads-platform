@@ -1,5 +1,123 @@
 export default [
   {
+    name: "launchChecklist",
+    title: "Launch Checklist",
+    type: "document",
+    options: {
+      canvasApp: {
+        exclude: true,
+      },
+    },
+    fields: [
+      {
+        name: "title",
+        title: "Title",
+        type: "string",
+        validation: (Rule) => Rule.required(),
+      },
+      {
+        name: "summary",
+        title: "Summary",
+        type: "text",
+      },
+      {
+        name: "sections",
+        title: "Sections",
+        type: "array",
+        of: [
+          {
+            type: "object",
+            fields: [
+              {
+                name: "title",
+                title: "Section title",
+                type: "string",
+                validation: (Rule) => Rule.required(),
+              },
+              {
+                name: "description",
+                title: "Description",
+                type: "text",
+              },
+              {
+                name: "tasks",
+                title: "Tasks",
+                type: "array",
+                of: [
+                  {
+                    type: "object",
+                    fields: [
+                      {
+                        name: "title",
+                        title: "Task",
+                        type: "string",
+                        validation: (Rule) => Rule.required(),
+                      },
+                      {
+                        name: "notes",
+                        title: "Notes",
+                        type: "text",
+                      },
+                      {
+                        name: "status",
+                        title: "Status",
+                        type: "string",
+                        initialValue: "todo",
+                        options: {
+                          list: [
+                            { title: "Todo", value: "todo" },
+                            { title: "In progress", value: "in_progress" },
+                            { title: "Blocked", value: "blocked" },
+                            { title: "Done", value: "done" },
+                          ],
+                        },
+                      },
+                      {
+                        name: "owner",
+                        title: "Owner",
+                        type: "string",
+                      },
+                      {
+                        name: "priority",
+                        title: "Priority",
+                        type: "string",
+                        initialValue: "medium",
+                        options: {
+                          list: [
+                            { title: "High", value: "high" },
+                            { title: "Medium", value: "medium" },
+                            { title: "Low", value: "low" },
+                          ],
+                        },
+                      },
+                    ],
+                    preview: {
+                      select: {
+                        title: "title",
+                        subtitle: "status",
+                      },
+                      prepare({ title, subtitle }) {
+                        return {
+                          title: title || "Untitled task",
+                          subtitle: subtitle ? subtitle.replace(/_/g, " ") : "todo",
+                        };
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
+            preview: {
+              select: {
+                title: "title",
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
     name: "faqItem",
     title: "FAQ Item",
     type: "document",

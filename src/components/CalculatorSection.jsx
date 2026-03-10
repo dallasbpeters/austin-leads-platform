@@ -101,7 +101,7 @@ export default function CalculatorSection() {
               <Button href="#estimate" size="md" pill className="w-full max-w-72">
                 Talk to a solar pro →
               </Button>
-              <span className="text-solar-slate-400 text-xs">Free estimate · No commitment · Takes 2 minutes</span>
+              <span className="text-solar-slate-700 text-xs">Free estimate · No commitment · Takes 2 minutes</span>
             </div>
           </div>
         </Card>
@@ -120,13 +120,13 @@ export default function CalculatorSection() {
 function ResultCard({ title, value, prefix = '', suffix = '', detail, accent = false }) {
   return (
     <Card className="bg-card p-5">
-      <span className="text-solar-slate-400 text-xs font-bold uppercase tracking-[0.08em]">{title}</span>
+      <span className="text-solar-slate-700 text-xs font-bold uppercase tracking-[0.08em]">{title}</span>
       <div className="mt-2 flex items-baseline gap-1 text-[1.875rem] font-bold text-foreground">
-        {prefix ? <span className="text-solar-slate-400 text-sm font-medium">{prefix}</span> : null}
+        {prefix ? <span className="text-solar-slate-700 text-sm font-medium">{prefix}</span> : null}
         <span>{value}</span>
-        {suffix ? <span className="text-solar-slate-400 text-sm font-medium">{suffix}</span> : null}
+        {suffix ? <span className="text-solar-slate-700 text-sm font-medium">{suffix}</span> : null}
       </div>
-      <p className="text-solar-slate-400 mt-1.5 text-xs">{detail}</p>
+      <p className="text-solar-slate-700 mt-1.5 text-xs">{detail}</p>
     </Card>
   )
 }

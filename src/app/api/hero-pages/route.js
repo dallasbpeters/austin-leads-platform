@@ -4,6 +4,7 @@ import { groq } from "next-sanity";
 import { requireAdminRequest } from "@/lib/auth/guards";
 import { getHeroPages, getHeroSitesForAdmin, getSiteById } from "@/lib/platform/content";
 import { isUnsplashConfigured } from "@/lib/platform/unsplash";
+import { withSectionKeys } from "@/lib/sanity/keys";
 import { sanityWriteClient } from "@/sanity/client";
 
 export const runtime = "nodejs";
@@ -126,6 +127,26 @@ export async function POST(request) {
   const documentType =
     pageType === "service" ? "servicePage" : pageType === "location" ? "locationPage" : "page";
 
+  const sections = withSectionKeys([
+    {
+      _type: "object",
+      type: "hero",
+      eyebrow: site.name,
+      title,
+      body: description || `Add hero copy for ${title}.`,
+      heroTextColor: "#ffffff",
+      heroOverlayColor: "#0f172a",
+      heroOverlayStartColor: "#0f172a",
+      heroOverlayEndColor: "#0f172a",
+      heroOverlayDirection: "to bottom",
+      heroOverlayStartOpacity: 0.6,
+      heroOverlayEndOpacity: 0.15,
+      heroOverlayOpacity: 0.42,
+      metrics: [],
+      items: [],
+    },
+  ]);
+
   const created = await sanityWriteClient.create({
     _type: documentType,
     title,
@@ -140,25 +161,7 @@ export async function POST(request) {
       _type: "slug",
       current: slug,
     },
-    sections: [
-      {
-        _type: "object",
-        type: "hero",
-        eyebrow: site.name,
-        title,
-        body: description || `Add hero copy for ${title}.`,
-        heroTextColor: "#ffffff",
-        heroOverlayColor: "#0f172a",
-        heroOverlayStartColor: "#0f172a",
-        heroOverlayEndColor: "#0f172a",
-        heroOverlayDirection: "to bottom",
-        heroOverlayStartOpacity: 0.6,
-        heroOverlayEndOpacity: 0.15,
-        heroOverlayOpacity: 0.42,
-        metrics: [],
-        items: [],
-      },
-    ],
+    sections,
   });
 
   return NextResponse.json(
@@ -170,22 +173,7 @@ export async function POST(request) {
         pageType,
         templateLevel: "hero",
         site,
-        heroSection: {
-          type: "hero",
-          eyebrow: site.name,
-          title,
-          body: description || `Add hero copy for ${title}.`,
-          heroTextColor: "#ffffff",
-          heroOverlayColor: "#0f172a",
-          heroOverlayStartColor: "#0f172a",
-          heroOverlayEndColor: "#0f172a",
-          heroOverlayDirection: "to bottom",
-          heroOverlayStartOpacity: 0.6,
-          heroOverlayEndOpacity: 0.15,
-          heroOverlayOpacity: 0.42,
-          metrics: [],
-          items: [],
-        },
+        heroSection: sections[0],
       },
     },
     { status: 201 },

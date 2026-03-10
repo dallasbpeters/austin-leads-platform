@@ -75,6 +75,39 @@ export function isVercelConfigured() {
   return getVercelConfig().enabled;
 }
 
+function mapProjectDomain(payload) {
+  return {
+    domain: payload.name,
+    apexName: payload.apexName,
+    projectId: payload.projectId,
+    redirectTarget: payload.redirect ?? null,
+    verified: payload.verified,
+    verificationStatus: mapVerificationStatus(payload),
+    dnsInstructions: payload.verification ?? [],
+    gitBranch: payload.gitBranch ?? null,
+    updatedAt: payload.updatedAt ?? null,
+    createdAt: payload.createdAt ?? null,
+    mode: "vercel",
+  };
+}
+
+export async function listProjectDomainsOnVercel() {
+  const config = getVercelConfig();
+
+  if (!config.enabled) {
+    return [];
+  }
+
+  const payload = await vercelRequest(
+    `/v9/projects/${config.projectIdOrName}/domains?limit=100&redirects=true`,
+    {
+      method: "GET",
+    },
+  );
+
+  return Array.isArray(payload?.domains) ? payload.domains.map(mapProjectDomain) : [];
+}
+
 export async function addDomainToVercel({ domain, redirectTarget = null }) {
   const config = getVercelConfig();
 
@@ -106,14 +139,7 @@ export async function addDomainToVercel({ domain, redirectTarget = null }) {
     }),
   });
 
-  return {
-    domain: payload.name,
-    projectId: payload.projectId,
-    verified: payload.verified,
-    verificationStatus: mapVerificationStatus(payload),
-    dnsInstructions: payload.verification ?? [],
-    mode: "vercel",
-  };
+  return mapProjectDomain(payload);
 }
 
 export async function verifyDomainOnVercel(domain) {
@@ -143,14 +169,7 @@ export async function verifyDomainOnVercel(domain) {
     },
   );
 
-  return {
-    domain: payload.name,
-    projectId: payload.projectId,
-    verified: payload.verified,
-    verificationStatus: mapVerificationStatus(payload),
-    dnsInstructions: payload.verification ?? [],
-    mode: "vercel",
-  };
+  return mapProjectDomain(payload);
 }
 
 export async function getDomainFromVercel(domain) {
@@ -164,12 +183,5 @@ export async function getDomainFromVercel(domain) {
     method: "GET",
   });
 
-  return {
-    domain: payload.name,
-    projectId: payload.projectId,
-    verified: payload.verified,
-    verificationStatus: mapVerificationStatus(payload),
-    dnsInstructions: payload.verification ?? [],
-    mode: "vercel",
-  };
+  return mapProjectDomain(payload);
 }
