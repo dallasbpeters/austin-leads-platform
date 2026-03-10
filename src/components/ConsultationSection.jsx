@@ -18,7 +18,7 @@ export default function ConsultationSection() {
 
       <div className="mx-auto z-5 grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2">
         <div>
-          <h2 className="type-display text-solar-secondary mb-4 text-[clamp(1.875rem,6vw,3.75rem)] leading-[1.05]">
+          <h2 className="type-display text-solar-secondary mb-4 text-[clamp(2.875rem,6vw,3.75rem)]">
             Talk to a
             <br />
             Austin Solar Pro

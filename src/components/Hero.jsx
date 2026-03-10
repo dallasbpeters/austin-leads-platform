@@ -22,15 +22,8 @@ export default function Hero({ heroSection = null }) {
     >
       {hasHeroImage ? (
         <>
-          <img
-            src={heroImageUrl}
-            alt={heroSection?.heroImage?.alt || ''}
-            className="absolute inset-0 z-0 h-full w-full object-cover object-center"
-          />
-          <div
-            className="absolute inset-0 z-10"
-            style={overlayStyle}
-          />
+          <img src={heroImageUrl} alt={heroSection?.heroImage?.alt || ''} className="absolute inset-0 z-0 h-full w-full object-cover object-center" />
+          <div className="absolute inset-0 z-10" style={overlayStyle} />
         </>
       ) : (
         <Image src="/assets/hero-bg.png" alt="" fill className="absolute inset-0 object-cover object-top opacity-10" />
@@ -48,7 +41,7 @@ export default function Hero({ heroSection = null }) {
               </span>
             </div>
 
-            <h1 className="type-display mb-10 text-[clamp(4.5rem,12vw,10rem)] leading-[0.85] tracking-[-0.04em] text-black" style={heroTextColor ? { color: heroTextColor } : undefined}>
+            <h1 className="type-display mb-10 text-[clamp(4.5rem,12vw,10rem)] tracking-[-0.04em] text-black" style={heroTextColor ? { color: heroTextColor } : undefined}>
               Solar,
               <br />
               <span

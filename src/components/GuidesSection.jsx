@@ -45,7 +45,7 @@ export default function GuidesSection() {
                 <ArrowIcon />
                 <span className="text-[2rem] font-semibold">{guide.number}</span>
               </div>
-              <h3 className="mt-4 text-[2rem] leading-[1.1]">{guide.title}</h3>
+              <h3 className="mt-4 text-[2rem]">{guide.title}</h3>
               <p className="mt-2 text-[0.95rem] font-semibold leading-6 text-white/90">{guide.copy}</p>
               <div className="mt-6 overflow-hidden rounded-2xl">
                 <img src={guide.image} alt={guide.title} className="h-56 w-full object-cover" />

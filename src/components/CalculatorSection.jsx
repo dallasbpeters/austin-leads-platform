@@ -64,8 +64,8 @@ export default function CalculatorSection() {
       <div className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)' }}></div>
       <div className="relative z-[1] mx-auto w-[min(72rem,calc(100%-3rem))]">
         <div className="mb-14 text-center">
-          <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] type-display text-foreground">See what solar could save&nbsp;you</h2>
-          <p className="text-solar-slate-500 mx-auto mt-3 max-w-[32rem] text-base">Enter your average monthly electric bill and we&apos;ll estimate your system size, potential savings, and likely payback period.</p>
+          <h2 className="m-0 text-[clamp(3.875rem,4vw,5.25rem)] type-display text-foreground">See what solar could save&nbsp;you</h2>
+          <p className="text-foreground mx-auto mt-3 max-w-[52rem] text-base">Enter your average monthly electric bill and we&apos;ll estimate your system size, potential savings, and likely payback period.</p>
         </div>
 
         <Card className="grid overflow-hidden max-[900px]:grid-cols-1 [grid-template-columns:minmax(280px,2fr)_minmax(320px,3fr)]" variant="surfaceStrong" radius="lg">
@@ -91,7 +91,7 @@ export default function CalculatorSection() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 p-8 max-sm:grid-cols-1">
+          <div className="grid grid-cols-2 gap-3 md:gap-6 p-4 md:p-8 max-sm:grid-cols-1">
             <ResultCard title="System Size" value={results.systemKw} suffix="kW" detail={`~${results.panels} panels on your roof`} />
             <ResultCard title="Year 1 Savings" value={results.year1} prefix="$" detail={`Avg ${results.monthly}/mo back in your pocket`} />
             <ResultCard title="25-Year Savings" value={results.lifetime} prefix="$" detail="With 2.5% annual rate increase" accent />

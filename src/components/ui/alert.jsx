@@ -23,7 +23,7 @@ function AlertDescription({ className, ...props }) {
 }
 
 function AlertTitle({ className, ...props }) {
-  return <h5 className={cn("mb-1 leading-none tracking-tight", className)} {...props} />;
+  return <h5 className={cn("mb-1 tracking-tight", className)} {...props} />;
 }
 
 Alert.Icon = AlertCircle;
