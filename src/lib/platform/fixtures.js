@@ -1,3 +1,5 @@
+import { getSolarGuideGridItems, getSolarGuidePages } from "./guides.js";
+
 const categories = {
   solar: "Solar",
   roofing: "Roofing",
@@ -378,63 +380,30 @@ export const pages = [
     siteSlug: "austin-solar-pros",
     slug: "guides",
     title: "Austin Solar Guides",
-    description: "A topical authority hub for educational and comparison content.",
+    description: "A guide hub with deeper Austin solar explainers, comparisons, and decision-making articles.",
     pageType: "page",
     templateLevel: "hero",
     sections: [
       {
         type: "hero",
         eyebrow: "Guide hub",
-        title: "Topical authority comes from a cluster, not a single hero page.",
+        title: "Go deeper on Austin solar without sifting through generic national advice.",
         body:
-          "The guide hub groups the comparison posts, how-to explainers, and FAQ-led pieces that help the hero site own broader search coverage over time.",
+          "This hub takes the core topics from the homepage and expands them into full guides built for Austin homeowners who are still researching before they ask for quotes.",
         metrics: [
-          { label: "Content format", value: "Editorial" },
-          { label: "Cadence", value: "Monthly" },
-          { label: "Outcome", value: "Authority" },
+          { label: "Guide count", value: "6 guides" },
+          { label: "Primary use", value: "Research" },
+          { label: "Audience", value: "Austin homeowners" },
         ],
       },
       {
-        type: "highlights",
-        title: "Recommended guide types",
-        items: [
-          { title: "Cost explainers", body: "Pages that unpack installation cost, financing, and bill offset assumptions." },
-          { title: "Comparison pieces", body: "Installer comparisons, battery decisions, and utility-versus-solar tradeoffs." },
-          { title: "AI-answer articles", body: "Question-led articles written to match how users ask Perplexity and ChatGPT." },
-        ],
+        type: "guideGrid",
+        title: "Browse the guide library",
+        items: getSolarGuideGridItems(),
       },
     ],
   },
-  {
-    id: "page-solar-post",
-    siteSlug: "austin-solar-pros",
-    slug: "blog/austin-solar-installation-cost",
-    title: "How Austin homeowners should think about solar installation cost",
-    description: "Example article page for the publishing workflow.",
-    pageType: "post",
-    templateLevel: "hero",
-    sections: [
-      {
-        type: "hero",
-        eyebrow: "AI-assisted draft example",
-        title: "Example article generated for the publish queue.",
-        body:
-          "This page exists to prove the post template, metadata pattern, and publish-to-CMS workflow. It is the type of asset the AI publishing interface will create and hand to human review.",
-        metrics: [
-          { label: "Content type", value: "Post" },
-          { label: "Workflow", value: "Draft -> Review -> Publish" },
-          { label: "Schema", value: "Article" },
-        ],
-      },
-      {
-        type: "story",
-        eyebrow: "Article structure",
-        title: "Drafts can be AI-assisted without being AI-slop.",
-        body:
-          "The workflow should start with clear source material, force human review, and publish only after the editorial owner is comfortable with accuracy, tone, and local relevance.",
-      },
-    ],
-  },
+  ...getSolarGuidePages(),
   {
     id: "page-landing-solar-homes",
     siteSlug: "austin-solar-homes",

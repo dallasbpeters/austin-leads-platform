@@ -89,6 +89,18 @@ const pageItemType = {
   type: "object",
   fields: [
     {
+      name: "number",
+      title: "Number",
+      type: "string",
+      options: canvasPurpose("Optional short index label such as 01, 02, or 03."),
+    },
+    {
+      name: "eyebrow",
+      title: "Eyebrow",
+      type: "string",
+      options: canvasPurpose("Optional short overline or supporting label for the item."),
+    },
+    {
       name: "title",
       title: "Title",
       type: "string",
@@ -111,6 +123,18 @@ const pageItemType = {
       title: "Answer",
       type: "text",
       options: canvasPurpose("Answer text for FAQ-style items."),
+    },
+    {
+      name: "href",
+      title: "Href",
+      type: "string",
+      options: canvasPurpose("Optional link target for this item when it should open another page."),
+    },
+    {
+      name: "image",
+      title: "Image",
+      type: "heroImage",
+      options: canvasExclude,
     },
   ],
   preview: {

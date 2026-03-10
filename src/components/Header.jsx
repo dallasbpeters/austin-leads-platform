@@ -7,7 +7,7 @@ const links = [
   { href: '#how-it-works', label: 'How it Works' },
   { href: '#costs', label: 'Cost & Savings' },
   { href: '#incentives', label: 'Incentives' },
-  { href: '#go-deeper', label: 'Guides' },
+  { href: '/guides', label: 'Guides' },
   { href: '#resources', label: 'Resources' },
 ]
 

@@ -108,7 +108,7 @@ function toHeroPageRecord(page, site) {
 
 export function getNavigationForSite(siteSlug) {
   return getPagesForSite(siteSlug)
-    .filter((page) => page.slug !== "")
+    .filter((page) => page.slug !== "" && page.pageType !== "post" && !page.slug.includes("/"))
     .map((page) => ({
       label: page.title.replace(/^Austin Solar /, "").replace(/^Austin /, ""),
       href: page.slug.startsWith("blog/") ? `/${page.slug}` : `/${page.slug}`,
@@ -186,7 +186,7 @@ export async function getPageForRequest(site, slugParts = []) {
         sections
       }`,
       { siteSlug: site.slug, slug: getPageKey(slugParts) || "/" },
-      { next: { revalidate: 60 } },
+      { cache: "no-store" },
     );
 
     if (page) {

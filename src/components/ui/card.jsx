@@ -3,15 +3,15 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 function Card({ className, ...props }) {
-  return <div data-slot="card" className={cn('shadow-theme-sm flex flex-col gap-6 rounded-xl border border-border bg-card py-4 text-card-foreground', className)} {...props} />
+  return <div data-slot="card" className={cn('shadow-theme-sm flex flex-col gap-2 rounded-xl border border-border bg-card py-4 text-card-foreground', className)} {...props} />
 }
 
 function CardHeader({ className, ...props }) {
-  return <div data-slot="card-header" className={cn('@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6', className)} {...props} />
+  return <div data-slot="card-header" className={cn('@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6', className)} {...props} />
 }
 
 function CardTitle({ className, ...props }) {
-  return <div data-slot="card-title" className={cn('leading-none font-semibold', className)} {...props} />
+  return <div data-slot="card-title" className={cn('leading-none font-bold', className)} {...props} />
 }
 
 function CardDescription({ className, ...props }) {
