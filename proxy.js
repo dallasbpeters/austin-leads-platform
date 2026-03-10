@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 import { auth } from "./src/auth";
 import { getAllSites } from "./src/lib/platform/content";
 
-const protectedPaths = ["/dashboard", "/analytics", "/publish", "/domains", "/studio"];
-const protectedApiPrefixes = ["/api/domains", "/api/publish-jobs", "/api/analytics"];
+const protectedPaths = ["/dashboard", "/analytics", "/publish", "/domains", "/studio", "/hero-pages"];
+const protectedApiPrefixes = ["/api/domains", "/api/publish-jobs", "/api/analytics", "/api/hero-pages", "/api/unsplash"];
 
 function normalizeHost(host) {
   return (host || "").replace(/:\d+$/, "").toLowerCase();
@@ -19,7 +19,7 @@ function getRedirectSite(host) {
   );
 }
 
-export default auth((request) => {
+const proxy = auth((request) => {
   const { nextUrl } = request;
   const pathname = nextUrl.pathname;
   const isLoggedIn = Boolean(request.auth?.user);
@@ -66,6 +66,8 @@ export default auth((request) => {
 
   return NextResponse.redirect(signInUrl);
 });
+
+export default proxy;
 
 export const config = {
   matcher: ["/((?!_next|favicon.ico).*)"],

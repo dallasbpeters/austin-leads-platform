@@ -2,6 +2,11 @@ export default {
   name: "site",
   title: "Site",
   type: "document",
+  options: {
+    canvasApp: {
+      exclude: true,
+    },
+  },
   fields: [
     { name: "name", title: "Name", type: "string", validation: (Rule) => Rule.required() },
     { name: "shortName", title: "Short name", type: "string" },

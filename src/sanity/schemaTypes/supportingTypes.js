@@ -3,6 +3,11 @@ export default [
     name: "faqItem",
     title: "FAQ Item",
     type: "document",
+    options: {
+      canvasApp: {
+        exclude: true,
+      },
+    },
     fields: [
       { name: "question", title: "Question", type: "string", validation: (Rule) => Rule.required() },
       { name: "answer", title: "Answer", type: "text", validation: (Rule) => Rule.required() },
@@ -13,6 +18,11 @@ export default [
     name: "review",
     title: "Review",
     type: "document",
+    options: {
+      canvasApp: {
+        exclude: true,
+      },
+    },
     fields: [
       { name: "author", title: "Author", type: "string" },
       { name: "rating", title: "Rating", type: "number" },
@@ -24,6 +34,11 @@ export default [
     name: "leadForm",
     title: "Lead Form",
     type: "document",
+    options: {
+      canvasApp: {
+        exclude: true,
+      },
+    },
     fields: [
       { name: "title", title: "Title", type: "string" },
       { name: "description", title: "Description", type: "text" },
@@ -34,6 +49,11 @@ export default [
     name: "seoSettings",
     title: "SEO Settings",
     type: "document",
+    options: {
+      canvasApp: {
+        exclude: true,
+      },
+    },
     fields: [
       { name: "title", title: "Title", type: "string" },
       { name: "description", title: "Description", type: "text" },
@@ -44,6 +64,11 @@ export default [
     name: "redirectRule",
     title: "Redirect Rule",
     type: "document",
+    options: {
+      canvasApp: {
+        exclude: true,
+      },
+    },
     fields: [
       { name: "domain", title: "Domain", type: "string", validation: (Rule) => Rule.required() },
       { name: "target", title: "Target", type: "string", validation: (Rule) => Rule.required() },
