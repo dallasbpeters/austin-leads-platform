@@ -695,10 +695,6 @@ export const solarGuides = [
           creditUrl: 'https://unsplash.com/@kyddvisuals',
           creditUsername: 'kyddvisuals',
           description: 'Residential roofline photographed in warm light.',
-          source: 'unsplash',
-          unsplashId: '2keCPb73aQY',
-          unsplashUrl: 'https://unsplash.com/photos/2keCPb73aQY',
-          url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1600&auto=format&fit=crop',
         }),
         metrics: [
           { _type: 'pageMetric', label: 'Focus', value: 'Roof suitability' },
