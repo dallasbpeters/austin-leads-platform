@@ -1,3 +1,4 @@
+@tailwind base;
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
@@ -261,9 +262,13 @@ h6 {
   }
 
   .btn--primary {
-    background-color: var(--color-primary-700);
+    background-color: var(--color-primary);
     color: var(--color-white);
     box-shadow: var(--shadow-brand);
+  }
+
+  input[type='checkbox'] {
+    accent-color: var(--color-primary) !important;
   }
 
   .btn--primary:hover {
@@ -455,6 +460,9 @@ h6 {
   .bg-color-secondary-700 {
     background-color: var(--color-secondary-700);
   }
+  .bg-color-secondary-950 {
+    background-color: var(--color-secondary-950);
+  }
 
   .bg-color-secondary-100 {
     background-color: var(--color-secondary-100);
@@ -599,7 +607,9 @@ h6 {
   }
 
   .solar-grid-bg {
-    background-image: linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
+    background-image:
+      linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 

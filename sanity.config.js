@@ -1,7 +1,17 @@
-import { deskTool } from "sanity/desk";
 import { defineConfig } from "sanity";
+import { deskTool } from "sanity/desk";
+import { presentationTool } from "sanity/presentation";
 
-import { dataset, isSanityConfigured, projectId, studioUrl } from "./src/sanity/env";
+import {
+  canonicalStudioUrl,
+  dataset,
+  frontendUrl,
+  frontendOriginAllowlist,
+  isSanityConfigured,
+  localFrontendUrl,
+  projectId,
+  studioUrl,
+} from "./src/sanity/env";
 import { schemaTypes } from "./src/sanity/schemaTypes";
 
 export default defineConfig({
@@ -10,7 +20,28 @@ export default defineConfig({
   projectId: projectId || "missing-project-id",
   dataset,
   basePath: studioUrl,
-  plugins: [deskTool()],
+  plugins: [
+    deskTool(),
+    presentationTool({
+      previewUrl: {
+        initial: frontendUrl,
+        previewMode: {
+          enable: `${frontendUrl}/api/draft-mode/enable`,
+          disable: `${frontendUrl}/api/draft-mode/disable`,
+        },
+        // Keep the legacy key alongside previewMode for hosted Studio compatibility.
+        draftMode: {
+          enable: `${frontendUrl}/api/draft-mode/enable`,
+          disable: `${frontendUrl}/api/draft-mode/disable`,
+        },
+      },
+      allowOrigins: [
+        ...frontendOriginAllowlist,
+        localFrontendUrl,
+        "https://austin-leads-platform.vercel.app",
+      ],
+    }),
+  ],
   schema: {
     types: schemaTypes,
   },

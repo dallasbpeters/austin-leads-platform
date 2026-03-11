@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 const OPEN_METEO_GEOCODE_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const OPEN_METEO_FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 const NWS_ALERTS_URL = 'https://api.weather.gov/alerts/active'
+const SWDI_BASE_URL = 'https://www.ncdc.noaa.gov/swdiws/csv'
 const WEATHER_USER_AGENT = 'Texas Solar and Roofing Pros (info@texassolarandroofingpros.com)'
 
 function formatLocationName(location) {
@@ -19,6 +20,64 @@ function buildMapEmbedUrl(latitude, longitude) {
   const bottom = (latitude - latDelta).toFixed(4)
 
   return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${latitude}%2C${longitude}`
+}
+
+function buildBoundingBox(latitude, longitude) {
+  const latDelta = 0.22
+  const lonDelta = 0.28
+
+  return {
+    minLon: Number((longitude - lonDelta).toFixed(4)),
+    minLat: Number((latitude - latDelta).toFixed(4)),
+    maxLon: Number((longitude + lonDelta).toFixed(4)),
+    maxLat: Number((latitude + latDelta).toFixed(4)),
+  }
+}
+
+function formatSwdiDate(date) {
+  return date.toISOString().slice(0, 10).replace(/-/g, '')
+}
+
+function parseCsv(csvText) {
+  const rows = csvText.trim().split(/\r?\n/).filter(Boolean)
+
+  if (rows.length < 2) {
+    return []
+  }
+
+  const headers = rows[0].split(',').map((header) => header.trim().toLowerCase())
+
+  return rows.slice(1).map((row) => {
+    const values = row.split(',').map((value) => value.trim())
+    return headers.reduce((record, header, index) => {
+      record[header] = values[index]
+      return record
+    }, {})
+  })
+}
+
+function normalizeSwdiPoint(row, fallbackType) {
+  const latitude = Number(row.lat || row.latitude)
+  const longitude = Number(row.lon || row.longitude)
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null
+  }
+
+  return {
+    id: row.id || `${fallbackType}-${row.ztime || row.date || latitude}-${longitude}`,
+    type: fallbackType,
+    latitude,
+    longitude,
+    date: row.ztime || row.date || null,
+    magnitude: row.maxsize || row.magnitude || null,
+    probability: row.prob || null,
+    severeProbability: row.sevprob || null,
+    city: row.city || null,
+    source: row.source || null,
+    event: row.event || null,
+    raw: row,
+  }
 }
 
 function weatherCodeLabel(code) {
@@ -70,7 +129,8 @@ function deriveRisk({ alerts, current, daily }) {
     return {
       level: hailAlert ? 'high' : 'elevated',
       headline: hailAlert ? 'Hail-related alert in the area' : 'Severe storm alert active nearby',
-      detail: 'Recent alerts suggest this location is worth a roof inspection if you have visible impact, leaks, or granule loss.',
+      detail:
+        'Recent alerts suggest this location is worth a roof inspection if you have visible impact, leaks, or granule loss.',
     }
   }
 
@@ -78,14 +138,16 @@ function deriveRisk({ alerts, current, daily }) {
     return {
       level: 'elevated',
       headline: 'Storm conditions look worth checking',
-      detail: 'Forecast wind, precipitation, or thunderstorm conditions are elevated enough to justify documenting the roof and watching for visible impact.',
+      detail:
+        'Forecast wind, precipitation, or thunderstorm conditions are elevated enough to justify documenting the roof and watching for visible impact.',
     }
   }
 
   return {
     level: 'low',
     headline: 'No strong hail signal right now',
-    detail: 'Current conditions do not point to an obvious hail issue, but recent storm history and roof age can still justify an inspection.',
+    detail:
+      'Current conditions do not point to an obvious hail issue, but recent storm history and roof age can still justify an inspection.',
   }
 }
 
@@ -104,6 +166,23 @@ async function fetchJson(url, init) {
   }
 
   return response.json()
+}
+
+async function fetchText(url, init) {
+  const response = await fetch(url, {
+    ...init,
+    headers: {
+      Accept: 'text/csv',
+      ...(init?.headers || {}),
+    },
+    cache: 'no-store',
+  })
+
+  if (!response.ok) {
+    throw new Error(`Weather request failed: ${response.status}`)
+  }
+
+  return response.text()
 }
 
 async function geocodeQuery(query) {
@@ -140,7 +219,14 @@ async function fetchForecast(latitude, longitude) {
   )
   url.searchParams.set(
     'daily',
-    ['weather_code', 'temperature_2m_max', 'temperature_2m_min', 'precipitation_probability_max', 'precipitation_sum', 'wind_gusts_10m_max'].join(','),
+    [
+      'weather_code',
+      'temperature_2m_max',
+      'temperature_2m_min',
+      'precipitation_probability_max',
+      'precipitation_sum',
+      'wind_gusts_10m_max',
+    ].join(','),
   )
 
   return fetchJson(url.toString())
@@ -166,6 +252,20 @@ async function fetchAlerts(latitude, longitude) {
     effective: feature.properties?.effective,
     expires: feature.properties?.expires,
   }))
+}
+
+async function fetchSwdiDataset(dataset, bbox, startDate, endDate) {
+  const dateRange = `${formatSwdiDate(startDate)}:${formatSwdiDate(endDate)}`
+  const bboxValue = [bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat].join(',')
+  const url = `${SWDI_BASE_URL}/${dataset}/${dateRange}/2500?bbox=${bboxValue}`
+
+  const csvText = await fetchText(url, {
+    headers: {
+      'User-Agent': WEATHER_USER_AGENT,
+    },
+  })
+
+  return parseCsv(csvText)
 }
 
 function normalizeForecast(forecast) {
@@ -216,14 +316,36 @@ export async function GET(request) {
           }
         : await geocodeQuery(query)
 
-    const [forecastData, alerts] = await Promise.all([
+    const bbox = buildBoundingBox(location.latitude, location.longitude)
+    const endDate = new Date()
+    const startDate = new Date()
+    startDate.setDate(endDate.getDate() - 30)
+
+    const [forecastData, alerts, hailRowsResult, reportRowsResult] = await Promise.allSettled([
       fetchForecast(location.latitude, location.longitude),
       fetchAlerts(location.latitude, location.longitude),
+      fetchSwdiDataset('nx3hail', bbox, startDate, endDate),
+      fetchSwdiDataset('plsr', bbox, startDate, endDate),
     ])
 
-    const forecast = normalizeForecast(forecastData)
+    if (forecastData.status !== 'fulfilled' || alerts.status !== 'fulfilled') {
+      throw new Error('Unable to load live weather data right now.')
+    }
+
+    const forecast = normalizeForecast(forecastData.value)
+    const hailRows = hailRowsResult.status === 'fulfilled' ? hailRowsResult.value : []
+    const reportRows = reportRowsResult.status === 'fulfilled' ? reportRowsResult.value : []
+    const hailPoints = hailRows
+      .map((row) => normalizeSwdiPoint(row, 'hail-signature'))
+      .filter(Boolean)
+      .slice(0, 250)
+    const reportPoints = reportRows
+      .map((row) => normalizeSwdiPoint(row, 'storm-report'))
+      .filter(Boolean)
+      .filter((row) => !row.event || /hail/i.test(row.event))
+      .slice(0, 250)
     const risk = deriveRisk({
-      alerts,
+      alerts: alerts.value,
       current: forecast.current,
       daily: forecast.daily,
     })
@@ -233,8 +355,15 @@ export async function GET(request) {
       mapEmbedUrl: buildMapEmbedUrl(location.latitude, location.longitude),
       current: forecast.current,
       daily: forecast.daily,
-      alerts,
+      alerts: alerts.value,
       risk,
+      hailLayer: {
+        bbox,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        hailSignatures: hailPoints,
+        stormReports: reportPoints,
+      },
       updatedAt: new Date().toISOString(),
     })
   } catch (error) {

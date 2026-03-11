@@ -69,7 +69,11 @@ export async function renderCurrentSitePage(slugParts = []) {
   if (isPrimarySiteSlug(site.slug) && slugParts.length === 0) {
     const homepage = await getHomepageForSite(site.slug);
     const heroHomepage = await getHeroHomepageForSite(site.slug);
-    const heroSection = heroHomepage?.heroSection ?? homepage?.sections?.find((section) => section.type === "hero") ?? null;
+    const heroSection =
+      homepage?.heroSection ??
+      heroHomepage?.heroSection ??
+      homepage?.sections?.find((section) => section.type === 'hero') ??
+      null;
     const resourcesSection =
       homepage?.sections?.find((section) => section._type === "resourceGridSection") ??
       homepage?.sections?.find((section) => section.type === "resourceGrid") ??

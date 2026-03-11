@@ -5,7 +5,9 @@ import "@fontsource/manrope/500.css";
 import "@fontsource/manrope/600.css";
 import "@fontsource/manrope/700.css";
 import "@fontsource/manrope/800.css";
+import { draftMode } from "next/headers";
 import Script from "next/script";
+import { VisualEditing } from "next-sanity/visual-editing";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../styles/globals.css";
@@ -28,7 +30,9 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const isDraftMode = (await draftMode()).isEnabled;
+
   return (
     <html lang="en">
       <body className="bg-background text-foreground">
@@ -37,6 +41,7 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
         {children}
+        {isDraftMode ? <VisualEditing /> : null}
         <Analytics />
         <SpeedInsights />
       </body>

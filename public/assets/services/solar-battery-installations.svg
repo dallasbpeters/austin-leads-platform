@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1600" height="1600" viewBox="0 0 1600 1600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="140" y1="88" x2="1370" y2="1500" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#091f2f" />
+      <stop offset="100%" stop-color="#0e3945" />
+    </linearGradient>
+    <linearGradient id="lineGradient" x1="180" y1="220" x2="1170" y2="1220" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#85d3ff" />
+      <stop offset="100%" stop-color="#f2e487" />
+    </linearGradient>
+    <radialGradient id="orbGradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 364) rotate(120) scale(520 520)">
+      <stop offset="0%" stop-color="#85d3ff" />
+      <stop offset="100%" stop-color="#f2e487" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="shadowGradient" x1="800" y1="980" x2="800" y2="1600" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(5, 12, 18, 0)" />
+      <stop offset="100%" stop-color="rgba(4, 10, 14, 0.96)" />
+    </linearGradient>
+    <filter id="softBlur" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="28" />
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1600" rx="64" fill="url(#bgGradient)" />
+  <circle cx="286" cy="198" r="212" fill="#f2e487" opacity="0.11" filter="url(#softBlur)" />
+  <circle cx="1316" cy="182" r="188" fill="#85d3ff" opacity="0.12" filter="url(#softBlur)" />
+  
+      <g opacity="0.26" stroke="url(#lineGradient)" fill="none">
+        <path d="M156 1122 L446 846 L786 846 L1090 1122" stroke-width="12" stroke-linejoin="round" />
+        <path d="M248 1022 H1008" stroke-width="10" />
+        <path d="M284 944 H962" stroke-width="8" />
+        <path d="M914 336 A110 110 0 1 1 913.9 336" stroke-width="12" />
+        <path d="M914 170 V92" stroke-width="8" stroke-linecap="round" />
+        <path d="M1040 214 L1098 156" stroke-width="8" stroke-linecap="round" />
+        <path d="M788 214 L730 156" stroke-width="8" stroke-linecap="round" />
+      </g>
+      <circle cx="1192" cy="438" r="224" fill="url(#orbGradient)" opacity="0.74" />
+    
+  <g transform="translate(940 722)" opacity="0.9">
+    <svg width="360" height="360" stroke-width="1.65" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="rgba(255,255,255,0.94)"><path d="M23 10V14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M1 16V8C1 6.89543 1.89543 6 3 6H18C19.1046 6 20 6.89543 20 8V16C20 17.1046 19.1046 18 18 18H3C1.89543 18 1 17.1046 1 16Z" stroke="currentColor"></path><path d="M10.1667 9L8.5 12H12.5L10.8333 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+  </g>
+  <rect x="0" y="938" width="1600" height="662" fill="url(#shadowGradient)" />
+  <rect x="30" y="30" width="1540" height="1540" rx="48" stroke="rgba(255,255,255,0.14)" stroke-width="2" />
+</svg>

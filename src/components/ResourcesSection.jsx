@@ -37,7 +37,6 @@ const iconMap = {
   thunderstorm: Thunderstorm,
   hail: Thunderstorm,
   roofing: HomeShield,
-  home: HomeSimple,
   solar: SunLight,
   sunlight: SunLight,
 }
@@ -52,11 +51,9 @@ function normalizeItems(section) {
   }
 
   return section.items.map((item, index) => ({
-    icon:
-      item.icon ||
-      defaultItems[index]?.icon ||
-      'roofing',
+    icon: item.icon || defaultItems[index]?.icon || 'roofing',
     title: item.title,
+    body: item.body,
     copy: item.body || item.answer || '',
     href: item.href || '#consultation',
     image: getImageUrl(item.imageAsset, item.image) || defaultItems[index]?.image,
@@ -67,19 +64,24 @@ function normalizeItems(section) {
 export default function ResourcesSection({ section = null }) {
   const items = normalizeItems(section)
   const title = section?.title || 'Start with what you need help with'
+  const body =
+    section?.body ||
+    'The most common solar and roofing questions, organized by category so you can find what you need faster.'
 
   return (
     <section
-      className="bg-color-warm   py-24"
+      className="bg-color-warm py-24"
       id="resources"
       style={{
-        backgroundImage: 'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
+        backgroundImage:
+          'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
       }}
     >
       <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <h2 className="type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
+          <p className="type-accent text-foreground m-0 text-[clamp(1rem,4vw,1.25rem)]">{body}</p>
         </div>
 
         <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
@@ -89,13 +91,17 @@ export default function ResourcesSection({ section = null }) {
             return (
               <Link key={item.title} href={item.href}>
                 <Card className="relative aspect-[1/1]" variant="media" radius="lg">
-                  <img src={item.image} alt={item.alt} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105" />
+                  <img
+                    src={item.image}
+                    alt={item.alt}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                  />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>
                   <div className="absolute inset-x-0 bottom-0 p-8 text-white">
                     <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]">
                       <Icon className="h-5 w-5" strokeWidth={2.2} />
                     </div>
-                    <div className="type-accent text-[1.875rem] font-bold leading-[1.1]">{item.title}</div>
+                    <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
                     <div className="mt-1 text-sm font-semibold text-white/70">{item.copy}</div>
                   </div>
                 </Card>

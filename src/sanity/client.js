@@ -1,6 +1,13 @@
 import { createClient } from "next-sanity";
 
-import { apiVersion, dataset, isSanityConfigured, projectId, useCdn } from "./env";
+import {
+  apiVersion,
+  canonicalStudioUrl,
+  dataset,
+  isSanityConfigured,
+  projectId,
+  useCdn,
+} from "./env";
 
 const baseConfig = {
   projectId,
@@ -8,6 +15,9 @@ const baseConfig = {
   apiVersion,
   useCdn,
 };
+
+const viewerToken =
+  process.env.SANITY_API_READ_TOKEN || process.env.SANITY_API_VIEWER_TOKEN || process.env.SANITY_API_WRITE_TOKEN;
 
 export const sanityClient = isSanityConfigured() ? createClient(baseConfig) : null;
 
@@ -21,3 +31,25 @@ export const sanityWriteClient =
     : null;
 
 export const sanityServerClient = sanityWriteClient || sanityClient;
+
+export function getSanityServerClient({ preview = false, stega = preview } = {}) {
+  if (!isSanityConfigured()) {
+    return null;
+  }
+
+  return createClient({
+    ...baseConfig,
+    token: preview ? viewerToken : undefined,
+    useCdn: preview ? false : useCdn,
+    perspective: preview ? "drafts" : "published",
+    stega: stega
+      ? {
+          studioUrl: canonicalStudioUrl,
+        }
+      : false,
+  });
+}
+
+export function hasSanityViewerToken() {
+  return Boolean(viewerToken);
+}

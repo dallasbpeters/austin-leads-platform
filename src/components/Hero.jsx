@@ -24,16 +24,35 @@ export default function Hero({ heroSection = null }) {
         alt: getImageAlt(item?.imageAsset, item?.image, item?.title || ''),
       }))
       .filter((image) => image.src),
-  ].filter((image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index)
+  ].filter(
+    (image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index,
+  )
   const hasRotatingHeroImages = rotatingHeroImages.length > 0
 
   return (
     <section className="radial-grid-bg type-accent text-color-body relative h-[80vh] overflow-x-hidden">
       {hasRotatingHeroImages ? (
-        <ImageFader borderRadius="0" images={rotatingHeroImages} interval={10000} fadeDuration={1200} overlayStyle={overlayStyle} showOverlay={Boolean(overlayStyle)} showDots={false} objectPosition="center" className="absolute inset-0 z-0 min-h-[80vh]" imageClassName="object-top" backgroundColor={'#000000'} />
+        <ImageFader
+          borderRadius="0"
+          images={rotatingHeroImages}
+          interval={10000}
+          fadeDuration={1200}
+          overlayStyle={overlayStyle}
+          showOverlay={Boolean(overlayStyle)}
+          showDots={false}
+          objectPosition="center"
+          className="absolute inset-0 z-0 min-h-[80vh]"
+          imageClassName="object-top"
+          backgroundColor={'#000000'}
+        />
       ) : (
         <>
-          <Image src="/assets/hero-bg.png" alt="" fill className="absolute inset-0 z-0 object-cover object-top opacity-10" />
+          <Image
+            src="/assets/hero-bg.png"
+            alt=""
+            fill
+            className="absolute inset-0 z-0 object-cover object-top opacity-10"
+          />
           {overlayStyle ? <div className="absolute inset-0 z-10" style={overlayStyle} /> : null}
         </>
       )}
@@ -45,21 +64,26 @@ export default function Hero({ heroSection = null }) {
                 <span className="bg-color-primary-300 absolute inset-0 animate-ping rounded-full opacity-75"></span>
                 <span className="bg-color-primary relative h-3 w-3 rounded-full"></span>
               </div>
-              <span className="text-[12px] font-bold uppercase tracking-[0.4em]" style={{ color: heroTextColor || 'var(--color-primary)' }}>
+              <span
+                className="text-[12px] font-bold tracking-[0.4em] uppercase"
+                style={{ color: heroTextColor || 'var(--color-primary)' }}
+              >
                 Texas roofing and solar guidance for homeowners
               </span>
             </div>
 
-            <h1 className="type-display mb-10 text-[clamp(4.5rem,12vw,10rem)] tracking-[-0.04em] text-black" style={heroTextColor ? { color: heroTextColor } : undefined}>
-              Roofing.
-              <br />
+            <h1
+              className="type-display -leading-1 mb-10 text-[clamp(4.5rem,12vw,10rem)] tracking-[-0.04em] text-black"
+              style={heroTextColor ? { color: heroTextColor } : undefined}
+            >
+              Texas Solar
               <span
                 className="text-transparent [-webkit-text-stroke-width:1px]"
                 style={{
                   WebkitTextStrokeColor: heroTextColor || 'black',
                 }}
               >
-                Solar.
+                & Roofing Pros.
               </span>
             </h1>
 
@@ -71,10 +95,16 @@ export default function Hero({ heroSection = null }) {
               <div className="flex items-center gap-6">
                 <div className="hidden h-12 w-px bg-white/10 md:block"></div>
                 <div>
-                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: softTextColor || 'var(--color-slate-500)' }}>
+                  <span
+                    className="mb-1 block text-[10px] font-bold tracking-[0.2em] uppercase"
+                    style={{ color: softTextColor || 'var(--color-slate-500)' }}
+                  >
                     We'll help you understand
                   </span>
-                  <span className="block text-sm font-medium" style={{ color: heroTextColor || 'var(--color-slate-800)' }}>
+                  <span
+                    className="block text-sm font-medium"
+                    style={{ color: heroTextColor || 'var(--color-slate-800)' }}
+                  >
                     Hail damage, roof replacement, insurance options, and solar savings
                   </span>
                 </div>
@@ -95,8 +125,12 @@ export default function Hero({ heroSection = null }) {
                   : undefined
               }
             >
-              <p className="m-0 text-lg font-light leading-7" style={{ color: heroTextColor || 'var(--color-text-strong)' }}>
-                Clear answers on hail and storm damage, roof repairs, dealing with your insurance company, and whether solar works for your Texas home.
+              <p
+                className="m-0 text-lg leading-7 font-light"
+                style={{ color: heroTextColor || 'var(--color-text-strong)' }}
+              >
+                Clear answers on hail and storm damage, roof repairs, dealing with your insurance company, and
+                whether solar works for your Texas home.
               </p>
               <div className="mt-6 flex gap-2">
                 <div className="bg-color-primary h-1 w-8 rounded-full"></div>

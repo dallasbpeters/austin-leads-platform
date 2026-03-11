@@ -8,7 +8,11 @@
     "start": "next start",
     "seed:guides": "node --env-file=.env.local scripts/seed-guides.mjs",
     "db:setup": "node --env-file=.env.local scripts/setup-neon.mjs",
-    "sanity:repair-sections": "node --env-file=.env.local scripts/repair-section-types.mjs"
+    "sanity:repair-sections": "node --env-file=.env.local scripts/repair-section-types.mjs",
+    "generate:favicons": "node scripts/generate-favicons.mjs",
+    "generate:service-images": "node scripts/generate-service-images.mjs",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "keywords": [],
   "author": "",
@@ -42,6 +46,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.1",
+    "png-to-ico": "^3.0.1",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.1"
   }

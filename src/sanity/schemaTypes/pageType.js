@@ -1,5 +1,6 @@
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
+const hideUnlessHomepage = ({ document }) => document?.pageType !== 'home'
 
 const heroImageUrlsType = {
   name: 'heroImageUrls',
@@ -204,7 +205,24 @@ const pageItemType = {
       name: 'icon',
       title: 'Icon',
       type: 'string',
-      options: canvasPurpose('Optional icon key such as hail, roofing, home, or solar.'),
+      options: {
+        list: [
+          { title: 'Hail / Storm', value: 'hail' },
+          { title: 'Roofing', value: 'roofing' },
+          { title: 'Home', value: 'home' },
+          { title: 'Solar', value: 'solar' },
+          { title: 'Sunlight', value: 'sunlight' },
+          { title: 'Thunderstorm', value: 'thunderstorm' },
+          { title: 'Energy Audit', value: 'audit' },
+          { title: 'Insulation / Air Sealing', value: 'insulation' },
+          { title: 'Ducts / HVAC Airflow', value: 'ducts' },
+          { title: 'Windows', value: 'windows' },
+          { title: 'Heat Pump / HVAC', value: 'heatpump' },
+          { title: 'Solar + Battery', value: 'solarbattery' },
+        ],
+        layout: 'dropdown',
+        ...canvasPurpose('Select the icon that best matches this card or item.'),
+      },
     },
     {
       name: 'image',
@@ -389,7 +407,9 @@ const genericSectionFields = [
     name: 'items',
     title: 'Items',
     type: 'array',
-    options: canvasPurpose('Repeatable content items like cards, FAQs, or supporting bullets for the section.'),
+    options: canvasPurpose(
+      'Repeatable content items like cards, FAQs, or supporting bullets for the section.',
+    ),
     of: [{ type: 'pageItem' }],
   },
   {
@@ -409,11 +429,26 @@ const genericSectionFields = [
 const heroSpecificFields = [
   { name: 'heroTextColor', title: 'Hero text color', type: 'string', options: canvasExclude },
   { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'string', options: canvasExclude },
-  { name: 'heroOverlayStartColor', title: 'Hero overlay start color', type: 'string', options: canvasExclude },
+  {
+    name: 'heroOverlayStartColor',
+    title: 'Hero overlay start color',
+    type: 'string',
+    options: canvasExclude,
+  },
   { name: 'heroOverlayEndColor', title: 'Hero overlay end color', type: 'string', options: canvasExclude },
   { name: 'heroOverlayDirection', title: 'Hero overlay direction', type: 'string', options: canvasExclude },
-  { name: 'heroOverlayStartOpacity', title: 'Hero overlay start opacity', type: 'number', options: canvasExclude },
-  { name: 'heroOverlayEndOpacity', title: 'Hero overlay end opacity', type: 'number', options: canvasExclude },
+  {
+    name: 'heroOverlayStartOpacity',
+    title: 'Hero overlay start opacity',
+    type: 'number',
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayEndOpacity',
+    title: 'Hero overlay end opacity',
+    type: 'number',
+    options: canvasExclude,
+  },
   { name: 'heroOverlayOpacity', title: 'Hero overlay opacity', type: 'number', options: canvasExclude },
   { name: 'heroImage', title: 'Hero image', type: 'heroImage', options: canvasExclude },
   { name: 'heroAsset', title: 'Uploaded hero image', type: 'uploadedImage', options: canvasExclude },
@@ -515,10 +550,119 @@ const baseFields = [
     validation: (Rule) => Rule.required(),
   },
   {
+    name: 'heroEyebrow',
+    title: 'Hero Eyebrow',
+    type: 'string',
+    hidden: hideUnlessHomepage,
+    options: canvasPurpose('Short kicker text above the homepage hero headline.'),
+  },
+  {
+    name: 'heroTitle',
+    title: 'Hero Title',
+    type: 'string',
+    hidden: hideUnlessHomepage,
+    options: canvasPurpose('Main homepage hero headline.'),
+  },
+  {
+    name: 'heroBody',
+    title: 'Hero Body',
+    type: 'text',
+    hidden: hideUnlessHomepage,
+    options: canvasPurpose('Supporting copy under the homepage hero headline.'),
+  },
+  {
+    name: 'heroTextColor',
+    title: 'Hero Text Color',
+    type: 'string',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayColor',
+    title: 'Hero Overlay Color',
+    type: 'string',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayStartColor',
+    title: 'Hero Overlay Start Color',
+    type: 'string',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayEndColor',
+    title: 'Hero Overlay End Color',
+    type: 'string',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayDirection',
+    title: 'Hero Overlay Direction',
+    type: 'string',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayStartOpacity',
+    title: 'Hero Overlay Start Opacity',
+    type: 'number',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayEndOpacity',
+    title: 'Hero Overlay End Opacity',
+    type: 'number',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayOpacity',
+    title: 'Hero Overlay Opacity',
+    type: 'number',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroAsset',
+    title: 'Uploaded Hero Image',
+    type: 'uploadedImage',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroImage',
+    title: 'External Hero Image',
+    type: 'heroImage',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
+  },
+  {
+    name: 'heroMetrics',
+    title: 'Hero Metrics',
+    type: 'array',
+    hidden: hideUnlessHomepage,
+    of: [{ type: 'pageMetric' }],
+    options: canvasPurpose('Short proof-point pairs shown in the homepage hero panel.'),
+  },
+  {
+    name: 'heroActions',
+    title: 'Hero Actions',
+    type: 'array',
+    hidden: hideUnlessHomepage,
+    of: [{ type: 'pageAction' }],
+    options: canvasPurpose('Buttons or links shown in the homepage hero.'),
+  },
+  {
     name: 'sections',
     title: 'Sections',
     type: 'array',
-    options: canvasPurpose('Structured page sections. Map headings, body copy, calls to action, proof points, and FAQ items into the relevant section.'),
+    options: canvasPurpose(
+      'Structured page sections. Map headings, body copy, calls to action, proof points, and FAQ items into the relevant section.',
+    ),
     of: [{ type: 'heroSection' }, { type: 'resourceGridSection' }, { type: 'pageSection' }],
   },
 ]
@@ -563,11 +707,24 @@ const pageDocuments = [
     type: 'document',
     options: {
       canvasApp: {
-        purpose: 'Editorial or blog content for a domain, including guides, comparisons, and educational posts.',
+        purpose:
+          'Editorial or blog content for a domain, including guides, comparisons, and educational posts.',
       },
     },
     fields: baseFields,
   },
 ]
 
-export default [heroImageUrlsType, heroImageType, uploadedImageType, pageMetricType, pageActionType, pageItemType, resourceCardType, heroSectionType, resourceGridSectionType, pageSectionType, ...pageDocuments]
+export default [
+  heroImageUrlsType,
+  heroImageType,
+  uploadedImageType,
+  pageMetricType,
+  pageActionType,
+  pageItemType,
+  resourceCardType,
+  heroSectionType,
+  resourceGridSectionType,
+  pageSectionType,
+  ...pageDocuments,
+]

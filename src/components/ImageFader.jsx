@@ -81,11 +81,11 @@ export default function ImageFader({
           key={index}
           src={cur.src}
           alt={cur.alt ?? ''}
-          loading="eager"
+          loading="lazy"
           decoding="async"
-          initial={{ opacity: 0.3 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0.3 }}
+          initial={{ opacity: 0.5, blur: 10 }}
+          animate={{ opacity: 1, blur: 0 }}
+          exit={{ opacity: 0.5, blur: 10 }}
           transition={{ duration: fadeSec, ease: 'linear' }}
           style={{
             position: 'absolute',
@@ -97,7 +97,7 @@ export default function ImageFader({
             borderRadius,
             pointerEvents: 'none',
             backgroundColor: backgroundColor,
-            willChange: 'opacity',
+            willChange: 'opacity, filter',
           }}
           className={cn(imageClassName)}
           draggable={false}
@@ -114,7 +114,11 @@ export default function ImageFader({
             width: '100%',
             height: '100%',
             pointerEvents: 'none',
-            background: overlayStyle?.backgroundImage ? undefined : useGradient ? `linear-gradient(to bottom, transparent 0%, ${overlayColor} 80%)` : overlayColor,
+            background: overlayStyle?.backgroundImage
+              ? undefined
+              : useGradient
+                ? `linear-gradient(to bottom, transparent 0%, ${overlayColor} 80%)`
+                : overlayColor,
             backdropFilter: overlayBlur > 0 ? `blur(${overlayBlur}px)` : undefined,
             borderRadius,
             zIndex: 2,

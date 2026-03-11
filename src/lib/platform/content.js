@@ -1,7 +1,7 @@
-import { headers } from "next/headers";
+import { draftMode, headers } from "next/headers";
 import { groq } from "next-sanity";
 
-import { sanityServerClient, sanityWriteClient } from "@/sanity/client";
+import { getSanityServerClient, sanityWriteClient } from "@/sanity/client";
 import { pages, sites } from "./fixtures";
 import { defaultLaunchChecklist } from "./launchChecklist";
 import { hasImageSource } from "./imageSource";
@@ -69,6 +69,58 @@ const sectionProjection = `
   ctaHref
 `;
 
+async function getSanityReadContext({ stega = true } = {}) {
+  const { isEnabled } = await draftMode();
+  const client = getSanityServerClient({ preview: isEnabled, stega: isEnabled && stega });
+
+  return {
+    client,
+    isDraft: isEnabled,
+    fetchOptions: isEnabled ? { cache: "no-store" } : { next: { revalidate: 60 } },
+  };
+}
+
+function buildHomepageHeroSection(page) {
+  if (!page) {
+    return null;
+  }
+
+  const sectionHero = page.sections?.find((section) => section.type === 'hero') ?? null;
+  const hasFlatHeroContent =
+    page.heroEyebrow ||
+    page.heroTitle ||
+    page.heroBody ||
+    hasImageSource(page.heroAsset, page.heroImage) ||
+    (page.heroMetrics?.length ?? 0) > 0 ||
+    (page.heroActions?.length ?? 0) > 0;
+
+  if (!hasFlatHeroContent) {
+    return sectionHero;
+  }
+
+  return {
+    ...(sectionHero || {}),
+    _type: 'heroSection',
+    type: 'hero',
+    eyebrow: page.heroEyebrow ?? sectionHero?.eyebrow ?? null,
+    title: page.heroTitle ?? sectionHero?.title ?? page.title ?? null,
+    body: page.heroBody ?? sectionHero?.body ?? page.description ?? null,
+    heroTextColor: page.heroTextColor ?? sectionHero?.heroTextColor ?? null,
+    heroOverlayColor: page.heroOverlayColor ?? sectionHero?.heroOverlayColor ?? null,
+    heroOverlayStartColor: page.heroOverlayStartColor ?? sectionHero?.heroOverlayStartColor ?? null,
+    heroOverlayEndColor: page.heroOverlayEndColor ?? sectionHero?.heroOverlayEndColor ?? null,
+    heroOverlayDirection: page.heroOverlayDirection ?? sectionHero?.heroOverlayDirection ?? null,
+    heroOverlayStartOpacity:
+      page.heroOverlayStartOpacity ?? sectionHero?.heroOverlayStartOpacity ?? null,
+    heroOverlayEndOpacity: page.heroOverlayEndOpacity ?? sectionHero?.heroOverlayEndOpacity ?? null,
+    heroOverlayOpacity: page.heroOverlayOpacity ?? sectionHero?.heroOverlayOpacity ?? null,
+    heroAsset: page.heroAsset ?? sectionHero?.heroAsset ?? null,
+    heroImage: page.heroImage ?? sectionHero?.heroImage ?? null,
+    metrics: page.heroMetrics ?? sectionHero?.metrics ?? [],
+    actions: page.heroActions ?? sectionHero?.actions ?? [],
+  };
+}
+
 function normalizeHost(host) {
   return (host || "").replace(/^https?:\/\//, "").replace(/:\d+$/, "").toLowerCase();
 }
@@ -106,12 +158,14 @@ export function getSiteBySlug(siteSlug) {
 export async function resolveSiteBySlug(siteSlug) {
   const localSite = getSiteBySlug(siteSlug);
 
-  if (!sanityServerClient) {
+  const { client, fetchOptions } = await getSanityReadContext({ stega: false });
+
+  if (!client) {
     return localSite;
   }
 
   try {
-    const site = await sanityServerClient.fetch(
+    const site = await client.fetch(
       groq`*[_type == "site" && slug.current == $siteSlug][0]{
         _id,
         "id": _id,
@@ -130,7 +184,7 @@ export async function resolveSiteBySlug(siteSlug) {
         organization
       }`,
       { siteSlug },
-      { cache: "no-store" },
+      fetchOptions,
     );
 
     return site ?? localSite ?? null;
@@ -179,7 +233,7 @@ function toHeroPageRecord(page, site) {
       primaryDomain: site.primaryDomain,
       tier: site.tier,
     },
-    heroSection: page.sections?.find((section) => section.type === "hero") ?? null,
+    heroSection: buildHomepageHeroSection(page),
   };
 }
 
@@ -214,12 +268,14 @@ export async function resolveSiteByHost(host) {
         (normalizedHost.endsWith(".vercel.app") && site.slug === "texas-solar-and-roofing-pros"),
     ) ?? null;
 
-  if (!sanityServerClient) {
+  const { client, fetchOptions } = await getSanityReadContext({ stega: false });
+
+  if (!client) {
     return localSite ?? getSiteBySlug("texas-solar-and-roofing-pros");
   }
 
   try {
-    const site = await sanityServerClient.fetch(
+    const site = await client.fetch(
       groq`*[_type == "site" && ($host == primaryDomain || $host in aliases)][0]{
         _id,
         "id": _id,
@@ -238,7 +294,7 @@ export async function resolveSiteByHost(host) {
         organization
       }`,
       { host: normalizedHost },
-      { next: { revalidate: 60 } },
+      fetchOptions,
     );
 
     return site ?? localSite ?? getSiteBySlug("texas-solar-and-roofing-pros");
@@ -257,13 +313,15 @@ export async function resolveCurrentSite() {
 export async function getPageForRequest(site, slugParts = []) {
   const localPage = getPageForSite(site.slug, slugParts);
 
-  if (!sanityServerClient) {
+  const { client, fetchOptions } = await getSanityReadContext();
+
+  if (!client) {
     return localPage;
   }
 
   try {
     const siteSlugs = getEquivalentSiteSlugs(site.slug);
-    const page = await sanityServerClient.fetch(
+    const page = await client.fetch(
       groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
         _id,
         "id": _id,
@@ -273,18 +331,49 @@ export async function getPageForRequest(site, slugParts = []) {
         pageType,
         templateLevel,
         "slug": slug.current,
+        heroEyebrow,
+        heroTitle,
+        heroBody,
+        heroTextColor,
+        heroOverlayColor,
+        heroOverlayStartColor,
+        heroOverlayEndColor,
+        heroOverlayDirection,
+        heroOverlayStartOpacity,
+        heroOverlayEndOpacity,
+        heroOverlayOpacity,
+        heroImage,
+        heroAsset{
+          alt,
+          asset->{
+            url,
+            metadata{
+              dimensions{
+                width,
+                height
+              }
+            }
+          }
+        },
+        heroMetrics,
+        heroActions[]{
+          label,
+          href,
+          variant
+        },
         sections[]{
           ${sectionProjection}
         }
       }`,
       { siteSlugs, slug: getPageKey(slugParts) || "/" },
-      { cache: "no-store" },
+      fetchOptions,
     );
 
     if (page) {
       return {
         ...page,
         slug: page.slug === "/" ? "" : page.slug,
+        heroSection: buildHomepageHeroSection(page),
       };
     }
   } catch {}
@@ -302,13 +391,15 @@ export async function getSitemapEntriesForSite(site) {
       updatedAt: null,
     }));
 
-  if (!sanityServerClient) {
+  const { client } = await getSanityReadContext({ stega: false });
+
+  if (!client) {
     return localEntries;
   }
 
   try {
     const siteSlugs = getEquivalentSiteSlugs(site.slug);
-    const entries = await sanityServerClient.fetch(
+    const entries = await client.fetch(
       groq`*[
         _type in ["page", "servicePage", "locationPage", "post"] &&
         site->slug.current in $siteSlugs &&
@@ -355,12 +446,14 @@ export async function getHeroPages() {
     .map((page) => toHeroPageRecord(page, getSiteBySlug(page.siteSlug)))
     .filter(Boolean);
 
-  if (!sanityServerClient) {
+  const { client } = await getSanityReadContext();
+
+  if (!client) {
     return localHeroPages;
   }
 
   try {
-    const heroPages = await sanityServerClient.fetch(
+    const heroPages = await client.fetch(
       groq`*[
         _type in ["page", "servicePage", "locationPage"] &&
         templateLevel == "hero" &&
@@ -373,6 +466,36 @@ export async function getHeroPages() {
         pageType,
         templateLevel,
         "slug": select(slug.current == "/" => "", slug.current),
+        heroEyebrow,
+        heroTitle,
+        heroBody,
+        heroTextColor,
+        heroOverlayColor,
+        heroOverlayStartColor,
+        heroOverlayEndColor,
+        heroOverlayDirection,
+        heroOverlayStartOpacity,
+        heroOverlayEndOpacity,
+        heroOverlayOpacity,
+        heroImage,
+        heroAsset{
+          alt,
+          asset->{
+            url,
+            metadata{
+              dimensions{
+                width,
+                height
+              }
+            }
+          }
+        },
+        heroMetrics,
+        heroActions[]{
+          label,
+          href,
+          variant
+        },
         site->{
           _id,
           "id": _id,
@@ -381,7 +504,7 @@ export async function getHeroPages() {
           primaryDomain,
           tier
         },
-        "heroSection": sections[type == "hero"][0]{
+        sections[]{
           ${sectionProjection}
         }
       }`,
@@ -389,7 +512,12 @@ export async function getHeroPages() {
       { cache: "no-store" },
     );
 
-    return Array.isArray(heroPages) ? heroPages : localHeroPages;
+    return Array.isArray(heroPages)
+      ? heroPages.map((page) => ({
+          ...page,
+          heroSection: buildHomepageHeroSection(page),
+        }))
+      : localHeroPages;
   } catch {
     return localHeroPages;
   }
@@ -406,12 +534,14 @@ export async function getPageBySlug(siteSlug, slug) {
 }
 
 export async function getLaunchChecklist() {
-  if (!sanityServerClient) {
+  const { client } = await getSanityReadContext({ stega: false });
+
+  if (!client) {
     return defaultLaunchChecklist;
   }
 
   try {
-    const checklist = await sanityServerClient.fetch(
+    const checklist = await client.fetch(
       groq`*[_type == "launchChecklist"] | order(_updatedAt desc)[0]{
         _id,
         title,
@@ -490,12 +620,14 @@ export async function getHeroSitesForAdmin() {
     source: "fixture",
   }));
 
-  if (!sanityServerClient) {
+  const { client } = await getSanityReadContext({ stega: false });
+
+  if (!client) {
     return localHeroSites;
   }
 
   try {
-    const heroSites = await sanityServerClient.fetch(
+    const heroSites = await client.fetch(
       groq`*[_type == "site" && tier == "hero"] | order(name asc) {
         _id,
         "id": _id,
