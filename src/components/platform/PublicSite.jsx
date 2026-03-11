@@ -2,12 +2,15 @@ import Link from 'next/link'
 
 import Footer from '@/components/Footer'
 import GuideCardGrid from '@/components/GuideCardGrid'
+import { GuideCard } from '@/components/GuideCardGrid'
+import HailWeatherLookup from '@/components/HailWeatherLookup'
 import Header from '@/components/Header'
+import LeadCaptureForm from '@/components/LeadCaptureForm'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
+import { isPrimarySiteSlug } from '@/lib/platform/content'
 import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 
 function HeroSection({ page, section }) {
@@ -125,7 +128,7 @@ function CardGridSection({ section }) {
 }
 
 function GuideGridSection({ section }) {
-  const palette = ['bg-[var(--site-primary)] text-white', 'bg-[var(--color-amber-400)] text-white', 'bg-blue-400 text-white', 'bg-[var(--site-secondary)] text-white', 'bg-blue-200 text-foreground', 'bg-[var(--color-amber-400)] text-white']
+  const palette = ['bg-color-secondary-700 text-white', 'bg-[var(--color-secondary-alt)] text-white', 'bg-blue-400 text-white', 'bg-[var(--site-secondary)] text-white', 'bg-blue-200 text-foreground', 'bg-[var(--color-secondary-alt)] text-white']
 
   const cards = (section.items || []).slice(0, 6).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
@@ -141,6 +144,35 @@ function GuideGridSection({ section }) {
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="mb-8 max-w-3xl">
           <h2 className="text-3xl text-foreground md:text-4xl">{section.title}</h2>
+        </div>
+        <GuideCardGrid cards={cards} columnsClassName="md:grid-cols-2 xl:grid-cols-3" palette={palette} />
+      </div>
+    </section>
+  )
+}
+
+function ServiceGridSection({ section }) {
+  const palette = ['bg-blue-200 text-foreground', 'bg-primary text-primary-foreground', 'bg-[var(--color-secondary-alt)] text-white', 'bg-blue-400 text-white', 'bg-[var(--site-secondary)] text-white', 'bg-blue-200 text-foreground']
+  const cards = (section.items || []).slice(0, 6).map((item, index) => ({
+    number: item.number || String(index + 1).padStart(2, '0'),
+    title: item.title || item.question,
+    copy: item.body || item.answer,
+    href: item.href,
+    image: getImageUrl(item.imageAsset, item.image),
+    imageAlt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
+    ctaLabel: item.eyebrow,
+  }))
+  return (
+    <section className="border-b border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))]">
+      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+        <div className="mb-10 max-w-3xl">
+          {section.eyebrow ? (
+            <Badge variant="outline" className="border-primary/20 bg-primary/5 text-foreground">
+              {section.eyebrow}
+            </Badge>
+          ) : null}
+          <h2 className="mt-5 text-3xl tracking-tight text-foreground md:text-4xl">{section.title}</h2>
+          {section.body ? <p className="mt-4 text-base leading-8 text-muted-foreground">{section.body}</p> : null}
         </div>
         <GuideCardGrid cards={cards} columnsClassName="md:grid-cols-2 xl:grid-cols-3" palette={palette} />
       </div>
@@ -193,6 +225,16 @@ function FaqSection({ section }) {
   )
 }
 
+function HailMapSection({ section }) {
+  return (
+    <section className="border-b border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,244,239,0.98))]">
+      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+        <HailWeatherLookup section={section} />
+      </div>
+    </section>
+  )
+}
+
 function CtaSection({ section }) {
   return (
     <section className="bg-secondary py-20 text-secondary-foreground">
@@ -212,7 +254,21 @@ function CtaSection({ section }) {
   )
 }
 
-function CtaBannerSection({ section }) {
+function CtaBannerSection({ page, section, site }) {
+  const leadContext = {
+    sourceType: 'cross-lead',
+    sourceSection: 'cta-banner',
+    serviceInterest: 'roofing',
+    siteSlug: site?.slug || 'texas-solar-and-roofing-pros',
+    siteName: site?.name || 'Texas Solar and Roofing Pros',
+    sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
+    pagePath: page?.slug ? `/${page.slug}` : '/',
+    pageTitle: page?.title || section?.title || 'Guide CTA',
+    metadata: {
+      entryPoint: 'guide-cta-banner',
+    },
+  }
+
   return (
     <section className="border-b border-border/60 bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white">
       <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
@@ -226,14 +282,7 @@ function CtaBannerSection({ section }) {
             <CardTitle className="text-xl text-white">Get matched with a roofing pro</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="grid gap-4">
-              <Input className="border-white/16 bg-white/6 text-white placeholder:text-white/48" placeholder="Full name" type="text" />
-              <Input className="border-white/16 bg-white/6 text-white placeholder:text-white/48" placeholder="Email address" type="email" />
-              <Input className="border-white/16 bg-white/6 text-white placeholder:text-white/48" placeholder="Phone number" type="tel" />
-              <Button className="mt-2" size="lg" type="button">
-                {section.ctaLabel || 'Request a roofing intro'}
-              </Button>
-            </form>
+            <LeadCaptureForm context={leadContext} compact buttonLabel={section.ctaLabel || 'Request a roofing intro'} className="grid gap-4" inputClassName="rounded-md border border-white/16 bg-white/6 px-3 py-2 text-white placeholder:text-white/48" labelClassName="text-white/70" checkboxClassName="accent-white" messageClassName="text-left" />
           </CardContent>
         </Card>
       </div>
@@ -246,14 +295,16 @@ const sectionRenderers = {
   story: StorySection,
   highlights: CardGridSection,
   guideGrid: GuideGridSection,
+  serviceGrid: ServiceGridSection,
   faq: FaqSection,
+  hailMap: HailMapSection,
   steps: StepsSection,
   cta: CtaSection,
   ctaBanner: CtaBannerSection,
 }
 
 export default function PublicSite({ site, page, pathname, navigation, jsonLd }) {
-  const useSolarShell = site.slug === 'austin-solar-pros'
+  const useSolarShell = isPrimarySiteSlug(site.slug)
   const style = {
     '--site-primary': site.brand?.primary || 'var(--color-primary)',
     '--site-secondary': site.brand?.secondary || 'var(--color-secondary)',
@@ -300,7 +351,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
             return null
           }
 
-          return <Component key={`${section.type}-${index}`} page={page} section={section} pathname={pathname} />
+          return <Component key={`${section.type}-${index}`} page={page} section={section} site={site} pathname={pathname} />
         })}
       </main>
 

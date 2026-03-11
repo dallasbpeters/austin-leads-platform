@@ -1,6 +1,7 @@
 import { getSolarGuideGridItems, getSolarGuidePages } from "./guides.js";
 
 const categories = {
+  solarRoofing: "Solar + Roofing",
   solar: "Solar",
   roofing: "Roofing",
   weddings: "Weddings",
@@ -14,6 +15,13 @@ const tierMap = {
 };
 
 const brandByCategory = {
+  solarRoofing: {
+    primary: "hsl(16 82% 62%)",
+    secondary: "hsl(204 42% 13%)",
+    accent: "hsl(190 58% 61%)",
+    surface: "hsl(24 44% 97%)",
+    heroTone: "dark",
+  },
   solar: {
     primary: "hsl(14 88% 65%)",
     secondary: "hsl(190 61% 15%)",
@@ -45,11 +53,12 @@ const brandByCategory = {
 };
 
 const portfolioDomains = [
-  { domain: "austinsolarpros.com", seoScore: 100, tier: "Hero", category: "solar", slug: "austin-solar-pros" },
+  { domain: "texassolarandroofingpros.com", name: "Texas Solar and Roofing Pros", seoScore: 100, tier: "Hero", category: "solarRoofing", slug: "texas-solar-and-roofing-pros" },
   { domain: "austinweddingvendors.com", seoScore: 100, tier: "Hero", category: "weddings", slug: "austin-wedding-vendors" },
   { domain: "roofprosofaustin.com", seoScore: 100, tier: "Hero", category: "roofing", slug: "roof-pros-of-austin" },
   { domain: "solarpanelsatx.com", seoScore: 100, tier: "Hero", category: "solar", slug: "solar-panels-atx" },
   { domain: "austinsolarsolutions.com", seoScore: 100, tier: "Hero", category: "solar", slug: "austin-solar-solutions" },
+  { domain: "austinsolarpros.com", seoScore: 10, tier: "Redirect", category: "solarRoofing", slug: "austin-solar-pros" },
   { domain: "austinsolarhomes.com", seoScore: 40, tier: "Mid", category: "solar", slug: "austin-solar-homes" },
   { domain: "austinweddingsandevents.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "austin-weddings-and-events" },
   { domain: "sanantonioweddingplanners.com", seoScore: 40, tier: "Mid", category: "weddings", slug: "san-antonio-wedding-planners" },
@@ -79,10 +88,11 @@ const portfolioDomains = [
 ];
 
 const redirectTargetByCategory = {
-  solar: "austin-solar-pros",
-  roofing: "roof-pros-of-austin",
+  solarRoofing: "texas-solar-and-roofing-pros",
+  solar: "texas-solar-and-roofing-pros",
+  roofing: "texas-solar-and-roofing-pros",
   weddings: "austin-wedding-vendors",
-  homeServices: "austin-solar-pros",
+  homeServices: "texas-solar-and-roofing-pros",
 };
 
 function fallbackSlug(domain) {
@@ -102,9 +112,9 @@ function titleizeDomain(domain) {
     .join(" ");
 }
 
-function buildLeadForm(domain, categoryLabel) {
+function buildLeadForm(domain, categoryLabel, nameOverride) {
   return {
-    title: `Request information from ${titleizeDomain(domain)}`,
+    title: `Request information from ${nameOverride || titleizeDomain(domain)}`,
     description: `Capture high-intent ${categoryLabel.toLowerCase()} demand for ${domain}.`,
     ctaLabel: `Request ${categoryLabel.toLowerCase()} info`,
   };
@@ -114,7 +124,7 @@ export const sites = portfolioDomains.map((entry, index) => {
   const tier = tierMap[entry.tier];
   const brand = brandByCategory[entry.category];
   const slug = entry.slug || fallbackSlug(entry.domain);
-  const title = titleizeDomain(entry.domain);
+  const title = entry.name || titleizeDomain(entry.domain);
 
   return {
     id: `site-${slug}`,
@@ -127,11 +137,11 @@ export const sites = portfolioDomains.map((entry, index) => {
     seoScore: entry.seoScore,
     primaryDomain: entry.domain,
     aliases:
-      entry.domain === "austinsolarpros.com"
+      entry.domain === "texassolarandroofingpros.com"
         ? [`www.${entry.domain}`, "localhost", "127.0.0.1"]
         : [`www.${entry.domain}`],
     redirectTarget: tier === "redirect" ? redirectTargetByCategory[entry.category] : null,
-    leadForm: tier === "redirect" ? null : buildLeadForm(entry.domain, categories[entry.category]),
+    leadForm: tier === "redirect" ? null : buildLeadForm(entry.domain, categories[entry.category], title),
     seo: {
       title,
       description: `${title} is an owned ${entry.tier.toLowerCase()} domain in the Austin Leads platform portfolio.`,
@@ -194,24 +204,24 @@ const solarHomeSections = [
 export const pages = [
   {
     id: "page-solar-home",
-    siteSlug: "austin-solar-pros",
+    siteSlug: "texas-solar-and-roofing-pros",
     slug: "",
-    title: "Austin Solar Pros",
+    title: "Texas Solar and Roofing Pros",
     description:
-      "One hero site for Austin solar content, lead capture, incentives education, and AI-ready answers.",
+      "Texas Solar and Roofing Pros connects roofing, solar, insurance education, and lead capture in one primary service brand.",
     pageType: "home",
     templateLevel: "hero",
     sections: [
       {
         type: "hero",
-        eyebrow: "One platform, many domains",
-        title: "Build the Austin market from one shared engine instead of 31 disconnected sites.",
+        eyebrow: "Texas solar + roofing",
+        title: "One place to figure out the roof, the storm damage, and whether solar should come next.",
         body:
-          "Austin Solar Pros is the phase-1 hero site. It demonstrates the platform model: reusable templates, structured SEO, unique content per domain, and lead capture flows that can scale across the whole portfolio.",
+          "Texas Solar and Roofing Pros is now the primary service brand. The site needs to work as a real lead-gen business first: clarify roof condition, explain insurance and detach-and-reset issues, and route qualified solar and roofing leads to the right partner.",
         metrics: [
-          { label: "Portfolio size", value: "31 domains" },
-          { label: "Phase 1", value: "1 hero site" },
-          { label: "Routing model", value: "Host aware" },
+          { label: "Primary market", value: "Texas homeowners" },
+          { label: "Core services", value: "Roofing + solar" },
+          { label: "Lead flow", value: "Direct to info@" },
         ],
         actions: [
           { label: "Open dashboard", href: "/dashboard", variant: "default" },
@@ -285,7 +295,7 @@ export const pages = [
   },
   {
     id: "page-solar-costs",
-    siteSlug: "austin-solar-pros",
+    siteSlug: "texas-solar-and-roofing-pros",
     slug: "solar-costs",
     title: "Austin Solar Cost Guide",
     description: "A service page template for solar pricing, savings, and financing education.",
@@ -330,8 +340,292 @@ export const pages = [
     ],
   },
   {
+    id: "page-services",
+    siteSlug: "texas-solar-and-roofing-pros",
+    slug: "services",
+    title: "Services",
+    description: "Energy-saving home services, roofing support, and solar planning for Texas homeowners.",
+    pageType: "servicePage",
+    templateLevel: "hero",
+    sections: [
+      {
+        type: "hero",
+        eyebrow: "Our services",
+        title: "Lower your energy bills with the right improvements, not guesswork.",
+        body:
+          "We help homeowners sort through practical energy and home-upgrade decisions, from audits and efficiency work to roofing coordination, heat pump upgrades, and solar plus battery planning.",
+        metrics: [
+          { label: "Best for", value: "High bills + aging homes" },
+          { label: "Core focus", value: "Efficiency, roofing, solar" },
+          { label: "Next step", value: "Consultation" },
+        ],
+        actions: [
+          { label: "Request a consultation", href: "/#consultation", variant: "default" },
+          { label: "Explore solar guides", href: "/guides", variant: "secondary" },
+        ],
+      },
+      {
+        type: "story",
+        eyebrow: "How this page helps",
+        title: "Some homes need efficiency work first. Some need roof work. Some are ready for solar now.",
+        body:
+          "The right solution depends on what is driving the utility bill, what condition the home is in, and whether the next move should be weatherization, HVAC efficiency, roofing work, or a solar project. This page is meant to show the service categories clearly so you can start in the right place.",
+      },
+      {
+        type: "serviceGrid",
+        eyebrow: "Service categories",
+        title: "Our services",
+        body:
+          "The flyer covered the range. This page makes the categories clearer, gives each one more context, and points the homeowner toward the right conversation first.",
+        items: [
+          {
+            title: "Energy Audits",
+            eyebrow: "Find the waste first",
+            subtitleLabel: "Best when",
+            subtitleValue: "Bills are high but the cause is unclear",
+            body: "A home energy audit helps identify where the house is losing money through poor insulation, air leaks, duct problems, equipment inefficiency, or usage patterns that need to be understood before bigger upgrades are priced.",
+            image: {
+              urls: {
+                regular: "https://images.unsplash.com/photo-1581092921461-eab62e97a780?q=80&w=1600&auto=format&fit=crop",
+              },
+              alt: "Technician reviewing home energy performance data",
+            },
+          },
+          {
+            title: "Insulation and Air Sealing",
+            eyebrow: "Keep conditioned air inside",
+            subtitleLabel: "Best when",
+            subtitleValue: "Rooms run unevenly or HVAC runs too long",
+            body: "Poor insulation and untreated air leaks force heating and cooling systems to work harder than they should. Tightening the envelope can lower utility costs and make the house noticeably more comfortable.",
+            image: {
+              urls: {
+                regular: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1600&auto=format&fit=crop",
+              },
+              alt: "Home improvement crew working on exterior wall upgrades",
+            },
+          },
+          {
+            title: "Duct Sealing",
+            eyebrow: "Fix hidden HVAC losses",
+            subtitleLabel: "Best when",
+            subtitleValue: "Comfort is uneven or attic losses are likely",
+            body: "Leaky ducts waste conditioned air where you do not benefit from it. Sealing and correcting duct problems can improve system performance, room balance, and overall HVAC efficiency without jumping straight to equipment replacement.",
+            image: {
+              urls: {
+                regular: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=1600&auto=format&fit=crop",
+              },
+              alt: "HVAC technician servicing residential ductwork",
+            },
+          },
+          {
+            title: "Window Replacement",
+            eyebrow: "Reduce heat gain and loss",
+            subtitleLabel: "Best when",
+            subtitleValue: "Drafts, glare, and older windows are part of the problem",
+            body: "Window upgrades can improve comfort, reduce heat gain, and cut down on avoidable energy waste. They make the most sense when the existing windows are clearly contributing to comfort and efficiency issues.",
+            image: {
+              urls: {
+                regular: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1600&auto=format&fit=crop",
+              },
+              alt: "Modern residential window replacement detail",
+            },
+          },
+          {
+            title: "Heat Pump Upgrades",
+            eyebrow: "Modernize heating and cooling",
+            subtitleLabel: "Best when",
+            subtitleValue: "Existing HVAC is aging or inefficient",
+            body: "A heat pump upgrade can reduce operating cost and improve efficiency when the existing system is near the end of its life or no longer performing well. It should be evaluated as part of the whole-home energy picture, not in isolation.",
+            image: {
+              urls: {
+                regular: "https://images.unsplash.com/photo-1621905251918-48416bd8575a?q=80&w=1600&auto=format&fit=crop",
+              },
+              alt: "Technician installing efficient residential HVAC equipment",
+            },
+          },
+          {
+            title: "Solar and Battery Installations",
+            eyebrow: "Generate and store power",
+            subtitleLabel: "Best when",
+            subtitleValue: "The home is ready for a longer-term energy upgrade",
+            body: "Solar and battery projects make the most sense when the roof, electrical situation, and energy goals are understood clearly. The best projects do not start with hype. They start with whether the system fits the home and the numbers hold up.",
+            image: {
+              urls: {
+                regular: "https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop",
+              },
+              alt: "Modern home solar and battery system installation",
+            },
+          },
+        ],
+      },
+      {
+        type: "steps",
+        title: "How to choose the right starting point",
+        items: [
+          {
+            title: "Start with the problem you already know",
+            body: "If the issue is obvious storm damage, start there. If the problem is just high utility bills, start with the efficiency side before assuming solar is automatically the first move.",
+          },
+          {
+            title: "Separate immediate repair from long-term upgrade",
+            body: "Some projects are about fixing damage or performance now. Others are about improving the home over the next several years. Keeping those decisions separate makes the plan much cleaner.",
+          },
+          {
+            title: "Use the house condition to set the order",
+            body: "Roof condition, HVAC age, insulation gaps, and electrical limitations can change what should happen first and what should wait.",
+          },
+          {
+            title: "Then price the right solution",
+            body: "Once the real issue is clear, the quote process becomes much more useful because you are comparing options built around the actual home instead of a generic pitch.",
+          },
+        ],
+      },
+      {
+        type: "faq",
+        title: "Service questions homeowners ask first",
+        items: [
+          {
+            question: "Do I need solar, or do I need efficiency work first?",
+            answer: "That depends on what is driving the bill. In some homes, insulation, ducts, or HVAC issues should be addressed first. In others, the house is ready for solar right away. The useful first step is identifying which problem is actually costing you money.",
+          },
+          {
+            question: "Can roofing, efficiency, and solar all be part of the same plan?",
+            answer: "Yes, but they should not all be sold as one blurred package. The right sequence matters, and each part of the project should stand on its own with a clear reason for doing it.",
+          },
+          {
+            question: "Is this page only about solar?",
+            answer: "No. It is intentionally broader than a solar-only page because many homeowners need a mix of energy-saving upgrades, home-condition work, and solar planning rather than one isolated answer.",
+          },
+        ],
+      },
+      {
+        type: "cta",
+        title: "Tell us what the house is doing, and we’ll help you figure out the right place to start.",
+        body: "Whether the issue is storm damage, high bills, older equipment, or a solar project you want to plan carefully, the next step should be a clearer diagnosis, not a generic sales script.",
+        ctaLabel: "Request a consultation",
+        ctaHref: "/#consultation",
+      },
+    ],
+  },
+  {
+    id: "page-solar-lane",
+    siteSlug: "texas-solar-and-roofing-pros",
+    slug: "solar",
+    title: "Solar",
+    description: "A dedicated solar lane covering savings, incentives, system sizing, and whether solar makes sense for the home.",
+    pageType: "servicePage",
+    templateLevel: "hero",
+    sections: [
+      {
+        type: "hero",
+        eyebrow: "Solar lane",
+        title: "Use the solar lane when the question is savings, system fit, and long-term value.",
+        body:
+          "This part of the site is for homeowners comparing system size, electric bill savings, incentives, financing choices, and whether the numbers actually work for their home.",
+        metrics: [
+          { label: "Focus", value: "Savings + fit" },
+          { label: "Topics", value: "Cost, incentives, payoff" },
+          { label: "Best for", value: "Solar planning" },
+        ],
+      },
+      {
+        type: "highlights",
+        title: "What the solar lane should answer",
+        items: [
+          {
+            title: "System size and production",
+            body: "Show how roof layout, shade, usage, and goals affect the right system size instead of pretending every home wants the same design.",
+          },
+          {
+            title: "Cost and financing",
+            body: "Break out cash price, financed price, tax-credit assumptions, and realistic payback without dressing up the numbers.",
+          },
+          {
+            title: "Readiness questions",
+            body: "Help the homeowner decide whether they should keep researching, request a quote, or first solve a roof or electrical issue.",
+          },
+        ],
+      },
+      {
+        type: "faq",
+        title: "Solar questions",
+        items: [
+          {
+            question: "Can the solar lane stay separate from roofing?",
+            answer: "Yes. It should stand on its own for homeowners who are evaluating energy savings first, while still linking clearly to roofing pages where the roof condition changes the project.",
+          },
+          {
+            question: "What makes this more useful than a generic installer page?",
+            answer: "It should explain the assumptions behind savings, not just push a quote button. The best solar pages help a homeowner understand the math before they talk to anyone.",
+          },
+        ],
+      },
+      {
+        type: "cta",
+        title: "Use the guide library when you want a deeper solar answer.",
+        body: "The guide pages go deeper on costs, batteries, incentives, financing, and roof readiness when the quick service-page summary is not enough.",
+        ctaLabel: "Browse solar guides",
+        ctaHref: "/guides",
+      },
+    ],
+  },
+  {
+    id: "page-roofing-lane",
+    siteSlug: "texas-solar-and-roofing-pros",
+    slug: "roofing",
+    title: "Roofing",
+    description: "A dedicated roofing lane for hail damage, aging roofs, insurance friction, and roof replacement planning.",
+    pageType: "servicePage",
+    templateLevel: "hero",
+    sections: [
+      {
+        type: "hero",
+        eyebrow: "Roofing lane",
+        title: "Use the roofing lane when the problem is storm damage, claim timing, or the roof itself.",
+        body:
+          "This side of the site is for homeowners dealing with hail, older roofs, insurance friction, replacement timing, and the questions that need to be answered before any connected solar conversation makes sense.",
+        metrics: [
+          { label: "Focus", value: "Storm + roof condition" },
+          { label: "Topics", value: "Claims, RCV/ACV, replacement" },
+          { label: "Best for", value: "Roof triage" },
+        ],
+      },
+      {
+        type: "steps",
+        title: "What the roofing lane should help you do",
+        items: [
+          { title: "Figure out whether a storm is relevant", body: "Start with hail history, visible symptoms, and a roof inspection instead of guessing from one bad weather day." },
+          { title: "Understand the policy language", body: "RCV vs ACV, depreciation, age thresholds, and detach-and-reset implications can materially change the project economics." },
+          { title: "Separate claim urgency from sales pressure", body: "A useful roofing page should clarify decisions, not rush the homeowner into the wrong next step." },
+          { title: "Connect the roof back to solar only when appropriate", body: "If solar is part of the long-term plan, the roofing lane should explain when and how that overlap matters." },
+        ],
+      },
+      {
+        type: "faq",
+        title: "Roofing questions",
+        items: [
+          {
+            question: "Why separate roofing from solar in the site structure?",
+            answer: "Because the intent is different. A storm-damage or claim visitor needs roof-specific answers first. Solar can be connected later, but it should not hijack the first visit.",
+          },
+          {
+            question: "Should detach and reset live here or on solar pages?",
+            answer: "Both. It belongs in roofing because it often starts as a roof and insurance issue, and it belongs in solar because it affects total project planning and cost.",
+          },
+        ],
+      },
+      {
+        type: "cta",
+        title: "Start with the hail page when the question is storm damage.",
+        body: "That page should become the most practical local entry point for homeowners trying to figure out whether recent weather activity may have created a real roof issue.",
+        ctaLabel: "Open hail damage page",
+        ctaHref: "/hail-damage",
+      },
+    ],
+  },
+  {
     id: "page-solar-incentives",
-    siteSlug: "austin-solar-pros",
+    siteSlug: "texas-solar-and-roofing-pros",
     slug: "incentives",
     title: "Austin Solar Incentives",
     description: "A focused incentives page with policy-oriented FAQ content.",
@@ -376,24 +670,136 @@ export const pages = [
     ],
   },
   {
+    id: "page-about",
+    siteSlug: "texas-solar-and-roofing-pros",
+    slug: "about",
+    title: "About",
+    description: "About Texas Solar and Roofing Pros and how the lead-generation and referral workflow is intended to work.",
+    pageType: "page",
+    templateLevel: "hero",
+    sections: [
+      {
+        type: "hero",
+        eyebrow: "About the business",
+        title: "A lead-gen business for homeowners who need clearer next steps on roofing and solar.",
+        body:
+          "Texas Solar and Roofing Pros is being positioned as a service brand that helps homeowners sort out what they are dealing with and routes good-fit opportunities to the right operating partners.",
+        metrics: [
+          { label: "Model", value: "Lead generation" },
+          { label: "Focus", value: "Roofing + solar" },
+          { label: "Next step", value: "Direct consultation" },
+        ],
+      },
+      {
+        type: "story",
+        eyebrow: "Positioning",
+        title: "This site needs to feel credible, useful, and direct.",
+        body:
+          "The right about page should explain how the business thinks, what kinds of homeowner problems it helps clarify, and why the site covers both roofing and solar without pretending they are the same conversation.",
+      },
+      {
+        type: "highlights",
+        title: "What should live here over time",
+        items: [
+          { title: "Mission and values", body: "Explain the operating values and the practical homeowner-first posture of the brand." },
+          { title: "Credentials and partners", body: "Show certifications, training, and the operating companies that ultimately handle the field work." },
+          { title: "Lead routing clarity", body: "Make it obvious how inquiries are reviewed and where they go, so the business model does not feel hidden." },
+        ],
+      },
+    ],
+  },
+  {
+    id: "page-hail-damage",
+    siteSlug: "texas-solar-and-roofing-pros",
+    slug: "hail-damage",
+    title: "Hail Damage and Roof Claims",
+    description: "A dedicated Texas hail-damage page focused on storm timing, roof impact, claim language, and next-step inspections.",
+    pageType: "servicePage",
+    templateLevel: "hero",
+    sections: [
+      {
+        type: "hero",
+        eyebrow: "Roofing lane",
+        title: "Find out whether hail hit your area and what it may mean for your roof.",
+        body:
+          "This page is the homeowner entry point for recent storm activity, hail damage patterns, roof-inspection timing, and the insurance questions that usually follow.",
+        metrics: [
+          { label: "Primary intent", value: "Roofing" },
+          { label: "Focus", value: "Storm + claim triage" },
+          { label: "CTA", value: "Inspection request" },
+        ],
+      },
+      {
+        type: "hailMap",
+        title: "Hail in your area?",
+        body:
+          "Search by ZIP code, city, or current location to see active alerts, storm conditions, and whether this looks like a location worth documenting for a roof inspection.",
+        items: [
+          {
+            title: "Search by location",
+            body: "Check the neighborhood or ZIP code first, then compare the weather signal to what you are seeing on the roof, gutters, vents, and windows.",
+          },
+          {
+            title: "See claim-relevant context",
+            body: "Look for severe storm alerts, wind gusts, and rain intensity so the next conversation starts with timing and evidence instead of guesswork.",
+          },
+          {
+            title: "Convert quickly",
+            body: "If the weather signal and roof condition line up, move straight into a roof review request while the storm timeline is still fresh.",
+          },
+        ],
+        ctaLabel: "Request a roof review",
+        ctaHref: "#estimate",
+      },
+      {
+        type: "steps",
+        title: "What homeowners should do after a storm",
+        items: [
+          { title: "Document the timing", body: "Write down the storm date, neighborhood, and any obvious exterior damage before details get fuzzy." },
+          { title: "Check the policy type", body: "RCV and ACV language can change how a claim feels financially, especially on older roofs." },
+          { title: "Schedule an inspection", body: "A qualified roof inspection should answer whether the damage looks claim-worthy, cosmetic, or unrelated to the storm." },
+          { title: "Avoid rushing the solar decision", body: "If the roof is now a live issue, separate the roofing conversation from the solar conversation until the condition is clear." },
+        ],
+      },
+      {
+        type: "faq",
+        title: "Hail damage questions",
+        items: [
+          {
+            question: "How do I know if hail actually hit my roof hard enough to matter?",
+            answer: "Storm presence alone is not enough. The useful signal is storm timing plus roof-specific impact, which is why the page should combine map data with a clear inspection CTA.",
+          },
+          {
+            question: "Why is a dedicated hail page important?",
+            answer: "Because hail traffic is high-intent roofing traffic. It deserves its own landing page, local SEO angle, and conversion flow instead of being buried inside generic roofing copy.",
+          },
+          {
+            question: "Should the hail page also talk about solar?",
+            answer: "Only where it naturally overlaps. The primary job of this page is storm and roof triage. Solar should appear as a secondary connected path, not the main topic.",
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "page-solar-guides",
-    siteSlug: "austin-solar-pros",
+    siteSlug: "texas-solar-and-roofing-pros",
     slug: "guides",
-    title: "Austin Solar Guides",
-    description: "A guide hub with deeper Austin solar explainers, comparisons, and decision-making articles.",
+    title: "Texas Solar and Roofing Guides",
+    description: "A guide hub with practical solar, roofing, insurance, and storm-repair explainers for Texas homeowners.",
     pageType: "page",
     templateLevel: "hero",
     sections: [
       {
         type: "hero",
         eyebrow: "Guide hub",
-        title: "Go deeper on Austin solar without sifting through generic national advice.",
+        title: "Go deeper on solar, roofing, storms, and insurance without sifting through generic national advice.",
         body:
-          "This hub takes the core topics from the homepage and expands them into full guides built for Austin homeowners who are still researching before they ask for quotes.",
+          "This hub expands the core homeowner questions into practical guides built for people trying to figure out roof condition, claim timing, detach and reset, and whether solar still makes sense afterward.",
         metrics: [
           { label: "Guide count", value: "6 guides" },
           { label: "Primary use", value: "Research" },
-          { label: "Audience", value: "Austin homeowners" },
+          { label: "Audience", value: "Texas homeowners" },
         ],
       },
       {
@@ -465,7 +871,7 @@ export const pages = [
 export const initialPublishJobs = [
   {
     id: "job-1",
-    siteSlug: "austin-solar-pros",
+    siteSlug: "texas-solar-and-roofing-pros",
     contentType: "post",
     title: "Austin Solar Installation Cost",
     prompt: "Write a practical guide about how Austin homeowners should evaluate installation cost, incentives, and payback.",
@@ -522,7 +928,7 @@ export const initialDomainRecords = sites.map((site, index) => ({
 
 export const initialAnalyticsSnapshots = [
   {
-    siteSlug: "austin-solar-pros",
+    siteSlug: "texas-solar-and-roofing-pros",
     sessions: 8420,
     uniqueVisitors: 6150,
     leads: 214,
@@ -598,7 +1004,7 @@ export const initialAnalyticsGoals = [
     id: "goal-1",
     name: "Hero site lead form submit",
     scope: "site",
-    siteSlug: "austin-solar-pros",
+    siteSlug: "texas-solar-and-roofing-pros",
     eventName: "lead_form_submitted",
     targetValue: 180,
     interval: "monthly",

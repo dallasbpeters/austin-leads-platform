@@ -4,8 +4,10 @@ import App from "@/App";
 import PublicSite from "@/components/platform/PublicSite";
 import {
   createJsonLd,
+  getHeroHomepageForSite,
   getNavigationForSite,
   getPageForRequest,
+  isPrimarySiteSlug,
   resolveSiteBySlug,
 } from "@/lib/platform/content";
 
@@ -17,8 +19,11 @@ export default async function PreviewSitePage({ params }) {
     notFound();
   }
 
-  if (site.slug === "austin-solar-pros" && slug.length === 0) {
-    return <App />;
+  if (isPrimarySiteSlug(site.slug) && slug.length === 0) {
+    const heroHomepage = await getHeroHomepageForSite(site.slug);
+    const heroSection = heroHomepage?.heroSection ?? null;
+
+    return <App heroSection={heroSection} site={site} />;
   }
 
   const page = await getPageForRequest(site, slug);

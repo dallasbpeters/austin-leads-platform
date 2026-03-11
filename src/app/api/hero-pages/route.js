@@ -129,7 +129,7 @@ export async function POST(request) {
 
   const sections = withSectionKeys([
     {
-      _type: "object",
+      _type: "heroSection",
       type: "hero",
       eyebrow: site.name,
       title,

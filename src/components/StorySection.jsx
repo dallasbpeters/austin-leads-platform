@@ -68,9 +68,9 @@ export default function StorySection() {
   return (
     <section className="overflow-hidden bg-white" id="how-it-works">
       <div className="mx-auto w-[min(72rem,calc(100%-3rem))]   py-32 text-center">
-        <h2 ref={ref} className="type-accent text-solar-neutral-800 m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em]">
-          We&apos;re an independent solar resource for Austin homeowners. No sales pitch. No pressure. Just clear information about how solar works here, what it costs, and whether it makes sense for your home. If you decide to keep going, you&apos;ll do it with better questions and clearer expectations.{' '}
-          <span className="type-display text-solar-neutral-400 italic">Start with the numbers first.</span>
+        <h2 ref={ref} className="type-accent text-color-neutral-800 m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em]">
+          Most homeowners do not start with a clean, simple solar question. They start with storm damage, an aging roof, an insurance claim, or a project they do not want to get wrong. This site is built to help you understand the roofing side, the solar side, and where those decisions affect each other.{' '}
+          <span className="type-display text-color-neutral-400 italic">Start with the issue in front of you. Get clear on the next step.</span>
         </h2>
       </div>
     </section>

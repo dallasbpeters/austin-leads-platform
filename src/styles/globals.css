@@ -1,14 +1,16 @@
-@import 'tailwindcss' source(none);
+@import 'tailwindcss';
 @import 'tw-animate-css';
-@source "../";
 
 :root {
-  --color-primary-h: 14;
-  --color-primary-s: 88%;
-  --color-primary-l: 65%;
+  --color-primary-h: 205;
+  --color-primary-s: 99%;
+  --color-primary-l: 36%;
   --color-secondary-h: 190;
   --color-secondary-s: 61%;
   --color-secondary-l: 15%;
+  --color-tertiary-h: 34;
+  --color-tertiary-s: 94%;
+  --color-tertiary-l: 54%;
 
   --color-primary-700: hsl(var(--color-primary-h) var(--color-primary-s) 53%);
   --color-primary: hsl(var(--color-primary-h) var(--color-primary-s) var(--color-primary-l));
@@ -24,6 +26,15 @@
   --color-secondary-500: hsl(var(--color-secondary-h) 64% 63%);
   --color-secondary-300: hsl(var(--color-secondary-h) 60% 76%);
   --color-secondary-100: hsl(var(--color-secondary-h) 28% 95%);
+  --color-secondary-alt: hsl(calc(var(--color-secondary-h) + 16) 56% 67%);
+
+  --color-tertiary-950: hsl(var(--color-tertiary-h) 64% 13%);
+  --color-tertiary: hsl(var(--color-tertiary-h) var(--color-tertiary-s) var(--color-tertiary-l));
+  --color-tertiary-700: hsl(var(--color-tertiary-h) 50% 28%);
+  --color-tertiary-500: hsl(var(--color-tertiary-h) 64% 63%);
+  --color-tertiary-300: hsl(var(--color-tertiary-h) 60% 76%);
+  --color-tertiary-100: hsl(var(--color-tertiary-h) 28% 95%);
+  --color-tertiary-alt: hsl(calc(var(--color-tertiary-h) + 16) 56% 67%);
 
   --color-warm-bg: hsl(calc(var(--color-primary-h) - 2) 54% 199%);
   --color-surface: hsl(calc(var(--color-primary-h) - 2) 34% 95%);
@@ -57,8 +68,7 @@
   --color-orange-600: var(--color-primary-700);
   --color-orange-500: var(--color-primary);
   --color-orange-400: var(--color-primary-300);
-  --color-amber-400: var(--color-primary-alt);
-  --color-yellow-500: var(--color-primary-alt);
+  --color-yellow-500: var(--color-secondary-alt);
   --color-blue-400: #546bf3;
   --color-white: #ffffff;
   --color-black: var(--color-text-strong);
@@ -340,146 +350,184 @@ h6 {
     background: rgba(255, 255, 255, 0.1);
   }
 
-  .text-solar-primary {
+  .text-color-primary {
     color: var(--color-primary);
   }
 
-  .text-solar-primary-700 {
+  .text-color-primary-700 {
     color: var(--color-primary-700);
   }
 
-  .text-solar-primary-300 {
+  .text-color-primary-300 {
     color: var(--color-primary-300);
   }
 
-  .text-solar-secondary {
+  .text-color-secondary {
     color: var(--color-secondary);
   }
 
-  .text-solar-strong {
+  .text-color-strong {
     color: var(--color-text-strong);
   }
 
-  .text-solar-body {
+  .text-color-body {
     color: var(--color-text);
   }
 
-  .text-solar-slate-950 {
+  .text-color-slate-950 {
     color: var(--color-slate-950);
   }
 
-  .text-solar-slate-900 {
+  .text-color-slate-900 {
     color: var(--color-slate-900);
   }
 
-  .text-solar-slate-800 {
+  .text-color-slate-800 {
     color: var(--color-gray-800);
   }
 
-  .text-solar-slate-500 {
+  .text-color-slate-700 {
+    color: var(--color-slate-700);
+  }
+
+  .text-color-slate-500 {
     color: var(--color-slate-500);
   }
 
-  .text-solar-slate-400 {
+  .text-color-slate-400 {
     color: var(--color-slate-400);
   }
 
-  .text-solar-neutral-900 {
+  .text-color-neutral-900 {
     color: var(--color-neutral-900);
   }
 
-  .text-solar-neutral-800 {
+  .text-color-neutral-800 {
     color: var(--color-neutral-800);
   }
 
-  .text-solar-neutral-500 {
+  .text-color-neutral-500 {
     color: var(--color-neutral-500);
   }
 
-  .text-solar-neutral-400 {
+  .text-color-neutral-400 {
     color: var(--color-neutral-400);
   }
 
-  .text-solar-cyan-900 {
+  .text-color-cyan-900 {
     color: var(--color-cyan-900);
   }
 
-  .text-solar-cyan-800 {
+  .text-color-cyan-800 {
     color: var(--color-cyan-800);
   }
 
-  .bg-solar-warm {
+  .bg-color-warm {
     background-color: var(--color-warm-bg);
   }
-  .bg-solar-gradient {
+  .bg-color-gradient {
     background: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
   }
 
-  .bg-solar-surface {
+  .bg-color-surface {
     background-color: var(--color-surface-elevated);
   }
 
-  .bg-solar-primary {
+  .bg-color-primary {
     background-color: var(--color-primary);
   }
 
-  .bg-solar-primary-700 {
+  .bg-color-primary-700 {
     background-color: var(--color-primary-700);
   }
 
-  .bg-solar-primary-100 {
+  .bg-color-primary-100 {
     background-color: var(--color-primary-100);
   }
 
-  .bg-solar-primary-300 {
+  .bg-color-primary-300 {
     background-color: var(--color-primary-300);
   }
+  .bg-color-secondary {
+    background-color: var(--color-secondary);
+  }
 
-  .bg-solar-secondary-100 {
+  .bg-color-secondary-700 {
+    background-color: var(--color-secondary-700);
+  }
+
+  .bg-color-secondary-100 {
     background-color: var(--color-secondary-100);
   }
 
-  .bg-solar-cyan-950 {
+  .bg-color-secondary-300 {
+    background-color: var(--color-secondary-300);
+  }
+
+  .bg-color-secondary-100 {
+    background-color: var(--color-secondary-100);
+  }
+  .bg-color-tertiary {
+    background-color: var(--color-tertiary);
+  }
+
+  .bg-color-tertiary-700 {
+    background-color: var(--color-tertiary-700);
+  }
+
+  .bg-color-tertiary-100 {
+    background-color: var(--color-tertiary-100);
+  }
+
+  .bg-color-tertiary-300 {
+    background-color: var(--color-tertiary-300);
+  }
+
+  .bg-color-tertiary-100 {
+    background-color: var(--color-tertiary-100);
+  }
+
+  .bg-color-cyan-950 {
     background-color: var(--color-cyan-950);
   }
 
-  .bg-solar-amber-400 {
+  .bg-color-amber-400 {
     background-color: var(--color-amber-400);
   }
 
-  .bg-solar-blue-400 {
+  .bg-color-blue-400 {
     background-color: var(--color-blue-400);
   }
 
-  .bg-solar-orange-soft {
+  .bg-color-orange-soft {
     background-color: rgba(248, 118, 84, 0.2);
   }
 
-  .border-solar {
+  .border-color {
     border-color: var(--color-border);
   }
 
-  .border-solar-grid {
+  .border-color-grid {
     border-color: var(--color-grid-line);
   }
 
-  .border-solar-secondary {
+  .border-color-secondary {
     border-color: var(--color-secondary);
   }
 
-  .shadow-solar-sm {
+  .shadow-color-sm {
     box-shadow: var(--shadow-sm);
   }
 
-  .shadow-solar-xl {
+  .shadow-color-xl {
     box-shadow: var(--shadow-lg);
   }
 
-  .shadow-solar-primary {
+  .shadow-color-primary {
     box-shadow: var(--shadow-brand);
   }
 
-  .hover-shadow-solar-primary:hover {
+  .hover-shadow-color-primary:hover {
     box-shadow: var(--shadow-brand-hover);
   }
 
@@ -515,28 +563,28 @@ h6 {
     box-shadow: var(--shadow-brand-hover);
   }
 
-  .bg-solar-button-secondary {
+  .bg-color-button-secondary {
     background-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.1);
   }
 
-  .hover-bg-solar-button-secondary:hover {
+  .hover-bg-color-button-secondary:hover {
     background-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.16);
   }
 
-  .border-solar-button-secondary {
+  .border-color-button-secondary {
     border-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.22);
   }
 
-  .outline-solar-focus:focus-visible {
+  .outline-color-focus:focus-visible {
     outline: 2px solid hsl(var(--color-primary-h) var(--color-primary-s) 65% / 0.65);
     outline-offset: 3px;
   }
 
-  .accent-solar-primary {
+  .accent-color-primary {
     accent-color: var(--color-primary);
   }
 
-  .hover-text-solar-primary:hover {
+  .hover-text-color-primary:hover {
     color: var(--color-primary);
   }
 
@@ -552,6 +600,11 @@ h6 {
 
   .solar-grid-bg {
     background-image: linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .radial-grid-bg {
+    background-image: radial-gradient(var(--color-grid) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 

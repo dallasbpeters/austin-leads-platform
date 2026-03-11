@@ -19,7 +19,6 @@ const heroImageType = {
   name: 'heroImage',
   title: 'Hero Image',
   type: 'object',
-  options: canvasExclude,
   fields: [
     { name: 'source', title: 'Source', type: 'string', options: canvasExclude },
     { name: 'unsplashId', title: 'Unsplash ID', type: 'string', options: canvasExclude },
@@ -57,14 +56,12 @@ const uploadedImageType = {
   type: 'image',
   options: {
     hotspot: true,
-    ...canvasExclude,
   },
   fields: [
     {
       name: 'alt',
       title: 'Alt text',
       type: 'string',
-      options: canvasExclude,
     },
   ],
 }
@@ -101,6 +98,49 @@ const pageMetricType = {
   },
 }
 
+const pageActionType = {
+  name: 'pageAction',
+  title: 'Page Action',
+  type: 'object',
+  fields: [
+    {
+      name: 'label',
+      title: 'Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Button label or link label for the action.'),
+    },
+    {
+      name: 'href',
+      title: 'Href',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Link target for the action button.'),
+    },
+    {
+      name: 'variant',
+      title: 'Variant',
+      type: 'string',
+      options: {
+        list: ['default', 'secondary', 'outline'],
+        ...canvasExclude,
+      },
+    },
+  ],
+  preview: {
+    select: {
+      title: 'label',
+      subtitle: 'href',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Page action',
+        subtitle: subtitle || 'No link target',
+      }
+    },
+  },
+}
+
 const pageItemType = {
   name: 'pageItem',
   title: 'Content Item',
@@ -125,6 +165,18 @@ const pageItemType = {
       options: canvasPurpose('Item title or card heading.'),
     },
     {
+      name: 'subtitleLabel',
+      title: 'Subtitle Label',
+      type: 'text',
+      options: canvasPurpose('Optional label for the subtitle.'),
+    },
+    {
+      name: 'subtitleValue',
+      title: 'Subtitle Value',
+      type: 'text',
+      options: canvasPurpose('Optional longer description or supporting text for the item.'),
+    },
+    {
       name: 'body',
       title: 'Body',
       type: 'text',
@@ -147,6 +199,12 @@ const pageItemType = {
       title: 'Href',
       type: 'string',
       options: canvasPurpose('Optional link target for this item when it should open another page.'),
+    },
+    {
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: canvasPurpose('Optional icon key such as hail, roofing, home, or solar.'),
     },
     {
       name: 'image',
@@ -177,67 +235,231 @@ const pageItemType = {
   },
 }
 
-const pageSectionType = {
-  name: 'pageSection',
-  title: 'Page Section',
+const resourceCardType = {
+  name: 'resourceCard',
+  title: 'Resource Card',
   type: 'object',
   fields: [
-    { name: 'type', title: 'Section type', type: 'string', options: canvasExclude },
     {
-      name: 'eyebrow',
-      title: 'Eyebrow',
+      name: 'icon',
+      title: 'Icon',
       type: 'string',
-      options: canvasPurpose('Short overline or kicker text that introduces the section.'),
+      options: {
+        list: [
+          { title: 'Hail / Storm', value: 'hail' },
+          { title: 'Roofing', value: 'roofing' },
+          { title: 'Home', value: 'home' },
+          { title: 'Solar', value: 'solar' },
+          { title: 'Sunlight', value: 'sunlight' },
+          { title: 'Thunderstorm', value: 'thunderstorm' },
+        ],
+        layout: 'dropdown',
+        ...canvasPurpose('Select the card icon.'),
+      },
     },
     {
       name: 'title',
       title: 'Title',
       type: 'string',
-      options: canvasPurpose('Primary heading for this section.'),
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Card title.'),
     },
     {
       name: 'body',
       title: 'Body',
       type: 'text',
-      options: canvasPurpose('Main body copy for this section.'),
+      options: canvasPurpose('Short supporting copy for the card.'),
     },
-    { name: 'heroTextColor', title: 'Hero text color', type: 'string', options: canvasExclude },
-    { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'string', options: canvasExclude },
-    { name: 'heroOverlayStartColor', title: 'Hero overlay start color', type: 'string', options: canvasExclude },
-    { name: 'heroOverlayEndColor', title: 'Hero overlay end color', type: 'string', options: canvasExclude },
-    { name: 'heroOverlayDirection', title: 'Hero overlay direction', type: 'string', options: canvasExclude },
-    { name: 'heroOverlayStartOpacity', title: 'Hero overlay start opacity', type: 'number', options: canvasExclude },
-    { name: 'heroOverlayEndOpacity', title: 'Hero overlay end opacity', type: 'number', options: canvasExclude },
-    { name: 'heroOverlayOpacity', title: 'Hero overlay opacity', type: 'number', options: canvasExclude },
-    { name: 'heroImage', title: 'Hero image', type: 'heroImage', options: canvasExclude },
-    { name: 'heroAsset', title: 'Uploaded hero image', type: 'uploadedImage', options: canvasExclude },
     {
-      name: 'metrics',
-      title: 'Metrics',
-      type: 'array',
-      options: canvasPurpose('Short proof-point pairs like payback period, tax credit, or savings.'),
-      of: [{ type: 'pageMetric' }],
+      name: 'href',
+      title: 'Href',
+      type: 'string',
+      options: canvasPurpose('Destination URL or anchor for the card.'),
+    },
+    {
+      name: 'imageAsset',
+      title: 'Uploaded image',
+      type: 'uploadedImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'image',
+      title: 'External image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Resource card',
+        subtitle: subtitle || 'Homepage resource card',
+      }
+    },
+  },
+}
+
+const resourceGridSectionType = {
+  name: 'resourceGridSection',
+  title: 'Resource Grid Section',
+  type: 'object',
+  initialValue: {
+    type: 'resourceGrid',
+  },
+  fields: [
+    {
+      name: 'type',
+      title: 'Section type',
+      type: 'string',
+      hidden: true,
+      options: canvasExclude,
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading.'),
     },
     {
       name: 'items',
-      title: 'Items',
+      title: 'Cards',
       type: 'array',
-      options: canvasPurpose('Repeatable content items like cards, FAQs, or supporting bullets for the section.'),
-      of: [{ type: 'pageItem' }],
-    },
-    {
-      name: 'ctaLabel',
-      title: 'CTA label',
-      type: 'string',
-      options: canvasPurpose('Label for the main call-to-action button or link.'),
-    },
-    {
-      name: 'ctaHref',
-      title: 'CTA href',
-      type: 'string',
-      options: canvasPurpose('Link target or anchor for the call-to-action.'),
+      validation: (Rule) => Rule.min(1).max(6),
+      of: [{ type: 'resourceCard' }],
+      options: canvasPurpose('Homepage resource cards.'),
     },
   ],
+  preview: {
+    select: {
+      title: 'title',
+      cardCount: 'items.length',
+    },
+    prepare({ title, cardCount }) {
+      return {
+        title: title || 'Resource grid',
+        subtitle: `${cardCount || 0} cards`,
+      }
+    },
+  },
+}
+
+const heroOnlyField = (field) => ({
+  ...field,
+  hidden: ({ parent }) => parent?.type !== 'hero',
+})
+
+const genericSectionFields = [
+  { name: 'type', title: 'Section type', type: 'string', options: canvasExclude },
+  {
+    name: 'eyebrow',
+    title: 'Eyebrow',
+    type: 'string',
+    options: canvasPurpose('Short overline or kicker text that introduces the section.'),
+  },
+  {
+    name: 'title',
+    title: 'Title',
+    type: 'string',
+    options: canvasPurpose('Primary heading for this section.'),
+  },
+  {
+    name: 'body',
+    title: 'Body',
+    type: 'text',
+    options: canvasPurpose('Main body copy for this section.'),
+  },
+  {
+    name: 'subheadingLabel',
+    title: 'Subheading Label',
+    type: 'text',
+    options: canvasPurpose('Optional label for the subheading.'),
+  },
+  {
+    name: 'subheading',
+    title: 'Subheading',
+    type: 'text',
+    options: canvasPurpose('Optional subheading or secondary heading for this section.'),
+  },
+  {
+    name: 'items',
+    title: 'Items',
+    type: 'array',
+    options: canvasPurpose('Repeatable content items like cards, FAQs, or supporting bullets for the section.'),
+    of: [{ type: 'pageItem' }],
+  },
+  {
+    name: 'ctaLabel',
+    title: 'CTA label',
+    type: 'string',
+    options: canvasPurpose('Label for the main call-to-action button or link.'),
+  },
+  {
+    name: 'ctaHref',
+    title: 'CTA href',
+    type: 'string',
+    options: canvasPurpose('Link target or anchor for the call-to-action.'),
+  },
+]
+
+const heroSpecificFields = [
+  { name: 'heroTextColor', title: 'Hero text color', type: 'string', options: canvasExclude },
+  { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'string', options: canvasExclude },
+  { name: 'heroOverlayStartColor', title: 'Hero overlay start color', type: 'string', options: canvasExclude },
+  { name: 'heroOverlayEndColor', title: 'Hero overlay end color', type: 'string', options: canvasExclude },
+  { name: 'heroOverlayDirection', title: 'Hero overlay direction', type: 'string', options: canvasExclude },
+  { name: 'heroOverlayStartOpacity', title: 'Hero overlay start opacity', type: 'number', options: canvasExclude },
+  { name: 'heroOverlayEndOpacity', title: 'Hero overlay end opacity', type: 'number', options: canvasExclude },
+  { name: 'heroOverlayOpacity', title: 'Hero overlay opacity', type: 'number', options: canvasExclude },
+  { name: 'heroImage', title: 'Hero image', type: 'heroImage', options: canvasExclude },
+  { name: 'heroAsset', title: 'Uploaded hero image', type: 'uploadedImage', options: canvasExclude },
+  {
+    name: 'metrics',
+    title: 'Metrics',
+    type: 'array',
+    options: canvasPurpose('Short proof-point pairs like payback period, tax credit, or savings.'),
+    of: [{ type: 'pageMetric' }],
+  },
+  {
+    name: 'actions',
+    title: 'Actions',
+    type: 'array',
+    options: canvasPurpose('Optional action buttons or links for hero sections.'),
+    of: [{ type: 'pageAction' }],
+  },
+]
+
+const heroSectionType = {
+  name: 'heroSection',
+  title: 'Hero Section',
+  type: 'object',
+  initialValue: {
+    type: 'hero',
+  },
+  fields: [...genericSectionFields, ...heroSpecificFields],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+    },
+    prepare({ title, eyebrow }) {
+      return {
+        title: title || eyebrow || 'Hero section',
+        subtitle: 'hero',
+      }
+    },
+  },
+}
+
+const pageSectionType = {
+  name: 'pageSection',
+  title: 'Page Section',
+  type: 'object',
+  fields: [...genericSectionFields, ...heroSpecificFields.map(heroOnlyField)],
   preview: {
     select: {
       title: 'title',
@@ -297,7 +519,7 @@ const baseFields = [
     title: 'Sections',
     type: 'array',
     options: canvasPurpose('Structured page sections. Map headings, body copy, calls to action, proof points, and FAQ items into the relevant section.'),
-    of: [{ type: 'pageSection' }],
+    of: [{ type: 'heroSection' }, { type: 'resourceGridSection' }, { type: 'pageSection' }],
   },
 ]
 
@@ -348,4 +570,4 @@ const pageDocuments = [
   },
 ]
 
-export default [heroImageUrlsType, heroImageType, uploadedImageType, pageMetricType, pageItemType, pageSectionType, ...pageDocuments]
+export default [heroImageUrlsType, heroImageType, uploadedImageType, pageMetricType, pageActionType, pageItemType, resourceCardType, heroSectionType, resourceGridSectionType, pageSectionType, ...pageDocuments]

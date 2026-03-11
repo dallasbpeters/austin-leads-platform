@@ -30,9 +30,9 @@ export const solarGuides = [
     id: 'guide-how-solar-works-austin',
     number: '01',
     slug: 'how-solar-works-austin',
-    title: 'How Solar Works in Austin',
-    cardCopy: 'A clear walkthrough of panels, inverters, grid connection, export credits, and what actually happens on an Austin home.',
-    description: 'A practical Austin-focused guide to how a residential solar system works, how energy flows through the home, and which local utility details matter before you buy.',
+    title: 'How Solar Actually Works',
+    cardCopy: 'What the panels do, what the inverter does, when you still use the grid, and what changes on the electric bill once a system is live.',
+    description: 'A practical guide to how a residential solar system works, how power moves through the home, and which utility details matter before you compare proposals.',
     image: createStaticHeroImage({
       alt: 'Modern Austin home with rooftop solar in warm daylight',
       color: '#c97a46',
@@ -44,8 +44,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'hero',
         eyebrow: 'Guide 01',
-        title: 'How solar actually works on an Austin home',
-        body: 'The useful version of this topic is not a science lesson. It is understanding where the power goes, what the utility still does, what changes on your bill, and why two systems with the same number of panels can perform very differently.',
+        title: 'How solar actually works on a real home',
+        body: 'Forget the sales pitch version. The useful version is understanding where the power goes, when the utility still matters, what actually changes on the bill, and why two systems with the same panel count can perform very differently.',
         heroImage: createStaticHeroImage({
           alt: 'Modern Austin home with rooftop solar in warm daylight',
           color: '#c97a46',
@@ -62,13 +62,13 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'story',
         eyebrow: 'System basics',
-        title: 'Solar offsets the power you buy from the grid. It does not replace the grid connection.',
-        body: 'The panels generate direct current electricity, the inverter turns that into usable household power, and the home uses that energy first when the sun is out. If the system makes more than the home is using at that moment, the excess can flow outward depending on your utility arrangement. At night, during storms, or when usage spikes above production, the home still pulls from the grid unless you have storage. That is why solar is best understood as a bill-offset system first and a backup-power system only when storage is included.',
+        title: 'Solar lowers the amount of power you buy. It does not make the grid disappear.',
+        body: 'The panels produce power during daylight hours, the inverter turns that output into electricity the house can actually use, and the home uses that energy first. If the system makes more than the house needs in that moment, the excess can flow back out depending on your utility arrangement. At night, during storms, or anytime usage jumps above production, the home still pulls from the grid unless a battery is part of the system. That is why solar is best understood as a bill-reduction project first and a backup-power project only when storage is added intentionally.',
       },
       {
         _type: 'pageSection',
         type: 'highlights',
-        title: 'The four moving parts homeowners should understand',
+        title: 'The parts of the system homeowners should actually understand',
         items: [
           {
             _type: 'pageItem',
@@ -95,7 +95,7 @@ export const solarGuides = [
       {
         _type: 'pageSection',
         type: 'steps',
-        title: 'What to understand before you ask for bids',
+        title: 'What to understand before you ask anyone for a quote',
         items: [
           {
             _type: 'pageItem',
@@ -122,7 +122,7 @@ export const solarGuides = [
       {
         _type: 'pageSection',
         type: 'faq',
-        title: 'Common first questions from Austin homeowners',
+        title: 'Common first questions from homeowners',
         items: [
           {
             _type: 'pageItem',
@@ -152,9 +152,9 @@ export const solarGuides = [
     id: 'guide-austin-solar-costs-and-savings',
     number: '02',
     slug: 'austin-solar-costs-and-savings',
-    title: 'Costs & Savings',
-    cardCopy: 'A more useful look at installed price, financing, tax-credit timing, export value, and what really changes payback.',
-    description: 'A detailed Austin solar cost guide covering installed price, incentives, financing structure, export assumptions, and the questions to ask before you trust a payback estimate.',
+    title: 'Solar Costs and Payback',
+    cardCopy: 'Installed price, tax-credit timing, financing cost, export value, and the numbers that really move payback.',
+    description: 'A detailed guide to solar project cost, financing structure, export assumptions, and the questions to ask before you trust a payback estimate.',
     image: createStaticHeroImage({
       alt: 'Calculator, utility bill, and warm-toned tabletop still life',
       color: '#d59b53',
@@ -166,8 +166,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'hero',
         eyebrow: 'Guide 02',
-        title: 'What Austin homeowners should expect solar to cost',
-        body: 'The useful answer is not a national average and it is not the monthly payment in the ad. It is the installed price, the expected production, the export value, the financing structure, and how the federal credit is actually being treated in the math.',
+        title: 'What homeowners should expect solar to cost',
+        body: 'The useful answer is not a national average and it is not the monthly payment in the ad. It is the installed price, expected production, export value, financing structure, and how the tax credit is actually being treated in the numbers.',
         heroImage: createStaticHeroImage({
           alt: 'Calculator, utility bill, and warm-toned tabletop still life',
           color: '#d59b53',
@@ -221,8 +221,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'story',
         eyebrow: 'Reading quotes',
-        title: 'The cleanest quote comparison is cost, production, and total paid over time.',
-        body: 'Homeowners often get forced into comparing offers on the wrong axis. One quote highlights monthly payment, another highlights tax-credit-adjusted cost, another highlights a lower system price with weaker production assumptions. The more useful comparison is installed price, expected production, export treatment, financing terms, total paid, and break-even timing under realistic assumptions.',
+        title: 'The cleanest comparison is cost, production, and total paid over time.',
+        body: 'Most homeowners are pushed to compare proposals on the wrong axis. One quote highlights monthly payment, another pushes tax-credit-adjusted cost, another looks cheaper because the production assumptions are weaker. The useful comparison is installed price, expected production, export treatment, financing terms, total paid, and break-even timing under realistic assumptions.',
       },
       {
         _type: 'pageSection',
@@ -284,9 +284,9 @@ export const solarGuides = [
     id: 'guide-austin-solar-incentives',
     number: '03',
     slug: 'austin-solar-incentives',
-    title: 'Austin Solar Incentives',
-    cardCopy: 'A factual guide to the federal credit, Texas property-tax treatment, and how to verify any local programs without hand-wavy promises.',
-    description: 'A practical solar incentives guide for Austin homeowners covering the federal credit, Texas property-tax treatment, and how to verify changing local utility details.',
+    title: 'Solar Incentives and Tax Credits',
+    cardCopy: 'The federal credit, Texas property-tax treatment, and how to verify local incentive claims before you rely on them.',
+    description: 'A practical solar incentives guide covering the federal credit, Texas property-tax treatment, and how to verify changing utility or local program details.',
     image: createStaticHeroImage({
       alt: 'Warm daylight over a solar-ready Austin neighborhood',
       color: '#7a9cb8',
@@ -304,8 +304,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'hero',
         eyebrow: 'Guide 03',
-        title: 'Which Austin solar incentives actually matter',
-        body: 'This topic gets messy when sites try to sound helpful by promising more certainty than they really have. The better approach is simple: know the incentives that materially affect project economics, understand which ones are date-sensitive, and verify local utility details before you make the quote math depend on them.',
+        title: 'Which solar incentives actually matter',
+        body: 'This topic gets messy when sites promise more certainty than they can support. The better approach is simple: know which incentives materially affect the project, understand which ones are date-sensitive, and verify local details before you let them drive the math.',
         heroImage: createStaticHeroImage({
           alt: 'Warm daylight over a solar-ready Austin neighborhood',
           color: '#7a9cb8',
@@ -327,7 +327,7 @@ export const solarGuides = [
       {
         _type: 'pageSection',
         type: 'highlights',
-        title: 'The three incentive topics homeowners care about most',
+        title: 'The incentive topics homeowners should care about most',
         items: [
           {
             _type: 'pageItem',
@@ -413,9 +413,9 @@ export const solarGuides = [
     id: 'guide-austin-solar-battery-backup',
     number: '04',
     slug: 'austin-solar-battery-backup',
-    title: 'Solar + Battery Backup',
-    cardCopy: 'A practical guide to when storage is worth adding, what it actually does in an outage, and how to keep the economics honest.',
-    description: 'A detailed guide to deciding whether solar plus battery backup makes sense for an Austin home, including outage behavior, load planning, and cost tradeoffs.',
+    title: 'Battery Backup: When It Is Worth It',
+    cardCopy: 'When storage is worth adding, what it actually does in an outage, and how to keep the economics honest.',
+    description: 'A detailed guide to deciding whether solar plus battery backup makes sense for a home, including outage behavior, load planning, and cost tradeoffs.',
     image: createStaticHeroImage({
       alt: 'Contemporary utility room with home battery equipment',
       color: '#4a6c8f',
@@ -434,7 +434,7 @@ export const solarGuides = [
         type: 'hero',
         eyebrow: 'Guide 04',
         title: 'When a battery changes the solar conversation',
-        body: 'Storage is one of the easiest places for a quote to get emotionally persuasive and economically fuzzy. A battery may be the right move, but the decision should start with resilience needs, critical loads, and how much value you assign to backup power.',
+        body: 'Storage is one of the easiest places for a quote to get emotionally persuasive and economically fuzzy. A battery may be the right move, but the decision should start with outage needs, critical loads, and how much value you assign to backup power.',
         heroImage: createStaticHeroImage({
           alt: 'Contemporary utility room with home battery equipment',
           color: '#4a6c8f',
@@ -512,7 +512,7 @@ export const solarGuides = [
       {
         _type: 'pageSection',
         type: 'faq',
-        title: 'Battery questions homeowners ask before signing',
+        title: 'Battery questions worth asking before signing',
         items: [
           {
             _type: 'pageItem',
@@ -537,8 +537,8 @@ export const solarGuides = [
     id: 'guide-buy-or-finance-solar-austin',
     number: '05',
     slug: 'buy-or-finance-solar-austin',
-    title: 'Buy or Finance Solar',
-    cardCopy: 'A practical framework for cash, loans, dealer fees, early payoff, and the financing details that actually change total cost.',
+    title: 'Cash vs. Financing for Solar',
+    cardCopy: 'Cash, loans, dealer fees, early payoff, and the financing details that actually change total cost.',
     description: 'A thorough guide to comparing cash purchase and financing options for solar so homeowners can evaluate total cost, payment structure, and flexibility.',
     image: createStaticHeroImage({
       alt: 'Warm residential desk scene with financing paperwork and coffee',
@@ -641,7 +641,7 @@ export const solarGuides = [
       {
         _type: 'pageSection',
         type: 'faq',
-        title: 'Financing questions to put on every comparison sheet',
+        title: 'Financing questions to put on every quote comparison sheet',
         items: [
           {
             _type: 'pageItem',
@@ -666,9 +666,9 @@ export const solarGuides = [
     id: 'guide-is-your-roof-ready-for-solar',
     number: '06',
     slug: 'is-your-roof-ready-for-solar',
-    title: 'Is Your Roof Ready for Solar?',
-    cardCopy: 'A practical roof-readiness guide covering age, condition, layout, shading, and when roofing work should happen before solar.',
-    description: 'A detailed homeowner guide to evaluating roof readiness before solar, including age, material, shading, usable area, and project sequencing.',
+    title: 'Roof Condition Before Solar',
+    cardCopy: 'Age, storm damage, layout, shading, and when roof work should happen before a solar contract gets signed.',
+    description: 'A detailed homeowner guide to evaluating roof condition before solar, including age, material, shading, usable area, storm damage, and project sequencing.',
     image: createStaticHeroImage({
       alt: 'Austin roofline in warm afternoon light',
       color: '#8a5b45',
@@ -687,7 +687,7 @@ export const solarGuides = [
         type: 'hero',
         eyebrow: 'Guide 06',
         title: 'A good solar quote starts with an honest roof assessment',
-        body: 'If the roof is near the end of its useful life, heavily shaded, or layout-constrained, the right move may be roof work first, a smaller system, or a different expectation about production. A serious quote should start there instead of glossing over the constraints.',
+        body: 'If the roof is near the end of its useful life, storm-damaged, heavily shaded, or layout-constrained, the right move may be roof work first, a smaller system, or a different expectation about production. A serious quote should start there instead of glossing over the constraints.',
         heroImage: createStaticHeroImage({
           alt: 'Austin roofline in warm afternoon light',
           color: '#8a5b45',
@@ -707,17 +707,22 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'Why this matters',
         title: 'The cheapest mistake is the one you avoid before panels are installed.',
-        body: 'Solar lasts a long time. If the roof underneath it is already questionable, the homeowner may end up paying for avoidable removal and reinstall work later. That is why roof condition, remaining life, shade, and usable area deserve real attention before comparing glossy proposals.',
+        body: 'Solar lasts a long time. If the roof underneath it is already questionable, the homeowner may end up paying for avoidable removal and reinstall work later. That is why roof condition, remaining life, shade, storm damage, and usable area deserve real attention before comparing glossy proposals.',
       },
       {
         _type: 'pageSection',
         type: 'steps',
-        title: 'The roof checks worth doing before you request bids',
+        title: 'The roof checks worth doing before you request solar bids',
         items: [
           {
             _type: 'pageItem',
             title: 'Estimate remaining roof life',
             body: 'If replacement is likely in the near future, it is usually better to plan for that now than remove a system later.',
+          },
+          {
+            _type: 'pageItem',
+            title: 'Look for storm damage before you do anything else',
+            body: 'Recent hail, lifted shingles, bruising, granule loss, or fresh leaks can change the order of operations and whether an insurance claim needs to happen before the solar conversation goes further.',
           },
           {
             _type: 'pageItem',
@@ -739,12 +744,17 @@ export const solarGuides = [
       {
         _type: 'pageSection',
         type: 'highlights',
-        title: 'What a good roof-readiness conversation should include',
+        title: 'What a good roof-condition conversation should include',
         items: [
           {
             _type: 'pageItem',
             title: 'Material and age',
             body: 'The roof material and its remaining useful life affect whether solar should happen now or later.',
+          },
+          {
+            _type: 'pageItem',
+            title: 'Visible damage and claim history',
+            body: 'A roof with recent hail damage or an open insurance issue needs a different conversation than a roof that is simply older but still sound.',
           },
           {
             _type: 'pageItem',
@@ -762,14 +772,14 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'ctaBanner',
         eyebrow: 'Need roof help first?',
-        title: 'If the roof needs work before solar, we can connect you to the right roofing professional.',
-        body: 'Some homes are not ready for solar yet because the roof itself needs attention first. Use this form if you want a roofing-first conversation before you come back to solar.',
-        ctaLabel: 'Request a roofing consult',
+        title: 'If the roof needs attention first, start with that conversation now.',
+        body: 'Use this form if you need a roofing-first conversation about storm damage, insurance timing, roof replacement, or whether solar should wait.',
+        ctaLabel: 'Request a roofing consultation',
       },
       {
         _type: 'pageSection',
         type: 'faq',
-        title: 'Roof readiness questions that change the plan',
+        title: 'Roof questions that can change the plan',
         items: [
           {
             _type: 'pageItem',
@@ -814,7 +824,7 @@ export function getSolarGuideGridItems() {
   }))
 }
 
-export function getSolarGuidePages(siteSlug = 'austin-solar-pros') {
+export function getSolarGuidePages(siteSlug = 'texas-solar-and-roofing-pros') {
   return solarGuides.map((guide) => ({
     id: `page-${guide.id}`,
     siteSlug,

@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 function ResultCard({ photo, onSelect, saving, canSelect }) {
   return (
     <Card className="overflow-hidden border-border/70 bg-background">
-      <div className="aspect-[4/3] bg-muted">
+      <div className="aspect-[1/1] bg-muted">
         <img alt={photo.alt} className="h-full w-full object-cover" src={photo.urls.small || photo.urls.regular || photo.urls.thumb} />
       </div>
       <CardContent className="space-y-3 p-4">
@@ -346,26 +346,12 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                 {hasImageSource(selectedPage?.heroSection?.heroAsset, selectedPage?.heroSection?.heroImage) ? (
                   <>
                     <div className="aspect-[4/3] bg-muted">
-                      <img
-                        alt={getImageAlt(
-                          selectedPage?.heroSection?.heroAsset,
-                          selectedPage?.heroSection?.heroImage,
-                          selectedPage?.title || selectedSite?.name || 'Hero image',
-                        )}
-                        className="h-full w-full object-cover"
-                        src={getImageUrl(selectedPage?.heroSection?.heroAsset, selectedPage?.heroSection?.heroImage)}
-                      />
+                      <img alt={getImageAlt(selectedPage?.heroSection?.heroAsset, selectedPage?.heroSection?.heroImage, selectedPage?.title || selectedSite?.name || 'Hero image')} className="h-full w-full object-cover" src={getImageUrl(selectedPage?.heroSection?.heroAsset, selectedPage?.heroSection?.heroImage)} />
                     </div>
                     <CardContent className="space-y-3 p-4">
                       <div>
                         <div className="text-sm font-medium text-foreground">Current hero image</div>
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          {selectedPage?.heroSection?.heroAsset?.asset?.url
-                            ? 'Using uploaded Sanity asset'
-                            : selectedPage?.heroSection?.heroImage?.creditName
-                              ? `Photo by ${selectedPage.heroSection.heroImage.creditName} on Unsplash`
-                              : 'Using external image'}
-                        </div>
+                        <div className="mt-1 text-xs text-muted-foreground">{selectedPage?.heroSection?.heroAsset?.asset?.url ? 'Using uploaded Sanity asset' : selectedPage?.heroSection?.heroImage?.creditName ? `Photo by ${selectedPage.heroSection.heroImage.creditName} on Unsplash` : 'Using external image'}</div>
                       </div>
                       {selectedPage?.heroSection?.heroImage?.unsplashUrl ? (
                         <a className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground" href={selectedPage.heroSection.heroImage.unsplashUrl} rel="noreferrer" target="_blank">

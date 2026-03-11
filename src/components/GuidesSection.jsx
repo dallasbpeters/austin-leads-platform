@@ -8,7 +8,7 @@ const guides = getFeaturedSolarGuideCards(3)
 export default function GuidesSection() {
   return (
     <section
-      className="bg-solar-warm   py-24"
+      className="bg-color-warm   py-24"
       id="go-deeper"
       style={{
         backgroundImage: 'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
@@ -17,14 +17,11 @@ export default function GuidesSection() {
     >
       <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mb-8">
-          <h2 className="type-accent text-solar-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">Go Deeper</h2>
+          <h2 className="type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">Go Deeper</h2>
         </div>
-        <GuideCardGrid
-          cards={guides}
-          palette={['bg-solar-primary text-white', 'bg-solar-amber-400 text-white', 'bg-solar-blue-400 text-white']}
-        />
+        <GuideCardGrid cards={guides} palette={['bg-color-primary text-white', 'bg-color-secondary text-white', 'bg-color-tertiary text-white']} />
         <div className="mt-8 flex justify-end">
-          <Link className="type-accent text-solar-secondary text-sm font-semibold uppercase tracking-[0.18em]" href="/guides">
+          <Link className="btn btn type-accent text-color-secondary text-sm font-semibold uppercase tracking-[0.18em]" href="/guides">
             Browse all guides
           </Link>
         </div>

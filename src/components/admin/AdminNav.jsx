@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, Globe2, ImagePlus, LayoutDashboard, PenSquare, TrendingUp } from "lucide-react";
+import { Bot, Globe2, ImagePlus, LayoutDashboard, PenSquare, TrendingUp, UsersRound } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/analytics", label: "Analytics", icon: TrendingUp },
+  { href: "/crm", label: "CRM", icon: UsersRound },
   { href: "/hero-pages", label: "Hero Pages", icon: ImagePlus },
   { href: "/publish", label: "Publish", icon: PenSquare },
   { href: "/domains", label: "Domains", icon: Globe2 },

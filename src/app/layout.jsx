@@ -13,6 +13,9 @@ import "../styles/globals.css";
 export const metadata = {
   title: "Austin Leads Platform",
   description: "Multi-tenant Next.js platform for Austin and Texas local service domains.",
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

@@ -6,7 +6,7 @@ import { useRef } from 'react'
 
 import { cn } from '@/lib/utils'
 
-const defaultPalette = ['bg-primary text-primary-foreground', 'bg-[var(--color-amber-400)] text-white', 'bg-[var(--color-blue-400)] text-white', 'bg-secondary text-secondary-foreground', 'bg-secondary text-secondary-foreground text-white', 'bg-[var(--color-blue-400)]  text-white']
+const defaultPalette = ['bg-primary text-primary-foreground', 'bg-[var(--color-secondary-alt)] text-white', 'bg-[var(--color-blue-400)] text-white', 'bg-secondary text-secondary-foreground', 'bg-secondary text-secondary-foreground text-white', 'bg-[var(--color-blue-400)]  text-white']
 
 const containerVariants = {
   hidden: {},
@@ -32,55 +32,61 @@ const itemVariants = {
   },
 }
 
-export default function GuideCardGrid({ cards, className, columnsClassName = 'md:grid-cols-3', palette = defaultPalette }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, {
-    once: true,
-    amount: 0.15,
-  })
+function normalizeCardProps(props) {
+  if (props.card) {
+    return {
+      ...props.card,
+      className: props.className,
+      toneClassName: props.toneClassName,
+      eyebrow: props.eyebrow ?? props.card.eyebrow,
+      ctaLabel: props.ctaLabel ?? props.card.ctaLabel,
+    }
+  }
 
-  return (
-    <AnimatePresence initial={false}>
-      <motion.div ref={ref} animate={isInView ? 'visible' : 'hidden'} className={cn('grid gap-5 max-[900px]:grid-cols-1', columnsClassName, className)} initial="hidden" variants={containerVariants}>
-        {cards.map((card, index) => (
-          <motion.div key={card.href || card.title} variants={itemVariants}>
-            <GuideCard card={card} toneClassName={palette[index % palette.length]} />
-          </motion.div>
-        ))}
-      </motion.div>
-    </AnimatePresence>
-  )
+  return {
+    number: props.number,
+    eyebrow: props.eyebrow,
+    title: props.title,
+    copy: props.copy || props.body,
+    href: props.href,
+    image: props.image,
+    imageAlt: props.imageAlt,
+    className: props.className,
+    toneClassName: props.toneClassName,
+    ctaLabel: props.ctaLabel,
+  }
 }
 
-function GuideCard({ card, toneClassName }) {
+function GuideCardBody({ card }) {
   return (
-    <Link href={card.href}>
-      <motion.article
-        animate="rest"
-        className={cn('shadow-theme-sm flex min-h-[380px] flex-col overflow-hidden rounded-xl border-0 p-6 h-full', toneClassName)}
-        initial={false}
-        variants={{
-          rest: {
-            y: 0,
-            scale: 1,
-          },
-          hover: {
-            y: -6,
-            scale: 1.015,
-          },
-        }}
-        transition={{
-          duration: 0.28,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        whileHover="hover"
-      >
-        <div className="flex items-center justify-between text-current/88">
-          <ArrowIcon />
-          <span className="text-[2rem] font-semibold">{card.number}</span>
-        </div>
-        <h3 className="mt-4 text-[2rem] tracking-tight">{card.title}</h3>
-        <p className="mt-2 text-[0.95rem] font-semibold leading-6 text-current/88">{card.copy}</p>
+    <motion.article
+      animate="rest"
+      className={cn('shadow-theme-sm flex min-h-[380px] h-full flex-col overflow-hidden rounded-xl border-0 p-6', card.toneClassName, card.className)}
+      initial={false}
+      variants={{
+        rest: {
+          y: 0,
+          scale: 1,
+        },
+        hover: {
+          y: -6,
+          scale: 1.015,
+        },
+      }}
+      transition={{
+        duration: 0.28,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover="hover"
+    >
+      <div className="flex items-center justify-between text-current/88">
+        <ArrowIcon />
+        {card.number ? <span className="text-[2rem] font-semibold">{card.number}</span> : null}
+      </div>
+      {card.eyebrow ? <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-current/72">{card.eyebrow}</p> : null}
+      <h3 className="mt-4 text-[2rem] tracking-tight">{card.title}</h3>
+      <p className="mt-2 text-[0.95rem] font-semibold leading-6 text-current/88">{card.copy}</p>
+      {card.image ? (
         <div className="mt-6 overflow-hidden rounded-lg">
           <motion.img
             alt={card.imageAlt || card.title}
@@ -100,14 +106,50 @@ function GuideCard({ card, toneClassName }) {
             }}
           />
         </div>
-        <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-current/88">
-          <SunIcon />
-          <span>Read the Guide</span>
-        </div>
-      </motion.article>
+      ) : null}
+      <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-current/88">
+        <SunIcon />
+        <span>{card.ctaLabel || 'Learn more'}</span>
+      </div>
+    </motion.article>
+  )
+}
+
+export default function GuideCardGrid({ cards = [], className, columnsClassName = 'md:grid-cols-3', palette = defaultPalette }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, {
+    once: true,
+    amount: 0.15,
+  })
+
+  return (
+    <AnimatePresence initial={false}>
+      <motion.div ref={ref} animate={isInView ? 'visible' : 'hidden'} className={cn('grid gap-5 max-[900px]:grid-cols-1', columnsClassName, className)} initial="hidden" variants={containerVariants}>
+        {cards.map((card, index) => (
+          <motion.div key={card.href || card.title} variants={itemVariants}>
+            <GuideCard card={card} toneClassName={palette[index % palette.length]} />
+          </motion.div>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+function GuideCard(props) {
+  const card = normalizeCardProps(props)
+
+  if (!card.href) {
+    return <GuideCardBody card={card} />
+  }
+
+  return (
+    <Link href={card.href}>
+      <GuideCardBody card={card} />
     </Link>
   )
 }
+
+export { GuideCard }
 
 function ArrowIcon() {
   return (

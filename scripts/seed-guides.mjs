@@ -21,22 +21,23 @@ const client = createClient({
   useCdn: false,
 });
 
-const siteSlug = "austin-solar-pros";
-const siteFixture = sites.find((site) => site.slug === siteSlug);
+const fixtureSiteSlug = "texas-solar-and-roofing-pros";
+const legacySiteSlug = "austin-solar-pros";
+const siteFixture = sites.find((site) => site.slug === fixtureSiteSlug);
 
 if (!siteFixture) {
-  console.error(`Could not find fixture site for ${siteSlug}.`);
+  console.error(`Could not find fixture site for ${fixtureSiteSlug}.`);
   process.exit(1);
 }
 
 async function ensureSite() {
   const existing = await client.fetch(
-    `*[_type == "site" && slug.current == $siteSlug][0]{_id}`,
-    { siteSlug },
+    `*[_type == "site" && (slug.current in $siteSlugs || primaryDomain == $primaryDomain)][0]{_id,"slug":slug.current}`,
+    { siteSlugs: [fixtureSiteSlug, legacySiteSlug], primaryDomain: siteFixture.primaryDomain },
   );
 
   if (existing?._id) {
-    return existing._id;
+    return existing;
   }
 
   const created = await client.createIfNotExists({
@@ -60,7 +61,10 @@ async function ensureSite() {
     organization: siteFixture.organization,
   });
 
-  return created._id;
+  return {
+    _id: created._id,
+    slug: siteFixture.slug,
+  };
 }
 
 function toSanityDocument(page, siteId, existingId) {
@@ -144,7 +148,7 @@ function mergeSeedSections(seedSections, existingSections = []) {
   );
 }
 
-async function upsertPage(page, siteId) {
+async function upsertPage(page, siteId, siteSlugForQuery) {
   const existing = await client.fetch(
     `*[_type in ["page", "post"] && site->slug.current == $siteSlug && slug.current == $slug][0]{
       _id,
@@ -168,7 +172,7 @@ async function upsertPage(page, siteId) {
         }
       }
     }`,
-    { siteSlug, slug: page.slug || "/" },
+    { siteSlug: siteSlugForQuery, slug: page.slug || "/" },
   );
 
   const document = toSanityDocument(
@@ -183,18 +187,18 @@ async function upsertPage(page, siteId) {
 }
 
 async function main() {
-  const siteId = await ensureSite();
+  const siteRecord = await ensureSite();
   const guidePages = pages.filter(
     (page) =>
-      page.siteSlug === siteSlug &&
+      page.siteSlug === fixtureSiteSlug &&
       (page.slug === "guides" || page.slug.startsWith("guides/")),
   );
 
   for (const page of guidePages) {
-    await upsertPage(page, siteId);
+    await upsertPage(page, siteRecord._id, siteRecord.slug);
   }
 
-  console.log(`Seeded ${guidePages.length} guide documents for ${siteSlug}.`);
+  console.log(`Seeded ${guidePages.length} guide documents for ${siteRecord.slug}.`);
 }
 
 main().catch((error) => {

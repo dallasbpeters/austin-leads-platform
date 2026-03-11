@@ -10,6 +10,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/sign-in",
   },
+  logger: {
+    error(error) {
+      if (error?.type === "JWTSessionError" || error?.code === "JWTSessionError") {
+        return;
+      }
+
+      console.error(error);
+    },
+  },
   session: {
     strategy: "jwt",
   },

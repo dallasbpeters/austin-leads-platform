@@ -8,6 +8,7 @@ import { hasImageSource } from "./imageSource";
 import { withSectionKeys } from "@/lib/sanity/keys";
 
 const sectionProjection = `
+  _type,
   _key,
   type,
   eyebrow,
@@ -35,6 +36,11 @@ const sectionProjection = `
     }
   },
   metrics,
+  actions[]{
+    label,
+    href,
+    variant
+  },
   items[]{
     _key,
     number,
@@ -44,6 +50,7 @@ const sectionProjection = `
     question,
     answer,
     href,
+    icon,
     image,
     imageAsset{
       alt,
@@ -66,6 +73,16 @@ function normalizeHost(host) {
   return (host || "").replace(/^https?:\/\//, "").replace(/:\d+$/, "").toLowerCase();
 }
 
+const PRIMARY_SITE_SLUGS = ["texas-solar-and-roofing-pros", "austin-solar-pros"];
+
+export function isPrimarySiteSlug(siteSlug) {
+  return PRIMARY_SITE_SLUGS.includes(siteSlug);
+}
+
+function getEquivalentSiteSlugs(siteSlug) {
+  return isPrimarySiteSlug(siteSlug) ? PRIMARY_SITE_SLUGS : [siteSlug];
+}
+
 export function getAllSites() {
   return sites;
 }
@@ -83,7 +100,7 @@ export function getSiteById(siteId) {
 }
 
 export function getSiteBySlug(siteSlug) {
-  return sites.find((site) => site.slug === siteSlug) ?? null;
+  return sites.find((site) => getEquivalentSiteSlugs(siteSlug).includes(site.slug)) ?? null;
 }
 
 export async function resolveSiteBySlug(siteSlug) {
@@ -131,12 +148,16 @@ export function getPageKey(slugParts = []) {
 }
 
 export function getPagesForSite(siteSlug) {
-  return pages.filter((page) => page.siteSlug === siteSlug);
+  return pages.filter((page) => getEquivalentSiteSlugs(siteSlug).includes(page.siteSlug));
 }
 
 export function getPageForSite(siteSlug, slugParts = []) {
   return (
-    pages.find((page) => page.siteSlug === siteSlug && page.slug === getPageKey(slugParts)) ?? null
+    pages.find(
+      (page) =>
+        getEquivalentSiteSlugs(siteSlug).includes(page.siteSlug) &&
+        page.slug === getPageKey(slugParts),
+    ) ?? null
   );
 }
 
@@ -166,9 +187,20 @@ export function getNavigationForSite(siteSlug) {
   return getPagesForSite(siteSlug)
     .filter((page) => page.slug !== "" && page.pageType !== "post" && !page.slug.includes("/"))
     .map((page) => ({
-      label: page.title.replace(/^Austin Solar /, "").replace(/^Austin /, ""),
+      label: page.title
+        .replace(/^Texas Solar and Roofing /, "")
+        .replace(/^Austin Solar /, "")
+        .replace(/^Austin /, ""),
       href: page.slug.startsWith("blog/") ? `/${page.slug}` : `/${page.slug}`,
-    }));
+      }));
+}
+
+function getEquivalentSiteIds(site) {
+  const equivalentSlugs = getEquivalentSiteSlugs(site.slug);
+
+  return sites
+    .filter((candidate) => equivalentSlugs.includes(candidate.slug))
+    .map((candidate) => candidate.id);
 }
 
 export async function resolveSiteByHost(host) {
@@ -179,11 +211,11 @@ export async function resolveSiteByHost(host) {
       (site) =>
         site.primaryDomain === normalizedHost ||
         site.aliases?.includes(normalizedHost) ||
-        (normalizedHost.endsWith(".vercel.app") && site.slug === "austin-solar-pros"),
+        (normalizedHost.endsWith(".vercel.app") && site.slug === "texas-solar-and-roofing-pros"),
     ) ?? null;
 
   if (!sanityServerClient) {
-    return localSite ?? getSiteBySlug("austin-solar-pros");
+    return localSite ?? getSiteBySlug("texas-solar-and-roofing-pros");
   }
 
   try {
@@ -209,9 +241,9 @@ export async function resolveSiteByHost(host) {
       { next: { revalidate: 60 } },
     );
 
-    return site ?? localSite ?? getSiteBySlug("austin-solar-pros");
+    return site ?? localSite ?? getSiteBySlug("texas-solar-and-roofing-pros");
   } catch {
-    return localSite ?? getSiteBySlug("austin-solar-pros");
+    return localSite ?? getSiteBySlug("texas-solar-and-roofing-pros");
   }
 }
 
@@ -230,11 +262,13 @@ export async function getPageForRequest(site, slugParts = []) {
   }
 
   try {
+    const siteSlugs = getEquivalentSiteSlugs(site.slug);
     const page = await sanityServerClient.fetch(
-      groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current == $siteSlug && slug.current == $slug][0]{
+      groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
         _id,
         "id": _id,
         title,
+        seo,
         description,
         pageType,
         templateLevel,
@@ -243,7 +277,7 @@ export async function getPageForRequest(site, slugParts = []) {
           ${sectionProjection}
         }
       }`,
-      { siteSlug: site.slug, slug: getPageKey(slugParts) || "/" },
+      { siteSlugs, slug: getPageKey(slugParts) || "/" },
       { cache: "no-store" },
     );
 
@@ -256,6 +290,64 @@ export async function getPageForRequest(site, slugParts = []) {
   } catch {}
 
   return localPage;
+}
+
+export async function getSitemapEntriesForSite(site) {
+  const localSiteIds = new Set(getEquivalentSiteIds(site));
+  const localEntries = pages
+    .filter((page) => localSiteIds.has(page.siteId) && page.slug !== "404")
+    .map((page) => ({
+      slug: page.slug,
+      pageType: page.pageType,
+      updatedAt: null,
+    }));
+
+  if (!sanityServerClient) {
+    return localEntries;
+  }
+
+  try {
+    const siteSlugs = getEquivalentSiteSlugs(site.slug);
+    const entries = await sanityServerClient.fetch(
+      groq`*[
+        _type in ["page", "servicePage", "locationPage", "post"] &&
+        site->slug.current in $siteSlugs &&
+        slug.current != "404"
+      ]{
+        "slug": select(slug.current == "/" => "", slug.current),
+        pageType,
+        _updatedAt
+      }`,
+      { siteSlugs },
+      { cache: "no-store" },
+    );
+
+    if (Array.isArray(entries) && entries.length) {
+      const deduped = new Map();
+
+      for (const entry of entries) {
+        if (!entry?.slug && entry?.slug !== "") {
+          continue;
+        }
+
+        deduped.set(entry.slug, {
+          slug: entry.slug,
+          pageType: entry.pageType,
+          updatedAt: entry._updatedAt ?? null,
+        });
+      }
+
+      for (const entry of localEntries) {
+        if (!deduped.has(entry.slug)) {
+          deduped.set(entry.slug, entry);
+        }
+      }
+
+      return Array.from(deduped.values());
+    }
+  } catch {}
+
+  return localEntries;
 }
 
 export async function getHeroPages() {
@@ -350,7 +442,8 @@ export async function getLaunchChecklist() {
 
 export async function getHeroHomepageForSite(siteSlug) {
   const heroPages = await getHeroPages();
-  const sitePages = heroPages.filter((page) => page.site?.slug === siteSlug);
+  const equivalentSlugs = getEquivalentSiteSlugs(siteSlug);
+  const sitePages = heroPages.filter((page) => equivalentSlugs.includes(page.site?.slug));
 
   const isHomepage = (page) => page.pageType === "home" || page.slug === "" || page.slug === "/";
   const hasHeroImage = (page) => hasImageSource(page?.heroSection?.heroAsset, page?.heroSection?.heroImage);
@@ -360,6 +453,29 @@ export async function getHeroHomepageForSite(siteSlug) {
     sitePages.find((page) => hasHeroImage(page)) ||
     sitePages.find((page) => isHomepage(page)) ||
     sitePages[0] ||
+    null
+  );
+}
+
+export async function getHomepageForSite(siteSlug) {
+  const site = getSiteBySlug(siteSlug);
+
+  if (!site) {
+    return null;
+  }
+
+  const homepage = await getPageForRequest(site, []);
+
+  if (homepage) {
+    return homepage;
+  }
+
+  const equivalentSlugs = getEquivalentSiteSlugs(siteSlug);
+  const fallbackPages = pages.filter((page) => equivalentSlugs.includes(page.siteSlug));
+
+  return (
+    fallbackPages.find((page) => page.pageType === "home" || page.slug === "") ||
+    fallbackPages[0] ||
     null
   );
 }
@@ -409,36 +525,80 @@ export function getPrimaryUrl(site, pathname = "/") {
 }
 
 export function createJsonLd(site, page, pathname = "/") {
-  const base = {
+  const canonicalUrl = getPrimaryUrl(site, pathname);
+  const organization = {
     "@context": "https://schema.org",
     "@type": site.organization?.type || "LocalBusiness",
     name: site.organization?.name || site.name,
-    url: getPrimaryUrl(site, pathname),
+    url: getPrimaryUrl(site, "/"),
     telephone: site.organization?.phone,
     email: site.organization?.email,
     areaServed: site.organization?.serviceArea,
   };
+  const webPage = {
+    "@context": "https://schema.org",
+    "@type": page?.pageType === "post" ? "Article" : "WebPage",
+    name: page?.title || site.name,
+    description: page?.description || site.seo?.description,
+    url: canonicalUrl,
+    isPartOf: {
+      "@type": "WebSite",
+      name: site.name,
+      url: getPrimaryUrl(site, "/"),
+    },
+  };
+  const breadcrumbs = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: pathname
+      .split("/")
+      .filter(Boolean)
+      .reduce(
+        (items, segment, index, all) => {
+          const href = `/${all.slice(0, index + 1).join("/")}`;
+          items.push({
+            "@type": "ListItem",
+            position: items.length + 1,
+            name: segment.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()),
+            item: getPrimaryUrl(site, href),
+          });
+          return items;
+        },
+        [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: getPrimaryUrl(site, "/"),
+          },
+        ],
+      ),
+  };
 
   if (page?.pageType === "post") {
-    return {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: page.title,
-      description: page.description,
-      about: site.categoryLabel,
-      publisher: {
-        "@type": "Organization",
-        name: site.name,
+    return [
+      organization,
+      {
+        ...webPage,
+        headline: page.title,
+        about: site.categoryLabel,
+        publisher: {
+          "@type": "Organization",
+          name: site.name,
+        },
+        mainEntityOfPage: canonicalUrl,
       },
-      mainEntityOfPage: getPrimaryUrl(site, pathname),
-    };
+      breadcrumbs,
+    ];
   }
 
   const faqSection = page?.sections?.find((section) => section.type === "faq");
 
   if (faqSection) {
     return [
-      base,
+      organization,
+      webPage,
+      breadcrumbs,
       {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -454,7 +614,7 @@ export function createJsonLd(site, page, pathname = "/") {
     ];
   }
 
-  return base;
+  return [organization, webPage, breadcrumbs];
 }
 
 export async function publishPageToSanity(job) {
@@ -477,14 +637,14 @@ export async function publishPageToSanity(job) {
     title: job.title,
     description: job.prompt,
     pageType: job.contentType,
-    templateLevel: job.siteSlug === "austin-solar-pros" ? "hero" : "landing",
+    templateLevel: job.siteSlug === "texas-solar-and-roofing-pros" ? "hero" : "landing",
     slug: {
       _type: "slug",
       current: job.contentType === "post" ? `blog/${slug}` : slug,
     },
     sections: withSectionKeys([
       {
-        _type: "object",
+        _type: "heroSection",
         type: "hero",
         eyebrow: "Published from queue",
         title: job.title,

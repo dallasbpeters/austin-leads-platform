@@ -1,7 +1,14 @@
+import Link from "next/link";
 import { FileText, Globe2, Server, SquarePen } from "lucide-react";
 
 import LaunchChecklistCard from "@/components/admin/LaunchChecklistCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ensureLeadSubmissionsTable,
+  getLeadSubmissionOverview,
+  hasLeadDatabase,
+  listRecentLeadSubmissions,
+} from "@/lib/leads/db";
 import { getAllRenderableSites, getAllSites, getLaunchChecklist } from "@/lib/platform/content";
 import { getAnalyticsOverview, listDomainRecords, listPublishJobs } from "@/lib/platform/store";
 
@@ -18,6 +25,20 @@ export default async function DashboardPage() {
   const jobs = listPublishJobs();
   const analytics = getAnalyticsOverview();
   const checklist = await getLaunchChecklist();
+  let leadOverview = { total: 0, last_30_days: 0, open: 0 };
+  let recentLeads = [];
+  let leadDbReady = false;
+
+  if (hasLeadDatabase()) {
+    try {
+      await ensureLeadSubmissionsTable();
+      leadOverview = await getLeadSubmissionOverview();
+      recentLeads = await listRecentLeadSubmissions(5);
+      leadDbReady = true;
+    } catch {
+      leadDbReady = false;
+    }
+  }
 
   const counts = {
     jobs: jobs.length,
@@ -136,6 +157,56 @@ export default async function DashboardPage() {
                   Real analytics is now instrumentation-first. The admin surface shows provider status and KPI
                   configuration until live data sources are connected.
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-theme-sm">
+              <CardHeader>
+                <CardTitle className="text-base">Leads</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-xl border border-border bg-muted/30 p-4">
+                    <div className="text-sm font-medium text-foreground">Total</div>
+                    <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{leadOverview.total}</div>
+                  </div>
+                  <div className="rounded-xl border border-border bg-muted/30 p-4">
+                    <div className="text-sm font-medium text-foreground">Last 30 days</div>
+                    <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{leadOverview.last_30_days}</div>
+                  </div>
+                  <div className="rounded-xl border border-border bg-muted/30 p-4">
+                    <div className="text-sm font-medium text-foreground">Open</div>
+                    <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{leadOverview.open}</div>
+                  </div>
+                </div>
+
+                {!leadDbReady ? (
+                  <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+                    Add `DATABASE_URL` or `NEON_DATABASE_URL`, then run `pnpm db:setup` to enable live lead capture and dashboard reporting.
+                  </div>
+                ) : recentLeads.length ? (
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    {recentLeads.map((lead) => (
+                      <div key={lead.id} className="grid gap-1 border-b border-border px-4 py-3 text-sm last:border-b-0">
+                        <div className="font-medium text-foreground">{lead.full_name}</div>
+                        <div className="text-muted-foreground">{lead.email}{lead.phone ? ` · ${lead.phone}` : ""}</div>
+                        <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                          {lead.service_interest || lead.source_type} · {lead.source_domain} · {lead.page_path}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+                    The database is connected, but no lead submissions have been captured yet.
+                  </div>
+                )}
+                <Link
+                  href="/crm"
+                  className="inline-flex items-center rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                >
+                  Open CRM
+                </Link>
               </CardContent>
             </Card>
 
