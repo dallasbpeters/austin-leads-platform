@@ -41,6 +41,9 @@ importers:
       iconoir-react:
         specifier: ^7.11.0
         version: 7.11.0(react@19.2.4)
+      leaflet:
+        specifier: ^1.9.4
+        version: 1.9.4
       lucide-react:
         specifier: ^0.577.0
         version: 0.577.0(react@19.2.4)
@@ -65,6 +68,9 @@ importers:
       react-dom:
         specifier: ^19.2.4
         version: 19.2.4(react@19.2.4)
+      react-leaflet:
+        specifier: ^5.0.0
+        version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       sanity:
         specifier: ^5.13.0
         version: 5.13.0(@emotion/is-prop-valid@1.4.0)(@noble/hashes@2.0.1)(@types/node@25.4.0)(@types/react@19.2.14)(babel-plugin-react-compiler@1.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(styled-components@6.3.11(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(tsx@4.21.0)(yaml@2.8.2)
@@ -2330,6 +2336,13 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
+  '@react-leaflet/core@3.0.0':
+    resolution: {integrity: sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==}
+    peerDependencies:
+      leaflet: ^1.9.0
+      react: ^19.0.0
+      react-dom: ^19.0.0
+
   '@rexxars/jiti@2.6.2':
     resolution: {integrity: sha512-B9FdXL9Z+TnaT+H1Z91nd68tjaD5q3G0ZC7e1Se3/rUur70DSZj++54HhkfoNIA5n/Y1TMllKKGk9qYsOVK2Lw==}
     hasBin: true
@@ -4292,6 +4305,9 @@ packages:
     resolution: {integrity: sha512-b94GiNHQNy6JNTrt5w6zNyffMrNkXZb3KTkCZJb2V1xaEGCk093vkZ2jk3tpaeP33/OiXC+WvK9AxUebnf5nbw==}
     engines: {node: '>= 0.6.3'}
 
+  leaflet@1.9.4:
+    resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
+
   leven@3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
     engines: {node: '>=6'}
@@ -5114,6 +5130,13 @@ packages:
 
   react-is@19.2.4:
     resolution: {integrity: sha512-W+EWGn2v0ApPKgKKCy/7s7WHXkboGcsrXE+2joLyVxkbyVQfO3MUEaUQDHoSmb8TFFrSKYa9mw64WZHNHSDzYA==}
+
+  react-leaflet@5.0.0:
+    resolution: {integrity: sha512-CWbTpr5vcHw5bt9i4zSlPEVQdTVcML390TjeDG0cK59z1ylexpqC6M1PJFjV8jD7CF+ACBFsLIDs6DRMoLEofw==}
+    peerDependencies:
+      leaflet: ^1.9.0
+      react: ^19.0.0
+      react-dom: ^19.0.0
 
   react-refractor@4.0.0:
     resolution: {integrity: sha512-2VMRH3HA/Nu+tMFzyQwdBK0my0BIZy1pkWHhjuSrplMyf8ZLx/Gw7tUXV0t2JbEsbSNHbEc9TbHhq3sUx2seVA==}
@@ -8376,6 +8399,12 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
+  '@react-leaflet/core@3.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      leaflet: 1.9.4
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
   '@rexxars/jiti@2.6.2': {}
 
   '@rexxars/react-json-inspector@9.0.1(react@19.2.4)':
@@ -10545,6 +10574,8 @@ snapshots:
     dependencies:
       readable-stream: 2.3.8
 
+  leaflet@1.9.4: {}
+
   leven@3.1.0: {}
 
   lightningcss-android-arm64@1.31.1:
@@ -11302,6 +11333,13 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@19.2.4: {}
+
+  react-leaflet@5.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      '@react-leaflet/core': 3.0.0(leaflet@1.9.4)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      leaflet: 1.9.4
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   react-refractor@4.0.0(react@19.2.4):
     dependencies:
