@@ -5,7 +5,7 @@ export const studioUrl = "/studio";
 export const canonicalStudioUrl =
   process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || "https://austin-leads-platform.sanity.studio";
 export const frontendUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://www.texassolarandroofingpros.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://texassolarandroofingpros.com";
 export const localFrontendUrl = process.env.NEXT_PUBLIC_LOCAL_SITE_URL || "http://localhost:3000";
 export const frontendOriginAllowlist = Array.from(
   new Set([frontendUrl, "https://texassolarandroofingpros.com", "https://www.texassolarandroofingpros.com"]),
