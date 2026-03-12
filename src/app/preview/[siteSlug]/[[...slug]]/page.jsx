@@ -1,7 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound } from 'next/navigation'
 
-import App from "@/App";
-import PublicSite from "@/components/platform/PublicSite";
+import App from '@/App'
+import PublicSite from '@/components/platform/PublicSite'
 import {
   createJsonLd,
   getHeroHomepageForSite,
@@ -9,30 +9,30 @@ import {
   getPageForRequest,
   isPrimarySiteSlug,
   resolveSiteBySlug,
-} from "@/lib/platform/content";
+} from '@/lib/platform/content'
 
 export default async function PreviewSitePage({ params }) {
-  const { siteSlug, slug = [] } = await params;
-  const site = await resolveSiteBySlug(siteSlug);
+  const { siteSlug, slug = [] } = await params
+  const site = await resolveSiteBySlug(siteSlug)
 
   if (!site) {
-    notFound();
+    notFound()
   }
 
   if (isPrimarySiteSlug(site.slug) && slug.length === 0) {
-    const heroHomepage = await getHeroHomepageForSite(site.slug);
-    const heroSection = heroHomepage?.heroSection ?? null;
+    const heroHomepage = await getHeroHomepageForSite(site.slug)
+    const heroSection = heroHomepage?.heroSection ?? null
 
-    return <App heroSection={heroSection} site={site} />;
+    return <App heroSection={heroSection} site={site} />
   }
 
-  const page = await getPageForRequest(site, slug);
+  const page = await getPageForRequest(site, slug)
 
   if (!page) {
-    notFound();
+    notFound()
   }
 
-  const pathname = slug.length ? `/${slug.join("/")}` : "/";
+  const pathname = slug.length ? `/${slug.join('/')}` : '/'
 
   return (
     <PublicSite
@@ -42,5 +42,5 @@ export default async function PreviewSitePage({ params }) {
       navigation={getNavigationForSite(site.slug)}
       jsonLd={createJsonLd(site, page, pathname)}
     />
-  );
+  )
 }

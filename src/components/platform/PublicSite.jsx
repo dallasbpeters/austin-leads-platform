@@ -85,7 +85,7 @@ function HeroSection({ page, section, sectionId }) {
       />
       {hasHeroImage ? (
         <>
-          <div className="absolute inset-0 z-[2]">
+          <div className="absolute inset-0 z-2">
             <Image
               width={2000}
               height={2000}
@@ -94,7 +94,7 @@ function HeroSection({ page, section, sectionId }) {
               src={heroImageUrl}
             />
           </div>
-          <div className="absolute inset-0 z-[3]" style={overlayStyle} />
+          <div className="absolute inset-0 z-3" style={overlayStyle} />
         </>
       ) : null}
       {/* {!hasHeroImage && overlayStyle ? <div className="absolute inset-0" style={overlayStyle} /> : null} */}

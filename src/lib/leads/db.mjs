@@ -1,25 +1,25 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless'
 
 function getDatabaseUrl() {
-  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || "";
+  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''
 }
 
 export function hasLeadDatabase() {
-  return Boolean(getDatabaseUrl());
+  return Boolean(getDatabaseUrl())
 }
 
 function getSql() {
-  const databaseUrl = getDatabaseUrl();
+  const databaseUrl = getDatabaseUrl()
 
   if (!databaseUrl) {
-    throw new Error("Lead database is not configured.");
+    throw new Error('Lead database is not configured.')
   }
 
-  return neon(databaseUrl);
+  return neon(databaseUrl)
 }
 
 export async function ensureLeadSubmissionsTable() {
-  const sql = getSql();
+  const sql = getSql()
 
   await sql`
     CREATE TABLE IF NOT EXISTS lead_submissions (
@@ -47,18 +47,18 @@ export async function ensureLeadSubmissionsTable() {
       notes TEXT,
       metadata JSONB NOT NULL DEFAULT '{}'::jsonb
     )
-  `;
+  `
 
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS pipeline_stage TEXT NOT NULL DEFAULT 'new'`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'normal'`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS assigned_to TEXT`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMPTZ`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS follow_up_at TIMESTAMPTZ`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS internal_notes TEXT`;
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS pipeline_stage TEXT NOT NULL DEFAULT 'new'`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'normal'`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS assigned_to TEXT`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMPTZ`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS follow_up_at TIMESTAMPTZ`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS internal_notes TEXT`
 }
 
 export async function getLeadSubmissionOverview() {
-  const sql = getSql();
+  const sql = getSql()
 
   const [counts] = await sql`
     SELECT
@@ -66,7 +66,7 @@ export async function getLeadSubmissionOverview() {
       COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days')::INT AS last_30_days,
       COUNT(*) FILTER (WHERE status = 'new')::INT AS open
     FROM lead_submissions
-  `;
+  `
 
-  return counts || { total: 0, last_30_days: 0, open: 0 };
+  return counts || { total: 0, last_30_days: 0, open: 0 }
 }

@@ -1,10 +1,6 @@
-import AnalyticsClient from "@/components/admin/AnalyticsClient";
-import { getAllRenderableSites } from "@/lib/platform/content";
-import {
-  getAnalyticsOverview,
-  getAnalyticsProviders,
-  listAnalyticsGoals,
-} from "@/lib/platform/store";
+import AnalyticsClient from '@/components/admin/AnalyticsClient'
+import { getAllRenderableSites } from '@/lib/platform/content'
+import { getAnalyticsOverview, getAnalyticsProviders, listAnalyticsGoals } from '@/lib/platform/store'
 
 export default function AnalyticsPage() {
   return (
@@ -14,5 +10,5 @@ export default function AnalyticsPage() {
       goals={listAnalyticsGoals()}
       sites={getAllRenderableSites()}
     />
-  );
+  )
 }

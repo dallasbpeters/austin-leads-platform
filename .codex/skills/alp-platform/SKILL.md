@@ -18,13 +18,13 @@ Use this skill when working on the shared platform architecture.
 
 ## Key files
 
-- [`src/app/(site)/[[...slug]]/page.jsx`](../../../src/app/(site)/[[...slug]]/page.jsx)
+- [`src/app/(site)/[[...slug]]/page.jsx`](<../../../src/app/(site)/[[...slug]]/page.jsx>)
 - [`src/components/platform/PublicSite.jsx`](../../../src/components/platform/PublicSite.jsx)
 - [`src/lib/platform/content.js`](../../../src/lib/platform/content.js)
 - [`src/lib/platform/fixtures.js`](../../../src/lib/platform/fixtures.js)
 - [`src/lib/platform/store.js`](../../../src/lib/platform/store.js)
 - [`src/lib/platform/vercel.js`](../../../src/lib/platform/vercel.js)
-- [`src/app/(admin)`](../../../src/app/(admin))
+- [`src/app/(admin)`](<../../../src/app/(admin)>)
 - [`src/app/api`](../../../src/app/api)
 - [`src/sanity`](../../../src/sanity)
 

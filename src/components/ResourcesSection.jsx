@@ -97,7 +97,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
 
             return (
               <Link key={item.title} href={item.href}>
-                <Card className="relative aspect-[1/1]" variant="media" radius="lg">
+                <Card className="relative aspect-square" variant="media" radius="lg">
                   <img
                     src={item.image}
                     alt={item.alt}
@@ -105,7 +105,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>
                   <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                    <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]">
+                    <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                       <Icon className="h-5 w-5" strokeWidth={2.2} />
                     </div>
                     <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>

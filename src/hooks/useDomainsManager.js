@@ -1,18 +1,18 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
 
 import {
   buildDefaultDomainForm,
   createDomainRecord,
   fetchDomains,
   verifyDomainRecord,
-} from "@/services/admin/domains"
+} from '@/services/admin/domains'
 
 export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   const [domains, setDomains] = useState(initialDomains)
   const [loading, setLoading] = useState(false)
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState('')
   const [form, setForm] = useState(buildDefaultDomainForm(sites))
 
   useEffect(() => {

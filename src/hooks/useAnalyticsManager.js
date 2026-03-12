@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
 
 import {
   buildDefaultAnalyticsGoalForm,
   createAnalyticsGoal,
   fetchAnalyticsGoals,
   updateAnalyticsGoal,
-} from "@/services/admin/analytics"
+} from '@/services/admin/analytics'
 
 export function useAnalyticsManager({ goals, sites }) {
   const [goalList, setGoalList] = useState(goals)

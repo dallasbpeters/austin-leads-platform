@@ -18,7 +18,7 @@ The goal is not "one website." The goal is one engine that can serve many domain
 
 - `http://localhost:3000/` renders the restored `Austin Solar Pros` designed homepage.
 - That homepage comes from [`src/App.jsx`](./src/App.jsx).
-- Public routing is handled by [`src/app/(site)/[[...slug]]/page.jsx`](./src/app/(site)/[[...slug]]/page.jsx).
+- Public routing is handled by [`src/app/(site)/[[...slug]]/page.jsx`](<./src/app/(site)/[[...slug]]/page.jsx>).
 - For the `austin-solar-pros` tenant with no slug, the route intentionally falls back to `App.jsx`.
 - Other tenants and deeper routes use the generic multi-tenant renderer in [`src/components/platform/PublicSite.jsx`](./src/components/platform/PublicSite.jsx).
 
@@ -32,7 +32,7 @@ The goal is not "one website." The goal is one engine that can serve many domain
 - Auth is implemented with Auth.js v5 beta.
 - The sign-in page is `/sign-in`.
 - Admin layout and shell live in:
-  - [`src/app/(admin)/layout.jsx`](./src/app/(admin)/layout.jsx)
+  - [`src/app/(admin)/layout.jsx`](<./src/app/(admin)/layout.jsx>)
   - [`src/components/admin/AdminShell.jsx`](./src/components/admin/AdminShell.jsx)
 - Route protection is handled by [`proxy.js`](./proxy.js).
 - Admin API routes are also protected server-side through [`src/lib/auth/guards.js`](./src/lib/auth/guards.js).

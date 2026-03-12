@@ -40,7 +40,7 @@ export default function SnapshotSection({ sectionId = 'texas-snapshot' }) {
           width="400"
           height="400"
           viewBox="0 0 24 24"
-          className="absolute top-10 left-[10%] h-[400px] w-[400px]"
+          className="absolute top-10 left-[10%] h-100 w-100"
         >
           <g fill="none" stroke="currentColor" strokeWidth="1.5">
             <circle cx="12" cy="12" r="6"></circle>
@@ -52,7 +52,7 @@ export default function SnapshotSection({ sectionId = 'texas-snapshot' }) {
         </svg>
       </div>
 
-      <div className="relative z-[1] mx-auto w-[min(80rem,calc(100%-3rem))]">
+      <div className="relative z-1 mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
           <p className="type-accent text-primary mb-4 text-sm font-semibold tracking-[0.2em] uppercase">
             Texas Snapshot

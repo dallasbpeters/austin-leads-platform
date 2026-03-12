@@ -1,12 +1,9 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { useColorPicker } from "react-best-gradient-color-picker"
+import { useEffect, useState } from 'react'
+import { useColorPicker } from 'react-best-gradient-color-picker'
 
-import {
-  buildHeroOverlayGradientValue,
-  parseRgbString,
-} from "@/lib/platform/heroAppearance"
+import { buildHeroOverlayGradientValue, parseRgbString } from '@/lib/platform/heroAppearance'
 import {
   buildDefaultHeroQuery,
   buildSiteHeroQuery,
@@ -16,20 +13,20 @@ import {
   saveHeroPageAppearance,
   saveHeroPageImage,
   searchUnsplashPhotos,
-} from "@/services/admin/hero-pages"
+} from '@/services/admin/hero-pages'
 
 function buildDefaultAppearance(selectedPage) {
   return {
-    heroTextColor: selectedPage?.heroSection?.heroTextColor || "#ffffff",
+    heroTextColor: selectedPage?.heroSection?.heroTextColor || '#ffffff',
     heroOverlayStartColor:
       selectedPage?.heroSection?.heroOverlayStartColor ||
       selectedPage?.heroSection?.heroOverlayColor ||
-      "#0f172a",
+      '#0f172a',
     heroOverlayEndColor:
       selectedPage?.heroSection?.heroOverlayEndColor ||
       selectedPage?.heroSection?.heroOverlayColor ||
-      "#0f172a",
-    heroOverlayDirection: selectedPage?.heroSection?.heroOverlayDirection || "180deg",
+      '#0f172a',
+    heroOverlayDirection: selectedPage?.heroSection?.heroOverlayDirection || '180deg',
     heroOverlayStartOpacity: String(
       selectedPage?.heroSection?.heroOverlayStartOpacity ??
         selectedPage?.heroSection?.heroOverlayOpacity ??
@@ -46,46 +43,44 @@ function buildDefaultAppearance(selectedPage) {
 
 export function useHeroPagesManager({ initialPages, heroSites }) {
   const [pages, setPages] = useState(initialPages)
-  const [selectedPageId, setSelectedPageId] = useState(initialPages[0]?.id || "")
-  const [query, setQuery] = useState(
-    initialPages[0] ? buildDefaultHeroQuery(initialPages[0]) : "",
-  )
+  const [selectedPageId, setSelectedPageId] = useState(initialPages[0]?.id || '')
+  const [query, setQuery] = useState(initialPages[0] ? buildDefaultHeroQuery(initialPages[0]) : '')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [searchPage, setSearchPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [savingImageId, setSavingImageId] = useState("")
+  const [savingImageId, setSavingImageId] = useState('')
   const [savingAppearance, setSavingAppearance] = useState(false)
   const [gradientPickerOpen, setGradientPickerOpen] = useState(false)
-  const [message, setMessage] = useState("")
-  const [error, setError] = useState("")
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
   const [creating, setCreating] = useState(false)
   const [appearanceForm, setAppearanceForm] = useState({
-    heroTextColor: "#ffffff",
-    heroOverlayStartColor: "#0f172a",
-    heroOverlayEndColor: "#0f172a",
-    heroOverlayDirection: "180deg",
-    heroOverlayStartOpacity: "0.6",
-    heroOverlayEndOpacity: "0.15",
-    heroOverlayOpacity: "0.42",
+    heroTextColor: '#ffffff',
+    heroOverlayStartColor: '#0f172a',
+    heroOverlayEndColor: '#0f172a',
+    heroOverlayDirection: '180deg',
+    heroOverlayStartOpacity: '0.6',
+    heroOverlayEndOpacity: '0.15',
+    heroOverlayOpacity: '0.42',
   })
   const [overlayGradient, setOverlayGradient] = useState(
-    "linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.15) 100%)",
+    'linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.15) 100%)',
   )
   const [createForm, setCreateForm] = useState({
-    title: "",
-    siteId: heroSites[0]?.id || "",
-    pageType: "home",
-    slug: "",
-    description: "",
+    title: '',
+    siteId: heroSites[0]?.id || '',
+    pageType: 'home',
+    slug: '',
+    description: '',
   })
 
   const selectedPage = pages.find((page) => page.id === selectedPageId) || pages[0] || null
   const { getGradientObject } = useColorPicker(overlayGradient, setOverlayGradient)
-  const selectedSiteId = selectedPage?.site?.id || createForm.siteId || heroSites[0]?.id || ""
+  const selectedSiteId = selectedPage?.site?.id || createForm.siteId || heroSites[0]?.id || ''
   const selectedSite = heroSites.find((site) => site.id === selectedSiteId) || null
-  const launchHref = selectedPage?.slug ? `/${selectedPage.slug}` : "/"
+  const launchHref = selectedPage?.slug ? `/${selectedPage.slug}` : '/'
 
   useEffect(() => {
     if (!selectedPageId && initialPages[0]?.id) {
@@ -122,7 +117,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
     return data.pages || []
   }
 
-  async function fetchPhotos(page, mode = "replace") {
+  async function fetchPhotos(page, mode = 'replace') {
     if (!query) {
       return
     }
@@ -133,13 +128,13 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
       setSearchPage(page)
       setTotalPages(data.totalPages || 1)
       setResults((current) =>
-        mode === "append"
+        mode === 'append'
           ? mergeUniquePhotos(current, data.results || [])
           : mergeUniquePhotos([], data.results || []),
       )
     } catch (nextError) {
       setError(nextError.message)
-      if (mode === "replace") {
+      if (mode === 'replace') {
         setResults([])
       }
     }
@@ -147,23 +142,23 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
 
   async function searchPhotos(event) {
     event?.preventDefault()
-    setError("")
-    setMessage("")
+    setError('')
+    setMessage('')
     setLoading(true)
 
     try {
-      await fetchPhotos(1, "replace")
+      await fetchPhotos(1, 'replace')
     } finally {
       setLoading(false)
     }
   }
 
   async function loadMorePhotos() {
-    setError("")
+    setError('')
     setLoadingMore(true)
 
     try {
-      await fetchPhotos(searchPage + 1, "append")
+      await fetchPhotos(searchPage + 1, 'append')
     } finally {
       setLoadingMore(false)
     }
@@ -174,8 +169,8 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
       return
     }
 
-    setError("")
-    setMessage("")
+    setError('')
+    setMessage('')
     setSavingImageId(photo.id)
 
     try {
@@ -199,7 +194,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
     } catch (nextError) {
       setError(nextError.message)
     } finally {
-      setSavingImageId("")
+      setSavingImageId('')
     }
   }
 
@@ -210,8 +205,8 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
       return
     }
 
-    setError("")
-    setMessage("")
+    setError('')
+    setMessage('')
     setSavingAppearance(true)
 
     try {
@@ -244,7 +239,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
 
     const gradientObject = getGradientObject(nextGradient)
 
-    if (!gradientObject?.isGradient || gradientObject.gradientType !== "linear-gradient") {
+    if (!gradientObject?.isGradient || gradientObject.gradientType !== 'linear-gradient') {
       return
     }
 
@@ -272,8 +267,8 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
 
   async function createPage(event) {
     event.preventDefault()
-    setError("")
-    setMessage("")
+    setError('')
+    setMessage('')
     setCreating(true)
 
     try {
@@ -284,9 +279,9 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
       setQuery(buildDefaultHeroQuery(data.page))
       setCreateForm((current) => ({
         ...current,
-        title: "",
-        slug: "",
-        description: "",
+        title: '',
+        slug: '',
+        description: '',
       }))
       if (!nextPages.find((page) => page.id === data.page.id)) {
         setPages((current) => [data.page, ...current])
@@ -303,9 +298,9 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
     const page = pages.find((entry) => entry.site?.id === site.id)
 
     setCreateForm((current) => ({ ...current, siteId: site.id }))
-    setSelectedPageId(page?.id || "")
-    setMessage("")
-    setError("")
+    setSelectedPageId(page?.id || '')
+    setMessage('')
+    setError('')
     setQuery(page ? buildDefaultHeroQuery(page) : buildSiteHeroQuery(site))
   }
 

@@ -1,6 +1,6 @@
-import { defineConfig } from "sanity";
-import { deskTool } from "sanity/desk";
-import { presentationTool } from "sanity/presentation";
+import { defineConfig } from 'sanity'
+import { deskTool } from 'sanity/desk'
+import { presentationTool } from 'sanity/presentation'
 
 import {
   canonicalStudioUrl,
@@ -11,13 +11,13 @@ import {
   localFrontendUrl,
   projectId,
   studioUrl,
-} from "./src/sanity/env";
-import { schemaTypes } from "./src/sanity/schemaTypes";
+} from './src/sanity/env'
+import { schemaTypes } from './src/sanity/schemaTypes'
 
 export default defineConfig({
-  name: "default",
-  title: "Austin Leads Studio",
-  projectId: projectId || "missing-project-id",
+  name: 'default',
+  title: 'Austin Leads Studio',
+  projectId: projectId || 'missing-project-id',
   dataset,
   basePath: studioUrl,
   plugins: [
@@ -38,7 +38,7 @@ export default defineConfig({
       allowOrigins: [
         ...frontendOriginAllowlist,
         localFrontendUrl,
-        "https://austin-leads-platform.vercel.app",
+        'https://austin-leads-platform.vercel.app',
       ],
     }),
   ],
@@ -55,4 +55,4 @@ export default defineConfig({
       assetSources: isSanityConfigured() ? undefined : [],
     },
   },
-});
+})

@@ -18,12 +18,12 @@ Do not treat this as a generic marketing site repo.
   - [`src/App.jsx`](./src/App.jsx)
   - section components in [`src/components`](./src/components)
 - Multi-tenant public renderer:
-  - [`src/app/(site)/[[...slug]]/page.jsx`](./src/app/(site)/[[...slug]]/page.jsx)
+  - [`src/app/(site)/[[...slug]]/page.jsx`](<./src/app/(site)/[[...slug]]/page.jsx>)
   - [`src/components/platform/PublicSite.jsx`](./src/components/platform/PublicSite.jsx)
   - [`src/lib/platform/content.js`](./src/lib/platform/content.js)
   - [`src/lib/platform/fixtures.js`](./src/lib/platform/fixtures.js)
 - Admin routes:
-  - [`src/app/(admin)`](./src/app/(admin))
+  - [`src/app/(admin)`](<./src/app/(admin)>)
   - [`src/components/admin`](./src/components/admin)
 - Auth:
   - [`src/auth.js`](./src/auth.js)

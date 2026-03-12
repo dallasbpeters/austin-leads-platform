@@ -43,13 +43,13 @@ export default function SignInForm({ callbackUrl = '/dashboard' }) {
   }
 
   return (
-    <Card className="shadow-theme-glass-soft w-full max-w-md border-border/80">
+    <Card className="shadow-theme-glass-soft border-border/80 w-full max-w-md">
       <CardHeader className="space-y-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <div className="bg-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-lg">
           <LockKeyhole className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">Admin access</p>
+          <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Admin access</p>
           <CardTitle className="mt-2 text-3xl tracking-tight">Sign in to the admin</CardTitle>
         </div>
       </CardHeader>

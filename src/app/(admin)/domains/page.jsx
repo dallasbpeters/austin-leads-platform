@@ -1,7 +1,7 @@
-import DomainsClient from "@/components/admin/DomainsClient";
-import { getAllRenderableSites } from "@/lib/platform/content";
-import { listDomainRecords } from "@/lib/platform/store";
-import { isVercelConfigured } from "@/lib/platform/vercel";
+import DomainsClient from '@/components/admin/DomainsClient'
+import { getAllRenderableSites } from '@/lib/platform/content'
+import { listDomainRecords } from '@/lib/platform/store'
+import { isVercelConfigured } from '@/lib/platform/vercel'
 
 export default function DomainsPage() {
   return (
@@ -10,5 +10,5 @@ export default function DomainsPage() {
       sites={getAllRenderableSites()}
       vercelEnabled={isVercelConfigured()}
     />
-  );
+  )
 }

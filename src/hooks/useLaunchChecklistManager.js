@@ -1,35 +1,35 @@
-"use client";
+'use client'
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react'
 
-import { updateLaunchChecklistTaskStatus } from "@/services/admin/launch-checklist";
+import { updateLaunchChecklistTaskStatus } from '@/services/admin/launch-checklist'
 
 export function useLaunchChecklistManager(initialChecklist) {
-  const [checklist, setChecklist] = useState(initialChecklist);
-  const [pendingTaskId, setPendingTaskId] = useState(null);
-  const [error, setError] = useState("");
+  const [checklist, setChecklist] = useState(initialChecklist)
+  const [pendingTaskId, setPendingTaskId] = useState(null)
+  const [error, setError] = useState('')
 
   const completion = useMemo(() => {
-    const tasks = checklist?.sections?.flatMap((section) => section.tasks || []) || [];
-    const completed = tasks.filter((task) => task.status === "done").length;
+    const tasks = checklist?.sections?.flatMap((section) => section.tasks || []) || []
+    const completed = tasks.filter((task) => task.status === 'done').length
 
     return {
       total: tasks.length,
       completed,
-    };
-  }, [checklist]);
+    }
+  }, [checklist])
 
   async function setTaskStatus({ sectionKey, taskKey, status }) {
     if (!checklist?._id) {
-      setError("Checklist document is missing an id.");
-      return;
+      setError('Checklist document is missing an id.')
+      return
     }
 
-    const taskId = `${sectionKey}:${taskKey}`;
-    const previousChecklist = checklist;
+    const taskId = `${sectionKey}:${taskKey}`
+    const previousChecklist = checklist
 
-    setPendingTaskId(taskId);
-    setError("");
+    setPendingTaskId(taskId)
+    setError('')
     setChecklist((current) => ({
       ...current,
       sections: current.sections?.map((section) =>
@@ -37,12 +37,10 @@ export function useLaunchChecklistManager(initialChecklist) {
           ? section
           : {
               ...section,
-              tasks: section.tasks?.map((task) =>
-                task._key === taskKey ? { ...task, status } : task,
-              ),
+              tasks: section.tasks?.map((task) => (task._key === taskKey ? { ...task, status } : task)),
             },
       ),
-    }));
+    }))
 
     try {
       await updateLaunchChecklistTaskStatus({
@@ -50,12 +48,12 @@ export function useLaunchChecklistManager(initialChecklist) {
         sectionKey,
         taskKey,
         status,
-      });
+      })
     } catch (updateError) {
-      setChecklist(previousChecklist);
-      setError(updateError.message);
+      setChecklist(previousChecklist)
+      setError(updateError.message)
     } finally {
-      setPendingTaskId(null);
+      setPendingTaskId(null)
     }
   }
 
@@ -65,5 +63,5 @@ export function useLaunchChecklistManager(initialChecklist) {
     error,
     pendingTaskId,
     setTaskStatus,
-  };
+  }
 }

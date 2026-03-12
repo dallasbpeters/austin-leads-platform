@@ -1,4 +1,16 @@
-function createStaticHeroImage({ alt, color = '#d7c2ad', creditName = '', creditUrl = '', creditUsername = '', description = '', downloadLocation = '', source = 'manual', unsplashId = '', unsplashUrl = '', url }) {
+function createStaticHeroImage({
+  alt,
+  color = '#d7c2ad',
+  creditName = '',
+  creditUrl = '',
+  creditUsername = '',
+  description = '',
+  downloadLocation = '',
+  source = 'manual',
+  unsplashId = '',
+  unsplashUrl = '',
+  url,
+}) {
   return {
     _type: 'heroImage',
     source,
@@ -31,8 +43,10 @@ export const solarGuides = [
     number: '01',
     slug: 'how-solar-works-austin',
     title: 'How Solar Actually Works',
-    cardCopy: 'What the panels do, what the inverter does, when you still use the grid, and what changes on the electric bill once a system is live.',
-    description: 'A practical guide to how a residential solar system works, how power moves through the home, and which utility details matter before you compare proposals.',
+    cardCopy:
+      'What the panels do, what the inverter does, when you still use the grid, and what changes on the electric bill once a system is live.',
+    description:
+      'A practical guide to how a residential solar system works, how power moves through the home, and which utility details matter before you compare proposals.',
     image: createStaticHeroImage({
       alt: 'Modern Austin home with rooftop solar in warm daylight',
       color: '#c97a46',
@@ -55,7 +69,11 @@ export const solarGuides = [
         metrics: [
           { _type: 'pageMetric', label: 'Best for', value: 'First-time research' },
           { _type: 'pageMetric', label: 'Reading time', value: '9 min' },
-          { _type: 'pageMetric', label: 'Primary question', value: 'What changes after the system is installed?' },
+          {
+            _type: 'pageMetric',
+            label: 'Primary question',
+            value: 'What changes after the system is installed?',
+          },
         ],
       },
       {
@@ -127,22 +145,26 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             question: 'Do solar panels power the house during an outage?',
-            answer: 'Not by default. Most grid-tied systems shut down when the grid goes down unless the system includes battery backup or another approved backup configuration.',
+            answer:
+              'Not by default. Most grid-tied systems shut down when the grid goes down unless the system includes battery backup or another approved backup configuration.',
           },
           {
             _type: 'pageItem',
             question: 'Do I need the biggest system possible?',
-            answer: 'Usually no. The better question is how much usage you want to offset, how your utility values exports, and whether your roof supports that size efficiently.',
+            answer:
+              'Usually no. The better question is how much usage you want to offset, how your utility values exports, and whether your roof supports that size efficiently.',
           },
           {
             _type: 'pageItem',
             question: 'Does Austin sunlight make solar worth it?',
-            answer: 'Austin has strong solar potential, but the outcome still depends on your roof, electric bill, export value, and installation cost. Sun alone is not the full answer.',
+            answer:
+              'Austin has strong solar potential, but the outcome still depends on your roof, electric bill, export value, and installation cost. Sun alone is not the full answer.',
           },
           {
             _type: 'pageItem',
             question: 'What part of the quote should I be most skeptical of?',
-            answer: 'Be skeptical of any quote that does not clearly explain annual production assumptions, export-credit treatment, and whether the system is sized to actual usage instead of a sales target.',
+            answer:
+              'Be skeptical of any quote that does not clearly explain annual production assumptions, export-credit treatment, and whether the system is sized to actual usage instead of a sales target.',
           },
         ],
       },
@@ -153,8 +175,10 @@ export const solarGuides = [
     number: '02',
     slug: 'austin-solar-costs-and-savings',
     title: 'Solar Costs and Payback',
-    cardCopy: 'Installed price, tax-credit timing, financing cost, export value, and the numbers that really move payback.',
-    description: 'A detailed guide to solar project cost, financing structure, export assumptions, and the questions to ask before you trust a payback estimate.',
+    cardCopy:
+      'Installed price, tax-credit timing, financing cost, export value, and the numbers that really move payback.',
+    description:
+      'A detailed guide to solar project cost, financing structure, export assumptions, and the questions to ask before you trust a payback estimate.',
     image: createStaticHeroImage({
       alt: 'Calculator, utility bill, and warm-toned tabletop still life',
       color: '#d59b53',
@@ -259,22 +283,26 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             question: 'What should I compare between installers?',
-            answer: 'Compare installed price, equipment scope, expected annual production, warranties, financing terms, export assumptions, and how the quote treats incentives. If one of those is missing, the comparison is incomplete.',
+            answer:
+              'Compare installed price, equipment scope, expected annual production, warranties, financing terms, export assumptions, and how the quote treats incentives. If one of those is missing, the comparison is incomplete.',
           },
           {
             _type: 'pageItem',
             question: 'Is monthly payment lower than my electric bill enough?',
-            answer: 'No. You also need to know total paid over time, how long it takes to break even, and whether the quote is using realistic assumptions to get to that monthly story.',
+            answer:
+              'No. You also need to know total paid over time, how long it takes to break even, and whether the quote is using realistic assumptions to get to that monthly story.',
           },
           {
             _type: 'pageItem',
             question: 'Why do payback estimates vary so much?',
-            answer: 'Because they depend on system price, production assumptions, electric-rate inflation, export value, tax-credit treatment, and what your household actually uses over time.',
+            answer:
+              'Because they depend on system price, production assumptions, electric-rate inflation, export value, tax-credit treatment, and what your household actually uses over time.',
           },
           {
             _type: 'pageItem',
             question: 'Should I trust a quote that feels unusually cheap?',
-            answer: 'Only after checking what was left out. A cheaper quote may reflect weaker equipment, optimistic production assumptions, hidden financing cost, or a system that is simply not sized the same way.',
+            answer:
+              'Only after checking what was left out. A cheaper quote may reflect weaker equipment, optimistic production assumptions, hidden financing cost, or a system that is simply not sized the same way.',
           },
         ],
       },
@@ -285,8 +313,10 @@ export const solarGuides = [
     number: '03',
     slug: 'austin-solar-incentives',
     title: 'Solar Incentives and Tax Credits',
-    cardCopy: 'The federal credit, Texas property-tax treatment, and how to verify local incentive claims before you rely on them.',
-    description: 'A practical solar incentives guide covering the federal credit, Texas property-tax treatment, and how to verify changing utility or local program details.',
+    cardCopy:
+      'The federal credit, Texas property-tax treatment, and how to verify local incentive claims before you rely on them.',
+    description:
+      'A practical solar incentives guide covering the federal credit, Texas property-tax treatment, and how to verify changing utility or local program details.',
     image: createStaticHeroImage({
       alt: 'Warm daylight over a solar-ready Austin neighborhood',
       color: '#7a9cb8',
@@ -388,22 +418,26 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             question: 'Can I always stack every incentive together?',
-            answer: 'Not automatically. Eligibility, timing, tax situation, and utility rules all matter. The stack should be verified, not assumed.',
+            answer:
+              'Not automatically. Eligibility, timing, tax situation, and utility rules all matter. The stack should be verified, not assumed.',
           },
           {
             _type: 'pageItem',
             question: 'Does a tax credit reduce the installer price?',
-            answer: 'No. It affects the homeowner’s tax situation rather than lowering the contract price at signing, which is why quotes should distinguish contract price from post-incentive economics.',
+            answer:
+              'No. It affects the homeowner’s tax situation rather than lowering the contract price at signing, which is why quotes should distinguish contract price from post-incentive economics.',
           },
           {
             _type: 'pageItem',
             question: 'Should incentive pages promise paperwork handling?',
-            answer: 'Only if that is actually true for the operating business. The content should stay factual and supportable.',
+            answer:
+              'Only if that is actually true for the operating business. The content should stay factual and supportable.',
           },
           {
             _type: 'pageItem',
             question: 'How often should I re-check local incentive details?',
-            answer: 'Before relying on them in a decision. Local utility rules and program availability can change, so homeowners should verify current details at the time they are evaluating quotes.',
+            answer:
+              'Before relying on them in a decision. Local utility rules and program availability can change, so homeowners should verify current details at the time they are evaluating quotes.',
           },
         ],
       },
@@ -414,8 +448,10 @@ export const solarGuides = [
     number: '04',
     slug: 'austin-solar-battery-backup',
     title: 'Battery Backup: When It Is Worth It',
-    cardCopy: 'When storage is worth adding, what it actually does in an outage, and how to keep the economics honest.',
-    description: 'A detailed guide to deciding whether solar plus battery backup makes sense for a home, including outage behavior, load planning, and cost tradeoffs.',
+    cardCopy:
+      'When storage is worth adding, what it actually does in an outage, and how to keep the economics honest.',
+    description:
+      'A detailed guide to deciding whether solar plus battery backup makes sense for a home, including outage behavior, load planning, and cost tradeoffs.',
     image: createStaticHeroImage({
       alt: 'Contemporary utility room with home battery equipment',
       color: '#4a6c8f',
@@ -517,17 +553,20 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             question: 'Can batteries run my whole house?',
-            answer: 'Sometimes, but not always. It depends on battery capacity, selected loads, inverter setup, and how the system is intentionally designed.',
+            answer:
+              'Sometimes, but not always. It depends on battery capacity, selected loads, inverter setup, and how the system is intentionally designed.',
           },
           {
             _type: 'pageItem',
             question: 'Does every solar system need a battery now?',
-            answer: 'No. Batteries solve a resilience and load-management problem. They are not mandatory for a strong solar project and should not be treated as such.',
+            answer:
+              'No. Batteries solve a resilience and load-management problem. They are not mandatory for a strong solar project and should not be treated as such.',
           },
           {
             _type: 'pageItem',
             question: 'Can I add storage later instead of now?',
-            answer: 'Often yes, but it depends on the equipment and the way the system is designed up front. That is why future expandability is worth asking about before signing.',
+            answer:
+              'Often yes, but it depends on the equipment and the way the system is designed up front. That is why future expandability is worth asking about before signing.',
           },
         ],
       },
@@ -538,8 +577,10 @@ export const solarGuides = [
     number: '05',
     slug: 'buy-or-finance-solar-austin',
     title: 'Cash vs. Financing for Solar',
-    cardCopy: 'Cash, loans, dealer fees, early payoff, and the financing details that actually change total cost.',
-    description: 'A thorough guide to comparing cash purchase and financing options for solar so homeowners can evaluate total cost, payment structure, and flexibility.',
+    cardCopy:
+      'Cash, loans, dealer fees, early payoff, and the financing details that actually change total cost.',
+    description:
+      'A thorough guide to comparing cash purchase and financing options for solar so homeowners can evaluate total cost, payment structure, and flexibility.',
     image: createStaticHeroImage({
       alt: 'Warm residential desk scene with financing paperwork and coffee',
       color: '#b86c4f',
@@ -646,17 +687,20 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             question: 'Is cash always better than financing?',
-            answer: 'Not automatically. Cash often improves total cost, but financing can preserve liquidity and may fit a homeowner’s priorities better. The right answer depends on the actual loan structure and what flexibility is worth to you.',
+            answer:
+              'Not automatically. Cash often improves total cost, but financing can preserve liquidity and may fit a homeowner’s priorities better. The right answer depends on the actual loan structure and what flexibility is worth to you.',
           },
           {
             _type: 'pageItem',
             question: 'Why can two loans with similar payments feel so different?',
-            answer: 'Because term length, dealer fees, interest structure, and tax-credit assumptions can change the total paid even if the monthly number looks manageable.',
+            answer:
+              'Because term length, dealer fees, interest structure, and tax-credit assumptions can change the total paid even if the monthly number looks manageable.',
           },
           {
             _type: 'pageItem',
             question: 'What financing detail is easiest to miss?',
-            answer: 'Usually the total cost of financing over time and whether the quote assumes the homeowner applies the tax credit in a specific way to keep the payment where it was advertised.',
+            answer:
+              'Usually the total cost of financing over time and whether the quote assumes the homeowner applies the tax credit in a specific way to keep the payment where it was advertised.',
           },
         ],
       },
@@ -667,8 +711,10 @@ export const solarGuides = [
     number: '06',
     slug: 'is-your-roof-ready-for-solar',
     title: 'Roof Condition Before Solar',
-    cardCopy: 'Age, storm damage, layout, shading, and when roof work should happen before a solar contract gets signed.',
-    description: 'A detailed homeowner guide to evaluating roof condition before solar, including age, material, shading, usable area, storm damage, and project sequencing.',
+    cardCopy:
+      'Age, storm damage, layout, shading, and when roof work should happen before a solar contract gets signed.',
+    description:
+      'A detailed homeowner guide to evaluating roof condition before solar, including age, material, shading, usable area, storm damage, and project sequencing.',
     image: createStaticHeroImage({
       alt: 'Austin roofline in warm afternoon light',
       color: '#8a5b45',
@@ -784,17 +830,20 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             question: 'Can solar go on an older roof?',
-            answer: 'Sometimes, but the answer depends on remaining roof life, current condition, and whether replacement is likely soon enough to create avoidable removal and reinstall cost.',
+            answer:
+              'Sometimes, but the answer depends on remaining roof life, current condition, and whether replacement is likely soon enough to create avoidable removal and reinstall cost.',
           },
           {
             _type: 'pageItem',
             question: 'Does every roof get the same production value?',
-            answer: 'No. Orientation, pitch, shading, obstructions, and layout constraints all change expected output and can make two homes with similar bills very different solar candidates.',
+            answer:
+              'No. Orientation, pitch, shading, obstructions, and layout constraints all change expected output and can make two homes with similar bills very different solar candidates.',
           },
           {
             _type: 'pageItem',
             question: 'Should roofing work happen before solar if both are needed?',
-            answer: 'Often yes, especially if the roof is near replacement. The cleaner sequence depends on timing, budget, and how likely it is that near-term roof work would disrupt a new system.',
+            answer:
+              'Often yes, especially if the roof is near replacement. The cleaner sequence depends on timing, budget, and how likely it is that near-term roof work would disrupt a new system.',
           },
         ],
       },

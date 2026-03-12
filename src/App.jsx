@@ -43,11 +43,17 @@ export default function App({
         />
         <DevTrace markup="src/components/StorySection.jsx" content="local JSX copy" />
         <StorySection />
-        <DevTrace markup="src/components/CalculatorSection.jsx" content="local JSX copy and local calculator logic" />
+        <DevTrace
+          markup="src/components/CalculatorSection.jsx"
+          content="local JSX copy and local calculator logic"
+        />
         <CalculatorSection />
         <DevTrace markup="src/components/CostsSection.jsx" content="local JSX copy" />
         <CostsSection />
-        <DevTrace markup="src/components/GuidesSection.jsx" content="local JSX section + guide cards from guides library" />
+        <DevTrace
+          markup="src/components/GuidesSection.jsx"
+          content="local JSX section + guide cards from guides library"
+        />
         <GuidesSection />
         <DevTrace markup="src/components/SnapshotSection.jsx" content="local JSX copy" />
         <SnapshotSection />
@@ -63,7 +69,10 @@ export default function App({
           content={`typed homepage resource grid from ${resourcesSection ? homepageSource : 'local fallback cards'}`}
         />
         <ResourcesSection section={resourcesSection} />
-        <DevTrace markup="src/components/ConsultationSection.jsx" content="local JSX section + live lead form" />
+        <DevTrace
+          markup="src/components/ConsultationSection.jsx"
+          content="local JSX section + live lead form"
+        />
         <ConsultationSection site={site} />
       </main>
       <DevTrace markup="src/components/Footer.jsx" content="local JSX footer + service catalog links" />

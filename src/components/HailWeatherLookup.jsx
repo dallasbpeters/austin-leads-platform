@@ -230,8 +230,8 @@ export default function HailWeatherLookup({ section }) {
                   </div>
                 ) : (
                   <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
-                    No active NWS alerts are posted for this point right now. Treat that as one data point, then
-                    confirm conditions with a roof inspection if you saw recent impact.
+                    No active NWS alerts are posted for this point right now. Treat that as one data point,
+                    then confirm conditions with a roof inspection if you saw recent impact.
                   </div>
                 )}
               </div>

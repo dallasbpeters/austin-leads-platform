@@ -1,11 +1,41 @@
 'use client'
 
-import { motion, useAnimationFrame, useMotionValueEvent, useScroll, useSpring, useTransform } from 'framer-motion'
+import {
+  motion,
+  useAnimationFrame,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-const defaultBandColors = ['var(--color-secondary-950)', 'var(--color-secondary)', 'var(--color-secondary-700)', 'var(--color-primary-700)', 'var(--color-primary)', 'var(--color-primary-alt)', 'var(--color-primary-300)', 'var(--color-secondary-300)']
+const defaultBandColors = [
+  'var(--color-secondary-950)',
+  'var(--color-secondary)',
+  'var(--color-secondary-700)',
+  'var(--color-primary-700)',
+  'var(--color-primary)',
+  'var(--color-primary-alt)',
+  'var(--color-primary-300)',
+  'var(--color-secondary-300)',
+]
 
-export default function Band({ colors = defaultBandColors, tint = 'var(--color-secondary-950)', minHeight = 2, maxHeight = 24, rotate = false, scrollStart = 0, scrollEnd = 0.8, reverse = false, autoAnimate = false, speed = 1, amplitude = 10, className = '', style }) {
+export default function Band({
+  colors = defaultBandColors,
+  tint = 'var(--color-secondary-950)',
+  minHeight = 2,
+  maxHeight = 24,
+  rotate = false,
+  scrollStart = 0,
+  scrollEnd = 0.8,
+  reverse = false,
+  autoAnimate = false,
+  speed = 1,
+  amplitude = 10,
+  className = '',
+  style,
+}) {
   const ref = useRef(null)
   const rectRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)
@@ -27,9 +57,24 @@ export default function Band({ colors = defaultBandColors, tint = 'var(--color-s
     offset: ['start end', 'end start'],
   })
 
-  const bands = useMemo(() => [{ opacity: 0.88 }, { opacity: 0.72 }, { opacity: 0.56 }, { opacity: 0.38 }, { opacity: 0.18 }, { opacity: 0.06 }], [])
+  const bands = useMemo(
+    () => [
+      { opacity: 0.88 },
+      { opacity: 0.72 },
+      { opacity: 0.56 },
+      { opacity: 0.38 },
+      { opacity: 0.18 },
+      { opacity: 0.06 },
+    ],
+    [],
+  )
 
-  const height = useTransform(scrollYProgress, [scrollStart, scrollEnd], reverse ? [minHeight, maxHeight] : [maxHeight, minHeight], { ease: (t) => t * t * (3 - 2 * t) })
+  const height = useTransform(
+    scrollYProgress,
+    [scrollStart, scrollEnd],
+    reverse ? [minHeight, maxHeight] : [maxHeight, minHeight],
+    { ease: (t) => t * t * (3 - 2 * t) },
+  )
 
   const offsetSpring = useSpring(0, { stiffness: 30, damping: 15 })
   useMotionValueEvent(offsetSpring, 'change', setMouseOffset)
@@ -91,7 +136,10 @@ export default function Band({ colors = defaultBandColors, tint = 'var(--color-s
   const step = 100 / (numStops - 1)
   const autoOffset = autoAnimate ? Math.sin(time * speed) * amplitude : 0
 
-  const stopPositions = useMemo(() => palette.map((_, index) => Math.max(0, Math.min(100, index * step + mouseOffset + autoOffset))), [palette, step, mouseOffset, autoOffset])
+  const stopPositions = useMemo(
+    () => palette.map((_, index) => Math.max(0, Math.min(100, index * step + mouseOffset + autoOffset))),
+    [palette, step, mouseOffset, autoOffset],
+  )
 
   const customProperties = stopPositions.reduce((accumulator, position, index) => {
     accumulator[`--stop${index}`] = `${position}%`
