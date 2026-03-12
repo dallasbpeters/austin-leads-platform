@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { cleanRuntimeHref } from '@/lib/sanity/stega'
 
 const HailLayerMap = dynamic(() => import('@/components/HailLayerMap'), {
   ssr: false,
@@ -54,6 +55,7 @@ export default function HailWeatherLookup({ section }) {
   const alerts = data?.alerts || []
   const risk = data?.risk
   const hailLayer = data?.hailLayer
+  const ctaHref = cleanRuntimeHref(section?.ctaHref)
 
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr]">
@@ -236,9 +238,9 @@ export default function HailWeatherLookup({ section }) {
                 )}
               </div>
 
-              {section.ctaHref ? (
+              {ctaHref ? (
                 <Button asChild size="sm">
-                  <Link href={section.ctaHref}>{section.ctaLabel || 'Request a roof review'}</Link>
+                  <Link href={ctaHref}>{section.ctaLabel || 'Request a roof review'}</Link>
                 </Button>
               ) : null}
             </div>

@@ -31,13 +31,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
 import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
+import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken } from '@/lib/sanity/stega'
 
 function slugifySectionToken(value) {
-  return String(value || '')
-    .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+  return toRuntimeToken(value)
 }
 
 function getSectionDomId(section, index) {
@@ -130,11 +127,24 @@ function HeroSection({ page, section, sectionId }) {
           </div>
           {section.actions?.length ? (
             <div className="flex flex-wrap gap-3 pt-2">
-              {section.actions.map((action) => (
-                <Button asChild key={action.href} variant={action.variant || 'default'} size="lg">
-                  <Link href={action.href}>{action.label}</Link>
-                </Button>
-              ))}
+              {section.actions.map((action, index) => {
+                const href = cleanRuntimeHref(action.href)
+
+                if (!href) {
+                  return null
+                }
+
+                return (
+                  <Button
+                    asChild
+                    key={buildRuntimeKey('hero-action', action.href, action.label, index)}
+                    variant={action.variant || 'default'}
+                    size="lg"
+                  >
+                    <Link href={href}>{action.label}</Link>
+                  </Button>
+                )
+              })}
             </div>
           ) : null}
         </div>
@@ -163,7 +173,7 @@ function HeroSection({ page, section, sectionId }) {
                         ? 'rounded-xl border border-white/15 bg-white/8 px-4 py-4'
                         : 'border-border/70 bg-card/90 rounded-xl border px-4 py-4'
                     }
-                    key={metric.label}
+                    key={buildRuntimeKey('hero-metric', metric.label, metric.value)}
                   >
                     <div
                       className="text-muted-foreground text-sm tracking-[0.18em] uppercase"
@@ -234,8 +244,11 @@ function CardGridSection({ section, sectionId }) {
           <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
         </div>
         <div className="grid gap-8 md:grid-cols-3">
-          {section.items?.map((item) => (
-            <Card key={item.title} className="grid grid-cols-1 place-content-start">
+          {section.items?.map((item, index) => (
+            <Card
+              key={buildRuntimeKey('card-grid-item', item.title, item.question, index)}
+              className="grid grid-cols-1 place-content-start"
+            >
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
               </CardHeader>
@@ -382,7 +395,7 @@ function getServiceIcon(item) {
     return serviceIconMap[item.icon]
   }
 
-  const title = `${item.title || ''} ${item.eyebrow || ''}`.toLowerCase()
+  const title = `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return AreaSearch
   if (title.includes('insulation') || title.includes('air sealing')) return HomeShield
@@ -406,7 +419,7 @@ function getServiceImage(item) {
     return serviceImageMap[item.icon]
   }
 
-  const title = `${item.title || ''} ${item.eyebrow || ''}`.toLowerCase()
+  const title = `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return serviceImageMap.audit
   if (title.includes('insulation') || title.includes('air sealing')) return serviceImageMap.insulation
@@ -513,11 +526,14 @@ function ServiceGridSection({ section, sectionId }) {
             )
 
             if (!item.href) {
-              return <div key={item.title}>{content}</div>
+              return <div key={buildRuntimeKey('service-item', item.title, item.href)}>{content}</div>
             }
 
             return (
-              <Link key={item.title} href={item.href}>
+              <Link
+                key={buildRuntimeKey('service-item', item.title, item.href)}
+                href={cleanRuntimeHref(item.href)}
+              >
                 {content}
               </Link>
             )
@@ -552,11 +568,14 @@ function ServiceGridSection({ section, sectionId }) {
                 )
 
                 if (!item.href) {
-                  return <div key={item.title}>{content}</div>
+                  return <div key={buildRuntimeKey('roofing-item', item.title, item.href)}>{content}</div>
                 }
 
                 return (
-                  <Link key={item.title} href={item.href}>
+                  <Link
+                    key={buildRuntimeKey('roofing-item', item.title, item.href)}
+                    href={cleanRuntimeHref(item.href)}
+                  >
                     {content}
                   </Link>
                 )
@@ -593,11 +612,14 @@ function ServiceGridSection({ section, sectionId }) {
                 )
 
                 if (!item.href) {
-                  return <div key={item.title}>{content}</div>
+                  return <div key={buildRuntimeKey('secondary-item', item.title, item.href)}>{content}</div>
                 }
 
                 return (
-                  <Link key={item.title} href={item.href}>
+                  <Link
+                    key={buildRuntimeKey('secondary-item', item.title, item.href)}
+                    href={cleanRuntimeHref(item.href)}
+                  >
                     {content}
                   </Link>
                 )
@@ -630,7 +652,7 @@ function StepsSection({ section, sectionId }) {
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {section.items?.map((item, index) => (
-            <Card key={item.title} className="border-border/80 bg-card">
+            <Card key={buildRuntimeKey('step-item', item.title, index)} className="border-border/80 bg-card">
               <CardHeader className="gap-4">
                 <Badge className="bg-secondary/90 text-secondary-foreground w-fit rounded-full px-3 py-1">
                   Step {index + 1}
@@ -665,8 +687,8 @@ function FaqSection({ section, sectionId }) {
           <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
         </div>
         <div className="space-y-4">
-          {section.items?.map((item) => (
-            <Card key={item.question} className="border-border/80 bg-card">
+          {section.items?.map((item, index) => (
+            <Card key={buildRuntimeKey('faq-item', item.question, index)} className="border-border/80 bg-card">
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.question}</CardTitle>
               </CardHeader>
@@ -738,6 +760,7 @@ function CtaSection({ page, section, site, pathname, sectionId }) {
 }
 
 function CtaBannerSection({ page, section, site, sectionId }) {
+  const slug = cleanRuntimeString(page?.slug)
   const leadContext = {
     sourceType: 'cross-lead',
     sourceSection: 'cta-banner',
@@ -745,7 +768,7 @@ function CtaBannerSection({ page, section, site, sectionId }) {
     siteSlug: site?.slug || 'texas-solar-and-roofing-pros',
     siteName: site?.name || 'Texas Solar and Roofing Pros',
     sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
-    pagePath: page?.slug ? `/${page.slug}` : '/',
+    pagePath: slug ? `/${slug}` : '/',
     pageTitle: page?.title || section?.title || 'Guide CTA',
     metadata: {
       entryPoint: 'guide-cta-banner',
@@ -858,11 +881,11 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
               <span className="text-foreground text-xl font-semibold tracking-tight">{site.name}</span>
             </Link>
             <nav className="hidden items-center gap-6 md:flex">
-              {navigation.map((item) => (
+              {navigation.map((item, index) => (
                 <Link
-                  key={item.href}
+                  key={buildRuntimeKey('site-nav-item', item.href, item.label, index)}
                   className="text-muted-foreground hover:text-foreground text-md font-medium transition-colors"
-                  href={item.href}
+                  href={cleanRuntimeHref(item.href)}
                 >
                   {item.label}
                 </Link>
@@ -893,7 +916,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
 
           return (
             <Component
-              key={`${section.type}-${index}`}
+              key={buildRuntimeKey('page-section', section._key, section.type, sectionId, index)}
               page={page}
               section={section}
               site={site}

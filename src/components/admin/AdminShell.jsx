@@ -6,9 +6,9 @@ import SignOutButton from './SignOutButton'
 
 export default function AdminShell({ children, user }) {
   return (
-    <div className="admin-theme bg-background text-foreground min-h-screen">
-      <div className="grid min-h-screen lg:grid-cols-[256px_1fr]">
-        <aside className="border-border bg-sidebar hidden h-[100vh] border-r lg:flex">
+    <div className="admin-theme bg-background text-foreground h-svh overflow-hidden">
+      <div className="grid h-full min-h-0 lg:grid-cols-[256px_1fr]">
+        <aside className="border-border bg-sidebar hidden h-svh border-r lg:flex">
           <div className="flex h-full w-full flex-col">
             <div className="border-border border-b p-4">
               <button className="group hover:border-border hover:bg-muted/40 flex w-full items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors">
@@ -46,7 +46,7 @@ export default function AdminShell({ children, user }) {
           </div>
         </aside>
 
-        <div className="bg-muted/40 flex min-w-0 flex-col">
+        <div className="bg-muted/40 flex min-w-0 min-h-0 flex-col">
           <header className="border-border bg-background hidden h-14 items-center justify-between border-b px-8 md:flex">
             <div className="text-muted-foreground flex items-center text-sm font-medium">
               <span>Austin Leads</span>
@@ -78,7 +78,7 @@ export default function AdminShell({ children, user }) {
             </div>
           </header>
 
-          <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
+          <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
     </div>

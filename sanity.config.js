@@ -14,6 +14,11 @@ import {
 } from './src/sanity/env'
 import { schemaTypes } from './src/sanity/schemaTypes'
 
+const previewModeRoutes = {
+  enable: '/api/draft-mode/enable',
+  disable: '/api/draft-mode/disable',
+}
+
 export default defineConfig({
   name: 'default',
   title: 'Austin Leads Studio',
@@ -25,15 +30,9 @@ export default defineConfig({
     presentationTool({
       previewUrl: {
         initial: frontendUrl,
-        previewMode: {
-          enable: `${frontendUrl}/api/draft-mode/enable`,
-          disable: `${frontendUrl}/api/draft-mode/disable`,
-        },
+        previewMode: previewModeRoutes,
         // Keep the legacy key alongside previewMode for hosted Studio compatibility.
-        draftMode: {
-          enable: `${frontendUrl}/api/draft-mode/enable`,
-          disable: `${frontendUrl}/api/draft-mode/disable`,
-        },
+        draftMode: previewModeRoutes,
       },
       allowOrigins: [
         ...frontendOriginAllowlist,

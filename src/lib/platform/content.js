@@ -1,5 +1,5 @@
 import { draftMode, headers } from 'next/headers'
-import { groq } from 'next-sanity'
+import { groq, stegaClean } from 'next-sanity'
 
 import { getSanityServerClient, sanityWriteClient } from '@/sanity/client'
 import { pages, sites } from './fixtures'
@@ -68,6 +68,78 @@ const sectionProjection = `
   ctaLabel,
   ctaHref
 `
+
+function cleanRuntimeString(value) {
+  return typeof value === 'string' ? stegaClean(value) : value
+}
+
+function sanitizeAction(action) {
+  if (!action) {
+    return action
+  }
+
+  return {
+    ...action,
+    href: cleanRuntimeString(action.href),
+    variant: cleanRuntimeString(action.variant),
+  }
+}
+
+function sanitizeItem(item) {
+  if (!item) {
+    return item
+  }
+
+  return {
+    ...item,
+    _key: cleanRuntimeString(item._key),
+    href: cleanRuntimeString(item.href),
+    icon: cleanRuntimeString(item.icon),
+  }
+}
+
+function sanitizeSection(section) {
+  if (!section) {
+    return section
+  }
+
+  return {
+    ...section,
+    _type: cleanRuntimeString(section._type),
+    _key: cleanRuntimeString(section._key),
+    type: cleanRuntimeString(section.type),
+    heroTextColor: cleanRuntimeString(section.heroTextColor),
+    heroOverlayColor: cleanRuntimeString(section.heroOverlayColor),
+    heroOverlayStartColor: cleanRuntimeString(section.heroOverlayStartColor),
+    heroOverlayEndColor: cleanRuntimeString(section.heroOverlayEndColor),
+    heroOverlayDirection: cleanRuntimeString(section.heroOverlayDirection),
+    ctaLabel: cleanRuntimeString(section.ctaLabel),
+    ctaHref: cleanRuntimeString(section.ctaHref),
+    actions: Array.isArray(section.actions) ? section.actions.map(sanitizeAction) : section.actions,
+    items: Array.isArray(section.items) ? section.items.map(sanitizeItem) : section.items,
+  }
+}
+
+function sanitizePageRuntimeFields(page) {
+  if (!page) {
+    return page
+  }
+
+  return {
+    ...page,
+    id: cleanRuntimeString(page.id),
+    slug: cleanRuntimeString(page.slug),
+    pageType: cleanRuntimeString(page.pageType),
+    templateLevel: cleanRuntimeString(page.templateLevel),
+    heroTextColor: cleanRuntimeString(page.heroTextColor),
+    heroOverlayColor: cleanRuntimeString(page.heroOverlayColor),
+    heroOverlayStartColor: cleanRuntimeString(page.heroOverlayStartColor),
+    heroOverlayEndColor: cleanRuntimeString(page.heroOverlayEndColor),
+    heroOverlayDirection: cleanRuntimeString(page.heroOverlayDirection),
+    sections: Array.isArray(page.sections) ? page.sections.map(sanitizeSection) : page.sections,
+    heroActions: Array.isArray(page.heroActions) ? page.heroActions.map(sanitizeAction) : page.heroActions,
+  }
+}
 
 async function getSanityReadContext({ stega = true } = {}) {
   const { isEnabled } = await draftMode()
@@ -334,7 +406,7 @@ export async function getPageForRequest(site, slugParts = []) {
 
   try {
     const siteSlugs = getEquivalentSiteSlugs(site.slug)
-    const page = await client.fetch(
+    const rawPage = await client.fetch(
       groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
         _id,
         "id": _id,
@@ -382,7 +454,9 @@ export async function getPageForRequest(site, slugParts = []) {
       fetchOptions,
     )
 
-    if (page) {
+    if (rawPage) {
+      const page = sanitizePageRuntimeFields(rawPage)
+
       return withPageSource(
         {
           ...page,
@@ -457,12 +531,12 @@ export async function getSitemapEntriesForSite(site) {
   return localEntries
 }
 
-export async function getHeroPages() {
+export async function getHeroPages({ stega = false } = {}) {
   const localHeroPages = pages
     .map((page) => toHeroPageRecord(page, getSiteBySlug(page.siteSlug)))
     .filter(Boolean)
 
-  const { client } = await getSanityReadContext()
+  const { client } = await getSanityReadContext({ stega })
 
   if (!client) {
     return localHeroPages
@@ -530,9 +604,9 @@ export async function getHeroPages() {
 
     return Array.isArray(heroPages)
       ? heroPages.map((page) => ({
-          ...page,
+          ...sanitizePageRuntimeFields(page),
           source: 'sanity',
-          heroSection: buildHomepageHeroSection(page),
+          heroSection: buildHomepageHeroSection(sanitizePageRuntimeFields(page)),
         }))
       : localHeroPages
   } catch {
@@ -588,7 +662,7 @@ export async function getLaunchChecklist() {
 }
 
 export async function getHeroHomepageForSite(siteSlug) {
-  const heroPages = await getHeroPages()
+  const heroPages = await getHeroPages({ stega: true })
   const equivalentSlugs = getEquivalentSiteSlugs(siteSlug)
   const sitePages = heroPages.filter((page) => equivalentSlugs.includes(page.site?.slug))
 

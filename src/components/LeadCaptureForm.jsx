@@ -4,6 +4,7 @@ import { LoaderCircle } from 'lucide-react'
 
 import Button from '@/components/Button'
 import { useLeadForm } from '@/hooks/useLeadForm'
+import { toRuntimeToken } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
 export default function LeadCaptureForm({
@@ -18,6 +19,7 @@ export default function LeadCaptureForm({
   messageClassName,
 }) {
   const { disabled, form, message, setForm, status, handleSubmit } = useLeadForm({ context })
+  const privacyFieldId = `${toRuntimeToken(context.sourceSection || 'lead') || 'lead'}-privacy`
 
   const updateField = (field) => (event) => {
     const value = event.target.value
@@ -77,13 +79,13 @@ export default function LeadCaptureForm({
       <div className="flex items-start gap-3 pt-2">
         <input
           type="checkbox"
-          id={`${context.sourceSection || 'lead'}-privacy`}
+          id={privacyFieldId}
           className={cn('mt-1 h-4 w-4', checkboxClassName)}
           defaultChecked
           disabled={disabled}
         />
         <label
-          htmlFor={`${context.sourceSection || 'lead'}-privacy`}
+          htmlFor={privacyFieldId}
           className={cn('text-sm font-semibold', labelClassName)}
         >
           {checkboxLabel}

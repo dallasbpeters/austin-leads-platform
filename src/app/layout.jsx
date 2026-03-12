@@ -10,6 +10,7 @@ import Script from 'next/script'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import '../styles/globals.css'
 
 export const metadata = {
@@ -32,10 +33,14 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID
 
   return (
     <html lang="en">
-      <body className="bg-background text-foreground">
+      {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
+      {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
+      <body className="bg-background text-foreground has-[admin-theme]:overflow-hidden">
         <Script
           src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"
           strategy="beforeInteractive"

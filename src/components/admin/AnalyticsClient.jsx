@@ -13,11 +13,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { useAnalyticsManager } from '@/hooks/useAnalyticsManager'
 import { formatAnalyticsNumber } from '@/services/admin/analytics'
 
-export default function AnalyticsClient({ overview, providers, goals, sites }) {
+function formatPercent(value) {
+  return `${value.toFixed(1)}%`
+}
+
+export default function AnalyticsClient({ overview, providers, gaSnapshot, goals, sites }) {
   const { form, goalList, loading, refreshGoals, setForm, submitGoal, updateGoal } = useAnalyticsManager({
     goals,
     sites,
   })
+  const gaProvider = providers.find((provider) => provider.id === 'ga4')
 
   return (
     <div className="p-4 md:p-8">
@@ -36,24 +41,40 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
         </div>
 
         <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {[
-            {
-              label: 'Connected providers',
-              value: formatAnalyticsNumber(overview.connectedProviders),
-              icon: Waypoints,
-            },
-            { label: 'Active goals', value: formatAnalyticsNumber(overview.configuredGoals), icon: Target },
-            {
-              label: 'Live reporting feeds',
-              value: formatAnalyticsNumber(overview.liveReportingSources),
-              icon: DatabaseZap,
-            },
-            {
-              label: 'Providers needing action',
-              value: formatAnalyticsNumber(overview.providersNeedingAction),
-              icon: TriangleAlert,
-            },
-          ].map((metric) => {
+          {(gaSnapshot?.status === 'available'
+            ? [
+                { label: 'GA4 users', value: formatAnalyticsNumber(gaSnapshot.totalUsers), icon: Waypoints },
+                { label: 'GA4 sessions', value: formatAnalyticsNumber(gaSnapshot.sessions), icon: DatabaseZap },
+                {
+                  label: 'GA4 page views',
+                  value: formatAnalyticsNumber(gaSnapshot.pageViews),
+                  icon: Target,
+                },
+                {
+                  label: 'GA4 engagement',
+                  value: formatPercent(gaSnapshot.engagementRate),
+                  icon: TriangleAlert,
+                },
+              ]
+            : [
+                {
+                  label: 'Connected providers',
+                  value: formatAnalyticsNumber(overview.connectedProviders),
+                  icon: Waypoints,
+                },
+                { label: 'Active goals', value: formatAnalyticsNumber(overview.configuredGoals), icon: Target },
+                {
+                  label: 'Live reporting feeds',
+                  value: formatAnalyticsNumber(overview.liveReportingSources),
+                  icon: DatabaseZap,
+                },
+                {
+                  label: 'Providers needing action',
+                  value: formatAnalyticsNumber(overview.providersNeedingAction),
+                  icon: TriangleAlert,
+                },
+              ]
+          ).map((metric) => {
             const Icon = metric.icon
 
             return (
@@ -71,6 +92,48 @@ export default function AnalyticsClient({ overview, providers, goals, sites }) {
         </div>
 
         <div className="grid gap-6">
+          <Card className="shadow-theme-sm">
+            <CardHeader>
+              <CardTitle>Google Analytics</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3">
+              {gaSnapshot?.status === 'available' ? (
+                <div className="border-border bg-muted/20 rounded-xl border p-4 text-sm">
+                  <div className="text-foreground font-medium">Live GA4 report</div>
+                  <div className="text-muted-foreground mt-1 leading-6">
+                    Property {gaSnapshot.propertyId}
+                    {gaSnapshot.measurementId ? ` · ${gaSnapshot.measurementId}` : ''} · last{' '}
+                    {gaSnapshot.windowDays} days · {formatAnalyticsNumber(gaSnapshot.conversions)} conversions
+                  </div>
+                </div>
+              ) : null}
+              {!gaSnapshot && gaProvider ? (
+                <div className="border-border bg-muted/20 grid gap-3 rounded-xl border p-4 md:grid-cols-[1fr_1fr]">
+                  <div>
+                    <div className="text-foreground font-medium">Instrumentation</div>
+                    <div className="text-muted-foreground mt-1 text-sm leading-6">
+                      {gaProvider.connected
+                        ? `GA4 is installed on the site with measurement ID ${gaProvider.source}.`
+                        : 'GA4 is not installed on the site yet.'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-foreground font-medium">Admin reporting</div>
+                    <div className="text-muted-foreground mt-1 text-sm leading-6">
+                      {gaProvider.nextStep}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              {gaSnapshot?.status === 'error' ? (
+                <div className="border-border bg-muted/20 rounded-xl border p-4 text-sm">
+                  <div className="text-foreground font-medium">GA4 reporting error</div>
+                  <div className="text-muted-foreground mt-1 leading-6">{gaSnapshot.error}</div>
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+
           <Card className="shadow-theme-sm">
             <CardHeader>
               <CardTitle>Create analytics goal</CardTitle>

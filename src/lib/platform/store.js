@@ -1,3 +1,5 @@
+import { getGoogleAnalyticsConfig, hasGoogleAnalyticsReportingConfig } from '@/lib/analytics/google'
+
 import { initialAnalyticsGoals, initialDomainRecords, initialPublishJobs } from './fixtures'
 
 let publishJobs = initialPublishJobs.map((job) => ({ ...job }))
@@ -153,6 +155,9 @@ export function getAnalyticsOverview() {
 }
 
 export function getAnalyticsProviders() {
+  const googleAnalytics = getGoogleAnalyticsConfig()
+  const ga4ReportingReady = hasGoogleAnalyticsReportingConfig()
+
   return [
     {
       id: 'vercel-analytics',
@@ -181,14 +186,22 @@ export function getAnalyticsProviders() {
     {
       id: 'ga4',
       name: 'Google Analytics 4',
-      connected: Boolean(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID),
-      status: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ? 'configured' : 'not configured',
+      connected: Boolean(googleAnalytics.measurementId),
+      status: googleAnalytics.measurementId ? 'configured' : 'not configured',
       description:
         'Optional secondary analytics provider for campaign attribution and custom event reporting.',
-      source: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'Add NEXT_PUBLIC_GA_MEASUREMENT_ID',
-      readAccess: 'not wired',
-      nextStep: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
-        ? 'Add a server-side reporting integration if you want GA4 numbers surfaced in this admin.'
+      source: googleAnalytics.measurementId
+        ? `${googleAnalytics.measurementId}${googleAnalytics.propertyId ? ` · property ${googleAnalytics.propertyId}` : ''}`
+        : 'Add NEXT_PUBLIC_GA_MEASUREMENT_ID',
+      readAccess: ga4ReportingReady
+        ? 'available'
+        : googleAnalytics.measurementId
+          ? 'credentials required'
+          : 'not wired',
+      nextStep: googleAnalytics.measurementId
+        ? ga4ReportingReady
+          ? 'GA4 reporting is available in the admin through the Google Analytics Data API.'
+          : 'Add GOOGLE_ANALYTICS_PROPERTY_ID plus a service account credential to surface GA4 reporting in the admin.'
         : 'Configure NEXT_PUBLIC_GA_MEASUREMENT_ID to enable client-side GA4 instrumentation.',
     },
     {

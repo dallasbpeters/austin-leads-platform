@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 
+import { buildRuntimeKey, cleanRuntimeHref } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
 const defaultPalette = [
@@ -152,7 +153,10 @@ export default function GuideCardGrid({
         variants={containerVariants}
       >
         {cards.map((card, index) => (
-          <motion.div key={card.href || card.title} variants={itemVariants}>
+          <motion.div
+            key={buildRuntimeKey('guide-card', card.href, card.title, card.number, index)}
+            variants={itemVariants}
+          >
             <GuideCard card={card} toneClassName={palette[index % palette.length]} />
           </motion.div>
         ))}
@@ -163,13 +167,14 @@ export default function GuideCardGrid({
 
 function GuideCard(props) {
   const card = normalizeCardProps(props)
+  const href = cleanRuntimeHref(card.href)
 
-  if (!card.href) {
+  if (!href) {
     return <GuideCardBody card={card} />
   }
 
   return (
-    <Link href={card.href}>
+    <Link href={href}>
       <GuideCardBody card={card} />
     </Link>
   )

@@ -3,6 +3,7 @@ import { FileText, Globe2, Server, SquarePen } from 'lucide-react'
 
 import LaunchChecklistCard from '@/components/admin/LaunchChecklistCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getGoogleAnalyticsSnapshot } from '@/lib/analytics/google'
 import {
   ensureLeadSubmissionsTable,
   getLeadSubmissionOverview,
@@ -24,6 +25,7 @@ export default async function DashboardPage() {
   const domains = listDomainRecords()
   const jobs = listPublishJobs()
   const analytics = getAnalyticsOverview()
+  const gaSnapshot = await getGoogleAnalyticsSnapshot()
   const checklist = await getLaunchChecklist()
   let leadOverview = { total: 0, last_30_days: 0, open: 0 }
   let recentLeads = []
@@ -139,22 +141,78 @@ export default async function DashboardPage() {
                 <CardTitle className="text-base">Analytics</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="border-border bg-muted/30 rounded-xl border p-4">
-                  <div className="text-foreground text-sm font-medium">Connected providers</div>
-                  <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
-                    {analytics.connectedProviders}
+                {gaSnapshot?.status === 'available' ? (
+                  <>
+                    <div className="border-border bg-muted/30 rounded-xl border p-4">
+                      <div className="text-foreground text-sm font-medium">
+                        GA4 last {gaSnapshot.windowDays} days
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-3">
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Users
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.totalUsers.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Sessions
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.sessions.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Page views
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.pageViews.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Conversions
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.conversions.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                      Property {gaSnapshot.propertyId}
+                      {gaSnapshot.measurementId ? ` · ${gaSnapshot.measurementId}` : ''} · Engagement rate{' '}
+                      {gaSnapshot.engagementRate.toFixed(1)}%
+                    </div>
+                  </>
+                ) : gaSnapshot?.status === 'error' ? (
+                  <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                    Google Analytics is configured, but the admin could not read the reporting API.{' '}
+                    {gaSnapshot.error}
                   </div>
-                </div>
-                <div className="border-border bg-muted/30 rounded-xl border p-4">
-                  <div className="text-foreground text-sm font-medium">Active goals</div>
-                  <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
-                    {analytics.configuredGoals}
-                  </div>
-                </div>
-                <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
-                  Real analytics is now instrumentation-first. The admin surface shows provider status and KPI
-                  configuration until live data sources are connected.
-                </div>
+                ) : (
+                  <>
+                    <div className="border-border bg-muted/30 rounded-xl border p-4">
+                      <div className="text-foreground text-sm font-medium">Connected providers</div>
+                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                        {analytics.connectedProviders}
+                      </div>
+                    </div>
+                    <div className="border-border bg-muted/30 rounded-xl border p-4">
+                      <div className="text-foreground text-sm font-medium">Active goals</div>
+                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                        {analytics.configuredGoals}
+                      </div>
+                    </div>
+                    <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                      GA4 reporting appears unavailable. Add GOOGLE_ANALYTICS_PROPERTY_ID and service account
+                      credentials to surface live reporting here.
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
