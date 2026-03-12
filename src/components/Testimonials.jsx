@@ -1,5 +1,6 @@
 'use client'
 import { Card } from '@/components/ui/card'
+import { getDevSectionAttributes } from './dev/DevTrace'
 
 function Ratings() {
   return (
@@ -41,7 +42,14 @@ function Ratings() {
 
 const Testimonials = () => {
   return (
-    <section className="radial-grid-bg bg-secondary py-24">
+    <section
+      className="radial-grid-bg bg-secondary py-24"
+      {...getDevSectionAttributes({
+        id: 'testimonials-homepage',
+        markup: 'src/components/Testimonials.jsx',
+        content: 'local JSX testimonial content',
+      })}
+    >
       <div className="text-center mb-20 max-w-7xl sm:px-6 lg:px-8 mr-auto ml-auto">
         <h2 className="text-4xl sm:text-6xl mb-6 text-foreground tracking-tight font-display font-medium dynamic-zoom-in animate-delay-200">
           What customers are saying

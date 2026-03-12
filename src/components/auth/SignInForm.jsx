@@ -50,7 +50,7 @@ export default function SignInForm({ callbackUrl = '/dashboard' }) {
         </div>
         <div>
           <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">Admin access</p>
-          <CardTitle className="mt-2 text-3xl tracking-tight">Sign in to platform ops</CardTitle>
+          <CardTitle className="mt-2 text-3xl tracking-tight">Sign in to the admin</CardTitle>
         </div>
       </CardHeader>
       <CardContent>

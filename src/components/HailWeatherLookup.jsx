@@ -165,17 +165,6 @@ export default function HailWeatherLookup({ section }) {
             </CardContent>
           </Card>
         </div>
-
-        <div className="grid gap-3">
-          {(section.items || []).map((item) => (
-            <Card key={item.title} className="border-border/80 bg-card">
-              <CardContent className="p-4">
-                <div className="text-foreground text-sm font-semibold">{item.title}</div>
-                <div className="text-muted-foreground mt-1 text-sm leading-6">{item.body}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
 
       <Card className="border-border/80 bg-card overflow-hidden">
@@ -241,8 +230,8 @@ export default function HailWeatherLookup({ section }) {
                   </div>
                 ) : (
                   <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
-                    No active NWS alerts are posted for this point right now. Use this as a storm signal, then
-                    confirm with a roof inspection if you saw recent impact.
+                    No active NWS alerts are posted for this point right now. Treat that as one data point, then
+                    confirm conditions with a roof inspection if you saw recent impact.
                   </div>
                 )}
               </div>

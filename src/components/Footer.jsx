@@ -3,14 +3,22 @@ import { Iconoir } from 'iconoir-react'
 
 import { mainServices, roofingServices, specialtyServices } from '@/lib/platform/service-catalog'
 
+import { getDevSectionAttributes } from './dev/DevTrace'
 import Logo from './Logo'
 
 export default function Footer() {
   return (
-    <div className="bg-color-secondary-950 w-full border-t border-white/10 text-white">
+    <div
+      className="bg-secondary-950 w-full border-t border-white/10 text-white"
+      {...getDevSectionAttributes({
+        id: 'site-footer',
+        markup: 'src/components/Footer.jsx',
+        content: 'local JSX footer + service catalog links',
+      })}
+    >
       <footer>
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-5">
+          <div className="grid gap-8 md:grid-cols-4">
             <div className="md:col-span-2">
               <Link
                 href="/"
@@ -20,8 +28,8 @@ export default function Footer() {
                 Texas Solar & Roofing Pros
               </Link>
               <p className="mt-3 max-w-md text-sm text-gray-400">
-                Texas Solar & Roofing Pros helps homeowners sort through roofing, energy efficiency, storm damage,
-                and solar decisions without the usual generic sales pitch.
+                Texas Solar & Roofing Pros helps homeowners sort through roofing, energy efficiency, storm
+                damage, and solar decisions without the usual generic sales pitch.
               </p>
               <div className="mt-4">
                 <h4 className="text-sm">Contact</h4>
@@ -60,25 +68,13 @@ export default function Footer() {
                 </ul>
               </div>
             </div>
-            <div>
-              <h4 className="text-sm">More</h4>
-              <ul className="mt-3 space-y-2 text-sm text-gray-400">
-                {specialtyServices.map((service) => (
-                  <li key={service.slug}>
-                    <Link href={`/services/${service.slug}`} className="hover:text-gray-200">
-                      {service.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
           <div className="mt-10 flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-xs text-gray-500">
+            <p className="text-sm text-gray-500">
               © Texas Solar & Roofing Pros. All rights reserved.
               <span id="year">2025</span>
             </p>
-            <div className="flex items-center gap-4 text-xs text-gray-500">
+            <div className="flex items-center gap-4 text-sm text-gray-500">
               <Link href="/services" className="hover:text-gray-300">
                 Services
               </Link>

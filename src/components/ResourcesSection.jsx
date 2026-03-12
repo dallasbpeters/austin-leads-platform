@@ -1,6 +1,7 @@
 import { HomeShield, HomeSimple, SunLight, Thunderstorm } from 'iconoir-react'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import Card from './Card'
+import { getDevSectionAttributes } from './dev/DevTrace'
 import Link from 'next/link'
 
 const defaultItems = [
@@ -61,7 +62,7 @@ function normalizeItems(section) {
   }))
 }
 
-export default function ResourcesSection({ section = null }) {
+export default function ResourcesSection({ section = null, sectionId = 'resources' }) {
   const items = normalizeItems(section)
   const title = section?.title || 'Start with what you need help with'
   const body =
@@ -70,8 +71,14 @@ export default function ResourcesSection({ section = null }) {
 
   return (
     <section
-      className="bg-color-warm py-24"
-      id="resources"
+      className="bg-warm py-24"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/ResourcesSection.jsx',
+        content: section?.items?.length
+          ? 'typed homepage resource grid from homepage record'
+          : 'local fallback resource cards',
+      })}
       style={{
         backgroundImage:
           'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
@@ -80,7 +87,7 @@ export default function ResourcesSection({ section = null }) {
     >
       <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
-          <h2 className="type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
+          <h2 className="type-accent text-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
           <p className="type-accent text-foreground m-0 text-[clamp(1rem,4vw,1.25rem)]">{body}</p>
         </div>
 

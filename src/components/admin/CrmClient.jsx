@@ -29,14 +29,29 @@ function statusTone(value) {
 }
 
 export default function CrmClient({ initialOverview, initialPipeline, initialLeads, leadDbReady }) {
-  const { error, filters, isRefreshing, isSaving, leads, overview, pipeline, selectedLead, setSelectedLeadId, refresh, saveLead, updateFilter } = useCrmManager({
+  const {
+    error,
+    filters,
+    isRefreshing,
+    isSaving,
+    leads,
+    overview,
+    pipeline,
+    selectedLead,
+    setSelectedLeadId,
+    refresh,
+    saveLead,
+    updateFilter,
+  } = useCrmManager({
     initialOverview,
     initialPipeline,
     initialLeads,
   })
   const [draftNotes, setDraftNotes] = useState(selectedLead?.internal_notes || '')
   const [draftAssignedTo, setDraftAssignedTo] = useState(selectedLead?.assigned_to || '')
-  const [draftFollowUpAt, setDraftFollowUpAt] = useState(selectedLead?.follow_up_at ? selectedLead.follow_up_at.slice(0, 16) : '')
+  const [draftFollowUpAt, setDraftFollowUpAt] = useState(
+    selectedLead?.follow_up_at ? selectedLead.follow_up_at.slice(0, 16) : '',
+  )
 
   function handleLeadSelect(lead) {
     setSelectedLeadId(lead.id)
@@ -61,8 +76,9 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
             <CardHeader>
               <CardTitle>CRM</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm leading-7 text-muted-foreground">
-              Add <code>DATABASE_URL</code> or <code>NEON_DATABASE_URL</code>, then run <code>pnpm db:setup</code> to enable the CRM.
+            <CardContent className="text-muted-foreground text-sm leading-7">
+              Add <code>DATABASE_URL</code> or <code>NEON_DATABASE_URL</code>, then run{' '}
+              <code>pnpm db:setup</code> to enable the CRM.
             </CardContent>
           </Card>
         </div>
@@ -75,9 +91,12 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">Lead management</p>
-            <h1 className="mt-2 text-3xl tracking-tight text-foreground">CRM</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">Triage inbound leads, assign follow-up, track inspection and quote stages, and keep notes in one place.</p>
+            <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Lead management</p>
+            <h1 className="text-foreground mt-2 text-3xl tracking-tight">CRM</h1>
+            <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-7">
+              Triage inbound leads, assign follow-up, track inspection and quote stages, and keep notes in one
+              place.
+            </p>
           </div>
           <Button variant="outline" onClick={() => refresh()} disabled={isRefreshing}>
             <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -101,9 +120,13 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
           <CardContent>
             <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-7">
               {pipeline.map((stage) => (
-                <div key={stage.stage} className="rounded-xl border border-border bg-muted/30 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{stage.stage}</div>
-                  <div className="mt-3 text-2xl font-semibold tracking-tight text-foreground">{stage.count}</div>
+                <div key={stage.stage} className="border-border bg-muted/30 rounded-xl border p-4">
+                  <div className="text-muted-foreground text-sm tracking-[0.18em] uppercase">
+                    {stage.stage}
+                  </div>
+                  <div className="text-foreground mt-3 text-2xl font-semibold tracking-tight">
+                    {stage.count}
+                  </div>
                 </div>
               ))}
             </div>
@@ -116,8 +139,13 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
           </CardHeader>
           <CardContent className="grid gap-3 lg:grid-cols-[2fr_1fr_1fr_1fr]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input className="pl-9" placeholder="Search name, email, phone, or domain" value={filters.search} onChange={(event) => updateFilter('search', event.target.value)} />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <Input
+                className="pl-9"
+                placeholder="Search name, email, phone, or domain"
+                value={filters.search}
+                onChange={(event) => updateFilter('search', event.target.value)}
+              />
             </div>
             <Select value={filters.status} onValueChange={(value) => updateFilter('status', value)}>
               <SelectTrigger className="w-full">
@@ -132,7 +160,10 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                 ))}
               </SelectContent>
             </Select>
-            <Select value={filters.pipelineStage} onValueChange={(value) => updateFilter('pipelineStage', value)}>
+            <Select
+              value={filters.pipelineStage}
+              onValueChange={(value) => updateFilter('pipelineStage', value)}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pipeline stage" />
               </SelectTrigger>
@@ -145,7 +176,10 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                 ))}
               </SelectContent>
             </Select>
-            <Select value={filters.serviceInterest} onValueChange={(value) => updateFilter('serviceInterest', value)}>
+            <Select
+              value={filters.serviceInterest}
+              onValueChange={(value) => updateFilter('serviceInterest', value)}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Service interest" />
               </SelectTrigger>
@@ -160,7 +194,11 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
           </CardContent>
         </Card>
 
-        {error ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div> : null}
+        {error ? (
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {error}
+          </div>
+        ) : null}
 
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <Card className="shadow-theme-sm">
@@ -170,17 +208,26 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
             <CardContent className="space-y-3">
               {leads.length ? (
                 leads.map((lead) => (
-                  <button key={lead.id} type="button" onClick={() => handleLeadSelect(lead)} className={`grid w-full gap-3 rounded-xl border p-4 text-left transition-colors ${selectedLead?.id === lead.id ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/30'}`}>
+                  <button
+                    key={lead.id}
+                    type="button"
+                    onClick={() => handleLeadSelect(lead)}
+                    className={`grid w-full gap-3 rounded-xl border p-4 text-left transition-colors ${selectedLead?.id === lead.id ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/30'}`}
+                  >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <div className="text-base font-semibold text-foreground">{lead.full_name}</div>
-                        <div className="mt-1 text-sm text-muted-foreground">
+                        <div className="text-foreground text-base font-semibold">{lead.full_name}</div>
+                        <div className="text-muted-foreground mt-1 text-sm">
                           {lead.service_interest || lead.source_type} · {lead.source_domain}
                         </div>
                       </div>
-                      <div className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusTone(lead.pipeline_stage)}`}>{lead.pipeline_stage}</div>
+                      <div
+                        className={`rounded-full px-2.5 py-1 text-sm font-medium ${statusTone(lead.pipeline_stage)}`}
+                      >
+                        {lead.pipeline_stage}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
                       <span className="inline-flex items-center gap-1">
                         <Mail className="h-4 w-4" />
                         {lead.email}
@@ -192,13 +239,15 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                         </span>
                       ) : null}
                     </div>
-                    <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
+                    <div className="text-muted-foreground text-sm tracking-[0.16em] uppercase">
                       {new Date(lead.created_at).toLocaleString()} · {lead.page_path}
                     </div>
                   </button>
                 ))
               ) : (
-                <div className="rounded-xl border border-border bg-muted/30 p-6 text-sm text-muted-foreground">No leads matched the current filters.</div>
+                <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-6 text-sm">
+                  No leads matched the current filters.
+                </div>
               )}
             </CardContent>
           </Card>
@@ -211,8 +260,10 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
               {selectedLead ? (
                 <>
                   <div className="space-y-2">
-                    <div className="text-xl font-semibold tracking-tight text-foreground">{selectedLead.full_name}</div>
-                    <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+                    <div className="text-foreground text-xl font-semibold tracking-tight">
+                      {selectedLead.full_name}
+                    </div>
+                    <div className="text-muted-foreground flex flex-wrap gap-3 text-sm">
                       <span className="inline-flex items-center gap-1">
                         <Mail className="h-4 w-4" />
                         {selectedLead.email}
@@ -228,7 +279,10 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
 
                   <div className="grid gap-4 md:grid-cols-2">
                     <Field label="Status">
-                      <Select value={selectedLead.status} onValueChange={(value) => saveLead({ status: value })}>
+                      <Select
+                        value={selectedLead.status}
+                        onValueChange={(value) => saveLead({ status: value })}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
@@ -242,7 +296,10 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                       </Select>
                     </Field>
                     <Field label="Pipeline stage">
-                      <Select value={selectedLead.pipeline_stage} onValueChange={(value) => saveLead({ pipelineStage: value })}>
+                      <Select
+                        value={selectedLead.pipeline_stage}
+                        onValueChange={(value) => saveLead({ pipelineStage: value })}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
@@ -256,7 +313,10 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                       </Select>
                     </Field>
                     <Field label="Priority">
-                      <Select value={selectedLead.priority} onValueChange={(value) => saveLead({ priority: value })}>
+                      <Select
+                        value={selectedLead.priority}
+                        onValueChange={(value) => saveLead({ priority: value })}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
@@ -270,23 +330,52 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                       </Select>
                     </Field>
                     <Field label="Owner">
-                      <Input value={draftAssignedTo} onChange={(event) => setDraftAssignedTo(event.target.value)} placeholder="Assign owner" />
+                      <Input
+                        value={draftAssignedTo}
+                        onChange={(event) => setDraftAssignedTo(event.target.value)}
+                        placeholder="Assign owner"
+                      />
                     </Field>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
-                    <InfoRow icon={CircleDot} label="Service interest" value={selectedLead.service_interest || 'Not specified'} />
-                    <InfoRow icon={UserRound} label="Source" value={`${selectedLead.source_domain} · ${selectedLead.page_path}`} />
-                    <InfoRow icon={CalendarClock} label="Created" value={formatDate(selectedLead.created_at)} />
-                    <InfoRow icon={CalendarClock} label="Last contacted" value={formatDate(selectedLead.last_contacted_at)} />
+                    <InfoRow
+                      icon={CircleDot}
+                      label="Service interest"
+                      value={selectedLead.service_interest || 'Not specified'}
+                    />
+                    <InfoRow
+                      icon={UserRound}
+                      label="Source"
+                      value={`${selectedLead.source_domain} · ${selectedLead.page_path}`}
+                    />
+                    <InfoRow
+                      icon={CalendarClock}
+                      label="Created"
+                      value={formatDate(selectedLead.created_at)}
+                    />
+                    <InfoRow
+                      icon={CalendarClock}
+                      label="Last contacted"
+                      value={formatDate(selectedLead.last_contacted_at)}
+                    />
                   </div>
 
                   <Field label="Follow-up at">
-                    <Input type="datetime-local" value={draftFollowUpAt} onChange={(event) => setDraftFollowUpAt(event.target.value)} />
+                    <Input
+                      type="datetime-local"
+                      value={draftFollowUpAt}
+                      onChange={(event) => setDraftFollowUpAt(event.target.value)}
+                    />
                   </Field>
 
                   <Field label="Internal notes">
-                    <Textarea rows={8} value={draftNotes} onChange={(event) => setDraftNotes(event.target.value)} placeholder="Add call notes, quote context, claim details, or next action." />
+                    <Textarea
+                      rows={8}
+                      value={draftNotes}
+                      onChange={(event) => setDraftNotes(event.target.value)}
+                      placeholder="Add call notes, quote context, claim details, or next action."
+                    />
                   </Field>
 
                   <div className="flex flex-wrap gap-3">
@@ -299,7 +388,9 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                   </div>
                 </>
               ) : (
-                <div className="rounded-xl border border-border bg-muted/30 p-6 text-sm text-muted-foreground">Select a lead to review notes, update stage, and schedule follow-up.</div>
+                <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-6 text-sm">
+                  Select a lead to review notes, update stage, and schedule follow-up.
+                </div>
               )}
             </CardContent>
           </Card>
@@ -313,8 +404,8 @@ function MetricCard({ label, value }) {
   return (
     <Card className="shadow-theme-sm">
       <CardContent className="p-5">
-        <div className="text-sm font-medium text-muted-foreground">{label}</div>
-        <div className="mt-2 text-3xl font-semibold tracking-tight text-foreground">{value}</div>
+        <div className="text-muted-foreground text-sm font-medium">{label}</div>
+        <div className="text-foreground mt-2 text-3xl font-semibold tracking-tight">{value}</div>
       </CardContent>
     </Card>
   )
@@ -323,7 +414,7 @@ function MetricCard({ label, value }) {
 function Field({ label, children }) {
   return (
     <label className="grid gap-2 text-sm">
-      <span className="font-medium text-foreground">{label}</span>
+      <span className="text-foreground font-medium">{label}</span>
       {children}
     </label>
   )
@@ -331,12 +422,12 @@ function Field({ label, children }) {
 
 function InfoRow({ icon: Icon, label, value }) {
   return (
-    <div className="rounded-xl border border-border bg-muted/30 p-4">
-      <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+    <div className="border-border bg-muted/30 rounded-xl border p-4">
+      <div className="text-muted-foreground inline-flex items-center gap-2 text-sm tracking-[0.16em] uppercase">
         <Icon className="h-4 w-4" />
         {label}
       </div>
-      <div className="mt-2 text-sm font-medium text-foreground">{value}</div>
+      <div className="text-foreground mt-2 text-sm font-medium">{value}</div>
     </div>
   )
 }

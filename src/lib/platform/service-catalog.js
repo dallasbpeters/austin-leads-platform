@@ -9,6 +9,7 @@ export const mainServices = [
     slug: 'energy-audits',
     title: 'Energy Audits',
     icon: 'audit',
+    menuDescription: 'Find what is driving the bill.',
     eyebrow: 'Find the waste first',
     subtitleLabel: 'Best when',
     subtitleValue: 'Bills are high but the cause is unclear',
@@ -70,6 +71,7 @@ export const mainServices = [
     slug: 'insulation-and-air-sealing',
     title: 'Insulation and Air Sealing',
     icon: 'insulation',
+    menuDescription: 'Tighten the envelope and stop air loss.',
     eyebrow: 'Keep conditioned air inside',
     subtitleLabel: 'Best when',
     subtitleValue: 'Rooms run unevenly or HVAC runs too long',
@@ -100,9 +102,18 @@ export const mainServices = [
         },
       ],
       steps: [
-        { title: 'Identify the biggest loss points', body: 'Focus on the areas that are letting conditioned air escape or heat in.' },
-        { title: 'Seal before adding material', body: 'Air sealing should usually come before simply piling on more insulation.' },
-        { title: 'Verify the comfort change', body: 'The result should be lower load and better room consistency, not just a checkbox.' },
+        {
+          title: 'Identify the biggest loss points',
+          body: 'Focus on the areas that are letting conditioned air escape or heat in.',
+        },
+        {
+          title: 'Seal before adding material',
+          body: 'Air sealing should usually come before simply piling on more insulation.',
+        },
+        {
+          title: 'Verify the comfort change',
+          body: 'The result should be lower load and better room consistency, not just a checkbox.',
+        },
       ],
       faq: [
         {
@@ -122,6 +133,7 @@ export const mainServices = [
     slug: 'duct-sealing',
     title: 'Duct Sealing',
     icon: 'ducts',
+    menuDescription: 'Reduce hidden HVAC loss in the ductwork.',
     eyebrow: 'Fix hidden HVAC losses',
     subtitleLabel: 'Best when',
     subtitleValue: 'Comfort is uneven or attic losses are likely',
@@ -138,14 +150,32 @@ export const mainServices = [
       storyBody:
         'Supply leaks, return issues, crushed runs, and disconnected sections all undermine comfort. Duct work should be evaluated before deciding the home simply needs bigger equipment.',
       highlights: [
-        { title: 'Supply losses', body: 'Conditioned air can be dumped into attic or crawl spaces before it ever reaches the room.' },
-        { title: 'Return imbalance', body: 'Poor return paths can create pressure problems and drag hot, dusty, or humid air into the house.' },
-        { title: 'System efficiency', body: 'Sealing and correcting duct issues can improve both comfort and equipment performance.' },
+        {
+          title: 'Supply losses',
+          body: 'Conditioned air can be dumped into attic or crawl spaces before it ever reaches the room.',
+        },
+        {
+          title: 'Return imbalance',
+          body: 'Poor return paths can create pressure problems and drag hot, dusty, or humid air into the house.',
+        },
+        {
+          title: 'System efficiency',
+          body: 'Sealing and correcting duct issues can improve both comfort and equipment performance.',
+        },
       ],
       steps: [
-        { title: 'Look for loss patterns', body: 'Start with rooms that are always off compared with the rest of the house.' },
-        { title: 'Inspect the distribution path', body: 'Check for leakage, disconnections, restrictions, and return-side problems.' },
-        { title: 'Correct before replacing', body: 'Fixing the delivery system often changes what equipment recommendation makes sense.' },
+        {
+          title: 'Look for loss patterns',
+          body: 'Start with rooms that are always off compared with the rest of the house.',
+        },
+        {
+          title: 'Inspect the distribution path',
+          body: 'Check for leakage, disconnections, restrictions, and return-side problems.',
+        },
+        {
+          title: 'Correct before replacing',
+          body: 'Fixing the delivery system often changes what equipment recommendation makes sense.',
+        },
       ],
       faq: [
         {
@@ -165,6 +195,7 @@ export const mainServices = [
     slug: 'window-replacement',
     title: 'Window Replacement',
     icon: 'windows',
+    menuDescription: 'Cut drafts, glare, and heat gain.',
     eyebrow: 'Reduce heat gain and loss',
     subtitleLabel: 'Best when',
     subtitleValue: 'Drafts, glare, and older windows are part of the problem',
@@ -177,18 +208,37 @@ export const mainServices = [
       heroEyebrow: 'Envelope upgrades',
       heroBody:
         'Windows matter when they are clearly contributing to heat gain, drafts, glare, or occupant discomfort. The goal is not replacing windows for the sake of it. The goal is fixing a real performance problem.',
-      storyTitle: 'If the windows are driving discomfort, they should be evaluated as part of the whole-home plan.',
+      storyTitle:
+        'If the windows are driving discomfort, they should be evaluated as part of the whole-home plan.',
       storyBody:
         'Older glass, poor seals, or weak frames can affect comfort and HVAC load. Window work should be priced alongside the other envelope decisions, not as an isolated sales pitch.',
       highlights: [
-        { title: 'Comfort and glare', body: 'Rooms with strong heat gain or obvious draft issues often point to a window problem.' },
-        { title: 'Envelope coordination', body: 'Window work should be considered together with insulation and air sealing, not in a vacuum.' },
-        { title: 'Upgrade timing', body: 'The right time is when performance issues are real enough to justify the cost.' },
+        {
+          title: 'Comfort and glare',
+          body: 'Rooms with strong heat gain or obvious draft issues often point to a window problem.',
+        },
+        {
+          title: 'Envelope coordination',
+          body: 'Window work should be considered together with insulation and air sealing, not in a vacuum.',
+        },
+        {
+          title: 'Upgrade timing',
+          body: 'The right time is when performance issues are real enough to justify the cost.',
+        },
       ],
       steps: [
-        { title: 'Identify the rooms that struggle', body: 'Look at the areas with glare, temperature swing, or visible aging in the window assembly.' },
-        { title: 'Compare impact vs cost', body: 'Decide whether window replacement is the best next dollar compared with other envelope work.' },
-        { title: 'Scope the upgrade carefully', body: 'Frame condition, glass package, orientation, and installation quality all matter.' },
+        {
+          title: 'Identify the rooms that struggle',
+          body: 'Look at the areas with glare, temperature swing, or visible aging in the window assembly.',
+        },
+        {
+          title: 'Compare impact vs cost',
+          body: 'Decide whether window replacement is the best next dollar compared with other envelope work.',
+        },
+        {
+          title: 'Scope the upgrade carefully',
+          body: 'Frame condition, glass package, orientation, and installation quality all matter.',
+        },
       ],
       faq: [
         {
@@ -208,6 +258,7 @@ export const mainServices = [
     slug: 'heat-pump-upgrades',
     title: 'Heat Pump Upgrades',
     icon: 'heatpump',
+    menuDescription: 'Upgrade aging HVAC with modern efficiency.',
     eyebrow: 'Modernize heating and cooling',
     subtitleLabel: 'Best when',
     subtitleValue: 'Existing HVAC is aging or inefficient',
@@ -224,14 +275,32 @@ export const mainServices = [
       storyBody:
         'Replacing equipment before understanding attic losses, duct problems, or window and insulation issues can lead to the wrong recommendation. Heat pump planning should start with how the house actually behaves.',
       highlights: [
-        { title: 'System age', body: 'Older HVAC equipment often becomes noisy, unreliable, and expensive long before it fully dies.' },
-        { title: 'Efficiency gains', body: 'Modern heat pumps can lower operating costs when the home and ductwork support the upgrade.' },
-        { title: 'Whole-house fit', body: 'The right answer depends on load, comfort goals, panel capacity, and the rest of the house condition.' },
+        {
+          title: 'System age',
+          body: 'Older HVAC equipment often becomes noisy, unreliable, and expensive long before it fully dies.',
+        },
+        {
+          title: 'Efficiency gains',
+          body: 'Modern heat pumps can lower operating costs when the home and ductwork support the upgrade.',
+        },
+        {
+          title: 'Whole-house fit',
+          body: 'The right answer depends on load, comfort goals, panel capacity, and the rest of the house condition.',
+        },
       ],
       steps: [
-        { title: 'Look at current system performance', body: 'Start with age, runtime, repair history, and whether the current system still keeps up.' },
-        { title: 'Check the supporting conditions', body: 'Ducts, insulation, leakage, and electrical readiness affect whether the upgrade will perform well.' },
-        { title: 'Size and quote the right option', body: 'The replacement should match the actual load and goals, not just mimic the old unit.' },
+        {
+          title: 'Look at current system performance',
+          body: 'Start with age, runtime, repair history, and whether the current system still keeps up.',
+        },
+        {
+          title: 'Check the supporting conditions',
+          body: 'Ducts, insulation, leakage, and electrical readiness affect whether the upgrade will perform well.',
+        },
+        {
+          title: 'Size and quote the right option',
+          body: 'The replacement should match the actual load and goals, not just mimic the old unit.',
+        },
       ],
       faq: [
         {
@@ -251,13 +320,15 @@ export const mainServices = [
     slug: 'solar-and-battery-installations',
     title: 'Solar and Battery Installations',
     icon: 'solarbattery',
+    menuDescription: 'Size solar and storage for the house.',
     eyebrow: 'Generate and store power',
     subtitleLabel: 'Best when',
     subtitleValue: 'The home is ready for a longer-term energy upgrade',
     body: 'Solar and battery projects make the most sense when the roof, electrical situation, and energy goals are understood clearly. The best projects do not start with hype. They start with whether the system fits the home and the numbers hold up.',
     image: {
       urls: {
-        regular: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+        regular:
+          'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
       },
       alt: 'Solar array installation under a bright sky',
     },
@@ -269,14 +340,32 @@ export const mainServices = [
       storyBody:
         'Roof condition, usage, shade, electrical constraints, outage goals, and financing all change the recommendation. The most useful solar conversation is the one that makes those tradeoffs visible.',
       highlights: [
-        { title: 'System fit', body: 'Roof shape, orientation, shading, and load profile all affect whether solar is worth doing.' },
-        { title: 'Battery value', body: 'Storage should be scoped around resilience goals, critical loads, and economics, not added automatically.' },
-        { title: 'Project sequence', body: 'Roofing or electrical work may need to happen before solar if the house is not ready.' },
+        {
+          title: 'System fit',
+          body: 'Roof shape, orientation, shading, and load profile all affect whether solar is worth doing.',
+        },
+        {
+          title: 'Battery value',
+          body: 'Storage should be scoped around resilience goals, critical loads, and economics, not added automatically.',
+        },
+        {
+          title: 'Project sequence',
+          body: 'Roofing or electrical work may need to happen before solar if the house is not ready.',
+        },
       ],
       steps: [
-        { title: 'Check the roof and load first', body: 'Start with whether the roof and utility profile make the project viable.' },
-        { title: 'Scope solar and storage separately', body: 'Solar and battery should each earn their place in the proposal.' },
-        { title: 'Price the project honestly', body: 'Cash, financing, incentives, and payback assumptions should all be visible.' },
+        {
+          title: 'Check the roof and load first',
+          body: 'Start with whether the roof and utility profile make the project viable.',
+        },
+        {
+          title: 'Scope solar and storage separately',
+          body: 'Solar and battery should each earn their place in the proposal.',
+        },
+        {
+          title: 'Price the project honestly',
+          body: 'Cash, financing, incentives, and payback assumptions should all be visible.',
+        },
       ],
       faq: [
         {
@@ -299,6 +388,7 @@ export const roofingServices = [
     slug: 'shingle-roofing',
     title: 'Shingle Roofing',
     icon: 'shingles',
+    menuDescription: 'Repair or replace worn asphalt roofing.',
     body: 'Asphalt shingle systems remain the most common residential roofing option and should be evaluated for age, ventilation, storm wear, and repairability.',
     image: {
       urls: {
@@ -311,18 +401,37 @@ export const roofingServices = [
       heroEyebrow: 'Roofing',
       heroBody:
         'Shingle roofing is still the most common residential roof system, but the right recommendation depends on age, storm history, ventilation, and whether the existing roof is repairable or truly worn out.',
-      storyTitle: 'The useful conversation is whether the roof can be repaired, restored, or whether replacement is actually justified.',
+      storyTitle:
+        'The useful conversation is whether the roof can be repaired, restored, or whether replacement is actually justified.',
       storyBody:
         'Shingle roofs age unevenly. Granule loss, lifted tabs, hail strikes, ventilation issues, and prior repairs all matter. The goal is a clear scope, not an automatic replacement pitch.',
       highlights: [
-        { title: 'Condition and age', body: 'The repair vs replacement decision depends on the actual condition of the field shingles and details.' },
-        { title: 'Storm history', body: 'Recent hail and wind exposure can change what should be documented and how the roof should be assessed.' },
-        { title: 'Ventilation and details', body: 'A roofing plan should look beyond shingles to flashing, valleys, ridge ventilation, and penetrations.' },
+        {
+          title: 'Condition and age',
+          body: 'The repair vs replacement decision depends on the actual condition of the field shingles and details.',
+        },
+        {
+          title: 'Storm history',
+          body: 'Recent hail and wind exposure can change what should be documented and how the roof should be assessed.',
+        },
+        {
+          title: 'Ventilation and details',
+          body: 'A roofing plan should look beyond shingles to flashing, valleys, ridge ventilation, and penetrations.',
+        },
       ],
       steps: [
-        { title: 'Inspect the roof surface', body: 'Look at wear patterns, exposed mats, lifted tabs, and repair history.' },
-        { title: 'Check the supporting details', body: 'Ventilation, flashing, and penetrations can be as important as the shingles themselves.' },
-        { title: 'Set the right scope', body: 'The end result should clearly explain whether repair, restoration, or replacement makes the most sense.' },
+        {
+          title: 'Inspect the roof surface',
+          body: 'Look at wear patterns, exposed mats, lifted tabs, and repair history.',
+        },
+        {
+          title: 'Check the supporting details',
+          body: 'Ventilation, flashing, and penetrations can be as important as the shingles themselves.',
+        },
+        {
+          title: 'Set the right scope',
+          body: 'The end result should clearly explain whether repair, restoration, or replacement makes the most sense.',
+        },
       ],
       faq: [
         {
@@ -342,6 +451,7 @@ export const roofingServices = [
     slug: 'metal-roofing',
     title: 'Metal Roofing',
     icon: 'metalroofing',
+    menuDescription: 'Long-life roofing with stronger storm resilience.',
     body: 'Metal roofing can be the right long-term fit when durability, reflectivity, and storm resilience matter more than the lowest upfront cost.',
     image: {
       urls: {
@@ -354,18 +464,37 @@ export const roofingServices = [
       heroEyebrow: 'Roofing',
       heroBody:
         'Metal roofing is a long-term system choice. It tends to appeal when durability, reflectivity, and lifecycle value matter more than the cheapest upfront bid.',
-      storyTitle: 'Metal roofing is not the answer for every house, but it can be the right fit when longevity and storm resilience are the priority.',
+      storyTitle:
+        'Metal roofing is not the answer for every house, but it can be the right fit when longevity and storm resilience are the priority.',
       storyBody:
         'The useful comparison is not just cost. It is maintenance expectations, installation quality, noise assumptions, detailing, and whether the homeowner wants to invest in a longer-horizon roof system.',
       highlights: [
-        { title: 'Longevity', body: 'Metal roofs can offer a longer service life when the system is designed and installed correctly.' },
-        { title: 'Storm performance', body: 'Profile, gauge, fastening system, and detailing all matter when weather resilience is part of the decision.' },
-        { title: 'Upfront vs lifecycle cost', body: 'The lowest bid is rarely the whole story with metal roofing.' },
+        {
+          title: 'Longevity',
+          body: 'Metal roofs can offer a longer service life when the system is designed and installed correctly.',
+        },
+        {
+          title: 'Storm performance',
+          body: 'Profile, gauge, fastening system, and detailing all matter when weather resilience is part of the decision.',
+        },
+        {
+          title: 'Upfront vs lifecycle cost',
+          body: 'The lowest bid is rarely the whole story with metal roofing.',
+        },
       ],
       steps: [
-        { title: 'Review the roof goals', body: 'Decide whether the homeowner is optimizing for budget, longevity, storm performance, or aesthetics.' },
-        { title: 'Compare the right systems', body: 'Standing seam and exposed-fastener systems behave differently and should not be treated as interchangeable.' },
-        { title: 'Price it around the full scope', body: 'Trim, penetrations, transitions, and installation details drive the real project value.' },
+        {
+          title: 'Review the roof goals',
+          body: 'Decide whether the homeowner is optimizing for budget, longevity, storm performance, or aesthetics.',
+        },
+        {
+          title: 'Compare the right systems',
+          body: 'Standing seam and exposed-fastener systems behave differently and should not be treated as interchangeable.',
+        },
+        {
+          title: 'Price it around the full scope',
+          body: 'Trim, penetrations, transitions, and installation details drive the real project value.',
+        },
       ],
       faq: [
         {
@@ -385,6 +514,7 @@ export const roofingServices = [
     slug: 'storm-damage-restoration',
     title: 'Storm Damage Restoration',
     icon: 'stormdamage',
+    menuDescription: 'Document damage and scope the recovery.',
     body: 'When a storm hits, the priority is documenting damage clearly, stabilizing the property, and creating a repair plan that insurance can actually follow.',
     image: {
       urls: {
@@ -401,14 +531,32 @@ export const roofingServices = [
       storyBody:
         'The right restoration process protects the house, documents the loss clearly, and creates a scope that can hold up with adjusters, contractors, and the homeowner.',
       highlights: [
-        { title: 'Damage documentation', body: 'Photos, roof notes, and site conditions need to be captured while the evidence is fresh.' },
-        { title: 'Stabilization', body: 'Leaks, exposed areas, and secondary damage risk should be addressed quickly.' },
-        { title: 'Claim-ready scope', body: 'A clean restoration plan makes the insurance conversation more defensible.' },
+        {
+          title: 'Damage documentation',
+          body: 'Photos, roof notes, and site conditions need to be captured while the evidence is fresh.',
+        },
+        {
+          title: 'Stabilization',
+          body: 'Leaks, exposed areas, and secondary damage risk should be addressed quickly.',
+        },
+        {
+          title: 'Claim-ready scope',
+          body: 'A clean restoration plan makes the insurance conversation more defensible.',
+        },
       ],
       steps: [
-        { title: 'Assess the damage', body: 'Start with roof, exterior, interior water signs, and vulnerable openings.' },
-        { title: 'Protect the property', body: 'Temporary measures may be needed to prevent additional loss while the scope is built.' },
-        { title: 'Build the restoration plan', body: 'The scope should explain what needs repair, what needs replacement, and why.' },
+        {
+          title: 'Assess the damage',
+          body: 'Start with roof, exterior, interior water signs, and vulnerable openings.',
+        },
+        {
+          title: 'Protect the property',
+          body: 'Temporary measures may be needed to prevent additional loss while the scope is built.',
+        },
+        {
+          title: 'Build the restoration plan',
+          body: 'The scope should explain what needs repair, what needs replacement, and why.',
+        },
       ],
       faq: [
         {
@@ -428,6 +576,7 @@ export const roofingServices = [
     slug: 'commercial-roofing',
     title: 'Commercial Roofing',
     icon: 'commercialroofing',
+    menuDescription: 'Low-slope and membrane roofing for businesses.',
     body: 'Commercial roof work needs a different conversation around access, membrane condition, drainage, penetrations, maintenance, and disruption to operations.',
     image: {
       urls: {
@@ -444,14 +593,32 @@ export const roofingServices = [
       storyBody:
         'Flat or low-slope systems need to be evaluated around membrane age, seam condition, ponding, flashing, penetrations, service traffic, and the cost of downtime.',
       highlights: [
-        { title: 'Drainage and ponding', body: 'Water behavior on the roof is a major part of commercial roof performance.' },
-        { title: 'Penetrations and seams', body: 'Equipment curbs, pipe penetrations, seams, and flashing details often drive failures.' },
-        { title: 'Operational impact', body: 'Scheduling and access should protect the building and limit disruption to the business.' },
+        {
+          title: 'Drainage and ponding',
+          body: 'Water behavior on the roof is a major part of commercial roof performance.',
+        },
+        {
+          title: 'Penetrations and seams',
+          body: 'Equipment curbs, pipe penetrations, seams, and flashing details often drive failures.',
+        },
+        {
+          title: 'Operational impact',
+          body: 'Scheduling and access should protect the building and limit disruption to the business.',
+        },
       ],
       steps: [
-        { title: 'Inspect the membrane and details', body: 'Start with drainage, seams, flashings, penetrations, and visible wear patterns.' },
-        { title: 'Evaluate maintenance vs replacement', body: 'Some roofs need focused repair while others are beyond patchwork.' },
-        { title: 'Build the work plan around the building', body: 'Scope, phasing, and access need to fit how the property operates.' },
+        {
+          title: 'Inspect the membrane and details',
+          body: 'Start with drainage, seams, flashings, penetrations, and visible wear patterns.',
+        },
+        {
+          title: 'Evaluate maintenance vs replacement',
+          body: 'Some roofs need focused repair while others are beyond patchwork.',
+        },
+        {
+          title: 'Build the work plan around the building',
+          body: 'Scope, phasing, and access need to fit how the property operates.',
+        },
       ],
       faq: [
         {
@@ -471,6 +638,7 @@ export const roofingServices = [
     slug: 'hail-and-wind-damage-roof-inspection',
     title: 'Hail & Wind Damage Roof Inspection',
     icon: 'hailinspection',
+    menuDescription: 'Separate real storm damage from normal wear.',
     body: 'An inspection should separate visible wear from real storm damage, note probable impact zones, and help decide whether repair, restoration, or replacement is justified.',
     image: {
       urls: {
@@ -483,18 +651,37 @@ export const roofingServices = [
       heroEyebrow: 'Storm inspection',
       heroBody:
         'A hail and wind inspection should do more than confirm that a storm happened. It should help determine whether the roof shows probable impact or uplift damage and what kind of next step is justified.',
-      storyTitle: 'The most useful inspection is the one that separates real storm evidence from ordinary wear.',
+      storyTitle:
+        'The most useful inspection is the one that separates real storm evidence from ordinary wear.',
       storyBody:
         'Homeowners do not need guesswork after a storm. They need a clear read on whether the roof likely took damage, where it appears, and whether that points toward monitoring, repair, or a claim conversation.',
       highlights: [
-        { title: 'Damage pattern', body: 'A credible inspection looks for consistent signal, not isolated marks or assumptions.' },
-        { title: 'Repairability', body: 'Some roofs need minor work while others show enough storm effect to justify bigger action.' },
-        { title: 'Claim readiness', body: 'Good documentation makes the next insurance or contractor conversation cleaner.' },
+        {
+          title: 'Damage pattern',
+          body: 'A credible inspection looks for consistent signal, not isolated marks or assumptions.',
+        },
+        {
+          title: 'Repairability',
+          body: 'Some roofs need minor work while others show enough storm effect to justify bigger action.',
+        },
+        {
+          title: 'Claim readiness',
+          body: 'Good documentation makes the next insurance or contractor conversation cleaner.',
+        },
       ],
       steps: [
-        { title: 'Inspect the full roof system', body: 'Look at field areas, ridges, soft metals, flashing, vents, and surrounding evidence.' },
-        { title: 'Separate wear from storm effect', body: 'The goal is to distinguish age-related deterioration from likely hail or wind impact.' },
-        { title: 'Set the right next step', body: 'Monitoring, repair, restoration, or claim support each require a different recommendation.' },
+        {
+          title: 'Inspect the full roof system',
+          body: 'Look at field areas, ridges, soft metals, flashing, vents, and surrounding evidence.',
+        },
+        {
+          title: 'Separate wear from storm effect',
+          body: 'The goal is to distinguish age-related deterioration from likely hail or wind impact.',
+        },
+        {
+          title: 'Set the right next step',
+          body: 'Monitoring, repair, restoration, or claim support each require a different recommendation.',
+        },
       ],
       faq: [
         {
@@ -514,9 +701,78 @@ export const roofingServices = [
 
 export const specialtyServices = [
   {
+    slug: 'detach-and-reset',
+    title: 'Detach and Reset',
+    icon: 'detachreset',
+    menuDescription: 'Remove and reinstall solar for reroof work.',
+    body: 'If the roof needs repair or replacement after solar is already installed, detach-and-reset planning keeps the reroof, panel removal, reinstall, and insurance conversation aligned before timing and cost drift.',
+    image: {
+      urls: {
+        regular:
+          'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+      },
+      alt: 'Solar panels installed on a residential roof before roofing coordination work',
+    },
+    detail: {
+      heroEyebrow: 'Solar coordination',
+      heroBody:
+        'Detach and reset matters when an existing solar array has to come off so the roof can be repaired or replaced. The useful conversation is who is handling removal and reinstall, how the reroof is being coordinated, and what happens if hail or age has damaged part of the solar system too.',
+      storyTitle:
+        'The real risk is not just taking panels off. It is letting the roofing scope, solar scope, and insurance scope drift apart.',
+      storyBody:
+        'Homeowners get stuck when the roofer, solar company, and carrier all assume someone else is covering the solar side. A good detach-and-reset scope should clarify sequencing, protect the system during removal, document existing equipment condition, and make the reinstall plan clear before the roof work starts.',
+      highlights: [
+        {
+          title: 'Qualified solar removal',
+          body: 'Panel removal and reinstall should be handled by a team that understands the solar system, not just the roofing schedule.',
+        },
+        {
+          title: 'Insurance coordination',
+          body: 'Detach-and-reset costs, roofing scope, and any storm-related documentation should be aligned early if the project involves a claim.',
+        },
+        {
+          title: 'Damaged equipment review',
+          body: 'Racking, wiring, and panel condition should be checked during removal so any damaged solar components are identified before reinstall.',
+        },
+      ],
+      steps: [
+        {
+          title: 'Confirm the roof scope first',
+          body: 'Settle whether the roof needs localized repair or full replacement before the array comes off, so the solar plan is built around a real roofing scope.',
+        },
+        {
+          title: 'Document and remove the system carefully',
+          body: 'Record the array condition, label the system components, and remove the equipment in a way that supports a clean reinstall.',
+        },
+        {
+          title: 'Reinstall and verify production',
+          body: 'Once the roof work is done, reinstall the system, inspect the electrical and mounting details, and verify the array is operating correctly before the project is closed.',
+        },
+      ],
+      faq: [
+        {
+          question: 'When do I need detach and reset for solar?',
+          answer:
+            'Usually when the roof under an existing array needs significant repair or replacement. The panels have to come off before the roofing work can be done correctly.',
+        },
+        {
+          question: 'Does insurance ever cover detach and reset?',
+          answer:
+            'Sometimes, especially when the reroof is tied to storm damage, but coverage depends on the policy and claim scope. That is why the solar side should be documented and discussed early, not after the roof work is already moving.',
+        },
+        {
+          question: 'What if a panel or other solar component is damaged?',
+          answer:
+            'That should be identified during removal and inspection. If equipment itself has been damaged, the homeowner needs a clear recommendation on repair or replacement before reinstall, rather than discovering the problem after the system goes back up.',
+        },
+      ],
+    },
+  },
+  {
     slug: 'rodent-deterrent',
     title: 'Rodent Deterrent',
     icon: 'rodent',
+    menuDescription: 'Protect solar wiring from pest damage.',
     body: 'Screening helps protect rooftop solar systems from pests that can damage wiring and create repeat service issues.',
     image: {
       urls: {
@@ -533,14 +789,32 @@ export const specialtyServices = [
       storyBody:
         'When rodents get under an array, they can create repeat service issues that are expensive and difficult to diagnose after the fact. Screening and prevention are often worth doing early.',
       highlights: [
-        { title: 'Protect wiring', body: 'The main goal is preventing chewing and nesting that damages system components.' },
-        { title: 'Reduce repeat service', body: 'Proactive screening is often cheaper than repeated diagnostics and repair visits.' },
-        { title: 'Preserve system performance', body: 'Keeping the underside of the array protected helps avoid preventable disruptions.' },
+        {
+          title: 'Protect wiring',
+          body: 'The main goal is preventing chewing and nesting that damages system components.',
+        },
+        {
+          title: 'Reduce repeat service',
+          body: 'Proactive screening is often cheaper than repeated diagnostics and repair visits.',
+        },
+        {
+          title: 'Preserve system performance',
+          body: 'Keeping the underside of the array protected helps avoid preventable disruptions.',
+        },
       ],
       steps: [
-        { title: 'Inspect the array edge', body: 'Look for access points and signs of activity around the roof-mounted system.' },
-        { title: 'Install deterrent measures', body: 'Use screening and detailing that reduce access without harming the roof or array.' },
-        { title: 'Monitor after install', body: 'Check that the system stays clean and protected over time.' },
+        {
+          title: 'Inspect the array edge',
+          body: 'Look for access points and signs of activity around the roof-mounted system.',
+        },
+        {
+          title: 'Install deterrent measures',
+          body: 'Use screening and detailing that reduce access without harming the roof or array.',
+        },
+        {
+          title: 'Monitor after install',
+          body: 'Check that the system stays clean and protected over time.',
+        },
       ],
       faq: [
         {
@@ -560,6 +834,7 @@ export const specialtyServices = [
     slug: 'electrical-services',
     title: 'Electrical Services',
     icon: 'electrical',
+    menuDescription: 'Panel, wiring, and upgrade support.',
     body: 'Licensed electrical work supports upgrades, troubleshooting, service changes, and safe integration with larger projects.',
     image: {
       urls: {
@@ -576,14 +851,32 @@ export const specialtyServices = [
       storyBody:
         'Panel capacity, breaker space, service condition, and wiring quality can all affect whether the next project is straightforward or needs electrical work first.',
       highlights: [
-        { title: 'Upgrade readiness', body: 'Electrical review helps determine whether larger projects can be added cleanly.' },
-        { title: 'Troubleshooting', body: 'Some problems need direct electrical diagnosis before any larger recommendation makes sense.' },
-        { title: 'Safety and compliance', body: 'Licensed work matters when the project touches service equipment or critical circuits.' },
+        {
+          title: 'Upgrade readiness',
+          body: 'Electrical review helps determine whether larger projects can be added cleanly.',
+        },
+        {
+          title: 'Troubleshooting',
+          body: 'Some problems need direct electrical diagnosis before any larger recommendation makes sense.',
+        },
+        {
+          title: 'Safety and compliance',
+          body: 'Licensed work matters when the project touches service equipment or critical circuits.',
+        },
       ],
       steps: [
-        { title: 'Review the existing service', body: 'Start with panel condition, capacity, and visible limitations.' },
-        { title: 'Define the needed scope', body: 'Clarify whether the work is troubleshooting, upgrade support, or a service change.' },
-        { title: 'Coordinate with the larger project', body: 'Electrical work should be timed and scoped around the broader home improvement plan.' },
+        {
+          title: 'Review the existing service',
+          body: 'Start with panel condition, capacity, and visible limitations.',
+        },
+        {
+          title: 'Define the needed scope',
+          body: 'Clarify whether the work is troubleshooting, upgrade support, or a service change.',
+        },
+        {
+          title: 'Coordinate with the larger project',
+          body: 'Electrical work should be timed and scoped around the broader home improvement plan.',
+        },
       ],
       faq: [
         {
@@ -603,6 +896,7 @@ export const specialtyServices = [
     slug: 'car-chargers',
     title: 'Car Chargers',
     icon: 'evcharger',
+    menuDescription: 'Install home EV charging that fits the panel.',
     body: 'Get a quote for a home EV charger that fits the panel, parking setup, and how the vehicle is actually used.',
     image: {
       urls: {
@@ -615,18 +909,37 @@ export const specialtyServices = [
       heroEyebrow: 'EV charging',
       heroBody:
         'A home car charger should be priced around the panel, parking layout, and how the vehicle is actually used. The useful quote is the one that fits the house, not just the charger hardware.',
-      storyTitle: 'Home EV charging is straightforward when the electrical side and daily use pattern are both understood.',
+      storyTitle:
+        'Home EV charging is straightforward when the electrical side and daily use pattern are both understood.',
       storyBody:
         'Charging speed, panel capacity, conduit path, parking position, and daily mileage all affect which install makes sense and how much complexity the project really needs.',
       highlights: [
-        { title: 'Panel fit', body: 'Capacity and breaker space determine what charger options are practical.' },
-        { title: 'Parking layout', body: 'Charger placement should fit where the car actually lives and how the cable will be used.' },
-        { title: 'Use pattern', body: 'Daily mileage and charging expectations affect whether a simple or more robust setup makes sense.' },
+        {
+          title: 'Panel fit',
+          body: 'Capacity and breaker space determine what charger options are practical.',
+        },
+        {
+          title: 'Parking layout',
+          body: 'Charger placement should fit where the car actually lives and how the cable will be used.',
+        },
+        {
+          title: 'Use pattern',
+          body: 'Daily mileage and charging expectations affect whether a simple or more robust setup makes sense.',
+        },
       ],
       steps: [
-        { title: 'Review the electrical starting point', body: 'Look at panel condition, available capacity, and the path to the charging location.' },
-        { title: 'Match the charger to usage', body: 'Select the charger around the vehicle and how the home actually uses it.' },
-        { title: 'Install for long-term usability', body: 'Placement, cable reach, and future flexibility all matter.' },
+        {
+          title: 'Review the electrical starting point',
+          body: 'Look at panel condition, available capacity, and the path to the charging location.',
+        },
+        {
+          title: 'Match the charger to usage',
+          body: 'Select the charger around the vehicle and how the home actually uses it.',
+        },
+        {
+          title: 'Install for long-term usability',
+          body: 'Placement, cable reach, and future flexibility all matter.',
+        },
       ],
       faq: [
         {
@@ -660,7 +973,7 @@ export const servicePages = allServiceEntries.map((service) => ({
       body: service.detail.heroBody,
       heroImage: service.image,
       actions: [
-        { label: 'Request a consultation', href: '/#consultation', variant: 'default' },
+        { label: 'Request a consultation', href: '#consultation', variant: 'default' },
         { label: 'View all services', href: '/services', variant: 'secondary' },
       ],
       metrics: [
@@ -695,7 +1008,7 @@ export const servicePages = allServiceEntries.map((service) => ({
       title: `Tell us what is going on with the house and we will help you figure out whether ${service.title.toLowerCase()} is the right next step.`,
       body: 'The goal is a clearer recommendation, a cleaner scope, and the right conversation first.',
       ctaLabel: 'Request a consultation',
-      ctaHref: '/#consultation',
+      ctaHref: '#consultation',
     },
   ],
 }))

@@ -81,7 +81,15 @@ export async function renderCurrentSitePage(slugParts = []) {
       null;
     const jsonLd = createJsonLd(site, homepage || heroHomepage, "/");
 
-    return <App heroSection={heroSection} resourcesSection={resourcesSection} site={site} jsonLd={jsonLd} />;
+    return (
+      <App
+        heroSection={heroSection}
+        resourcesSection={resourcesSection}
+        site={site}
+        jsonLd={jsonLd}
+        homepageSource={homepage?.source || heroHomepage?.source || "fixture"}
+      />
+    );
   }
 
   const page = await getPageForRequest(site, slugParts);

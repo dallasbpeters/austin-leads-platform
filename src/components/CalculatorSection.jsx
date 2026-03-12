@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Button from './Button'
 import Card from './Card'
+import { getDevSectionAttributes } from './dev/DevTrace'
 import { Slider } from '@/components/ui/slider'
 
 const DEFAULT_BILL = 200
@@ -54,54 +55,129 @@ function calculate(rawBill) {
   }
 }
 
-export default function CalculatorSection() {
+export default function CalculatorSection({ sectionId = 'solar-calculator' }) {
   const [bill, setBill] = useState(DEFAULT_BILL)
   const results = useMemo(() => calculate(bill), [bill])
 
   return (
-    <section className="bg-color-warm relative overflow-hidden   py-24">
-      <div className="absolute right-0 top-0 h-[60rem] w-[32rem] translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(var(--color-primary-h) var(--color-primary-s) 72% / 0.1)' }}></div>
-      <div className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]" style={{ background: 'hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)' }}></div>
+    <section
+      className="bg-warm relative overflow-hidden py-24"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/CalculatorSection.jsx',
+        content: 'local JSX copy and local calculator logic',
+      })}
+    >
+      <div
+        className="absolute top-0 right-0 h-[60rem] w-[32rem] translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]"
+        style={{ background: 'hsl(var(--color-primary-h) var(--color-primary-s) 72% / 0.1)' }}
+      ></div>
+      <div
+        className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]"
+        style={{ background: 'hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)' }}
+      ></div>
       <div className="relative z-[1] mx-auto w-[min(72rem,calc(100%-3rem))]">
         <div className="mb-14 text-center">
-          <h2 className="m-0 text-[clamp(3.875rem,4vw,5.25rem)] type-display text-foreground">See what solar could save</h2>
-          <p className="text-foreground mx-auto mt-3 max-w-[52rem] text-base">Enter your average monthly electric bill and we&apos;ll estimate system size, possible savings, and a likely payback range. Solar stands on its own here, even when roofing decisions affect the bigger project.</p>
+          <h2 className="type-display text-foreground m-0 text-[clamp(3.875rem,4vw,5.25rem)]">
+            See what solar could save
+          </h2>
+          <p className="text-foreground mx-auto mt-3 max-w-[52rem] text-base">
+            Enter your average monthly electric bill and we&apos;ll estimate system size, possible savings,
+            and a likely payback range. Solar stands on its own here, even when roofing decisions affect the
+            bigger project.
+          </p>
         </div>
 
-        <Card className="grid overflow-hidden max-[900px]:grid-cols-1 [grid-template-columns:minmax(280px,2fr)_minmax(320px,3fr)]" variant="surfaceStrong" radius="lg">
+        <Card
+          className="grid [grid-template-columns:minmax(280px,2fr)_minmax(320px,3fr)] overflow-hidden max-[900px]:grid-cols-1"
+          variant="surfaceStrong"
+          radius="lg"
+        >
           <div className="flex flex-col justify-center bg-[linear-gradient(to_bottom_right,var(--color-cyan-950),var(--color-cyan-900))] p-8 text-white">
-            <label htmlFor="calc-bill" className="mb-3 block text-xs font-bold uppercase tracking-[0.15em] text-[rgba(103,232,249,0.7)]">
+            <label
+              htmlFor="calc-bill"
+              className="mb-3 block text-sm font-bold tracking-[0.15em] text-[rgba(103,232,249,0.7)] uppercase"
+            >
               Your Monthly Electric Bill
             </label>
             <div className="relative mb-6">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-semibold text-white/60">$</span>
-              <input id="calc-bill" type="number" min={MIN_BILL} max={MAX_BILL} value={bill} onChange={(event) => setBill(clampBill(event.target.value))} className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-4 pl-10 text-[1.875rem] font-semibold text-white outline-none" />
+              <span className="absolute top-1/2 left-4 -translate-y-1/2 text-2xl font-semibold text-white/60">
+                $
+              </span>
+              <input
+                id="calc-bill"
+                type="number"
+                min={MIN_BILL}
+                max={MAX_BILL}
+                value={bill}
+                onChange={(event) => setBill(clampBill(event.target.value))}
+                className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-4 pl-10 text-[1.875rem] font-semibold text-white outline-none"
+              />
             </div>
-            <Slider min={MIN_BILL} max={MAX_BILL} step={10} value={[bill]} onValueChange={([nextBill]) => setBill(clampBill(nextBill))} className="mb-4" />
-            <div className="flex justify-between text-xs font-medium text-[rgba(103,232,249,0.5)]">
+            <Slider
+              min={MIN_BILL}
+              max={MAX_BILL}
+              step={10}
+              value={[bill]}
+              onValueChange={([nextBill]) => setBill(clampBill(nextBill))}
+              className="mb-4"
+            />
+            <div className="flex justify-between text-sm font-medium text-[rgba(103,232,249,0.5)]">
               <span>$50</span>
               <span>$800</span>
             </div>
 
-            <div className="mt-8 flex items-center gap-2 border-t border-white/10 pt-6 text-xs text-[rgba(103,232,249,0.6)]">
-              <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"></path>
+            <div className="mt-8 flex items-center gap-2 border-t border-white/10 pt-6 text-sm text-[rgba(103,232,249,0.6)]">
+              <svg
+                className="h-4 w-4 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                ></path>
               </svg>
               Based on typical Texas residential production assumptions and current utility-rate ranges
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:gap-6 p-4 md:p-8 max-sm:grid-cols-1">
-            <ResultCard title="System Size" value={results.systemKw} suffix="kW" detail={`~${results.panels} panels on your roof`} />
-            <ResultCard title="Year 1 Savings" value={results.year1} prefix="$" detail={`Avg ${results.monthly}/mo back in your pocket`} />
-            <ResultCard title="25-Year Savings" value={results.lifetime} prefix="$" detail="With 2.5% annual rate increase" accent />
-            <ResultCard title="Payback Period" value={results.payback} suffix="years" detail="After federal credit and a typical local rebate" accent />
+          <div className="grid grid-cols-2 gap-3 p-4 max-sm:grid-cols-1 md:gap-6 md:p-8">
+            <ResultCard
+              title="System Size"
+              value={results.systemKw}
+              suffix="kW"
+              detail={`~${results.panels} panels on your roof`}
+            />
+            <ResultCard
+              title="Year 1 Savings"
+              value={results.year1}
+              prefix="$"
+              detail={`Avg ${results.monthly}/mo back in your pocket`}
+            />
+            <ResultCard
+              title="25-Year Savings"
+              value={results.lifetime}
+              prefix="$"
+              detail="With 2.5% annual rate increase"
+              accent
+            />
+            <ResultCard
+              title="Payback Period"
+              value={results.payback}
+              suffix="years"
+              detail="After federal credit and a typical local rebate"
+              accent
+            />
 
             <div className="col-span-full mt-2 flex flex-wrap items-center gap-4">
               <Button href="#estimate" size="md" pill className="w-full max-w-72">
                 Talk through your solar options
               </Button>
-              <span className="text-color-slate-700 text-xs">Free estimate · No commitment · Takes 2 minutes</span>
+              <span className="text-sm text-slate-700">Free estimate · No commitment · Takes 2 minutes</span>
             </div>
           </div>
         </Card>
@@ -109,7 +185,8 @@ export default function CalculatorSection() {
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: 'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
+          backgroundImage:
+            'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
           backgroundSize: '24px 24px',
         }}
       ></div>
@@ -120,13 +197,13 @@ export default function CalculatorSection() {
 function ResultCard({ title, value, prefix = '', suffix = '', detail, accent = false }) {
   return (
     <Card className="bg-card p-5">
-      <span className="text-color-slate-700 text-xs font-bold uppercase tracking-[0.08em]">{title}</span>
-      <div className="mt-2 flex items-baseline gap-1 text-[1.875rem] font-bold text-foreground">
-        {prefix ? <span className="text-color-slate-700 text-sm font-medium">{prefix}</span> : null}
+      <span className="text-sm font-bold tracking-[0.08em] text-slate-700 uppercase">{title}</span>
+      <div className="text-foreground mt-2 flex items-baseline gap-1 text-[1.875rem] font-bold">
+        {prefix ? <span className="text-sm font-medium text-slate-700">{prefix}</span> : null}
         <span>{value}</span>
-        {suffix ? <span className="text-color-slate-700 text-sm font-medium">{suffix}</span> : null}
+        {suffix ? <span className="text-sm font-medium text-slate-700">{suffix}</span> : null}
       </div>
-      <p className="text-color-slate-700 mt-1.5 text-xs">{detail}</p>
+      <p className="mt-1.5 text-sm text-slate-700">{detail}</p>
     </Card>
   )
 }

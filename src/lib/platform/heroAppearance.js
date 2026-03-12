@@ -115,6 +115,9 @@ export function getHeroOverlayAppearance(section) {
     section?.heroOverlayStartColor || section?.heroOverlayColor || "#0f172a"
   const overlayEndColor = section?.heroOverlayEndColor || overlayStartColor
   const overlayDirection = normalizeHeroOverlayDirection(section?.heroOverlayDirection)
+  const hasExplicitStopOpacity =
+    typeof section?.heroOverlayStartOpacity === "number" ||
+    typeof section?.heroOverlayEndOpacity === "number"
   const overlayStartOpacity =
     typeof section?.heroOverlayStartOpacity === "number"
       ? section.heroOverlayStartOpacity
@@ -122,7 +125,9 @@ export function getHeroOverlayAppearance(section) {
   const overlayEndOpacity =
     typeof section?.heroOverlayEndOpacity === "number"
       ? section.heroOverlayEndOpacity
-      : overlayOpacity
+      : hasExplicitStopOpacity
+        ? overlayOpacity
+        : Math.min(overlayOpacity, 0.15)
   const overlayStart = hexToRgba(overlayStartColor, overlayStartOpacity)
   const overlayEnd = hexToRgba(overlayEndColor, overlayEndOpacity)
 

@@ -121,6 +121,17 @@ function buildHomepageHeroSection(page) {
   };
 }
 
+function withPageSource(page, source) {
+  if (!page) {
+    return null;
+  }
+
+  return {
+    ...page,
+    source,
+  };
+}
+
 function normalizeHost(host) {
   return (host || "").replace(/^https?:\/\//, "").replace(/:\d+$/, "").toLowerCase();
 }
@@ -206,12 +217,13 @@ export function getPagesForSite(siteSlug) {
 }
 
 export function getPageForSite(siteSlug, slugParts = []) {
-  return (
+  return withPageSource(
     pages.find(
       (page) =>
         getEquivalentSiteSlugs(siteSlug).includes(page.siteSlug) &&
         page.slug === getPageKey(slugParts),
-    ) ?? null
+    ) ?? null,
+    "fixture",
   );
 }
 
@@ -370,11 +382,11 @@ export async function getPageForRequest(site, slugParts = []) {
     );
 
     if (page) {
-      return {
+      return withPageSource({
         ...page,
         slug: page.slug === "/" ? "" : page.slug,
         heroSection: buildHomepageHeroSection(page),
-      };
+      }, "sanity");
     }
   } catch {}
 
@@ -514,9 +526,10 @@ export async function getHeroPages() {
 
     return Array.isArray(heroPages)
       ? heroPages.map((page) => ({
-          ...page,
-          heroSection: buildHomepageHeroSection(page),
-        }))
+        ...page,
+        source: "sanity",
+        heroSection: buildHomepageHeroSection(page),
+      }))
       : localHeroPages;
   } catch {
     return localHeroPages;
@@ -579,10 +592,10 @@ export async function getHeroHomepageForSite(siteSlug) {
   const hasHeroImage = (page) => hasImageSource(page?.heroSection?.heroAsset, page?.heroSection?.heroImage);
 
   return (
-    sitePages.find((page) => isHomepage(page) && hasHeroImage(page)) ||
-    sitePages.find((page) => hasHeroImage(page)) ||
-    sitePages.find((page) => isHomepage(page)) ||
-    sitePages[0] ||
+    withPageSource(sitePages.find((page) => isHomepage(page) && hasHeroImage(page)), sitePages.find((page) => isHomepage(page) && hasHeroImage(page))?.source) ||
+    withPageSource(sitePages.find((page) => hasHeroImage(page)), sitePages.find((page) => hasHeroImage(page))?.source) ||
+    withPageSource(sitePages.find((page) => isHomepage(page)), sitePages.find((page) => isHomepage(page))?.source) ||
+    withPageSource(sitePages[0], sitePages[0]?.source) ||
     null
   );
 }
@@ -604,8 +617,10 @@ export async function getHomepageForSite(siteSlug) {
   const fallbackPages = pages.filter((page) => equivalentSlugs.includes(page.siteSlug));
 
   return (
-    fallbackPages.find((page) => page.pageType === "home" || page.slug === "") ||
-    fallbackPages[0] ||
+    withPageSource(
+      fallbackPages.find((page) => page.pageType === "home" || page.slug === "") || fallbackPages[0] || null,
+      "fixture",
+    ) ||
     null
   );
 }

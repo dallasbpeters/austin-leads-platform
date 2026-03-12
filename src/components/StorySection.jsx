@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { getDevSectionAttributes } from './dev/DevTrace'
 
-export default function StorySection() {
+export default function StorySection({ sectionId = 'how-it-works' }) {
   const ref = useRef(null)
 
   useEffect(() => {
@@ -66,11 +67,26 @@ export default function StorySection() {
   }, [])
 
   return (
-    <section className="overflow-hidden bg-white" id="how-it-works">
-      <div className="mx-auto w-[min(72rem,calc(100%-3rem))]   py-32 text-center">
-        <h2 ref={ref} className="type-accent text-color-neutral-800 m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em]">
-          Most homeowners do not start with a clean, simple solar question. They start with storm damage, an aging roof, an insurance claim, or a project they do not want to get wrong. This site is built to help you understand the roofing side, the solar side, and where those decisions affect each other.{' '}
-          <span className="type-display text-color-neutral-400 italic">Start with the issue in front of you. Get clear on the next step.</span>
+    <section
+      className="overflow-hidden bg-white"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/StorySection.jsx',
+        content: 'local JSX copy',
+        note: 'karaoke text reveal section',
+      })}
+    >
+      <div className="mx-auto w-[min(72rem,calc(100%-3rem))] py-32 text-center">
+        <h2
+          ref={ref}
+          className="type-accent m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em] text-neutral-800"
+        >
+          Most homeowners do not start with a clean, simple solar question. They start with storm damage, an
+          aging roof, an insurance claim, or a project they do not want to get wrong. This site is built to
+          help you understand the roofing side, the solar side, and where those decisions affect each other.{' '}
+          <span className="type-display text-neutral-400 italic">
+            Start with the issue in front of you. Get clear on the next step.
+          </span>
         </h2>
       </div>
     </section>
