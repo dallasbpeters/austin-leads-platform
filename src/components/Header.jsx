@@ -5,7 +5,7 @@ import Logo from './Logo'
 import { getDevSectionAttributes } from './dev/DevTrace'
 
 import * as React from 'react'
-import { SubmitDocument, Menu, Rocket, Xmark } from 'iconoir-react'
+import { Menu, Xmark } from 'iconoir-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
 import Image from 'next/image'
 import { mainServices, roofingServices, specialtyServices } from '@/lib/platform/service-catalog'
@@ -26,7 +26,7 @@ const LINKS = [
   { href: '/services', label: 'Services' },
   { href: '/hail-damage', label: 'Hail Damage' },
   { href: '/guides', label: 'Guides' },
-  { href: '/about', label: 'About' },
+  { href: '/about', label: 'About Us' },
 ]
 const serviceIndex = [...mainServices, ...roofingServices, ...specialtyServices].reduce((acc, service) => {
   acc[service.slug] = service
@@ -71,7 +71,7 @@ function NavList() {
         <Link
           key={href}
           href={href}
-          className="btn hover:bg-accent hover:text-accent-foreground font-semi-bold flex items-center gap-2 rounded-md px-3 py-2 text-sm"
+          className="btn hover:text-primary font-semi-bold flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-transparent"
         >
           {label}
         </Link>
@@ -83,7 +83,7 @@ function MenuItem({ title, description, href }) {
   return (
     <Link
       href={href}
-      className="hover:bg-accent hover:text-accent-foreground flex flex-col items-start rounded-md p-2"
+      className="hover:text-primary flex flex-col items-start rounded-md p-2 hover:bg-transparent"
     >
       <p className="text-sm font-semibold">{title}</p>
       {description ? <p className="text-muted-foreground text-sm">{description}</p> : null}
@@ -179,7 +179,6 @@ export default function Header() {
             <AccordionItem value="solar-pages" className="border-none">
               <AccordionTrigger className="btn p-0 hover:no-underline">
                 <div className="hover:bg-accent flex w-full items-center gap-2 rounded-md px-3 py-2">
-                  <SubmitDocument className="h-4 w-4" />
                   <span className="text-sm">Solar</span>
                 </div>
               </AccordionTrigger>
@@ -194,7 +193,6 @@ export default function Header() {
             <AccordionItem value="roofing-pages" className="border-none">
               <AccordionTrigger className="btn p-0 hover:no-underline">
                 <div className="hover:bg-accent flex w-full items-center gap-2 rounded-md px-3 py-2">
-                  <Rocket className="h-4 w-4" />
                   <span className="text-sm">Roofing</span>
                 </div>
               </AccordionTrigger>

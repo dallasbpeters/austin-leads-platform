@@ -33,7 +33,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
 
   return (
     <section
-      className="radial-grid-bg type-accent text-body relative h-[80vh] overflow-x-hidden"
+      className="radial-grid-bg type-accent text-body relative h-[80vh] overflow-hidden"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/Hero.jsx',
@@ -55,7 +55,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           showOverlay={Boolean(overlayStyle)}
           showDots={false}
           objectPosition="center"
-          className="absolute inset-0 z-[2] min-h-[80vh]"
+          className="absolute inset-0 z-2 min-h-[80vh]"
           imageClassName="object-top"
           backgroundColor={'#000000'}
         />
@@ -65,9 +65,9 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             src="/assets/hero-bg.png"
             alt=""
             fill
-            className="absolute inset-0 z-[2] object-cover object-top opacity-10"
+            className="absolute inset-0 z-2 object-cover object-top opacity-10"
           />
-          {overlayStyle ? <div className="absolute inset-0 z-[3]" style={overlayStyle} /> : null}
+          {overlayStyle ? <div className="absolute inset-0 z-3" style={overlayStyle} /> : null}
         </>
       )}
       <div className="relative z-20 mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-4 py-30">
@@ -82,7 +82,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
                 className="text-[12px] font-bold tracking-[0.4em] uppercase"
                 style={{ color: heroTextColor || 'var(--color-primary)' }}
               >
-                Comprehensive Solar and Roofing for Texas Homeowners
+                Solar and Roofing for Texas Homeowners
               </span>
             </div>
 
@@ -97,7 +97,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
                   WebkitTextStrokeColor: heroTextColor || 'black',
                 }}
               >
-                & Roofing Pros.
+                & Roofing
               </span>
             </h1>
 
@@ -128,7 +128,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
 
           <div className="solar-fade-up solar-fade-up-delay">
             <Card
-              className="p-8 backdrop-blur-[12px]"
+              className="p-8 backdrop-blur-md"
               radius="lg"
               style={
                 hasHeroImage

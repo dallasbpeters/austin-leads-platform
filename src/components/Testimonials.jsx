@@ -50,7 +50,7 @@ function Ratings() {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-[16px] w-[16px] fill-current"
+        className="h-4 w-4 fill-current"
         data-icon-replaced="true"
         style={{ width: '16px', height: '16px', color: 'rgb(250, 204, 21)' }}
       >
@@ -69,7 +69,7 @@ function Ratings() {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-[16px] w-[16px] fill-current"
+        className="h-4 w-4 fill-current"
         data-icon-replaced="true"
         style={{ width: '16px', height: '16px', color: 'rgb(250, 204, 21)' }}
       >
@@ -88,7 +88,7 @@ function Ratings() {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-[16px] w-[16px] fill-current"
+        className="h-4 w-4 fill-current"
         data-icon-replaced="true"
         style={{ width: '16px', height: '16px', color: 'rgb(250, 204, 21)' }}
       >
@@ -104,7 +104,7 @@ function Ratings() {
 const Testimonials = () => {
   return (
     <section
-      className="radial-grid-bg bg-secondary py-24"
+      className="radial-grid-bg bg-secondary-100 py-24"
       {...getDevSectionAttributes({
         id: 'testimonials-homepage',
         markup: 'src/components/Testimonials.jsx',
@@ -114,7 +114,7 @@ const Testimonials = () => {
       <div className="mr-auto mb-20 ml-auto max-w-7xl text-center sm:px-6 lg:px-8">
         <h2 className="text-foreground font-display dynamic-zoom-in animate-delay-200 mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
           What customers are saying
-          <span className="bg-primary block bg-clip-text leading-[var(--leading-relaxed)] font-medium tracking-tight text-transparent">
+          <span className="bg-primary block bg-clip-text leading-relaxed font-medium tracking-tight text-transparent">
             about Texas Solar and Roofing Pros
           </span>
         </h2>
