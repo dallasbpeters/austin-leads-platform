@@ -8,6 +8,7 @@ import {
   buildDefaultHeroQuery,
   buildSiteHeroQuery,
   createHeroPageDocument,
+  deleteHeroPageDocument,
   fetchHeroPagesAdmin,
   mergeUniquePhotos,
   saveHeroPageAppearance,
@@ -56,6 +57,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [creating, setCreating] = useState(false)
+  const [deletingPageId, setDeletingPageId] = useState('')
   const [appearanceForm, setAppearanceForm] = useState({
     heroTextColor: '#ffffff',
     heroOverlayStartColor: '#0f172a',
@@ -80,6 +82,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
   const { getGradientObject } = useColorPicker(overlayGradient, setOverlayGradient)
   const selectedSiteId = selectedPage?.site?.id || createForm.siteId || heroSites[0]?.id || ''
   const selectedSite = heroSites.find((site) => site.id === selectedSiteId) || null
+  const sitePages = pages.filter((page) => page.site?.id === selectedSiteId)
   const launchHref = selectedPage?.slug ? `/${selectedPage.slug}` : '/'
 
   useEffect(() => {
@@ -294,6 +297,40 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
     }
   }
 
+  async function deletePage(page) {
+    if (!page?.id) {
+      return
+    }
+
+    setError('')
+    setMessage('')
+    setDeletingPageId(page.id)
+
+    try {
+      const data = await deleteHeroPageDocument(page.id)
+      const nextPages = await refreshHeroPages()
+      const remainingSitePages = nextPages.filter((entry) => entry.site?.id === page.site?.id)
+      const fallbackPage = remainingSitePages[0] || nextPages[0] || null
+
+      setSelectedPageId(fallbackPage?.id || '')
+      setQuery(
+        fallbackPage
+          ? buildDefaultHeroQuery(fallbackPage)
+          : page.site
+            ? buildSiteHeroQuery(page.site)
+            : '',
+      )
+      setResults([])
+      setSearchPage(1)
+      setTotalPages(1)
+      setMessage(`Deleted ${data.title || page.title}.`)
+    } catch (nextError) {
+      setError(nextError.message)
+    } finally {
+      setDeletingPageId('')
+    }
+  }
+
   function selectSite(site) {
     const page = pages.find((entry) => entry.site?.id === site.id)
 
@@ -304,10 +341,19 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
     setQuery(page ? buildDefaultHeroQuery(page) : buildSiteHeroQuery(site))
   }
 
+  function selectPage(page) {
+    setSelectedPageId(page.id)
+    setCreateForm((current) => ({ ...current, siteId: page.site?.id || current.siteId }))
+    setMessage('')
+    setError('')
+    setQuery(buildDefaultHeroQuery(page))
+  }
+
   return {
     appearanceForm,
     createForm,
     creating,
+    deletingPageId,
     error,
     gradientPickerOpen,
     launchHref,
@@ -321,16 +367,19 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
     savingAppearance,
     savingImageId,
     searchPage,
+    sitePages,
     selectedPage,
     selectedSite,
     selectedSiteId,
     totalPages,
     createPage,
+    deletePage,
     handleOverlayGradientChange,
     loadMorePhotos,
     saveAppearance,
     savePhoto,
     searchPhotos,
+    selectPage,
     selectSite,
     setAppearanceForm,
     setCreateForm,

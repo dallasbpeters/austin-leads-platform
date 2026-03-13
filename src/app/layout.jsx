@@ -9,6 +9,7 @@ import { draftMode } from 'next/headers'
 import Script from 'next/script'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { Analytics } from '@vercel/analytics/react'
+import { VercelToolbar } from '@vercel/toolbar/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import '../styles/globals.css'
@@ -46,6 +47,7 @@ export default async function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
         {children}
+        <VercelToolbar />
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />
         <SpeedInsights />

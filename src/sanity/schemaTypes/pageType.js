@@ -60,9 +60,15 @@ const uploadedImageType = {
   },
   fields: [
     {
-      name: 'alt',
+      name: 'altText',
       title: 'Alt text',
       type: 'string',
+    },
+    {
+      name: 'alt',
+      title: 'Legacy alt text',
+      type: 'string',
+      hidden: true,
     },
   ],
 }

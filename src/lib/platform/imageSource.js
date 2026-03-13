@@ -13,7 +13,7 @@ export function getImageUrl(imageField, fallbackImage = null) {
 }
 
 export function getImageAlt(imageField, fallbackImage = null, fallbackText = '') {
-  return imageField?.alt || fallbackImage?.alt || fallbackText || ''
+  return imageField?.altText || imageField?.alt || fallbackImage?.alt || fallbackText || ''
 }
 
 export function hasImageSource(imageField, fallbackImage = null) {

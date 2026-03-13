@@ -24,6 +24,7 @@ const sectionProjection = `
   heroOverlayOpacity,
   heroImage,
   heroAsset{
+    altText,
     alt,
     asset->{
       url,
@@ -53,6 +54,7 @@ const sectionProjection = `
     icon,
     image,
     imageAsset{
+      altText,
       alt,
       asset->{
         url,
@@ -429,6 +431,7 @@ export async function getPageForRequest(site, slugParts = []) {
         heroOverlayOpacity,
         heroImage,
         heroAsset{
+          altText,
           alt,
           asset->{
             url,
@@ -569,6 +572,7 @@ export async function getHeroPages({ stega = false } = {}) {
         heroOverlayOpacity,
         heroImage,
         heroAsset{
+          altText,
           alt,
           asset->{
             url,

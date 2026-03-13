@@ -1,6 +1,5 @@
 import Button from './Button'
 import Card from './Card'
-import Gradient from './Gradient'
 import Image from 'next/image'
 import ImageFader from './ImageFader'
 import { getDevSectionAttributes } from './dev/DevTrace'
@@ -33,24 +32,19 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
 
   return (
     <section
-      className="radial-grid-bg type-accent text-body relative h-[80vh] overflow-hidden"
+      className="radial-grid-bg type-accent text-body relative min-h-[80vh] overflow-hidden"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/Hero.jsx',
         content: 'homepage hero copy + hero media from homepage record',
       })}
     >
-      <Gradient
-        zIndex={1}
-        className={hasHeroImage ? 'opacity-70' : 'opacity-100'}
-        style={{ mixBlendMode: hasHeroImage ? 'screen' : 'normal' }}
-      />
       {hasRotatingHeroImages ? (
         <ImageFader
           borderRadius="0"
           images={rotatingHeroImages}
           interval={10000}
-          fadeDuration={300}
+          fadeDuration={600}
           overlayStyle={overlayStyle}
           showOverlay={Boolean(overlayStyle)}
           showDots={false}

@@ -38,8 +38,8 @@ export default function App({
         <Hero heroSection={heroSection} />
         <Band
           colors={['#2660AE', '#1C447F', '#0C333A', 'var(--color-secondary-alt)', 'var(--color-amber-600)']}
-          tint="#1C2432"
-          maxHeight={16}
+          tint="var(--color-secondary-950)"
+          maxHeight={12}
         />
         <DevTrace markup="src/components/StorySection.jsx" content="local JSX copy" />
         <StorySection />

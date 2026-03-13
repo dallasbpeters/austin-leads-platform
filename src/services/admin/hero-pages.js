@@ -81,3 +81,9 @@ export async function createHeroPageDocument(payload) {
     body: JSON.stringify(payload),
   })
 }
+
+export async function deleteHeroPageDocument(pageId) {
+  return requestJson(`/api/hero-pages/${pageId}`, {
+    method: 'DELETE',
+  })
+}

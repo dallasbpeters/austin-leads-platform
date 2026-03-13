@@ -1,3 +1,5 @@
+import withVercelToolbar from '@vercel/toolbar/plugins/next'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
@@ -30,4 +32,8 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+const withToolbar = withVercelToolbar({
+  enableInProduction: true,
+})
+
+export default withToolbar(nextConfig)

@@ -43,7 +43,7 @@ function NavigationMenuItem({ className, ...props }) {
 }
 
 const navigationMenuTriggerStyle = cva(
-  'btn group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-semi-bold transition-[color,box-shadow] outline-none    hover:text-primary focus:bg-primary focus:text-primary-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-primary data-[state=open]:bg-white',
+  'btn group inline-flex h-9 w-max items-center text-foreground justify-center rounded-md bg-background px-4 py-2 text-sm font-semi-bold transition-[color,box-shadow] outline-none    hover:text-primary focus:bg-primary focus:text-primary-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-primary data-[state=open]:bg-white',
 )
 
 function NavigationMenuTrigger({ className, children, ...props }) {

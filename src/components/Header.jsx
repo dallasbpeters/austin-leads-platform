@@ -71,7 +71,7 @@ function NavList() {
         <Link
           key={href}
           href={href}
-          className="btn hover:text-primary font-semi-bold flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-transparent"
+          className="btn text-foreground hover:text-primary font-semi-bold flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-transparent"
         >
           {label}
         </Link>
@@ -112,7 +112,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link href="/" title="Texas Solar & Roofing Pros" className="grid grid-flow-col items-center gap-2">
             <Logo />
-            <div className="type-accent text-base leading-none font-semibold text-slate-950">
+            <div className="type-accent text-lg leading-none font-bold text-foreground">
               Texas Solar & Roofing Pros
             </div>
           </Link>

@@ -82,9 +82,9 @@ export default function ImageFader({
           key={index}
           loading="lazy"
           decoding="async"
-          initial={{ opacity: 0.5, blur: 10 }}
-          animate={{ opacity: 1, blur: 0 }}
-          exit={{ opacity: 0.5, blur: 10 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0.5}}
           transition={{ duration: fadeSec, ease: 'linear' }}
           className={cn(imageClassName)}
           draggable={false}

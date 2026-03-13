@@ -906,20 +906,24 @@ export const pages = [
         body: 'Now you need the reroof and the solar work sequenced correctly. That means documenting system condition before removal, defining who handles detach-and-reset, checking for panel or wiring damage, and making sure the reinstall is not treated as an afterthought.',
       },
       {
-        type: 'highlights',
-        title: 'What we help you figure out when solar is part of the picture',
+        type: 'serviceGrid',
+        title: 'What Hail Actually Does to a Texas Roof',
+        subtitle: 'Hailstorms roll through Texas every year. If your home was in the path, the damage might not be obvious from the ground — but ignoring it gets expensive fast.',
         items: [
           {
-            title: 'Detach-and-reset needs its own plan, not a handshake',
-            body: 'Solar removal and reinstall should be priced, sequenced, and assigned before the reroof begins. If that is vague going in, it gets expensive coming out.',
+            title: 'Roof leaks that start small and get worse',
+            body: 'Hail cracks and punctures let water in. What starts as a small ceiling stain turns into warped decking, ruined insulation, and a repair bill that doubles every month you wait.',
+            imageUrl: '/images/water-dripping-from-ceiling-damaged-interior-space-winter-season.jpg',
           },
           {
-            title: 'Document everything before the panels come off',
-            body: 'That protects you if damaged panels, wiring, or mounting hardware is discovered during removal or before reinstall. No documentation means no leverage.',
+            title: 'Mold you won\'t see until it\'s a problem',
+            body: 'That moisture has to go somewhere. It feeds mold behind walls and under insulation — the kind you don\'t notice until you smell it or someone in the house starts getting sick.',
+            imageUrl: '/images/concrete-roof-wood-sky.jpg',
           },
           {
-            title: 'The roofing crew and solar crew need to be on the same schedule',
-            body: 'The reroof should not be scheduled as if the solar array does not exist. The trades need a plan that works in the actual order the job has to happen.',
+            title: 'Missing or cracked tiles that leave the house exposed',
+            body: 'Hail knocks tiles loose or shatters them outright. Every gap is an open door for rain, pests, and heat loss. The longer it sits, the more damage spreads underneath.',
+            imageUrl: '/images/overlapping-rows-yellow-ceramic-roofing-tiles-mounted-wooden-boards-covering-residential-building-roof-construction.jpg',
           },
         ],
       },

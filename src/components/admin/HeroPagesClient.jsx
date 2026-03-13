@@ -1,17 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { ExternalLink, ImagePlus, LoaderCircle, Search } from 'lucide-react'
+import { ExternalLink, ImagePlus, LoaderCircle, Search, Trash2 } from 'lucide-react'
 import ColorPicker from 'react-best-gradient-color-picker'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useHeroPagesManager } from '@/hooks/useHeroPagesManager'
 import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 import { cn } from '@/lib/utils'
@@ -19,7 +20,7 @@ import { cn } from '@/lib/utils'
 function ResultCard({ photo, onSelect, saving, canSelect }) {
   return (
     <Card className="border-border/70 bg-background overflow-hidden">
-      <div className="bg-muted aspect-[1/1]">
+      <div className="bg-muted aspect-square">
         <img
           alt={photo.alt}
           className="h-full w-full object-cover"
@@ -57,6 +58,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
     appearanceForm,
     createForm,
     creating,
+    deletingPageId,
     error,
     gradientPickerOpen,
     launchHref,
@@ -70,22 +72,39 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
     savingAppearance,
     savingImageId,
     searchPage,
+    sitePages,
     selectedPage,
     selectedSite,
     selectedSiteId,
     totalPages,
     createPage,
+    deletePage,
     handleOverlayGradientChange,
     loadMorePhotos,
     saveAppearance,
     savePhoto,
     searchPhotos,
+    selectPage,
     selectSite,
     setAppearanceForm,
     setCreateForm,
     setGradientPickerOpen,
     setQuery,
   } = useHeroPagesManager({ initialPages, heroSites })
+
+  async function handleDeletePage() {
+    if (!selectedPage) {
+      return
+    }
+
+    const confirmed = window.confirm(`Delete "${selectedPage.title}"? This removes the hero page from Sanity.`)
+
+    if (!confirmed) {
+      return
+    }
+
+    await deletePage(selectedPage)
+  }
 
   return (
     <div className="space-y-8 p-6 lg:p-10">
@@ -226,50 +245,44 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Hero site inventory</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          
               {heroSites.length ? (
                 heroSites.map((site) => {
-                  const page = pages.find((entry) => entry.site?.id === site.id)
+                  const sitePages = pages.filter((entry) => entry.site?.id === site.id)
+                  const page = sitePages[0]
                   const active = site.id === selectedSiteId
                   const hasHeroMedia = hasImageSource(
                     page?.heroSection?.heroAsset,
                     page?.heroSection?.heroImage,
                   )
+                  
 
                   return (
-                    <button
-                      className={cn(
-                        'w-full rounded-xl border px-4 py-4 text-left transition-colors',
-                        active
-                          ? 'shadow-theme-sm border-primary bg-primary/8 ring-primary/15 ring-1'
-                          : 'border-border bg-background hover:border-border/90 hover:bg-muted/40',
-                      )}
-                      key={site.id}
-                      onClick={() => selectSite(site)}
-                      type="button"
+                    <Card
+                    key={site.id}
+                    onClick={() => selectSite(site)}
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-foreground text-sm font-medium">{site.name}</div>
-                          <div className="text-muted-foreground mt-1 text-sm">{site.primaryDomain}</div>
-                        </div>
-                        <Badge variant={active ? 'default' : 'outline'}>
+            <CardHeader>
+              <CardTitle>{site.name}</CardTitle>
+              <CardDescription>{site.primaryDomain}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+
+                        <Badge variant={active ? 'secondary' : 'default'}>
                           {active ? 'Editing' : 'Select'}
                         </Badge>
-                      </div>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <Badge variant={page ? 'secondary' : 'outline'}>
-                          {page ? 'Homepage created' : 'Needs homepage'}
+                        <Badge variant={sitePages.length ? 'outline' : 'outline'}>
+                          {sitePages.length
+                            ? `${sitePages.length} hero page${sitePages.length === 1 ? '' : 's'}`
+                            : 'No hero pages'}
                         </Badge>
-                        <Badge variant={hasHeroMedia ? 'secondary' : 'outline'}>
+                        <Badge variant={hasHeroMedia ? 'outline' : 'outline'}>
                           {hasHeroMedia ? 'Image set' : 'No image'}
                         </Badge>
                       </div>
-                    </button>
+                    </CardContent>
+                    </Card>
                   )
                 })
               ) : (
@@ -277,8 +290,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                   No hero sites are available yet. Create or import hero-tier site records first.
                 </div>
               )}
-            </CardContent>
-          </Card>
+           
         </div>
 
         <div className="space-y-6">
@@ -318,9 +330,94 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                           </Link>
                         </Button>
                       ) : null}
+                      {selectedPage ? (
+                        <Button
+                          disabled={deletingPageId === selectedPage.id}
+                          onClick={handleDeletePage}
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          {deletingPageId === selectedPage.id ? (
+                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="mr-2 h-4 w-4" />
+                          )}
+                          Delete page
+                        </Button>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
+
+                {selectedSite ? (
+                  <div className="border-border bg-muted/20 space-y-3 rounded-xl border p-4">
+                    <div>
+                      <div className="text-foreground text-sm font-medium">Pages for this site</div>
+                      <div className="text-muted-foreground mt-1 text-sm leading-6">
+                        Switch between hero pages attached to {selectedSite.name}.
+                      </div>
+                    </div>
+
+                    {sitePages.length ? (
+                      <div className="grid gap-3">
+                        {sitePages.map((page) => {
+                          const active = page.id === selectedPage?.id
+                          const pageHasHeroMedia = hasImageSource(
+                            page?.heroSection?.heroAsset,
+                            page?.heroSection?.heroImage,
+                          )
+
+                          return (
+                            <button
+                              className={cn(
+                                'w-full rounded-xl border px-4 py-4 text-left transition-colors',
+                                active
+                                  ? 'shadow-theme-sm border-primary bg-primary/8 ring-primary/15 ring-1'
+                                  : 'border-border bg-background hover:border-border/90 hover:bg-background',
+                              )}
+                              key={page.id}
+                              onClick={() => selectPage(page)}
+                              type="button"
+                            >
+                              <div className="flex flex-wrap items-center justify-between gap-3">
+                                <div className="min-w-0">
+                                  <div className="text-foreground truncate text-sm font-medium">
+                                    {page.title}
+                                  </div>
+                                  <div className="text-muted-foreground mt-1 text-sm">
+                                    {page.slug ? `/${page.slug}` : '/'}
+                                  </div>
+                                </div>
+                                <Badge variant={active ? 'default' : 'outline'}>
+                                  {active ? 'Editing' : 'Open'}
+                                </Badge>
+                              </div>
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                <Badge variant="outline">
+                                  {page.pageType === 'home'
+                                    ? 'Home'
+                                    : page.pageType === 'service'
+                                      ? 'Service'
+                                      : page.pageType === 'location'
+                                        ? 'Location'
+                                        : 'Page'}
+                                </Badge>
+                                <Badge variant={pageHasHeroMedia ? 'secondary' : 'outline'}>
+                                  {pageHasHeroMedia ? 'Image set' : 'No image'}
+                                </Badge>
+                              </div>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <div className="border-border bg-background text-muted-foreground rounded-xl border border-dashed px-4 py-4 text-sm leading-7">
+                        This site has no hero pages yet. Create one from the form on the left.
+                      </div>
+                    )}
+                  </div>
+                ) : null}
 
                 <form className="flex flex-col gap-3 md:flex-row" onSubmit={searchPhotos}>
                   <Input

@@ -7,7 +7,6 @@ import {
   Flash,
   HomeShield,
   HomeSimple,
-  SunLight,
   Thunderstorm,
   WarningTriangle,
   WindowTabs,
@@ -17,7 +16,6 @@ import {
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
-import Gradient from '@/components/Gradient'
 import GuideCardGrid from '@/components/GuideCardGrid'
 import HailWeatherLookup from '@/components/HailWeatherLookup'
 import Header from '@/components/Header'
@@ -64,7 +62,7 @@ function HeroSection({ page, section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 relative grid min-h-[60vh] place-content-center overflow-hidden border-b bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))] py-32"
+      className="border-border/60 relative grid min-h-[60vh] place-content-center overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))] py-32"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:HeroSection',
@@ -74,11 +72,6 @@ function HeroSection({ page, section, sectionId }) {
       <DevTrace
         markup="src/components/platform/PublicSite.jsx:HeroSection"
         content={`page record from ${page?.source || 'fixture'} + hero section from ${section?._type || 'page section'}`}
-      />
-      <Gradient
-        zIndex={1}
-        className={hasHeroImage ? 'opacity-60' : 'opacity-100'}
-        style={{ mixBlendMode: hasHeroImage ? 'screen' : 'normal' }}
       />
       {hasHeroImage ? (
         <>
@@ -240,8 +233,9 @@ function CardGridSection({ section, sectionId }) {
         content={`highlight cards from ${section?._type || 'page section'}`}
       />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="mb-8 max-w-3xl">
+        <div className="mb-8 max-w-3xl grid gap-2">
           <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
+          <p className="text-foreground text-lg leading-8 mb-4">{section.subtitle}</p>
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {section.items?.map((item, index) => (
@@ -265,10 +259,10 @@ function CardGridSection({ section, sectionId }) {
 
 function GuideGridSection({ section, sectionId }) {
   const palette = [
-    'bg-secondary-700 text-white',
-    'bg-[var(--color-secondary-alt)] text-white',
+    'bg-primary text-white',
+    'bg-tertiary text-white',
     'bg-blue-400 text-white',
-    'bg-[var(--site-secondary)] text-white',
+    'bg-[var(--color-tertiary-alt)] text-foreground',
     'bg-blue-200 text-foreground',
     'bg-[var(--color-secondary-alt)] text-white',
   ]
@@ -415,6 +409,13 @@ function getServiceImage(item) {
     }
   }
 
+  if (item.imageUrl) {
+    return {
+      url: cleanRuntimeString(item.imageUrl),
+      alt: cleanRuntimeString(item.imageAlt || item.alt || item.title || item.question),
+    }
+  }
+
   if (item.icon && serviceImageMap[item.icon]) {
     return serviceImageMap[item.icon]
   }
@@ -498,6 +499,9 @@ function ServiceGridSection({ section, sectionId }) {
             </Badge>
           ) : null}
           <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          {section.subtitle ? (
+            <p className="text-foreground/80 mt-4 text-lg leading-8">{section.subtitle}</p>
+          ) : null}
           {section.body ? (
             <p className="text-muted-foreground mt-4 text-base leading-8">{section.body}</p>
           ) : null}
