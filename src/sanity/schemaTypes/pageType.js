@@ -1,6 +1,12 @@
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
 const hideUnlessHomepage = ({ document }) => document?.pageType !== 'home'
+const previewText = (value, fallback) => {
+  if (typeof value !== 'string') return fallback
+  const normalized = value.replace(/\s+/g, ' ').trim()
+  if (!normalized) return fallback
+  return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
+}
 
 const heroImageUrlsType = {
   name: 'heroImageUrls',
@@ -248,12 +254,13 @@ const pageItemType = {
       title: 'title',
       question: 'question',
       subtitle: 'body',
+      eyebrow: 'eyebrow',
       answer: 'answer',
     },
-    prepare({ title, question, subtitle, answer }) {
+    prepare({ title, question, subtitle, eyebrow, answer }) {
       return {
         title: title || question || 'Content item',
-        subtitle: subtitle || answer || 'Supporting content',
+        subtitle: previewText(subtitle || answer || eyebrow, 'Supporting content'),
       }
     },
   },
@@ -372,6 +379,58 @@ const resourceGridSectionType = {
   },
 }
 
+const guideGridSectionType = {
+  name: 'guideGridSection',
+  title: 'Guide Grid Section',
+  type: 'object',
+  initialValue: {
+    type: 'guideGrid',
+  },
+  fields: [
+    {
+      name: 'type',
+      title: 'Section type',
+      type: 'string',
+      hidden: true,
+      options: canvasExclude,
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading for the guide library or guide grid.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Optional supporting copy above the guide grid.'),
+    },
+    {
+      name: 'items',
+      title: 'Guide cards',
+      type: 'array',
+      validation: (Rule) => Rule.min(1),
+      of: [{ type: 'pageItem' }],
+      options: canvasPurpose('Guide cards shown in the grid.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      cardCount: 'items.length',
+    },
+    prepare({ title, body, cardCount }) {
+      return {
+        title: title || 'Guide grid',
+        subtitle: previewText(body, `${cardCount || 0} guides`),
+      }
+    },
+  },
+}
+
 const heroOnlyField = (field) => ({
   ...field,
   hidden: ({ parent }) => parent?.type !== 'hero',
@@ -433,6 +492,7 @@ const genericSectionFields = [
 ]
 
 const heroSpecificFields = [
+  { name: 'heroGradient', title: 'Hero gradient', type: 'text', options: canvasExclude },
   { name: 'heroTextColor', title: 'Hero text color', type: 'string', options: canvasExclude },
   { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'string', options: canvasExclude },
   {
@@ -486,11 +546,12 @@ const heroSectionType = {
     select: {
       title: 'title',
       eyebrow: 'eyebrow',
+      body: 'body',
     },
-    prepare({ title, eyebrow }) {
+    prepare({ title, eyebrow, body }) {
       return {
         title: title || eyebrow || 'Hero section',
-        subtitle: 'hero',
+        subtitle: previewText(body, 'hero'),
       }
     },
   },
@@ -506,11 +567,12 @@ const pageSectionType = {
       title: 'title',
       subtitle: 'type',
       eyebrow: 'eyebrow',
+      body: 'body',
     },
-    prepare({ title, subtitle, eyebrow }) {
+    prepare({ title, subtitle, eyebrow, body }) {
       return {
         title: title || eyebrow || 'Untitled section',
-        subtitle: subtitle || 'section',
+        subtitle: previewText(body, subtitle || 'section'),
       }
     },
   },
@@ -575,6 +637,13 @@ const baseFields = [
     type: 'text',
     hidden: hideUnlessHomepage,
     options: canvasPurpose('Supporting copy under the homepage hero headline.'),
+  },
+  {
+    name: 'heroGradient',
+    title: 'Hero Gradient',
+    type: 'text',
+    hidden: hideUnlessHomepage,
+    options: canvasExclude,
   },
   {
     name: 'heroTextColor',
@@ -669,7 +738,12 @@ const baseFields = [
     options: canvasPurpose(
       'Structured page sections. Map headings, body copy, calls to action, proof points, and FAQ items into the relevant section.',
     ),
-    of: [{ type: 'heroSection' }, { type: 'resourceGridSection' }, { type: 'pageSection' }],
+    of: [
+      { type: 'heroSection' },
+      { type: 'resourceGridSection' },
+      { type: 'guideGridSection' },
+      { type: 'pageSection' },
+    ],
   },
 ]
 
@@ -731,6 +805,7 @@ export default [
   resourceCardType,
   heroSectionType,
   resourceGridSectionType,
+  guideGridSectionType,
   pageSectionType,
   ...pageDocuments,
 ]

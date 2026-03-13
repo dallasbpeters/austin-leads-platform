@@ -261,11 +261,6 @@ body.admin-body-locked {
       color 200ms ease-out,
   }
 
-  .btn:hover {
-    color: var(--color-white);
-    background-color: initial;
-  }
-
   .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -288,16 +283,25 @@ body.admin-body-locked {
 
   .btn--primary:hover {
     box-shadow: var(--shadow-brand-hover);
+    background-color: var(--color-primary-700);
   }
 
   .btn--secondary {
-    border: 1px solid hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.22);
-    background-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.1);
-    color: var(--color-primary-700);
+    border: 1px solid hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.22);
+    background-color: hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.4);
+    color: var(--color-secondary-700);
   }
 
   .btn--secondary:hover {
     background-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.16);
+  }
+  .btn--tertiary {
+    background-color: var(--color-tertiary-alt);
+    color: var(--color-black);
+  }
+
+  .btn--tertiary:hover {
+    background-color: var(--color-tertiary-700);
   }
 
   .btn--md {

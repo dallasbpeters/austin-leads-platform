@@ -103,6 +103,7 @@ export default function ImageFader({
             src={cur.src}
             alt={cur.alt ?? ''}
             fill
+            sizes="100vw"
             className="object-cover"
             draggable={false}
             style={{

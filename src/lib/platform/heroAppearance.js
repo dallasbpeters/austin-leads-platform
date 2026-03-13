@@ -67,6 +67,11 @@ export function heroOverlayDirectionToDegrees(direction) {
   return degreesByDirection[normalized] || '180deg'
 }
 
+const DEFAULT_HERO_OVERLAY_COLOR = '#0f172a'
+const DEFAULT_HERO_OVERLAY_DIRECTION = '45deg'
+const DEFAULT_HERO_OVERLAY_START_OPACITY = 0.12
+const DEFAULT_HERO_OVERLAY_END_OPACITY = 0.5
+
 export function clampHeroOverlayOpacity(value, fallback = 0.42) {
   if (Number.isNaN(value)) {
     return fallback
@@ -105,20 +110,65 @@ export function parseRgbString(value) {
 }
 
 export function getHeroOverlayAppearance(section) {
-  const overlayOpacity = typeof section?.heroOverlayOpacity === 'number' ? section.heroOverlayOpacity : 0.42
-  const overlayStartColor = section?.heroOverlayStartColor || section?.heroOverlayColor || '#0f172a'
+  const defaultOverlayStyle = {
+    backgroundImage: `linear-gradient(${DEFAULT_HERO_OVERLAY_DIRECTION}, ${hexToRgba(DEFAULT_HERO_OVERLAY_COLOR, DEFAULT_HERO_OVERLAY_START_OPACITY)}, ${hexToRgba(DEFAULT_HERO_OVERLAY_COLOR, DEFAULT_HERO_OVERLAY_END_OPACITY)})`,
+  }
+
+  if (typeof section?.heroGradient === 'string' && section.heroGradient.trim()) {
+    return {
+      overlayOpacity: typeof section?.heroOverlayOpacity === 'number' ? section.heroOverlayOpacity : DEFAULT_HERO_OVERLAY_END_OPACITY,
+      overlayStartColor:
+        section?.heroOverlayStartColor || section?.heroOverlayColor || DEFAULT_HERO_OVERLAY_COLOR,
+      overlayEndColor:
+        section?.heroOverlayEndColor ||
+        section?.heroOverlayStartColor ||
+        section?.heroOverlayColor ||
+        DEFAULT_HERO_OVERLAY_COLOR,
+      overlayDirection: normalizeHeroOverlayDirection(section?.heroOverlayDirection || DEFAULT_HERO_OVERLAY_DIRECTION),
+      overlayStartOpacity:
+        typeof section?.heroOverlayStartOpacity === 'number'
+          ? section.heroOverlayStartOpacity
+          : DEFAULT_HERO_OVERLAY_START_OPACITY,
+      overlayEndOpacity:
+        typeof section?.heroOverlayEndOpacity === 'number'
+          ? section.heroOverlayEndOpacity
+          : DEFAULT_HERO_OVERLAY_END_OPACITY,
+      overlayStyle: {
+        backgroundImage: section.heroGradient.trim(),
+      },
+    }
+  }
+
+  const hasExplicitOverlay =
+    typeof section?.heroOverlayOpacity === 'number' ||
+    typeof section?.heroOverlayStartOpacity === 'number' ||
+    typeof section?.heroOverlayEndOpacity === 'number' ||
+    typeof section?.heroOverlayColor === 'string' ||
+    typeof section?.heroOverlayStartColor === 'string' ||
+    typeof section?.heroOverlayEndColor === 'string' ||
+    typeof section?.heroOverlayDirection === 'string'
+  const overlayOpacity =
+    typeof section?.heroOverlayOpacity === 'number' ? section.heroOverlayOpacity : DEFAULT_HERO_OVERLAY_END_OPACITY
+  const overlayStartColor =
+    section?.heroOverlayStartColor || section?.heroOverlayColor || DEFAULT_HERO_OVERLAY_COLOR
   const overlayEndColor = section?.heroOverlayEndColor || overlayStartColor
-  const overlayDirection = normalizeHeroOverlayDirection(section?.heroOverlayDirection)
+  const overlayDirection = normalizeHeroOverlayDirection(
+    section?.heroOverlayDirection || DEFAULT_HERO_OVERLAY_DIRECTION,
+  )
   const hasExplicitStopOpacity =
     typeof section?.heroOverlayStartOpacity === 'number' || typeof section?.heroOverlayEndOpacity === 'number'
   const overlayStartOpacity =
-    typeof section?.heroOverlayStartOpacity === 'number' ? section.heroOverlayStartOpacity : overlayOpacity
+    typeof section?.heroOverlayStartOpacity === 'number'
+      ? section.heroOverlayStartOpacity
+      : hasExplicitOverlay
+        ? overlayOpacity
+        : DEFAULT_HERO_OVERLAY_START_OPACITY
   const overlayEndOpacity =
     typeof section?.heroOverlayEndOpacity === 'number'
       ? section.heroOverlayEndOpacity
       : hasExplicitStopOpacity
         ? overlayOpacity
-        : Math.min(overlayOpacity, 0.15)
+        : DEFAULT_HERO_OVERLAY_END_OPACITY
   const overlayStart = hexToRgba(overlayStartColor, overlayStartOpacity)
   const overlayEnd = hexToRgba(overlayEndColor, overlayEndOpacity)
 
@@ -134,7 +184,7 @@ export function getHeroOverlayAppearance(section) {
         ? {
             backgroundImage: `linear-gradient(${overlayDirection}, ${overlayStart}, ${overlayEnd})`,
           }
-        : undefined,
+        : defaultOverlayStyle,
   }
 }
 
@@ -143,7 +193,7 @@ export function buildHeroOverlayGradientValue(section) {
     getHeroOverlayAppearance(section)
 
   const start = hexToRgba(overlayStartColor, overlayStartOpacity) || 'rgba(15, 23, 42, 0.6)'
-  const end = hexToRgba(overlayEndColor, overlayEndOpacity) || 'rgba(15, 23, 42, 0.15)'
+  const end = hexToRgba(overlayEndColor, overlayEndOpacity) || 'rgba(15, 23, 42, 0.35)'
   const degrees = heroOverlayDirectionToDegrees(overlayDirection)
 
   return `linear-gradient(${degrees}, ${start} 0%, ${end} 100%)`

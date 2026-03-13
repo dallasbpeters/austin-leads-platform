@@ -112,7 +112,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link href="/" title="Texas Solar & Roofing Pros" className="grid grid-flow-col items-center gap-2">
             <Logo />
-            <div className="type-accent text-lg leading-none font-bold text-foreground">
+            <div className="type-accent sm:text-md text-lg leading-none font-bold text-foreground">
               Texas Solar & Roofing Pros
             </div>
           </Link>
@@ -163,7 +163,7 @@ export default function Header() {
             <NavList />
           </div>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => setOpenNav(!openNav)}
             className="mr-2 ml-auto lg:hidden"

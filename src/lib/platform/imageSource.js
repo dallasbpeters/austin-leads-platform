@@ -2,6 +2,17 @@ export function getSanityAssetUrl(imageField) {
   return imageField?.asset?.url || ''
 }
 
+export function getHeroImageUrl(imageField, fallbackImage = null) {
+  return (
+    getSanityAssetUrl(imageField) ||
+    fallbackImage?.urls?.full ||
+    fallbackImage?.urls?.regular ||
+    fallbackImage?.urls?.small ||
+    fallbackImage?.urls?.thumb ||
+    ''
+  )
+}
+
 export function getImageUrl(imageField, fallbackImage = null) {
   return (
     getSanityAssetUrl(imageField) ||

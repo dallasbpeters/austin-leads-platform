@@ -64,11 +64,11 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
     heroOverlayEndColor: '#0f172a',
     heroOverlayDirection: '180deg',
     heroOverlayStartOpacity: '0.6',
-    heroOverlayEndOpacity: '0.15',
+    heroOverlayEndOpacity: '1',
     heroOverlayOpacity: '0.42',
   })
   const [overlayGradient, setOverlayGradient] = useState(
-    'linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.15) 100%)',
+    'linear-gradient(180deg, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.35) 100%)',
   )
   const [createForm, setCreateForm] = useState({
     title: '',

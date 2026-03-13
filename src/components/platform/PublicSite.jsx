@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
-import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
+import { getHeroImageUrl, getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken } from '@/lib/sanity/stega'
 
 function slugifySectionToken(value) {
@@ -44,7 +44,7 @@ function getSectionDomId(section, index) {
 }
 
 function HeroSection({ page, section, sectionId }) {
-  const heroImageUrl = getImageUrl(section.heroAsset, section.heroImage)
+  const heroImageUrl = getHeroImageUrl(section.heroAsset, section.heroImage)
   const hasHeroImage = hasImageSource(section.heroAsset, section.heroImage)
   const heroTitle = page?.pageType === 'post' ? page.title : section.title
   const heroTextColor = section.heroTextColor || (hasHeroImage ? '#ffffff' : '')
@@ -62,7 +62,7 @@ function HeroSection({ page, section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 relative grid min-h-[60vh] place-content-center overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))] py-32"
+      className="border-border/60 relative grid min-h-[60vh] place-content-center overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))] py-12 lg:py-32"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:HeroSection',
@@ -77,8 +77,10 @@ function HeroSection({ page, section, sectionId }) {
         <>
           <div className="absolute inset-0 z-2">
             <Image
-              width={2000}
-              height={2000}
+              width={3000}
+              height={3000}
+              quality={100}
+              sizes="100vw"
               alt={getImageAlt(section.heroAsset, section.heroImage, heroTitle)}
               className="h-full w-full object-cover"
               src={heroImageUrl}
@@ -87,7 +89,7 @@ function HeroSection({ page, section, sectionId }) {
           <div className="absolute inset-0 z-3" style={overlayStyle} />
         </>
       ) : null}
-      {/* {!hasHeroImage && overlayStyle ? <div className="absolute inset-0" style={overlayStyle} /> : null} */}
+      {!hasHeroImage && overlayStyle ? <div className="absolute inset-0" style={overlayStyle} /> : null}
       <div
         className={
           hasHeroImage
@@ -131,7 +133,7 @@ function HeroSection({ page, section, sectionId }) {
                   <Button
                     asChild
                     key={buildRuntimeKey('hero-action', action.href, action.label, index)}
-                    variant={action.variant || 'default'}
+                    variant={action.variant || (index === 0 ? 'default' : 'tertiary')}
                     size="lg"
                   >
                     <Link href={href}>{action.label}</Link>
@@ -152,7 +154,7 @@ function HeroSection({ page, section, sectionId }) {
             >
               <CardHeader className="pb-4">
                 <CardTitle
-                  className="text-muted-foreground text-sm font-medium tracking-[0.2em] uppercase"
+                  className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase"
                   style={heroMutedStyle}
                 >
                   Snapshot
@@ -169,7 +171,7 @@ function HeroSection({ page, section, sectionId }) {
                     key={buildRuntimeKey('hero-metric', metric.label, metric.value)}
                   >
                     <div
-                      className="text-muted-foreground text-sm tracking-[0.18em] uppercase"
+                      className="text-muted-foreground text-xs tracking-[0.18em] uppercase"
                       style={heroMutedStyle}
                     >
                       {metric.label}
@@ -292,6 +294,7 @@ function GuideGridSection({ section, sectionId }) {
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="mb-8 max-w-3xl">
           <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
+          {section.body ? <p className="text-muted-foreground text-lg leading-8">{section.body}</p> : null}
         </div>
         <GuideCardGrid
           cards={cards}
@@ -413,6 +416,13 @@ function getServiceImage(item) {
     return {
       url: cleanRuntimeString(item.imageUrl),
       alt: cleanRuntimeString(item.imageAlt || item.alt || item.title || item.question),
+    }
+  }
+
+  if (item.image) {
+    return {
+      url: getImageUrl(null, item.image),
+      alt: getImageAlt(null, item.image, item.title || item.question),
     }
   }
 
@@ -656,10 +666,10 @@ function StepsSection({ section, sectionId }) {
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {section.items?.map((item, index) => (
-            <Card key={buildRuntimeKey('step-item', item.title, index)} className="border-border/80 bg-card">
+            <Card key={buildRuntimeKey('step-item', item.title, index)} className="border-border/80 bg-card pt-12 pb-8">
               <CardHeader className="gap-4">
-                <Badge className="bg-secondary/90 text-secondary-foreground w-fit rounded-full px-3 py-1">
-                  Step {index + 1}
+                <Badge className="bg-secondary/90 text-secondary-foreground text-lg w-fit rounded-full size-8">
+                  {index + 1}
                 </Badge>
                 <CardTitle className="text-foreground text-xl">{item.title}</CardTitle>
               </CardHeader>

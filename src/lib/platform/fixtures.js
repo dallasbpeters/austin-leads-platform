@@ -794,7 +794,7 @@ export const pages = [
       {
         type: 'hero',
         eyebrow: 'About us',
-        title: 'We built this site because Texas homeowners deserve straight answers about roofs and solar.',
+        title: 'Texas homeowners deserve straight answers about roofs and solar.',
         body: 'Texas Solar and Roofing Pros exists to help homeowners cut through the noise. Roof condition, storm damage, insurance friction, energy upgrades, solar planning. We help you understand what is happening with your house so you can make the call, not get pressured into one.',
         heroImage: {
           urls: {

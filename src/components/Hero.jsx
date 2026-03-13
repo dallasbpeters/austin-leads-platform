@@ -4,10 +4,10 @@ import Image from 'next/image'
 import ImageFader from './ImageFader'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
-import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
+import { getHeroImageUrl, getImageAlt, hasImageSource } from '@/lib/platform/imageSource'
 
 export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }) {
-  const heroImageUrl = getImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
+  const heroImageUrl = getHeroImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
   const hasHeroImage = hasImageSource(heroSection?.heroAsset, heroSection?.heroImage)
   const heroTextColor = heroSection?.heroTextColor || (hasHeroImage ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
@@ -21,7 +21,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
     },
     ...(heroSection?.items || [])
       .map((item) => ({
-        src: getImageUrl(item?.imageAsset, item?.image),
+        src: getHeroImageUrl(item?.imageAsset, item?.image),
         alt: getImageAlt(item?.imageAsset, item?.image, item?.title || ''),
       }))
       .filter((image) => image.src),

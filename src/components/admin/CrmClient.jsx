@@ -71,7 +71,7 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
   if (!leadDbReady) {
     return (
       <div className="p-4 md:p-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-8xl">
           <Card className="shadow-theme-sm">
             <CardHeader>
               <CardTitle>CRM</CardTitle>
@@ -88,7 +88,7 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
 
   return (
     <div className="p-4 md:p-8">
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="mx-auto max-w-8xl space-y-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Lead management</p>

@@ -22,7 +22,7 @@ export default function AdminNav() {
   return (
     <nav className="grid gap-4">
       <div>
-        <div className="text-muted-foreground mb-1 px-3 text-sm font-medium tracking-[0.18em] uppercase">
+        <div className="text-muted-foreground mb-1 px-3 text-xs font-medium tracking-[0.18em] uppercase">
           Overview
         </div>
         {items.slice(0, 2).map((item) => {
@@ -48,7 +48,7 @@ export default function AdminNav() {
       </div>
 
       <div>
-        <div className="text-muted-foreground mb-1 px-3 text-sm font-medium tracking-[0.18em] uppercase">
+        <div className="text-muted-foreground mb-1 px-3 text-xs font-medium tracking-[0.18em] uppercase">
           Workspace
         </div>
         {items.slice(2).map((item) => {

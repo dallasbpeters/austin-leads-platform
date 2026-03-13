@@ -1,4 +1,5 @@
 import { createClient } from 'next-sanity'
+import { normalizeSectionType, withSectionKeys } from '../src/lib/sanity/keys.js'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -19,39 +20,14 @@ const client = createClient({
   useCdn: false,
 })
 
-function inferSectionType(section) {
-  if (section?._type && section._type !== 'object') {
-    return section
-  }
-
-  if (section?.type === 'hero') {
-    return {
-      ...section,
-      _type: 'heroSection',
-    }
-  }
-
-  if (section?.type === 'resourceGrid') {
-    return {
-      ...section,
-      _type: 'resourceGridSection',
-      items: (section?.items || []).map((item) => ({
-        ...item,
-        _type: item?._type === 'resourceCard' ? item._type : 'resourceCard',
-      })),
-    }
-  }
-
-  return {
-    ...section,
-    _type: 'pageSection',
-  }
-}
-
 const docs = await client.fetch(
   `*[
     _type in ["page", "servicePage", "locationPage", "post"] &&
-    count(sections[_type == "object"]) > 0
+    count(sections[
+      !defined(_type) ||
+      _type == "object" ||
+      (_type == "pageSection" && type in ["hero", "resourceGrid", "guideGrid"])
+    ]) > 0
   ]{
     _id,
     title,
@@ -62,7 +38,7 @@ const docs = await client.fetch(
 let repaired = 0
 
 for (const doc of docs) {
-  const nextSections = (doc.sections || []).map(inferSectionType)
+  const nextSections = withSectionKeys((doc.sections || []).map(normalizeSectionType))
   const changed = JSON.stringify(nextSections) !== JSON.stringify(doc.sections || [])
 
   if (!changed) {
