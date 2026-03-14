@@ -13,6 +13,7 @@ import { VercelToolbar } from '@vercel/toolbar/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import '../styles/globals.css'
+import { SanityLive } from '@/sanity/live'
 
 export const metadata = {
   title: 'Austin Leads Platform',
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }) {
         />
         {children}
         <VercelToolbar />
+        <SanityLive />
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />
         <SpeedInsights />

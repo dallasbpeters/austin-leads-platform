@@ -86,6 +86,64 @@ export function normalizeSectionType(section) {
     })
   }
 
+  if (section.type === 'aboutProfile') {
+    const people =
+      Array.isArray(section.people) && section.people.length
+        ? section.people
+        : [
+            omitUndefined({
+              _key: section.personKey,
+              _type: 'aboutProfilePerson',
+              label: section.personLabel,
+              name: section.personName,
+              role: section.personRole,
+              blurb: section.personBlurb,
+              profileImage: section.profileImage,
+              profileImageAsset: section.profileImageAsset,
+              certificationLabel: section.certificationLabel,
+              certificationTitle: section.certificationTitle,
+              badgeImage: section.badgeImage,
+              badgeImageAsset: section.badgeImageAsset,
+            }),
+            omitUndefined({
+              _key: section.secondaryPersonKey,
+              _type: 'aboutProfilePerson',
+              label: section.secondaryPersonLabel,
+              name: section.secondaryPersonName,
+              role: section.secondaryPersonRole,
+              blurb: section.secondaryPersonBlurb,
+              profileImage: section.secondaryProfileImage,
+              profileImageAsset: section.secondaryProfileImageAsset,
+            }),
+          ].filter((person) => person.name)
+
+    return omitUndefined({
+      _key: section._key,
+      _type: 'aboutProfileSection',
+      type: 'aboutProfile',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+      people,
+      profileImage: section.profileImage,
+      profileImageAsset: section.profileImageAsset,
+      personLabel: section.personLabel,
+      personName: section.personName,
+      personRole: section.personRole,
+      personBlurb: section.personBlurb,
+      certificationLabel: section.certificationLabel,
+      certificationTitle: section.certificationTitle,
+      badgeImage: section.badgeImage,
+      badgeImageAsset: section.badgeImageAsset,
+      secondaryProfileImage: section.secondaryProfileImage,
+      secondaryProfileImageAsset: section.secondaryProfileImageAsset,
+      secondaryPersonLabel: section.secondaryPersonLabel,
+      secondaryPersonName: section.secondaryPersonName,
+      secondaryPersonRole: section.secondaryPersonRole,
+      secondaryPersonBlurb: section.secondaryPersonBlurb,
+    })
+  }
+
   if (section._type && section._type !== 'object' && section._type !== 'pageSection') {
     return baseSection
   }
@@ -111,6 +169,10 @@ export function withSectionKeys(sections) {
 
     if (Array.isArray(normalizedSection?.items)) {
       keyedSection.items = withObjectArrayKeys(normalizedSection.items, 'item', 'title')
+    }
+
+    if (Array.isArray(normalizedSection?.people)) {
+      keyedSection.people = withObjectArrayKeys(normalizedSection.people, 'person', 'name')
     }
 
     return keyedSection

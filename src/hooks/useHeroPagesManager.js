@@ -31,12 +31,12 @@ function buildDefaultAppearance(selectedPage) {
     heroOverlayStartOpacity: String(
       selectedPage?.heroSection?.heroOverlayStartOpacity ??
         selectedPage?.heroSection?.heroOverlayOpacity ??
-        0.6,
+        0.15,
     ),
     heroOverlayEndOpacity: String(
       selectedPage?.heroSection?.heroOverlayEndOpacity ??
         selectedPage?.heroSection?.heroOverlayOpacity ??
-        0.15,
+        0.6,
     ),
     heroOverlayOpacity: String(selectedPage?.heroSection?.heroOverlayOpacity ?? 0.42),
   }

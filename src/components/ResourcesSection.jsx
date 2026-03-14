@@ -1,4 +1,5 @@
 import { HomeShield, HomeSimple, SunLight, Thunderstorm } from 'iconoir-react'
+import Image from 'next/image'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import Card from './Card'
 import { getDevSectionAttributes } from './dev/DevTrace'
@@ -17,7 +18,7 @@ const defaultItems = [
     icon: 'roofing',
     title: 'Roofing + Insurance',
     copy: 'Roof age, claim language, and the insurance details that change the job',
-    href: '#incentives',
+    href: '/insurance-basics',
     image: 'https://images.unsplash.com/photo-1668097613572-40b7c11c8727?w=800&q=80',
     alt: 'Roofline in sunlight',
   },
@@ -98,9 +99,11 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
             return (
               <Link key={item.title} href={item.href}>
                 <Card className="relative aspect-square" variant="media" radius="lg">
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.alt}
+                    width={700}
+                    height={700}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>

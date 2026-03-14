@@ -1,26 +1,24 @@
-import Link from 'next/link'
-
-import { Button } from '@/components/ui/button'
+import ContextualNotFound from '@/components/ContextualNotFound'
 
 export default function NotFound() {
   return (
-    <main className="bg-background flex min-h-screen items-center justify-center px-6">
-      <div className="max-w-xl text-center">
-        <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">404</p>
-        <h1 className="text-foreground mt-4 text-4xl tracking-tight">
-          This page does not exist on the current domain.
-        </h1>
-        <p className="text-muted-foreground mt-4 text-base leading-8">
-          The request reached the platform, but there is no page mapped for that path on this site yet.
-        </p>
-        <div className="mt-8 flex justify-center gap-3">
-          <Button asChild>
-            <Link href="/">Go home</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/dashboard">Open dashboard</Link>
-          </Button>
-        </div>
+    <main className="bg-background relative min-h-screen overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(234,88,12,0.16),transparent_30%),radial-gradient(circle_at_80%_20%,rgba(15,23,42,0.24),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,1))]"
+      />
+
+      <div
+        aria-hidden="true"
+        className="border-border/60 absolute top-16 right-[8%] h-40 w-40 rounded-full border bg-white/45 blur-2xl"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute bottom-20 left-[10%] h-56 w-56 rounded-full bg-[rgba(15,23,42,0.08)] blur-3xl"
+      />
+
+      <div className="relative mx-auto flex min-h-screen max-w-6xl items-center px-6 py-20">
+        <ContextualNotFound />
       </div>
     </main>
   )

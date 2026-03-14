@@ -1,0 +1,10 @@
+<svg width="800" height="633" viewBox="0 0 800 633" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="633" fill="white"/>
+  <path d="M119 245L83 130L145 113L159 62L222 65L257 18L314 46L365 7L414 45L476 18L514 67L577 62L590 115L653 130L643 192L702 226L668 279L702 327L643 363L653 423L590 439L577 492L514 486L476 536L414 507L365 548L314 510L257 536L222 488L159 492L145 441L83 423L95 361L39 327L77 278L39 226L95 192L83 130L119 245Z" fill="#F89B1C"/>
+  <rect x="58" y="250" width="687" height="149" fill="#0B6EAE"/>
+  <rect x="88" y="418" width="615" height="22" fill="#F89B1C"/>
+  <text x="401" y="211" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="102" letter-spacing="2" fill="white">NABCEP</text>
+  <text x="401" y="370" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="104" font-weight="700" letter-spacing="2" fill="white">CERTIFIED</text>
+  <text x="401" y="525" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="82" fill="black">PV Technical Sales</text>
+  <text x="401" y="611" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="82" fill="black">Professional</text>
+</svg>

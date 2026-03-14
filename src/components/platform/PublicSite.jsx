@@ -13,6 +13,8 @@ import {
   Wrench,
 } from 'iconoir-react'
 
+import {cn} from '@/lib/utils'
+
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
@@ -22,6 +24,7 @@ import Header from '@/components/Header'
 import ConsultationSection from '@/components/ConsultationSection'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
 import QuoteSection from '@/components/QuoteSection'
+import LogoCloud from '@/components/logo-cloud'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -30,6 +33,7 @@ import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearan
 import { isPrimarySiteSlug } from '@/lib/platform/content'
 import { getHeroImageUrl, getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken } from '@/lib/sanity/stega'
+import { roofingServices } from '@/lib/platform/service-catalog'
 
 function slugifySectionToken(value) {
   return toRuntimeToken(value)
@@ -134,6 +138,7 @@ function HeroSection({ page, section, sectionId }) {
                     asChild
                     key={buildRuntimeKey('hero-action', action.href, action.label, index)}
                     variant={action.variant || (index === 0 ? 'default' : 'tertiary')}
+                    shape="pill"
                     size="lg"
                   >
                     <Link href={href}>{action.label}</Link>
@@ -293,7 +298,7 @@ function GuideGridSection({ section, sectionId }) {
       />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="mb-8 max-w-3xl">
-          <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
+          <h2 className="text-foreground text-3xl md:text-4xl mb-4">{section.title}</h2>
           {section.body ? <p className="text-muted-foreground text-lg leading-8">{section.body}</p> : null}
         </div>
         <GuideCardGrid
@@ -528,7 +533,7 @@ function ServiceGridSection({ section, sectionId }) {
                   alt={item.imageAlt}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.95)_20%,rgba(11,59,66,0.2),transparent)]"></div>
                 <div className="absolute inset-x-0 bottom-0 p-8 text-white">
                   <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                     <Icon className="h-5 w-5" strokeWidth={2.2} />
@@ -761,14 +766,197 @@ function QuoteBannerSection({ section, sectionId }) {
   )
 }
 
+function AboutProfileSection({ section, sectionId }) {
+  const people =
+    section.people?.length
+      ? section.people
+      : [
+          {
+            label: section.personLabel,
+            name: section.personName,
+            role: section.personRole,
+            blurb: section.personBlurb,
+            profileImage: section.profileImage,
+            profileImageAsset: section.profileImageAsset,
+            certificationLabel: section.certificationLabel,
+            certificationTitle: section.certificationTitle,
+            badgeImage: section.badgeImage,
+            badgeImageAsset: section.badgeImageAsset,
+          },
+          {
+            label: section.secondaryPersonLabel,
+            name: section.secondaryPersonName,
+            role: section.secondaryPersonRole,
+            blurb: section.secondaryPersonBlurb,
+            profileImage: section.secondaryProfileImage,
+            profileImageAsset: section.secondaryProfileImageAsset,
+          },
+        ].filter((person) => person?.name)
+
+  return (
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,239,0.96))]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:AboutProfileSection',
+        content: `about profile section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:AboutProfileSection"
+        content={`about profile section from ${section?._type || 'page section'}`}
+      />
+      <div className="mx-auto grid max-w-7xl gap-6 px-6 py-20 grid-cols-1 lg:px-10">
+        <div className="mb-10 max-w-3xl">
+          {section.eyebrow ? (
+            <Badge variant="outline" className="border-primary/20 bg-primary/5 text-foreground">
+              {section.eyebrow}
+            </Badge>
+          ) : null}
+          <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          {section.body ? (
+            <p className="text-muted-foreground mt-4 text-base leading-8">{section.body}</p>
+          ) : null}
+        </div>
+        <div className="grid content-start gap-6 grid-cols-1 md:grid-cols-2">
+          {people.map((person, index) => {
+            const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
+            const profileImageAlt = getImageAlt(
+              person.profileImageAsset,
+              person.profileImage,
+              person.name || 'Profile image'
+            )
+            const badgeImageUrl = getImageUrl(person.badgeImageAsset, person.badgeImage)
+            const badgeImageAlt = getImageAlt(
+              person.badgeImageAsset,
+              person.badgeImage,
+              person.certificationTitle || 'Certification badge'
+            )
+            const resolvedBadgeImageUrl =
+              badgeImageUrl ||
+              (person.certificationTitle?.includes('NABCEP')
+                ? 'https://www.nabcep.org/wp-content/uploads/2020/01/PVTS-Registered-Seal.jpg'
+                : '')
+            const resolvedBadgeImageAlt =
+              badgeImageAlt || person.certificationTitle || 'Certification badge'
+
+            return (
+              <Card
+                key={buildRuntimeKey('about-person', person.name, index)}
+                radius="lg"
+                className={cn(
+                  'relative justify-end pt-20',
+                  index === 0 ? 'border-border/80 bg-card' : 'bg-card'
+                )}
+              >
+                <CardHeader className="relative z-10 flex items-center gap-4">
+                  <Image
+                    width={700}
+                    height={700}
+                    src={profileImageUrl || '/images/kathie-millen.png'}
+                    alt={profileImageAlt}
+                    className={cn(
+                      'object-cover rounded-full',
+                      index === 0 ? 'h-24 w-24' : 'h-24 w-24'
+                    )}
+                  />
+                  <div className="flex items-start gap-4">
+                    <div className="grid gap-2">
+                      <div className="text-foreground text-xs tracking-[0.2em] uppercase">
+                        {person.label || 'Profile'}
+                      </div>
+                      <CardTitle className="text-foreground text-3xl tracking-tight">
+                        {person.name}
+                      </CardTitle>
+                      {person.role ? (
+                        <p className="text-foreground text-lg leading-7 font-semibold">{person.role}</p>
+                      ) : null}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="relative z-10 grid gap-4">
+                  {person.blurb ? (
+                    <p className="text-foreground text-base leading-8">{person.blurb}</p>
+                  ) : null}
+                  {person.certificationTitle ? (
+                    <div className="border-border/80 grid gap-3 rounded-2xl border bg-white p-4">
+                      <div className="flex items-center gap-3">
+                        {resolvedBadgeImageUrl ? (
+                          <Image
+                            width={320}
+                            height={320}
+                            src={resolvedBadgeImageUrl}
+                            alt={resolvedBadgeImageAlt}
+                            className="h-16 w-16 object-contain"
+                          />
+                        ) : null}
+                        <div className="grid gap-1">
+                          {person.certificationLabel ? (
+                            <div className="text-foreground text-xs tracking-[0.2em] uppercase">
+                              {person.certificationLabel}
+                            </div>
+                          ) : null}
+                          <div className="text-foreground text-base font-semibold leading-6">
+                            {person.certificationTitle}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function RoofingLogoCloudSection({ sectionId }) {
+  return (
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,239,0.96))]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:RoofingLogoCloudSection',
+        content: 'local JSX roofing certification logo cloud',
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:RoofingLogoCloudSection"
+        content="local JSX roofing certification logo cloud"
+      />
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <LogoCloud />
+      </div>
+    </section>
+  )
+}
+
 function CtaSection({ page, section, site, pathname, sectionId }) {
+  const pathnameSegments = (pathname || '').split('/').filter(Boolean)
+  const topLevelPath = cleanRuntimeString(pathnameSegments[0])
+  const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
+  const roofingServiceSlugs = new Set(roofingServices.map((service) => service.slug))
+  const isRoofingContext =
+    topLevelPath === 'roofing' || topLevelPath === 'hail-damage' || (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug))
+  const pageSlug = cleanRuntimeString(page?.slug)
+  const pagePath = pageSlug ? `/${pageSlug}` : pathname || '/'
+
   return (
     <>
       <DevTrace
         markup="src/components/platform/PublicSite.jsx:CtaSection"
         content={`shared consultation section fallback for page from ${page?.source || 'fixture'}`}
       />
-      <ConsultationSection site={site} sectionId={sectionId} />
+      <ConsultationSection
+        site={site}
+        sectionId={sectionId}
+        variant={isRoofingContext ? 'roofingInspection' : 'default'}
+        pagePath={pagePath}
+        pageTitle={page?.title || 'Texas Solar and Roofing Pros'}
+      />
     </>
   )
 }
@@ -835,6 +1023,7 @@ function CtaBannerSection({ page, section, site, sectionId }) {
 const sectionRenderers = {
   hero: HeroSection,
   story: StorySection,
+  aboutProfile: AboutProfileSection,
   quote: QuoteBannerSection,
   highlights: CardGridSection,
   guideGrid: GuideGridSection,
@@ -850,6 +1039,16 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
   const useSolarShell = isPrimarySiteSlug(site.slug)
   const sections = page.sections || []
   const hasLeadCaptureSection = sections.some((section) => section.type === 'cta')
+  const pageSlug = cleanRuntimeString(page.slug)
+  const firstLeadCaptureSectionIndex = sections.findIndex((section) => section.type === 'cta')
+  const pathnameSegments = (pathname || '').split('/').filter(Boolean)
+  const topLevelPath = cleanRuntimeString(pathnameSegments[0])
+  const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
+  const roofingServiceSlugs = new Set(roofingServices.map((service) => service.slug))
+  const showRoofingLogoCloud =
+    useSolarShell &&
+    (topLevelPath === 'roofing' || (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug)))
+  const suppressDefaultLeadCapture = pageSlug === 'privacy-policy' || pageSlug === 'terms'
   const style = {
     '--site-primary': site.brand?.primary || 'var(--color-primary)',
     '--site-secondary': site.brand?.secondary || 'var(--color-secondary)',
@@ -929,18 +1128,26 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
           const sectionId = getSectionDomId(section, index)
 
           return (
-            <Component
-              key={buildRuntimeKey('page-section', section._key, section.type, sectionId, index)}
-              page={page}
-              section={section}
-              site={site}
-              pathname={pathname}
-              sectionId={sectionId}
-            />
+            <div key={buildRuntimeKey('page-section', section._key, section.type, sectionId, index)}>
+              {showRoofingLogoCloud && index === firstLeadCaptureSectionIndex ? (
+                <RoofingLogoCloudSection sectionId="roofing-certifications" />
+              ) : null}
+              <Component
+                page={page}
+                section={section}
+                site={site}
+                pathname={pathname}
+                sectionId={sectionId}
+              />
+            </div>
           )
         })}
 
-        {!hasLeadCaptureSection ? (
+        {showRoofingLogoCloud && firstLeadCaptureSectionIndex === -1 ? (
+          <RoofingLogoCloudSection sectionId="roofing-certifications" />
+        ) : null}
+
+        {!hasLeadCaptureSection && !suppressDefaultLeadCapture ? (
           <CtaSection page={page} section={null} site={site} pathname={pathname} sectionId="cta-contact" />
         ) : null}
       </main>

@@ -59,8 +59,7 @@ export default function SnapshotSection({ sectionId = 'texas-snapshot' }) {
           </p>
           <h2 className="mb-4 text-[clamp(1.875rem,4vw,2.25rem)]">The numbers people usually ask for.</h2>
           <p className="type-accent m-0 text-base font-semibold text-white/70">
-            These are directional homeowner benchmarks, not a substitute for a roof inspection, claim review,
-            or project-specific production model.
+          Most homeowners walk into their first quote with zero frame of reference. These are the cost ranges, timelines, and coverage benchmarks we see on Central Texas projects — so you're not starting from scratch. Your numbers will vary based on roof size, material, and carrier, but at least you'll know what ballpark you're in.
           </p>
         </div>
 

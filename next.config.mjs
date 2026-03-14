@@ -30,6 +30,16 @@ const nextConfig = {
         hostname: 'hoirqrkdgbmvpwutwuwj.supabase.co',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.nabcep.org',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'framerusercontent.com',
+        port: '',
+      },
     ],
   },
   experimental: {

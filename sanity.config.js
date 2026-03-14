@@ -10,9 +10,11 @@ import {
   isSanityConfigured,
   localFrontendUrl,
   projectId,
+  studioPreviewOrigin,
   studioUrl,
 } from './src/sanity/env'
 import { schemaTypes } from './src/sanity/schemaTypes'
+import { presentationDocuments, presentationLocations } from './src/sanity/presentation'
 
 const previewModeRoutes = {
   enable: '/api/draft-mode/enable',
@@ -29,10 +31,15 @@ export default defineConfig({
     deskTool(),
     presentationTool({
       previewUrl: {
-        initial: frontendUrl,
+        initial: studioPreviewOrigin,
+        preview: '/',
         previewMode: previewModeRoutes,
         // Keep the legacy key alongside previewMode for hosted Studio compatibility.
         draftMode: previewModeRoutes,
+      },
+      resolve: {
+        mainDocuments: presentationDocuments,
+        locations: presentationLocations,
       },
       allowOrigins: [
         ...frontendOriginAllowlist,

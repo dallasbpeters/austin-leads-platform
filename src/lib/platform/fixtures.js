@@ -236,7 +236,7 @@ export const sites = portfolioDomains.map((entry, index) => {
     leadForm: tier === 'redirect' ? null : buildLeadForm(entry.domain, categories[entry.category], title),
     seo: {
       title,
-      description: `${title} \u2014 honest ${categories[entry.category].toLowerCase()} guidance for Austin and Texas homeowners who want real answers, not a sales pitch.`,
+      description: `${title} \u2014 honest ${categories[entry.category].toLowerCase()} guidance for Austin and Texas homeowners who want real answers before making a decision.`,
     },
     brand: {
       eyebrow: tier === 'hero' ? 'Featured Site' : tier === 'landing' ? 'Focused Site' : 'Redirect Domain',
@@ -305,7 +305,7 @@ export const pages = [
     slug: '',
     title: 'Texas Solar and Roofing Pros',
     description:
-      'Honest roofing, solar, storm-damage, and energy guidance for Texas homeowners who want answers, not a sales pitch.',
+      'Honest roofing, solar, storm-damage, and energy guidance for Texas homeowners who want real answers before making a decision.',
     pageType: 'home',
     templateLevel: 'hero',
     sections: [
@@ -395,7 +395,7 @@ export const pages = [
           {
             question: 'Can roofing and solar be part of the same plan?',
             answer:
-              'Absolutely. But they should not be blurred into one sales pitch. Roof condition, storm timing, and insurance can all change when solar should happen and how it gets priced. Keeping them separate makes the plan smarter.',
+              'Absolutely. But they should not be blurred into one conversation. Roof condition, storm timing, and insurance can all change when solar should happen and how it gets priced. Keeping them separate makes the plan smarter.',
           },
         ],
       },
@@ -787,7 +787,7 @@ export const pages = [
     slug: 'about',
     title: 'About',
     description:
-      "Who we are, how we work, and why we built a site that puts the homeowner's question before the sales pitch.",
+      "Who we are, how we work, and why we built a site that puts the homeowner's question first.",
     pageType: 'page',
     templateLevel: 'hero',
     sections: [
@@ -815,6 +815,49 @@ export const pages = [
         body: 'We cover both roofing and solar because that is how real homeowner problems work. A hail-damaged roof changes the solar timeline. A $400 electric bill might be an insulation problem, not a solar problem. We treat them as connected decisions because your house does not care about marketing categories.',
       },
       {
+        type: 'aboutProfile',
+        eyebrow: 'Meet the team',
+        title: 'Kathie Millen and Tandra Peters help homeowners sort out the roof, the solar timing, and the insurance questions before the project drifts.',
+        body: 'Kathie brings the solar side into focus when roof condition, production, detach-and-reset, and project timing all have to line up. Tandra brings the roofing perspective, inspection mindset, and on-the-ground practicality that helps families understand what the roof is actually telling them and what the next step should be.',
+        people: [
+          {
+            label: 'Profile',
+            name: 'Kathie Millen',
+            role: 'Solar advisor and homeowner guide',
+            blurb:
+              'Kathie helps homeowners understand when solar makes sense, when roofing or insurance issues need to be solved first, and how to keep the whole project aligned so the next step is actually the right one.',
+            profileImage: {
+              urls: {
+                regular: '/images/kathie-millen.png',
+              },
+              alt: 'Kathie Millen',
+            },
+            certificationLabel: 'Certification',
+            certificationTitle: 'NABCEP Certified PV Technical Sales Professional',
+            badgeImage: {
+              urls: {
+                regular: 'https://www.nabcep.org/wp-content/uploads/2020/01/PVTS-Registered-Seal.jpg',
+              },
+              alt: 'NABCEP Certified PV Technical Sales Professional badge',
+            },
+          },
+          {
+            label: 'Roofing Consultant',
+            name: 'Tandra Peters',
+            role: 'Roofing consultant',
+            blurb:
+              'Tandra helps homeowners make sense of roof inspections, storm-related findings, repair-versus-replacement questions, and what to do next when the house, the claim, and the timeline all start colliding. She brings a practical roofing perspective shaped by four years of consulting work and the real-life lens of raising a family while managing a home.',
+            profileImage: {
+              urls: {
+                regular:
+                  'https://framerusercontent.com/images/uiHRL1xLU2ipXyTy47BrE94JhGI.jpg?scale-down-to=1024',
+              },
+              alt: 'Tandra Peters',
+            },
+          },
+        ],
+      },
+      {
         type: 'quote',
         eyebrow: 'Built on conviction',
         title: 'Our mission',
@@ -822,7 +865,7 @@ export const pages = [
       },
       {
         type: 'highlights',
-        title: 'What we are building here',
+        title: 'What you should expect from us',
         items: [
           {
             title: 'Mission and values',
@@ -998,6 +1041,200 @@ export const pages = [
       },
     ],
   },
+  {
+    id: 'page-insurance-basics',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'insurance-basics',
+    title: 'Insurance Basics for Roof and Storm Claims',
+    description:
+      'A plain-language guide to RCV, ACV, deductibles, supplements, depreciation, and how roof and solar scopes get out of sync after a storm claim.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'hero',
+        eyebrow: 'Insurance basics',
+        title: 'Understand the claim before the paperwork starts driving the project.',
+        body: 'Roof claims get expensive when the language is unclear. Deductibles, depreciation, supplements, exclusions, and detach-and-reset all change the real number you are working with. This page is here to make those pieces easier to sort before you sign anything.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2200',
+          },
+          alt: 'Insurance paperwork and home planning documents on a desk',
+        },
+        actions: [
+          { label: 'Talk through a claim', href: '#consultation', variant: 'default' },
+          { label: 'See hail damage help', href: '/hail-damage', variant: 'secondary' },
+        ],
+        metrics: [
+          { label: 'What this covers', value: 'Roof + solar claims' },
+          { label: 'Focus', value: 'Scope and payout clarity' },
+          { label: 'Best for', value: 'Storm-driven roof decisions' },
+        ],
+      },
+      {
+        type: 'story',
+        eyebrow: 'Why this matters',
+        title: 'Most of the trouble starts after the storm, when the numbers and scope stop matching the house.',
+        body: 'The adjuster summary is not the same thing as a finished scope. Homeowners get trapped between roof quotes, depreciation holdback, deductible expectations, policy exclusions, and the solar question nobody raised early enough. The goal is to understand where the money is supposed to come from, what is still missing from the scope, and what should be clarified before work starts.',
+      },
+      {
+        type: 'highlights',
+        title: 'The claim terms that change the real budget',
+        items: [
+          {
+            title: 'RCV vs. ACV',
+            body: 'Replacement cost value and actual cash value are not interchangeable. One usually assumes recoverable depreciation. The other can leave you covering a much larger gap out of pocket.',
+          },
+          {
+            title: 'Deductible reality',
+            body: 'The deductible is part of the project math from day one. If the scope is thin or the payout is delayed, that deductible feels bigger fast.',
+          },
+          {
+            title: 'Supplements',
+            body: 'A supplement is what gets written when the original scope missed real work. That is common, especially when flashing, code items, or solar detach-and-reset were not accounted for up front.',
+          },
+        ],
+      },
+      {
+        type: 'steps',
+        title: 'How to keep the claim from turning into a scope mess',
+        items: [
+          {
+            title: 'Read the adjuster scope before signing a roof contract',
+            body: 'Make sure the scope actually reflects the roof condition, code items, accessories, and any solar-related work before the project starts moving.',
+          },
+          {
+            title: 'Separate roof work from solar work, but line them up early',
+            body: 'Detach-and-reset should be discussed before the reroof, not after materials are ordered and schedules are locked.',
+          },
+          {
+            title: 'Clarify missing items while the file is still active',
+            body: 'If something is missing, document it and push the supplement conversation early. Waiting until install day is how projects stall.',
+          },
+        ],
+      },
+      {
+        type: 'faq',
+        title: 'Insurance basics homeowners ask first',
+        items: [
+          {
+            question: 'What is depreciation holdback?',
+            answer:
+              'It is the part of the replacement cost that often gets paid later, after the work is completed and documented. If you do not account for that timing, the project cash flow can get tight fast.',
+          },
+          {
+            question: 'Why does the first adjuster scope feel incomplete so often?',
+            answer:
+              'Because roofs, flashing details, code requirements, and solar-related work are not always fully captured in an initial inspection. Supplements are common when the first scope is thin.',
+          },
+          {
+            question: 'Does insurance always pay for detach-and-reset?',
+            answer:
+              'No. Sometimes it is covered, sometimes it is partially covered, and sometimes it has to be justified separately. That is why it needs to be discussed while the roof scope is still being built.',
+          },
+        ],
+      },
+      {
+        type: 'cta',
+        title: 'If the roof, the claim, and the solar question are all colliding at once, we can help you sort the scope before it gets expensive.',
+        body: 'A short conversation can save a lot of avoidable friction when the paperwork and the house are telling different stories.',
+        ctaLabel: 'Request a consultation',
+        ctaHref: '#consultation',
+      },
+    ],
+  },
+  {
+    id: 'page-privacy-policy',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'privacy-policy',
+    title: 'Privacy Policy',
+    description:
+      'How Texas Solar and Roofing Pros collects, uses, stores, and shares personal information, including lead forms and website analytics data.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'story',
+        eyebrow: 'Legal',
+        title: 'Privacy Policy',
+        body: `We use information to respond to inquiries, improve the site, and operate the business.
+
+If you fill out a form, we collect the information you enter, such as your name, email address, phone number, address details, and anything else you choose to include. We use that information to respond to your request, coordinate services, and communicate about roofing, solar, hail, insurance, or energy-efficiency questions.
+
+We also use Google Analytics 4 and similar website tools to understand how visitors use the site, which pages are working, how traffic arrives, and how the site can be improved. That data may include browser, device, referral, and page interaction information.
+
+We may use trusted providers for hosting, analytics, CRM, email, form handling, and related business operations. They only get access to the information needed to perform those functions. We do not treat form submissions as public content, and we do not sell lead details as a retail data product.`,
+      },
+      {
+        type: 'faq',
+        title: 'Privacy questions',
+        items: [
+          {
+            question: 'Do you use Google Analytics?',
+            answer:
+              'Yes. The site uses Google Analytics 4 to understand site traffic and behavior. That means analytics-related identifiers may be stored or read in your browser when analytics is enabled.',
+          },
+          {
+            question: 'How do I request changes or deletion?',
+            answer:
+              'Email info@texassolarandroofingpros.com and describe the request. We will review it and respond based on the information we can verify and any legal or operational obligations that apply.',
+          },
+          {
+            question: 'Do you share my information?',
+            answer:
+              'We may share it with service providers or project participants when needed to respond to your request or operate the site, but not as a general-purpose public data feed.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'page-terms',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'terms',
+    title: 'Terms of Use',
+    description:
+      'Terms governing use of the Texas Solar and Roofing Pros website, informational content, and request forms.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'story',
+        eyebrow: 'Legal',
+        title: 'Terms of Use',
+        body: `Website content should help you ask better questions, not replace professional review.
+
+The site is intended to provide general information about roofing, solar, storm damage, energy upgrades, insurance-related issues, and related services. It is not legal, tax, insurance, engineering, or project-specific advice for your situation.
+
+Using the site or submitting a form does not by itself create a contract, guarantee service availability, or guarantee project pricing. Final recommendations depend on property-specific facts such as roof condition, electrical conditions, storm scope, policy terms, utility data, and actual inspection findings.
+
+The site may reference or rely on third-party tools, links, analytics, maps, and other platforms. We are not responsible for third-party content or systems outside our control.`,
+      },
+      {
+        type: 'faq',
+        title: 'Terms questions',
+        items: [
+          {
+            question: 'Can site content be outdated or change over time?',
+            answer:
+              'Yes. We try to keep content current, but programs, incentives, insurance rules, product availability, and pricing can change. The site is not a guarantee that any specific offer, figure, or policy treatment is currently available.',
+          },
+          {
+            question: 'Does this site guarantee results or savings?',
+            answer:
+              'No. Results depend on the property, usage, roof condition, financing, utility rates, weather, workmanship, and other factors outside a simple web page.',
+          },
+          {
+            question: 'How do I contact you about these terms?',
+            answer:
+              'Email info@texassolarandroofingpros.com if you have a question about site use or need to raise an issue related to these terms.',
+          },
+        ],
+      },
+    ],
+  },
   ...servicePages,
   {
     id: 'page-solar-guides',
@@ -1005,7 +1242,7 @@ export const pages = [
     slug: 'guides',
     title: 'Texas Solar and Roofing Guides',
     description:
-      'Plain-language guides on solar costs, roofing decisions, insurance claims, and storm repair for Texas homeowners who want real answers.',
+      'Plain-language guides on solar costs, roofing decisions, storm damage claims, detach and reset, and project planning for Texas homeowners who want real answers before signing anything.',
     pageType: 'page',
     templateLevel: 'hero',
     sections: [
@@ -1013,7 +1250,7 @@ export const pages = [
         type: 'hero',
         eyebrow: 'Guide library',
         title: 'Skip the generic advice. These guides are built for Texas homeowners.',
-        body: 'Roof condition, claim timing, detach-and-reset, solar costs, incentives, and whether solar even makes sense for your house. If the quick service pages leave you wanting more, the guides go deeper.',
+        body: 'Solar economics, roof condition, storm damage claims, detach-and-reset, battery backup, financing traps, and how to plan both projects together. If the service pages leave you wanting more detail, the guides go deeper.',
         heroImage: {
           urls: {
             regular:
@@ -1022,7 +1259,7 @@ export const pages = [
           alt: 'Residential solar roof used as the guide library hero image',
         },
         metrics: [
-          { label: 'Guides available', value: '6 guides' },
+          { label: 'Guides available', value: '9 guides' },
           { label: 'Built for', value: 'Research + planning' },
           { label: 'Audience', value: 'Texas homeowners' },
         ],

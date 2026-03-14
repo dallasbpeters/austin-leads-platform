@@ -22,8 +22,8 @@ export async function PATCH(request, { params }) {
     body?.heroOverlayStartColor?.trim() || body?.heroOverlayColor?.trim() || '#0f172a'
   const heroOverlayEndColor = body?.heroOverlayEndColor?.trim() || heroOverlayStartColor
   const heroOverlayDirection = normalizeHeroOverlayDirection(body?.heroOverlayDirection?.trim())
-  const heroOverlayStartOpacity = clampHeroOverlayOpacity(Number(body?.heroOverlayStartOpacity), 0.6)
-  const heroOverlayEndOpacity = clampHeroOverlayOpacity(Number(body?.heroOverlayEndOpacity), 0.15)
+  const heroOverlayStartOpacity = clampHeroOverlayOpacity(Number(body?.heroOverlayStartOpacity), 0.15)
+  const heroOverlayEndOpacity = clampHeroOverlayOpacity(Number(body?.heroOverlayEndOpacity), 0.6)
   const heroOverlayOpacity = clampHeroOverlayOpacity(
     Number(body?.heroOverlayOpacity),
     (heroOverlayStartOpacity + heroOverlayEndOpacity) / 2,

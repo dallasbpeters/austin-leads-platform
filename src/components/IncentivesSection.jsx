@@ -11,7 +11,7 @@ export default function IncentivesSection({ sectionId = 'incentives' }) {
         content: 'local JSX copy',
       })}
     >
-      <div className="mx-auto grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2">
+      <div className="mx-auto grid max-w-6xl items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2">
         <div className="grid place-items-start gap-4">
           <h2 className="type-accent text-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">
             Roof insurance and claim realities

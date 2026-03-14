@@ -26,7 +26,7 @@
                 'Most Texas homes waste 20\u201330% of their energy through gaps, bad insulation, and duct leaks you can\u2019t see. An energy audit finds every one of them and gives you a dollar-for-dollar plan to fix what matters most \u2014 so you stop guessing and start saving.',
               storyTitle: 'Stop guessing where your money goes.',
               storyBody:
-                'You can feel the draft by the back door. You know the upstairs is ten degrees hotter than downstairs. But you don\u2019t know which problems cost you $40 a month and which ones cost $400. That\u2019s what an audit answers \u2014 with diagnostic equipment that sees what you can\u2019t: air leaks behind walls, duct losses in the attic, insulation gaps that have been there since the house was built. You walk away with a prioritized fix list ranked by savings, not a sales pitch.',
+                'You can feel the draft by the back door. You know the upstairs is ten degrees hotter than downstairs. But you don\u2019t know which problems cost you $40 a month and which ones cost $400. That\u2019s what an audit answers \u2014 with diagnostic equipment that sees what you can\u2019t: air leaks behind walls, duct losses in the attic, insulation gaps that have been there since the house was built. You walk away with a prioritized fix list ranked by savings, not guesswork.',
               highlights: [
                 {
                   title: 'Blower door testing reveals hidden air leaks',
@@ -52,7 +52,7 @@
                 },
                 {
                   title: 'Receive a dollar-ranked fix list with payback timelines',
-                  body: 'Each recommendation comes with estimated cost, projected annual savings, and payback period. Air sealing might pay back in 8 months. A duct repair might save $600/year. You decide what to do first based on numbers, not a sales pitch.',
+                  body: 'Each recommendation comes with estimated cost, projected annual savings, and payback period. Air sealing might pay back in 8 months. A duct repair might save $600/year. You decide what to do first based on numbers, not someone else\u2019s priorities.',
                 },
               ],
               faq: [

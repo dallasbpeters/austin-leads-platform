@@ -51,7 +51,7 @@
   --color-border-strong: hsl(calc(var(--color-primary-h) - 2) 18% 74%);
   --color-text-strong: hsl(var(--color-secondary-h) 28% 14%);
   --color-text: hsl(var(--color-secondary-h) 18% 37%);
-  --color-text-muted: hsl(var(--color-secondary-h) 12% 52%);
+  --color-text-muted: hsl(var(--color-primary-h) 12% 22%);
 
   --color-slate-950: var(--color-text-strong);
   --color-slate-900: var(--color-text-strong);
@@ -188,6 +188,26 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -274,7 +294,6 @@ body.admin-body-locked {
   .btn--primary {
     background-color: var(--color-primary);
     color: var(--color-white);
-    box-shadow: var(--shadow-brand);
   }
 
   input[type='checkbox'] {
@@ -289,7 +308,7 @@ body.admin-body-locked {
   .btn--secondary {
     border: 1px solid hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.22);
     background-color: hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.4);
-    color: var(--color-secondary-700);
+    color: var(--color-white);
   }
 
   .btn--secondary:hover {
@@ -727,5 +746,15 @@ body.admin-body-locked {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-marquee {
+    animation: marquee var(--duration, 40s) linear infinite;
+  }
+
+  .animate-marquee-vertical {
+    animation: marquee-vertical var(--duration, 40s) linear infinite;
   }
 }

@@ -112,7 +112,7 @@ const Testimonials = () => {
       })}
     >
       <div className="mr-auto mb-20 ml-auto max-w-7xl text-center sm:px-6 lg:px-8">
-        <h2 className="text-foreground font-display dynamic-zoom-in animate-delay-200 mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
+        <h2 className="text-foreground dynamic-zoom-in animate-delay-200 mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
           What customers are saying
           <span className="bg-primary block bg-clip-text leading-relaxed font-medium tracking-tight text-transparent">
             about Texas Solar and Roofing Pros

@@ -14,6 +14,95 @@ const sectionProjection = `
   eyebrow,
   title,
   body,
+  people[]{
+    _key,
+    label,
+    name,
+    role,
+    blurb,
+    certificationLabel,
+    certificationTitle,
+    profileImage,
+    profileImageAsset{
+      altText,
+      alt,
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    },
+    badgeImage,
+    badgeImageAsset{
+      altText,
+      alt,
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    }
+  },
+  profileImage,
+  profileImageAsset{
+    altText,
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  personLabel,
+  personName,
+  personRole,
+  personBlurb,
+  certificationLabel,
+  certificationTitle,
+  badgeImage,
+  badgeImageAsset{
+    altText,
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  secondaryProfileImage,
+  secondaryProfileImageAsset{
+    altText,
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  secondaryPersonLabel,
+  secondaryPersonName,
+  secondaryPersonRole,
+  secondaryPersonBlurb,
   heroGradient,
   heroTextColor,
   heroOverlayColor,
@@ -101,6 +190,23 @@ function sanitizeItem(item) {
   }
 }
 
+function sanitizePerson(person) {
+  if (!person) {
+    return person
+  }
+
+  return {
+    ...person,
+    _key: cleanRuntimeString(person._key),
+    label: cleanRuntimeString(person.label),
+    name: cleanRuntimeString(person.name),
+    role: cleanRuntimeString(person.role),
+    blurb: cleanRuntimeString(person.blurb),
+    certificationLabel: cleanRuntimeString(person.certificationLabel),
+    certificationTitle: cleanRuntimeString(person.certificationTitle),
+  }
+}
+
 function sanitizeSection(section) {
   if (!section) {
     return section
@@ -117,6 +223,17 @@ function sanitizeSection(section) {
     heroOverlayStartColor: cleanRuntimeString(section.heroOverlayStartColor),
     heroOverlayEndColor: cleanRuntimeString(section.heroOverlayEndColor),
     heroOverlayDirection: cleanRuntimeString(section.heroOverlayDirection),
+    people: Array.isArray(section.people) ? section.people.map(sanitizePerson) : section.people,
+    personLabel: cleanRuntimeString(section.personLabel),
+    personName: cleanRuntimeString(section.personName),
+    personRole: cleanRuntimeString(section.personRole),
+    personBlurb: cleanRuntimeString(section.personBlurb),
+    certificationLabel: cleanRuntimeString(section.certificationLabel),
+    certificationTitle: cleanRuntimeString(section.certificationTitle),
+    secondaryPersonLabel: cleanRuntimeString(section.secondaryPersonLabel),
+    secondaryPersonName: cleanRuntimeString(section.secondaryPersonName),
+    secondaryPersonRole: cleanRuntimeString(section.secondaryPersonRole),
+    secondaryPersonBlurb: cleanRuntimeString(section.secondaryPersonBlurb),
     ctaLabel: cleanRuntimeString(section.ctaLabel),
     ctaHref: cleanRuntimeString(section.ctaHref),
     actions: Array.isArray(section.actions) ? section.actions.map(sanitizeAction) : section.actions,

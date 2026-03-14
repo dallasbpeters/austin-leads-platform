@@ -520,7 +520,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                               Edit gradient
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent align="start" className="w-[21rem] p-4">
+                          <PopoverContent align="start" className="w-84 p-4">
                             <div className="mb-3"></div>
                             <ColorPicker
                               disableDarkMode
@@ -595,7 +595,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                   selectedPage?.heroSection?.heroImage,
                 ) ? (
                   <>
-                    <div className="bg-muted aspect-[4/3]">
+                    <div className="bg-muted aspect-4/3">
                       <img
                         alt={getImageAlt(
                           selectedPage?.heroSection?.heroAsset,

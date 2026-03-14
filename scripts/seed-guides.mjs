@@ -1,7 +1,26 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { createClient } from 'next-sanity'
 
 import { pages, sites } from '../src/lib/platform/fixtures.js'
 import { withSectionKeys } from '../src/lib/sanity/keys.js'
+
+// Load .env.local without requiring dotenv
+try {
+  const envPath = resolve(import.meta.dirname, '..', '.env.local')
+  const envFile = readFileSync(envPath, 'utf-8')
+  for (const line of envFile.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eqIndex = trimmed.indexOf('=')
+    if (eqIndex === -1) continue
+    const key = trimmed.slice(0, eqIndex).trim()
+    const value = trimmed.slice(eqIndex + 1).trim().replace(/^["']|["']$/g, '')
+    if (!process.env[key]) process.env[key] = value
+  }
+} catch {
+  // .env.local not found — rely on existing env vars
+}
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
