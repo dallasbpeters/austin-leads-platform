@@ -14,7 +14,7 @@ const SECTION_VARIANTS = {
     ),
     copy:
       "If you're dealing with hail damage, an older roof, an insurance question, or a solar project you want to price out properly, send the details and we'll help you figure out the right next step.",
-    buttonLabel: 'Contact Us Today',
+    buttonLabel: 'Reach out to our team',
     sourceSection: 'homepage-consultation',
     serviceInterest: 'solar-roofing',
     metadata: {
