@@ -913,7 +913,7 @@ function AboutProfileSection({ section, sectionId }) {
                               height={320}
                               src={resolvedBadgeImageUrl}
                               alt={resolvedBadgeImageAlt}
-                              className="size-20 object-contain rounded-lg p-1 bg-white"
+                              className="size-20 object-contain rounded-xl bg-white"
                             />
                           ) : null}
                           <div className="grid gap-1">

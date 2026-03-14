@@ -27,16 +27,16 @@ const DEFAULT_ATTRIBUTION = 'Texas Solar and Roofing Pros'
 const STICKY_BUFFER = 100 // px to scroll past before resetting
 const quoteWordColors = {
   default: {
-    active: 'rgb(79, 132, 142)',
-    inactive: 'rgb(107, 191, 252)',
+    active: 'rgb(255, 255, 255)',
+    inactive: 'rgb(70, 117, 126)',
   },
   primary: {
     active: 'rgb(255 255 255)',
     inactive: 'rgb(255 255 255 / 0.38)',
   },
   secondary: {
-    active: 'rgb(79, 132, 142)',
-    inactive: 'rgb(107, 191, 252)',
+    active: 'rgb(255, 255, 255)',
+    inactive: 'rgb(255, 255, 255 / 0.38)',
   },
 }
 
