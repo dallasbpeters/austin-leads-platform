@@ -271,7 +271,8 @@ export default function LeadSettingsClient({ initialSettings }) {
 
             {!settings.canSave ? (
               <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
-                Saving is unavailable because `SANITY_API_WRITE_TOKEN` is not configured for this runtime.
+                Saving is unavailable because `DATABASE_URL` or `NEON_DATABASE_URL` is not configured for
+                this runtime.
               </div>
             ) : null}
 

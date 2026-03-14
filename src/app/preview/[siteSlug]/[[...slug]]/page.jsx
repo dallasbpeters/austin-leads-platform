@@ -5,6 +5,7 @@ import PublicSite from '@/components/platform/PublicSite'
 import {
   createJsonLd,
   getHeroHomepageForSite,
+  getHomepageReviewsForSite,
   getNavigationForSite,
   getPageForRequest,
   isPrimarySiteSlug,
@@ -22,8 +23,9 @@ export default async function PreviewSitePage({ params }) {
   if (isPrimarySiteSlug(site.slug) && slug.length === 0) {
     const heroHomepage = await getHeroHomepageForSite(site.slug)
     const heroSection = heroHomepage?.heroSection ?? null
+    const reviews = await getHomepageReviewsForSite(site.slug)
 
-    return <App heroSection={heroSection} site={site} />
+    return <App heroSection={heroSection} reviews={reviews} site={site} />
   }
 
   const page = await getPageForRequest(site, slug)

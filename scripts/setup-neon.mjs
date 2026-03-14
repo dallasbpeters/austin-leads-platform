@@ -2,6 +2,7 @@ import {
   ensureLeadSubmissionsTable,
   getLeadSubmissionOverview,
   hasLeadDatabase,
+  ensureLeadRoutingSettingsTable,
 } from '../src/lib/leads/db.mjs'
 import {
   ensureDomainRecordsTable,
@@ -17,6 +18,7 @@ async function main() {
 
   if (hasLeadDatabase()) {
     await ensureLeadSubmissionsTable()
+    await ensureLeadRoutingSettingsTable()
   }
 
   if (hasDomainDatabase()) {
@@ -31,7 +33,7 @@ async function main() {
     JSON.stringify(
       {
         ok: true,
-        tables: ['lead_submissions', 'domain_records'],
+        tables: ['lead_submissions', 'lead_routing_settings', 'domain_records'],
         overview,
         domains: domains.length,
       },

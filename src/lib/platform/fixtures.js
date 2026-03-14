@@ -212,6 +212,14 @@ function buildLeadForm(domain, categoryLabel, nameOverride) {
   }
 }
 
+function getSiteSeoDescription(slug, title, categoryLabel) {
+  if (slug === 'texas-solar-and-roofing-pros') {
+    return 'Roofing and solar services for homeowners across Austin and Central Texas, including installation, repairs, inspections, and storm-damage help.'
+  }
+
+  return `${title} — honest ${categoryLabel.toLowerCase()} guidance for Austin and Texas homeowners who want real answers before making a decision.`
+}
+
 export const sites = portfolioDomains.map((entry, index) => {
   const tier = tierMap[entry.tier]
   const brand = brandByCategory[entry.category]
@@ -236,7 +244,7 @@ export const sites = portfolioDomains.map((entry, index) => {
     leadForm: tier === 'redirect' ? null : buildLeadForm(entry.domain, categories[entry.category], title),
     seo: {
       title,
-      description: `${title} \u2014 honest ${categories[entry.category].toLowerCase()} guidance for Austin and Texas homeowners who want real answers before making a decision.`,
+      description: getSiteSeoDescription(slug, title, categories[entry.category]),
     },
     brand: {
       eyebrow: tier === 'hero' ? 'Featured Site' : tier === 'landing' ? 'Focused Site' : 'Redirect Domain',
@@ -305,7 +313,7 @@ export const pages = [
     slug: '',
     title: 'Texas Solar and Roofing Pros',
     description:
-      'Honest roofing, solar, storm-damage, and energy guidance for Texas homeowners who want real answers before making a decision.',
+      'Roofing and solar services for homeowners across Austin and Central Texas, including installation, repairs, inspections, and storm-damage help.',
     pageType: 'home',
     templateLevel: 'hero',
     sections: [

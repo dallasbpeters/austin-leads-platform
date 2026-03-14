@@ -19,10 +19,24 @@ Content requirements:
 - Avoid generic testimonials, unverifiable superlatives, or vague trust language.
 
 Structure requirements:
+- Replace the starter draft copy. Do not leave the original placeholder or brief text repeated across multiple sections.
 - Include a hero section with eyebrow, title, and body.
 - Include a story section that explains the homeowner problem and what they should understand.
 - Include a highlights section with concrete, scannable points.
+- Include a steps section when the topic involves a process, decision path, or sequence.
 - Include an FAQ section with 3 to 5 questions unless the format clearly does not support it.
+
+Schema requirements:
+- Only use the existing document schema. Do not invent new top-level fields.
+- The sections array should use:
+  - a hero section object with \`type: "hero"\`
+  - page section objects with \`type\` values like \`"story"\`, \`"highlights"\`, \`"steps"\`, \`"faq"\`, or \`"cta"\`
+- For \`highlights\` and \`steps\`, populate \`items\` with objects shaped like page items:
+  - use \`title\` and \`body\`
+  - optionally use \`eyebrow\`, \`href\`, or \`icon\` when they truly help
+- For \`faq\`, populate \`items\` with objects that use \`question\` and \`answer\`
+- Do not put FAQ copy into \`title/body\` item fields when the section type is \`faq\`
+- Do not restate the same paragraph in hero, story, highlights, and steps. Each section should perform a different role.
 
 Brand context:
 - This company covers roofing, solar, hail damage, insurance-related homeowner guidance, and adjacent home-energy services.
@@ -33,11 +47,13 @@ const CONTENT_TYPE_GUIDANCE = {
 - Prioritize education and decision support.
 - Explain how the process works in real life.
 - Use examples, homeowner framing, and common mistakes where helpful.
-- Do not turn the guide into a sales page.`,
+- Do not turn the guide into a sales page.
+- Write sections that each do a different job instead of restating the brief.`,
   servicePage: `Service-page guidance:
 - Make the problem and next step clear quickly.
 - Focus on when the service makes sense, what it should cover, and what good execution looks like.
-- Avoid sounding like a contractor ad with empty promises.`,
+- Avoid sounding like a contractor ad with empty promises.
+- Make the hero, story, highlights, and FAQ materially different from each other.`,
   locationPage: `Location-page guidance:
 - Keep the local framing credible and relevant.
 - Mention local conditions only when they are materially useful.

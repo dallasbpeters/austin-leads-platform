@@ -25,6 +25,16 @@ export const sanityWriteClient =
       })
     : null
 
+export const sanityAgentWriteClient =
+  isSanityConfigured() && process.env.SANITY_API_WRITE_TOKEN
+    ? createClient({
+        ...baseConfig,
+        apiVersion: 'vX',
+        token: process.env.SANITY_API_WRITE_TOKEN,
+        useCdn: false,
+      })
+    : null
+
 export const sanityServerClient = sanityWriteClient || sanityClient
 
 export function getSanityServerClient({ preview = false, stega = preview } = {}) {

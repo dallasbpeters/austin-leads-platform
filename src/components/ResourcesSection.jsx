@@ -27,7 +27,7 @@ const defaultItems = [
     icon: 'solar',
     title: 'Solar + Savings',
     copy: 'System cost, savings, incentives, and whether solar pencils out',
-    href: '#costs',
+    href: '/solar-costs',
     image: 'https://images.unsplash.com/photo-1604177420682-0c840feb01de?w=800&q=80',
     alt: 'Rooftop work in progress',
   },

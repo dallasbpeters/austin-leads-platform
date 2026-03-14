@@ -30,18 +30,15 @@ App:
 Studio:
 
 - `SANITY_STUDIO_PREVIEW_ORIGIN`
-- `SANITY_AGENT_SCHEMA_ID`
+- `SANITY_STUDIO_AGENT_SCHEMA_ID`
 
 ## Current status
 
-The shared drafting pieces are in the repo, but the custom Studio tool is currently disabled in `sanity.config.js` while the Studio-side integration is stabilized.
+The custom Studio tool is enabled. It can:
 
-The available pieces are:
-
-- schema-aware draft helpers
-- Sanity Agent instructions
-- deployed schema id
-- app/server-side draft creation helper if needed
+- create a schema-valid starter draft directly in Studio
+- call Sanity Agent generation when the Studio build has the deployed schema id
+- open the resulting draft for editorial cleanup in Studio
 
 ## Instruction design
 

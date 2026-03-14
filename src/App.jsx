@@ -17,6 +17,7 @@ import DevTrace from './components/dev/DevTrace'
 export default function App({
   heroSection = null,
   resourcesSection = null,
+  reviews = [],
   site = null,
   jsonLd = null,
   homepageSource = 'fixture',
@@ -60,8 +61,11 @@ export default function App({
         <Band />
         <DevTrace markup="src/components/IncentivesSection.jsx" content="local JSX copy" />
         <IncentivesSection />
-        <DevTrace markup="src/components/Testimonials.jsx" content="local JSX testimonial content" />
-        <Testimonails />
+        <DevTrace
+          markup="src/components/Testimonials.jsx"
+          content={`homepage reviews from ${reviews.length ? 'sanity' : 'local fallback testimonials'}`}
+        />
+        <Testimonails reviews={reviews} />
         <DevTrace markup="src/components/QuoteSection.jsx" content="local JSX quote content" />
         <QuoteSection />
         <DevTrace

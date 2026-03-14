@@ -24,13 +24,12 @@ const SECTION_VARIANTS = {
   roofingInspection: {
     heading: (
       <>
-        
+        Get a free
         <br />
         roof inspection
       </>
     ),
-    copy:
-      "If you're dealing with hail, wind damage, an aging roof, or an insurance claim, send the details and we'll help you figure out whether you need repairs, a full replacement, or a cleaner claim-ready scope.",
+    copy: "We'll help you figure out next steps for repair, replacement, or guidance on your insurance process.",
     buttonLabel: 'Request Free Inspection',
     sourceSection: 'roofing-consultation',
     serviceInterest: 'roofing',

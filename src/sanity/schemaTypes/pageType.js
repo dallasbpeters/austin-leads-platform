@@ -1,12 +1,25 @@
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
 const hideUnlessHomepage = ({ document }) => document?.pageType !== 'home'
+const isSectionType = (parent, ...types) => types.includes(parent?.type)
+const hideUnlessSectionTypes =
+  (...types) =>
+  ({ parent }) =>
+    !isSectionType(parent, ...types)
 const previewText = (value, fallback) => {
   if (typeof value !== 'string') return fallback
   const normalized = value.replace(/\s+/g, ' ').trim()
   if (!normalized) return fallback
   return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
 }
+
+const hasLegacyAboutPeople = (parent) =>
+  Boolean(
+    parent?.personName ||
+      parent?.profileName ||
+      parent?.secondaryPersonName ||
+      parent?.secondaryProfileName,
+  )
 
 const heroImageUrlsType = {
   name: 'heroImageUrls',
@@ -443,6 +456,106 @@ const pageItemType = {
   },
 }
 
+const sectionContentItemType = {
+  name: 'sectionContentItem',
+  title: 'Section Item',
+  type: 'object',
+  fields: [
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional short supporting label for the item.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Item title or step heading.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Supporting copy for the item.'),
+    },
+    {
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Check Circle', value: 'CheckCircle' },
+          { title: 'Shield', value: 'Shield' },
+          { title: 'Hammer', value: 'Hammer' },
+          { title: 'Sun / Solar', value: 'SunLight' },
+          { title: 'Question Mark', value: 'QuestionMark' },
+          { title: 'Info Circle', value: 'InfoCircle' },
+          { title: 'Warning Triangle', value: 'WarningTriangle' },
+          { title: 'Map Pin', value: 'MapPin' },
+        ],
+        layout: 'dropdown',
+        ...canvasPurpose('Optional icon for highlight or step items.'),
+      },
+    },
+    {
+      name: 'href',
+      title: 'Href',
+      type: 'string',
+      options: canvasPurpose('Optional link target if the item should link somewhere.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      eyebrow: 'eyebrow',
+    },
+    prepare({ title, subtitle, eyebrow }) {
+      return {
+        title: title || 'Section item',
+        subtitle: previewText(subtitle || eyebrow, 'Supporting content'),
+      }
+    },
+  },
+}
+
+const pageFaqItemType = {
+  name: 'pageFaqItem',
+  title: 'FAQ Item',
+  type: 'object',
+  fields: [
+    {
+      name: 'question',
+      title: 'Question',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Question shown in the FAQ row.'),
+    },
+    {
+      name: 'answer',
+      title: 'Answer',
+      type: 'text',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Answer shown when the FAQ item is opened.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'question',
+      subtitle: 'answer',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'FAQ item',
+        subtitle: previewText(subtitle, 'Answer'),
+      }
+    },
+  },
+}
+
 const resourceCardType = {
   name: 'resourceCard',
   title: 'Resource Card',
@@ -772,7 +885,20 @@ const aboutProfileSectionType = {
       title: 'People',
       type: 'array',
       of: [{ type: 'aboutProfilePerson' }],
-      validation: (Rule) => Rule.required().min(1).max(2),
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const count = Array.isArray(value) ? value.length : 0
+
+          if (count > 2) {
+            return 'Add no more than 2 people.'
+          }
+
+          if (count === 0 && hasLegacyAboutPeople(context.parent)) {
+            return true
+          }
+
+          return true
+        }),
       options: canvasPurpose('Profile cards shown in this section.'),
     },
     {
@@ -962,6 +1088,7 @@ const genericSectionFields = [
     name: 'eyebrow',
     title: 'Eyebrow',
     type: 'string',
+    hidden: hideUnlessSectionTypes('story'),
     options: canvasPurpose('Short overline or kicker text that introduces the section.'),
   },
   {
@@ -974,24 +1101,28 @@ const genericSectionFields = [
     name: 'body',
     title: 'Body',
     type: 'text',
+    hidden: hideUnlessSectionTypes('story', 'cta'),
     options: canvasPurpose('Main body copy for this section.'),
   },
   {
     name: 'subheadingLabel',
     title: 'Subheading Label',
     type: 'text',
+    hidden: true,
     options: canvasPurpose('Optional label for the subheading.'),
   },
   {
     name: 'subheading',
     title: 'Subheading',
     type: 'text',
+    hidden: true,
     options: canvasPurpose('Optional subheading or secondary heading for this section.'),
   },
   {
     name: 'items',
     title: 'Items',
     type: 'array',
+    hidden: hideUnlessSectionTypes('highlights', 'steps', 'faq'),
     options: canvasPurpose(
       'Repeatable content items like cards, FAQs, or supporting bullets for the section.',
     ),
@@ -1001,12 +1132,14 @@ const genericSectionFields = [
     name: 'ctaLabel',
     title: 'CTA label',
     type: 'string',
+    hidden: hideUnlessSectionTypes('cta'),
     options: canvasPurpose('Label for the main call-to-action button or link.'),
   },
   {
     name: 'ctaHref',
     title: 'CTA href',
     type: 'string',
+    hidden: hideUnlessSectionTypes('cta'),
     options: canvasPurpose('Link target or anchor for the call-to-action.'),
   },
 ]
@@ -1072,6 +1205,219 @@ const heroSectionType = {
       return {
         title: title || eyebrow || 'Hero section',
         subtitle: previewText(body, 'hero'),
+      }
+    },
+  },
+}
+
+const storySectionType = {
+  name: 'storySection',
+  title: 'Story Section',
+  type: 'object',
+  initialValue: {
+    type: 'story',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline or kicker text for the story section.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Primary story heading.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main explanatory copy for the story section.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      body: 'body',
+    },
+    prepare({ title, eyebrow, body }) {
+      return {
+        title: title || eyebrow || 'Story section',
+        subtitle: previewText(body, 'story'),
+      }
+    },
+  },
+}
+
+const highlightsSectionType = {
+  name: 'highlightsSection',
+  title: 'Highlights Section',
+  type: 'object',
+  initialValue: {
+    type: 'highlights',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading for the highlights block.'),
+    },
+    {
+      name: 'items',
+      title: 'Highlights',
+      type: 'array',
+      of: [{ type: 'sectionContentItem' }],
+      validation: (Rule) => Rule.required().min(1),
+      options: canvasPurpose('Highlight items with title and supporting body copy.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      itemCount: 'items.length',
+    },
+    prepare({ title, itemCount }) {
+      return {
+        title: title || 'Highlights section',
+        subtitle: `${itemCount || 0} items`,
+      }
+    },
+  },
+}
+
+const stepsSectionType = {
+  name: 'stepsSection',
+  title: 'Steps Section',
+  type: 'object',
+  initialValue: {
+    type: 'steps',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading for the steps block.'),
+    },
+    {
+      name: 'items',
+      title: 'Steps',
+      type: 'array',
+      of: [{ type: 'sectionContentItem' }],
+      validation: (Rule) => Rule.required().min(1),
+      options: canvasPurpose('Sequential or process-oriented items with title and body.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      itemCount: 'items.length',
+    },
+    prepare({ title, itemCount }) {
+      return {
+        title: title || 'Steps section',
+        subtitle: `${itemCount || 0} items`,
+      }
+    },
+  },
+}
+
+const faqSectionType = {
+  name: 'faqSection',
+  title: 'FAQ Section',
+  type: 'object',
+  initialValue: {
+    type: 'faq',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading for the FAQ block.'),
+    },
+    {
+      name: 'items',
+      title: 'FAQ items',
+      type: 'array',
+      of: [{ type: 'pageFaqItem' }],
+      validation: (Rule) => Rule.required().min(1),
+      options: canvasPurpose('Frequently asked questions and answers.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      itemCount: 'items.length',
+    },
+    prepare({ title, itemCount }) {
+      return {
+        title: title || 'FAQ section',
+        subtitle: `${itemCount || 0} questions`,
+      }
+    },
+  },
+}
+
+const ctaSectionType = {
+  name: 'ctaSection',
+  title: 'CTA Section',
+  type: 'object',
+  initialValue: {
+    type: 'cta',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main CTA headline.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Supporting CTA copy.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Label for the CTA button or link.'),
+    },
+    {
+      name: 'ctaHref',
+      title: 'CTA href',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Link target or anchor for the CTA.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'CTA section',
+        subtitle: previewText(subtitle, 'Call to action'),
       }
     },
   },
@@ -1294,6 +1640,11 @@ const baseFields = [
     ),
     of: [
       { type: 'heroSection' },
+      { type: 'storySection' },
+      { type: 'highlightsSection' },
+      { type: 'stepsSection' },
+      { type: 'faqSection' },
+      { type: 'ctaSection' },
       { type: 'resourceGridSection' },
       { type: 'guideGridSection' },
       { type: 'aboutProfileSection' },
@@ -1357,8 +1708,15 @@ export default [
   pageMetricType,
   pageActionType,
   pageItemType,
+  sectionContentItemType,
+  pageFaqItemType,
   resourceCardType,
   heroSectionType,
+  storySectionType,
+  highlightsSectionType,
+  stepsSectionType,
+  faqSectionType,
+  ctaSectionType,
   resourceGridSectionType,
   guideGridSectionType,
   aboutProfilePersonType,
