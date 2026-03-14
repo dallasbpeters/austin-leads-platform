@@ -6,7 +6,10 @@ import { getLeadRoutingSettings, saveLeadRoutingSettings } from '@/lib/leads/set
 export const runtime = 'nodejs'
 
 function badRequest(message, status = 400) {
-  return NextResponse.json({ error: message }, { status })
+  return NextResponse.json(
+    { error: message },
+    { status, headers: { 'Cache-Control': 'no-store, max-age=0' } },
+  )
 }
 
 export async function GET() {
@@ -14,7 +17,14 @@ export async function GET() {
   if (unauthorized) return unauthorized
 
   const settings = await getLeadRoutingSettings()
-  return NextResponse.json({ settings })
+  return NextResponse.json(
+    { settings },
+    {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
+      },
+    },
+  )
 }
 
 export async function POST(request) {
@@ -29,7 +39,14 @@ export async function POST(request) {
 
   try {
     const settings = await saveLeadRoutingSettings(payload)
-    return NextResponse.json({ ok: true, settings })
+    return NextResponse.json(
+      { ok: true, settings },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        },
+      },
+    )
   } catch (error) {
     return badRequest(error instanceof Error ? error.message : 'Unable to save lead settings.', 422)
   }

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Mail, Save, ShieldCheck, TriangleAlert } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ function buildInitialForm(settings) {
     fromName: settings.fromName || '',
     fromEmail: settings.fromEmail || '',
     subjectPrefix: settings.subjectPrefix || '',
+    resendTemplateId: settings.resendTemplateId || '',
   }
 }
 
@@ -30,6 +32,21 @@ async function saveLeadSettings(payload) {
 
   if (!response.ok) {
     throw new Error(data.error || 'Unable to save lead settings.')
+  }
+
+  return data.settings
+}
+
+async function fetchLeadSettings() {
+  const response = await fetch('/api/leads/settings', {
+    method: 'GET',
+    cache: 'no-store',
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Unable to load lead settings.')
   }
 
   return data.settings
@@ -53,11 +70,44 @@ function StatusCard({ title, value, tone = 'neutral', detail }) {
 }
 
 export default function LeadSettingsClient({ initialSettings }) {
+  const router = useRouter()
   const [settings, setSettings] = useState(initialSettings)
   const [form, setForm] = useState(() => buildInitialForm(initialSettings))
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const [isSaving, setIsSaving] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
+
+  useEffect(() => {
+    let active = true
+
+    async function syncSettings() {
+      setIsSyncing(true)
+
+      try {
+        const nextSettings = await fetchLeadSettings()
+
+        if (!active) {
+          return
+        }
+
+        setSettings(nextSettings)
+        setForm(buildInitialForm(nextSettings))
+      } catch {
+        // Keep the server-rendered settings if the client sync fails.
+      } finally {
+        if (active) {
+          setIsSyncing(false)
+        }
+      }
+    }
+
+    syncSettings()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   function updateField(name, value) {
     setForm((current) => ({ ...current, [name]: value }))
@@ -68,19 +118,26 @@ export default function LeadSettingsClient({ initialSettings }) {
     setMessage('')
     setError('')
 
-    startTransition(async () => {
+    async function persist() {
+      setIsSaving(true)
+
       try {
         const nextSettings = await saveLeadSettings(form)
         setSettings(nextSettings)
         setForm(buildInitialForm(nextSettings))
         setMessage('Lead routing settings saved.')
+        router.refresh()
       } catch (saveError) {
         setError(saveError.message || 'Unable to save lead settings.')
+      } finally {
+        setIsSaving(false)
       }
-    })
+    }
+
+    persist()
   }
 
-  const saveDisabled = isPending || !settings.canSave
+  const saveDisabled = isSaving || isSyncing || !settings.canSave
   const providerTone = settings.providerReady ? 'success' : settings.apiKeyConfigured ? 'warning' : 'warning'
 
   return (
@@ -90,7 +147,8 @@ export default function LeadSettingsClient({ initialSettings }) {
         <h1 className="text-foreground mt-2 text-3xl tracking-tight">Lead settings</h1>
         <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
           Control where new lead notifications go, what sender appears in the inbox, and whether Resend
-          notifications are active. The API key stays server-side in env vars.
+          notifications are active. You can also point notifications at a Resend template. The API key
+          stays server-side in env vars.
         </p>
       </div>
 
@@ -119,6 +177,16 @@ export default function LeadSettingsClient({ initialSettings }) {
             settings.emailNotificationsEnabled
               ? 'New form submissions will notify this inbox.'
               : 'Email notifications are currently disabled.'
+          }
+        />
+        <StatusCard
+          title="Template"
+          value={settings.resendTemplateId || 'Raw HTML email'}
+          tone={settings.resendTemplateId ? 'success' : 'neutral'}
+          detail={
+            settings.resendTemplateId
+              ? 'Lead notifications will use the configured Resend template.'
+              : 'No template configured. The built-in HTML email will be used.'
           }
         />
       </div>
@@ -188,6 +256,19 @@ export default function LeadSettingsClient({ initialSettings }) {
               </div>
             </div>
 
+            <div className="grid gap-2">
+              <label className="text-foreground text-sm font-medium">Resend template ID</label>
+              <Input
+                value={form.resendTemplateId}
+                onChange={(event) => updateField('resendTemplateId', event.target.value)}
+                placeholder="tpl_123456789"
+              />
+              <div className="text-muted-foreground text-sm leading-6">
+                Optional. If set, lead notifications will send through this Resend template using the lead
+                data as template variables.
+              </div>
+            </div>
+
             {!settings.canSave ? (
               <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
                 Saving is unavailable because `SANITY_API_WRITE_TOKEN` is not configured for this runtime.
@@ -201,7 +282,7 @@ export default function LeadSettingsClient({ initialSettings }) {
               </div>
               <div className="text-muted-foreground mt-2">
                 The Resend API key remains server-side in env vars. This screen only controls the sender,
-                recipient, subject prefix, and whether the notification flow is enabled.
+                recipient, subject prefix, template ID, and whether the notification flow is enabled.
               </div>
             </div>
 
@@ -223,7 +304,7 @@ export default function LeadSettingsClient({ initialSettings }) {
             <div className="flex justify-end">
               <Button type="submit" disabled={saveDisabled}>
                 <Save className="mr-2 h-4 w-4" />
-                Save lead settings
+                {isSaving ? 'Saving…' : isSyncing ? 'Syncing…' : 'Save lead settings'}
               </Button>
             </div>
           </form>

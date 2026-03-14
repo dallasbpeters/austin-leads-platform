@@ -122,7 +122,6 @@ function mergeSeedSections(seedSections, existingSections = []) {
       const mergedSection = {
         ...section,
         heroAsset: existingSection.heroAsset || section.heroAsset,
-        heroImage: existingSection.heroImage || section.heroImage,
         heroTextColor: existingSection.heroTextColor || section.heroTextColor,
         heroOverlayColor: existingSection.heroOverlayColor || section.heroOverlayColor,
         heroOverlayStartColor: existingSection.heroOverlayStartColor || section.heroOverlayStartColor,
@@ -153,7 +152,6 @@ function mergeSeedSections(seedSections, existingSections = []) {
           return {
             ...item,
             imageAsset: existingItem.imageAsset || item.imageAsset,
-            image: existingItem.image || item.image,
           }
         }),
       }

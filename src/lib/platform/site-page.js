@@ -24,6 +24,14 @@ function getCurrentOrigin(host, forwardedProto) {
   return `${protocol}://${host}`
 }
 
+function getOriginFromAbsoluteUrl(url) {
+  try {
+    return new URL(url).origin
+  } catch {
+    return null
+  }
+}
+
 function getPageHeroImage(page) {
   const sectionHero = page?.sections?.find((section) => section.type === 'hero') ?? null
 
@@ -88,11 +96,13 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   }
 
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
-  const canonical = getPrimaryUrl(site, pathname)
-  const currentOrigin = getCurrentOrigin(host, forwardedProto) || canonical
+  const fallbackCanonical = getPrimaryUrl(site, pathname)
+  const canonical = page.seo?.canonicalUrl || site.seo?.canonicalUrl || fallbackCanonical
+  const currentOrigin = getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
   const title = page.seo?.title || page.title || site.seo?.title || site.name
   const description = page.seo?.description || page.description || site.seo?.description
-  const ogImage = buildOgImageUrl(currentOrigin, site, page, pathname)
+  const ogImage = page.seo?.ogImage || site.seo?.ogImage || buildOgImageUrl(currentOrigin, site, page, pathname)
+  const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
 
   return {
     title,
@@ -123,8 +133,8 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
       images: [ogImage],
     },
     robots: {
-      index: isIndexableHost,
-      follow: isIndexableHost,
+      index: shouldIndex,
+      follow: shouldIndex,
     },
   }
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { startTransition } from 'react'
 import { CheckCircle2, Clock3, LoaderCircle, RefreshCcw, XCircle } from 'lucide-react'
 
@@ -59,9 +60,22 @@ export default function PublishClient({ initialJobs, sites }) {
       <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Create draft job</CardTitle>
+            <CardTitle>Preferred workflow: draft in Sanity</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="text-muted-foreground mb-5 space-y-3 text-sm leading-7">
+              <p>
+                The current recommendation is to use the hosted Sanity Studio for AI-assisted drafting and final
+                editing. The Studio tool creates a real draft document first, then lets Sanity Agent build the first
+                pass inside the actual CMS.
+              </p>
+              <p>
+                Use this admin page only as a legacy queue prototype. It is not the primary editorial path.
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/studio">Open Studio</Link>
+              </Button>
+            </div>
             <form className="grid gap-4" onSubmit={submitJob}>
               <div className="grid gap-2">
                 <label className="text-foreground text-sm font-medium">Target site</label>

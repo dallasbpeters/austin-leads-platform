@@ -71,7 +71,7 @@ function NavList() {
         <Link
           key={href}
           href={href}
-          className="btn text-foreground hover:text-primary font-semi-bold flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-transparent"
+          className="btn text-foreground hover:text-primary font-semi-bold flex items-start justify-start gap-2 rounded-md px-3 py-2 text-sm hover:bg-transparent"
         >
           {label}
         </Link>
@@ -83,7 +83,7 @@ function MenuItem({ title, description, href }) {
   return (
     <Link
       href={href}
-      className="hover:text-primary flex flex-col items-start rounded-md p-2 hover:bg-transparent"
+      className="hover:text-primary flex flex-col items-start rounded-md py-2 px-3 hover:bg-transparent"
     >
       <p className="text-sm font-semibold">{title}</p>
       {description ? <p className="text-muted-foreground text-sm">{description}</p> : null}
@@ -92,6 +92,8 @@ function MenuItem({ title, description, href }) {
 }
 export default function Header() {
   const [openNav, setOpenNav] = React.useState(false)
+  const mobileMenuId = React.useId()
+
   React.useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) setOpenNav(false)
@@ -163,52 +165,61 @@ export default function Header() {
             <NavList />
           </div>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
+            type="button"
             onClick={() => setOpenNav(!openNav)}
             className="mr-2 ml-auto lg:hidden"
+            aria-expanded={openNav}
+            aria-controls={mobileMenuId}
+            aria-label={openNav ? 'Close navigation menu' : 'Open navigation menu'}
           >
-            {openNav ? <Xmark className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            {openNav ? <Xmark className="size-6" /> : <Menu className="size-6" />}
           </Button>
         </div>
       </div>
 
       <Collapsible open={openNav}>
-        <CollapsibleContent className="bg-card border-border mx-auto w-full rounded-md border px-4 py-2 shadow-sm">
-          <Accordion type="single" collapsible className="mt-2">
-            <AccordionItem value="solar-pages" className="border-none">
-              <AccordionTrigger className="btn p-0 hover:no-underline">
-                <div className="hover:bg-accent flex w-full items-center gap-2 rounded-md px-3 py-2">
-                  <span className="text-sm">Solar</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-0">
-                <div className="space-y-1">
-                  {SOLAR_ITEMS.map((item) => (
-                    <MenuItem key={item.href} {...item} />
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="roofing-pages" className="border-none">
-              <AccordionTrigger className="btn p-0 hover:no-underline">
-                <div className="hover:bg-accent flex w-full items-center gap-2 rounded-md px-3 py-2">
-                  <span className="text-sm">Roofing</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-0">
-                <div className="space-y-1">
-                  {ROOFING_ITEMS.map((item) => (
-                    <MenuItem key={item.href} {...item} />
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          <div className="mt-2 space-y-1">
-            <NavList />
-          </div>
-        </CollapsibleContent>
+        {openNav ? (
+          <CollapsibleContent
+            id={mobileMenuId}
+            className="bg-card border-border mx-auto w-full rounded-md border px-4 py-2 shadow-sm"
+          >
+            <Accordion type="single" collapsible className="mt-2">
+              <AccordionItem value="solar-pages" className="border-none">
+                <AccordionTrigger className="btn p-0 hover:no-underline">
+                  <div className="flex w-full items-center gap-2 rounded-md px-3 py-2">
+                    <span className="text-sm font-semibold">Solar</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pb-0">
+                  <div className="space-y-1">
+                    {SOLAR_ITEMS.map((item) => (
+                      <MenuItem key={item.href} {...item} />
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="roofing-pages" className="border-none">
+                <AccordionTrigger className="btn p-0 hover:no-underline">
+                  <div className="flex w-full items-center gap-2 rounded-md px-3 py-2">
+                    <span className="text-sm font-semibold">Roofing</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pb-0">
+                  <div className="space-y-1">
+                    {ROOFING_ITEMS.map((item) => (
+                      <MenuItem key={item.href} {...item} />
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            <div className="mt-2 space-y-1">
+              <NavList />
+            </div>
+          </CollapsibleContent>
+        ) : null}
       </Collapsible>
     </nav>
   )

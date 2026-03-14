@@ -153,6 +153,45 @@ const launchChecklistDefinition = {
       ],
     },
     {
+      title: 'Go-live operations',
+      description:
+        'Handle the launch tasks that turn a technically ready site into a live, reviewable, and reachable business property.',
+      tasks: [
+        {
+          title: 'Submit the live sitemap to Google Search Console and Bing Webmaster Tools',
+          notes:
+            'Verify the production domain, submit `/sitemap.xml`, and confirm crawl/index coverage after launch.',
+          status: 'todo',
+          owner: 'SEO',
+          priority: 'high',
+        },
+        {
+          title: 'Complete Google Business Profile and align site links, services, and photos',
+          notes:
+            'Make sure the site URL, service categories, phone, photos, and service-area details match the live business profile.',
+          status: 'todo',
+          owner: 'Operations',
+          priority: 'high',
+        },
+        {
+          title: 'Confirm citation consistency across major local profiles',
+          notes:
+            'Check name, address, phone, website URL, and service-area details on Yelp, Apple Business Connect, Facebook, BBB, and other live profiles.',
+          status: 'todo',
+          owner: 'Operations',
+          priority: 'medium',
+        },
+        {
+          title: 'Run a live lead-routing test from form, click-to-call, and direct email paths',
+          notes:
+            'Confirm that launch traffic can actually reach Kathy, that CRM attribution survives, and that failures are visible.',
+          status: 'todo',
+          owner: 'Operations',
+          priority: 'high',
+        },
+      ],
+    },
+    {
       title: 'Analytics and lead capture',
       description:
         'Replace placeholders with the live measurement and lead routing needed to operate the platform.',
@@ -177,6 +216,53 @@ const launchChecklistDefinition = {
           title: 'Wire lead forms to the real destination workflow',
           notes:
             'Confirm where submissions go, how failures are reported, and how domain/source attribution is preserved.',
+          status: 'todo',
+          owner: 'Operations',
+          priority: 'high',
+        },
+      ],
+    },
+    {
+      title: 'Exposure and distribution',
+      description:
+        'Get the live site into real local channels so it is not waiting passively for discovery.',
+      tasks: [
+        {
+          title: 'Publish and distribute the first wave of guides through email, social, and partner channels',
+          notes:
+            'Use the launch guides as shareable assets, not just SEO pages. Add UTMs so traffic sources can be measured.',
+          status: 'todo',
+          owner: 'Content',
+          priority: 'high',
+        },
+        {
+          title: 'Create a review request workflow for homeowners and recent customers',
+          notes:
+            'Ask for Google reviews with direct links, then surface the strongest language back into page proof and sales follow-up.',
+          status: 'todo',
+          owner: 'Operations',
+          priority: 'high',
+        },
+        {
+          title: 'Build referral and partner outreach with roofers, insurance-facing contacts, and local home-service relationships',
+          notes:
+            'Use the site as the destination for referrals, inspection follow-up, and educational content handoff.',
+          status: 'todo',
+          owner: 'Business Development',
+          priority: 'medium',
+        },
+        {
+          title: 'Launch a small paid search and retargeting test against the highest-intent service pages',
+          notes:
+            'Start with tightly scoped search terms, branded protection, and remarketing audiences so early spend stays measurable.',
+          status: 'todo',
+          owner: 'Marketing',
+          priority: 'medium',
+        },
+        {
+          title: 'Review weekly lead quality and tighten the pages that are getting traffic but not producing consultations',
+          notes:
+            'Use CRM status, service-interest selection, and page attribution to decide which pages need stronger proof, better CTAs, or different traffic sources.',
           status: 'todo',
           owner: 'Operations',
           priority: 'high',

@@ -24,3 +24,16 @@ export async function verifyDomainRecord(domain) {
     method: 'POST',
   })
 }
+
+export async function updateDomainRecordRequest(domain, form) {
+  return requestJson(`/api/domains/${encodeURIComponent(domain)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(form),
+  })
+}
+
+export async function deleteDomainRecordRequest(domain) {
+  return requestJson(`/api/domains/${encodeURIComponent(domain)}`, {
+    method: 'DELETE',
+  })
+}

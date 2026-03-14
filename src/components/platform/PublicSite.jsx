@@ -12,8 +12,9 @@ import {
   WindowTabs,
   Wrench,
 } from 'iconoir-react'
+import * as IconoirIcons from 'iconoir-react'
 
-import {cn} from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 import Image from 'next/image'
 
@@ -240,15 +241,17 @@ function CardGridSection({ section, sectionId }) {
         content={`highlight cards from ${section?._type || 'page section'}`}
       />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="mb-8 max-w-3xl grid gap-2">
+        <div className="mb-8 grid max-w-3xl gap-2">
           <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
-          <p className="text-foreground text-lg leading-8 mb-4">{section.subtitle}</p>
+          {section.subtitle ? (
+            <p className="text-foreground mb-4 text-xl leading-8">{section.subtitle}</p>
+          ) : null}
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {section.items?.map((item, index) => (
             <Card
               key={buildRuntimeKey('card-grid-item', item.title, item.question, index)}
-              className="grid grid-cols-1 place-content-start"
+              className="grid grid-cols-1 place-content-start pt-8"
             >
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
@@ -298,7 +301,7 @@ function GuideGridSection({ section, sectionId }) {
       />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="mb-8 max-w-3xl">
-          <h2 className="text-foreground text-3xl md:text-4xl mb-4">{section.title}</h2>
+          <h2 className="text-foreground mb-4 text-3xl md:text-4xl">{section.title}</h2>
           {section.body ? <p className="text-muted-foreground text-lg leading-8">{section.body}</p> : null}
         </div>
         <GuideCardGrid
@@ -397,7 +400,13 @@ function getServiceIcon(item) {
     return serviceIconMap[item.icon]
   }
 
-  const title = `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
+  // Support PascalCase iconoir icon names from Sanity dropdowns
+  if (item.icon && IconoirIcons[item.icon]) {
+    return IconoirIcons[item.icon]
+  }
+
+  const title =
+    `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return AreaSearch
   if (title.includes('insulation') || title.includes('air sealing')) return HomeShield
@@ -435,7 +444,8 @@ function getServiceImage(item) {
     return serviceImageMap[item.icon]
   }
 
-  const title = `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
+  const title =
+    `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return serviceImageMap.audit
   if (title.includes('insulation') || title.includes('air sealing')) return serviceImageMap.insulation
@@ -493,6 +503,25 @@ function ServiceGridSection({ section, sectionId }) {
     }
   })
 
+  function renderServiceMedia(item, overlayClassName) {
+    if (!item.imageUrl) {
+      return <div className={`absolute inset-0 ${overlayClassName}`} />
+    }
+
+    return (
+      <>
+        <Image
+          width={2000}
+          height={2000}
+          src={item.imageUrl}
+          alt={item.imageAlt}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+        />
+        <div className={`absolute inset-0 ${overlayClassName}`} />
+      </>
+    )
+  }
+
   return (
     <section
       className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))]"
@@ -526,17 +555,13 @@ function ServiceGridSection({ section, sectionId }) {
             const Icon = getServiceIcon(item)
             const content = (
               <Card className="relative aspect-square" variant="media" radius="lg">
-                <Image
-                  width={2000}
-                  height={2000}
-                  src={item.imageUrl}
-                  alt={item.imageAlt}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.95)_20%,rgba(11,59,66,0.2),transparent)]"></div>
+                {renderServiceMedia(
+                  item,
+                  'bg-[linear-gradient(to_top,rgba(1,60,66,1)_30%,rgba(11,59,66,0.1),transparent)]',
+                )}
                 <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                    <Icon className="h-5 w-5" strokeWidth={2.2} />
+                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <Icon className="h-8 w-8" strokeWidth={2} />
                   </div>
                   <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
                   <div className="text-md mt-1 font-semibold text-white/70">{item.copy}</div>
@@ -568,14 +593,10 @@ function ServiceGridSection({ section, sectionId }) {
                 const Icon = getServiceIcon(item)
                 const content = (
                   <Card className="relative aspect-4/5 overflow-hidden" variant="media" radius="lg">
-                    <Image
-                      width={2000}
-                      height={2000}
-                      src={item.imageUrl}
-                      alt={item.imageAlt}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]" />
+                    {renderServiceMedia(
+                      item,
+                      'bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]',
+                    )}
                     <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                       <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
@@ -612,14 +633,10 @@ function ServiceGridSection({ section, sectionId }) {
                 const Icon = getServiceIcon(item)
                 const content = (
                   <Card className="relative aspect-square overflow-hidden" variant="media" radius="lg">
-                    <Image
-                      width={2000}
-                      height={2000}
-                      src={item.imageUrl}
-                      alt={item.imageAlt}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]" />
+                    {renderServiceMedia(
+                      item,
+                      'bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]',
+                    )}
                     <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                       <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
@@ -671,9 +688,12 @@ function StepsSection({ section, sectionId }) {
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {section.items?.map((item, index) => (
-            <Card key={buildRuntimeKey('step-item', item.title, index)} className="border-border/80 bg-card pt-12 pb-8">
+            <Card
+              key={buildRuntimeKey('step-item', item.title, index)}
+              className="border-border/80 bg-card pt-12 pb-8"
+            >
               <CardHeader className="gap-4">
-                <Badge className="bg-secondary/90 text-secondary-foreground text-lg w-fit rounded-full size-8">
+                <Badge className="bg-primary border-primary ring-primary text-secondary-foreground size-8 w-fit rounded-full text-lg ring-1">
                   {index + 1}
                 </Badge>
                 <CardTitle className="text-foreground text-xl">{item.title}</CardTitle>
@@ -707,7 +727,10 @@ function FaqSection({ section, sectionId }) {
         </div>
         <div className="space-y-4">
           {section.items?.map((item, index) => (
-            <Card key={buildRuntimeKey('faq-item', item.question, index)} className="border-border/80 bg-card">
+            <Card
+              key={buildRuntimeKey('faq-item', item.question, index)}
+              className="border-border/80 bg-card"
+            >
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.question}</CardTitle>
               </CardHeader>
@@ -723,7 +746,7 @@ function FaqSection({ section, sectionId }) {
 function HailMapSection({ section, sectionId }) {
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,244,239,0.98))]"
+      className="border-border/60 bg-gradient border-b"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:HailMapSection',
@@ -734,7 +757,7 @@ function HailMapSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:HailMapSection"
         content={`hail lookup section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+      <div className="mx-auto max-w-[1600px] px-6 py-20 lg:px-10">
         <HailWeatherLookup section={section} />
       </div>
     </section>
@@ -767,35 +790,34 @@ function QuoteBannerSection({ section, sectionId }) {
 }
 
 function AboutProfileSection({ section, sectionId }) {
-  const people =
-    section.people?.length
-      ? section.people
-      : [
-          {
-            label: section.personLabel,
-            name: section.personName,
-            role: section.personRole,
-            blurb: section.personBlurb,
-            profileImage: section.profileImage,
-            profileImageAsset: section.profileImageAsset,
-            certificationLabel: section.certificationLabel,
-            certificationTitle: section.certificationTitle,
-            badgeImage: section.badgeImage,
-            badgeImageAsset: section.badgeImageAsset,
-          },
-          {
-            label: section.secondaryPersonLabel,
-            name: section.secondaryPersonName,
-            role: section.secondaryPersonRole,
-            blurb: section.secondaryPersonBlurb,
-            profileImage: section.secondaryProfileImage,
-            profileImageAsset: section.secondaryProfileImageAsset,
-          },
-        ].filter((person) => person?.name)
+  const people = section.people?.length
+    ? section.people
+    : [
+        {
+          label: section.personLabel,
+          name: section.personName,
+          role: section.personRole,
+          blurb: section.personBlurb,
+          profileImage: section.profileImage,
+          profileImageAsset: section.profileImageAsset,
+          certificationLabel: section.certificationLabel,
+          certificationTitle: section.certificationTitle,
+          badgeImage: section.badgeImage,
+          badgeImageAsset: section.badgeImageAsset,
+        },
+        {
+          label: section.secondaryPersonLabel,
+          name: section.secondaryPersonName,
+          role: section.secondaryPersonRole,
+          blurb: section.secondaryPersonBlurb,
+          profileImage: section.secondaryProfileImage,
+          profileImageAsset: section.secondaryProfileImageAsset,
+        },
+      ].filter((person) => person?.name)
 
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,239,0.96))]"
+      className="border-border/60 border-b bg-gradient"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:AboutProfileSection',
@@ -806,7 +828,7 @@ function AboutProfileSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:AboutProfileSection"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-7xl gap-6 px-6 py-20 grid-cols-1 lg:px-10">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 py-20 lg:px-10">
         <div className="mb-10 max-w-3xl">
           {section.eyebrow ? (
             <Badge variant="outline" className="border-primary/20 bg-primary/5 text-foreground">
@@ -818,94 +840,98 @@ function AboutProfileSection({ section, sectionId }) {
             <p className="text-muted-foreground mt-4 text-base leading-8">{section.body}</p>
           ) : null}
         </div>
-        <div className="grid content-start gap-6 grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 content-start gap-6">
           {people.map((person, index) => {
             const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
             const profileImageAlt = getImageAlt(
               person.profileImageAsset,
               person.profileImage,
-              person.name || 'Profile image'
+              person.name || 'Profile image',
             )
             const badgeImageUrl = getImageUrl(person.badgeImageAsset, person.badgeImage)
             const badgeImageAlt = getImageAlt(
               person.badgeImageAsset,
               person.badgeImage,
-              person.certificationTitle || 'Certification badge'
+              person.certificationTitle || 'Certification badge',
             )
             const resolvedBadgeImageUrl =
               badgeImageUrl ||
               (person.certificationTitle?.includes('NABCEP')
                 ? 'https://www.nabcep.org/wp-content/uploads/2020/01/PVTS-Registered-Seal.jpg'
                 : '')
-            const resolvedBadgeImageAlt =
-              badgeImageAlt || person.certificationTitle || 'Certification badge'
+            const resolvedBadgeImageAlt = badgeImageAlt || person.certificationTitle || 'Certification badge'
+
+            const profileCardBackgrounds = [
+              "linear-gradient(45deg, var(--color-primary), var(--color-tidal)), url('https://grainy-gradients.vercel.app/noise.svg')",
+              "linear-gradient(45deg, var(--color-metterhorn), var(--color-sweetcorn)), url('https://grainy-gradients.vercel.app/noise.svg')",
+              "linear-gradient(45deg, var(--color-secondary), var(--color-tertiary)), url('https://grainy-gradients.vercel.app/noise.svg')",
+            ]
 
             return (
-              <Card
-                key={buildRuntimeKey('about-person', person.name, index)}
-                radius="lg"
-                className={cn(
-                  'relative justify-end pt-60',
-                  index === 0 ? 'border-border/80 bg-card' : 'bg-card'
-                )}
-              >
+                <Card key={buildRuntimeKey('about-person', person.name, index)
+                  
+                } 
+                radius="lg" className='bg-card pt-8 aspect-3/3 items-end grid grid-cols-1 content-between'
+                style={{
+                  background: profileCardBackgrounds[index % profileCardBackgrounds.length],
+                  backgroundBlendMode: 'multiply',
+                  }}>
                   <Image
-                    width={700}
-                    height={700}
-                    src={profileImageUrl || '/images/kathie-millen.png'}
-                    alt={profileImageAlt}
-                    className={cn(
-                      'absolute inset-0 object-cover filter grayscale',
-                      index === 0 ? 'h-full w-full' : 'h-full w-full'
-                    )}
-                  />
-                <CardHeader className="relative z-10 flex items-center gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="grid gap-2">
-                      <div className="text-white text-xs tracking-[0.2em] uppercase">
-                        {person.label || 'Profile'}
-                      </div>
-                      <CardTitle className="text-white text-3xl tracking-tight">
-                        {person.name}
-                      </CardTitle>
-                      {person.role ? (
-                        <p className="text-white text-lg leading-7 font-semibold">{person.role}</p>
-                      ) : null}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="relative z-10 grid gap-4">
-                  {person.blurb ? (
-                    <p className="text-white text-base leading-6">{person.blurb}</p>
-                  ) : null}
-                  {person.certificationTitle ? (
-                    <div className="border-border/80 grid gap-3 rounded-2xl border bg-white p-4">
-                      <div className="flex items-center gap-3">
-                        {resolvedBadgeImageUrl ? (
-                          <Image
-                            width={320}
-                            height={320}
-                            src={resolvedBadgeImageUrl}
-                            alt={resolvedBadgeImageAlt}
-                            className="h-16 w-16 object-contain"
-                          />
+                  width={700}
+                  height={700}
+                  src={profileImageUrl}
+                  alt={profileImageAlt}
+                  className='absolute inset-0 size-full object-cover grayscale filter'
+                  
+                />
+                  <CardHeader className="relative z-10 flex items-center gap-4">
+                    <div className="flex items-start">
+                      <div className="grid gap-2">
+                        <div className="text-white text-xs tracking-[0.2em] uppercase">
+                          {person.label || 'Profile'}
+                        </div>
+                        <CardTitle className="text-white text-3xl tracking-tight leading-3">
+                          {person.name}
+                        </CardTitle>
+                        {person.role ? (
+                          <p className="text-white text-lg leading-7 font-semibold">{person.role}</p>
                         ) : null}
-                        <div className="grid gap-1">
-                          {person.certificationLabel ? (
-                            <div className="text-foreground text-xs tracking-[0.2em] uppercase">
-                              {person.certificationLabel}
-                            </div>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative z-10 grid gap-4 h-30 grid-cols-1 content-end"
+                  >
+                    {person.blurb ? (
+                      <p className="text-white text-base leading-6">{person.blurb}</p>
+                    ) : null}
+                    {person.certificationTitle ? (
+                      <div className="border-border/80 grid gap-3">
+                        <div className="flex items-center gap-3">
+                          {resolvedBadgeImageUrl ? (
+                            <Image
+                              width={320}
+                              height={320}
+                              src={resolvedBadgeImageUrl}
+                              alt={resolvedBadgeImageAlt}
+                              className="size-20 object-contain rounded-lg p-1 bg-white"
+                            />
                           ) : null}
-                          <div className="text-foreground text-base font-semibold leading-6">
-                            {person.certificationTitle}
+                          <div className="grid gap-1">
+                            {person.certificationLabel ? (
+                              <div className="text-white text-xs tracking-[0.2em] uppercase">
+                                {person.certificationLabel}
+                              </div>
+                            ) : null}
+                            <div className="text-white text-base leading-6 font-semibold">
+                              {person.certificationTitle}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ) : null}
-                </CardContent>
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,1),rgba(11,59,66,0.2),transparent)]"></div>
-              </Card>
+                    ) : null}
+                  </CardContent>
+                  <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-black),rgba(11,59,66,0.2),transparent)]"></div>
+                </Card>
             )
           })}
         </div>
@@ -941,7 +967,9 @@ function CtaSection({ page, section, site, pathname, sectionId }) {
   const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
   const roofingServiceSlugs = new Set(roofingServices.map((service) => service.slug))
   const isRoofingContext =
-    topLevelPath === 'roofing' || topLevelPath === 'hail-damage' || (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug))
+    topLevelPath === 'roofing' ||
+    topLevelPath === 'hail-damage' ||
+    (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug))
   const pageSlug = cleanRuntimeString(page?.slug)
   const pagePath = pageSlug ? `/${pageSlug}` : pathname || '/'
 

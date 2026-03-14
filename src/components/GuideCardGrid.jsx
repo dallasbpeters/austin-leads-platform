@@ -100,7 +100,7 @@ function GuideCardBody({ card }) {
           {card.eyebrow}
         </p>
       ) : null}
-      <h3 className="mt-4 text-[2rem] tracking-tight">{card.title}</h3>
+      <h3 className="mt-4 text-[2rem] tracking-tight leading-10">{card.title}</h3>
       <p className="mt-2 text-[0.95rem] leading-6 font-semibold text-current/88">{card.copy}</p>
       {card.image ? (
         <div className="mt-6 overflow-hidden rounded-lg">

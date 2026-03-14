@@ -182,3 +182,43 @@ export async function getDomainFromVercel(domain) {
 
   return mapProjectDomain(payload)
 }
+
+export async function updateDomainOnVercel(domain, { redirectTarget = null } = {}) {
+  const config = getVercelConfig()
+
+  if (!config.enabled) {
+    return {
+      domain,
+      redirectTarget,
+      verified: false,
+      verificationStatus: redirectTarget ? 'redirect-only' : 'pending',
+      dnsInstructions: [],
+      mode: 'placeholder',
+    }
+  }
+
+  const payload = await vercelRequest(`/v9/projects/${config.projectIdOrName}/domains/${domain}`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      redirect: redirectTarget,
+      redirectStatusCode: redirectTarget ? 308 : null,
+      gitBranch: null,
+    }),
+  })
+
+  return mapProjectDomain(payload)
+}
+
+export async function removeDomainFromVercel(domain) {
+  const config = getVercelConfig()
+
+  if (!config.enabled) {
+    return { domain, removed: true, mode: 'placeholder' }
+  }
+
+  await vercelRequest(`/v9/projects/${config.projectIdOrName}/domains/${domain}`, {
+    method: 'DELETE',
+  })
+
+  return { domain, removed: true, mode: 'vercel' }
+}

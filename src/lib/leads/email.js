@@ -49,6 +49,23 @@ function buildLeadRows(lead) {
   ]
 }
 
+function buildTemplateVariables(lead) {
+  return {
+    leadName: formatValue(lead.fullName, ''),
+    leadEmail: formatValue(lead.email, ''),
+    leadPhone: formatValue(lead.phone),
+    serviceInterest: formatValue(lead.serviceInterest),
+    leadType: formatValue(lead.sourceType),
+    sourceSection: formatValue(lead.sourceSection),
+    siteName: formatValue(lead.siteName),
+    sourceDomain: formatValue(lead.sourceDomain),
+    pagePath: formatValue(lead.pagePath),
+    pageTitle: formatValue(lead.pageTitle),
+    submittedAt: formatSubmittedAt(lead.createdAt),
+    notes: formatValue(lead.notes),
+  }
+}
+
 function buildHtmlBody(lead) {
   const rows = buildLeadRows(lead)
     .map(
@@ -131,15 +148,26 @@ export async function sendLeadNotificationEmail(lead) {
   }
 
   const resend = new Resend(getResendApiKey())
-
-  const { data, error } = await resend.emails.send({
+  const basePayload = {
     from: formatFromAddress(settings),
     to: [settings.notificationToEmail],
     replyTo: lead.email,
     subject: `${settings.subjectPrefix}: ${lead.fullName} (${lead.siteName})`,
-    html: buildHtmlBody(lead),
-    text: buildTextBody(lead),
-  })
+  }
+
+  const { data, error } = settings.resendTemplateId
+    ? await resend.emails.send({
+        ...basePayload,
+        template: {
+          id: settings.resendTemplateId,
+          variables: buildTemplateVariables(lead),
+        },
+      })
+    : await resend.emails.send({
+        ...basePayload,
+        html: buildHtmlBody(lead),
+        text: buildTextBody(lead),
+      })
 
   if (error) {
     throw new Error(error.message || 'Unable to send lead notification email.')

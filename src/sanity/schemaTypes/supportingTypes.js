@@ -188,9 +188,23 @@ export default [
       },
     },
     fields: [
-      { name: 'domain', title: 'Domain', type: 'string', validation: (Rule) => Rule.required() },
-      { name: 'target', title: 'Target', type: 'string', validation: (Rule) => Rule.required() },
-      { name: 'statusCode', title: 'Status code', type: 'number', initialValue: 308 },
+      {
+        name: 'source',
+        title: 'Source host',
+        type: 'string',
+        validation: (Rule) => Rule.required(),
+      },
+      {
+        name: 'destination',
+        title: 'Destination URL',
+        type: 'string',
+        validation: (Rule) => Rule.required(),
+      },
+      { name: 'permanent', title: 'Permanent redirect', type: 'boolean', initialValue: true },
+      // Legacy fields kept for backward compatibility with existing drafts.
+      { name: 'domain', title: 'Domain (legacy)', type: 'string', hidden: true },
+      { name: 'target', title: 'Target (legacy)', type: 'string', hidden: true },
+      { name: 'statusCode', title: 'Status code (legacy)', type: 'number', hidden: true },
     ],
   },
   {
@@ -236,6 +250,11 @@ export default [
       {
         name: 'subjectPrefix',
         title: 'Subject prefix',
+        type: 'string',
+      },
+      {
+        name: 'resendTemplateId',
+        title: 'Resend template ID',
         type: 'string',
       },
     ],

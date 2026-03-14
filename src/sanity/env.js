@@ -5,7 +5,7 @@ export const studioUrl = '/studio'
 export const canonicalStudioUrl =
   process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || 'https://austin-leads-platform.sanity.studio'
 export const localStudioUrl =
-  process.env.NEXT_PUBLIC_LOCAL_SANITY_STUDIO_URL || 'http://localhost:3333'
+  process.env.NEXT_PUBLIC_LOCAL_SANITY_STUDIO_URL || 'http://localhost:3334'
 export const runtimeStudioUrl =
   process.env.NODE_ENV === 'development' ? localStudioUrl : canonicalStudioUrl
 export const frontendUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://texassolarandroofingpros.com'

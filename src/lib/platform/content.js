@@ -650,6 +650,8 @@ export async function getPageForRequest(site, slugParts = []) {
     const rawPage = await client.fetch(
       groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
         _id,
+        _createdAt,
+        _updatedAt,
         "id": _id,
         title,
         seo,
@@ -721,7 +723,7 @@ export async function getPageForRequest(site, slugParts = []) {
 export async function getSitemapEntriesForSite(site) {
   const localSiteIds = new Set(getEquivalentSiteIds(site))
   const localEntries = pages
-    .filter((page) => localSiteIds.has(page.siteId) && page.slug !== '404')
+    .filter((page) => localSiteIds.has(page.siteId) && page.slug !== '404' && page?.seo?.noIndex !== true)
     .map((page) => ({
       slug: page.slug,
       pageType: page.pageType,
@@ -740,7 +742,8 @@ export async function getSitemapEntriesForSite(site) {
       groq`*[
         _type in ["page", "servicePage", "locationPage", "post"] &&
         site->slug.current in $siteSlugs &&
-        slug.current != "404"
+        slug.current != "404" &&
+        coalesce(seo.noIndex, false) != true
       ]{
         "slug": select(slug.current == "/" => "", slug.current),
         pageType,
@@ -1008,30 +1011,40 @@ export function getPrimaryUrl(site, pathname = '/') {
 
 export function createJsonLd(site, page, pathname = '/') {
   const canonicalUrl = getPrimaryUrl(site, pathname)
+  const organizationId = `${getPrimaryUrl(site, '/')}#organization`
+  const websiteId = `${getPrimaryUrl(site, '/')}#website`
+  const webpageId = `${canonicalUrl}#webpage`
   const organization = {
-    '@context': 'https://schema.org',
     '@type': site.organization?.type || 'LocalBusiness',
+    '@id': organizationId,
     name: site.organization?.name || site.name,
     url: getPrimaryUrl(site, '/'),
     telephone: site.organization?.phone,
     email: site.organization?.email,
     areaServed: site.organization?.serviceArea,
   }
+  const website = {
+    '@type': 'WebSite',
+    '@id': websiteId,
+    url: getPrimaryUrl(site, '/'),
+    name: site.name,
+    publisher: {
+      '@id': organizationId,
+    },
+  }
   const webPage = {
-    '@context': 'https://schema.org',
-    '@type': page?.pageType === 'post' ? 'Article' : 'WebPage',
+    '@type': 'WebPage',
+    '@id': webpageId,
     name: page?.title || site.name,
-    description: page?.description || site.seo?.description,
+    description: page?.seo?.description || page?.description || site.seo?.description,
     url: canonicalUrl,
     isPartOf: {
-      '@type': 'WebSite',
-      name: site.name,
-      url: getPrimaryUrl(site, '/'),
+      '@id': websiteId,
     },
   }
   const breadcrumbs = {
-    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': `${canonicalUrl}#breadcrumb`,
     itemListElement: pathname
       .split('/')
       .filter(Boolean)
@@ -1056,47 +1069,53 @@ export function createJsonLd(site, page, pathname = '/') {
         ],
       ),
   }
+  const graph = [organization, website, webPage, breadcrumbs]
 
   if (page?.pageType === 'post') {
-    return [
-      organization,
-      {
-        ...webPage,
-        headline: page.title,
-        about: site.categoryLabel,
-        publisher: {
-          '@type': 'Organization',
-          name: site.name,
-        },
-        mainEntityOfPage: canonicalUrl,
+    graph.push({
+      '@type': 'Article',
+      '@id': `${canonicalUrl}#article`,
+      headline: page.title,
+      description: page?.seo?.description || page?.description || site.seo?.description,
+      mainEntityOfPage: {
+        '@id': webpageId,
       },
-      breadcrumbs,
-    ]
+      about: site.categoryLabel,
+      publisher: {
+        '@id': organizationId,
+      },
+      datePublished: page?.createdAt || page?._createdAt || page?.updatedAt || page?._updatedAt,
+      dateModified: page?.updatedAt || page?._updatedAt || page?.createdAt || page?._createdAt,
+      url: canonicalUrl,
+    })
+
+    return {
+      '@context': 'https://schema.org',
+      '@graph': graph,
+    }
   }
 
   const faqSection = page?.sections?.find((section) => section.type === 'faq')
 
   if (faqSection) {
-    return [
-      organization,
-      webPage,
-      breadcrumbs,
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: faqSection.items.map((item) => ({
-          '@type': 'Question',
-          name: item.question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: item.answer,
-          },
-        })),
-      },
-    ]
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#faq`,
+      mainEntity: (faqSection.items || []).map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    })
   }
 
-  return [organization, webPage, breadcrumbs]
+  return {
+    '@context': 'https://schema.org',
+    '@graph': graph,
+  }
 }
 
 export async function publishPageToSanity(job) {

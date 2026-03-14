@@ -10,7 +10,7 @@ import {
 
 const LogoCloud = () => {
   return (
-    <div className="mx-auto max-w-5xl px-6 py-6">
+    <div className="mx-auto max-w-7xl px-6 py-6">
       <Marquee
         pauseOnHover
         style={{
@@ -19,12 +19,12 @@ const LogoCloud = () => {
         }}
       >
         <div className="flex items-center gap-16 px-4">
-          <Logo01 className="h-20 w-auto object-contain" />
-          <Logo02 className="h-20 w-auto object-contain" />
-          <Logo03 className="h-20 w-auto object-contain" />
-          <Logo04 className="h-20 w-auto object-contain" />
-          <Logo05 className="h-20 w-auto object-contain" />
-          <Logo06 className="h-20 w-auto object-contain" />
+          <Logo01 className="h-24 w-auto object-contain" />
+          <Logo02 className="h-24 w-auto object-contain" />
+          <Logo03 className="h-24 w-auto object-contain" />
+          <Logo04 className="h-24 w-auto object-contain" />
+          <Logo05 className="h-24 w-auto object-contain" />
+          <Logo06 className="h-24 w-auto object-contain" />
         </div>
       </Marquee>
     </div>

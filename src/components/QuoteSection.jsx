@@ -25,6 +25,20 @@ const DEFAULT_EYEBROW = 'TRUSTED BY HOMEOWNERS'
 const DEFAULT_ATTRIBUTION = 'Texas Solar and Roofing Pros'
 
 const STICKY_BUFFER = 100 // px to scroll past before resetting
+const quoteWordColors = {
+  default: {
+    active: 'rgb(79, 132, 142)',
+    inactive: 'rgb(107, 191, 252)',
+  },
+  primary: {
+    active: 'rgb(255 255 255)',
+    inactive: 'rgb(255 255 255 / 0.38)',
+  },
+  secondary: {
+    active: 'rgb(79, 132, 142)',
+    inactive: 'rgb(107, 191, 252)',
+  },
+}
 
 export default function QuoteSection({
   className,
@@ -40,6 +54,7 @@ export default function QuoteSection({
   const wasFullyRevealedRef = useRef(false)
   const words = quoteText.split(/\s+/)
   const totalWords = words.length
+  const wordColors = quoteWordColors[variant] || quoteWordColors.default
 
   useEffect(() => {
     const section = sectionRef.current
@@ -129,7 +144,7 @@ export default function QuoteSection({
               <span
                 key={`${word}-${index}`}
                 className="quote-word transition-colors duration-300"
-                style={{ color: index < revealedCount ? 'rgb(255 255 255)' : 'rgba(255 255 255, 0.5)' }}
+                style={{ color: index < revealedCount ? wordColors.active : wordColors.inactive }}
               >
                 {word}
                 {index < words.length - 1 ? ' ' : ''}

@@ -96,6 +96,37 @@ export function getDomainRecord(domain) {
   return domainRecords.find((record) => record.domain === domain) ?? null
 }
 
+export function updateDomainRecord(domain, patch) {
+  let updated = null
+
+  domainRecords = domainRecords.map((record) => {
+    if (record.domain !== domain) {
+      return record
+    }
+
+    updated = {
+      ...record,
+      ...patch,
+      lastCheckedAt: now(),
+    }
+
+    return updated
+  })
+
+  return updated
+}
+
+export function deleteDomainRecord(domain) {
+  const existing = getDomainRecord(domain)
+
+  if (!existing) {
+    return null
+  }
+
+  domainRecords = domainRecords.filter((record) => record.domain !== domain)
+  return existing
+}
+
 export function listAnalyticsGoals() {
   return [...analyticsGoals].sort((a, b) => a.name.localeCompare(b.name))
 }

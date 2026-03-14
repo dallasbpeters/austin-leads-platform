@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { requireAdminRequest } from '@/lib/auth/guards'
+import { getDomainRecordDb, hasDomainDatabase, updateDomainRecordDb } from '@/lib/platform/domain-db'
 import { getDomainRecord, upsertDomainRecord } from '@/lib/platform/store'
 import { verifyDomainOnVercel } from '@/lib/platform/vercel'
 
@@ -11,7 +12,7 @@ export async function POST(_request, { params }) {
   if (unauthorized) return unauthorized
 
   const { domain } = await params
-  const existing = getDomainRecord(domain)
+  const existing = hasDomainDatabase() ? await getDomainRecordDb(domain) : getDomainRecord(domain)
 
   if (!existing) {
     return NextResponse.json({ error: 'Domain not found.' }, { status: 404 })
@@ -19,12 +20,17 @@ export async function POST(_request, { params }) {
 
   const result = await verifyDomainOnVercel(domain)
 
-  const record = upsertDomainRecord({
-    ...existing,
+  const patch = {
     verified: result.verified,
     verificationStatus: result.verificationStatus,
     dnsInstructions: result.dnsInstructions,
-  })
+  }
+  const record = hasDomainDatabase()
+    ? await updateDomainRecordDb(domain, patch)
+    : upsertDomainRecord({
+        ...existing,
+        ...patch,
+      })
 
   return NextResponse.json({ domain: record })
 }

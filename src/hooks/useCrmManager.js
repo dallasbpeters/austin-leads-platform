@@ -16,13 +16,13 @@ export function useCrmManager({ initialOverview, initialPipeline, initialLeads }
   const [pipeline, setPipeline] = useState(initialPipeline)
   const [leads, setLeads] = useState(initialLeads)
   const [filters, setFilters] = useState(defaultFilters)
-  const [selectedLeadId, setSelectedLeadId] = useState(initialLeads[0]?.id || null)
+  const [selectedLeadId, setSelectedLeadId] = useState(null)
   const [error, setError] = useState('')
   const [isRefreshing, startRefresh] = useTransition()
   const [isSaving, startSave] = useTransition()
 
   const selectedLead = useMemo(
-    () => leads.find((lead) => lead.id === selectedLeadId) || leads[0] || null,
+    () => (selectedLeadId ? leads.find((lead) => lead.id === selectedLeadId) || null : null),
     [leads, selectedLeadId],
   )
 
@@ -30,9 +30,7 @@ export function useCrmManager({ initialOverview, initialPipeline, initialLeads }
     setOverview(payload.overview)
     setPipeline(payload.pipeline)
     setLeads(payload.leads)
-    setSelectedLeadId((current) =>
-      payload.leads.some((lead) => lead.id === current) ? current : payload.leads[0]?.id || null,
-    )
+    setSelectedLeadId((current) => (payload.leads.some((lead) => lead.id === current) ? current : null))
   }
 
   function refresh(nextFilters = filters) {

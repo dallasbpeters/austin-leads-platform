@@ -43,6 +43,9 @@ export default {
       fields: [
         { name: 'title', title: 'Default title', type: 'string' },
         { name: 'description', title: 'Default description', type: 'text' },
+        { name: 'canonicalUrl', title: 'Canonical URL', type: 'url' },
+        { name: 'ogImage', title: 'Default Open Graph image URL', type: 'url' },
+        { name: 'noIndex', title: 'No index entire site', type: 'boolean', initialValue: false },
       ],
     },
     {

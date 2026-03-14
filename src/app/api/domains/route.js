@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server'
 
 import { requireAdminRequest } from '@/lib/auth/guards'
+import {
+  hasDomainDatabase,
+  listDomainRecordsDb,
+  seedInitialDomainRecords,
+  upsertDomainRecordDb,
+} from '@/lib/platform/domain-db'
 import { getAllSites } from '@/lib/platform/content'
 import { listDomainRecords, upsertDomainRecord } from '@/lib/platform/store'
 import { addDomainToVercel, isVercelConfigured, listProjectDomainsOnVercel } from '@/lib/platform/vercel'
@@ -31,7 +37,11 @@ export async function GET() {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) return unauthorized
 
-  const localDomains = listDomainRecords()
+  if (hasDomainDatabase()) {
+    await seedInitialDomainRecords()
+  }
+
+  const localDomains = hasDomainDatabase() ? await listDomainRecordsDb() : listDomainRecords()
 
   if (!isVercelConfigured()) {
     return NextResponse.json({ domains: localDomains, source: 'local' })
@@ -44,7 +54,7 @@ export async function GET() {
   const syncedDomains = vercelDomains.map((record) => {
     const existing = localByDomain.get(record.domain)
 
-    return upsertDomainRecord({
+    const nextRecord = {
       ...existing,
       domain: record.domain,
       siteSlug: inferSiteSlug(record.domain, sites, existing),
@@ -57,8 +67,12 @@ export async function GET() {
       apexName: record.apexName ?? existing?.apexName ?? null,
       gitBranch: record.gitBranch ?? existing?.gitBranch ?? null,
       source: existing ? 'merged' : 'vercel',
-    })
+    }
+
+    return hasDomainDatabase() ? upsertDomainRecordDb(nextRecord) : upsertDomainRecord(nextRecord)
   })
+
+  const resolvedSyncedDomains = hasDomainDatabase() ? await Promise.all(syncedDomains) : syncedDomains
 
   const localOnly = localDomains
     .filter((record) => !vercelDomains.some((domain) => domain.domain === record.domain))
@@ -81,7 +95,7 @@ export async function GET() {
     }))
 
   return NextResponse.json({
-    domains: [...syncedDomains, ...localOnly].sort((a, b) => a.domain.localeCompare(b.domain)),
+    domains: [...resolvedSyncedDomains, ...localOnly].sort((a, b) => a.domain.localeCompare(b.domain)),
     source: 'vercel',
   })
 }
@@ -93,16 +107,27 @@ export async function POST(request) {
   const body = await request.json()
   const result = await addDomainToVercel(body)
 
-  const record = upsertDomainRecord({
-    domain: body.domain,
-    siteSlug: body.siteSlug,
-    tier: body.redirectTarget ? 'redirect' : 'landing',
-    redirectTarget: body.redirectTarget || null,
-    projectId: result.projectId,
-    verified: result.verified,
-    verificationStatus: result.verificationStatus,
-    dnsInstructions: result.dnsInstructions,
-  })
+  const persisted = hasDomainDatabase()
+    ? await upsertDomainRecordDb({
+        domain: body.domain,
+        siteSlug: body.siteSlug,
+        tier: body.redirectTarget ? 'redirect' : 'landing',
+        redirectTarget: body.redirectTarget || null,
+        projectId: result.projectId,
+        verified: result.verified,
+        verificationStatus: result.verificationStatus,
+        dnsInstructions: result.dnsInstructions,
+      })
+    : upsertDomainRecord({
+        domain: body.domain,
+        siteSlug: body.siteSlug,
+        tier: body.redirectTarget ? 'redirect' : 'landing',
+        redirectTarget: body.redirectTarget || null,
+        projectId: result.projectId,
+        verified: result.verified,
+        verificationStatus: result.verificationStatus,
+        dnsInstructions: result.dnsInstructions,
+      })
 
-  return NextResponse.json({ domain: record }, { status: 201 })
+  return NextResponse.json({ domain: persisted }, { status: 201 })
 }

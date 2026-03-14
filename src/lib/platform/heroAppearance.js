@@ -69,8 +69,8 @@ export function heroOverlayDirectionToDegrees(direction) {
 
 const DEFAULT_HERO_OVERLAY_COLOR = '#0f172a'
 const DEFAULT_HERO_OVERLAY_DIRECTION = '45deg'
-const DEFAULT_HERO_OVERLAY_START_OPACITY = 0.12
-const DEFAULT_HERO_OVERLAY_END_OPACITY = 0.5
+const DEFAULT_HERO_OVERLAY_START_OPACITY = 0.8
+const DEFAULT_HERO_OVERLAY_END_OPACITY = 0.12
 
 export function clampHeroOverlayOpacity(value, fallback = 0.42) {
   if (Number.isNaN(value)) {

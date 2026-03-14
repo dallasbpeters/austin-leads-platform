@@ -24,7 +24,7 @@ const SECTION_VARIANTS = {
   roofingInspection: {
     heading: (
       <>
-        Request a free
+        
         <br />
         roof inspection
       </>

@@ -1,30 +1,32 @@
+'use client'
+
 import Link from 'next/link'
 import { DotArrowUp } from 'iconoir-react'
+import { AutoSizedText } from '@/components/autoSizedText'
 
-import { mainServices, roofingServices, specialtyServices } from '@/lib/platform/service-catalog'
+import { mainServices, roofingServices } from '@/lib/platform/service-catalog'
 
 import { getDevSectionAttributes } from './dev/DevTrace'
 import Logo from './Logo'
 
 export default function Footer() {
   return (
-    <div
-      className="bg-secondary-950 w-full border-t border-white/10 text-white"
+    <footer
+      className="bg-secondary-950 w-full border-t border-white/10 text-white relative overflow-hidden"
       {...getDevSectionAttributes({
         id: 'site-footer',
         markup: 'src/components/Footer.jsx',
         content: 'local JSX footer + service catalog links',
       })}
     >
-      <footer>
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 z-2">
           <div className="grid gap-8 md:grid-cols-4">
             <div className="md:col-span-2">
               <Link
                 href="/"
-                className="flex items-center gap-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="flex items-center gap-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-xl font-bold"
               >
-                <Logo className="h-8 w-auto" />
+                <Logo className="h-12 w-auto" />
                 Texas Solar & Roofing Pros
               </Link>
               <p className="mt-3 max-w-md text-sm text-gray-300">
@@ -68,7 +70,7 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="mt-10 flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="mt-10 flex flex-col items-start md:items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-gray-300">
               © Texas Solar & Roofing Pros. All rights reserved.
               <span id="year"> 2026</span>
@@ -93,7 +95,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-      </footer>
-    </div>
+        <AutoSizedText tabIndex={-1} className="table text-white/6 absolute left-0 bottom-10 text-center whitespace-nowrap leading-2 aria-hidden pointer-events-none font-extrabold tracking-tight">Texas Solar & Roofing</AutoSizedText>
+    </footer>
   )
 }

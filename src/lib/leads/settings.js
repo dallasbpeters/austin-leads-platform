@@ -17,6 +17,7 @@ const leadRoutingSettingsQuery = groq`
     fromName,
     fromEmail,
     subjectPrefix
+    resendTemplateId
   }
 `
 
@@ -38,6 +39,7 @@ function getEnvDefaults() {
     fromName: normalizeString(process.env.RESEND_FROM_NAME) || DEFAULT_FROM_NAME,
     fromEmail: normalizeEmail(process.env.RESEND_FROM_EMAIL),
     subjectPrefix: normalizeString(process.env.RESEND_SUBJECT_PREFIX) || DEFAULT_SUBJECT_PREFIX,
+    resendTemplateId: normalizeString(process.env.RESEND_TEMPLATE_ID),
   }
 }
 
@@ -59,6 +61,7 @@ export async function getLeadRoutingSettings() {
     fromName: normalizeString(document?.fromName) || envDefaults.fromName,
     fromEmail: normalizeEmail(document?.fromEmail) || envDefaults.fromEmail,
     subjectPrefix: normalizeString(document?.subjectPrefix) || envDefaults.subjectPrefix,
+    resendTemplateId: normalizeString(document?.resendTemplateId) || envDefaults.resendTemplateId,
   }
 
   return {
@@ -84,6 +87,7 @@ export async function saveLeadRoutingSettings(input) {
     fromName: normalizeString(input.fromName) || DEFAULT_FROM_NAME,
     fromEmail: normalizeEmail(input.fromEmail),
     subjectPrefix: normalizeString(input.subjectPrefix) || DEFAULT_SUBJECT_PREFIX,
+    resendTemplateId: normalizeString(input.resendTemplateId),
   }
 
   if (!document.notificationToEmail) {

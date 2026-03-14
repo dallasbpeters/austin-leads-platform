@@ -4,6 +4,7 @@ import { LoaderCircle } from 'lucide-react'
 
 import Button from '@/components/Button'
 import { useLeadForm } from '@/hooks/useLeadForm'
+import { LEAD_SERVICE_OPTIONS } from '@/lib/leads/service-options'
 import { toRuntimeToken } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
@@ -74,6 +75,27 @@ export default function LeadCaptureForm({
             disabled={disabled}
           />
         </div>
+      </div>
+
+      <div>
+        <label htmlFor="service-interest" className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Service interested in</label>
+        <select
+        id="service-interest"
+          className={cn(
+            'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
+            inputClassName,
+          )}
+          value={form.serviceInterest}
+          onChange={updateField('serviceInterest')}
+          disabled={disabled}
+          required
+        >
+          {LEAD_SERVICE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-start gap-3 pt-2">

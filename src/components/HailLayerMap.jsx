@@ -2,7 +2,7 @@
 
 import 'leaflet/dist/leaflet.css'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { CircleMarker, LayerGroup, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet'
 
 function hailRadius(point) {
@@ -71,12 +71,27 @@ function FitMapToPoints({ center, points }) {
 }
 
 export default function HailLayerMap({ center, hailLayer }) {
+  const [isMounted, setIsMounted] = useState(false)
   const hailSignatures = hailLayer?.hailSignatures || []
   const stormReports = hailLayer?.stormReports || []
   const allPoints = [...hailSignatures, ...stormReports]
+  const mapKey = `${center.latitude}:${center.longitude}`
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return <div className="h-full min-h-[24rem] w-full bg-slate-100" />
+  }
 
   return (
-    <MapContainer center={[center.latitude, center.longitude]} className="h-full min-h-[24rem] w-full" zoom={10}>
+    <MapContainer
+      key={mapKey}
+      center={[center.latitude, center.longitude]}
+      className="h-full min-h-[24rem] w-full"
+      zoom={10}
+    >
       <TileLayer
         attribution='&copy; OpenStreetMap contributors &copy; CARTO'
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"

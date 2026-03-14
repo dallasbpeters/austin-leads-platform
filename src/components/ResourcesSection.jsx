@@ -1,4 +1,5 @@
 import { HomeShield, HomeSimple, SunLight, Thunderstorm } from 'iconoir-react'
+import * as IconoirIcons from 'iconoir-react'
 import Image from 'next/image'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import Card from './Card'
@@ -44,7 +45,7 @@ const iconMap = {
 }
 
 function getResourceIcon(iconName) {
-  return iconMap[iconName] || HomeSimple
+  return iconMap[iconName] || IconoirIcons[iconName] || HomeSimple
 }
 
 function normalizeItems(section) {
@@ -108,8 +109,8 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>
                   <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                    <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                      <Icon className="h-5 w-5" strokeWidth={2.2} />
+                    <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                      <Icon className="h-8 w-8" strokeWidth={2} />
                     </div>
                     <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
                     <div className="mt-1 text-sm font-semibold text-white/70">{item.copy}</div>

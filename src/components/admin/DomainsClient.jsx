@@ -1,7 +1,7 @@
 'use client'
 
 import { startTransition } from 'react'
-import { Globe2, Plus, RefreshCcw, Search } from 'lucide-react'
+import { Globe2, Pencil, Plus, RefreshCcw, Search, Trash2 } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -25,8 +25,24 @@ function DomainStatus({ status }) {
 }
 
 export default function DomainsClient({ initialDomains, sites, vercelEnabled }) {
-  const { domains, form, loading, query, addDomain, refreshDomains, setForm, setQuery, verifyDomain } =
-    useDomainsManager({ initialDomains, sites, vercelEnabled })
+  const {
+    domains,
+    editForm,
+    editingDomain,
+    form,
+    loading,
+    query,
+    addDomain,
+    cancelEditing,
+    refreshDomains,
+    removeDomain,
+    saveDomain,
+    setEditForm,
+    setForm,
+    setQuery,
+    startEditing,
+    verifyDomain,
+  } = useDomainsManager({ initialDomains, sites, vercelEnabled })
 
   const filteredDomains = domains.filter((domainRecord) =>
     [domainRecord.domain, domainRecord.siteSlug, domainRecord.redirectTarget, domainRecord.verificationStatus]
@@ -179,6 +195,18 @@ export default function DomainsClient({ initialDomains, sites, vercelEnabled }) 
                   variant="outline"
                   size="lg"
                   className="rounded-lg"
+                  onClick={() =>
+                    editingDomain === domainRecord.domain ? cancelEditing() : startEditing(domainRecord)
+                  }
+                  disabled={loading}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  {editingDomain === domainRecord.domain ? 'Close' : 'Edit'}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="rounded-lg"
                   onClick={() => startTransition(refreshDomains)}
                   disabled={loading}
                 >
@@ -193,8 +221,67 @@ export default function DomainsClient({ initialDomains, sites, vercelEnabled }) 
                 >
                   Verify
                 </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="rounded-lg"
+                  onClick={() => removeDomain(domainRecord.domain)}
+                  disabled={loading}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </Button>
               </div>
             </CardContent>
+            {editingDomain === domainRecord.domain ? (
+              <CardContent className="border-border border-t pt-0">
+                <div className="grid gap-4 pt-4 md:grid-cols-4">
+                  <Select
+                    value={editForm.siteSlug}
+                    onValueChange={(value) => setEditForm((current) => ({ ...current, siteSlug: value }))}
+                  >
+                    <SelectTrigger className="h-10 rounded-lg">
+                      <SelectValue placeholder="Choose site" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {sites.map((site) => (
+                        <SelectItem key={site.slug} value={site.slug}>
+                          {site.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={editForm.tier}
+                    onValueChange={(value) => setEditForm((current) => ({ ...current, tier: value }))}
+                  >
+                    <SelectTrigger className="h-10 rounded-lg">
+                      <SelectValue placeholder="Tier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="landing">Landing</SelectItem>
+                      <SelectItem value="redirect">Redirect</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    className="h-10 rounded-lg md:col-span-2"
+                    value={editForm.redirectTarget}
+                    onChange={(event) =>
+                      setEditForm((current) => ({ ...current, redirectTarget: event.target.value }))
+                    }
+                    placeholder="Redirect target (optional)"
+                  />
+                </div>
+                <div className="mt-4 flex gap-3">
+                  <Button onClick={() => saveDomain(domainRecord.domain)} disabled={loading}>
+                    Save changes
+                  </Button>
+                  <Button variant="outline" onClick={cancelEditing} disabled={loading}>
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            ) : null}
           </Card>
         ))}
 

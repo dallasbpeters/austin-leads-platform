@@ -1,11 +1,9 @@
 import { defineConfig } from 'sanity'
-import { deskTool } from 'sanity/desk'
+import { structureTool } from 'sanity/structure'
 import { presentationTool } from 'sanity/presentation'
 
 import {
-  canonicalStudioUrl,
   dataset,
-  frontendUrl,
   frontendOriginAllowlist,
   isSanityConfigured,
   localFrontendUrl,
@@ -13,6 +11,7 @@ import {
   studioPreviewOrigin,
   studioUrl,
 } from './src/sanity/env'
+import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
 import { schemaTypes } from './src/sanity/schemaTypes'
 import { presentationDocuments, presentationLocations } from './src/sanity/presentation'
 
@@ -28,7 +27,7 @@ export default defineConfig({
   dataset,
   basePath: studioUrl,
   plugins: [
-    deskTool(),
+    structureTool(),
     presentationTool({
       previewUrl: {
         initial: studioPreviewOrigin,
@@ -51,6 +50,7 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
+  tools: (prev) => [...prev, aiDraftingTool()],
   studio: {
     components: {
       layout: (props) => props.renderDefault(props),

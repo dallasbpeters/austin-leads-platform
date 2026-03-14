@@ -1,7 +1,7 @@
 import { defineDocuments, defineLocations } from 'sanity/presentation'
 
 const PAGE_TYPES = ['page', 'servicePage', 'locationPage', 'post']
-const SINGLE_SLUG_PAGE_TYPES = ['page', 'locationPage', 'post']
+const SINGLE_SLUG_PAGE_TYPES = ['page', 'servicePage', 'locationPage', 'post']
 
 const SINGLE_PAGE_ROUTES = [
   '/about',

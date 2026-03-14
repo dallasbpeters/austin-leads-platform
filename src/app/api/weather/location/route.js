@@ -151,6 +151,14 @@ function deriveRisk({ alerts, current, daily }) {
   }
 }
 
+function fallbackRisk(locationName) {
+  return {
+    level: 'low',
+    headline: 'Weather providers are partially unavailable',
+    detail: `We can still center the map for ${locationName || 'this location'}, but some live forecast or alert feeds are temporarily unavailable.`,
+  }
+}
+
 async function fetchJson(url, init) {
   const response = await fetch(url, {
     ...init,
@@ -328,11 +336,44 @@ export async function GET(request) {
       fetchSwdiDataset('plsr', bbox, startDate, endDate),
     ])
 
-    if (forecastData.status !== 'fulfilled' || alerts.status !== 'fulfilled') {
-      throw new Error('Unable to load live weather data right now.')
+    if (forecastData.status !== 'fulfilled') {
+      console.error('Weather forecast lookup failed', {
+        error: forecastData.reason instanceof Error ? forecastData.reason.message : forecastData.reason,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      })
     }
 
-    const forecast = normalizeForecast(forecastData.value)
+    if (alerts.status !== 'fulfilled') {
+      console.error('Weather alerts lookup failed', {
+        error: alerts.reason instanceof Error ? alerts.reason.message : alerts.reason,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      })
+    }
+
+    if (hailRowsResult.status !== 'fulfilled') {
+      console.error('SWDI hail lookup failed', {
+        error: hailRowsResult.reason instanceof Error ? hailRowsResult.reason.message : hailRowsResult.reason,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      })
+    }
+
+    if (reportRowsResult.status !== 'fulfilled') {
+      console.error('SWDI storm report lookup failed', {
+        error:
+          reportRowsResult.reason instanceof Error ? reportRowsResult.reason.message : reportRowsResult.reason,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      })
+    }
+
+    const forecast =
+      forecastData.status === 'fulfilled'
+        ? normalizeForecast(forecastData.value)
+        : { current: null, daily: [] }
+    const alertItems = alerts.status === 'fulfilled' ? alerts.value : []
     const hailRows = hailRowsResult.status === 'fulfilled' ? hailRowsResult.value : []
     const reportRows = reportRowsResult.status === 'fulfilled' ? reportRowsResult.value : []
     const hailPoints = hailRows
@@ -344,19 +385,28 @@ export async function GET(request) {
       .filter(Boolean)
       .filter((row) => !row.event || /hail/i.test(row.event))
       .slice(0, 250)
-    const risk = deriveRisk({
-      alerts: alerts.value,
-      current: forecast.current,
-      daily: forecast.daily,
-    })
+    const risk =
+      forecastData.status === 'fulfilled' || alerts.status === 'fulfilled'
+        ? deriveRisk({
+            alerts: alertItems,
+            current: forecast.current,
+            daily: forecast.daily,
+          })
+        : fallbackRisk(location.name)
 
     return NextResponse.json({
       location,
       mapEmbedUrl: buildMapEmbedUrl(location.latitude, location.longitude),
       current: forecast.current,
       daily: forecast.daily,
-      alerts: alerts.value,
+      alerts: alertItems,
       risk,
+      providerStatus: {
+        forecast: forecastData.status === 'fulfilled' ? 'ok' : 'error',
+        alerts: alerts.status === 'fulfilled' ? 'ok' : 'error',
+        hailSignatures: hailRowsResult.status === 'fulfilled' ? 'ok' : 'error',
+        stormReports: reportRowsResult.status === 'fulfilled' ? 'ok' : 'error',
+      },
       hailLayer: {
         bbox,
         startDate: startDate.toISOString(),

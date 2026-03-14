@@ -1,320 +1,415 @@
 # Austin Leads Platform
 
-Multi-tenant Next.js platform for Austin/Texas local-service domains, with one shared codebase serving multiple branded sites.
+Austin Leads Platform is a multi-tenant Next.js application for Texas local-service lead generation. It combines:
 
-This repo is currently in an in-between state:
+- a preserved custom homepage for `Austin Solar Pros`
+- a generic public renderer for the rest of the tenant pages
+- a protected internal admin for operations
+- Sanity as the working CMS
+- lead routing, domain operations, analytics readiness, and content tooling
 
-- the public `Austin Solar Pros` homepage is still the existing designed marketing page
-- the multi-tenant platform foundation is in place for the rest of the domains
-- the admin surface is protected with Auth.js
-- Sanity is wired as the intended CMS
-- analytics and domain tooling are partially real and partially scaffolding
+This repo is not a generic brochure site. It is one engine serving multiple domains, content sets, and admin workflows.
 
-The goal is not "one website." The goal is one engine that can serve many domains with different content, branding, routing, SEO metadata, and operational workflows.
-
-## Current State
+## What Is In The App
 
 ### Public site
 
-- `http://localhost:3000/` renders the restored `Austin Solar Pros` designed homepage.
-- That homepage comes from [`src/App.jsx`](./src/App.jsx).
-- Public routing is handled by [`src/app/(site)/[[...slug]]/page.jsx`](<./src/app/(site)/[[...slug]]/page.jsx>).
-- For the `austin-solar-pros` tenant with no slug, the route intentionally falls back to `App.jsx`.
-- Other tenants and deeper routes use the generic multi-tenant renderer in [`src/components/platform/PublicSite.jsx`](./src/components/platform/PublicSite.jsx).
+- `/` renders the preserved Austin Solar homepage from [`src/App.jsx`](./src/App.jsx)
+- the generic tenant renderer lives in [`src/components/platform/PublicSite.jsx`](./src/components/platform/PublicSite.jsx)
+- catch-all public routing lives in [`src/app/(site)/[[...slug]]/page.jsx`](./src/app/(site)/[[...slug]]/page.jsx)
+- tenant/content resolution lives in [`src/lib/platform/content.js`](./src/lib/platform/content.js)
 
-### Admin surface
+Current public page families include:
 
-- Protected routes:
-  - `/dashboard`
-  - `/analytics`
-  - `/publish`
-  - `/domains`
-- Auth is implemented with Auth.js v5 beta.
-- The sign-in page is `/sign-in`.
-- Admin layout and shell live in:
-  - [`src/app/(admin)/layout.jsx`](<./src/app/(admin)/layout.jsx>)
-  - [`src/components/admin/AdminShell.jsx`](./src/components/admin/AdminShell.jsx)
-- Route protection is handled by [`proxy.js`](./proxy.js).
-- Admin API routes are also protected server-side through [`src/lib/auth/guards.js`](./src/lib/auth/guards.js).
+- home and top-level pages like `/about`, `/services`, `/roofing`, `/solar`, `/hail-damage`, `/guides`
+- service detail pages at `/services/[serviceSlug]`
+- guide detail pages at `/guides/[guideSlug]`
+- legal pages such as `/privacy-policy` and `/terms`
+- hail weather lookup and storm-history mapping
+- OG image generation through `/api/og`
 
-### Sanity
+### Admin
 
-- Sanity project id is currently set to `xuhfhjna`.
-- Sanity env defaults are defined in:
-  - [`src/sanity/env.js`](./src/sanity/env.js)
-  - [`.env.example`](./.env.example)
-- Schema/config files:
-  - [`sanity.config.js`](./sanity.config.js)
-  - [`sanity.cli.js`](./sanity.cli.js)
-  - [`src/sanity/schemaTypes`](./src/sanity/schemaTypes)
-- The app can read from Sanity when env vars are present.
-- The publish workflow can write to Sanity when `SANITY_API_WRITE_TOKEN` is present.
+Protected admin routes currently include:
 
-Important caveat:
+- `/dashboard`
+- `/analytics`
+- `/crm`
+- `/hero-pages`
+- `/publish`
+- `/domains`
+- `/settings`
+- `/studio`
 
-- The canonical Studio is the Sanity-hosted deployment, configured by `NEXT_PUBLIC_SANITY_STUDIO_URL`.
-- Local and Vercel `/studio` routes redirect to that canonical Studio so there is only one editor surface.
+Admin navigation is defined in [`src/components/admin/AdminNav.jsx`](./src/components/admin/AdminNav.jsx).
 
-### Analytics
+What the admin currently does:
 
-- Real client-side Vercel instrumentation is mounted in [`src/app/layout.jsx`](./src/app/layout.jsx):
-  - `@vercel/analytics`
-  - `@vercel/speed-insights`
-- The analytics admin page is now instrumentation-first.
-- It does **not** fake sessions/leads/conversion data anymore.
-- The analytics page currently shows:
+- `Dashboard`
+  - checklist progress
+  - publish queue snapshot
+  - analytics readiness / GA4 snapshot
+  - lead overview when Neon is configured
+- `Analytics`
   - provider status
-  - instrumentation readiness
-  - KPI/goal definitions managed in the admin UI
+  - goals management
+  - GA4 reporting when credentials exist
+- `CRM`
+  - lead table and right-side detail drawer
+  - status, pipeline, priority, notes, owner, and follow-up editing
+- `Hero Pages`
+  - create hero-tier page records in Sanity
+  - search Unsplash
+  - attach hero image metadata
+  - edit hero gradient/appearance values
+- `Publish`
+  - create draft jobs
+  - move jobs through approve/reject/publish states
+  - hand off a basic published document into Sanity
+- `Domains`
+  - view domain inventory
+  - verify/connect flow against Vercel when credentials exist
+- `Settings`
+  - lead-routing settings
+  - Resend sender/recipient/template configuration
+- `Studio`
+  - redirect to the canonical Sanity Studio
 
-Analytics state and helpers live in:
+### CMS and content operations
 
-- [`src/lib/platform/store.js`](./src/lib/platform/store.js)
-- [`src/components/admin/AnalyticsClient.jsx`](./src/components/admin/AnalyticsClient.jsx)
+Sanity is the intended content system.
 
-What is real today:
+Important files:
 
-- Vercel Analytics and Speed Insights are mounted and will begin working on Vercel deployments.
-- KPI goals can be created and managed in the UI.
+- config: [`sanity.config.js`](./sanity.config.js)
+- env helpers: [`src/sanity/env.js`](./src/sanity/env.js)
+- schema: [`src/sanity/schemaTypes`](./src/sanity/schemaTypes)
+- Presentation/Visual Editing wiring: [`src/sanity/presentation.js`](./src/sanity/presentation.js), [`src/sanity/live.jsx`](./src/sanity/live.jsx)
 
-What is not real yet:
+Current content model reality:
 
-- there is no real reporting backend feeding sessions/leads/query metrics into the dashboard
-- GA4 and Search Console are not connected unless you add their env/config later
+- Sanity is live and heavily used
+- some fallback fixture content still exists for bootstrapping and local safety
+- service pages, guides, launch checklist, lead routing settings, and hero-page tools are all connected to Sanity
+- the app still uses fixtures as a fallback layer where Sanity content is missing
 
-### Domain management
+### Leads and notifications
 
-- Domain inventory and verification UI exists at `/domains`.
-- Domain/Vercel helpers live in:
-  - [`src/lib/platform/vercel.js`](./src/lib/platform/vercel.js)
-  - [`src/app/api/domains`](./src/app/api/domains)
-- With no Vercel credentials configured, the page falls back to placeholder verification instructions.
-- With real Vercel credentials present, the connect/verify flow is intended to call the Vercel API.
+Lead capture is wired into:
 
-### AI publishing
+- public forms
+- Neon storage when configured
+- admin CRM
+- Resend email notifications
 
-- The publish UI exists at `/publish`.
-- It currently supports:
-  - draft job creation
-  - review state transitions
-  - publish action handoff to Sanity
-- Core files:
-  - [`src/components/admin/PublishClient.jsx`](./src/components/admin/PublishClient.jsx)
-  - [`src/app/api/publish-jobs`](./src/app/api/publish-jobs)
+Key files:
 
-Important caveat:
+- lead settings: [`src/lib/leads/settings.js`](./src/lib/leads/settings.js)
+- lead API: [`src/app/api/leads/route.js`](./src/app/api/leads/route.js)
+- lead mailer: [`src/lib/leads/email.js`](./src/lib/leads/email.js)
+- CRM API: [`src/app/api/crm/leads`](./src/app/api/crm/leads)
 
-- provider execution is still placeholder-oriented
-- there is no durable queue, job database, or live model-provider orchestration yet
+Lead notifications support:
 
-## Run Locally
+- configurable recipient
+- configurable sender
+- configurable subject prefix
+- configurable Resend template ID
 
-### Install
+### Analytics and performance
+
+The app already mounts:
+
+- `@vercel/analytics`
+- `@vercel/speed-insights`
+
+GA4 reporting is partially integrated:
+
+- client measurement is supported
+- Data API reporting works when Google credentials are present
+- the admin is now instrumentation-first instead of fake KPI-first
+
+Key files:
+
+- root layout: [`src/app/layout.jsx`](./src/app/layout.jsx)
+- GA helpers: [`src/lib/analytics/google.js`](./src/lib/analytics/google.js)
+
+### Domains and deployment operations
+
+Vercel domain operations are wired through:
+
+- [`src/lib/platform/vercel.js`](./src/lib/platform/vercel.js)
+- [`src/app/api/domains`](./src/app/api/domains)
+
+Without Vercel credentials, the admin shows placeholder guidance.
+With live credentials, the admin is intended to verify and manage domain connections.
+
+## Local Development
+
+Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-### Start dev server
+Run the app:
 
 ```bash
 pnpm dev
 ```
 
-### Production build
+Run the local Studio:
+
+```bash
+pnpm studio:dev
+```
+
+Build:
 
 ```bash
 pnpm build
+```
+
+Start production build locally:
+
+```bash
 pnpm start
 ```
 
-Notes:
+Useful scripts:
 
-- The build currently runs with `next build --webpack`.
-- Turbopack build behavior was unstable during earlier setup, so webpack is the current safe default for production builds.
+- `pnpm seed:pages`
+- `pnpm seed:guides`
+- `pnpm db:setup`
+- `pnpm sanity:repair-sections`
+- `pnpm generate:favicons`
+- `pnpm generate:service-images`
 
 ## Environment Variables
 
-Copy [`.env.example`](./.env.example) to `.env.local` and fill in what you need.
+Copy [`.env.example`](./.env.example) to `.env.local`.
 
-### Required for current local auth
+Important groups:
+
+### Auth
 
 - `AUTH_SECRET`
 - `AUTH_ADMIN_NAME`
 - `AUTH_ADMIN_EMAIL`
 - `AUTH_ADMIN_PASSWORD`
 
-The local admin email is currently configured in `.env.local`.
-
-The password is intentionally only stored in `.env.local`.
-
-Before deployment:
-
-- rotate the password
-- rotate the auth secret
-- copy them into Vercel environment variables
-
 ### Sanity
 
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`
 - `NEXT_PUBLIC_SANITY_DATASET`
 - `NEXT_PUBLIC_SANITY_API_VERSION`
-- `SANITY_API_WRITE_TOKEN` for write/publish actions
+- `NEXT_PUBLIC_SANITY_STUDIO_URL`
+- `SANITY_API_READ_TOKEN`
+- `SANITY_API_WRITE_TOKEN`
+- `SANITY_VIEWER_TOKEN`
 
-### Optional analytics / search configuration
+### Resend / leads
+
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+- `RESEND_FROM_NAME`
+- `RESEND_LEAD_TO_EMAIL`
+- `RESEND_SUBJECT_PREFIX`
+- `RESEND_TEMPLATE_ID`
+
+### Analytics / search
 
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`
+- `GOOGLE_ANALYTICS_PROPERTY_ID`
 - `GOOGLE_SITE_VERIFICATION`
 
-### Optional Vercel domain management
+### Vercel
 
 - `VERCEL_TOKEN`
 - `VERCEL_PROJECT_ID`
 - `VERCEL_TEAM_ID`
 - `VERCEL_TEAM_SLUG`
 
-## Important Routes
+### Database
 
-### Public
+- Neon/Postgres connection values used by:
+  - CRM / lead submissions
+  - persisted domain inventory metadata
+  - `pnpm db:setup`, which now creates both `lead_submissions` and `domain_records`
 
-- `/` -> current `Austin Solar Pros` designed homepage
-- `/:slug` -> public tenant/platform pages
-- `/robots.txt`
-- `/sitemap.xml`
+## Sanity Workflow
 
-### Admin
+### Canonical editor surface
 
-- `/sign-in`
-- `/dashboard`
-- `/analytics`
-- `/publish`
-- `/domains`
-- `/studio`
+The canonical editor is the Sanity-hosted Studio. The app’s `/studio` route redirects there.
 
-### APIs
+Local Studio is for development/testing only:
 
-- `/api/auth/[...nextauth]`
-- `/api/publish-jobs`
-- `/api/publish-jobs/[jobId]`
-- `/api/domains`
-- `/api/domains/[domain]/verify`
-- `/api/analytics/goals`
-- `/api/analytics/goals/[goalId]`
+- `pnpm studio:dev` starts local Studio on `http://localhost:3334`
+- the app dev server uses `http://localhost:3000`
 
-## Architecture Notes
+### Reading content
 
-### Tenant/content model
+The app reads content through [`src/lib/platform/content.js`](./src/lib/platform/content.js).
 
-The tenant/domain/page scaffolding is currently driven by fixture data:
+Current read order is effectively:
 
-- [`src/lib/platform/fixtures.js`](./src/lib/platform/fixtures.js)
-- [`src/lib/platform/content.js`](./src/lib/platform/content.js)
+1. Sanity documents when present
+2. fixture/catalog fallbacks when Sanity content is missing
 
-This is intentional for now so the app can build and route before the CMS data layer is fully live.
+### Seeding content
 
-Long term, the fixture layer should shrink and Sanity should become the real source of truth.
+Seeders currently exist for:
 
-### Auth
+- public pages: [`scripts/seed-public-pages.mjs`](./scripts/seed-public-pages.mjs)
+- guides: [`scripts/seed-guides.mjs`](./scripts/seed-guides.mjs)
 
-Auth uses a single environment-backed admin account right now.
+These are useful when bootstrapping content into Sanity from the current source files.
 
-This is acceptable for a protected internal tool during early development, but not the final auth model.
+### Visual editing / Presentation
 
-Longer term options:
+Presentation and Visual Editing are wired, but depend on:
 
-- role-based Auth.js users backed by a database
-- SSO for internal team access
-- invitation-based team management
+- correct Studio configuration
+- draft mode
+- the route-to-document mapping in [`src/sanity/presentation.js`](./src/sanity/presentation.js)
+- valid Sanity documents for the page being previewed
 
-### Admin theme
+## Publishing Workflow Today
 
-The admin shell now uses a neutral theme override in [`src/styles/globals.css`](./src/styles/globals.css) under `.admin-theme`.
+The current publishing flow is split between admin and Sanity.
 
-This keeps the public site brand palette separate from the internal operations UI.
+### What `/publish` does today
 
-## Known Limitations
+The admin publish tool:
 
-These are the main issues still open:
+- stores jobs in the in-memory store at [`src/lib/platform/store.js`](./src/lib/platform/store.js)
+- does not run a real AI provider
+- does not persist jobs in a database
+- creates placeholder draft output if none exists
+- can publish a minimal document into Sanity through [`publishPageToSanity`](./src/lib/platform/content.js)
 
-1. The public solar homepage is restored, but the rest of the public-site multi-tenant templates are still a hybrid of placeholder data and generic rendering.
-2. `/publish` still needs a closer pass to match the provided `publish.html` layout as tightly as `/dashboard`.
-3. `/studio` is not a live embedded Sanity Studio yet.
-4. Analytics is now honest, but not fully connected to a reporting backend.
-5. Domain connect/verify only becomes truly live once Vercel credentials are configured.
-6. Publish jobs and analytics goals are still kept in in-memory store state, not a durable database.
-7. There is no persistent model for users, teams, permissions, or audit history yet.
+The publish handoff currently creates:
 
-## Recommended Next Steps
+- a very basic document
+- one hero section
+- slug derived from the title
 
-The safest order is:
+That means `/publish` is currently better described as:
 
-### 1. Finish public-site ownership
+- a draft-queue prototype
+- a workflow contract
+- not a production editorial system
 
-- keep the existing designed `Austin Solar Pros` homepage as the canonical hero site
-- decide whether additional solar pages should also reuse the original design system or move to the generic renderer
-- migrate any remaining "generated" public content that should be replaced with real designed content
+### Sanity Agent drafting workflow
 
-### 2. Finish admin template parity
+The project now has the underlying Sanity Agent drafting pieces prepared:
 
-- bring `/publish` into closer alignment with [`publish.html`](./publish.html)
-- tighten `/domains` so it visually matches the same dashboard system
-- add mobile nav behavior if internal users need tablet/phone access
+- shared draft helpers: [`src/sanity/agent/draftHelpers.js`](./src/sanity/agent/draftHelpers.js)
+- publishing instructions: [`src/sanity/agent/publishingInstructions.js`](./src/sanity/agent/publishingInstructions.js)
+- setup guide: [`docs/sanity-agent-publishing-workflow.md`](./docs/sanity-agent-publishing-workflow.md)
 
-### 3. Make analytics truly real
+The custom Studio tool itself is not currently enabled in `sanity.config.js` because the local Studio boot path was unstable with that registration. The correct product direction is still Sanity-first drafting, but the tool should be reintroduced only after the Studio-side integration is stabilized.
 
-- define the canonical analytics stack:
-  - Vercel Analytics only
-  - Vercel + GA4
-  - Vercel + GA4 + Search Console
-- add real tracked events for:
-  - lead form submit
-  - CTA click
-  - quote request start
-  - publish job creation
-  - domain verification complete
-- decide where reporting data should come from for admin dashboards
+### What should be published in Sanity
 
-### 4. Replace in-memory admin state
+For production content quality, Sanity should be the final source of truth for:
 
-- move publish jobs into a durable database table
-- move analytics goals into a durable table
-- move domain inventory into durable storage if it becomes operationally important
+- hero copy
+- service pages
+- guides
+- FAQs
+- about/team/legal content
+- launch checklist data
+- lead routing settings
 
-### 5. Complete Sanity integration
+### Recommended editorial flow
 
-- resolve embedded Studio compatibility with Next 16, or run Sanity Studio separately if that is faster
-- replace fixture-driven pages with real Sanity documents
-- add content seeding/migration scripts for initial tenant/page setup
+Recommended current-state workflow:
 
-### 6. Finalize Vercel domain ops
+1. Use admin for operational tooling:
+   - leads
+   - domains
+   - hero images
+   - analytics readiness
+   - launch checklist
+2. Use the Sanity Studio `AI Drafting` tool when you want an AI-assisted first draft
+3. Use Sanity Studio for page content editing and final publishing
+4. Treat `/publish` as experimental until it has:
+   - durable job storage
+   - real provider execution
+   - human review UX tied to real documents
+   - better section generation than a one-section placeholder page
 
-- add `VERCEL_TOKEN` and project/team env vars
-- test add/verify flows against the actual Vercel project
-- decide whether redirects should live in app logic, Vercel config, or both
+## Admin AI Publishing Vs Sanity-Only
 
-### 7. Harden authentication
+### Option 1: keep the admin AI publishing feature
 
-- move beyond a single env-backed admin account
-- add proper user persistence and roles
-- add session invalidation and audit visibility if multiple operators will use the system
+Pros:
 
-## What To Check Before Deployment
+- gives the team one place for operations and draft generation
+- can standardize briefs, prompts, review states, and handoff
+- useful if you want a future queue for service pages, location pages, and guides
+- can eventually connect AI generation, review, and publishing in one internal workflow
 
-Before a real Vercel deployment, verify:
+Cons:
 
-- the admin credentials in `.env.local` have been rotated and copied to Vercel env vars
-- Sanity write token is set if publish-to-CMS is expected to work
-- Vercel domain env vars are set if domain management should be live
-- any optional analytics providers are configured if needed
-- the public homepage at `/` is still the intended designed solar page
-- `/dashboard`, `/analytics`, `/publish`, `/domains`, and `/studio` all require auth
+- current implementation is still thin and placeholder-heavy
+- jobs are in memory, not durable
+- generated output is not rich enough yet to trust
+- duplicates editorial concerns that Sanity already handles well
+- introduces another interface your team has to understand and maintain
 
-## Current Build Status
+### Option 2: remove AI publishing and use Sanity only
 
-As of the current repo state:
+Pros:
 
-- `pnpm build` passes
-- public root restores the designed solar homepage
-- admin auth is active
-- analytics instrumentation is real at the client/runtime layer
-- analytics reporting is still early-stage and intentionally conservative
+- simpler mental model
+- one source of truth for content
+- less maintenance
+- fewer opportunities for content drift between admin and CMS
+- easier to train editors on one system
+
+Cons:
+
+- loses the future workflow surface for prompt-driven draft generation
+- operational team may miss having drafts/briefs in the admin
+- if you later want AI-assisted queueing, you will have to rebuild that surface
+
+### Recommendation
+
+Right now, do not treat `/publish` as the main publishing path.
+
+Best near-term path:
+
+- keep the codebase support for `/publish`
+- use the Sanity Agent drafting tool in Studio as the AI-assisted path
+- relabel `/publish` internally as experimental or legacy draft-assist
+- use Sanity Studio as the actual editorial system
+
+If you want less complexity immediately, you could hide `/publish` from the admin nav until it is durable enough to matter. That is a better move than pretending it is production-ready.
+
+## Dashboard Checklist And Launch Ops
+
+The dashboard checklist source lives in [`src/lib/platform/launchChecklist.js`](./src/lib/platform/launchChecklist.js).
+
+It now needs to cover both:
+
+- production go-live readiness
+- exposure/distribution after launch
+
+Recommended launch sequence:
+
+1. Finish domain, auth, content, lead routing, and analytics readiness
+2. Launch the site
+3. Submit to search engines and local business platforms
+4. Start distributing the content through local channels, reviews, partnerships, and paid/organic campaigns
+5. Measure conversion and tighten pages based on actual lead behavior
+
+## Current Recommended Next Steps
+
+1. Make Sanity the final source of truth for the remaining fixture-backed pages.
+2. Keep `/publish` only as a draft-assist prototype unless you fund a real queue/provider workflow.
+3. Finish Vercel domain + env configuration for production.
+4. Verify GA4, Search Console, sitemap, robots, and OG output on the live domain.
+5. Use the dashboard checklist as the operational launch board, then expand it with exposure tasks once the domain is live.
