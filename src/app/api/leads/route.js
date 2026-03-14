@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createLeadSubmission, ensureLeadSubmissionsTable, hasLeadDatabase } from '@/lib/leads/db'
+import { sendLeadNotificationEmail } from '@/lib/leads/email'
 
 function badRequest(message, status = 400) {
   return NextResponse.json({ error: message }, { status })
@@ -49,7 +50,7 @@ export async function POST(request) {
 
   await ensureLeadSubmissionsTable()
 
-  const submission = await createLeadSubmission({
+  const leadInput = {
     fullName,
     email,
     phone,
@@ -63,7 +64,25 @@ export async function POST(request) {
     pagePath,
     pageTitle: normalizeString(payload.pageTitle),
     metadata: payload.metadata || {},
-  })
+  }
+
+  const submission = await createLeadSubmission(leadInput)
+
+  let notification = { status: 'skipped' }
+
+  try {
+    notification = await sendLeadNotificationEmail({
+      ...leadInput,
+      id: submission.id,
+      createdAt: submission.created_at,
+      status: submission.status,
+    })
+  } catch (error) {
+    console.error('Lead notification email failed.', {
+      leadId: submission.id,
+      message: error instanceof Error ? error.message : String(error),
+    })
+  }
 
   return NextResponse.json({
     ok: true,
@@ -72,5 +91,6 @@ export async function POST(request) {
       createdAt: submission.created_at,
       status: submission.status,
     },
+    notification,
   })
 }

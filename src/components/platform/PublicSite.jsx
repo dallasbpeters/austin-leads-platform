@@ -274,7 +274,7 @@ function GuideGridSection({ section, sectionId }) {
     'bg-[var(--color-secondary-alt)] text-white',
   ]
 
-  const cards = (section.items || []).slice(0, 6).map((item, index) => ({
+  const cards = (section.items || []).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
     copy: item.body || item.answer,
@@ -845,38 +845,38 @@ function AboutProfileSection({ section, sectionId }) {
                 key={buildRuntimeKey('about-person', person.name, index)}
                 radius="lg"
                 className={cn(
-                  'relative justify-end pt-20',
+                  'relative justify-end pt-60',
                   index === 0 ? 'border-border/80 bg-card' : 'bg-card'
                 )}
               >
-                <CardHeader className="relative z-10 flex items-center gap-4">
                   <Image
                     width={700}
                     height={700}
                     src={profileImageUrl || '/images/kathie-millen.png'}
                     alt={profileImageAlt}
                     className={cn(
-                      'object-cover rounded-full',
-                      index === 0 ? 'h-24 w-24' : 'h-24 w-24'
+                      'absolute inset-0 object-cover filter grayscale',
+                      index === 0 ? 'h-full w-full' : 'h-full w-full'
                     )}
                   />
+                <CardHeader className="relative z-10 flex items-center gap-4">
                   <div className="flex items-start gap-4">
                     <div className="grid gap-2">
-                      <div className="text-foreground text-xs tracking-[0.2em] uppercase">
+                      <div className="text-white text-xs tracking-[0.2em] uppercase">
                         {person.label || 'Profile'}
                       </div>
-                      <CardTitle className="text-foreground text-3xl tracking-tight">
+                      <CardTitle className="text-white text-3xl tracking-tight">
                         {person.name}
                       </CardTitle>
                       {person.role ? (
-                        <p className="text-foreground text-lg leading-7 font-semibold">{person.role}</p>
+                        <p className="text-white text-lg leading-7 font-semibold">{person.role}</p>
                       ) : null}
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="relative z-10 grid gap-4">
                   {person.blurb ? (
-                    <p className="text-foreground text-base leading-8">{person.blurb}</p>
+                    <p className="text-white text-base leading-6">{person.blurb}</p>
                   ) : null}
                   {person.certificationTitle ? (
                     <div className="border-border/80 grid gap-3 rounded-2xl border bg-white p-4">
@@ -904,6 +904,7 @@ function AboutProfileSection({ section, sectionId }) {
                     </div>
                   ) : null}
                 </CardContent>
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,1),rgba(11,59,66,0.2),transparent)]"></div>
               </Card>
             )
           })}

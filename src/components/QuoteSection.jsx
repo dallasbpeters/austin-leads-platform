@@ -129,7 +129,7 @@ export default function QuoteSection({
               <span
                 key={`${word}-${index}`}
                 className="quote-word transition-colors duration-300"
-                style={{ color: index < revealedCount ? 'rgb(255 255 255)' : 'rgb(115 115 115)' }}
+                style={{ color: index < revealedCount ? 'rgb(255 255 255)' : 'rgba(255 255 255, 0.5)' }}
               >
                 {word}
                 {index < words.length - 1 ? ' ' : ''}

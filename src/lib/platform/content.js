@@ -326,6 +326,124 @@ function withPageSource(page, source) {
   }
 }
 
+async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug }) {
+  if (!page?.sections?.some((section) => section.type === 'guideGrid')) {
+    return page
+  }
+
+  const equivalentSiteSlugs = getEquivalentSiteSlugs(siteSlug)
+  const localGuidePages = pages.filter(
+    (candidate) =>
+      equivalentSiteSlugs.includes(candidate.siteSlug) &&
+      candidate.pageType === 'post' &&
+      candidate.slug?.startsWith('guides/'),
+  )
+  const localGuideMap = new Map(
+    localGuidePages.map((guidePage) => {
+      const heroSection = guidePage.sections?.find((section) => section.type === 'hero') || null
+
+      return [
+        `/${guidePage.slug}`,
+        {
+          title: guidePage.title,
+          heroImage: heroSection?.heroImage ?? null,
+          heroAsset: heroSection?.heroAsset ?? null,
+        },
+      ]
+    }),
+  )
+
+  const guideSlugs = Array.from(
+    new Set(
+      page.sections
+        .filter((section) => section.type === 'guideGrid')
+        .flatMap((section) => section.items || [])
+        .map((item) => cleanRuntimeString(item?.href))
+        .filter((href) => href?.startsWith('/guides/'))
+        .map((href) => href.replace(/^\//, '')),
+    ),
+  )
+
+  let sanityGuideMap = new Map()
+
+  if (client && guideSlugs.length) {
+    try {
+      const sanityGuides = await client.fetch(
+        groq`*[
+          _type == "post" &&
+          site->slug.current in $siteSlugs &&
+          slug.current in $slugs
+        ]{
+          title,
+          "slug": slug.current,
+          sections[]{
+            type,
+            heroImage,
+            heroAsset{
+              altText,
+              alt,
+              asset->{
+                url,
+                metadata{
+                  dimensions{
+                    width,
+                    height
+                  }
+                }
+              }
+            }
+          }
+        }`,
+        { siteSlugs: equivalentSiteSlugs, slugs: guideSlugs },
+        fetchOptions,
+      )
+
+      sanityGuideMap = new Map(
+        (sanityGuides || []).map((guidePage) => {
+          const heroSection = guidePage.sections?.find((section) => section.type === 'hero') || null
+
+          return [
+            `/${guidePage.slug}`,
+            {
+              title: guidePage.title,
+              heroImage: heroSection?.heroImage ?? null,
+              heroAsset: heroSection?.heroAsset ?? null,
+            },
+          ]
+        }),
+      )
+    } catch {}
+  }
+
+  return {
+    ...page,
+    sections: page.sections.map((section) => {
+      if (section.type !== 'guideGrid') {
+        return section
+      }
+
+      return {
+        ...section,
+        items: (section.items || []).map((item) => {
+          const href = cleanRuntimeString(item?.href)
+          const guidePage = sanityGuideMap.get(href) || localGuideMap.get(href)
+
+          if (!guidePage) {
+            return item
+          }
+
+          return {
+            ...item,
+            title: guidePage.title || item.title,
+            image: guidePage.heroImage ?? item.image ?? null,
+            imageAsset: guidePage.heroAsset ?? item.imageAsset ?? null,
+          }
+        }),
+      }
+    }),
+  }
+}
+
 function normalizeHost(host) {
   return (host || '')
     .replace(/^https?:\/\//, '')
@@ -582,14 +700,18 @@ export async function getPageForRequest(site, slugParts = []) {
     if (rawPage) {
       const page = sanitizePageRuntimeFields(rawPage)
 
-      return withPageSource(
-        {
+      const syncedPage = await syncGuideGridSectionItems({
+        client,
+        fetchOptions,
+        page: {
           ...page,
           slug: page.slug === '/' ? '' : page.slug,
           heroSection: buildHomepageHeroSection(page),
         },
-        'sanity',
-      )
+        siteSlug: site.slug,
+      })
+
+      return withPageSource(syncedPage, 'sanity')
     }
   } catch {}
 

@@ -193,4 +193,63 @@ export default [
       { name: 'statusCode', title: 'Status code', type: 'number', initialValue: 308 },
     ],
   },
+  {
+    name: 'leadRoutingSettings',
+    title: 'Lead Routing Settings',
+    type: 'document',
+    options: {
+      canvasApp: {
+        exclude: true,
+      },
+    },
+    fields: [
+      {
+        name: 'title',
+        title: 'Title',
+        type: 'string',
+        initialValue: 'Lead Routing Settings',
+        validation: (Rule) => Rule.required(),
+      },
+      {
+        name: 'emailNotificationsEnabled',
+        title: 'Email notifications enabled',
+        type: 'boolean',
+        initialValue: true,
+      },
+      {
+        name: 'notificationToEmail',
+        title: 'Notification recipient',
+        type: 'email',
+        validation: (Rule) => Rule.required().email(),
+      },
+      {
+        name: 'fromName',
+        title: 'Sender name',
+        type: 'string',
+      },
+      {
+        name: 'fromEmail',
+        title: 'Sender email',
+        type: 'email',
+        validation: (Rule) => Rule.required().email(),
+      },
+      {
+        name: 'subjectPrefix',
+        title: 'Subject prefix',
+        type: 'string',
+      },
+    ],
+    preview: {
+      select: {
+        title: 'title',
+        subtitle: 'notificationToEmail',
+      },
+      prepare({ title, subtitle }) {
+        return {
+          title: title || 'Lead Routing Settings',
+          subtitle: subtitle || 'No recipient configured',
+        }
+      },
+    },
+  },
 ]

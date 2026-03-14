@@ -468,16 +468,10 @@ export const solarGuides = [
     description:
       'A complete guide to the solar panel detach-and-reset process during a Texas roof replacement — timeline, cost, coordination, warranty impact, and the details that protect your investment.',
     image: createStaticHeroImage({
-      alt: 'Roofing crew working on a residential roof with solar panel racking visible',
+      alt: 'Roofing crew working on a residential roof during a solar detach-and-reset project',
       color: '#8a6b52',
-      creditName: 'Bill Mead',
-      creditUrl: 'https://unsplash.com/@billmead',
-      creditUsername: 'billmead',
-      description: 'Residential roof replacement work in progress.',
-      source: 'unsplash',
-      unsplashId: 'wmaP3Tl80ww',
-      unsplashUrl: 'https://unsplash.com/photos/wmaP3Tl80ww',
-      url: 'https://images.unsplash.com/photo-1632759145219-6e45036d7fda?q=80&w=1600&auto=format&fit=crop',
+      description: 'Residential roofing work in progress before solar is reinstalled.',
+      url: '/images/roof-install.png',
     }),
     sections: [
       {
@@ -487,16 +481,10 @@ export const solarGuides = [
         title: 'What happens to solar panels when the roof needs replacing',
         body: 'If you already have solar and the roof underneath it needs work — whether from age, storm damage, or an insurance claim — the panels have to come off before roofing can start and go back on after. That process is called a detach and reset. It sounds straightforward, but the coordination, cost, timeline, and warranty details matter more than most homeowners expect.',
         heroImage: createStaticHeroImage({
-          alt: 'Roofing crew working on a residential roof with solar panel racking visible',
+          alt: 'Roofing crew working on a residential roof during a solar detach-and-reset project',
           color: '#8a6b52',
-          creditName: 'Bill Mead',
-          creditUrl: 'https://unsplash.com/@billmead',
-          creditUsername: 'billmead',
-          description: 'Residential roof replacement work in progress.',
-          source: 'unsplash',
-          unsplashId: 'wmaP3Tl80ww',
-          unsplashUrl: 'https://unsplash.com/photos/wmaP3Tl80ww',
-          url: 'https://images.unsplash.com/photo-1632759145219-6e45036d7fda?q=80&w=1600&auto=format&fit=crop',
+          description: 'Residential roofing work in progress before solar is reinstalled.',
+          url: '/images/roof-install.png',
         }),
         metrics: [
           { _type: 'pageMetric', label: 'Focus', value: 'Panel removal and reinstall' },
@@ -801,14 +789,8 @@ export const solarGuides = [
     image: createStaticHeroImage({
       alt: 'Close-up of aged asphalt shingles on a Texas residential roof',
       color: '#8a5b45',
-      creditName: 'Dillon Kydd',
-      creditUrl: 'https://unsplash.com/@kyddvisuals',
-      creditUsername: 'kyddvisuals',
-      description: 'Residential roofline photographed in warm light.',
-      source: 'unsplash',
-      unsplashId: '2keCPb73aQY',
-      unsplashUrl: 'https://unsplash.com/photos/2keCPb73aQY',
-      url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1600&auto=format&fit=crop',
+      description: 'Close-up of asphalt shingles showing wear and texture.',
+      url: '/images/closeup-shingle-roof-bright-sky-showcasing-texture-alignment-shingles-symbolizing-durability-protection.jpg',
     }),
     sections: [
       {
@@ -820,14 +802,8 @@ export const solarGuides = [
         heroImage: createStaticHeroImage({
           alt: 'Close-up of aged asphalt shingles on a Texas residential roof',
           color: '#8a5b45',
-          creditName: 'Dillon Kydd',
-          creditUrl: 'https://unsplash.com/@kyddvisuals',
-          creditUsername: 'kyddvisuals',
-          description: 'Residential roofline photographed in warm light.',
-          source: 'unsplash',
-          unsplashId: '2keCPb73aQY',
-          unsplashUrl: 'https://unsplash.com/photos/2keCPb73aQY',
-          url: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1600&auto=format&fit=crop',
+          description: 'Close-up of asphalt shingles showing wear and texture.',
+          url: '/images/closeup-shingle-roof-bright-sky-showcasing-texture-alignment-shingles-symbolizing-durability-protection.jpg',
         }),
         metrics: [
           { _type: 'pageMetric', label: 'Focus', value: 'Roof condition and timing' },
