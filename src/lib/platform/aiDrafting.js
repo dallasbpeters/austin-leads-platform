@@ -1,8 +1,9 @@
 import { groq } from 'next-sanity'
 
-import { sanityWriteClient } from '@/sanity/client'
+import { sanityAgentWriteClient, sanityWriteClient } from '@/sanity/client'
 import {
   buildDraftSkeleton,
+  sanitizeDraftDocumentIdPart,
   slugifyDraftValue,
   toDraftSchemaType,
   trimDraftLines,
@@ -12,11 +13,11 @@ import { buildSanityAgentPublishingInstruction } from '@/sanity/agent/publishing
 const SANITY_AGENT_SCHEMA_ID = process.env.SANITY_AGENT_SCHEMA_ID || ''
 
 async function runSanityAgentGenerate({ documentId, schemaType, input }) {
-  if (!sanityWriteClient?.agent?.action?.generate || !SANITY_AGENT_SCHEMA_ID) {
+  if (!sanityAgentWriteClient?.agent?.action?.generate || !SANITY_AGENT_SCHEMA_ID) {
     throw new Error('Sanity Agent Generate is not configured.')
   }
 
-  await sanityWriteClient.agent.action.generate({
+  await sanityAgentWriteClient.agent.action.generate({
     schemaId: SANITY_AGENT_SCHEMA_ID,
     documentId,
     instruction: buildSanityAgentPublishingInstruction({
@@ -77,9 +78,8 @@ export async function createAiDraftDocument(input) {
     },
   )
 
-  const baseDocumentId = String(existing?._id || `${schemaType}-${normalizedSlug}`)
-    .replace(/^drafts\./, '')
-    .slice(0, 120)
+  const fallbackDocumentId = `${schemaType}-${sanitizeDraftDocumentIdPart(normalizedSlug)}`.slice(0, 120)
+  const baseDocumentId = String(existing?._id || fallbackDocumentId).replace(/^drafts\./, '').slice(0, 120)
   const draftId = `drafts.${baseDocumentId}`
 
   const { skeleton } = buildDraftSkeleton(input)

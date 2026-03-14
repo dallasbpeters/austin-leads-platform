@@ -57,6 +57,104 @@ export async function ensureLeadSubmissionsTable() {
   await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS internal_notes TEXT`
 }
 
+export async function ensureLeadRoutingSettingsTable() {
+  const sql = getSql()
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS lead_routing_settings (
+      id TEXT PRIMARY KEY,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      email_notifications_enabled BOOLEAN NOT NULL DEFAULT true,
+      notification_to_email TEXT,
+      from_name TEXT,
+      from_email TEXT,
+      subject_prefix TEXT,
+      resend_template_id TEXT
+    )
+  `
+}
+
+function normalizeLeadRoutingSettingsRow(row) {
+  if (!row) {
+    return null
+  }
+
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    emailNotificationsEnabled: row.email_notifications_enabled,
+    notificationToEmail: row.notification_to_email,
+    fromName: row.from_name,
+    fromEmail: row.from_email,
+    subjectPrefix: row.subject_prefix,
+    resendTemplateId: row.resend_template_id,
+  }
+}
+
+export async function getLeadRoutingSettingsRow(id = 'default') {
+  const sql = getSql()
+  await ensureLeadRoutingSettingsTable()
+
+  const [row] = await sql`
+    SELECT *
+    FROM lead_routing_settings
+    WHERE id = ${id}
+    LIMIT 1
+  `
+
+  return normalizeLeadRoutingSettingsRow(row)
+}
+
+export async function upsertLeadRoutingSettingsRow(
+  {
+    emailNotificationsEnabled,
+    notificationToEmail,
+    fromName,
+    fromEmail,
+    subjectPrefix,
+    resendTemplateId,
+  },
+  id = 'default',
+) {
+  const sql = getSql()
+  await ensureLeadRoutingSettingsTable()
+
+  const [row] = await sql`
+    INSERT INTO lead_routing_settings (
+      id,
+      email_notifications_enabled,
+      notification_to_email,
+      from_name,
+      from_email,
+      subject_prefix,
+      resend_template_id
+    )
+    VALUES (
+      ${id},
+      ${emailNotificationsEnabled},
+      ${notificationToEmail || null},
+      ${fromName || null},
+      ${fromEmail || null},
+      ${subjectPrefix || null},
+      ${resendTemplateId || null}
+    )
+    ON CONFLICT (id)
+    DO UPDATE SET
+      updated_at = NOW(),
+      email_notifications_enabled = EXCLUDED.email_notifications_enabled,
+      notification_to_email = EXCLUDED.notification_to_email,
+      from_name = EXCLUDED.from_name,
+      from_email = EXCLUDED.from_email,
+      subject_prefix = EXCLUDED.subject_prefix,
+      resend_template_id = EXCLUDED.resend_template_id
+    RETURNING *
+  `
+
+  return normalizeLeadRoutingSettingsRow(row)
+}
+
 export async function getLeadSubmissionOverview() {
   const sql = getSql()
 

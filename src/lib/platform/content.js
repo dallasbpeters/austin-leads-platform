@@ -263,6 +263,27 @@ function sanitizePageRuntimeFields(page) {
   }
 }
 
+function sanitizeReview(review) {
+  if (!review) {
+    return review
+  }
+
+  return {
+    ...review,
+    id: cleanRuntimeString(review.id),
+    author: cleanRuntimeString(review.author),
+    reviewerLocation: cleanRuntimeString(review.reviewerLocation),
+    body: cleanRuntimeString(review.body),
+    stars: typeof review.stars === 'number' ? review.stars : review.stars ? Number(review.stars) : null,
+    reviewerPhoto: review.reviewerPhoto
+      ? {
+          ...review.reviewerPhoto,
+          alt: cleanRuntimeString(review.reviewerPhoto.alt),
+        }
+      : null,
+  }
+}
+
 async function getSanityReadContext({ stega = true } = {}) {
   const { isEnabled } = await draftMode()
   const client = getSanityServerClient({ preview: isEnabled, stega: isEnabled && stega })
@@ -961,6 +982,52 @@ export async function getHomepageForSite(siteSlug) {
       'fixture',
     ) || null
   )
+}
+
+export async function getHomepageReviewsForSite(siteSlug) {
+  const site = getSiteBySlug(siteSlug)
+
+  if (!site) {
+    return []
+  }
+
+  const { client, fetchOptions } = await getSanityReadContext({ stega: true })
+
+  if (!client) {
+    return []
+  }
+
+  try {
+    const siteSlugs = getEquivalentSiteSlugs(siteSlug)
+    const reviews = await client.fetch(
+      groq`*[_type == "review" && site->slug.current in $siteSlugs] | order(_createdAt desc){
+        _id,
+        "id": _id,
+        author,
+        body,
+        reviewerLocation,
+        "stars": coalesce(stars, rating, 5),
+        reviewerPhoto{
+          alt,
+          asset->{
+            url,
+            metadata{
+              dimensions{
+                width,
+                height
+              }
+            }
+          }
+        }
+      }`,
+      { siteSlugs },
+      fetchOptions,
+    )
+
+    return Array.isArray(reviews) ? reviews.map(sanitizeReview) : []
+  } catch {
+    return []
+  }
 }
 
 export async function getHeroSitesForAdmin() {

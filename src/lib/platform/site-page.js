@@ -7,6 +7,7 @@ import { getHeroImageUrl } from '@/lib/platform/imageSource'
 import {
   createJsonLd,
   getHomepageForSite,
+  getHomepageReviewsForSite,
   getHeroHomepageForSite,
   getNavigationForSite,
   getPageForRequest,
@@ -157,12 +158,14 @@ export async function renderCurrentSitePage(slugParts = []) {
       homepage?.sections?.find((section) => section.type === 'resourceGrid') ??
       homepage?.sections?.find((section) => section.type === 'resources') ??
       null
+    const reviews = await getHomepageReviewsForSite(site.slug)
     const jsonLd = createJsonLd(site, homepage || heroHomepage, '/')
 
     return (
       <App
         heroSection={heroSection}
         resourcesSection={resourcesSection}
+        reviews={reviews}
         site={site}
         jsonLd={jsonLd}
         homepageSource={homepage?.source || heroHomepage?.source || 'fixture'}

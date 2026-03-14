@@ -142,11 +142,65 @@ export default [
       },
     },
     fields: [
-      { name: 'author', title: 'Author', type: 'string' },
-      { name: 'rating', title: 'Rating', type: 'number' },
-      { name: 'body', title: 'Body', type: 'text' },
+      {
+        name: 'author',
+        title: 'Reviewer name',
+        type: 'string',
+        validation: (Rule) => Rule.required(),
+      },
+      {
+        name: 'stars',
+        title: 'Stars',
+        type: 'number',
+        initialValue: 5,
+        validation: (Rule) => Rule.required().min(1).max(5).integer(),
+      },
+      {
+        name: 'rating',
+        title: 'Rating (legacy)',
+        type: 'number',
+        hidden: true,
+      },
+      {
+        name: 'reviewerLocation',
+        title: 'Reviewer location',
+        type: 'string',
+      },
+      {
+        name: 'reviewerPhoto',
+        title: 'Reviewer photo',
+        type: 'image',
+        options: {
+          hotspot: true,
+        },
+        fields: [
+          {
+            name: 'alt',
+            title: 'Alt text',
+            type: 'string',
+          },
+        ],
+      },
+      { name: 'body', title: 'Review body', type: 'text', validation: (Rule) => Rule.required() },
       { name: 'site', title: 'Site', type: 'reference', to: [{ type: 'site' }] },
     ],
+    preview: {
+      select: {
+        title: 'author',
+        subtitle: 'reviewerLocation',
+        stars: 'stars',
+        legacyRating: 'rating',
+        media: 'reviewerPhoto',
+      },
+      prepare({ title, subtitle, stars, legacyRating, media }) {
+        const resolvedStars = stars ?? legacyRating ?? null
+        return {
+          title: title || 'Unnamed reviewer',
+          subtitle: [resolvedStars ? `${resolvedStars} stars` : null, subtitle].filter(Boolean).join(' • '),
+          media,
+        }
+      },
+    },
   },
   {
     name: 'leadForm',
@@ -206,69 +260,5 @@ export default [
       { name: 'target', title: 'Target (legacy)', type: 'string', hidden: true },
       { name: 'statusCode', title: 'Status code (legacy)', type: 'number', hidden: true },
     ],
-  },
-  {
-    name: 'leadRoutingSettings',
-    title: 'Lead Routing Settings',
-    type: 'document',
-    options: {
-      canvasApp: {
-        exclude: true,
-      },
-    },
-    fields: [
-      {
-        name: 'title',
-        title: 'Title',
-        type: 'string',
-        initialValue: 'Lead Routing Settings',
-        validation: (Rule) => Rule.required(),
-      },
-      {
-        name: 'emailNotificationsEnabled',
-        title: 'Email notifications enabled',
-        type: 'boolean',
-        initialValue: true,
-      },
-      {
-        name: 'notificationToEmail',
-        title: 'Notification recipient',
-        type: 'email',
-        validation: (Rule) => Rule.required().email(),
-      },
-      {
-        name: 'fromName',
-        title: 'Sender name',
-        type: 'string',
-      },
-      {
-        name: 'fromEmail',
-        title: 'Sender email',
-        type: 'email',
-        validation: (Rule) => Rule.required().email(),
-      },
-      {
-        name: 'subjectPrefix',
-        title: 'Subject prefix',
-        type: 'string',
-      },
-      {
-        name: 'resendTemplateId',
-        title: 'Resend template ID',
-        type: 'string',
-      },
-    ],
-    preview: {
-      select: {
-        title: 'title',
-        subtitle: 'notificationToEmail',
-      },
-      prepare({ title, subtitle }) {
-        return {
-          title: title || 'Lead Routing Settings',
-          subtitle: subtitle || 'No recipient configured',
-        }
-      },
-    },
-  },
+  }
 ]

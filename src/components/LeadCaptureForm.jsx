@@ -117,7 +117,7 @@ export default function LeadCaptureForm({
       {message ? (
         <div
           className={cn(
-            'absolute bottom-18 rounded-sm border px-4 py-3 text-sm',
+            'absolute -bottom-18 rounded-sm border px-4 py-3 text-sm',
             status === 'success'
               ? 'border-emerald-200 bg-emerald-500 text-emerald-50'
               : 'border-rose-200 bg-rose-50 text-rose-900',

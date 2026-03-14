@@ -1,13 +1,15 @@
 import React from 'react'
 import { useClient } from 'sanity'
 
-import { buildDraftSkeleton, trimDraftLines } from '../agent/draftHelpers'
+import { studioUrl } from '../env'
+import { buildDraftSkeleton, slugifyDraftValue, trimDraftLines } from '../agent/draftHelpers'
 import {
   buildSanityAgentPublishingInstruction,
   SANITY_AGENT_PUBLISHING_SETUP_NOTES,
 } from '../agent/publishingInstructions'
 
-const SANITY_AGENT_SCHEMA_ID = process.env.SANITY_AGENT_SCHEMA_ID || ''
+const SANITY_AGENT_SCHEMA_ID =
+  process.env.SANITY_STUDIO_AGENT_SCHEMA_ID || process.env.SANITY_AGENT_SCHEMA_ID || ''
 const CONTENT_TYPE_OPTIONS = [
   { value: 'page', label: 'Page' },
   { value: 'servicePage', label: 'Service page' },
@@ -44,18 +46,39 @@ function Field({ label, children, hint }) {
   )
 }
 
+function buildSuggestedSlug(contentType, title) {
+  const normalized = slugifyDraftValue(title)
+
+  if (!normalized) {
+    return ''
+  }
+
+  if (contentType === 'post') {
+    return normalized.startsWith('guides/') ? normalized : `guides/${normalized}`
+  }
+
+  if (contentType === 'servicePage') {
+    return normalized.startsWith('services/') ? normalized : `services/${normalized}`
+  }
+
+  return normalized
+}
+
 export function AiDraftingTool() {
-  const client = useClient({ apiVersion: '2025-10-21' })
+  const client = useClient({ apiVersion: 'vX' })
   const [sites, setSites] = React.useState([])
   const [loadingSites, setLoadingSites] = React.useState(true)
   const [submitting, setSubmitting] = React.useState(false)
   const [error, setError] = React.useState('')
   const [result, setResult] = React.useState(null)
+  const [slugTouched, setSlugTouched] = React.useState(false)
   const [form, setForm] = React.useState({
     siteId: '',
     contentType: 'page',
     title: '',
     slug: '',
+    heroImageUrl: '',
+    heroImageAlt: '',
     brief: '',
     sources: '',
   })
@@ -99,6 +122,33 @@ export function AiDraftingTool() {
   }, [client])
 
   const selectedSite = sites.find((site) => site._id === form.siteId)
+
+  React.useEffect(() => {
+    if (slugTouched && form.slug) {
+      return
+    }
+
+    const nextSlug = buildSuggestedSlug(form.contentType, form.title)
+
+    setForm((current) => {
+      if (current.slug === nextSlug) {
+        return current
+      }
+
+      return {
+        ...current,
+        slug: nextSlug,
+      }
+    })
+  }, [form.contentType, form.title, form.slug, slugTouched])
+
+  function regenerateSlug() {
+    setSlugTouched(false)
+    setForm((current) => ({
+      ...current,
+      slug: buildSuggestedSlug(current.contentType, current.title),
+    }))
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -187,11 +237,13 @@ export function AiDraftingTool() {
       return
     }
 
-    window.location.assign(`/intent/edit/id=${encodeURIComponent(result.documentId)};type=${encodeURIComponent(result.schemaType)}`)
+    window.location.assign(
+      `${studioUrl}/intent/edit/id=${encodeURIComponent(result.documentId)};type=${encodeURIComponent(result.schemaType)}`,
+    )
   }
 
   return (
-    <div style={{ padding: '1.5rem', display: 'grid', gap: '1.25rem', maxWidth: '960px' }}>
+    <div style={{ padding: '1.5rem', display: 'grid', gap: '1.25rem', maxWidth: '960px', marginInline: 'auto' }}>
       <div style={{ display: 'grid', gap: '0.5rem' }}>
         <div style={{ fontSize: '0.8rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6b7280' }}>
           Draft assistant
@@ -216,7 +268,7 @@ export function AiDraftingTool() {
       >
         <div style={{ fontWeight: 600 }}>Publishing workflow notes</div>
         {SANITY_AGENT_PUBLISHING_SETUP_NOTES.map((note) => (
-          <div key={note} style={{ color: '#4b5563', lineHeight: 1.6 }}>
+          <div key={note} style={{ color: '#4b5563', fontSize: '0.9rem', lineHeight: 1.6 }}>
             {note}
           </div>
         ))}
@@ -233,8 +285,9 @@ export function AiDraftingTool() {
             lineHeight: 1.6,
           }}
         >
-          `SANITY_AGENT_SCHEMA_ID` is not configured for the Studio build. The tool can still create starter drafts,
-          but Sanity Agent generation will not run until the deployed schema id is available in the Studio env.
+          `SANITY_STUDIO_AGENT_SCHEMA_ID` is not configured for the Studio build. The tool can still create
+          starter drafts, but Sanity Agent generation will not run until the deployed schema id is available
+          in the Studio env.
         </div>
       ) : null}
 
@@ -340,14 +393,69 @@ export function AiDraftingTool() {
           />
         </Field>
 
-        <Field label="Slug" hint="Use the final path segment. For guides, include the guides/ prefix if you want it.">
-          <input
-            value={form.slug}
-            onChange={(event) => setForm((current) => ({ ...current, slug: event.target.value }))}
-            placeholder="guides/texas-storm-damage-roof-insurance-claims"
-            style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
-          />
+        <Field
+          label="Slug"
+          hint="It auto-generates from the title. Posts get a guides/ prefix and service pages get services/ automatically."
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: '0.65rem' }}>
+            <input
+              value={form.slug}
+              onChange={(event) => {
+                setSlugTouched(true)
+                setForm((current) => ({ ...current, slug: event.target.value }))
+              }}
+              placeholder="guides/texas-storm-damage-roof-insurance-claims"
+              style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+            />
+            <button
+              type="button"
+              onClick={regenerateSlug}
+              disabled={!form.title}
+              style={{
+                border: '1px solid #d1d5db',
+                background: '#f9fafb',
+                color: '#111827',
+                padding: '0.75rem 0.9rem',
+                borderRadius: '0.6rem',
+                cursor: form.title ? 'pointer' : 'not-allowed',
+                fontWeight: 600,
+                opacity: form.title ? 1 : 0.6,
+              }}
+            >
+              Generate
+            </button>
+          </div>
         </Field>
+
+        <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          <Field
+            label="Hero image URL"
+            hint={
+              form.contentType === 'post'
+                ? 'For guides, the guide-library card image will inherit this hero image automatically.'
+                : 'Optional. Paste a full image URL to seed the hero with an external image.'
+            }
+          >
+            <input
+              value={form.heroImageUrl}
+              onChange={(event) => setForm((current) => ({ ...current, heroImageUrl: event.target.value }))}
+              placeholder="https://images.unsplash.com/photo-..."
+              style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+            />
+          </Field>
+
+          <Field
+            label="Hero image alt text"
+            hint="Used for the draft hero image. Leave blank to default to the draft title."
+          >
+            <input
+              value={form.heroImageAlt}
+              onChange={(event) => setForm((current) => ({ ...current, heroImageAlt: event.target.value }))}
+              placeholder="Crew inspecting a hail-damaged Texas roof"
+              style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+            />
+          </Field>
+        </div>
 
         <Field label="Brief">
           <textarea

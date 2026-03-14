@@ -30,15 +30,29 @@ function normalizeSectionItemType(section, item) {
     return item
   }
 
-  if (item._type) {
-    return item
-  }
-
   if (section?.type === 'resourceGrid') {
     return {
       ...item,
       _type: 'resourceCard',
     }
+  }
+
+  if (section?.type === 'faq') {
+    return {
+      ...item,
+      _type: 'pageFaqItem',
+    }
+  }
+
+  if (section?.type === 'highlights' || section?.type === 'steps') {
+    return {
+      ...item,
+      _type: 'sectionContentItem',
+    }
+  }
+
+  if (item._type && item._type !== 'object') {
+    return item
   }
 
   return {
@@ -83,6 +97,59 @@ export function normalizeSectionType(section) {
       title: section.title,
       body: section.body,
       items: normalizedItems,
+    })
+  }
+
+  if (section.type === 'story') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'storySection',
+      type: 'story',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+    })
+  }
+
+  if (section.type === 'highlights') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'highlightsSection',
+      type: 'highlights',
+      title: section.title,
+      items: normalizedItems,
+    })
+  }
+
+  if (section.type === 'steps') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'stepsSection',
+      type: 'steps',
+      title: section.title,
+      items: normalizedItems,
+    })
+  }
+
+  if (section.type === 'faq') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'faqSection',
+      type: 'faq',
+      title: section.title,
+      items: normalizedItems,
+    })
+  }
+
+  if (section.type === 'cta') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'ctaSection',
+      type: 'cta',
+      title: section.title,
+      body: section.body,
+      ctaLabel: section.ctaLabel,
+      ctaHref: section.ctaHref,
     })
   }
 
