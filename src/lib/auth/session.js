@@ -1,9 +1,9 @@
-import { auth } from "@/auth";
+import { auth } from '@/auth'
 
 export async function safeAuth() {
   try {
-    return await auth();
+    return await auth()
   } catch {
-    return null;
+    return null
   }
 }

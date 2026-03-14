@@ -1,5 +1,16 @@
 export function getSanityAssetUrl(imageField) {
-  return imageField?.asset?.url || "";
+  return imageField?.asset?.url || ''
+}
+
+export function getHeroImageUrl(imageField, fallbackImage = null) {
+  return (
+    getSanityAssetUrl(imageField) ||
+    fallbackImage?.urls?.full ||
+    fallbackImage?.urls?.regular ||
+    fallbackImage?.urls?.small ||
+    fallbackImage?.urls?.thumb ||
+    ''
+  )
 }
 
 export function getImageUrl(imageField, fallbackImage = null) {
@@ -8,14 +19,14 @@ export function getImageUrl(imageField, fallbackImage = null) {
     fallbackImage?.urls?.regular ||
     fallbackImage?.urls?.small ||
     fallbackImage?.urls?.thumb ||
-    ""
-  );
+    ''
+  )
 }
 
-export function getImageAlt(imageField, fallbackImage = null, fallbackText = "") {
-  return imageField?.alt || fallbackImage?.alt || fallbackText || "";
+export function getImageAlt(imageField, fallbackImage = null, fallbackText = '') {
+  return imageField?.altText || imageField?.alt || fallbackImage?.alt || fallbackText || ''
 }
 
 export function hasImageSource(imageField, fallbackImage = null) {
-  return Boolean(getImageUrl(imageField, fallbackImage));
+  return Boolean(getImageUrl(imageField, fallbackImage))
 }

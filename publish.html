@@ -1,311 +1,504 @@
-<html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Austin Leads CMS - AI Publishing</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #e5e5e5;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #d4d4d4;
-        }
-        [contenteditable]:empty:before {
-            content: attr(placeholder);
-            color: #a3a3a3;
-            pointer-events: none;
-            display: block;
-        }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #e5e5e5;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #d4d4d4;
+      }
+      [contenteditable]:empty:before {
+        content: attr(placeholder);
+        color: #a3a3a3;
+        pointer-events: none;
+        display: block;
+      }
     </style>
-</head>
-<body class="bg-neutral-50 text-neutral-900 antialiased flex h-screen overflow-hidden selection:bg-neutral-200 selection:text-neutral-900">
-
+  </head>
+  <body
+    class="flex h-screen overflow-hidden bg-neutral-50 text-neutral-900 antialiased selection:bg-neutral-200 selection:text-neutral-900"
+  >
     <!-- Mobile Header -->
-    <div class="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-neutral-200">
-        <div class="text-lg font-semibold tracking-tight">AL</div>
-        <button class="text-neutral-500 hover:text-neutral-900">
-            <iconify-icon icon="solar:hamburger-menu-linear" width="24" height="24" stroke-width="1.5"></iconify-icon>
-        </button>
+    <div class="flex items-center justify-between border-b border-neutral-200 bg-white px-4 py-3 md:hidden">
+      <div class="text-lg font-semibold tracking-tight">AL</div>
+      <button class="text-neutral-500 hover:text-neutral-900">
+        <iconify-icon
+          icon="solar:hamburger-menu-linear"
+          width="24"
+          height="24"
+          stroke-width="1.5"
+        ></iconify-icon>
+      </button>
     </div>
 
     <!-- Sidebar -->
-    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-neutral-200 h-full">
-        <div class="p-4 border-b border-neutral-200">
-            <button class="w-full flex items-center justify-between px-3 py-2 hover:bg-neutral-50 transition-colors rounded-lg border border-transparent hover:border-neutral-200 group">
-                <div class="flex items-center gap-3">
-                    <div class="w-7 h-7 bg-neutral-900 text-white rounded flex items-center justify-center text-xs font-semibold tracking-tight shadow-sm">
-                        AL
-                    </div>
-                    <div class="flex flex-col items-start">
-                        <span class="text-sm font-medium leading-none">Austin Leads</span>
-                        <span class="text-xs text-neutral-500 mt-1 leading-none">Production</span>
-                    </div>
-                </div>
-                <iconify-icon icon="solar:alt-arrow-down-linear" class="text-neutral-400 group-hover:text-neutral-600 transition-colors" width="16" height="16" stroke-width="1.5"></iconify-icon>
-            </button>
-        </div>
+    <aside class="hidden h-full w-64 flex-col border-r border-neutral-200 bg-white md:flex">
+      <div class="border-b border-neutral-200 p-4">
+        <button
+          class="group flex w-full items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-neutral-200 hover:bg-neutral-50"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="flex h-7 w-7 items-center justify-center rounded bg-neutral-900 text-xs font-semibold tracking-tight text-white shadow-sm"
+            >
+              AL
+            </div>
+            <div class="flex flex-col items-start">
+              <span class="text-sm leading-none font-medium">Austin Leads</span>
+              <span class="mt-1 text-xs leading-none text-neutral-500">Production</span>
+            </div>
+          </div>
+          <iconify-icon
+            icon="solar:alt-arrow-down-linear"
+            class="text-neutral-400 transition-colors group-hover:text-neutral-600"
+            width="16"
+            height="16"
+            stroke-width="1.5"
+          ></iconify-icon>
+        </button>
+      </div>
 
-        <div class="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-1">
-            <p class="px-3 text-xs font-medium text-neutral-400 mb-1 uppercase tracking-wider">Overview</p>
-            <a href="/" class="flex items-center gap-3 hover:bg-neutral-50 hover:text-neutral-900 transition-colors text-sm font-medium text-neutral-600 rounded-lg pt-2 pr-3 pb-2 pl-3">
-                <iconify-icon icon="solar:pie-chart-2-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
-                Dashboard
-            </a>
-            
-            <p class="px-3 text-xs font-medium text-neutral-400 mt-4 mb-1 uppercase tracking-wider">Workspace</p>
-            <a href="#" class="flex items-center justify-between px-3 py-2 bg-neutral-100 text-neutral-900 rounded-lg text-sm font-medium transition-colors">
-                <div class="flex items-center gap-3">
-                    <iconify-icon icon="solar:document-text-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
-                    Content
-                </div>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
-                <iconify-icon icon="solar:inbox-in-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
-                Workflows
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
-                <iconify-icon icon="solar:folder-with-files-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
-                Media
-            </a>
+      <div class="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4">
+        <p class="mb-1 px-3 text-xs font-medium tracking-wider text-neutral-400 uppercase">Overview</p>
+        <a
+          href="/"
+          class="flex items-center gap-3 rounded-lg pt-2 pr-3 pb-2 pl-3 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+        >
+          <iconify-icon
+            icon="solar:pie-chart-2-linear"
+            width="18"
+            height="18"
+            stroke-width="1.5"
+          ></iconify-icon>
+          Dashboard
+        </a>
 
-            <p class="px-3 text-xs font-medium text-neutral-400 mt-4 mb-1 uppercase tracking-wider">Infrastructure</p>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
-                <iconify-icon icon="solar:global-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
-                Domains
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
-                <iconify-icon icon="solar:users-group-rounded-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
-                Team
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-lg text-sm font-medium transition-colors">
-                <iconify-icon icon="solar:settings-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
-                Settings
-            </a>
-        </div>
+        <p class="mt-4 mb-1 px-3 text-xs font-medium tracking-wider text-neutral-400 uppercase">Workspace</p>
+        <a
+          href="#"
+          class="flex items-center justify-between rounded-lg bg-neutral-100 px-3 py-2 text-sm font-medium text-neutral-900 transition-colors"
+        >
+          <div class="flex items-center gap-3">
+            <iconify-icon
+              icon="solar:document-text-linear"
+              width="18"
+              height="18"
+              stroke-width="1.5"
+            ></iconify-icon>
+            Content
+          </div>
+        </a>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+        >
+          <iconify-icon icon="solar:inbox-in-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
+          Workflows
+        </a>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+        >
+          <iconify-icon
+            icon="solar:folder-with-files-linear"
+            width="18"
+            height="18"
+            stroke-width="1.5"
+          ></iconify-icon>
+          Media
+        </a>
 
-        <div class="p-4 border-t border-neutral-200">
-            <button class="w-full flex items-center gap-3 px-2 py-1.5 hover:bg-neutral-50 transition-colors rounded-lg">
-                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" class="w-8 h-8 rounded-full shadow-sm bg-neutral-200 border border-neutral-200">
-                <div class="flex flex-col items-start flex-1 overflow-hidden">
-                    <span class="text-sm font-medium truncate w-full text-left text-neutral-900">Jane Doe</span>
-                    <span class="text-xs text-neutral-500 truncate w-full text-left">jane@austinleads.com</span>
-                </div>
-            </button>
-        </div>
+        <p class="mt-4 mb-1 px-3 text-xs font-medium tracking-wider text-neutral-400 uppercase">
+          Infrastructure
+        </p>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+        >
+          <iconify-icon icon="solar:global-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
+          Domains
+        </a>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+        >
+          <iconify-icon
+            icon="solar:users-group-rounded-linear"
+            width="18"
+            height="18"
+            stroke-width="1.5"
+          ></iconify-icon>
+          Team
+        </a>
+        <a
+          href="#"
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+        >
+          <iconify-icon icon="solar:settings-linear" width="18" height="18" stroke-width="1.5"></iconify-icon>
+          Settings
+        </a>
+      </div>
+
+      <div class="border-t border-neutral-200 p-4">
+        <button
+          class="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-neutral-50"
+        >
+          <img
+            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+            alt="User"
+            class="h-8 w-8 rounded-full border border-neutral-200 bg-neutral-200 shadow-sm"
+          />
+          <div class="flex flex-1 flex-col items-start overflow-hidden">
+            <span class="w-full truncate text-left text-sm font-medium text-neutral-900">Jane Doe</span>
+            <span class="w-full truncate text-left text-xs text-neutral-500">jane@austinleads.com</span>
+          </div>
+        </button>
+      </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden bg-neutral-50/50">
-        
-        <!-- Top Header -->
-        <header class="hidden md:flex h-14 border-b border-neutral-200 bg-white items-center justify-between px-8 shrink-0">
-            <div class="flex items-center text-sm font-medium text-neutral-500">
-                <span>Austin Leads</span>
-                <iconify-icon icon="solar:alt-arrow-right-linear" class="mx-2 text-neutral-400" width="14" height="14" stroke-width="1.5"></iconify-icon>
-                <a href="#" class="hover:text-neutral-900 transition-colors">Content</a>
-                <iconify-icon icon="solar:alt-arrow-right-linear" class="mx-2 text-neutral-400" width="14" height="14" stroke-width="1.5"></iconify-icon>
-                <span class="text-neutral-900">AI Publishing</span>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <button class="text-neutral-500 hover:text-neutral-900 relative transition-colors">
-                    <iconify-icon icon="solar:bell-linear" width="20" height="20" stroke-width="1.5"></iconify-icon>
-                </button>
-                <button class="bg-neutral-900 text-white text-sm font-medium px-4 py-1.5 rounded-md hover:bg-neutral-800 transition-colors shadow-sm flex items-center gap-2">
-                    <iconify-icon icon="solar:check-circle-linear" width="16" height="16" stroke-width="1.5"></iconify-icon>
-                    Publish Post
-                </button>
-            </div>
-        </header>
-
-        <!-- Scrollable Area -->
-        <div class="flex-1 overflow-y-auto md:p-8 pt-4 pr-4 pb-4 pl-4">
-            <div class="max-w-7xl mx-auto">
-                
-                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-                    <div class="">
-                        <h1 class="text-2xl font-semibold tracking-tight text-neutral-900">Generate New Post</h1>
-                        <p class="text-sm text-neutral-500 mt-1">Use AI to draft content backed by your custom sources.</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-                    
-                    <!-- Left Column: Settings & Prompts -->
-                    <div class="lg:col-span-4 flex flex-col gap-6">
-                        
-                        <!-- AI Configuration Card -->
-                        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm p-5">
-                            <h3 class="text-sm font-semibold text-neutral-900 mb-4 flex items-center gap-2">
-                                <iconify-icon icon="solar:magic-stick-3-linear" class="text-blue-500"></iconify-icon>
-                                AI Configuration
-                            </h3>
-                            
-                            <div class="flex flex-col gap-4">
-                                <!-- Site Selection -->
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-xs font-medium text-neutral-700">Target Site</label>
-                                    <div class="relative">
-                                        <select class="w-full text-sm border border-neutral-200 rounded-md bg-neutral-50 hover:bg-neutral-100/50 transition-colors px-3 py-2 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 appearance-none pr-8 cursor-pointer">
-                                            <option>austinsolarpros.com</option>
-                                            <option>austinweddingvendors.com</option>
-                                            <option>roofprosofaustin.com</option>
-                                        </select>
-                                        <iconify-icon icon="solar:alt-arrow-down-linear" class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" width="16" height="16" stroke-width="1.5"></iconify-icon>
-                                    </div>
-                                </div>
-
-                                <!-- Model Selection -->
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-xs font-medium text-neutral-700">AI Model</label>
-                                    <div class="relative">
-                                        <select class="w-full text-sm border border-neutral-200 rounded-md bg-neutral-50 hover:bg-neutral-100/50 transition-colors px-3 py-2 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 appearance-none pr-8 cursor-pointer">
-                                            <option>GPT-4 Optimized (Default)</option>
-                                            <option>Claude 3.5 Sonnet</option>
-                                            <option>Gemini 1.5 Pro</option>
-                                        </select>
-                                        <iconify-icon icon="solar:alt-arrow-down-linear" class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" width="16" height="16" stroke-width="1.5"></iconify-icon>
-                                    </div>
-                                </div>
-
-                                <!-- Prompt Input -->
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-xs font-medium text-neutral-700">Prompt / Topic</label>
-                                    <textarea rows="4" placeholder="e.g. Write a comprehensive guide about local tax incentives for installing solar panels in Travis County..." class="w-full text-sm border border-neutral-200 rounded-md bg-white px-3 py-2 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 placeholder:text-neutral-400 resize-none"></textarea>
-                                </div>
-
-                                <button class="mt-2 w-full bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm flex items-center justify-center gap-2">
-                                    <iconify-icon icon="solar:pen-new-round-linear" width="16" height="16"></iconify-icon>
-                                    Generate Draft
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Sources Panel -->
-                        <div class="bg-white rounded-xl border border-neutral-200 shadow-sm flex flex-col overflow-hidden">
-                            <div class="p-4 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/50">
-                                <h3 class="text-sm font-semibold text-neutral-900 flex items-center gap-2">
-                                    <iconify-icon icon="solar:link-minimalistic-linear"></iconify-icon>
-                                    Reference Sources
-                                </h3>
-                                <span class="bg-neutral-200 text-neutral-700 text-xs px-1.5 py-0.5 rounded font-medium">2</span>
-                            </div>
-                            
-                            <div class="p-4 flex flex-col gap-3">
-                                <!-- Add Source Input -->
-                                <div class="flex gap-2">
-                                    <input type="text" placeholder="Paste URL to add context..." class="flex-1 text-sm border border-neutral-200 rounded-md bg-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-neutral-900 placeholder:text-neutral-400">
-                                    <button class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-sm font-medium rounded-md transition-colors border border-neutral-200/50">
-                                        Add
-                                    </button>
-                                </div>
-
-                                <!-- Source List -->
-                                <div class="flex flex-col gap-2 mt-2">
-                                    <!-- Source Item -->
-                                    <div class="flex items-center gap-2 text-sm bg-neutral-50 px-3 py-2 rounded-md border border-neutral-100 group">
-                                        <iconify-icon icon="solar:document-text-linear" class="text-neutral-400 shrink-0"></iconify-icon>
-                                        <span class="truncate flex-1 text-xs text-neutral-700">austintexas.gov/department/solar-energy</span>
-                                        <button class="text-neutral-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                                            <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
-                                        </button>
-                                    </div>
-                                    <!-- Source Item -->
-                                    <div class="flex items-center gap-2 text-sm bg-neutral-50 px-3 py-2 rounded-md border border-neutral-100 group">
-                                        <iconify-icon icon="solar:document-text-linear" class="text-neutral-400 shrink-0"></iconify-icon>
-                                        <span class="truncate flex-1 text-neutral-700 text-xs">energy.gov/savings/residential-renewable-energy-tax-credit</span>
-                                        <button class="text-neutral-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                                            <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Right Column: Editor & Output -->
-                    <div class="lg:col-span-8 flex flex-col h-[calc(100vh-12rem)] min-h-[600px]">
-                        <div class="bg-white border border-neutral-200 rounded-xl shadow-sm flex flex-col h-full overflow-hidden">
-                            
-                            <!-- Editor Toolbar -->
-                            <div class="flex flex-wrap items-center justify-between p-3 border-b border-neutral-100 bg-neutral-50/50 gap-2">
-                                <div class="flex items-center gap-3">
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/50">
-                                        <span class="w-1 h-1 rounded-full bg-amber-500"></span>
-                                        AI Draft
-                                    </span>
-                                    <span class="text-xs text-neutral-400">~850 words</span>
-                                </div>
-                                
-                                <div class="flex items-center gap-2">
-                                    <button class="flex items-center gap-1.5 text-xs font-medium text-neutral-600 bg-white border border-neutral-200 px-2.5 py-1.5 rounded-md hover:bg-neutral-50 transition-colors shadow-sm">
-                                        <iconify-icon icon="solar:copy-linear" width="14"></iconify-icon> Copy
-                                    </button>
-                                    <button class="flex items-center gap-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1.5 rounded-md hover:bg-blue-100 transition-colors shadow-sm">
-                                        <iconify-icon icon="solar:refresh-circle-linear" width="14"></iconify-icon> Regenerate
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Editor Content Area -->
-                            <div class="flex-1 overflow-y-auto p-6 md:p-10 flex flex-col relative group outline-none">
-                                <!-- Title -->
-                                <h1 class="text-3xl font-semibold tracking-tight text-neutral-900 mb-6 outline-none" contenteditable="true" placeholder="Enter post title...">The Complete Guide to Solar Tax Incentives in Austin (2024)</h1>
-                                
-                                <!-- Body -->
-                                <div class="text-base text-neutral-700 leading-relaxed space-y-5 outline-none flex-1" contenteditable="true" placeholder="Start typing or use AI to generate content...">
-                                    <p>As residents of Austin increasingly look towards sustainable energy, solar panels have become a prominent feature across local rooftops. Beyond the environmental benefits, the financial incentives available in 2024 make the transition to solar more accessible than ever for Travis County homeowners.</p>
-                                    
-                                    <h2 class="text-xl font-semibold tracking-tight text-neutral-900 mt-8 mb-4">Federal Solar Investment Tax Credit (ITC)</h2>
-                                    <p>The most significant incentive currently available is the Federal Solar Investment Tax Credit. For systems installed in 2024, homeowners can claim a 30% tax credit on the total cost of their solar panel system. This credit is applied directly to your federal income taxes, significantly reducing the upfront burden of installation.</p>
-
-                                    <h2 class="text-xl font-semibold tracking-tight text-neutral-900 mt-8 mb-4">Austin Energy Rebates</h2>
-                                    <p>Locally, Austin Energy continues to offer robust rebates. Residents who complete the solar education course and use a participating contractor can qualify for a capacity-based incentive. Currently, this translates to $2,500 for eligible residential installations, further sweetening the deal on top of federal credits.</p>
-
-                                    <h2 class="text-xl font-semibold tracking-tight text-neutral-900 mt-8 mb-4">Property Tax Exemptions in Texas</h2>
-                                    <p>One of the hidden financial perks of installing solar in Texas is the property tax exemption. Under the Texas Property Tax Code, the increase in home value resulting from a solar installation is 100% exempt from property taxes. You get the resale value boost without the recurring tax penalty.</p>
-                                </div>
-                            </div>
-
-                            <!-- AI Sources Footnote (Used by model) -->
-                            <div class="border-t border-neutral-100 bg-neutral-50 px-6 py-3">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <iconify-icon icon="solar:info-circle-linear" class="text-neutral-400" width="14"></iconify-icon>
-                                    <span class="text-xs font-semibold text-neutral-600 uppercase tracking-wider">Citations Used by AI</span>
-                                </div>
-                                <div class="flex flex-wrap gap-2">
-                                    <a href="#" class="inline-flex items-center gap-1 px-2 py-1 rounded bg-white border border-neutral-200 text-xs text-neutral-600 hover:text-blue-600 hover:border-blue-200 transition-colors">
-                                        <span class="font-medium text-neutral-400">[1]</span> austintexas.gov
-                                    </a>
-                                    <a href="#" class="inline-flex items-center gap-1 px-2 py-1 rounded bg-white border border-neutral-200 text-xs text-neutral-600 hover:text-blue-600 hover:border-blue-200 transition-colors">
-                                        <span class="font-medium text-neutral-400">[2]</span> energy.gov
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
+    <main class="flex h-full flex-1 flex-col overflow-hidden bg-neutral-50/50">
+      <!-- Top Header -->
+      <header
+        class="hidden h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-8 md:flex"
+      >
+        <div class="flex items-center text-sm font-medium text-neutral-500">
+          <span>Austin Leads</span>
+          <iconify-icon
+            icon="solar:alt-arrow-right-linear"
+            class="mx-2 text-neutral-400"
+            width="14"
+            height="14"
+            stroke-width="1.5"
+          ></iconify-icon>
+          <a href="#" class="transition-colors hover:text-neutral-900">Content</a>
+          <iconify-icon
+            icon="solar:alt-arrow-right-linear"
+            class="mx-2 text-neutral-400"
+            width="14"
+            height="14"
+            stroke-width="1.5"
+          ></iconify-icon>
+          <span class="text-neutral-900">AI Publishing</span>
         </div>
-    </main>
 
-</body></html>
+        <div class="flex items-center gap-4">
+          <button class="relative text-neutral-500 transition-colors hover:text-neutral-900">
+            <iconify-icon icon="solar:bell-linear" width="20" height="20" stroke-width="1.5"></iconify-icon>
+          </button>
+          <button
+            class="flex items-center gap-2 rounded-md bg-neutral-900 px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-neutral-800"
+          >
+            <iconify-icon
+              icon="solar:check-circle-linear"
+              width="16"
+              height="16"
+              stroke-width="1.5"
+            ></iconify-icon>
+            Publish Post
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Area -->
+      <div class="flex-1 overflow-y-auto pt-4 pr-4 pb-4 pl-4 md:p-8">
+        <div class="mx-auto max-w-7xl">
+          <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div class="">
+              <h1 class="text-2xl font-semibold tracking-tight text-neutral-900">Generate New Post</h1>
+              <p class="mt-1 text-sm text-neutral-500">
+                Use AI to draft content backed by your custom sources.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+            <!-- Left Column: Settings & Prompts -->
+            <div class="flex flex-col gap-6 lg:col-span-4">
+              <!-- AI Configuration Card -->
+              <div class="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+                <h3 class="mb-4 flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                  <iconify-icon icon="solar:magic-stick-3-linear" class="text-blue-500"></iconify-icon>
+                  AI Configuration
+                </h3>
+
+                <div class="flex flex-col gap-4">
+                  <!-- Site Selection -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-medium text-neutral-700">Target Site</label>
+                    <div class="relative">
+                      <select
+                        class="w-full cursor-pointer appearance-none rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 pr-8 text-sm text-neutral-900 transition-colors hover:bg-neutral-100/50 focus:ring-2 focus:ring-neutral-900 focus:outline-none"
+                      >
+                        <option>austinsolarpros.com</option>
+                        <option>austinweddingvendors.com</option>
+                        <option>roofprosofaustin.com</option>
+                      </select>
+                      <iconify-icon
+                        icon="solar:alt-arrow-down-linear"
+                        class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-neutral-500"
+                        width="16"
+                        height="16"
+                        stroke-width="1.5"
+                      ></iconify-icon>
+                    </div>
+                  </div>
+
+                  <!-- Model Selection -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-medium text-neutral-700">AI Model</label>
+                    <div class="relative">
+                      <select
+                        class="w-full cursor-pointer appearance-none rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 pr-8 text-sm text-neutral-900 transition-colors hover:bg-neutral-100/50 focus:ring-2 focus:ring-neutral-900 focus:outline-none"
+                      >
+                        <option>GPT-4 Optimized (Default)</option>
+                        <option>Claude 3.5 Sonnet</option>
+                        <option>Gemini 1.5 Pro</option>
+                      </select>
+                      <iconify-icon
+                        icon="solar:alt-arrow-down-linear"
+                        class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-neutral-500"
+                        width="16"
+                        height="16"
+                        stroke-width="1.5"
+                      ></iconify-icon>
+                    </div>
+                  </div>
+
+                  <!-- Prompt Input -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-xs font-medium text-neutral-700">Prompt / Topic</label>
+                    <textarea
+                      rows="4"
+                      placeholder="e.g. Write a comprehensive guide about local tax incentives for installing solar panels in Travis County..."
+                      class="w-full resize-none rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:ring-2 focus:ring-neutral-900 focus:outline-none"
+                    ></textarea>
+                  </div>
+
+                  <button
+                    class="mt-2 flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
+                  >
+                    <iconify-icon icon="solar:pen-new-round-linear" width="16" height="16"></iconify-icon>
+                    Generate Draft
+                  </button>
+                </div>
+              </div>
+
+              <!-- Sources Panel -->
+              <div
+                class="flex flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
+              >
+                <div
+                  class="flex items-center justify-between border-b border-neutral-100 bg-neutral-50/50 p-4"
+                >
+                  <h3 class="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                    <iconify-icon icon="solar:link-minimalistic-linear"></iconify-icon>
+                    Reference Sources
+                  </h3>
+                  <span class="rounded bg-neutral-200 px-1.5 py-0.5 text-xs font-medium text-neutral-700"
+                    >2</span
+                  >
+                </div>
+
+                <div class="flex flex-col gap-3 p-4">
+                  <!-- Add Source Input -->
+                  <div class="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Paste URL to add context..."
+                      class="flex-1 rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-sm placeholder:text-neutral-400 focus:ring-2 focus:ring-neutral-900 focus:outline-none"
+                    />
+                    <button
+                      class="rounded-md border border-neutral-200/50 bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-200"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <!-- Source List -->
+                  <div class="mt-2 flex flex-col gap-2">
+                    <!-- Source Item -->
+                    <div
+                      class="group flex items-center gap-2 rounded-md border border-neutral-100 bg-neutral-50 px-3 py-2 text-sm"
+                    >
+                      <iconify-icon
+                        icon="solar:document-text-linear"
+                        class="shrink-0 text-neutral-400"
+                      ></iconify-icon>
+                      <span class="flex-1 truncate text-xs text-neutral-700"
+                        >austintexas.gov/department/solar-energy</span
+                      >
+                      <button
+                        class="shrink-0 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-rose-500"
+                      >
+                        <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
+                      </button>
+                    </div>
+                    <!-- Source Item -->
+                    <div
+                      class="group flex items-center gap-2 rounded-md border border-neutral-100 bg-neutral-50 px-3 py-2 text-sm"
+                    >
+                      <iconify-icon
+                        icon="solar:document-text-linear"
+                        class="shrink-0 text-neutral-400"
+                      ></iconify-icon>
+                      <span class="flex-1 truncate text-xs text-neutral-700"
+                        >energy.gov/savings/residential-renewable-energy-tax-credit</span
+                      >
+                      <button
+                        class="shrink-0 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100 hover:text-rose-500"
+                      >
+                        <iconify-icon icon="solar:trash-bin-minimalistic-linear"></iconify-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Editor & Output -->
+            <div class="flex h-[calc(100vh-12rem)] min-h-[600px] flex-col lg:col-span-8">
+              <div
+                class="flex h-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm"
+              >
+                <!-- Editor Toolbar -->
+                <div
+                  class="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 bg-neutral-50/50 p-3"
+                >
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="inline-flex items-center gap-1.5 rounded-full border border-amber-200/50 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700"
+                    >
+                      <span class="h-1 w-1 rounded-full bg-amber-500"></span>
+                      AI Draft
+                    </span>
+                    <span class="text-xs text-neutral-400">~850 words</span>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <button
+                      class="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2.5 py-1.5 text-xs font-medium text-neutral-600 shadow-sm transition-colors hover:bg-neutral-50"
+                    >
+                      <iconify-icon icon="solar:copy-linear" width="14"></iconify-icon> Copy
+                    </button>
+                    <button
+                      class="flex items-center gap-1.5 rounded-md border border-blue-100 bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700 shadow-sm transition-colors hover:bg-blue-100"
+                    >
+                      <iconify-icon icon="solar:refresh-circle-linear" width="14"></iconify-icon> Regenerate
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Editor Content Area -->
+                <div class="group relative flex flex-1 flex-col overflow-y-auto p-6 outline-none md:p-10">
+                  <!-- Title -->
+                  <h1
+                    class="mb-6 text-3xl font-semibold tracking-tight text-neutral-900 outline-none"
+                    contenteditable="true"
+                    placeholder="Enter post title..."
+                  >
+                    The Complete Guide to Solar Tax Incentives in Austin (2024)
+                  </h1>
+
+                  <!-- Body -->
+                  <div
+                    class="flex-1 space-y-5 text-base leading-relaxed text-neutral-700 outline-none"
+                    contenteditable="true"
+                    placeholder="Start typing or use AI to generate content..."
+                  >
+                    <p>
+                      As residents of Austin increasingly look towards sustainable energy, solar panels have
+                      become a prominent feature across local rooftops. Beyond the environmental benefits, the
+                      financial incentives available in 2024 make the transition to solar more accessible than
+                      ever for Travis County homeowners.
+                    </p>
+
+                    <h2 class="mt-8 mb-4 text-xl font-semibold tracking-tight text-neutral-900">
+                      Federal Solar Investment Tax Credit (ITC)
+                    </h2>
+                    <p>
+                      The most significant incentive currently available is the Federal Solar Investment Tax
+                      Credit. For systems installed in 2024, homeowners can claim a 30% tax credit on the
+                      total cost of their solar panel system. This credit is applied directly to your federal
+                      income taxes, significantly reducing the upfront burden of installation.
+                    </p>
+
+                    <h2 class="mt-8 mb-4 text-xl font-semibold tracking-tight text-neutral-900">
+                      Austin Energy Rebates
+                    </h2>
+                    <p>
+                      Locally, Austin Energy continues to offer robust rebates. Residents who complete the
+                      solar education course and use a participating contractor can qualify for a
+                      capacity-based incentive. Currently, this translates to $2,500 for eligible residential
+                      installations, further sweetening the deal on top of federal credits.
+                    </p>
+
+                    <h2 class="mt-8 mb-4 text-xl font-semibold tracking-tight text-neutral-900">
+                      Property Tax Exemptions in Texas
+                    </h2>
+                    <p>
+                      One of the hidden financial perks of installing solar in Texas is the property tax
+                      exemption. Under the Texas Property Tax Code, the increase in home value resulting from
+                      a solar installation is 100% exempt from property taxes. You get the resale value boost
+                      without the recurring tax penalty.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- AI Sources Footnote (Used by model) -->
+                <div class="border-t border-neutral-100 bg-neutral-50 px-6 py-3">
+                  <div class="mb-2 flex items-center gap-2">
+                    <iconify-icon
+                      icon="solar:info-circle-linear"
+                      class="text-neutral-400"
+                      width="14"
+                    ></iconify-icon>
+                    <span class="text-xs font-semibold tracking-wider text-neutral-600 uppercase"
+                      >Citations Used by AI</span
+                    >
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 rounded border border-neutral-200 bg-white px-2 py-1 text-xs text-neutral-600 transition-colors hover:border-blue-200 hover:text-blue-600"
+                    >
+                      <span class="font-medium text-neutral-400">[1]</span> austintexas.gov
+                    </a>
+                    <a
+                      href="#"
+                      class="inline-flex items-center gap-1 rounded border border-neutral-200 bg-white px-2 py-1 text-xs text-neutral-600 transition-colors hover:border-blue-200 hover:text-blue-600"
+                    >
+                      <span class="font-medium text-neutral-400">[2]</span> energy.gov
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

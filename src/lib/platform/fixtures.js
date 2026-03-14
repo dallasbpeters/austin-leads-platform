@@ -1,10 +1,5 @@
 import { getSolarGuideGridItems, getSolarGuidePages } from './guides.js'
-import {
-  mainServices,
-  roofingServices,
-  specialtyServices,
-  servicePages,
-} from './service-catalog.js'
+import { mainServices, roofingServices, specialtyServices, servicePages } from './service-catalog.js'
 
 const categories = {
   solarRoofing: 'Solar + Roofing',
@@ -211,9 +206,9 @@ function titleizeDomain(domain) {
 
 function buildLeadForm(domain, categoryLabel, nameOverride) {
   return {
-    title: `Request information from ${nameOverride || titleizeDomain(domain)}`,
-    description: `Capture high-intent ${categoryLabel.toLowerCase()} demand for ${domain}.`,
-    ctaLabel: `Request ${categoryLabel.toLowerCase()} info`,
+    title: `Get a straight answer from ${nameOverride || titleizeDomain(domain)}`,
+    description: `Connect Texas homeowners with real ${categoryLabel.toLowerCase()} guidance through ${domain}.`,
+    ctaLabel: `Talk to a ${categoryLabel.toLowerCase()} pro`,
   }
 }
 
@@ -241,10 +236,10 @@ export const sites = portfolioDomains.map((entry, index) => {
     leadForm: tier === 'redirect' ? null : buildLeadForm(entry.domain, categories[entry.category], title),
     seo: {
       title,
-      description: `${title} is an owned ${entry.tier.toLowerCase()} domain in the Austin Leads platform portfolio.`,
+      description: `${title} \u2014 honest ${categories[entry.category].toLowerCase()} guidance for Austin and Texas homeowners who want real answers before making a decision.`,
     },
     brand: {
-      eyebrow: tier === 'hero' ? 'Hero Site' : tier === 'landing' ? 'Landing Page' : 'Redirect Domain',
+      eyebrow: tier === 'hero' ? 'Featured Site' : tier === 'landing' ? 'Focused Site' : 'Redirect Domain',
       ...brand,
     },
     organization: {
@@ -260,39 +255,46 @@ export const sites = portfolioDomains.map((entry, index) => {
 const solarHomeSections = [
   {
     type: 'hero',
-    eyebrow: 'Solar-ready home buyers',
-    title: 'Find the Austin neighborhoods where solar penciles out fastest.',
-    body: 'This focused landing page exists to capture buyers and homeowners who want fast answers on solar-readiness, utility savings, and resale value.',
+    eyebrow: 'Solar-ready homes in Austin',
+    title: 'Wondering if your Austin home is actually a good fit for solar?',
+    body: 'Not every house is. This page helps you compare neighborhood factors, roof layout, electric bills, and resale value so you can figure that out before anyone tries to sell you a system.',
+    heroImage: {
+      urls: {
+        regular:
+          'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+      },
+      alt: 'Residential rooftop solar installation under a bright Texas sky',
+    },
     metrics: [
-      { label: 'Primary intent', value: 'Home buyers' },
+      { label: 'Built for', value: 'Homeowners + buyers' },
       { label: 'Page type', value: 'Landing' },
-      { label: 'Target CTA', value: 'Consult' },
+      { label: 'Next step', value: 'Free consultation' },
     ],
   },
   {
     type: 'highlights',
-    title: 'Why this landing page exists',
+    title: 'What you will find here',
     items: [
       {
-        title: 'Separate keyword target',
-        body: 'Own a solar-home keyword cluster without competing with the hero installer site.',
+        title: 'Which Austin neighborhoods work best for solar',
+        body: 'Some areas, roof styles, and tree cover situations are better than others. We break that down so you know where you stand.',
       },
       {
-        title: 'Focused conversion',
-        body: 'Use a lighter content footprint with a single job to do: capture warm discovery traffic.',
+        title: 'What your electric bill is really telling you',
+        body: 'Your bill, roof condition, and home orientation all affect whether solar makes financial sense. We show you how to read those signals.',
       },
       {
-        title: 'Shared platform',
-        body: 'Reuse the same rendering, SEO, and form engine as the hero properties.',
+        title: 'How to spot a solar-ready home vs. one that needs work first',
+        body: 'Some houses are ready today. Others need a roof fix, electrical upgrade, or tree removal first. Knowing the difference saves you thousands.',
       },
     ],
   },
   {
     type: 'cta',
-    title: 'Stand up additional Austin niche pages quickly.',
-    body: 'This template is intentionally lean so more long-tail domains can go live without rebuilding the stack.',
-    ctaLabel: 'Duplicate this landing pattern',
-    ctaHref: '/dashboard',
+    title: "Not sure if your home is a good solar candidate? Let's find out.",
+    body: 'Whether you are buying a home, comparing neighborhoods, or just tired of high energy bills, a quick conversation about your specific house is the fastest way to get a real answer.',
+    ctaLabel: 'Request a free consultation',
+    ctaHref: '/#consultation',
   },
 ]
 
@@ -303,95 +305,106 @@ export const pages = [
     slug: '',
     title: 'Texas Solar and Roofing Pros',
     description:
-      'Texas Solar and Roofing Pros connects roofing, solar, insurance education, and lead capture in one primary service brand.',
+      'Honest roofing, solar, storm-damage, and energy guidance for Texas homeowners who want real answers before making a decision.',
     pageType: 'home',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
         eyebrow: 'Texas solar + roofing',
-        title: 'One place to figure out the roof, the storm damage, and whether solar should come next.',
-        body: 'Texas Solar and Roofing Pros is now the primary service brand. The site needs to work as a real lead-gen business first: clarify roof condition, explain insurance and detach-and-reset issues, and route qualified solar and roofing leads to the right partner.',
+        title: "Storm damage? High electric bills? Let's figure out what your house actually needs.",
+        body: 'Maybe it is hail damage. Maybe the roof is 20 years old. Maybe your electric bill hit $400 last summer and you are wondering if solar is the move. Whatever brought you here, the goal is the same: figure out what is going on with the house and handle it in the right order.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+          },
+          alt: 'Texas home with rooftop solar panels',
+        },
         metrics: [
-          { label: 'Primary market', value: 'Texas homeowners' },
-          { label: 'Core services', value: 'Roofing + solar' },
-          { label: 'Lead flow', value: 'Direct to info@' },
+          { label: 'Who we help', value: 'Texas homeowners' },
+          { label: 'What we cover', value: 'Roofing + solar' },
+          { label: 'How to start', value: 'Free consultation' },
         ],
         actions: [
-          { label: 'Open dashboard', href: '/dashboard', variant: 'default' },
-          { label: 'View publish queue', href: '/publish', variant: 'secondary' },
+          { label: 'See our services', href: '/services', variant: 'default' },
+          { label: 'Read the guides', href: '/guides', variant: 'secondary' },
         ],
       },
       {
         type: 'story',
-        eyebrow: 'The opportunity',
-        title: 'One kitchen, thirty-one menus.',
-        body: 'The platform serves different content, branding, and forms based on the incoming domain. The visitor sees a distinct site. Operations get one codebase, one deployment, one CMS, and one SEO system to maintain.',
+        eyebrow: 'Our approach',
+        title: 'Fix what is broken first. Then talk about upgrades.',
+        body: 'Too many companies try to sell solar and roofing as one big package deal. That is not how homes work. If your roof has storm damage, handle that first. If your HVAC is bleeding money, address that. Solar is a smart move for a lot of Texas homes, but only when the timing is right and the roof underneath is solid.',
       },
       {
         type: 'highlights',
-        title: 'What phase 1 needs to prove',
+        title: 'Here is what homeowners actually come here looking for',
         items: [
           {
-            title: 'Tiered domain strategy',
-            body: 'Hero, landing, and redirect domains each get the right build depth instead of one expensive default.',
+            title: 'A roof answer when the roof is the real problem',
+            body: 'Storm damage, aging shingles, insurance headaches, and detach-and-reset questions deserve straight answers without getting buried in solar upsells.',
           },
           {
-            title: 'Search-ready output',
-            body: 'Pre-rendered metadata, structured data, and per-domain sitemaps make every property machine-readable from day one.',
+            title: 'Solar guidance that starts with the math, not a pitch',
+            body: 'When the roof is solid, the real question is: will solar actually save you money? We walk you through system size, incentives, financing, and payback so you can decide for yourself.',
           },
           {
-            title: 'Operator-friendly tooling',
-            body: 'Sanity handles content. The admin UI handles workflow, publishing, and domain operations.',
+            title: 'A conversation that respects your time',
+            body: 'By the time you reach out, you should already know what your house needs. That way the quote and inspection process is useful from minute one.',
           },
         ],
       },
       {
         type: 'steps',
-        title: 'Platform flow',
+        title: 'How to use this site',
         items: [
-          { title: 'Resolve the host', body: 'Map the incoming domain to a site record and brand profile.' },
           {
-            title: 'Fetch the content',
-            body: 'Read from Sanity when configured, otherwise use seeded fixtures for local build stability.',
+            title: 'Start with the problem staring you in the face',
+            body: 'Storm damage, an old roof, $400 electric bills, or solar curiosity each point to different pages and different first steps.',
           },
           {
-            title: 'Render the template',
-            body: 'Compose the correct page shell, structured data, and lead capture blocks.',
+            title: 'Use the service pages to zero in',
+            body: 'Our service pages help you figure out whether you need roof work, efficiency upgrades, solar planning, or some combination.',
           },
           {
-            title: 'Measure and iterate',
-            body: 'Use the dashboard and publishing queue to expand the portfolio without rebuilding the stack.',
+            title: 'Go deeper with the guides when you want the full picture',
+            body: 'The guides cover cost breakdowns, incentive details, battery options, financing, insurance claims, and roof readiness in plain language.',
+          },
+          {
+            title: 'Request a consultation once you know what you are dealing with',
+            body: 'That way the conversation is about your house, not a generic pitch that could apply to anyone in the zip code.',
           },
         ],
       },
       {
         type: 'faq',
-        title: 'Why this architecture works',
+        title: 'Questions we hear every week',
         items: [
           {
-            question: 'Why not build 31 separate websites?',
+            question: 'Should I fix the roof before I get a solar quote?',
             answer:
-              'Separate codebases multiply maintenance, drift, and hosting overhead. A shared platform keeps the SEO engine consistent while still allowing each domain to feel distinct.',
+              'Almost always, yes. If the roof is damaged or near the end of its life, that needs to be settled first. Otherwise you are building a solar project on top of a problem you will have to deal with later anyway.',
           },
           {
-            question: 'Can each site still look unique?',
+            question:
+              'I am not sure if this is a roof problem or an energy-cost problem. How do I figure it out?',
             answer:
-              'Yes. Each site record includes brand tokens, content, navigation, and lead forms. The engine stays shared; the presentation layer changes per tenant.',
+              'That is exactly what the service pages and consultation are for. Sometimes it is both. The first useful step is figuring out what is actually driving the cost or the urgency, and we can help you sort that out.',
           },
           {
-            question: 'What happens to weaker domains?',
+            question: 'Can roofing and solar be part of the same plan?',
             answer:
-              'They can stay in the inventory, be tracked in the domains UI, and redirect to stronger hero properties until they justify a standalone build.',
+              'Absolutely. But they should not be blurred into one conversation. Roof condition, storm timing, and insurance can all change when solar should happen and how it gets priced. Keeping them separate makes the plan smarter.',
           },
         ],
       },
       {
         type: 'cta',
-        title: 'Phase 1 is the foundation, not the finish line.',
-        body: 'The goal is one production-grade hero site, a real CMS, and the operations tooling needed to scale the next thirty domains quickly.',
-        ctaLabel: 'Review the domain plan',
-        ctaHref: '/domains',
+        title: 'Tell us what is going on with the house. We will point you in the right direction.',
+        body: 'Whether it is a roof that took hail, an electric bill that makes no sense, or a solar project you want to plan the right way, a short conversation about your specific home is the best starting point.',
+        ctaLabel: 'Request a free consultation',
+        ctaHref: '/#consultation',
       },
     ],
   },
@@ -400,52 +413,60 @@ export const pages = [
     siteSlug: 'texas-solar-and-roofing-pros',
     slug: 'solar-costs',
     title: 'Austin Solar Cost Guide',
-    description: 'A service page template for solar pricing, savings, and financing education.',
+    description:
+      'What solar actually costs in Austin, what affects the price, and how to tell if the numbers work for your home.',
     pageType: 'servicePage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Service page',
-        title: 'Austin solar costs are only useful when the assumptions are visible.',
-        body: 'This page is structured like the long-tail service pages the platform will generate at scale: clear pricing ranges, assumptions, FAQ markup, and a focused lead capture step.',
+        eyebrow: 'Solar pricing in Austin',
+        title: 'How much does solar actually cost in Texas? It depends on your house.',
+        body: 'You have probably seen numbers all over the map. That is because every home is different. This page breaks down installed cost, financing, tax credits, and realistic payback so you can compare apples to apples before talking to anyone.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+          },
+          alt: 'Solar panels on a residential roof during daylight',
+        },
         metrics: [
-          { label: 'Typical range', value: '$18k-$32k' },
-          { label: 'Payback', value: '7-9 years' },
-          { label: 'Intent', value: 'High' },
+          { label: 'Typical range', value: '$18k\u2013$32k' },
+          { label: 'Avg. payback', value: '7\u20139 years' },
+          { label: 'Buyer intent', value: 'High' },
         ],
       },
       {
         type: 'highlights',
-        title: 'What this page should answer',
+        title: 'What this page will answer for you',
         items: [
           {
-            title: 'Installed cost',
-            body: 'Use range-based pricing with the variables that change the number.',
+            title: 'What drives the installed price up or down',
+            body: 'Roof layout, shading, panel choice, electrical work, and how you pay for it all change the final number. We show you each variable so nothing is a surprise.',
           },
           {
-            title: 'Credits and exemptions',
-            body: 'Call out incentives without pretending they are guaranteed forever.',
+            title: 'Which credits and exemptions apply to you',
+            body: 'The federal tax credit is the big one, but local utility programs and property-tax exemptions matter too. We explain what is available now and what you need to verify before signing.',
           },
           {
-            title: 'Decision criteria',
-            body: 'Help visitors decide whether they should request a quote or keep researching.',
+            title: 'Whether you should get a quote or keep researching',
+            body: 'Not every homeowner is ready for a quote. We help you figure out if the numbers are in the right ballpark for your situation first.',
           },
         ],
       },
       {
         type: 'faq',
-        title: 'Pricing questions',
+        title: 'Solar pricing questions',
         items: [
           {
-            question: 'Should every solar page use the same cost copy?',
+            question: 'Why do solar quotes vary so much from house to house?',
             answer:
-              'No. Each domain and page should target a distinct keyword cluster and angle so the properties do not compete with one another.',
+              'Because your roof, shade, electrical panel, equipment choice, and financing all change the price. A neighbor three doors down could get a quote $8,000 different from yours and both numbers could be honest. This page helps you understand why.',
           },
           {
-            question: 'Where should the final numbers come from?',
+            question: 'How do I know if a solar quote is actually fair?',
             answer:
-              'From verified pricing sources and human review before publication. The platform can scaffold the structure; accuracy still needs editorial input.',
+              'When you understand what drives the cost, you can spot inflated numbers and lowball bids. This page gives you the framework so you walk into any quote conversation informed.',
           },
         ],
       },
@@ -456,36 +477,43 @@ export const pages = [
     siteSlug: 'texas-solar-and-roofing-pros',
     slug: 'services',
     title: 'Services',
-    description: 'Energy-saving home services, roofing support, and solar planning for Texas homeowners.',
+    description:
+      'Roofing, solar, efficiency, and home-energy services for Texas homeowners who want to spend less and fix what matters.',
     pageType: 'servicePage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Our services',
-        title: 'Lower your energy bills with the right improvements, not guesswork.',
-        body: 'We help homeowners sort through practical energy and home-upgrade decisions, from audits and efficiency work to roofing coordination, heat pump upgrades, and solar plus battery planning.',
+        eyebrow: 'What we do',
+        title: "Stop guessing why your energy bills are so high. Let's fix the actual problem.",
+        body: 'We help Texas homeowners figure out whether the issue is the roof, the insulation, the HVAC, or all three, then build a plan that actually lowers bills instead of just adding panels and hoping for the best.',
+        heroImage: {
+          urls: {
+            regular: '/assets/services/photos/energy-audits.jpg',
+          },
+          alt: 'Home energy audit consultation in progress',
+        },
         metrics: [
           { label: 'Best for', value: 'High bills + aging homes' },
-          { label: 'Core focus', value: 'Efficiency, roofing, solar' },
-          { label: 'Next step', value: 'Consultation' },
+          { label: 'Focus areas', value: 'Efficiency, roofing, solar' },
+          { label: 'How to start', value: 'Free consultation' },
         ],
         actions: [
-          { label: 'Request a consultation', href: '/#consultation', variant: 'default' },
-          { label: 'Explore solar guides', href: '/guides', variant: 'secondary' },
+          { label: 'Request a free consultation', href: '/#consultation', variant: 'default' },
+          { label: 'Read the solar guides', href: '/guides', variant: 'secondary' },
         ],
       },
       {
         type: 'story',
-        eyebrow: 'How this page helps',
-        title: 'Some homes need efficiency work first. Some need roof work. Some are ready for solar now.',
-        body: 'The right solution depends on what is driving the utility bill, what condition the home is in, and whether the next move should be weatherization, HVAC efficiency, roofing work, or a solar project. This page is meant to show the service categories clearly so you can start in the right place.',
+        eyebrow: 'The honest truth',
+        title: 'Some homes need efficiency work first. Some need a new roof. Some are ready for solar today.',
+        body: 'The right answer depends on what is driving your bill, what shape the house is in, and whether the smart move is weatherization, HVAC work, a roof fix, or a solar project. We lay out the categories so you can start in the right place instead of buying the wrong thing first.',
       },
       {
         type: 'serviceGrid',
         eyebrow: 'Service categories',
-        title: 'Our services',
-        body: 'These are the core services we use to lower energy waste, improve comfort, protect the home, and help homeowners figure out what should happen first.',
+        title: 'What we help with',
+        body: 'Everything here is about one thing: lowering energy waste, improving comfort, protecting the house, and helping you figure out the right order to tackle it all.',
         items: mainServices.map((service) => ({
           ...service,
           href: `/services/${service.slug}`,
@@ -495,7 +523,7 @@ export const pages = [
           ...service,
           href: `/services/${service.slug}`,
         })),
-        secondaryTitle: 'Other Services',
+        secondaryTitle: 'Specialty Services',
         secondaryItems: specialtyServices.map((service) => ({
           ...service,
           href: `/services/${service.slug}`,
@@ -503,92 +531,100 @@ export const pages = [
       },
       {
         type: 'steps',
-        title: 'How to choose the right starting point',
+        title: 'How to pick the right starting point',
         items: [
           {
-            title: 'Start with the problem you already know',
-            body: 'If the issue is obvious storm damage, start there. If the problem is just high utility bills, start with the efficiency side before assuming solar is automatically the first move.',
+            title: 'Start with the problem you already know about',
+            body: 'If hail hit last week, start with roofing. If the problem is a $400 electric bill and no storm damage, start on the efficiency side. Do not let someone sell you solar when the real issue is a leaky attic.',
           },
           {
-            title: 'Separate immediate repair from long-term upgrade',
-            body: 'Some projects are about fixing damage or performance now. Others are about improving the home over the next several years. Keeping those decisions separate makes the plan much cleaner.',
+            title: 'Separate emergency repairs from long-term upgrades',
+            body: 'Some projects are about fixing damage right now. Others are about improving the home over the next 5\u201310 years. Keeping those decisions separate saves you money and headaches.',
           },
           {
-            title: 'Use the house condition to set the order',
-            body: 'Roof condition, HVAC age, insulation gaps, and electrical limitations can change what should happen first and what should wait.',
+            title: 'Let the house condition set the order',
+            body: 'Roof age, HVAC condition, insulation gaps, and electrical capacity all affect what should happen first. We help you read those signals.',
           },
           {
-            title: 'Then price the right solution',
-            body: 'Once the real issue is clear, the quote process becomes much more useful because you are comparing options built around the actual home instead of a generic pitch.',
+            title: 'Then get a quote that actually makes sense',
+            body: 'Once you know the real issue, the quote process works. You are comparing options built around your house, not a generic package.',
           },
         ],
       },
       {
         type: 'faq',
-        title: 'Service questions homeowners ask first',
+        title: 'Questions we hear first',
         items: [
           {
-            question: 'Do I need solar, or do I need efficiency work first?',
+            question: 'Do I need solar, or do I need to fix something else first?',
             answer:
-              'That depends on what is driving the bill. In some homes, insulation, ducts, or HVAC issues should be addressed first. In others, the house is ready for solar right away. The useful first step is identifying which problem is actually costing you money.',
+              'Depends on what is driving the bill. In some homes, insulation, duct leaks, or an aging HVAC are burning more money than solar would save. In others, the house is ready for panels today. The useful first step is figuring out which one you are dealing with.',
           },
           {
-            question: 'Can roofing, efficiency, and solar all be part of the same plan?',
+            question: 'Can roofing, efficiency work, and solar all be part of one plan?',
             answer:
-              'Yes, but they should not all be sold as one blurred package. The right sequence matters, and each part of the project should stand on its own with a clear reason for doing it.',
+              'Yes, but they should not be sold as one blurred package. Each piece should make sense on its own, with a clear reason for doing it and a clear order. That is how you avoid overspending.',
           },
           {
-            question: 'Is this page only about solar?',
+            question: 'Is this site only about solar?',
             answer:
-              'No. It is intentionally broader than a solar-only page because many homeowners need a mix of energy-saving upgrades, home-condition work, and solar planning rather than one isolated answer.',
+              'No. We cover it all because most homeowners need a mix of energy upgrades, home repairs, and solar planning, not just one isolated answer. The house does not care about marketing categories.',
           },
         ],
       },
       {
         type: 'cta',
-        title: 'Tell us what the house is doing, and we’ll help you figure out the right place to start.',
-        body: 'Whether the issue is storm damage, high bills, older equipment, or a solar project you want to plan carefully, the next step should be a clearer diagnosis, not a generic sales script.',
-        ctaLabel: 'Request a consultation',
+        title: 'Tell us what the house is doing and we will help you figure out where to start.',
+        body: 'Storm damage, sky-high bills, aging equipment, or a solar project you want to plan carefully. Whatever it is, the next step should be a real conversation about your home, not a cookie-cutter sales call.',
+        ctaLabel: 'Request a free consultation',
         ctaHref: '/#consultation',
       },
     ],
   },
   {
-    id: 'page-solar-lane',
+    id: 'page-solar',
     siteSlug: 'texas-solar-and-roofing-pros',
     slug: 'solar',
     title: 'Solar',
     description:
-      'A dedicated solar lane covering savings, incentives, system sizing, and whether solar makes sense for the home.',
+      'Solar guidance for Texas homeowners who want to know the real savings before committing to a system.',
     pageType: 'servicePage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Solar lane',
-        title: 'Use the solar lane when the question is savings, system fit, and long-term value.',
-        body: 'This part of the site is for homeowners comparing system size, electric bill savings, incentives, financing choices, and whether the numbers actually work for their home.',
+        eyebrow: 'Solar for Texas homes',
+        title:
+          "Will solar actually save you money? Let's look at the numbers before anyone tries to sell you panels.",
+        body: 'This is for homeowners who want to compare system size, electric bill impact, tax credits, financing, and payback before they commit. If the math works, great. If it does not, you should know that upfront.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+          },
+          alt: 'Residential solar array in sunlight',
+        },
         metrics: [
-          { label: 'Focus', value: 'Savings + fit' },
-          { label: 'Topics', value: 'Cost, incentives, payoff' },
-          { label: 'Best for', value: 'Solar planning' },
+          { label: 'Focus', value: 'Real savings' },
+          { label: 'Covers', value: 'Cost, credits, payoff' },
+          { label: 'Built for', value: 'Planning stage' },
         ],
       },
       {
         type: 'highlights',
-        title: 'What the solar lane should answer',
+        title: 'What a useful solar conversation should cover',
         items: [
           {
-            title: 'System size and production',
-            body: 'Show how roof layout, shade, usage, and goals affect the right system size instead of pretending every home wants the same design.',
+            title: 'System size that matches your home, not a sales target',
+            body: 'Your roof layout, shade, energy use, and goals all affect the right system size. We show you what matters instead of pushing the biggest system possible.',
           },
           {
-            title: 'Cost and financing',
-            body: 'Break out cash price, financed price, tax-credit assumptions, and realistic payback without dressing up the numbers.',
+            title: 'Cost and financing with the assumptions laid bare',
+            body: 'Cash price, financed price, what the tax credit actually covers, and realistic payback. No dressed-up numbers or best-case-only projections.',
           },
           {
-            title: 'Readiness questions',
-            body: 'Help the homeowner decide whether they should keep researching, request a quote, or first solve a roof or electrical issue.',
+            title: 'Whether now is the right time or you should wait',
+            body: 'Sometimes the smart move is to fix the roof first, upgrade the HVAC, or wait for a better financing window. We help you figure that out.',
           },
         ],
       },
@@ -597,66 +633,74 @@ export const pages = [
         title: 'Solar questions',
         items: [
           {
-            question: 'Can the solar lane stay separate from roofing?',
+            question: 'Can I evaluate solar without it turning into a roofing conversation?',
             answer:
-              'Yes. It should stand on its own for homeowners who are evaluating energy savings first, while still linking clearly to roofing pages where the roof condition changes the project.',
+              'Yes. Solar should stand on its own for homeowners focused on savings. If your roof changes the picture, we will tell you, but we are not going to hijack your solar research with a roofing upsell.',
           },
           {
-            question: 'What makes this more useful than a generic installer page?',
+            question: 'How is this different from a typical solar installer page?',
             answer:
-              'It should explain the assumptions behind savings, not just push a quote button. The best solar pages help a homeowner understand the math before they talk to anyone.',
+              'Most installer pages exist to get you to click "Get a Quote" as fast as possible. We explain the assumptions behind the savings so you actually understand the math before you talk to anyone.',
           },
         ],
       },
       {
         type: 'cta',
-        title: 'Use the guide library when you want a deeper solar answer.',
-        body: 'The guide pages go deeper on costs, batteries, incentives, financing, and roof readiness when the quick service-page summary is not enough.',
-        ctaLabel: 'Browse solar guides',
+        title: 'Want the full picture? The guide library goes deeper.',
+        body: 'Our guides cover costs, batteries, incentives, financing options, and roof readiness in the kind of detail a quick service page cannot.',
+        ctaLabel: 'Browse the solar guides',
         ctaHref: '/guides',
       },
     ],
   },
   {
-    id: 'page-roofing-lane',
+    id: 'page-roofing',
     siteSlug: 'texas-solar-and-roofing-pros',
     slug: 'roofing',
     title: 'Roofing',
     description:
-      'A dedicated roofing lane for hail damage, aging roofs, insurance friction, and roof replacement planning.',
+      'Straight-talk roofing help for Texas homeowners dealing with hail damage, aging roofs, insurance claims, and replacement decisions.',
     pageType: 'servicePage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Roofing lane',
-        title: 'Use the roofing lane when the problem is storm damage, claim timing, or the roof itself.',
-        body: 'This side of the site is for homeowners dealing with hail, older roofs, insurance friction, replacement timing, and the questions that need to be answered before any connected solar conversation makes sense.',
+        eyebrow: 'Roofing in Texas',
+        title:
+          'Hail damage, insurance headaches, and an aging roof all hitting at once? We can help you sort it out.',
+        body: 'When a storm rolls through, everything gets complicated fast: the roof, the claim, the adjuster, and if you have solar, the detach-and-reset question nobody warned you about. This side of the site helps you handle it in the right order.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1656646549671-000665d8d8bc?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+          },
+          alt: 'Residential roof viewed from above for inspection and replacement planning',
+        },
         metrics: [
           { label: 'Focus', value: 'Storm + roof condition' },
-          { label: 'Topics', value: 'Claims, RCV/ACV, replacement' },
-          { label: 'Best for', value: 'Roof triage' },
+          { label: 'Covers', value: 'Claims, RCV/ACV, replacement' },
+          { label: 'Built for', value: 'Roof triage' },
         ],
       },
       {
         type: 'steps',
-        title: 'What the roofing lane should help you do',
+        title: 'What a useful roofing conversation helps you do',
         items: [
           {
-            title: 'Figure out whether a storm is relevant',
-            body: 'Start with hail history, visible symptoms, and a roof inspection instead of guessing from one bad weather day.',
+            title: 'Figure out if the storm actually damaged your roof',
+            body: 'Bad weather does not automatically mean roof damage. Start with a real inspection and actual evidence, not a door-knocker who showed up the day after the hail.',
           },
           {
-            title: 'Understand the policy language',
-            body: 'RCV vs ACV, depreciation, age thresholds, and detach-and-reset implications can materially change the project economics.',
+            title: 'Understand the insurance language before it costs you',
+            body: 'RCV vs. ACV, depreciation holdback, age thresholds, and detach-and-reset line items all affect what you are actually working with after the adjuster leaves.',
           },
           {
-            title: 'Separate claim urgency from sales pressure',
-            body: 'A useful roofing page should clarify decisions, not rush the homeowner into the wrong next step.',
+            title: 'Separate the urgency from the sales pressure',
+            body: 'A damaged roof is urgent. A roofer pressuring you to sign before the insurance check clears is not. We help you tell the difference.',
           },
           {
-            title: 'Connect the roof back to solar only when appropriate',
-            body: 'If solar is part of the long-term plan, the roofing lane should explain when and how that overlap matters.',
+            title: 'Connect the roof back to solar when it matters',
+            body: 'If panels are already up there or solar is in your future plans, the roof decision affects the solar timeline. We make sure those two conversations stay connected.',
           },
         ],
       },
@@ -665,22 +709,22 @@ export const pages = [
         title: 'Roofing questions',
         items: [
           {
-            question: 'Why separate roofing from solar in the site structure?',
+            question: 'Why do you keep roofing separate from solar on this site?',
             answer:
-              'Because the intent is different. A storm-damage or claim visitor needs roof-specific answers first. Solar can be connected later, but it should not hijack the first visit.',
+              'Because a homeowner who just got hit by hail needs roof answers, not a solar pitch. We connect the two when it matters, but the first visit should answer the first question.',
           },
           {
-            question: 'Should detach and reset live here or on solar pages?',
+            question: 'Where does detach-and-reset fit in?',
             answer:
-              'Both. It belongs in roofing because it often starts as a roof and insurance issue, and it belongs in solar because it affects total project planning and cost.',
+              'Both places. It starts as a roofing and insurance issue (who pays, how it is scoped), but it also affects solar project planning and total cost. We cover it on both sides so nothing falls through the cracks.',
           },
         ],
       },
       {
         type: 'cta',
-        title: 'Start with the hail page when the question is storm damage.',
-        body: 'That page should become the most practical local entry point for homeowners trying to figure out whether recent weather activity may have created a real roof issue.',
-        ctaLabel: 'Open hail damage page',
+        title: 'Dealing with hail damage, an insurance claim, or a solar detach question?',
+        body: 'The hail damage page walks you through what to document, what to ask before the claim gets messy, and how to handle detach-and-reset when solar is already on the roof.',
+        ctaLabel: 'Go to the hail damage page',
         ctaHref: '/hail-damage',
       },
     ],
@@ -690,40 +734,48 @@ export const pages = [
     siteSlug: 'texas-solar-and-roofing-pros',
     slug: 'incentives',
     title: 'Austin Solar Incentives',
-    description: 'A focused incentives page with policy-oriented FAQ content.',
+    description:
+      'Which solar incentives, tax credits, and exemptions are actually available for Texas homeowners right now.',
     pageType: 'locationPage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Location page',
-        title: 'Use policy pages to answer the questions AI search engines quote most often.',
-        body: 'Incentive pages are ideal for clear factual writing, structured FAQ blocks, and update timestamps. They often become the most cited assets in AI overviews and answer engines.',
+        eyebrow: 'Solar incentives in Texas',
+        title: 'Know exactly which solar incentives apply to your home before you price a thing.',
+        body: 'The federal tax credit gets the headlines, but local utility programs, property-tax exemptions, and financing deals all affect the real number. This page tells you what is available now and what you need to double-check before relying on it.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+          },
+          alt: 'Solar panels representing incentive and project planning',
+        },
         metrics: [
-          { label: 'Schema', value: 'FAQ + Article' },
-          { label: 'Update pattern', value: 'Quarterly' },
-          { label: 'Goal', value: 'Citations' },
+          { label: 'Biggest factor', value: 'Federal tax credit' },
+          { label: 'Also check', value: 'Local utility programs' },
+          { label: 'Use this for', value: 'Project planning' },
         ],
       },
       {
         type: 'story',
-        eyebrow: 'Content pattern',
-        title: 'Answer the rule, then explain the nuance.',
-        body: 'This template works best when it states the current credit or exemption clearly, then follows with verification notes, deadlines, and local applicability details.',
+        eyebrow: 'What you need to verify',
+        title: 'We will tell you what is on the table. You verify it is still there when you are ready.',
+        body: 'Incentive programs change. Local rebates run out. Eligibility rules shift. A useful incentives page gives you the current picture and tells you exactly where to confirm the details before you sign anything.',
       },
       {
         type: 'faq',
-        title: 'Incentive FAQs',
+        title: 'Incentive questions',
         items: [
           {
-            question: 'Why are incentive pages important for AI search?',
+            question: 'Which incentives should I check first?',
             answer:
-              'They map cleanly to question-and-answer prompts and are easier for AI systems to parse and cite than vague homepage marketing copy.',
+              'Start with the federal solar tax credit. Then check your local utility for any active rebate, look at the property-tax exemption for solar in Texas, and factor in how financing assumptions change the payback.',
           },
           {
-            question: 'Should the page claim we handle rebate paperwork?',
+            question: 'Can I count on a rebate still being available when I am ready to install?',
             answer:
-              'Only if the operating business actually does. The platform should default to factual, supportable claims rather than inflated service promises.',
+              'Not always. Local programs can change or run out of funding. We help you identify what is available today, but always confirm current status before committing.',
           },
         ],
       },
@@ -735,42 +787,97 @@ export const pages = [
     slug: 'about',
     title: 'About',
     description:
-      'About Texas Solar and Roofing Pros and how the lead-generation and referral workflow is intended to work.',
+      "Who we are, how we work, and why we built a site that puts the homeowner's question first.",
     pageType: 'page',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'About the business',
-        title: 'A lead-gen business for homeowners who need clearer next steps on roofing and solar.',
-        body: 'Texas Solar and Roofing Pros is being positioned as a service brand that helps homeowners sort out what they are dealing with and routes good-fit opportunities to the right operating partners.',
+        eyebrow: 'About us',
+        title: 'Texas homeowners deserve straight answers about roofs and solar.',
+        body: 'Texas Solar and Roofing Pros exists to help homeowners cut through the noise. Roof condition, storm damage, insurance friction, energy upgrades, solar planning. We help you understand what is happening with your house so you can make the call, not get pressured into one.',
+        heroImage: {
+          urls: {
+            regular: '/images/about-us.jpg',
+          },
+          alt: 'Residential home exterior representing Texas homeowners and home improvement planning',
+        },
         metrics: [
-          { label: 'Model', value: 'Lead generation' },
-          { label: 'Focus', value: 'Roofing + solar' },
-          { label: 'Next step', value: 'Direct consultation' },
+          { label: 'Focus', value: 'Texas Homeowners' },
+          { label: 'Coverage', value: 'Roofs & Solar' },
+          { label: 'Approach', value: 'Straight talk' },
         ],
       },
       {
         type: 'story',
-        eyebrow: 'Positioning',
-        title: 'This site needs to feel credible, useful, and direct.',
-        body: 'The right about page should explain how the business thinks, what kinds of homeowner problems it helps clarify, and why the site covers both roofing and solar without pretending they are the same conversation.',
+        eyebrow: 'How we think',
+        title: 'Useful first. Credible always. No pressure ever.',
+        body: 'We cover both roofing and solar because that is how real homeowner problems work. A hail-damaged roof changes the solar timeline. A $400 electric bill might be an insulation problem, not a solar problem. We treat them as connected decisions because your house does not care about marketing categories.',
+      },
+      {
+        type: 'aboutProfile',
+        eyebrow: 'Meet the team',
+        title: 'Kathie Millen and Tandra Peters help homeowners sort out the roof, the solar timing, and the insurance questions before the project drifts.',
+        body: 'Kathie brings the solar side into focus when roof condition, production, detach-and-reset, and project timing all have to line up. Tandra brings the roofing perspective, inspection mindset, and on-the-ground practicality that helps families understand what the roof is actually telling them and what the next step should be.',
+        people: [
+          {
+            label: 'Profile',
+            name: 'Kathie Millen',
+            role: 'Solar advisor and homeowner guide',
+            blurb:
+              'Kathie helps homeowners understand when solar makes sense, when roofing or insurance issues need to be solved first, and how to keep the whole project aligned so the next step is actually the right one.',
+            profileImage: {
+              urls: {
+                regular: '/images/kathie-millen.png',
+              },
+              alt: 'Kathie Millen',
+            },
+            certificationLabel: 'Certification',
+            certificationTitle: 'NABCEP Certified PV Technical Sales Professional',
+            badgeImage: {
+              urls: {
+                regular: 'https://www.nabcep.org/wp-content/uploads/2020/01/PVTS-Registered-Seal.jpg',
+              },
+              alt: 'NABCEP Certified PV Technical Sales Professional badge',
+            },
+          },
+          {
+            label: 'Roofing Consultant',
+            name: 'Tandra Peters',
+            role: 'Roofing consultant',
+            blurb:
+              'Tandra helps homeowners make sense of roof inspections, storm-related findings, repair-versus-replacement questions, and what to do next when the house, the claim, and the timeline all start colliding. She brings a practical roofing perspective shaped by four years of consulting work and the real-life lens of raising a family while managing a home.',
+            profileImage: {
+              urls: {
+                regular:
+                  'https://framerusercontent.com/images/uiHRL1xLU2ipXyTy47BrE94JhGI.jpg?scale-down-to=1024',
+              },
+              alt: 'Tandra Peters',
+            },
+          },
+        ],
+      },
+      {
+        type: 'quote',
+        eyebrow: 'Built on conviction',
+        title: 'Our mission',
+        body: "We run this business to honor God — which means we would rather give you the honest answer than the profitable one. If your home does not need the work, we'll say so. Doing right by people isn't a strategy. It's the standard.",
       },
       {
         type: 'highlights',
-        title: 'What should live here over time',
+        title: 'What you should expect from us',
         items: [
           {
             title: 'Mission and values',
-            body: 'Explain the operating values and the practical homeowner-first posture of the brand.',
+            body: 'We believe homeowners make better decisions when they understand the problem first. Every page on this site is built around that idea.',
           },
           {
             title: 'Credentials and partners',
-            body: 'Show certifications, training, and the operating companies that ultimately handle the field work.',
+            body: 'Certifications, training, and the operating companies that handle the field work. We want you to know who you are working with.',
           },
           {
-            title: 'Lead routing clarity',
-            body: 'Make it obvious how inquiries are reviewed and where they go, so the business model does not feel hidden.',
+            title: 'A clear process from first click to consultation',
+            body: 'How we review questions, how consultations work, and what to expect after you reach out. No surprises.',
           },
         ],
       },
@@ -780,84 +887,349 @@ export const pages = [
     id: 'page-hail-damage',
     siteSlug: 'texas-solar-and-roofing-pros',
     slug: 'hail-damage',
-    title: 'Hail Damage and Roof Claims',
+    title: 'Hail Damage, Roof Claims, and Solar Roof Reset Questions',
     description:
-      'A dedicated Texas hail-damage page focused on storm timing, roof impact, claim language, and next-step inspections.',
+      'Texas hail damage help: what to do about your roof, your insurance claim, and your solar panels before the project gets expensive and confusing.',
     pageType: 'servicePage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Roofing lane',
-        title: 'Find out whether hail hit your area and what it may mean for your roof.',
-        body: 'This page is the homeowner entry point for recent storm activity, hail damage patterns, roof-inspection timing, and the insurance questions that usually follow.',
+        eyebrow: 'Hail damage + insurance',
+        title:
+          'Hail hit your home? Here is how to handle the roof, the claim, and the solar panels without getting burned.',
+        body: 'The real challenge is not the storm. It is figuring out whether the roof shows real damage, whether the insurance scope covers everything, and how to handle detach-and-reset if solar is already up there. That is where projects get slow, expensive, and confusing.',
+        heroImage: {
+          urls: {
+            regular: '/images/hail-damage.png',
+          },
+          alt: 'Storm-damaged roof representing hail claim and reroof concerns',
+        },
         metrics: [
-          { label: 'Primary intent', value: 'Roofing' },
-          { label: 'Focus', value: 'Storm + claim triage' },
-          { label: 'CTA', value: 'Inspection request' },
+          { label: 'Main concern', value: 'Roof damage + claims' },
+          { label: 'Also covers', value: 'Solar detach + reset' },
+          { label: 'Best next step', value: 'Inspection + documentation' },
+        ],
+      },
+      {
+        type: 'story',
+        eyebrow: 'What homeowners are actually dealing with',
+        title:
+          'The stress starts when the roofer, the insurance company, and the solar crew all act like someone else is handling the hard part.',
+        body: 'The storm headline is not the problem. The problem is whether the roof evidence supports the claim, whether the adjuster missed code items or supplements, and whether anyone has defined the detach-and-reset plan before the reroof crew shows up. That is what we help you sort out.',
+      },
+      {
+        type: 'quote',
+        eyebrow: 'Our promise',
+        title: 'Texas Solar and Roofing Pros',
+        body: 'We help you sort out three things before any work starts: the roof condition, the insurance scope, and the solar removal-and-reinstall plan. When those three stay aligned, the project goes smoother and costs less.',
+      },
+      {
+        type: 'highlights',
+        title: 'What we help you figure out on the roofing and insurance side',
+        items: [
+          {
+            title: 'Does your roof actually have storm damage, or just age?',
+            body: 'A bad storm in the area does not mean your roof is damaged. The real question is whether your roof shows consistent hail impact that changes the repair decision, not just scattered cosmetic marks.',
+          },
+          {
+            title: 'How your policy language changes what you are actually working with',
+            body: 'RCV vs. ACV, depreciation holdback, deductibles, and age-related exclusions all affect the real budget after the adjuster writes the first scope. You need to understand those terms before you sign anything.',
+          },
+          {
+            title: "Whether the adjuster's first scope is actually complete",
+            body: 'It usually is not. Code items, supplements, ventilation, decking issues, and other legitimate line items often need to be documented before the reroof budget makes sense.',
+          },
+        ],
+      },
+      {
+        type: 'story',
+        eyebrow: 'When solar is already on the roof',
+        title: 'Panels on the roof turn a roofing claim into a three-way coordination problem.',
+        body: 'Now you need the reroof and the solar work sequenced correctly. That means documenting system condition before removal, defining who handles detach-and-reset, checking for panel or wiring damage, and making sure the reinstall is not treated as an afterthought.',
+      },
+      {
+        type: 'serviceGrid',
+        title: 'What Hail Actually Does to a Texas Roof',
+        subtitle: 'Hailstorms roll through Texas every year. If your home was in the path, the damage might not be obvious from the ground — but ignoring it gets expensive fast.',
+        items: [
+          {
+            title: 'Roof leaks that start small and get worse',
+            body: 'Hail cracks and punctures let water in. What starts as a small ceiling stain turns into warped decking, ruined insulation, and a repair bill that doubles every month you wait.',
+            imageUrl: '/images/water-dripping-from-ceiling-damaged-interior-space-winter-season.jpg',
+          },
+          {
+            title: 'Mold you won\'t see until it\'s a problem',
+            body: 'That moisture has to go somewhere. It feeds mold behind walls and under insulation — the kind you don\'t notice until you smell it or someone in the house starts getting sick.',
+            imageUrl: '/images/concrete-roof-wood-sky.jpg',
+          },
+          {
+            title: 'Missing or cracked tiles that leave the house exposed',
+            body: 'Hail knocks tiles loose or shatters them outright. Every gap is an open door for rain, pests, and heat loss. The longer it sits, the more damage spreads underneath.',
+            imageUrl: '/images/overlapping-rows-yellow-ceramic-roofing-tiles-mounted-wooden-boards-covering-residential-building-roof-construction.jpg',
+          },
+        ],
+      },
+      {
+        type: 'steps',
+        title: 'How to keep the roof, insurance, and solar scopes aligned',
+        items: [
+          {
+            title: 'Start with photos, notes, and storm timing',
+            body: 'Document visible roof damage, interior leaks, soft-metal hits, and when the storm happened. Build the claim on evidence, not assumptions.',
+          },
+          {
+            title: 'Get a real roof inspection, not just a weather recap',
+            body: 'The inspection should tell you whether the roof actually shows storm damage, whether repair is realistic, and whether a claim or full replacement is justified.',
+          },
+          {
+            title: 'Review the policy and scope before approving any work',
+            body: 'Do not assume the first adjuster scope is complete. Check depreciation, code items, exclusions, and likely supplements before treating the budget as final.',
+          },
+          {
+            title: 'Lock down detach-and-reset responsibilities early',
+            body: 'If solar panels are on the roof, define who removes them, who reinstalls them, how condition is documented, and what happens if solar components are also damaged. Do this before the reroof, not during.',
+          },
         ],
       },
       {
         type: 'hailMap',
-        title: 'Hail in your area?',
-        body: 'Search by ZIP code, city, or current location to see active alerts, storm conditions, and whether this looks like a location worth documenting for a roof inspection.',
+        title: 'Use the storm map as supporting evidence, not the whole decision.',
+        body: 'Check recent storm activity for your property and compare it to what the roof inspection actually finds. The map supports the conversation. It does not replace boots on the roof.',
         items: [
           {
-            title: 'Search by location',
-            body: 'Check the neighborhood or ZIP code first, then compare the weather signal to what you are seeing on the roof, gutters, vents, and windows.',
+            title: 'Anchor the timeline',
+            body: 'Use storm dates and location data to connect the weather event, the inspection, and the claim conversation into one clear timeline.',
           },
           {
-            title: 'See claim-relevant context',
-            body: 'Look for severe storm alerts, wind gusts, and rain intensity so the next conversation starts with timing and evidence instead of guesswork.',
+            title: 'Back up your documentation',
+            body: 'The map is most useful when it supports your photos, notes, and a roof-level inspection instead of standing alone.',
           },
           {
-            title: 'Convert quickly',
-            body: 'If the weather signal and roof condition line up, move straight into a roof review request while the storm timeline is still fresh.',
+            title: 'Keep the next step simple',
+            body: 'If the roof concerns, inspection findings, and storm timing all line up, move into scope review and claim questions without overcomplicating it.',
           },
         ],
         ctaLabel: 'Request a roof review',
         ctaHref: '#estimate',
       },
       {
-        type: 'steps',
-        title: 'What homeowners should do after a storm',
+        type: 'faq',
+        title: 'Hail damage, claims, and solar reset questions',
         items: [
           {
-            title: 'Document the timing',
-            body: 'Write down the storm date, neighborhood, and any obvious exterior damage before details get fuzzy.',
+            question: 'Does hail always mean I need a new roof?',
+            answer:
+              'No. Some roofs show minor or repairable damage. Others show enough impact to justify replacement. The useful inspection is the one that tells you the difference honestly, not the one that always says "you need a new roof."',
           },
           {
-            title: 'Check the policy type',
-            body: 'RCV and ACV language can change how a claim feels financially, especially on older roofs.',
+            question: 'What is RCV vs. ACV and why should I care?',
+            answer:
+              'It changes how much money you are actually working with. Replacement cost value and actual cash value are not the same thing, and depreciation or policy limits can leave you covering a much bigger gap than expected.',
           },
           {
-            title: 'Schedule an inspection',
-            body: 'A qualified roof inspection should answer whether the damage looks claim-worthy, cosmetic, or unrelated to the storm.',
+            question: 'Who pays for detach-and-reset when solar is already on the roof?',
+            answer:
+              'Sometimes insurance contributes, sometimes it does not, and sometimes it depends on how the scope is written. That is why this needs to be nailed down before the reroof starts, not argued about halfway through.',
           },
           {
-            title: 'Avoid rushing the solar decision',
-            body: 'If the roof is now a live issue, separate the roofing conversation from the solar conversation until the condition is clear.',
+            question: 'What if the roof claim is approved but my solar panels are also damaged?',
+            answer:
+              'That should be caught before reinstall. A good detach-and-reset plan documents system condition during removal so damaged panels, wiring, or mounts do not become a surprise after the roof is done.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'page-insurance-basics',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'insurance-basics',
+    title: 'Insurance Basics for Roof and Storm Claims',
+    description:
+      'A plain-language guide to RCV, ACV, deductibles, supplements, depreciation, and how roof and solar scopes get out of sync after a storm claim.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'hero',
+        eyebrow: 'Insurance basics',
+        title: 'Understand the claim before the paperwork starts driving the project.',
+        body: 'Roof claims get expensive when the language is unclear. Deductibles, depreciation, supplements, exclusions, and detach-and-reset all change the real number you are working with. This page is here to make those pieces easier to sort before you sign anything.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2200',
+          },
+          alt: 'Insurance paperwork and home planning documents on a desk',
+        },
+        actions: [
+          { label: 'Talk through a claim', href: '#consultation', variant: 'default' },
+          { label: 'See hail damage help', href: '/hail-damage', variant: 'secondary' },
+        ],
+        metrics: [
+          { label: 'What this covers', value: 'Roof + solar claims' },
+          { label: 'Focus', value: 'Scope and payout clarity' },
+          { label: 'Best for', value: 'Storm-driven roof decisions' },
+        ],
+      },
+      {
+        type: 'story',
+        eyebrow: 'Why this matters',
+        title: 'Most of the trouble starts after the storm, when the numbers and scope stop matching the house.',
+        body: 'The adjuster summary is not the same thing as a finished scope. Homeowners get trapped between roof quotes, depreciation holdback, deductible expectations, policy exclusions, and the solar question nobody raised early enough. The goal is to understand where the money is supposed to come from, what is still missing from the scope, and what should be clarified before work starts.',
+      },
+      {
+        type: 'highlights',
+        title: 'The claim terms that change the real budget',
+        items: [
+          {
+            title: 'RCV vs. ACV',
+            body: 'Replacement cost value and actual cash value are not interchangeable. One usually assumes recoverable depreciation. The other can leave you covering a much larger gap out of pocket.',
+          },
+          {
+            title: 'Deductible reality',
+            body: 'The deductible is part of the project math from day one. If the scope is thin or the payout is delayed, that deductible feels bigger fast.',
+          },
+          {
+            title: 'Supplements',
+            body: 'A supplement is what gets written when the original scope missed real work. That is common, especially when flashing, code items, or solar detach-and-reset were not accounted for up front.',
+          },
+        ],
+      },
+      {
+        type: 'steps',
+        title: 'How to keep the claim from turning into a scope mess',
+        items: [
+          {
+            title: 'Read the adjuster scope before signing a roof contract',
+            body: 'Make sure the scope actually reflects the roof condition, code items, accessories, and any solar-related work before the project starts moving.',
+          },
+          {
+            title: 'Separate roof work from solar work, but line them up early',
+            body: 'Detach-and-reset should be discussed before the reroof, not after materials are ordered and schedules are locked.',
+          },
+          {
+            title: 'Clarify missing items while the file is still active',
+            body: 'If something is missing, document it and push the supplement conversation early. Waiting until install day is how projects stall.',
           },
         ],
       },
       {
         type: 'faq',
-        title: 'Hail damage questions',
+        title: 'Insurance basics homeowners ask first',
         items: [
           {
-            question: 'How do I know if hail actually hit my roof hard enough to matter?',
+            question: 'What is depreciation holdback?',
             answer:
-              'Storm presence alone is not enough. The useful signal is storm timing plus roof-specific impact, which is why the page should combine map data with a clear inspection CTA.',
+              'It is the part of the replacement cost that often gets paid later, after the work is completed and documented. If you do not account for that timing, the project cash flow can get tight fast.',
           },
           {
-            question: 'Why is a dedicated hail page important?',
+            question: 'Why does the first adjuster scope feel incomplete so often?',
             answer:
-              'Because hail traffic is high-intent roofing traffic. It deserves its own landing page, local SEO angle, and conversion flow instead of being buried inside generic roofing copy.',
+              'Because roofs, flashing details, code requirements, and solar-related work are not always fully captured in an initial inspection. Supplements are common when the first scope is thin.',
           },
           {
-            question: 'Should the hail page also talk about solar?',
+            question: 'Does insurance always pay for detach-and-reset?',
             answer:
-              'Only where it naturally overlaps. The primary job of this page is storm and roof triage. Solar should appear as a secondary connected path, not the main topic.',
+              'No. Sometimes it is covered, sometimes it is partially covered, and sometimes it has to be justified separately. That is why it needs to be discussed while the roof scope is still being built.',
+          },
+        ],
+      },
+      {
+        type: 'cta',
+        title: 'If the roof, the claim, and the solar question are all colliding at once, we can help you sort the scope before it gets expensive.',
+        body: 'A short conversation can save a lot of avoidable friction when the paperwork and the house are telling different stories.',
+        ctaLabel: 'Request a consultation',
+        ctaHref: '#consultation',
+      },
+    ],
+  },
+  {
+    id: 'page-privacy-policy',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'privacy-policy',
+    title: 'Privacy Policy',
+    description:
+      'How Texas Solar and Roofing Pros collects, uses, stores, and shares personal information, including lead forms and website analytics data.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'story',
+        eyebrow: 'Legal',
+        title: 'Privacy Policy',
+        body: `We use information to respond to inquiries, improve the site, and operate the business.
+
+If you fill out a form, we collect the information you enter, such as your name, email address, phone number, address details, and anything else you choose to include. We use that information to respond to your request, coordinate services, and communicate about roofing, solar, hail, insurance, or energy-efficiency questions.
+
+We also use Google Analytics 4 and similar website tools to understand how visitors use the site, which pages are working, how traffic arrives, and how the site can be improved. That data may include browser, device, referral, and page interaction information.
+
+We may use trusted providers for hosting, analytics, CRM, email, form handling, and related business operations. They only get access to the information needed to perform those functions. We do not treat form submissions as public content, and we do not sell lead details as a retail data product.`,
+      },
+      {
+        type: 'faq',
+        title: 'Privacy questions',
+        items: [
+          {
+            question: 'Do you use Google Analytics?',
+            answer:
+              'Yes. The site uses Google Analytics 4 to understand site traffic and behavior. That means analytics-related identifiers may be stored or read in your browser when analytics is enabled.',
+          },
+          {
+            question: 'How do I request changes or deletion?',
+            answer:
+              'Email info@texassolarandroofingpros.com and describe the request. We will review it and respond based on the information we can verify and any legal or operational obligations that apply.',
+          },
+          {
+            question: 'Do you share my information?',
+            answer:
+              'We may share it with service providers or project participants when needed to respond to your request or operate the site, but not as a general-purpose public data feed.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'page-terms',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'terms',
+    title: 'Terms of Use',
+    description:
+      'Terms governing use of the Texas Solar and Roofing Pros website, informational content, and request forms.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'story',
+        eyebrow: 'Legal',
+        title: 'Terms of Use',
+        body: `Website content should help you ask better questions, not replace professional review.
+
+The site is intended to provide general information about roofing, solar, storm damage, energy upgrades, insurance-related issues, and related services. It is not legal, tax, insurance, engineering, or project-specific advice for your situation.
+
+Using the site or submitting a form does not by itself create a contract, guarantee service availability, or guarantee project pricing. Final recommendations depend on property-specific facts such as roof condition, electrical conditions, storm scope, policy terms, utility data, and actual inspection findings.
+
+The site may reference or rely on third-party tools, links, analytics, maps, and other platforms. We are not responsible for third-party content or systems outside our control.`,
+      },
+      {
+        type: 'faq',
+        title: 'Terms questions',
+        items: [
+          {
+            question: 'Can site content be outdated or change over time?',
+            answer:
+              'Yes. We try to keep content current, but programs, incentives, insurance rules, product availability, and pricing can change. The site is not a guarantee that any specific offer, figure, or policy treatment is currently available.',
+          },
+          {
+            question: 'Does this site guarantee results or savings?',
+            answer:
+              'No. Results depend on the property, usage, roof condition, financing, utility rates, weather, workmanship, and other factors outside a simple web page.',
+          },
+          {
+            question: 'How do I contact you about these terms?',
+            answer:
+              'Email info@texassolarandroofingpros.com if you have a question about site use or need to raise an issue related to these terms.',
           },
         ],
       },
@@ -870,25 +1242,31 @@ export const pages = [
     slug: 'guides',
     title: 'Texas Solar and Roofing Guides',
     description:
-      'A guide hub with practical solar, roofing, insurance, and storm-repair explainers for Texas homeowners.',
+      'Plain-language guides on solar costs, roofing decisions, storm damage claims, detach and reset, and project planning for Texas homeowners who want real answers before signing anything.',
     pageType: 'page',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Guide hub',
-        title:
-          'Go deeper on solar, roofing, storms, and insurance without sifting through generic national advice.',
-        body: 'This hub expands the core homeowner questions into practical guides built for people trying to figure out roof condition, claim timing, detach and reset, and whether solar still makes sense afterward.',
+        eyebrow: 'Guide library',
+        title: 'Skip the generic advice. These guides are built for Texas homeowners.',
+        body: 'Solar economics, roof condition, storm damage claims, detach-and-reset, battery backup, financing traps, and how to plan both projects together. If the service pages leave you wanting more detail, the guides go deeper.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+          },
+          alt: 'Residential solar roof used as the guide library hero image',
+        },
         metrics: [
-          { label: 'Guide count', value: '6 guides' },
-          { label: 'Primary use', value: 'Research' },
+          { label: 'Guides available', value: '9 guides' },
+          { label: 'Built for', value: 'Research + planning' },
           { label: 'Audience', value: 'Texas homeowners' },
         ],
       },
       {
         type: 'guideGrid',
-        title: 'Browse the guide library',
+        title: 'Browse the guides',
         items: getSolarGuideGridItems(),
       },
     ],
@@ -899,7 +1277,7 @@ export const pages = [
     siteSlug: 'austin-solar-homes',
     slug: '',
     title: 'Austin Solar Homes',
-    description: 'Focused landing page for solar-ready home buyers and homeowners.',
+    description: 'Is your Austin home actually a good fit for solar? Find out before you get a quote.',
     pageType: 'landingPage',
     templateLevel: 'landing',
     sections: solarHomeSections,
@@ -909,41 +1287,28 @@ export const pages = [
     siteSlug: 'roof-pros-of-austin',
     slug: '',
     title: 'Roof Pros of Austin',
-    description: 'Hero-site placeholder for the roofing category.',
+    description:
+      'Dedicated roofing help for Austin homeowners dealing with storms, aging roofs, and replacement decisions.',
     pageType: 'home',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
-        eyebrow: 'Hero Site',
-        title: 'The same platform can pivot cleanly from solar to roofing.',
-        body: 'This is the cross-category proof point. Content, lead forms, and messaging change. The underlying SEO system, CMS model, and admin tooling stay shared.',
+        eyebrow: 'Austin roofing',
+        title:
+          "Austin's dedicated roofing site is coming. Storm pages, inspections, replacements, and claim support under one roof.",
+        body: 'This site is reserved for a full roofing-first build with everything Austin homeowners need after a storm or when a roof reaches the end of its life.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1656646549671-000665d8d8bc?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+          },
+          alt: 'Residential roof representing the reserved roofing site',
+        },
         metrics: [
           { label: 'Category', value: 'Roofing' },
-          { label: 'Pages in phase 1', value: 'Placeholder' },
-          { label: 'Status', value: 'Ready to expand' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'page-weddings-home',
-    siteSlug: 'austin-wedding-vendors',
-    slug: '',
-    title: 'Austin Wedding Vendors',
-    description: 'Hero-site placeholder for the weddings category.',
-    pageType: 'home',
-    templateLevel: 'hero',
-    sections: [
-      {
-        type: 'hero',
-        eyebrow: 'Hero Site',
-        title: 'The same CMS and routing model can also serve editorial marketplaces.',
-        body: 'Weddings prove the engine is not locked to contractor categories. The public templates can adapt to directory and editorial use cases without changing the operational core.',
-        metrics: [
-          { label: 'Category', value: 'Weddings' },
-          { label: 'Content mode', value: 'Editorial + directory' },
-          { label: 'Status', value: 'Placeholder' },
+          { label: 'Current status', value: 'Coming soon' },
+          { label: 'Next step', value: 'Expansion ready' },
         ],
       },
     ],

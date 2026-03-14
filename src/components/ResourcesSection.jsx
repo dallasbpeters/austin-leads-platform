@@ -1,6 +1,9 @@
 import { HomeShield, HomeSimple, SunLight, Thunderstorm } from 'iconoir-react'
+import * as IconoirIcons from 'iconoir-react'
+import Image from 'next/image'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import Card from './Card'
+import { getDevSectionAttributes } from './dev/DevTrace'
 import Link from 'next/link'
 
 const defaultItems = [
@@ -16,7 +19,7 @@ const defaultItems = [
     icon: 'roofing',
     title: 'Roofing + Insurance',
     copy: 'Roof age, claim language, and the insurance details that change the job',
-    href: '#incentives',
+    href: '/insurance-basics',
     image: 'https://images.unsplash.com/photo-1668097613572-40b7c11c8727?w=800&q=80',
     alt: 'Roofline in sunlight',
   },
@@ -42,7 +45,7 @@ const iconMap = {
 }
 
 function getResourceIcon(iconName) {
-  return iconMap[iconName] || HomeSimple
+  return iconMap[iconName] || IconoirIcons[iconName] || HomeSimple
 }
 
 function normalizeItems(section) {
@@ -61,7 +64,7 @@ function normalizeItems(section) {
   }))
 }
 
-export default function ResourcesSection({ section = null }) {
+export default function ResourcesSection({ section = null, sectionId = 'resources' }) {
   const items = normalizeItems(section)
   const title = section?.title || 'Start with what you need help with'
   const body =
@@ -70,8 +73,14 @@ export default function ResourcesSection({ section = null }) {
 
   return (
     <section
-      className="bg-color-warm py-24"
-      id="resources"
+      className="bg-warm py-24"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/ResourcesSection.jsx',
+        content: section?.items?.length
+          ? 'typed homepage resource grid from homepage record'
+          : 'local fallback resource cards',
+      })}
       style={{
         backgroundImage:
           'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
@@ -80,7 +89,7 @@ export default function ResourcesSection({ section = null }) {
     >
       <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
-          <h2 className="type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
+          <h2 className="type-accent text-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
           <p className="type-accent text-foreground m-0 text-[clamp(1rem,4vw,1.25rem)]">{body}</p>
         </div>
 
@@ -90,16 +99,18 @@ export default function ResourcesSection({ section = null }) {
 
             return (
               <Link key={item.title} href={item.href}>
-                <Card className="relative aspect-[1/1]" variant="media" radius="lg">
-                  <img
+                <Card className="relative aspect-square" variant="media" radius="lg">
+                  <Image
                     src={item.image}
                     alt={item.alt}
+                    width={700}
+                    height={700}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>
                   <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                    <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]">
-                      <Icon className="h-5 w-5" strokeWidth={2.2} />
+                    <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                      <Icon className="h-8 w-8" strokeWidth={2} />
                     </div>
                     <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
                     <div className="mt-1 text-sm font-semibold text-white/70">{item.copy}</div>

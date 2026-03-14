@@ -1,50 +1,56 @@
-import { defineConfig } from "sanity";
-import { deskTool } from "sanity/desk";
-import { presentationTool } from "sanity/presentation";
+import { defineConfig } from 'sanity'
+import { structureTool } from 'sanity/structure'
+import { presentationTool } from 'sanity/presentation'
 
 import {
-  canonicalStudioUrl,
   dataset,
-  frontendUrl,
   frontendOriginAllowlist,
   isSanityConfigured,
   localFrontendUrl,
   projectId,
+  studioPreviewOrigin,
   studioUrl,
-} from "./src/sanity/env";
-import { schemaTypes } from "./src/sanity/schemaTypes";
+} from './src/sanity/env'
+import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
+import { schemaTypes } from './src/sanity/schemaTypes'
+import { presentationDocuments, presentationLocations } from './src/sanity/presentation'
+
+const previewModeRoutes = {
+  enable: '/api/draft-mode/enable',
+  disable: '/api/draft-mode/disable',
+}
 
 export default defineConfig({
-  name: "default",
-  title: "Austin Leads Studio",
-  projectId: projectId || "missing-project-id",
+  name: 'default',
+  title: 'Austin Leads Studio',
+  projectId: projectId || 'missing-project-id',
   dataset,
   basePath: studioUrl,
   plugins: [
-    deskTool(),
+    structureTool(),
     presentationTool({
       previewUrl: {
-        initial: frontendUrl,
-        previewMode: {
-          enable: `${frontendUrl}/api/draft-mode/enable`,
-          disable: `${frontendUrl}/api/draft-mode/disable`,
-        },
+        initial: studioPreviewOrigin,
+        preview: '/',
+        previewMode: previewModeRoutes,
         // Keep the legacy key alongside previewMode for hosted Studio compatibility.
-        draftMode: {
-          enable: `${frontendUrl}/api/draft-mode/enable`,
-          disable: `${frontendUrl}/api/draft-mode/disable`,
-        },
+        draftMode: previewModeRoutes,
+      },
+      resolve: {
+        mainDocuments: presentationDocuments,
+        locations: presentationLocations,
       },
       allowOrigins: [
         ...frontendOriginAllowlist,
         localFrontendUrl,
-        "https://austin-leads-platform.vercel.app",
+        'https://austin-leads-platform.vercel.app',
       ],
     }),
   ],
   schema: {
     types: schemaTypes,
   },
+  tools: (prev) => [...prev, aiDraftingTool()],
   studio: {
     components: {
       layout: (props) => props.renderDefault(props),
@@ -55,4 +61,4 @@ export default defineConfig({
       assetSources: isSanityConfigured() ? undefined : [],
     },
   },
-});
+})

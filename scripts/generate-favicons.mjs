@@ -50,10 +50,7 @@ async function main() {
 
   await writeFile(faviconSvgPath, svgMarkup)
 
-  const [png16, png32] = await Promise.all([
-    renderPng(16, favicon16Path),
-    renderPng(32, favicon32Path),
-  ])
+  const [png16, png32] = await Promise.all([renderPng(16, favicon16Path), renderPng(32, favicon32Path)])
 
   await renderPng(180, appleTouchIconPath)
 

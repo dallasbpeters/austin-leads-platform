@@ -1,3 +1,3 @@
 export default function StudioLayout({ children }) {
-  return children;
+  return children
 }

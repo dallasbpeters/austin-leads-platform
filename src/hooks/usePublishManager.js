@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
 
 import {
   buildDefaultPublishForm,
   createPublishJob,
   fetchPublishJobs,
   updatePublishJob,
-} from "@/services/admin/publish"
+} from '@/services/admin/publish'
 
 export function usePublishManager({ initialJobs, sites }) {
   const [jobs, setJobs] = useState(initialJobs)
@@ -37,9 +37,9 @@ export function usePublishManager({ initialJobs, sites }) {
       await createPublishJob(form)
       setForm((current) => ({
         ...current,
-        title: "",
-        prompt: "",
-        sources: "",
+        title: '',
+        prompt: '',
+        sources: '',
       }))
       await refreshJobs()
     } finally {

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 const Logo = ({ className, ...props }) => (
   <svg
     className={cn(
-      'text-color-primary h-7 w-7 fill-current [clipRule:evenodd] [fillRule:evenodd] [strokeLinejoin:round] [strokeMiterlimit:2]',
+      'text-primary h-7 w-7 fill-current [clipRule:evenodd] [fillRule:evenodd] [strokeLinejoin:round] [strokeMiterlimit:2]',
       className,
     )}
     viewBox="0 0 483 491"

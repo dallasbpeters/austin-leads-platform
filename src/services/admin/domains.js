@@ -1,26 +1,39 @@
-import { requestJson } from "@/services/admin/hero-pages"
+import { requestJson } from '@/services/admin/hero-pages'
 
 export function buildDefaultDomainForm(sites) {
   return {
-    domain: "",
-    siteSlug: sites[0]?.slug || "",
-    redirectTarget: "",
+    domain: '',
+    siteSlug: sites[0]?.slug || '',
+    redirectTarget: '',
   }
 }
 
 export async function fetchDomains() {
-  return requestJson("/api/domains")
+  return requestJson('/api/domains')
 }
 
 export async function createDomainRecord(form) {
-  return requestJson("/api/domains", {
-    method: "POST",
+  return requestJson('/api/domains', {
+    method: 'POST',
     body: JSON.stringify(form),
   })
 }
 
 export async function verifyDomainRecord(domain) {
   return requestJson(`/api/domains/${domain}/verify`, {
-    method: "POST",
+    method: 'POST',
+  })
+}
+
+export async function updateDomainRecordRequest(domain, form) {
+  return requestJson(`/api/domains/${encodeURIComponent(domain)}`, {
+    method: 'PATCH',
+    body: JSON.stringify(form),
+  })
+}
+
+export async function deleteDomainRecordRequest(domain) {
+  return requestJson(`/api/domains/${encodeURIComponent(domain)}`, {
+    method: 'DELETE',
   })
 }

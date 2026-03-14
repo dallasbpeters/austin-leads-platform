@@ -1,14 +1,20 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation'
 
-import AdminShell from "@/components/admin/AdminShell";
-import { safeAuth } from "@/lib/auth/session";
+import AdminBodyScrollLock from '@/components/admin/AdminBodyScrollLock'
+import AdminShell from '@/components/admin/AdminShell'
+import { safeAuth } from '@/lib/auth/session'
 
 export default async function AdminLayout({ children }) {
-  const session = await safeAuth();
+  const session = await safeAuth()
 
   if (!session?.user) {
-    redirect("/sign-in");
+    redirect('/sign-in')
   }
 
-  return <AdminShell user={session.user}>{children}</AdminShell>;
+  return (
+    <>
+      <AdminBodyScrollLock />
+      <AdminShell user={session.user}>{children}</AdminShell>
+    </>
+  )
 }

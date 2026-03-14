@@ -1,701 +1,1024 @@
-const baseMeta = {
-  siteSlug: 'texas-solar-and-roofing-pros',
-  pageType: 'servicePage',
-  templateLevel: 'hero',
-}
 
-export const mainServices = [
-  {
-    slug: 'energy-audits',
-    title: 'Energy Audits',
-    icon: 'audit',
-    eyebrow: 'Find the waste first',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Bills are high but the cause is unclear',
-    body: 'A home energy audit helps identify where the house is losing money through poor insulation, air leaks, duct problems, equipment inefficiency, or usage patterns that need to be understood before bigger upgrades are priced.',
-    image: {
-      urls: { regular: '/assets/services/photos/energy-audits.jpg' },
-      alt: 'Thermostat control being adjusted during a home energy audit',
-    },
-    detail: {
-      heroEyebrow: 'Home performance',
-      heroBody:
-        'An energy audit is the right first move when utility costs are climbing but the house is giving mixed signals. It helps separate envelope issues, HVAC losses, and usage problems before money is spent in the wrong place.',
-      storyTitle: 'Use an audit when the house feels expensive to run but the reason is still fuzzy.',
-      storyBody:
-        'A good audit turns vague frustration into a real scope. Instead of guessing between HVAC, insulation, windows, or solar, the homeowner gets a clearer picture of where comfort and energy losses are actually happening.',
-      highlights: [
-        {
-          title: 'Envelope losses',
-          body: 'Identify air leakage, insulation gaps, and rooms that are drifting out of balance.',
-        },
-        {
-          title: 'Equipment performance',
-          body: 'Check whether HVAC runtime, duct losses, or controls are making the bill worse.',
-        },
-        {
-          title: 'Upgrade order',
-          body: 'Show what should happen first so later quotes are built on the real problem.',
-        },
-      ],
-      steps: [
-        {
-          title: 'Review the symptoms',
-          body: 'Start with the homeowner’s complaints: high bills, hot rooms, cold rooms, humidity, or noisy equipment.',
-        },
-        {
-          title: 'Inspect the likely loss points',
-          body: 'Look at attic conditions, ducts, return paths, controls, and the overall condition of the thermal envelope.',
-        },
-        {
-          title: 'Set the priority list',
-          body: 'Turn the findings into a practical sequence so the next quote solves the right issue.',
-        },
-      ],
-      faq: [
-        {
-          question: 'Do I need an energy audit before solar?',
-          answer:
-            'Not always, but it is useful when the bill is high and the home has obvious comfort or performance issues. An audit helps prevent overspending on generation before waste is addressed.',
-        },
-        {
-          question: 'Will an audit tell me what to fix first?',
-          answer:
-            'That is the point. A useful audit should narrow the list, not make the project feel more confusing.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'insulation-and-air-sealing',
-    title: 'Insulation and Air Sealing',
-    icon: 'insulation',
-    eyebrow: 'Keep conditioned air inside',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Rooms run unevenly or HVAC runs too long',
-    body: 'Poor insulation and untreated air leaks force heating and cooling systems to work harder than they should. Tightening the envelope can lower utility costs and make the house noticeably more comfortable.',
-    image: {
-      urls: { regular: '/assets/services/photos/insulation-air-sealing.jpg' },
-      alt: 'Residential attic space with reflective insulation installed',
-    },
-    detail: {
-      heroEyebrow: 'Efficiency upgrades',
-      heroBody:
-        'Insulation and air sealing are often the highest-leverage comfort fixes in older homes. The goal is not just more material. It is a tighter, better-performing envelope that reduces unnecessary HVAC load.',
-      storyTitle: 'If the house leaks conditioned air all day, the equipment never gets a fair shot.',
-      storyBody:
-        'Many homes struggle because the envelope is loose, not because the HVAC system is undersized. Sealing obvious leaks and correcting weak insulation can change room balance, runtime, and operating cost fast.',
-      highlights: [
-        {
-          title: 'Attic leakage',
-          body: 'Top-plate gaps, penetrations, and attic bypasses can quietly drain conditioned air.',
-        },
-        {
-          title: 'Insulation quality',
-          body: 'Coverage, depth, compression, and disturbed areas matter as much as nominal R-value.',
-        },
-        {
-          title: 'Comfort impact',
-          body: 'These upgrades often reduce hot spots, drafts, and the feeling that the system never catches up.',
-        },
-      ],
-      steps: [
-        { title: 'Identify the biggest loss points', body: 'Focus on the areas that are letting conditioned air escape or heat in.' },
-        { title: 'Seal before adding material', body: 'Air sealing should usually come before simply piling on more insulation.' },
-        { title: 'Verify the comfort change', body: 'The result should be lower load and better room consistency, not just a checkbox.' },
-      ],
-      faq: [
-        {
-          question: 'Can insulation lower my bill without replacing HVAC?',
-          answer:
-            'Yes. In many homes, the envelope is making the system work harder than necessary. Tightening the shell can reduce runtime and improve comfort even before equipment changes.',
-        },
-        {
-          question: 'Is air sealing the same as adding insulation?',
-          answer:
-            'No. They work together, but air sealing addresses leakage while insulation slows heat transfer. Good results usually require both to be considered together.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'duct-sealing',
-    title: 'Duct Sealing',
-    icon: 'ducts',
-    eyebrow: 'Fix hidden HVAC losses',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Comfort is uneven or attic losses are likely',
-    body: 'Leaky ducts waste conditioned air where you do not benefit from it. Sealing and correcting duct problems can improve system performance, room balance, and overall HVAC efficiency without jumping straight to equipment replacement.',
-    image: {
-      urls: { regular: '/assets/services/photos/duct-sealing.jpg' },
-      alt: 'Architectural vent detail representing HVAC airflow and duct performance',
-    },
-    detail: {
-      heroEyebrow: 'HVAC performance',
-      heroBody:
-        'Duct problems hide in attics, walls, and plenums, but the symptoms show up in every room. If the system runs hard and the comfort still feels wrong, duct leakage is part of the conversation.',
-      storyTitle: 'The system can only perform as well as the air path allows.',
-      storyBody:
-        'Supply leaks, return issues, crushed runs, and disconnected sections all undermine comfort. Duct work should be evaluated before deciding the home simply needs bigger equipment.',
-      highlights: [
-        { title: 'Supply losses', body: 'Conditioned air can be dumped into attic or crawl spaces before it ever reaches the room.' },
-        { title: 'Return imbalance', body: 'Poor return paths can create pressure problems and drag hot, dusty, or humid air into the house.' },
-        { title: 'System efficiency', body: 'Sealing and correcting duct issues can improve both comfort and equipment performance.' },
-      ],
-      steps: [
-        { title: 'Look for loss patterns', body: 'Start with rooms that are always off compared with the rest of the house.' },
-        { title: 'Inspect the distribution path', body: 'Check for leakage, disconnections, restrictions, and return-side problems.' },
-        { title: 'Correct before replacing', body: 'Fixing the delivery system often changes what equipment recommendation makes sense.' },
-      ],
-      faq: [
-        {
-          question: 'Can duct sealing really lower energy use?',
-          answer:
-            'Yes. If conditioned air is being lost before it gets to the living space, the system runs longer to make up for it.',
-        },
-        {
-          question: 'How do I know if my ducts are the problem?',
-          answer:
-            'Common signs include uneven temperatures, weak airflow in certain rooms, hot attics with HVAC runs, and equipment that seems to run constantly.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'window-replacement',
-    title: 'Window Replacement',
-    icon: 'windows',
-    eyebrow: 'Reduce heat gain and loss',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Drafts, glare, and older windows are part of the problem',
-    body: 'Window upgrades can improve comfort, reduce heat gain, and cut down on avoidable energy waste. They make the most sense when the existing windows are clearly contributing to comfort and efficiency issues.',
-    image: {
-      urls: { regular: '/assets/services/photos/window-replacement-flyer.jpg' },
-      alt: 'Crew installing new residential windows on a house exterior',
-    },
-    detail: {
-      heroEyebrow: 'Envelope upgrades',
-      heroBody:
-        'Windows matter when they are clearly contributing to heat gain, drafts, glare, or occupant discomfort. The goal is not replacing windows for the sake of it. The goal is fixing a real performance problem.',
-      storyTitle: 'If the windows are driving discomfort, they should be evaluated as part of the whole-home plan.',
-      storyBody:
-        'Older glass, poor seals, or weak frames can affect comfort and HVAC load. Window work should be priced alongside the other envelope decisions, not as an isolated sales pitch.',
-      highlights: [
-        { title: 'Comfort and glare', body: 'Rooms with strong heat gain or obvious draft issues often point to a window problem.' },
-        { title: 'Envelope coordination', body: 'Window work should be considered together with insulation and air sealing, not in a vacuum.' },
-        { title: 'Upgrade timing', body: 'The right time is when performance issues are real enough to justify the cost.' },
-      ],
-      steps: [
-        { title: 'Identify the rooms that struggle', body: 'Look at the areas with glare, temperature swing, or visible aging in the window assembly.' },
-        { title: 'Compare impact vs cost', body: 'Decide whether window replacement is the best next dollar compared with other envelope work.' },
-        { title: 'Scope the upgrade carefully', body: 'Frame condition, glass package, orientation, and installation quality all matter.' },
-      ],
-      faq: [
-        {
-          question: 'Will new windows solve high energy bills by themselves?',
-          answer:
-            'Sometimes they help, but they are only one part of the envelope. Bills are often affected by multiple issues at once.',
-        },
-        {
-          question: 'Are window replacements mostly about efficiency or comfort?',
-          answer:
-            'Usually both. The best candidates are the homes where the existing windows are clearly hurting everyday comfort as well as efficiency.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'heat-pump-upgrades',
-    title: 'Heat Pump Upgrades',
-    icon: 'heatpump',
-    eyebrow: 'Modernize heating and cooling',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Existing HVAC is aging or inefficient',
-    body: 'A heat pump upgrade can reduce operating cost and improve efficiency when the existing system is near the end of its life or no longer performing well. It should be evaluated as part of the whole-home energy picture, not in isolation.',
-    image: {
-      urls: { regular: '/assets/services/photos/heat-pump-upgrades.jpg' },
-      alt: 'Residential outdoor heat pump unit mounted beside a home',
-    },
-    detail: {
-      heroEyebrow: 'Equipment planning',
-      heroBody:
-        'A heat pump can be a smart move when the existing system is old, expensive to operate, or no longer keeping up. The key is making that decision in the context of the full house, not just the equipment quote.',
-      storyTitle: 'A heat pump makes more sense when the load, ducting, and envelope are understood first.',
-      storyBody:
-        'Replacing equipment before understanding attic losses, duct problems, or window and insulation issues can lead to the wrong recommendation. Heat pump planning should start with how the house actually behaves.',
-      highlights: [
-        { title: 'System age', body: 'Older HVAC equipment often becomes noisy, unreliable, and expensive long before it fully dies.' },
-        { title: 'Efficiency gains', body: 'Modern heat pumps can lower operating costs when the home and ductwork support the upgrade.' },
-        { title: 'Whole-house fit', body: 'The right answer depends on load, comfort goals, panel capacity, and the rest of the house condition.' },
-      ],
-      steps: [
-        { title: 'Look at current system performance', body: 'Start with age, runtime, repair history, and whether the current system still keeps up.' },
-        { title: 'Check the supporting conditions', body: 'Ducts, insulation, leakage, and electrical readiness affect whether the upgrade will perform well.' },
-        { title: 'Size and quote the right option', body: 'The replacement should match the actual load and goals, not just mimic the old unit.' },
-      ],
-      faq: [
-        {
-          question: 'Should I replace HVAC before considering solar?',
-          answer:
-            'Sometimes yes, especially if the old system is inefficient enough to distort the household energy picture. The best sequence depends on the condition of both the equipment and the home.',
-        },
-        {
-          question: 'Can a heat pump improve comfort as well as efficiency?',
-          answer:
-            'Yes. A well-scoped upgrade can help with runtime, humidity, room balance, and overall system control.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'solar-and-battery-installations',
-    title: 'Solar and Battery Installations',
-    icon: 'solarbattery',
-    eyebrow: 'Generate and store power',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'The home is ready for a longer-term energy upgrade',
-    body: 'Solar and battery projects make the most sense when the roof, electrical situation, and energy goals are understood clearly. The best projects do not start with hype. They start with whether the system fits the home and the numbers hold up.',
-    image: {
-      urls: {
-        regular: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
-      },
-      alt: 'Solar array installation under a bright sky',
-    },
-    detail: {
-      heroEyebrow: 'Solar planning',
-      heroBody:
-        'Solar and battery projects should be sized around the home, the roof, and the actual electric profile. The useful conversation is not hype. It is whether the system fits and whether the numbers stay honest.',
-      storyTitle: 'Good solar projects start with fit, not a generic savings claim.',
-      storyBody:
-        'Roof condition, usage, shade, electrical constraints, outage goals, and financing all change the recommendation. The most useful solar conversation is the one that makes those tradeoffs visible.',
-      highlights: [
-        { title: 'System fit', body: 'Roof shape, orientation, shading, and load profile all affect whether solar is worth doing.' },
-        { title: 'Battery value', body: 'Storage should be scoped around resilience goals, critical loads, and economics, not added automatically.' },
-        { title: 'Project sequence', body: 'Roofing or electrical work may need to happen before solar if the house is not ready.' },
-      ],
-      steps: [
-        { title: 'Check the roof and load first', body: 'Start with whether the roof and utility profile make the project viable.' },
-        { title: 'Scope solar and storage separately', body: 'Solar and battery should each earn their place in the proposal.' },
-        { title: 'Price the project honestly', body: 'Cash, financing, incentives, and payback assumptions should all be visible.' },
-      ],
-      faq: [
-        {
-          question: 'Should every solar project include a battery?',
-          answer:
-            'No. A battery is useful when the homeowner wants backup power or time-shifting value, but it should not be treated as mandatory.',
-        },
-        {
-          question: 'Do I need a new roof before solar?',
-          answer:
-            'Sometimes. If the roof is near the end of its service life, it should be discussed before panels go on.',
-        },
-      ],
-    },
-  },
-]
-
-export const roofingServices = [
-  {
-    slug: 'shingle-roofing',
-    title: 'Shingle Roofing',
-    icon: 'shingles',
-    body: 'Asphalt shingle systems remain the most common residential roofing option and should be evaluated for age, ventilation, storm wear, and repairability.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1762726012995-81c2f26e6a4b?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'Close-up of weathered roof shingles and eaves',
-    },
-    detail: {
-      heroEyebrow: 'Roofing',
-      heroBody:
-        'Shingle roofing is still the most common residential roof system, but the right recommendation depends on age, storm history, ventilation, and whether the existing roof is repairable or truly worn out.',
-      storyTitle: 'The useful conversation is whether the roof can be repaired, restored, or whether replacement is actually justified.',
-      storyBody:
-        'Shingle roofs age unevenly. Granule loss, lifted tabs, hail strikes, ventilation issues, and prior repairs all matter. The goal is a clear scope, not an automatic replacement pitch.',
-      highlights: [
-        { title: 'Condition and age', body: 'The repair vs replacement decision depends on the actual condition of the field shingles and details.' },
-        { title: 'Storm history', body: 'Recent hail and wind exposure can change what should be documented and how the roof should be assessed.' },
-        { title: 'Ventilation and details', body: 'A roofing plan should look beyond shingles to flashing, valleys, ridge ventilation, and penetrations.' },
-      ],
-      steps: [
-        { title: 'Inspect the roof surface', body: 'Look at wear patterns, exposed mats, lifted tabs, and repair history.' },
-        { title: 'Check the supporting details', body: 'Ventilation, flashing, and penetrations can be as important as the shingles themselves.' },
-        { title: 'Set the right scope', body: 'The end result should clearly explain whether repair, restoration, or replacement makes the most sense.' },
-      ],
-      faq: [
-        {
-          question: 'How do I know if my shingle roof is ready for replacement?',
-          answer:
-            'Age matters, but condition matters more. Widespread wear, storm damage, failed details, and repair fatigue usually point to replacement more than one isolated issue.',
-        },
-        {
-          question: 'Can an older shingle roof still be repaired?',
-          answer:
-            'Sometimes. If the field condition is still serviceable and the problem is localized, repair may still be the right call.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'metal-roofing',
-    title: 'Metal Roofing',
-    icon: 'metalroofing',
-    body: 'Metal roofing can be the right long-term fit when durability, reflectivity, and storm resilience matter more than the lowest upfront cost.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1718948173667-fbd912b6d1fa?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'House with a standing seam metal roof',
-    },
-    detail: {
-      heroEyebrow: 'Roofing',
-      heroBody:
-        'Metal roofing is a long-term system choice. It tends to appeal when durability, reflectivity, and lifecycle value matter more than the cheapest upfront bid.',
-      storyTitle: 'Metal roofing is not the answer for every house, but it can be the right fit when longevity and storm resilience are the priority.',
-      storyBody:
-        'The useful comparison is not just cost. It is maintenance expectations, installation quality, noise assumptions, detailing, and whether the homeowner wants to invest in a longer-horizon roof system.',
-      highlights: [
-        { title: 'Longevity', body: 'Metal roofs can offer a longer service life when the system is designed and installed correctly.' },
-        { title: 'Storm performance', body: 'Profile, gauge, fastening system, and detailing all matter when weather resilience is part of the decision.' },
-        { title: 'Upfront vs lifecycle cost', body: 'The lowest bid is rarely the whole story with metal roofing.' },
-      ],
-      steps: [
-        { title: 'Review the roof goals', body: 'Decide whether the homeowner is optimizing for budget, longevity, storm performance, or aesthetics.' },
-        { title: 'Compare the right systems', body: 'Standing seam and exposed-fastener systems behave differently and should not be treated as interchangeable.' },
-        { title: 'Price it around the full scope', body: 'Trim, penetrations, transitions, and installation details drive the real project value.' },
-      ],
-      faq: [
-        {
-          question: 'Is metal roofing worth the extra cost?',
-          answer:
-            'It can be, especially when the homeowner values a longer service life and a more durable system. The decision depends on budget horizon and roof goals.',
-        },
-        {
-          question: 'Does metal roofing work well in storm-prone areas?',
-          answer:
-            'It can, but only when the system and details are chosen correctly. Material alone does not guarantee performance.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'storm-damage-restoration',
-    title: 'Storm Damage Restoration',
-    icon: 'stormdamage',
-    body: 'When a storm hits, the priority is documenting damage clearly, stabilizing the property, and creating a repair plan that insurance can actually follow.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1767385945380-37deed400d81?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'Storm-damaged structure with torn metal roofing',
-    },
-    detail: {
-      heroEyebrow: 'Storm response',
-      heroBody:
-        'Storm restoration starts with clarity. The homeowner needs to know what was actually damaged, what needs immediate stabilization, and what the insurance process is likely to require.',
-      storyTitle: 'After a storm, the first job is sorting real damage from panic and vague promises.',
-      storyBody:
-        'The right restoration process protects the house, documents the loss clearly, and creates a scope that can hold up with adjusters, contractors, and the homeowner.',
-      highlights: [
-        { title: 'Damage documentation', body: 'Photos, roof notes, and site conditions need to be captured while the evidence is fresh.' },
-        { title: 'Stabilization', body: 'Leaks, exposed areas, and secondary damage risk should be addressed quickly.' },
-        { title: 'Claim-ready scope', body: 'A clean restoration plan makes the insurance conversation more defensible.' },
-      ],
-      steps: [
-        { title: 'Assess the damage', body: 'Start with roof, exterior, interior water signs, and vulnerable openings.' },
-        { title: 'Protect the property', body: 'Temporary measures may be needed to prevent additional loss while the scope is built.' },
-        { title: 'Build the restoration plan', body: 'The scope should explain what needs repair, what needs replacement, and why.' },
-      ],
-      faq: [
-        {
-          question: 'What should I do first after storm roof damage?',
-          answer:
-            'Document what you can safely see, protect the property from further loss if needed, and get the roof inspected before assumptions turn into the wrong repair plan.',
-        },
-        {
-          question: 'Does storm restoration always mean a full roof replacement?',
-          answer:
-            'No. It depends on the damage pattern, the roof system, and whether the issues are localized or widespread.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'commercial-roofing',
-    title: 'Commercial Roofing',
-    icon: 'commercialroofing',
-    body: 'Commercial roof work needs a different conversation around access, membrane condition, drainage, penetrations, maintenance, and disruption to operations.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1737256359080-9354dbcc21ef?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'Large commercial building roof under clear sky',
-    },
-    detail: {
-      heroEyebrow: 'Commercial roofing',
-      heroBody:
-        'Commercial roofing is its own category of work. Drainage, penetrations, membrane condition, access, and business disruption all affect how the project should be planned.',
-      storyTitle: 'Commercial roof decisions require a different scope than a residential roof conversation.',
-      storyBody:
-        'Flat or low-slope systems need to be evaluated around membrane age, seam condition, ponding, flashing, penetrations, service traffic, and the cost of downtime.',
-      highlights: [
-        { title: 'Drainage and ponding', body: 'Water behavior on the roof is a major part of commercial roof performance.' },
-        { title: 'Penetrations and seams', body: 'Equipment curbs, pipe penetrations, seams, and flashing details often drive failures.' },
-        { title: 'Operational impact', body: 'Scheduling and access should protect the building and limit disruption to the business.' },
-      ],
-      steps: [
-        { title: 'Inspect the membrane and details', body: 'Start with drainage, seams, flashings, penetrations, and visible wear patterns.' },
-        { title: 'Evaluate maintenance vs replacement', body: 'Some roofs need focused repair while others are beyond patchwork.' },
-        { title: 'Build the work plan around the building', body: 'Scope, phasing, and access need to fit how the property operates.' },
-      ],
-      faq: [
-        {
-          question: 'How is commercial roofing different from residential roofing?',
-          answer:
-            'The systems, failure points, access considerations, and work sequencing are different enough that the scope has to be approached differently from the start.',
-        },
-        {
-          question: 'Can a commercial roof be restored instead of replaced?',
-          answer:
-            'Sometimes. The answer depends on membrane condition, moisture history, drainage, and whether the roof is still a good candidate for restoration.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'hail-and-wind-damage-roof-inspection',
-    title: 'Hail & Wind Damage Roof Inspection',
-    icon: 'hailinspection',
-    body: 'An inspection should separate visible wear from real storm damage, note probable impact zones, and help decide whether repair, restoration, or replacement is justified.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1656646549671-000665d8d8bc?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'Aerial view of a residential roof for inspection',
-    },
-    detail: {
-      heroEyebrow: 'Storm inspection',
-      heroBody:
-        'A hail and wind inspection should do more than confirm that a storm happened. It should help determine whether the roof shows probable impact or uplift damage and what kind of next step is justified.',
-      storyTitle: 'The most useful inspection is the one that separates real storm evidence from ordinary wear.',
-      storyBody:
-        'Homeowners do not need guesswork after a storm. They need a clear read on whether the roof likely took damage, where it appears, and whether that points toward monitoring, repair, or a claim conversation.',
-      highlights: [
-        { title: 'Damage pattern', body: 'A credible inspection looks for consistent signal, not isolated marks or assumptions.' },
-        { title: 'Repairability', body: 'Some roofs need minor work while others show enough storm effect to justify bigger action.' },
-        { title: 'Claim readiness', body: 'Good documentation makes the next insurance or contractor conversation cleaner.' },
-      ],
-      steps: [
-        { title: 'Inspect the full roof system', body: 'Look at field areas, ridges, soft metals, flashing, vents, and surrounding evidence.' },
-        { title: 'Separate wear from storm effect', body: 'The goal is to distinguish age-related deterioration from likely hail or wind impact.' },
-        { title: 'Set the right next step', body: 'Monitoring, repair, restoration, or claim support each require a different recommendation.' },
-      ],
-      faq: [
-        {
-          question: 'Can I tell if hail damaged my roof from the ground?',
-          answer:
-            'Sometimes you can see clues, but a real inspection should look at the full roof system and related evidence before making a recommendation.',
-        },
-        {
-          question: 'Does hail always mean I need a new roof?',
-          answer:
-            'No. The degree and pattern of damage determine whether repair, restoration, or replacement is actually warranted.',
-        },
-      ],
-    },
-  },
-]
-
-export const specialtyServices = [
-  {
-    slug: 'rodent-deterrent',
-    title: 'Rodent Deterrent',
-    icon: 'rodent',
-    body: 'Screening helps protect rooftop solar systems from pests that can damage wiring and create repeat service issues.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1694248581706-a645f65a2f27?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'Close-up of rooftop solar panels',
-    },
-    detail: {
-      heroEyebrow: 'Solar protection',
-      heroBody:
-        'Rodent deterrent work protects solar equipment from the kind of damage that turns into repeat service calls, wiring issues, and frustrating production loss.',
-      storyTitle: 'Pest protection is small compared with the cost of avoidable wiring damage.',
-      storyBody:
-        'When rodents get under an array, they can create repeat service issues that are expensive and difficult to diagnose after the fact. Screening and prevention are often worth doing early.',
-      highlights: [
-        { title: 'Protect wiring', body: 'The main goal is preventing chewing and nesting that damages system components.' },
-        { title: 'Reduce repeat service', body: 'Proactive screening is often cheaper than repeated diagnostics and repair visits.' },
-        { title: 'Preserve system performance', body: 'Keeping the underside of the array protected helps avoid preventable disruptions.' },
-      ],
-      steps: [
-        { title: 'Inspect the array edge', body: 'Look for access points and signs of activity around the roof-mounted system.' },
-        { title: 'Install deterrent measures', body: 'Use screening and detailing that reduce access without harming the roof or array.' },
-        { title: 'Monitor after install', body: 'Check that the system stays clean and protected over time.' },
-      ],
-      faq: [
-        {
-          question: 'Is rodent deterrent worth doing on solar?',
-          answer:
-            'It often is, especially if the area or roof conditions make pest activity more likely. Preventive work is usually cheaper than repair after damage occurs.',
-        },
-        {
-          question: 'Can rodents really damage solar wiring?',
-          answer:
-            'Yes. Chewed wiring and nesting under panels can create recurring service and performance problems.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'electrical-services',
-    title: 'Electrical Services',
-    icon: 'electrical',
-    body: 'Licensed electrical work supports upgrades, troubleshooting, service changes, and safe integration with larger projects.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1759692071712-adc78a8516c8?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'Electrical panel and power equipment',
-    },
-    detail: {
-      heroEyebrow: 'Electrical support',
-      heroBody:
-        'Electrical work often sits behind the scenes, but it is what allows larger projects to happen safely and correctly. Service changes, troubleshooting, and upgrade readiness all depend on licensed electrical scope.',
-      storyTitle: 'Many bigger home upgrades stall because the electrical side was never scoped honestly.',
-      storyBody:
-        'Panel capacity, breaker space, service condition, and wiring quality can all affect whether the next project is straightforward or needs electrical work first.',
-      highlights: [
-        { title: 'Upgrade readiness', body: 'Electrical review helps determine whether larger projects can be added cleanly.' },
-        { title: 'Troubleshooting', body: 'Some problems need direct electrical diagnosis before any larger recommendation makes sense.' },
-        { title: 'Safety and compliance', body: 'Licensed work matters when the project touches service equipment or critical circuits.' },
-      ],
-      steps: [
-        { title: 'Review the existing service', body: 'Start with panel condition, capacity, and visible limitations.' },
-        { title: 'Define the needed scope', body: 'Clarify whether the work is troubleshooting, upgrade support, or a service change.' },
-        { title: 'Coordinate with the larger project', body: 'Electrical work should be timed and scoped around the broader home improvement plan.' },
-      ],
-      faq: [
-        {
-          question: 'Why would electrical work come before solar or EV charging?',
-          answer:
-            'Because panel capacity, service condition, and code-compliant integration determine whether those projects can be installed safely and correctly.',
-        },
-        {
-          question: 'Do all home energy upgrades require electrical work?',
-          answer:
-            'No, but many larger upgrades either depend on it or benefit from having the electrical side reviewed first.',
-        },
-      ],
-    },
-  },
-  {
-    slug: 'car-chargers',
-    title: 'Car Chargers',
-    icon: 'evcharger',
-    body: 'Get a quote for a home EV charger that fits the panel, parking setup, and how the vehicle is actually used.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1724963914478-77af9eba1c50?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-      },
-      alt: 'Electric vehicle plugged into a home charger',
-    },
-    detail: {
-      heroEyebrow: 'EV charging',
-      heroBody:
-        'A home car charger should be priced around the panel, parking layout, and how the vehicle is actually used. The useful quote is the one that fits the house, not just the charger hardware.',
-      storyTitle: 'Home EV charging is straightforward when the electrical side and daily use pattern are both understood.',
-      storyBody:
-        'Charging speed, panel capacity, conduit path, parking position, and daily mileage all affect which install makes sense and how much complexity the project really needs.',
-      highlights: [
-        { title: 'Panel fit', body: 'Capacity and breaker space determine what charger options are practical.' },
-        { title: 'Parking layout', body: 'Charger placement should fit where the car actually lives and how the cable will be used.' },
-        { title: 'Use pattern', body: 'Daily mileage and charging expectations affect whether a simple or more robust setup makes sense.' },
-      ],
-      steps: [
-        { title: 'Review the electrical starting point', body: 'Look at panel condition, available capacity, and the path to the charging location.' },
-        { title: 'Match the charger to usage', body: 'Select the charger around the vehicle and how the home actually uses it.' },
-        { title: 'Install for long-term usability', body: 'Placement, cable reach, and future flexibility all matter.' },
-      ],
-      faq: [
-        {
-          question: 'Do I need a panel upgrade for a home EV charger?',
-          answer:
-            'Not always. It depends on the existing service, available capacity, and what other loads are already on the panel.',
-        },
-        {
-          question: 'How do I know which charger level I need?',
-          answer:
-            'That depends on daily mileage, how long the car is parked at home, and whether the electrical system supports the faster option cleanly.',
-        },
-      ],
-    },
-  },
-]
-
-export const allServiceEntries = [...mainServices, ...roofingServices, ...specialtyServices]
-
-export const servicePages = allServiceEntries.map((service) => ({
-  id: `page-service-${service.slug}`,
-  ...baseMeta,
-  slug: `services/${service.slug}`,
-  title: service.title,
-  description: service.body,
-  sections: [
-    {
-      type: 'hero',
-      eyebrow: service.detail.heroEyebrow,
-      title: service.title,
-      body: service.detail.heroBody,
-      heroImage: service.image,
-      actions: [
-        { label: 'Request a consultation', href: '/#consultation', variant: 'default' },
-        { label: 'View all services', href: '/services', variant: 'secondary' },
-      ],
-      metrics: [
-        { label: 'Category', value: service.detail.heroEyebrow },
-        { label: 'Focus', value: service.eyebrow || service.subtitleValue || 'Service planning' },
-        { label: 'Next step', value: 'Consultation' },
-      ],
-    },
-    {
-      type: 'story',
-      eyebrow: 'Overview',
-      title: service.detail.storyTitle,
-      body: service.detail.storyBody,
-    },
-    {
-      type: 'highlights',
-      title: `What a good ${service.title.toLowerCase()} scope should cover`,
-      items: service.detail.highlights,
-    },
-    {
-      type: 'steps',
-      title: `How ${service.title.toLowerCase()} should be approached`,
-      items: service.detail.steps,
-    },
-    {
-      type: 'faq',
-      title: `${service.title} questions`,
-      items: service.detail.faq,
-    },
-    {
-      type: 'cta',
-      title: `Tell us what is going on with the house and we will help you figure out whether ${service.title.toLowerCase()} is the right next step.`,
-      body: 'The goal is a clearer recommendation, a cleaner scope, and the right conversation first.',
-      ctaLabel: 'Request a consultation',
-      ctaHref: '/#consultation',
-    },
-  ],
-}))
+        
+        const baseMeta = {
+          siteSlug: 'texas-solar-and-roofing-pros',
+          pageType: 'servicePage',
+          templateLevel: 'hero',
+        }
+        
+        export const mainServices = [
+          {
+            slug: 'energy-audits',
+            title: 'Energy Audits',
+            icon: 'audit',
+            menuDescription: 'Find out exactly where your house is bleeding money.',
+            eyebrow: 'Find the waste first',
+            subtitleLabel: 'Best when',
+            subtitleValue: 'Your bills are high but nobody can tell you why',
+            body: 'Your electric bill isn\u2019t lying \u2014 your house is losing energy somewhere. An energy audit uses blower door testing, thermal imaging, and duct diagnostics to find every leak, gap, and failure so you know exactly what to fix and in what order.',
+            image: {
+              urls: { regular: '/assets/services/photos/energy-audits.jpg' },
+              alt: 'Thermostat control being adjusted during a home energy audit',
+            },
+            detail: {
+              heroEyebrow: 'Home performance',
+              heroBody:
+                'Most Texas homes waste 20\u201330% of their energy through gaps, bad insulation, and duct leaks you can\u2019t see. An energy audit finds every one of them and gives you a dollar-for-dollar plan to fix what matters most \u2014 so you stop guessing and start saving.',
+              storyTitle: 'Stop guessing where your money goes.',
+              storyBody:
+                'You can feel the draft by the back door. You know the upstairs is ten degrees hotter than downstairs. But you don\u2019t know which problems cost you $40 a month and which ones cost $400. That\u2019s what an audit answers \u2014 with diagnostic equipment that sees what you can\u2019t: air leaks behind walls, duct losses in the attic, insulation gaps that have been there since the house was built. You walk away with a prioritized fix list ranked by savings, not guesswork.',
+              highlights: [
+                {
+                  title: 'Blower door testing reveals hidden air leaks',
+                  body: 'A blower door depressurizes your home and measures exactly how much air escapes and where \u2014 around outlets, plumbing, attic hatches, and penetrations you\u2019d never find by feel.',
+                },
+                {
+                  title: 'Thermal imaging shows what\u2019s missing behind walls',
+                  body: 'An infrared camera maps temperature differences across every wall and ceiling. Missing insulation, moisture problems, and thermal bridges light up on screen \u2014 no guessing, no tearing open drywall.',
+                },
+                {
+                  title: 'Duct leakage testing catches hidden HVAC losses',
+                  body: 'In many Texas homes, 20\u201330% of conditioned air never reaches your rooms. Duct testing measures exactly how much you\u2019re losing and where \u2014 usually in the attic where it hurts most.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Gather 12 months of electric bills and schedule your audit',
+                  body: 'Your billing history lets the auditor benchmark your home against similar houses in your zip code. Bring any comfort complaints too \u2014 hot rooms, drafts, humidity \u2014 so the testing targets the right areas.',
+                },
+                {
+                  title: 'Blower door depressurization, infrared scan, and duct leakage test',
+                  body: 'The blower door pulls air out of the house to measure total leakage in CFM50. An infrared camera maps temperature differences on every wall and ceiling \u2014 exposing missing insulation, moisture, and thermal bridges you\u2019d never spot visually. Duct testing measures how much conditioned air leaks before it reaches your rooms.',
+                },
+                {
+                  title: 'Receive a dollar-ranked fix list with payback timelines',
+                  body: 'Each recommendation comes with estimated cost, projected annual savings, and payback period. Air sealing might pay back in 8 months. A duct repair might save $600/year. You decide what to do first based on numbers, not someone else\u2019s priorities.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Do I need an energy audit before solar?',
+                  answer:
+                    'Not always, but it\u2019s smart when bills are high and the house has obvious comfort issues. Fixing waste first means you can size a smaller, cheaper solar system \u2014 and stop overpaying in the meantime.',
+                },
+                {
+                  question: 'Will an audit actually save me money?',
+                  answer:
+                    'Homeowners who follow the top 2\u20133 recommendations typically cut energy bills by 15\u201330%. The audit itself usually pays for itself within the first year of improvements.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'insulation-and-air-sealing',
+            title: 'Insulation and Air Sealing',
+            icon: 'insulation',
+            menuDescription: 'Seal the gaps that are costing you the most.',
+            eyebrow: 'Keep conditioned air inside',
+            subtitleLabel: 'Best when',
+            subtitleValue: 'Rooms run hot, your AC never stops, or your attic is underinsulated',
+            body: 'That $350 August electric bill isn\u2019t because your AC is broken. It\u2019s because your house can\u2019t hold the cool air it makes. Insulation slows the heat. Air sealing stops the leaks. Together, they let your system do its job in half the runtime \u2014 and your bill drops accordingly.',
+            image: {
+              urls: { regular: '/assets/services/photos/insulation-air-sealing.jpg' },
+              alt: 'Residential attic space with reflective insulation installed',
+            },
+            detail: {
+              heroEyebrow: 'Efficiency upgrades',
+              heroBody:
+                'Texas heat doesn\u2019t care how hard your AC works. If your attic insulation is thin, settled, or missing \u2014 and your house has air leaks at every penetration \u2014 you\u2019re paying to cool the outdoors. Proper insulation and air sealing change that math fast.',
+              storyTitle: 'Your AC isn\u2019t the problem \u2014 your envelope is.',
+              storyBody:
+                'Hot attic air presses down through gaps around light fixtures, plumbing chases, and the attic hatch. Outside air pushes in around outlets, windows, and where the framing meets the foundation. Your system runs constantly trying to keep up. Air sealing plugs those highways first. Then blown-in insulation fills around wires, pipes, and joists to create a continuous thermal blanket. The result: rooms even out, your system cycles less, and you stop fighting the thermostat.',
+              highlights: [
+                {
+                  title: 'Attic air sealing plugs the biggest leaks first',
+                  body: 'Before any insulation goes in, every penetration in your attic floor gets sealed \u2014 wiring holes, plumbing stacks, recessed lights, top plates. These are the highways for hot attic air to pour into your living space.',
+                },
+                {
+                  title: 'Blown-in insulation fills every gap evenly',
+                  body: 'Unlike batts that leave gaps and sag over time, blown-in insulation fills around wires, pipes, and joists for continuous coverage. It reaches spots batts simply can\u2019t.',
+                },
+                {
+                  title: 'Measurable comfort difference room to room',
+                  body: 'Rooms that used to be five or ten degrees off from the rest of the house even out. Your system cycles less, your bill drops, and you stop fighting the thermostat.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Measure existing R-value and map every air leakage path',
+                  body: 'We measure your current insulation depth and condition, then use a blower door to identify where air is escaping \u2014 top plates, wiring penetrations, plumbing chases, recessed lights, the attic hatch. The gap between what you have and what your Texas climate zone requires (R-38 to R-60) determines the scope.',
+                },
+                {
+                  title: 'Seal the attic floor before any insulation goes in',
+                  body: 'Every penetration gets sealed with fire-rated caulk or spray foam \u2014 wiring holes, plumbing stacks, HVAC chases, top plates, can lights. This is the step most contractors skip because it\u2019s slow and invisible. It\u2019s also the step that makes the insulation actually work, because insulation doesn\u2019t stop air \u2014 it only slows heat.',
+                },
+                {
+                  title: 'Blow insulation to target depth and retest with a blower door',
+                  body: 'Blown-in cellulose or fiberglass fills around every wire, pipe, and joist for continuous coverage. Depth markers verify thickness across the attic. A post-install blower door test confirms the air sealing hit its target CFM50 number \u2014 you see the before and after side by side.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Can insulation lower my bill without replacing HVAC?',
+                  answer:
+                    'Yes \u2014 in many homes the envelope is making the system work harder than it needs to. Tightening the shell can reduce runtime and improve comfort even before equipment changes.',
+                },
+                {
+                  question: 'How much will this actually save?',
+                  answer:
+                    'Most homeowners see a 15\u201325% reduction in heating and cooling costs after proper insulation and air sealing. In a Texas summer with $300+ electric bills, that adds up fast.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'duct-sealing',
+            title: 'Duct Sealing',
+            icon: 'ducts',
+            menuDescription: 'Stop losing cooled air before it reaches your rooms.',
+            eyebrow: 'Fix hidden HVAC losses',
+            subtitleLabel: 'Best when',
+            subtitleValue: 'Some rooms never cool down or the system runs constantly',
+            body: 'Your AC makes cold air. Your ducts deliver it. But if those ducts are leaking in a 140\u00b0F attic, you\u2019re cooling the attic instead of your living room \u2014 and paying full price for air you never feel. Duct sealing closes those gaps so every room gets what it\u2019s supposed to.',
+            image: {
+              urls: { regular: '/assets/services/photos/duct-sealing.jpg' },
+              alt: 'Architectural vent detail representing HVAC airflow and duct performance',
+            },
+            detail: {
+              heroEyebrow: 'HVAC performance',
+              heroBody:
+                'Up to 30% of the air your system produces never makes it to your rooms. It leaks out at joints, connections, and gaps \u2014 usually into your attic, where it does absolutely nothing for your comfort but everything to your bill.',
+              storyTitle: 'The air you\u2019re paying for is going into your attic.',
+              storyBody:
+                'You set the thermostat to 72, but the bedroom reads 78. The kitchen is fine, but the living room won\u2019t cool down. Before you blame the AC unit, look at the delivery system. Every loose joint, torn flex duct, and disconnected boot is a hole where cooled air escapes into 140-degree heat. And those leaks also pull hot attic air and dust into your supply stream. Duct sealing with mastic and metallic tape closes those gaps \u2014 and a before/after pressure test proves it worked.',
+              highlights: [
+                {
+                  title: 'Pressurized testing shows exactly how much you\u2019re losing',
+                  body: 'A duct blaster test measures total leakage as a hard number. Most homes test at 20\u201330% leakage. After sealing, that drops below 10%. You see the before and after side by side.',
+                },
+                {
+                  title: 'Joint and connection sealing targets the worst leaks',
+                  body: 'The biggest losses happen where duct sections meet boots, plenums, and branch lines. Mastic sealant and metallic tape at these connections stop the majority of air loss in one pass.',
+                },
+                {
+                  title: 'Better airflow means more even temperatures',
+                  body: 'That back bedroom that never cools down? It\u2019s probably at the end of a duct run with leaks upstream stealing its air. Seal those leaks and airflow rebalances \u2014 no new equipment needed.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Pressurize the duct system and measure total leakage in CFM',
+                  body: 'A duct blaster test seals the registers and pressurizes your duct system to measure exactly how much air escapes before it reaches your rooms. Most Texas homes test at 20\u201330% leakage. This baseline tells us exactly how bad the problem is and where to focus.',
+                },
+                {
+                  title: 'Seal every joint, boot, and connection with mastic \u2014 not duct tape',
+                  body: 'Mastic sealant and UL-rated metallic tape go on every accessible joint where duct sections meet boots, plenums, and branch lines. Crushed flex gets reshaped or replaced. Disconnected runs get reconnected. Standard duct tape dries out and fails in a 140\u00b0F Texas attic within two years \u2014 which is why we don\u2019t use it.',
+                },
+                {
+                  title: 'Retest to confirm leakage dropped below 10% and check every register',
+                  body: 'The duct blaster runs again so you see the improvement as a hard number. Then we measure airflow at each supply register to confirm air reaches every room. That back bedroom that never cooled down should be getting its full CFM now.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Can duct sealing really lower energy use?',
+                  answer:
+                    'Yes. If conditioned air is lost before it reaches your rooms, the system runs longer to compensate. Sealing cuts that waste and often makes the house noticeably more comfortable the same day.',
+                },
+                {
+                  question: 'Is this worth doing if I\u2019m replacing my AC soon?',
+                  answer:
+                    'Absolutely \u2014 sealed ducts let you buy a smaller, less expensive system because it doesn\u2019t have to overcome duct losses. It\u2019s one of the best things to do before a new HVAC install.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'window-replacement',
+            title: 'Window Replacement',
+            icon: 'windows',
+            menuDescription: 'Replace the windows that are letting Texas heat pour in.',
+            eyebrow: 'Reduce heat gain and loss',
+            subtitleLabel: 'Best when',
+            subtitleValue: 'You feel the heat radiating through the glass every afternoon',
+            body: 'Stand next to any window in your house on an August afternoon. Feel that heat radiating in? Single-pane windows do almost nothing to stop it. Low-E, double-pane replacements cut heat gain, reduce UV damage, and make your AC\u2019s job dramatically easier.',
+            image: {
+              urls: { regular: '/assets/services/photos/window-replacement.jpg' },
+              alt: 'Crew installing new residential windows on a house exterior',
+            },
+            detail: {
+              heroEyebrow: 'Envelope upgrades',
+              heroBody:
+                'Windows are the weakest link in your home\u2019s thermal envelope. Single-pane and aging double-pane windows let heat pour in, UV rays damage your floors and furniture, and your AC runs overtime compensating. The right replacements change all of that.',
+              storyTitle: 'Your windows are working against your AC.',
+              storyBody:
+                'Every BTU of heat that enters through your windows is a BTU your AC has to remove. Older double-pane windows with failed seals \u2014 you can spot them by the fog between the glass \u2014 have lost most of their insulating ability. Low-E coated, argon-filled replacements cut heat gain dramatically, and proper installation eliminates the drafts old windows are notorious for. Your rooms stay cooler, your system runs less, and your floors stop fading from UV.',
+              highlights: [
+                {
+                  title: 'Low-E coating blocks heat without blocking light',
+                  body: 'Low-emissivity coatings reflect infrared heat back outside while letting visible light through. Bright rooms without the greenhouse effect.',
+                },
+                {
+                  title: 'Proper installation eliminates air leaks around frames',
+                  body: 'A great window installed badly still leaks. Professional installation includes shimming, insulating, and sealing around every frame to eliminate the drafts old windows are known for.',
+                },
+                {
+                  title: 'Noise reduction you\u2019ll notice immediately',
+                  body: 'Double-pane windows with gas fill cut exterior noise significantly. If you live near a busy road, the difference is obvious the first night.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Measure every opening and check framing for rot or damage',
+                  body: 'Width, height, depth, and squareness determine whether you need an insert (pocket) install or a full-frame replacement. Insert windows fit inside an existing frame that\u2019s still sound. Full-frame strips to the studs for a tighter seal but costs more. We check your framing condition and give you an honest recommendation.',
+                },
+                {
+                  title: 'Match glass specs to each wall\u2019s sun exposure',
+                  body: 'South and west-facing windows in Texas take brutal afternoon heat \u2014 they need a lower solar heat gain coefficient (SHGC) than north-facing ones. We specify Low-E coatings, gas fill, and frame materials based on which direction each window faces, how much shade it gets, and what your cooling load actually looks like.',
+                },
+                {
+                  title: 'Install with proper flashing, insulate the rough opening, and test',
+                  body: 'Old windows come out, new ones are shimmed plumb and level. The rough opening gets sealed with low-expansion foam. Full-frame replacements integrate with flashing tape for proper water management \u2014 head and jambs sealed, sill left to drain. Every window gets operation-checked, locked, and unlocked before the crew leaves.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Will new windows solve high energy bills by themselves?',
+                  answer:
+                    'They help, but they\u2019re one part of the envelope. Most homeowners see 12\u201325% cooling savings. The biggest payoff comes when windows are done alongside insulation and air sealing.',
+                },
+                {
+                  question: 'Can I replace windows one room at a time?',
+                  answer:
+                    'Yes. Many homeowners start with the rooms that get the most sun or have the worst comfort problems. We help you prioritize which windows give you the biggest return first.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'heat-pump-upgrades',
+            title: 'Heat Pump Upgrades',
+            icon: 'heatpump',
+            menuDescription: 'One system that heats and cools \u2014 for less.',
+            eyebrow: 'Modernize heating and cooling',
+            subtitleLabel: 'Best when',
+            subtitleValue: 'Your AC and furnace are aging, expensive, or can\u2019t keep up',
+            body: 'A heat pump replaces both your AC and furnace, moving heat instead of generating it \u2014 which means it uses 2\u20133x less energy. Texas winters are mild enough that heat pumps handle them easily, and the latest models work well below freezing.',
+            image: {
+              urls: { regular: '/assets/services/photos/heat-pump-upgrades.jpg' },
+              alt: 'Residential outdoor heat pump unit mounted beside a home',
+            },
+            detail: {
+              heroEyebrow: 'Equipment planning',
+              heroBody:
+                'A heat pump does the job of both your AC and furnace but uses significantly less energy. For Texas homeowners dealing with sky-high summer bills and short, mild winters, it\u2019s one of the highest-ROI comfort investments you can make.',
+              storyTitle: 'One system that heats and cools \u2014 for a fraction of what you\u2019re paying now.',
+              storyBody:
+                'Your current setup probably has a furnace for winter and an AC for summer \u2014 two separate systems, neither one particularly efficient. A heat pump replaces both. In summer it pulls heat out; in winter it reverses and pulls heat in. Because it\u2019s moving heat instead of generating it, it uses 2\u20133x less energy than a traditional furnace. Pair that with up to $2,000 in federal tax credits and utility rebates, and the numbers start working fast.',
+              highlights: [
+                {
+                  title: '2\u20133x more efficient than traditional furnaces',
+                  body: 'A gas furnace burns a dollar of gas to make a dollar of heat. A heat pump spends a dollar of electricity to move three dollars of heat. The efficiency gap is real and shows up on every bill.',
+                },
+                {
+                  title: 'Federal tax credits and utility rebates available',
+                  body: 'The Inflation Reduction Act offers up to $2,000 in tax credits for qualifying installations. Texas utilities often add rebates on top. We help you identify every incentive you qualify for.',
+                },
+                {
+                  title: 'Variable-speed models eliminate hot and cold spots',
+                  body: 'Modern variable-speed heat pumps adjust output continuously instead of cycling on and off. More consistent temperatures, lower humidity in summer, and quieter operation.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Run a Manual J load calculation to size the system to your actual house',
+                  body: 'Square footage alone doesn\u2019t determine the right system \u2014 insulation levels, window area, orientation, duct condition, and occupancy all factor in. A Manual J calculation accounts for all of it and gives a precise BTU load. Skipping this is how you end up with an oversized system that short-cycles, strips humidity poorly, and wears out early.',
+                },
+                {
+                  title: 'Remove old furnace and AC, install heat pump with proper refrigerant line sizing',
+                  body: 'The old equipment comes out. The new heat pump outdoor unit and air handler go in per manufacturer spec. Refrigerant lines are brazed (not flared), ductwork connections adjusted for the new system\u2019s airflow requirements, and the electrical circuit is wired to code with a disconnect at the outdoor unit.',
+                },
+                {
+                  title: 'Commission the system: verify charge, measure static pressure, check every register',
+                  body: 'Refrigerant charge is verified using superheat and subcooling measurements \u2014 not just pressure. Total static pressure is measured to confirm the duct system can handle the new equipment. Airflow is checked at every register. The thermostat is programmed, and we walk you through emergency heat, defrost cycles, and how to file your federal tax credit paperwork.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Do heat pumps work in Texas winters?',
+                  answer:
+                    'Yes \u2014 Texas is actually the ideal climate. Modern models work efficiently well below freezing, and Texas rarely gets that cold. No backup heat needed for the vast majority of winter nights.',
+                },
+                {
+                  question: 'How much will I save on energy bills?',
+                  answer:
+                    'Most Texas homeowners switching from a standard AC/furnace combo see 20\u201340% savings on heating and 10\u201315% on cooling. The exact number depends on your current system\u2019s age and your home\u2019s envelope.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'solar-and-battery-installations',
+            title: 'Solar and Battery Installations',
+            icon: 'solarbattery',
+            menuDescription: 'Generate your own power and stop being at the mercy of the grid.',
+            eyebrow: 'Generate and store power',
+            subtitleLabel: 'Best when',
+            subtitleValue: 'You\u2019re ready to take control of your energy bill for the long haul',
+            body: 'Every day, the Texas sun dumps thousands of watts onto your roof for free. Solar panels convert that into electricity you use, store, or send back for credit. Add a battery, and you have power when the grid goes down. The 30% federal tax credit covers nearly a third of the installed cost.',
+            image: {
+              urls: {
+                regular:
+                  'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+              },
+              alt: 'Solar array installation under a bright sky',
+            },
+            detail: {
+              heroEyebrow: 'Solar planning',
+              heroBody:
+                'After grid failures during Winter Storm Uri and subsequent summer blackouts, Texas homeowners learned the grid isn\u2019t always there. Solar and battery storage let you generate your own power, slash your bill, and keep critical systems running when the grid fails.',
+              storyTitle: 'Your roof is already collecting energy \u2014 you\u2019re just not using it.',
+              storyBody:
+                'Right now, that sunlight turns into heat your AC has to fight. Solar panels convert it into electricity instead. Add a battery, and you have backup power with no generator fuel, no noise, no maintenance. Panels cost 70% less than a decade ago, the federal tax credit covers 30%, and Texas\u2019s deregulated market means you actually benefit from what you produce. We design your system around your real electric bills \u2014 not a generic estimate \u2014 so the numbers stay honest.',
+              highlights: [
+                {
+                  title: 'Custom system design based on your actual usage',
+                  body: 'Panel count, battery size, and inverter capacity are all sized to match how your household actually uses energy throughout the year. No cookie-cutter proposals.',
+                },
+                {
+                  title: '30% federal tax credit on total installed cost',
+                  body: 'The ITC covers 30% of everything \u2014 panels, batteries, inverter, wiring, labor, and permitting. Dollar-for-dollar credit on your federal taxes.',
+                },
+                {
+                  title: 'Battery backup keeps critical systems running',
+                  body: 'When the grid drops, your battery kicks in automatically \u2014 fridge, lights, internet, medical equipment. No transfer switch to flip, no generator to start.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Pull your utility data, run a shade analysis, and assess roof condition',
+                  body: 'We analyze 12 months of usage to size the system to your actual consumption \u2014 not a generic estimate. A shade study maps shadow patterns from trees, chimneys, and neighboring structures across every hour and season. Roof age, material, orientation, pitch, and structural condition all have to check out before we design anything.',
+                },
+                {
+                  title: 'Custom system design, financing options, permits, and utility interconnection',
+                  body: 'Your proposal includes panel count, inverter type, battery sizing (if applicable), projected savings, and payback timeline with and without the 30% federal tax credit. We handle building permits, electrical permits, and the utility interconnection application \u2014 that\u2019s typically 2\u20134 weeks of paperwork you never have to touch.',
+                },
+                {
+                  title: 'Install in 1\u20132 days, pass city inspection, and activate with live monitoring',
+                  body: 'Panels, racking, inverter, and battery go on your roof and wall. After city inspection and utility permission to operate (PTO), the system goes live. We set up your monitoring app so you see production in real time \u2014 and we verify the first week\u2019s output against the design model to make sure everything performs as promised.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'How much does a solar system cost in Texas?',
+                  answer:
+                    'A typical residential system runs $15,000\u2013$30,000 before the 30% tax credit. After the credit, most systems cost $10,500\u2013$21,000. Battery adds $8,000\u2013$15,000 depending on capacity. We break it all down in your proposal.',
+                },
+                {
+                  question: 'Do I need a new roof before solar?',
+                  answer:
+                    'If your roof has less than 10 years of life left, yes \u2014 it should be discussed first. Putting panels on a roof that needs replacing in 5 years means paying for detach-and-reset later. We\u2019ll be honest about the timing.',
+                },
+              ],
+            },
+          },
+        ]
+        
+        export const roofingServices = [
+          {
+            slug: 'shingle-roofing',
+            title: 'Shingle Roofing',
+            icon: 'shingles',
+            menuDescription: 'The most common Texas roof \u2014 done right the first time.',
+            body: 'Architectural shingles handle Texas heat, hail, and wind \u2014 if they\u2019re installed correctly. Full tear-off, deck inspection, ice-and-water shield in the valleys, and manufacturer-spec nail patterns are the difference between a roof that lasts 30 years and one that leaks in 5.',
+            image: {
+              urls: {
+                regular:
+                  '/images/closeup-shingle-roof-bright-sky-showcasing-texture-alignment-shingles-symbolizing-durability-protection.jpg',
+              },
+              alt: 'Close-up of weathered roof shingles and eaves',
+            },
+            detail: {
+              heroEyebrow: 'Roofing',
+              heroBody:
+                'A shingle roof is only as good as the crew that installs it. Proper deck prep, correct nail patterns, sealed valleys, and manufacturer-spec underlayment are the difference between a roof that handles Texas weather for decades and one that starts failing in years.',
+              actions: [
+                { label: 'Request a consultation', href: '#consultation', variant: 'default' },
+                { label: 'View all services', href: '/services', variant: 'ghost' },
+              ],
+              storyTitle: 'Your roof is your home\u2019s first line of defense \u2014 shortcuts kill it early.',
+              storyBody:
+                'Texas throws everything at your roof \u2014 triple-digit heat, golf-ball hail, straight-line winds, and driving rain. Architectural shingles can handle all of it when the installation is done right. That means full tear-off, damaged decking replaced (not covered over), ice-and-water shield in valleys and at eaves, and starter strips and ridge caps per manufacturer spec. We don\u2019t layer over old roofs and we don\u2019t skip the details that matter.',
+              highlights: [
+                {
+                  title: 'Full tear-off and deck inspection \u2014 no layovers',
+                  body: 'We strip the old roof to inspect every inch of the deck. Damaged or rotted plywood gets replaced before anything new goes on. Layering over old shingles hides problems and voids most warranties.',
+                },
+                {
+                  title: 'Ice-and-water shield where it matters most',
+                  body: 'Self-adhering membrane goes at eaves, valleys, and around every penetration \u2014 the spots where water damage starts. Some contractors skip it. We don\u2019t.',
+                },
+                {
+                  title: 'Manufacturer-certified installation protects your warranty',
+                  body: 'Shingle warranties have installation requirements. If your contractor doesn\u2019t follow them, the warranty means nothing. Certified installation means the manufacturer stands behind both materials and labor.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Inspect existing layers, choose your shingles, and pull permits',
+                  body: 'We check for existing layers (Texas code limits how many you can have), assess deck condition from the attic side, and document any visible damage. You pick the shingle line \u2014 color, style, wind rating, impact resistance, and warranty tier. We pull permits and lock in your install date.',
+                },
+                {
+                  title: 'Full tear-off, replace damaged decking, then underlayment and flashing',
+                  body: 'Every old shingle comes off \u2014 no layovers. The deck gets inspected plank by plank; rotten or delaminated OSB is replaced. Ice-and-water shield goes at eaves, valleys, and every penetration. Synthetic underlayment covers the rest. Drip edge at eaves and rakes, step flashing at walls \u2014 all before a single shingle goes on.',
+                },
+                {
+                  title: 'Install to manufacturer nail pattern, finish ridge ventilation, and magnetic sweep',
+                  body: 'Shingles go on with the manufacturer\u2019s required nail count, spacing, and exposure. Starter strips at eaves and rakes. Ridge cap with proper ventilation to prevent attic heat buildup. We walk every inch, run a rolling magnet across your yard and driveway for stray nails, haul all debris, and do a final walkthrough with you.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'How long does a shingle roof last in Texas?',
+                  answer:
+                    'Architectural shingles typically last 25\u201330 years with proper installation and ventilation. Texas heat and hail can shorten that if the install was done poorly or attic ventilation is inadequate.',
+                },
+                {
+                  question: 'What about the nails in my yard?',
+                  answer:
+                    'We use tarps during tear-off and run a rolling magnet across your entire yard, driveway, and landscaping after the job. We take nail cleanup seriously \u2014 your tires and bare feet will thank us.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'metal-roofing',
+            title: 'Metal Roofing',
+            icon: 'metalroofing',
+            menuDescription: 'A 50-year roof that handles Texas weather better than anything else.',
+            body: 'Metal roofs last 2\u20133x longer than shingles, reflect solar heat to lower cooling costs, and stand up to wind and hail that would total a standard roof. Higher upfront \u2014 dramatically lower over the life of your home.',
+            image: {
+              urls: {
+                regular:
+                  'https://images.unsplash.com/photo-1718948173667-fbd912b6d1fa?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+              },
+              alt: 'House with a standing seam metal roof',
+            },
+            detail: {
+              heroEyebrow: 'Roofing',
+              heroBody:
+                'A metal roof is the last roof most Texas homeowners ever buy. It handles 140 mph winds, sheds hail that would total a shingle roof, reflects solar heat to cut cooling costs, and lasts 40\u201370 years with minimal maintenance.',
+              storyTitle: 'The roof you install once.',
+              storyBody:
+                'You can replace your shingle roof every 20\u201325 years and spend $30K+ over the life of your home. Or you can install metal once and be done. Standing seam panels interlock to resist wind uplift, and the material handles hail impacts that crack shingles. A reflective coating can reduce roof surface temperature by up to 100\u00b0F compared to dark asphalt \u2014 which means 10\u201325% savings on cooling. The upfront cost is higher. The lifetime cost isn\u2019t even close.',
+              highlights: [
+                {
+                  title: '40\u201370 year lifespan vs. 25 for shingles',
+                  body: 'Metal doesn\u2019t crack, curl, or lose granules. It doesn\u2019t rot from moisture or grow algae. One metal roof outlasts two or three shingle roofs.',
+                },
+                {
+                  title: 'Reflects solar heat to lower cooling costs',
+                  body: 'A metal roof with reflective coating can reduce surface temperature by up to 100\u00b0F vs. dark asphalt shingles. That translates to 10\u201325% cooling savings in a Texas summer.',
+                },
+                {
+                  title: 'Wind rated for 140+ mph',
+                  body: 'Standing seam panels interlock and are mechanically attached to resist extreme wind uplift. Where shingle tabs tear off in a storm, metal stays locked in place.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Verify roof structure for the weight, take measurements for custom panel fabrication',
+                  body: 'Metal panels are fabricated to the exact length of your roof runs \u2014 no field splices. We verify your framing and decking can handle the load, take precise measurements for custom fabrication, and walk you through profiles (standing seam vs. exposed fastener), gauge options (26 vs. 24 gauge), and Kynar/PVDF coatings that resist fading for decades.',
+                },
+                {
+                  title: 'Tear off, install high-temp underlayment, and bend custom flashing for every detail',
+                  body: 'Old roof comes off. High-temp synthetic underlayment rated for metal contact covers the entire deck. Custom-bent flashing goes at eaves, rakes, valleys, walls, and every penetration. Metal roofing lives and dies by its flashing \u2014 a bad valley or wall tie-in will leak no matter how good the panels are.',
+                },
+                {
+                  title: 'Install panels eave-to-ridge with thermal expansion clips and test every seam',
+                  body: 'Standing seam panels attach with concealed clips that allow thermal movement \u2014 metal expands and contracts significantly in Texas heat. Panels run full length to minimize seams. Ridge caps, gable trim, and transition flashing complete the system. Every clip, seam, and fastener gets inspected before we call it done.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Is a metal roof loud when it rains?',
+                  answer:
+                    'No \u2014 not with proper installation. Metal over solid decking with underlayment is no louder than shingles. The \u201cloud metal roof\u201d reputation comes from barns and sheds with no decking underneath.',
+                },
+                {
+                  question: 'How much more does metal cost than shingles?',
+                  answer:
+                    'Typically 2\u20133x more upfront. But it lasts 2\u20133x longer and saves on cooling every year. When you calculate cost per year of service, metal is usually cheaper over time.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'storm-damage-restoration',
+            title: 'Storm Damage Restoration',
+            icon: 'stormdamage',
+            menuDescription: 'Navigate insurance and get your roof restored right after a storm.',
+            body: 'When a storm hits, you need someone who documents the damage the way insurance expects, meets the adjuster on your roof, and makes sure the scope covers what actually needs to happen \u2014 not just what\u2019s fastest.',
+            image: {
+              urls: {
+                regular:
+                  '/images/storm-damage.jpg',
+              },
+              alt: 'Storm-damaged structure with torn metal roofing',
+            },
+            detail: {
+              heroEyebrow: 'Storm response',
+              heroBody:
+                'Storm damage triggers a process most homeowners have never been through: documentation, insurance claims, adjuster meetings, and restoration coordination. We handle all of it \u2014 from first inspection to final paperwork \u2014 so you get the full restoration your policy covers.',
+              storyTitle: 'Your insurance covers it \u2014 but only if you do it right.',
+              storyBody:
+                'A hailstorm blows through. You notice shingles in the yard. You call insurance. And that\u2019s where most homeowners get lost. The adjuster writes a scope. The roofer says it\u2019s not enough. You\u2019re stuck in the middle. We\u2019ve been through this thousands of times. We document damage the way adjusters expect, meet them on your roof, and make sure the scope covers what actually needs repair. You choose your own contractor \u2014 insurance can\u2019t tell you who to hire. And we don\u2019t ask you to pay out of pocket for work your policy should cover.',
+              highlights: [
+                {
+                  title: 'Free inspection within 48 hours',
+                  body: 'After a storm, timing matters. We get on your roof fast to assess and document before damage worsens. The inspection is free and comes with a report you can use whether you hire us or not.',
+                },
+                {
+                  title: 'Insurance documentation that holds up',
+                  body: 'We photograph and document every point of damage using the same methods and terminology adjusters use. Fewer disputes, faster approvals, and a claim that reflects the full scope.',
+                },
+                {
+                  title: 'We meet your adjuster on the roof',
+                  body: 'Most homeowners don\u2019t know what to look for \u2014 and some adjusters miss things. We walk the roof with your adjuster to make sure nothing gets overlooked.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'We inspect within 48 hours and build documentation that matches what adjusters need',
+                  body: 'We photograph every impact point, damaged component, and collateral indicator \u2014 soft metals, AC fins, gutters, siding \u2014 with close-ups, reference shots, timestamps, and measurements. This gets compiled into a report formatted the way insurance adjusters expect to see it, using the same terminology they use in Xactimate. Strong documentation means fewer disputes and faster approvals.',
+                },
+                {
+                  title: 'File your claim, and we walk the roof with your adjuster to align scope',
+                  body: 'You file the claim using our documentation. When the adjuster comes out, we\u2019re on the roof with them pointing out every item \u2014 because some adjusters miss things, and their initial scope isn\u2019t final. If the adjuster\u2019s estimate doesn\u2019t cover what\u2019s actually damaged, we help identify what was missed so you can request a re-inspection or supplement.',
+                },
+                {
+                  title: 'Restore to the approved scope, file supplements for hidden damage, and close out the claim',
+                  body: 'Work proceeds per the approved line items. If tear-off reveals damage the adjuster couldn\u2019t see \u2014 rotted decking, saturated underlayment, damaged flashing \u2014 we document it and file a supplement before proceeding. Completion photos, material receipts, and warranty documentation go to your carrier so they release the recoverable depreciation check. You get a clean close-out, not a lingering claim.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Should I call insurance or a roofer first?',
+                  answer:
+                    'Call us first. A professional inspection gives you documented evidence before you call your carrier. Going in with documentation makes the process faster and more likely to cover the full scope.',
+                },
+                {
+                  question: 'Do I have to pay anything out of pocket?',
+                  answer:
+                    'You\u2019re responsible for your deductible \u2014 that\u2019s set by your policy. Any contractor who offers to \u201ccover your deductible\u201d is breaking the law. We\u2019re straight with you about costs from day one.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'detach-and-reset',
+            title: 'Detach and Reset',
+            icon: 'detachreset',
+            menuDescription: 'Remove and reinstall solar safely when your roof needs work.',
+            body: 'Need a new roof but have solar panels? We safely remove, label, store, and reinstall your system \u2014 with fresh flashings and verified production \u2014 so your equipment, warranty, and investment come through intact.',
+            image: {
+              urls: {
+                regular: 'https://images.unsplash.com/photo-1624397640148-949b1732bb0a?q=80&w=3174&auto=format&fit=crop'
+              },
+              alt: 'Solar panels installed on a residential roof before roofing coordination work',
+            },
+            detail: {
+              heroEyebrow: 'Solar coordination',
+              heroBody:
+                'Reroofing with solar panels on top requires specialized handling. Disconnecting, removing, storing, and reinstalling the wrong way voids warranties, damages equipment, and creates safety hazards. We coordinate the entire process so the roof, the panels, and the insurance scope all stay aligned.',
+              storyTitle:
+                'The real risk isn\u2019t taking panels off \u2014 it\u2019s letting the roofing, solar, and insurance scopes drift apart.',
+              storyBody:
+                'Homeowners get stuck when the roofer, solar company, and carrier all assume someone else is handling the solar side. A proper detach-and-reset clarifies sequencing up front: certified technicians remove the system, document condition, store everything safely, and reinstall on the new roof with fresh flashings and verified connections. Your panels, inverter, and warranty come through intact.',
+              highlights: [
+                {
+                  title: 'Certified solar removal protects your warranty',
+                  body: 'Most panel warranties require authorized handling. Using an unqualified crew can void coverage entirely. Our technicians are manufacturer-certified.',
+                },
+                {
+                  title: 'Insurance coordination from day one',
+                  body: 'Detach-and-reset costs, roofing scope, and storm documentation should be aligned early. We make sure the solar side doesn\u2019t get left out of the claim conversation.',
+                },
+                {
+                  title: 'Equipment condition documented before and after',
+                  body: 'Racking, wiring, and panel condition are checked during removal so any damaged components are identified before reinstall \u2014 not discovered after the system goes back up.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Coordinate roof scope and solar removal timing so both crews stay aligned',
+                  body: 'Before anything comes off, we settle whether the roof needs patch repair or full replacement, confirm the insurance scope includes detach-and-reset costs if applicable, and lock in removal timing so panels come off right before the roofing crew\u2019s start date. Sitting on a half-stripped roof costs everyone time and money.',
+                },
+                {
+                  title: 'De-energize using proper shutdown sequence, remove panels one at a time, label and map every position',
+                  body: 'The inverter shuts down first, then the wiring is disconnected at the inverter, then the grid interconnect, then the panel. Every panel is individually labeled with its position, orientation, and serial number. Wiring diagrams, conduit routing, and racking layout are photographed and documented for exact repositioning. Panels are stored flat and protected \u2014 mishandling voids the manufacturer warranty.',
+                },
+                {
+                  title: 'Reinstall on new flashings, test every circuit, and verify production matches the pre-removal baseline',
+                  body: 'Old flashing boots are never reused on a new roof \u2014 every penetration gets fresh EPDM or silicone flashings, new lag bolts torqued to spec (not overtightened), and proper sealant. Panels go back in their original positions. We test every string, verify inverter communication, and compare the first week\u2019s production against the pre-removal baseline to confirm nothing was lost.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Can my roofer just work around the panels?',
+                  answer:
+                    'No \u2014 not if you want the roof done right. Roofers can\u2019t properly install underlayment, flashing, or shingles under or around mounted panels. They have to come off.',
+                },
+                {
+                  question: 'Does insurance ever cover detach and reset?',
+                  answer:
+                    'Sometimes, especially when the reroof is tied to storm damage. But coverage depends on the policy and claim scope \u2014 which is why the solar side should be documented and discussed early, not after the roof work is already moving.',
+                },
+                {
+                  question: 'What if a panel or component is damaged?',
+                  answer:
+                    'That gets identified during removal and inspection. If equipment is damaged, you get a clear recommendation on repair or replacement before reinstall \u2014 not a surprise after the system goes back up.',
+                },
+              ],
+            },
+        
+          },
+          {
+            slug: 'commercial-roofing',
+            title: 'Commercial Roofing',
+            icon: 'commercialroofing',
+            menuDescription: 'Flat-roof and membrane systems for Texas businesses.',
+            body: 'Commercial roofs face different challenges: larger spans, flat or low-slope designs, rooftop equipment, and the need to keep your business running during the work. We handle the complexity \u2014 phased, permitted, and warrantied.',
+            image: {
+              urls: {
+                regular:
+                  'https://images.unsplash.com/photo-1737256359080-9354dbcc21ef?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+              },
+              alt: 'Large commercial building roof under clear sky',
+            },
+            detail: {
+              heroEyebrow: 'Commercial roofing',
+              heroBody:
+                'A leaking commercial roof doesn\u2019t just damage the building \u2014 it disrupts operations, threatens inventory, and puts employees at risk. We handle commercial roofing from inspection through warranty with phased scheduling that keeps your doors open.',
+              storyTitle: 'Commercial roof decisions need a different scope than residential.',
+              storyBody:
+                'Flat and low-slope systems need proper drainage, careful detailing around rooftop HVAC units, and phased scheduling so your building stays weather-tight throughout the project. We work with TPO, EPDM, modified bitumen, and metal depending on what your building actually needs \u2014 and we coordinate around your business hours when the work gets loud.',
+              highlights: [
+                {
+                  title: 'Drainage and ponding designed out',
+                  body: 'Ponding water is the number one enemy of commercial roofs. We design systems with proper slope, internal drains, and scupper details that move water off instead of letting it sit.',
+                },
+                {
+                  title: 'Phased installation keeps your business open',
+                  body: 'We don\u2019t need to tear off the entire roof at once. Work gets phased in sections so your building stays weather-tight and your operations stay running.',
+                },
+                {
+                  title: 'Manufacturer warranties up to 30 years',
+                  body: 'Certified installation means your warranty covers both materials and labor \u2014 real protection, not the limited materials-only warranty you get from uncertified installers.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Infrared scan for moisture, core cuts to confirm, and a full condition report',
+                  body: 'An infrared survey identifies wet zones across the roof surface \u2014 saturated insulation retains heat differently and shows up clearly on thermal imaging. Core cuts in the worst areas physically confirm moisture levels. You get a condition report with color-coded CAD drawings showing exactly where the membrane, insulation, flashings, and drainage are failing \u2014 and a clear repair vs. replace recommendation.',
+                },
+                {
+                  title: 'Spec the right membrane system and build a phased schedule around your operations',
+                  body: 'TPO, EPDM, modified bitumen, or metal \u2014 each has a use case depending on your roof slope, traffic, equipment loads, and budget. We spec ISO board insulation thickness for energy code compliance, detail every penetration and curb, and phase the work in sections so your building stays weather-tight and your operations keep running. Noisy work gets scheduled around your hours.',
+                },
+                {
+                  title: 'Install with welded seams, test every seam, and deliver manufacturer warranty documentation',
+                  body: 'TPO seams are heat-welded at 500\u2013600\u00b0F and probed for voids the same day. Test welds are run each morning and afternoon to verify proper width and adhesion. ISO insulation, membrane, flashings, and drainage go in per manufacturer spec. City inspection and manufacturer\u2019s final inspection verify the work. You receive full warranty documentation and a recommended maintenance schedule to keep coverage valid.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Can the work be done while my business is open?',
+                  answer:
+                    'In most cases, yes. We phase the work and coordinate around your operations. Some noise during tear-off is unavoidable, but we schedule the loudest work during off-hours when needed.',
+                },
+                {
+                  question: 'How often should a commercial roof be inspected?',
+                  answer:
+                    'Twice a year \u2014 spring and fall \u2014 plus after any major storm. Regular inspections catch small problems before they become expensive ones. Most warranty programs require documented maintenance to stay valid.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'hail-and-wind-damage-roof-inspection',
+            title: 'Hail & Wind Damage Roof Inspection',
+            icon: 'hailinspection',
+            menuDescription: 'Find out if the last storm damaged your roof \u2014 before the leaks start.',
+            body: 'You can\u2019t see hail damage from the ground. Cracked shingles, dented flashing, and stripped granules only show up on close inspection. If a storm came through your area, a professional inspection tells you what you\u2019re dealing with before it turns into water damage.',
+            image: {
+              urls: {
+                regular:
+                  'https://images.unsplash.com/photo-1656646549671-000665d8d8bc?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+              },
+              alt: 'Aerial view of a residential roof for inspection',
+            },
+            detail: {
+              heroEyebrow: 'Storm inspection',
+              heroBody:
+                'Hail doesn\u2019t have to punch a hole through your roof to cause serious problems. It cracks shingles, strips granules, and dents flashing \u2014 creating entry points for water that get expensive fast. A professional inspection catches it early, while insurance still covers the claim.',
+              storyTitle:
+                'The damage you can\u2019t see from the ground is the damage that gets expensive.',
+              storyBody:
+                'Over the months after a storm, small hail impacts turn into leaks, rot, mold, and insulation damage that costs far more than the original repair. We inspect your roof, gutters, siding, and exterior \u2014 and document everything with photos and measurements formatted for insurance adjusters. If it\u2019s fine, we tell you it\u2019s fine. If it needs work, we show you exactly where and why.',
+              highlights: [
+                {
+                  title: 'Ground-to-roof inspection covers everything the storm touched',
+                  body: 'We check gutters, downspouts, siding, window screens, AC units, and vents \u2014 because hail hits everything, and collateral damage strengthens your insurance claim.',
+                },
+                {
+                  title: 'Close-up documentation formatted for insurance',
+                  body: 'Every point of damage gets photographed with close-ups and reference shots. Timestamps, measurements, and descriptions included \u2014 formatted the way adjusters expect to see it.',
+                },
+                {
+                  title: 'Honest assessment \u2014 no scare tactics',
+                  body: 'If your roof is fine, we tell you. If it needs work, we show you where and why. We don\u2019t manufacture damage or pressure you into unnecessary repairs.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'We confirm storm activity in your area and get on your roof within 48 hours',
+                  body: 'We check local storm reports to verify hail size and wind speeds before we come out \u2014 this context helps the inspection and strengthens any future claim. The inspection is free and you\u2019re under no obligation regardless of what we find.',
+                },
+                {
+                  title: 'Ground-to-roof inspection: soft metals first, then test squares on every slope',
+                  body: 'We start on the ground checking gutters, AC fins, vents, and downspouts for dents \u2014 soft metals show hail impact even when shingles don\u2019t look damaged from below. On the roof, we mark 10\u00d710-foot test squares on each slope and count every hit: granule displacement, mat bruising (feels soft, like an apple bruise), lifted tabs, and crease marks from wind. Eight or more hits per test square is a common threshold for replacement.',
+                },
+                {
+                  title: 'Detailed photo report with a clear recommendation: file, monitor, or no action',
+                  body: 'Every damage point is photographed with close-ups and reference shots \u2014 timestamped and described using adjuster terminology. The report distinguishes functional damage (compromised waterproofing) from cosmetic damage (surface marks that don\u2019t affect performance). If filing makes sense, we walk you through the call to your carrier and meet the adjuster on your roof to make sure nothing gets missed.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Is the inspection really free?',
+                  answer:
+                    'Yes \u2014 completely free, no obligation. We inspect, document, and give you the report. If you file a claim and use us, great. If not, you still have the documentation.',
+                },
+                {
+                  question: 'How soon after a storm should I get inspected?',
+                  answer:
+                    'As soon as possible. Most Texas policies have a time limit for weather-related claims \u2014 typically one to two years. Waiting lets secondary damage develop and complicates the claim.',
+                },
+              ],
+            },
+          },
+        ]
+        
+        export const specialtyServices = [
+          {
+            slug: 'rodent-deterrent',
+            title: 'Rodent Deterrent',
+            icon: 'rodent',
+            menuDescription: 'Protect solar wiring from the pests that chew through it.',
+            body: 'Rats and squirrels love nesting under solar arrays \u2014 and they chew through wiring that costs hundreds to replace. Critter guard screening seals the perimeter of your array so pests can\u2019t get underneath, preventing the repeat service calls that drive homeowners crazy.',
+            image: {
+              urls: {
+                regular:'https://images.unsplash.com/photo-1550845621-36e814edfae8?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+              },
+              alt: 'Close-up of rooftop solar panels',
+            },
+            detail: {
+              heroEyebrow: 'Solar protection',
+              heroBody:
+                'The gap between your solar panels and your roof is the perfect nesting spot for rats, squirrels, and birds. Once they\u2019re in, they chew wiring, drag debris, and create repeat service problems that are expensive to diagnose. Critter guard screening stops them before it starts.',
+              storyTitle: 'Prevention costs a fraction of what repeat wiring damage costs.',
+              storyBody:
+                'When rodents get under an array, the damage isn\u2019t always obvious. Chewed wiring causes intermittent production drops that are difficult and expensive to diagnose. Nesting material creates fire risk. Droppings corrode connections. One screening installation prevents all of it \u2014 and it\u2019s a fraction of the cost of even one service call to replace damaged wire runs.',
+              highlights: [
+                {
+                  title: 'Protect wiring from chewing and nesting damage',
+                  body: 'The main goal is preventing rodents from reaching the wiring, connectors, and optimizers underneath your panels. One chewed wire can knock out an entire string.',
+                },
+                {
+                  title: 'Eliminate repeat service calls',
+                  body: 'Proactive screening is a one-time install. Without it, rodent damage becomes a recurring problem \u2014 each service call costing more than the screening would have.',
+                },
+                {
+                  title: 'Preserve system performance long-term',
+                  body: 'A clean, sealed array perimeter keeps debris, nesting material, and moisture from accumulating underneath \u2014 protecting both production and roof condition.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Check for existing nesting, chewed wiring, and measure the panel-to-roof gap',
+                  body: 'We inspect underneath the array for droppings, nesting material, chewed wire insulation, and corroded connectors \u2014 signs that rodents have already moved in. The gap between your panels and roof (typically 4\u20138 inches) determines the mesh width needed. If panels need to come up for cleaning or wire repair, that happens before the guard goes on.',
+                },
+                {
+                  title: 'Install 19-gauge galvanized mesh using rail-mounted clips \u2014 no screws into panels',
+                  body: 'PVC-coated galvanized steel mesh (1/2\u201d \u00d7 1\u201d spacing) gets bent into an L-channel or C-channel shape for rigidity and clips directly to the mounting rails \u2014 never screwed into panel frames, which voids the manufacturer warranty. Corners are bent continuous with slit flanges, not patched. Penetrations around conduit get cut and stitched with hog rings. The goal is zero gaps larger than half an inch around the entire perimeter.',
+                },
+                {
+                  title: 'Remove any existing nests and debris, verify complete coverage',
+                  body: 'All nesting material, droppings, and accumulated debris are cleaned out before the mesh seals the perimeter. Every linear foot of screening is checked for secure attachment and gap-free coverage. A typical residential array runs 60\u2013100 linear feet of perimeter \u2014 any opening along that line defeats the purpose.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Is critter guard worth doing if I haven\u2019t had problems yet?',
+                  answer:
+                    'Yes \u2014 especially if your area has tree cover or you\u2019ve seen squirrels or rats on your roof. Prevention is far cheaper than diagnosing and repairing wiring damage after the fact.',
+                },
+                {
+                  question: 'Can rodents really damage solar wiring?',
+                  answer:
+                    'Absolutely. Chewed wiring and nesting under panels cause production drops, arc faults, and recurring service calls. It\u2019s one of the most common and most preventable solar maintenance issues.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'electrical-services',
+            title: 'Electrical Services',
+            icon: 'electrical',
+            menuDescription: 'Panel upgrades and wiring for modern Texas homes.',
+            body: 'Your home\u2019s electrical system wasn\u2019t built for heat pumps, EV chargers, and solar panels. If your panel is maxed out or your wiring can\u2019t handle modern loads, an upgrade brings your home\u2019s backbone up to the 200 or 400 amps you need \u2014 safely, to code, and ready for what\u2019s next.',
+            image: {
+              urls: {
+                regular:
+                  'https://images.unsplash.com/photo-1759692071712-adc78a8516c8?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+              },
+              alt: 'Electrical panel and power equipment',
+            },
+            detail: {
+              heroEyebrow: 'Electrical support',
+              heroBody:
+                'Adding solar, a heat pump, or an EV charger to a home with a 100-amp panel and 30-year-old wiring is asking for tripped breakers and fire risk. We bring your electrical system up to code and capacity so your home handles everything you need it to \u2014 safely.',
+              storyTitle: 'Many bigger upgrades stall because the electrical side was never scoped.',
+              storyBody:
+                'When your house was built, nobody planned for an electric car, a heat pump, or 30 solar panels feeding power back to the grid. Your 100 or 150-amp panel made sense then. It doesn\u2019t now. A panel upgrade replaces the old service with 200A or 400A capacity, every circuit gets properly labeled, and modern arc-fault and ground-fault protection goes where code requires it. We handle the permits, the utility coordination, and the inspection \u2014 typically one day without power.',
+              highlights: [
+                {
+                  title: 'Panel upgrades from 100A to 200A or 400A',
+                  body: 'We replace your outdated panel with modern service that gives you capacity for heat pumps, EV chargers, solar, and whatever else your home needs now and in the future.',
+                },
+                {
+                  title: 'Proper permitting and utility coordination',
+                  body: 'Panel upgrades require permits and inspections from the city and utility. We handle the entire process and coordinate the power shutoff and reconnection.',
+                },
+                {
+                  title: 'Safety upgrades included',
+                  body: 'Modern panels include arc-fault and ground-fault protection on required circuits. If your home still has a Federal Pacific or Zinsco panel \u2014 both known fire risks \u2014 replacement is urgent.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Evaluate your current panel, calculate total load including planned upgrades, and size the new service',
+                  body: 'We look at your existing panel capacity (most older Texas homes are 100A or 150A), wiring condition, and every load you plan to add \u2014 solar, EV charger, heat pump, electric range. The total determines whether you need 200A or 400A service. If your panel is a Federal Pacific or Zinsco, replacement is urgent regardless of capacity \u2014 both are documented fire hazards.',
+                },
+                {
+                  title: 'Pull permits, coordinate the utility disconnect, and swap the panel in a day',
+                  body: 'We file electrical permits and coordinate the utility meter pull. The old panel comes out, a new panel is mounted with properly sized bus bars, grounded per code, and every circuit reconnected and labeled. Arc-fault breakers go on bedroom and living area circuits. Ground-fault protection goes on wet locations. The whole swap typically takes 5\u20136 hours with power off.',
+                },
+                {
+                  title: 'City inspection, utility reconnection, and a full walkthrough of your new panel',
+                  body: 'The city electrical inspector verifies breaker sizing, grounding, bus bar integrity, and code compliance. Once approved, the utility reconnects the meter and restores power. We test voltage at every circuit, verify grounding, and walk you through the panel \u2014 what each breaker controls, how AFCI/GFCI protection works, and what to do if one trips.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'How do I know if I need a panel upgrade?',
+                  answer:
+                    'If you\u2019re adding solar, a heat pump, or an EV charger and your panel is 100 amps \u2014 you need one. Other signs: breakers that trip frequently, a panel with fuses instead of breakers, or a Federal Pacific or Zinsco brand.',
+                },
+                {
+                  question: 'Can I upgrade the panel and add solar at the same time?',
+                  answer:
+                    'Yes \u2014 and it\u2019s the most efficient way to do it. We size the panel for solar from the start so you avoid paying for two separate permitting processes.',
+                },
+              ],
+            },
+          },
+          {
+            slug: 'car-chargers',
+            title: 'Car Chargers',
+            icon: 'evcharger',
+            menuDescription: 'Charge at home and stop paying for public stations.',
+            body: 'A Level 2 home charger adds 25\u201330 miles of range per hour \u2014 full battery every morning without visiting a public station. Home electricity costs a fraction of public DC fast charging. We handle the wiring, the permit, and the install.',
+            image: {
+              urls: {
+                regular:
+                  'https://images.unsplash.com/photo-1724963914478-77af9eba1c50?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+              },
+              alt: 'Electric vehicle plugged into a home charger',
+            },
+            detail: {
+              heroEyebrow: 'EV charging',
+              heroBody:
+                'Public charging is slow, expensive, and inconvenient. A Level 2 home charger lets you plug in when you get home and wake up to a full battery every morning. We handle the electrical work, permitting, and installation so all you do is plug in.',
+              storyTitle: 'Charge at home like you charge your phone.',
+              storyBody:
+                'You don\u2019t drive to a gas station to charge your phone. Your car should work the same way. A Level 2 charger uses a 240-volt circuit \u2014 same voltage as your dryer \u2014 and adds 25\u201330 miles of range per hour. Plug in after dinner, wake up full. Home electricity in Texas averages 12\u201314 cents per kWh vs. 30\u201350 cents at public fast chargers. That\u2019s hundreds saved per year. The 30% federal tax credit covers up to $1,000 of installation costs.',
+              highlights: [
+                {
+                  title: 'Full charge overnight \u2014 every night',
+                  body: 'A Level 2 charger refills even a completely depleted battery overnight. No planning around public stations, no waiting, no apps.',
+                },
+                {
+                  title: 'Fraction of the cost of public charging',
+                  body: 'Home electricity runs 12\u201314\u00a2/kWh in Texas. Public DC fast chargers charge 30\u201350\u00a2. Charging at home \u2014 especially off-peak \u2014 saves hundreds per year.',
+                },
+                {
+                  title: '30% federal tax credit on installation',
+                  body: 'The federal government offers a 30% credit (up to $1,000) on residential EV charger installation \u2014 labor, parts, and permits included.',
+                },
+              ],
+              steps: [
+                {
+                  title: 'Check panel capacity, calculate the wire run, and determine if a panel upgrade is needed first',
+                  body: 'A Level 2 charger needs a dedicated 240V, 40\u201350 amp circuit \u2014 same voltage as your dryer. We check whether your panel has the capacity and an open 2-pole breaker slot. If the run from panel to garage exceeds 50 feet, we upsize from 6 AWG to 4 AWG copper to prevent voltage drop. If your panel is full or undersized, we\u2019ll tell you before any work starts.',
+                },
+                {
+                  title: 'Pull the permit, run a dedicated 240V circuit, and install hardwired or NEMA 14-50',
+                  body: 'We file the electrical permit, run a dedicated circuit in conduit from your panel to the charging location, install the 2-pole breaker, and mount the charger. You choose hardwired (more stable, no GFCI nuisance tripping) or a NEMA 14-50 outlet (more flexible \u2014 you can swap chargers later). Either way, the circuit is dedicated \u2014 nothing else shares it.',
+                },
+                {
+                  title: 'Test charging rate with your actual vehicle, pass city inspection, and set up off-peak scheduling',
+                  body: 'We plug in your car and verify it\u2019s pulling the expected amperage and adding 25\u201330 miles of range per hour. The city inspector checks the circuit, breaker, and installation. We walk you through the charger app, set up scheduled charging for off-peak hours (when Texas electricity is cheapest), and show you how to file the 30% federal tax credit.',
+                },
+              ],
+              faq: [
+                {
+                  question: 'Do I need a panel upgrade for an EV charger?',
+                  answer:
+                    'If you have a 200-amp panel with available breaker slots, probably not. If you have a 100-amp panel or it\u2019s already full, you\u2019ll likely need an upgrade first. We assess this on the first visit.',
+                },
+                {
+                  question: 'What if I want to add solar later?',
+                  answer:
+                    'Great idea \u2014 charging your EV with solar means virtually free fuel. We can size the panel for future solar addition now so you don\u2019t redo electrical work later.',
+                },
+              ],
+            },
+          },
+        ]
+        
+        export const allServiceEntries = [...mainServices, ...roofingServices, ...specialtyServices]
+        
+        export const servicePages = allServiceEntries.map((service) => ({
+          id: `page-service-${service.slug}`,
+          ...baseMeta,
+          slug: `services/${service.slug}`,
+          title: service.title,
+          description: service.body,
+          sections: [
+            {
+              type: 'hero',
+              eyebrow: service.detail.heroEyebrow,
+              title: service.title,
+              body: service.detail.heroBody,
+              heroImage: service.image,
+              heroGradient: service.detail.heroGradient,
+              heroTextColor: service.detail.heroTextColor,
+              heroOverlayColor: service.detail.heroOverlayColor,
+              heroOverlayStartColor: service.detail.heroOverlayStartColor,
+              heroOverlayEndColor: service.detail.heroOverlayEndColor,
+              heroOverlayDirection: service.detail.heroOverlayDirection,
+              heroOverlayStartOpacity: service.detail.heroOverlayStartOpacity,
+              heroOverlayEndOpacity: service.detail.heroOverlayEndOpacity,
+              heroOverlayOpacity: service.detail.heroOverlayOpacity,
+              actions: service.detail.actions || [
+                { label: 'Request a consultation', href: '#consultation' },
+                { label: 'View all services', href: '/services' },
+              ],
+              metrics: [
+                { label: 'Category', value: service.detail.heroEyebrow },
+                { label: 'Focus', value: service.eyebrow || service.subtitleValue || 'Service planning' },
+                { label: 'Next step', value: 'Consultation' },
+              ],
+            },
+            {
+              type: 'story',
+              eyebrow: 'Overview',
+              title: service.detail.storyTitle,
+              body: service.detail.storyBody,
+            },
+            {
+              type: 'highlights',
+              title: `What a good ${service.title.toLowerCase()} scope should cover`,
+              items: service.detail.highlights,
+            },
+            {
+              type: 'steps',
+              title: `How ${service.title.toLowerCase()} should be approached`,
+              items: service.detail.steps,
+            },
+            {
+              type: 'faq',
+              title: `${service.title} questions`,
+              items: service.detail.faq,
+            },
+            {
+              type: 'cta',
+              title: `Tell us what is going on with the house and we will help you figure out whether ${service.title.toLowerCase()} is the right next step.`,
+              body: 'The goal is a clearer recommendation, a cleaner scope, and the right conversation first.',
+              ctaLabel: 'Request a consultation',
+              ctaHref: '#consultation',
+            },
+          ],
+        }))

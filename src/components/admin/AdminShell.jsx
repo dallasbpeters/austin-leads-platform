@@ -6,20 +6,22 @@ import SignOutButton from './SignOutButton'
 
 export default function AdminShell({ children, user }) {
   return (
-    <div className="admin-theme min-h-screen bg-background text-foreground">
-      <div className="grid min-h-screen lg:grid-cols-[256px_1fr]">
-        <aside className="hidden h-[100vh] border-r border-border bg-sidebar lg:flex">
+    <div className="admin-theme bg-background text-foreground h-svh overflow-hidden">
+      <div className="grid h-full min-h-0 lg:grid-cols-[256px_1fr]">
+        <aside className="border-border bg-sidebar hidden h-svh border-r lg:flex">
           <div className="flex h-full w-full flex-col">
-            <div className="border-b border-border p-4">
-              <button className="group flex w-full items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-border hover:bg-muted/40">
+            <div className="border-border border-b p-4">
+              <button className="group hover:border-border hover:bg-muted/40 flex w-full items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="shadow-theme-sm flex h-7 w-7 items-center justify-center rounded bg-primary text-xs font-semibold tracking-tight text-primary-foreground">AL</div>
+                  <div className="shadow-theme-sm bg-primary text-primary-foreground flex h-7 w-7 items-center justify-center rounded text-sm font-semibold tracking-tight">
+                    AL
+                  </div>
                   <div className="flex flex-col items-start">
-                    <span className="text-sm font-medium leading-none text-foreground">Austin Leads</span>
-                    <span className="mt-1 text-xs leading-none text-muted-foreground">Production</span>
+                    <span className="text-foreground text-sm leading-none font-medium">Austin Leads</span>
+                    <span className="text-muted-foreground mt-1 text-sm leading-none">Production</span>
                   </div>
                 </div>
-                <Building2 className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                <Building2 className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors" />
               </button>
             </div>
 
@@ -27,12 +29,16 @@ export default function AdminShell({ children, user }) {
               <AdminNav />
             </div>
 
-            <div className="border-t border-border p-4">
-              <div className="mb-4 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted/40">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-muted text-sm font-medium text-foreground">{user?.name?.[0] || 'A'}</div>
+            <div className="border-border border-t p-4">
+              <div className="hover:bg-muted/40 mb-4 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors">
+                <div className="border-border bg-muted text-foreground flex h-8 w-8 items-center justify-center rounded-full border text-sm font-medium">
+                  {user?.name?.[0] || 'A'}
+                </div>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium text-foreground">{user?.name || 'Platform Admin'}</div>
-                  <div className="truncate text-xs text-muted-foreground">{user?.email}</div>
+                  <div className="text-foreground truncate text-sm font-medium">
+                    {user?.name || 'Platform Admin'}
+                  </div>
+                  <div className="text-muted-foreground truncate text-sm">{user?.email}</div>
                 </div>
               </div>
               <SignOutButton />
@@ -40,9 +46,9 @@ export default function AdminShell({ children, user }) {
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-col bg-muted/40">
-          <header className="hidden h-14 items-center justify-between border-b border-border bg-background px-8 md:flex">
-            <div className="flex items-center text-sm font-medium text-muted-foreground">
+        <div className="bg-muted/40 flex min-w-0 min-h-0 flex-col">
+          <header className="border-border bg-background hidden h-14 items-center justify-between border-b px-8 md:flex">
+            <div className="text-muted-foreground flex items-center text-sm font-medium">
               <span>Austin Leads</span>
               <span className="mx-2 text-neutral-300">/</span>
               <span className="text-foreground">Overview</span>
@@ -50,22 +56,29 @@ export default function AdminShell({ children, user }) {
 
             <div className="flex items-center gap-4">
               <div className="relative hidden lg:block">
-                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <input type="text" placeholder="Search..." className="w-64 rounded-md border border-border bg-muted px-4 py-1.5 pl-8 text-sm text-foreground outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-foreground" />
+                <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="border-border bg-muted text-foreground placeholder:text-muted-foreground focus:ring-foreground w-64 rounded-md border px-4 py-1.5 pl-8 text-sm transition-shadow outline-none focus:ring-2"
+                />
               </div>
 
-              <button className="relative text-muted-foreground transition-colors hover:text-foreground">
+              <button className="text-muted-foreground hover:text-foreground relative transition-colors">
                 <Bell className="h-5 w-5" />
-                <span className="absolute right-0 top-0 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-background" />
+                <span className="ring-background absolute top-0 right-0 h-2 w-2 rounded-full bg-rose-500 ring-2" />
               </button>
 
-              <Link href="/publish" className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+              <Link
+                href="/publish"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
+              >
                 Create Post
               </Link>
             </div>
           </header>
 
-          <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
+          <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
     </div>

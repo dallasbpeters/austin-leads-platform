@@ -1,6 +1,6 @@
 function buildRequestHeaders(headers = {}) {
   return {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     ...headers,
   }
 }
@@ -13,7 +13,7 @@ export async function requestJson(url, init) {
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null)
-    throw new Error(payload?.error || "Request failed.")
+    throw new Error(payload?.error || 'Request failed.')
   }
 
   return response.json()
@@ -21,19 +21,19 @@ export async function requestJson(url, init) {
 
 export function buildDefaultHeroQuery(page) {
   if (!page) {
-    return ""
+    return ''
   }
 
-  const domain = page.site?.primaryDomain?.split(".")[0]?.replace(/-/g, " ")
+  const domain = page.site?.primaryDomain?.split('.')[0]?.replace(/-/g, ' ')
   return `${domain || page.site?.name || page.title} home exterior`
 }
 
 export function buildSiteHeroQuery(site) {
   if (!site) {
-    return ""
+    return ''
   }
 
-  const domain = site.primaryDomain?.split(".")[0]?.replace(/-/g, " ")
+  const domain = site.primaryDomain?.split('.')[0]?.replace(/-/g, ' ')
   return `${domain || site.name} home exterior`
 }
 
@@ -54,7 +54,7 @@ export function mergeUniquePhotos(existing, incoming) {
 }
 
 export async function fetchHeroPagesAdmin() {
-  return requestJson("/api/hero-pages")
+  return requestJson('/api/hero-pages')
 }
 
 export async function searchUnsplashPhotos(query, page) {
@@ -63,21 +63,27 @@ export async function searchUnsplashPhotos(query, page) {
 
 export async function saveHeroPageImage(pageId, photo) {
   return requestJson(`/api/hero-pages/${pageId}/image`, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify({ photo }),
   })
 }
 
 export async function saveHeroPageAppearance(pageId, appearance) {
   return requestJson(`/api/hero-pages/${pageId}/appearance`, {
-    method: "PATCH",
+    method: 'PATCH',
     body: JSON.stringify(appearance),
   })
 }
 
 export async function createHeroPageDocument(payload) {
-  return requestJson("/api/hero-pages", {
-    method: "POST",
+  return requestJson('/api/hero-pages', {
+    method: 'POST',
     body: JSON.stringify(payload),
+  })
+}
+
+export async function deleteHeroPageDocument(pageId) {
+  return requestJson(`/api/hero-pages/${pageId}`, {
+    method: 'DELETE',
   })
 }

@@ -17,11 +17,5 @@
     "next.config.mjs",
     "proxy.js"
   ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    ".vercel",
-    "dist",
-    ".pnpm-store"
-  ]
+  "exclude": ["node_modules", ".next", ".vercel", "dist", ".pnpm-store"]
 }

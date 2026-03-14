@@ -1,68 +1,97 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 
 import { fetchLocationWeather } from '@/services/weather'
 
 const DEFAULT_QUERY = 'Austin, TX'
 
+function geolocationErrorMessage(error) {
+  if (!error) {
+    return 'We could not access your current location.'
+  }
+
+  if (error.code === 1) {
+    return 'Location access was blocked. Allow location access in your browser and try again.'
+  }
+
+  if (error.code === 2) {
+    return 'Your location could not be determined. Try entering your city or ZIP code instead.'
+  }
+
+  if (error.code === 3) {
+    return 'Location lookup timed out. Try again or enter your city or ZIP code instead.'
+  }
+
+  return 'We could not access your current location.'
+}
+
 export function useHailWeatherLookup(initialQuery = DEFAULT_QUERY) {
   const [query, setQuery] = useState(initialQuery)
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
-  const [isPending, startTransition] = useTransition()
+  const [isLoading, setIsLoading] = useState(false)
+  const [hasUserSearched, setHasUserSearched] = useState(false)
+
+  async function loadWeather(params) {
+    setIsLoading(true)
+
+    try {
+      const nextData = await fetchLocationWeather(params)
+      setData(nextData)
+      setError('')
+      if (typeof params?.name === 'string' && params.name.trim()) {
+        setQuery(params.name)
+      } else if (typeof params?.q === 'string' && params.q.trim()) {
+        setQuery(params.q)
+      }
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : 'Unable to load weather data.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    startTransition(async () => {
-      try {
-        const nextData = await fetchLocationWeather({ q: initialQuery })
-        setData(nextData)
-        setError('')
-      } catch (nextError) {
-        setError(nextError instanceof Error ? nextError.message : 'Unable to load weather data.')
-      }
-    })
+    loadWeather({ q: initialQuery })
   }, [initialQuery])
 
   function searchByQuery(nextQuery = query) {
-    startTransition(async () => {
-      try {
-        const nextData = await fetchLocationWeather({ q: nextQuery })
-        setData(nextData)
-        setError('')
-      } catch (nextError) {
-        setError(nextError instanceof Error ? nextError.message : 'Unable to load weather data.')
-      }
-    })
+    setHasUserSearched(true)
+    const trimmedQuery = nextQuery?.trim()
+
+    if (!trimmedQuery) {
+      setError('Enter a city, ZIP code, or neighborhood to check the weather.')
+      return
+    }
+
+    loadWeather({ q: trimmedQuery })
   }
 
   function searchByCurrentLocation() {
+    setHasUserSearched(true)
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setError('Geolocation is not available in this browser.')
       return
     }
 
-    startTransition(() => {
-      navigator.geolocation.getCurrentPosition(
-        async ({ coords }) => {
-          try {
-            const nextData = await fetchLocationWeather({
-              lat: coords.latitude,
-              lon: coords.longitude,
-              name: 'Current location',
-            })
-            setData(nextData)
-            setError('')
-          } catch (nextError) {
-            setError(nextError instanceof Error ? nextError.message : 'Unable to load weather data.')
-          }
-        },
-        () => {
-          setError('We could not access your current location.')
-        },
-        { enableHighAccuracy: true, timeout: 10000 },
-      )
-    })
+    setIsLoading(true)
+    setError('')
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        loadWeather({
+          lat: coords.latitude,
+          lon: coords.longitude,
+          name: 'Current location',
+        })
+      },
+      (geoError) => {
+        setIsLoading(false)
+        setError(geolocationErrorMessage(geoError))
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 },
+    )
   }
 
   return {
@@ -70,7 +99,8 @@ export function useHailWeatherLookup(initialQuery = DEFAULT_QUERY) {
     setQuery,
     data,
     error,
-    isPending,
+    isPending: isLoading,
+    hasUserSearched,
     searchByQuery,
     searchByCurrentLocation,
   }

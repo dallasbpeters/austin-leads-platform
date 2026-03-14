@@ -1,45 +1,41 @@
-import { neon } from "@neondatabase/serverless";
-import {
-  LEAD_PIPELINE_STAGES,
-  LEAD_PRIORITIES,
-  LEAD_STATUSES,
-} from "./constants";
+import { neon } from '@neondatabase/serverless'
+import { LEAD_PIPELINE_STAGES, LEAD_PRIORITIES, LEAD_STATUSES } from './constants'
 
 function getDatabaseUrl() {
-  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || "";
+  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''
 }
 
 export function hasLeadDatabase() {
-  return Boolean(getDatabaseUrl());
+  return Boolean(getDatabaseUrl())
 }
 
 function getSql() {
-  const databaseUrl = getDatabaseUrl();
+  const databaseUrl = getDatabaseUrl()
 
   if (!databaseUrl) {
-    throw new Error("Lead database is not configured.");
+    throw new Error('Lead database is not configured.')
   }
 
-  return neon(databaseUrl);
+  return neon(databaseUrl)
 }
 
 function clampLimit(limit, fallback = 10, max = 100) {
-  return Number.isFinite(limit) ? Math.max(1, Math.min(limit, max)) : fallback;
+  return Number.isFinite(limit) ? Math.max(1, Math.min(limit, max)) : fallback
 }
 
 function normalizeLeadRow(row) {
   if (!row) {
-    return row;
+    return row
   }
 
   return {
     ...row,
-    metadata: typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata || {},
-  };
+    metadata: typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata || {},
+  }
 }
 
 export async function ensureLeadSubmissionsTable() {
-  const sql = getSql();
+  const sql = getSql()
 
   await sql`
     CREATE TABLE IF NOT EXISTS lead_submissions (
@@ -67,19 +63,19 @@ export async function ensureLeadSubmissionsTable() {
       notes TEXT,
       metadata JSONB NOT NULL DEFAULT '{}'::jsonb
     )
-  `;
+  `
 
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS pipeline_stage TEXT NOT NULL DEFAULT 'new'`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'normal'`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS assigned_to TEXT`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMPTZ`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS follow_up_at TIMESTAMPTZ`;
-  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS internal_notes TEXT`;
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS pipeline_stage TEXT NOT NULL DEFAULT 'new'`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS priority TEXT NOT NULL DEFAULT 'normal'`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS assigned_to TEXT`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS last_contacted_at TIMESTAMPTZ`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS follow_up_at TIMESTAMPTZ`
+  await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS internal_notes TEXT`
 }
 
 export async function createLeadSubmission(input) {
-  const sql = getSql();
-  const id = crypto.randomUUID();
+  const sql = getSql()
+  const id = crypto.randomUUID()
 
   const [row] = await sql`
     INSERT INTO lead_submissions (
@@ -115,36 +111,36 @@ export async function createLeadSubmission(input) {
       ${JSON.stringify(input.metadata || {})}::jsonb
     )
     RETURNING *
-  `;
+  `
 
-  return normalizeLeadRow(row);
+  return normalizeLeadRow(row)
 }
 
 export async function listRecentLeadSubmissions(limit = 10) {
-  const sql = getSql();
-  const safeLimit = clampLimit(limit, 10, 50);
+  const sql = getSql()
+  const safeLimit = clampLimit(limit, 10, 50)
 
   const rows = await sql`
     SELECT *
     FROM lead_submissions
     ORDER BY created_at DESC
     LIMIT ${safeLimit}
-  `;
+  `
 
-  return rows.map(normalizeLeadRow);
+  return rows.map(normalizeLeadRow)
 }
 
 export async function listLeadSubmissions({
   limit = 50,
-  search = "",
-  status = "all",
-  pipelineStage = "all",
-  serviceInterest = "all",
+  search = '',
+  status = 'all',
+  pipelineStage = 'all',
+  serviceInterest = 'all',
 } = {}) {
-  const sql = getSql();
-  const safeLimit = clampLimit(limit, 50, 200);
-  const hasSearch = Boolean(search?.trim());
-  const searchValue = `%${search.trim()}%`;
+  const sql = getSql()
+  const safeLimit = clampLimit(limit, 50, 200)
+  const hasSearch = Boolean(search?.trim())
+  const searchValue = `%${search.trim()}%`
 
   const rows = await sql`
     SELECT *
@@ -169,51 +165,51 @@ export async function listLeadSubmissions({
       END,
       created_at DESC
     LIMIT ${safeLimit}
-  `;
+  `
 
-  return rows.map(normalizeLeadRow);
+  return rows.map(normalizeLeadRow)
 }
 
 export async function getLeadSubmissionById(leadId) {
-  const sql = getSql();
+  const sql = getSql()
 
   const [row] = await sql`
     SELECT *
     FROM lead_submissions
     WHERE id = ${leadId}
     LIMIT 1
-  `;
+  `
 
-  return normalizeLeadRow(row);
+  return normalizeLeadRow(row)
 }
 
 export async function updateLeadSubmission(leadId, updates) {
-  const sql = getSql();
-  const existing = await getLeadSubmissionById(leadId);
+  const sql = getSql()
+  const existing = await getLeadSubmissionById(leadId)
 
   if (!existing) {
-    return null;
+    return null
   }
 
-  const nextStatus = updates.status || existing.status;
-  const nextPipelineStage = updates.pipelineStage || existing.pipeline_stage;
-  const nextPriority = updates.priority || existing.priority;
+  const nextStatus = updates.status || existing.status
+  const nextPipelineStage = updates.pipelineStage || existing.pipeline_stage
+  const nextPriority = updates.priority || existing.priority
   const nextAssignedTo =
-    typeof updates.assignedTo === "string" ? updates.assignedTo.trim() || null : existing.assigned_to;
+    typeof updates.assignedTo === 'string' ? updates.assignedTo.trim() || null : existing.assigned_to
   const nextInternalNotes =
-    typeof updates.internalNotes === "string" ? updates.internalNotes : existing.internal_notes;
+    typeof updates.internalNotes === 'string' ? updates.internalNotes : existing.internal_notes
   const nextFollowUpAt =
     updates.followUpAt === null
       ? null
       : updates.followUpAt
         ? new Date(updates.followUpAt).toISOString()
-        : existing.follow_up_at;
+        : existing.follow_up_at
   const nextLastContactedAt =
     updates.touch === true
       ? new Date().toISOString()
       : updates.lastContactedAt
         ? new Date(updates.lastContactedAt).toISOString()
-        : existing.last_contacted_at;
+        : existing.last_contacted_at
 
   const [row] = await sql`
     UPDATE lead_submissions
@@ -228,13 +224,13 @@ export async function updateLeadSubmission(leadId, updates) {
       last_contacted_at = ${nextLastContactedAt}
     WHERE id = ${leadId}
     RETURNING *
-  `;
+  `
 
-  return normalizeLeadRow(row);
+  return normalizeLeadRow(row)
 }
 
 export async function getLeadSubmissionOverview() {
-  const sql = getSql();
+  const sql = getSql()
 
   const [counts] = await sql`
     SELECT
@@ -246,21 +242,23 @@ export async function getLeadSubmissionOverview() {
       COUNT(*) FILTER (WHERE pipeline_stage = 'quoted')::INT AS quoted,
       COUNT(*) FILTER (WHERE pipeline_stage = 'won')::INT AS won
     FROM lead_submissions
-  `;
+  `
 
-  return counts || {
-    total: 0,
-    last_30_days: 0,
-    open: 0,
-    qualified: 0,
-    inspections: 0,
-    quoted: 0,
-    won: 0,
-  };
+  return (
+    counts || {
+      total: 0,
+      last_30_days: 0,
+      open: 0,
+      qualified: 0,
+      inspections: 0,
+      quoted: 0,
+      won: 0,
+    }
+  )
 }
 
 export async function getLeadPipelineSummary() {
-  const sql = getSql();
+  const sql = getSql()
 
   const rows = await sql`
     SELECT pipeline_stage, COUNT(*)::INT AS count
@@ -277,10 +275,10 @@ export async function getLeadPipelineSummary() {
         WHEN 'lost' THEN 7
         ELSE 8
       END
-  `;
+  `
 
   return LEAD_PIPELINE_STAGES.map((stage) => ({
     stage,
     count: rows.find((row) => row.pipeline_stage === stage)?.count || 0,
-  }));
+  }))
 }

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { cleanRuntimeHref } from '@/lib/sanity/stega'
 
 const HailLayerMap = dynamic(() => import('@/components/HailLayerMap'), {
   ssr: false,
@@ -20,7 +21,7 @@ function riskTone(level) {
   }
 
   if (level === 'elevated') {
-    return 'border-amber-400/35 bg-amber-400/10 text-amber-50'
+    return 'border-amber-400/35 bg-amber-400/10 text-amber-900'
   }
 
   return 'border-cyan-300/25 bg-cyan-300/10 text-cyan-50'
@@ -46,8 +47,16 @@ function formatDate(dateString) {
 }
 
 export default function HailWeatherLookup({ section }) {
-  const { data, error, isPending, query, setQuery, searchByQuery, searchByCurrentLocation } =
-    useHailWeatherLookup('Austin, TX')
+  const {
+    data,
+    error,
+    isPending,
+    hasUserSearched,
+    query,
+    setQuery,
+    searchByQuery,
+    searchByCurrentLocation,
+  } = useHailWeatherLookup('Austin, TX')
 
   const current = data?.current
   const daily = data?.daily?.[0]
@@ -55,8 +64,14 @@ export default function HailWeatherLookup({ section }) {
   const risk = data?.risk
   const hailLayer = data?.hailLayer
 
+  const hasStormPoints = Boolean(hailLayer?.hailSignatures?.length || hailLayer?.stormReports?.length)
+  const windowLabel =
+    hailLayer?.startDate && hailLayer?.endDate
+      ? `${formatDate(hailLayer.startDate)} - ${formatDate(hailLayer.endDate)}`
+      : 'Last 30 days'
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr]">
+    <div className="grid gap-8 lg:grid-cols-1 max-w-7xl mx-auto">
       <div className="space-y-5">
         <Badge variant="outline" className="border-primary/20 bg-primary/5 text-foreground">
           Hail in your area
@@ -67,23 +82,15 @@ export default function HailWeatherLookup({ section }) {
         </div>
 
         <form
-          className="grid gap-3 md:grid-cols-[1fr_auto_auto]"
+          className="grid gap-3 grid-cols-1 md:grid-cols-[300px_200px_200px]"
           onSubmit={(event) => {
             event.preventDefault()
             searchByQuery()
           }}
         >
-          <Input
-            className="border-border/70 h-11 bg-white/90"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Enter ZIP code, city, or neighborhood"
-            value={query}
-          />
-          <Button className="h-11" disabled={isPending}>
-            {isPending ? 'Checking…' : 'Check weather'}
-          </Button>
           <Button
-            className="h-11"
+            size="md"
+            className="h-10" 
             disabled={isPending}
             onClick={searchByCurrentLocation}
             type="button"
@@ -92,9 +99,21 @@ export default function HailWeatherLookup({ section }) {
             <LocateFixed className="size-4" />
             Current location
           </Button>
+          <Input
+          id="hail-weather-lookup-query"
+          name="hail-weather-lookup-query"
+          htmlFor="hail-weather-lookup-query"
+            className="border-border/70 h-11 bg-white"
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Enter ZIP code, city, or neighborhood"
+            value={query}
+          />
+          <Button className="h-10" id="hail-weather-lookup-submit" size="md" disabled={isPending} type="submit">
+            {isPending ? 'Checking…' : 'Check weather'}
+          </Button>
         </form>
 
-        {error ? (
+        {hasUserSearched && error ? (
           <Card className="border-red-500/20 bg-red-500/5 text-red-900">
             <CardContent className="p-4 text-sm">{error}</CardContent>
           </Card>
@@ -129,7 +148,7 @@ export default function HailWeatherLookup({ section }) {
           <Card className="border-border/80 bg-card">
             <CardContent className="p-4">
               <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
-                <CloudRainWind className="size-4" />
+                <CloudRainWind className="size-8" />
                 Conditions
               </div>
               <div className="text-foreground mt-3 text-lg font-semibold">
@@ -144,7 +163,7 @@ export default function HailWeatherLookup({ section }) {
           <Card className="border-border/80 bg-card">
             <CardContent className="p-4">
               <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
-                <Wind className="size-4" />
+                <Wind className="size-8" />
                 Gusts
               </div>
               <div className="text-foreground mt-3 text-lg font-semibold">
@@ -157,7 +176,7 @@ export default function HailWeatherLookup({ section }) {
           <Card className="border-border/80 bg-card">
             <CardContent className="p-4">
               <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
-                <TriangleAlert className="size-4" />
+                <TriangleAlert className="size-8" />
                 Alerts
               </div>
               <div className="text-foreground mt-3 text-lg font-semibold">{alerts.length}</div>
@@ -165,43 +184,36 @@ export default function HailWeatherLookup({ section }) {
             </CardContent>
           </Card>
         </div>
-
-        <div className="grid gap-3">
-          {(section.items || []).map((item) => (
-            <Card key={item.title} className="border-border/80 bg-card">
-              <CardContent className="p-4">
-                <div className="text-foreground text-sm font-semibold">{item.title}</div>
-                <div className="text-muted-foreground mt-1 text-sm leading-6">{item.body}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
 
-      <Card className="border-border/80 bg-card overflow-hidden">
-        <CardHeader className="border-border/60 border-b pb-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <CardTitle className="text-foreground text-xl">Live storm view</CardTitle>
-            {data?.updatedAt ? (
-              <div className="text-muted-foreground text-xs tracking-[0.16em] uppercase">
-                Updated{' '}
-                {new Date(data.updatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-              </div>
-            ) : null}
-          </div>
-        </CardHeader>
+      <Card className="border-none overflow-hidden p-0">
         <CardContent className="p-0">
-          <div className="grid min-h-[30rem] lg:grid-rows-[1fr_auto]">
-            {data?.mapEmbedUrl ? (
+          <div className="grid min-h-200 lg:grid-rows-[1fr_auto]">
+            {data?.location ? (
               <HailLayerMap center={data.location} hailLayer={hailLayer} />
             ) : (
-              <div className="flex min-h-[22rem] items-center justify-center bg-[linear-gradient(180deg,#102230,#1b3344)] text-sm text-white/70">
-                Loading map…
+              <div className="flex min-h-88 items-center justify-center bg-[linear-gradient(180deg,#102230,#1b3344)] text-sm text-white/70">
+                Check weather to see a map of hail in your area
               </div>
             )}
 
             <div className="border-border/60 grid gap-4 border-t bg-slate-950/92 p-5 text-white md:grid-cols-[1fr_auto] md:items-start">
               <div className="space-y-4">
+                <div className="grid gap-2 md:grid-cols-3">
+                  <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
+                    <div className="font-semibold text-white">Search window</div>
+                    <div className="mt-1">{windowLabel}</div>
+                  </div>
+                  <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
+                    <div className="font-semibold text-white">Property marker</div>
+                    <div className="mt-1">{data?.location?.name || 'Selected location'}</div>
+                  </div>
+                  <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
+                    <div className="font-semibold text-white">Map status</div>
+                    <div className="mt-1">{hasStormPoints ? 'Nearby storm data found' : 'No nearby storm points'}</div>
+                  </div>
+                </div>
+
                 <div>
                   <div className="text-sm font-semibold">
                     {alerts[0]?.event || daily?.weatherLabel || 'Weather outlook'}
@@ -216,7 +228,7 @@ export default function HailWeatherLookup({ section }) {
                 </div>
 
                 {hailLayer ? (
-                  <div className="grid gap-2 md:grid-cols-2">
+                  <div className="grid gap-2 md:grid-cols-3">
                     <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                       <div className="font-semibold text-white">Radar hail signatures</div>
                       <div className="mt-1">{hailLayer.hailSignatures.length} points in the last 30 days</div>
@@ -226,6 +238,10 @@ export default function HailWeatherLookup({ section }) {
                       <div className="mt-1">
                         {hailLayer.stormReports.length} hail-related reports in the last 30 days
                       </div>
+                    </div>
+                    <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
+                      <div className="font-semibold text-white">Legend</div>
+                      <div className="mt-1">Orange = radar hail signature, cyan = storm report, orange dot = property</div>
                     </div>
                   </div>
                 ) : null}
@@ -241,17 +257,11 @@ export default function HailWeatherLookup({ section }) {
                   </div>
                 ) : (
                   <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
-                    No active NWS alerts are posted for this point right now. Use this as a storm signal, then
-                    confirm with a roof inspection if you saw recent impact.
+                    No active NWS alerts are posted for this point right now. Treat that as one data point,
+                    then confirm conditions with a roof inspection if you saw recent impact.
                   </div>
                 )}
               </div>
-
-              {section.ctaHref ? (
-                <Button asChild size="sm">
-                  <Link href={section.ctaHref}>{section.ctaLabel || 'Request a roof review'}</Link>
-                </Button>
-              ) : null}
             </div>
           </div>
         </CardContent>

@@ -1,18 +1,18 @@
-import CrmClient from "@/components/admin/CrmClient";
+import CrmClient from '@/components/admin/CrmClient'
 import {
   ensureLeadSubmissionsTable,
   getLeadPipelineSummary,
   getLeadSubmissionOverview,
   hasLeadDatabase,
   listLeadSubmissions,
-} from "@/lib/leads/db";
+} from '@/lib/leads/db'
 
 export const metadata = {
-  title: "CRM | Austin Leads Platform",
-};
+  title: 'CRM | Austin Leads Platform',
+}
 
 export default async function CrmPage() {
-  let leadDbReady = false;
+  let leadDbReady = false
   let initialOverview = {
     total: 0,
     last_30_days: 0,
@@ -21,25 +21,25 @@ export default async function CrmPage() {
     inspections: 0,
     quoted: 0,
     won: 0,
-  };
-  let initialPipeline = [];
-  let initialLeads = [];
+  }
+  let initialPipeline = []
+  let initialLeads = []
 
   if (hasLeadDatabase()) {
     try {
-      await ensureLeadSubmissionsTable();
+      await ensureLeadSubmissionsTable()
       const [overview, pipeline, leads] = await Promise.all([
         getLeadSubmissionOverview(),
         getLeadPipelineSummary(),
         listLeadSubmissions({ limit: 100 }),
-      ]);
+      ])
 
-      initialOverview = overview;
-      initialPipeline = pipeline;
-      initialLeads = leads;
-      leadDbReady = true;
+      initialOverview = overview
+      initialPipeline = pipeline
+      initialLeads = leads
+      leadDbReady = true
     } catch {
-      leadDbReady = false;
+      leadDbReady = false
     }
   }
 
@@ -50,5 +50,5 @@ export default async function CrmPage() {
       initialLeads={initialLeads}
       leadDbReady={leadDbReady}
     />
-  );
+  )
 }

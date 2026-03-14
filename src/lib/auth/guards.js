@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
-import { safeAuth } from "./session";
+import { safeAuth } from './session'
 
 export async function requireAdminRequest() {
-  const session = await safeAuth();
+  const session = await safeAuth()
 
   if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  return null;
+  return null
 }

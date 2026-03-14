@@ -1,63 +1,65 @@
-import Link from "next/link";
-import { FileText, Globe2, Server, SquarePen } from "lucide-react";
+import Link from 'next/link'
+import { FileText, Globe2, Server, SquarePen } from 'lucide-react'
 
-import LaunchChecklistCard from "@/components/admin/LaunchChecklistCard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import LaunchChecklistCard from '@/components/admin/LaunchChecklistCard'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getGoogleAnalyticsSnapshot } from '@/lib/analytics/google'
 import {
   ensureLeadSubmissionsTable,
   getLeadSubmissionOverview,
   hasLeadDatabase,
   listRecentLeadSubmissions,
-} from "@/lib/leads/db";
-import { getAllRenderableSites, getAllSites, getLaunchChecklist } from "@/lib/platform/content";
-import { getAnalyticsOverview, listDomainRecords, listPublishJobs } from "@/lib/platform/store";
+} from '@/lib/leads/db'
+import { getAllRenderableSites, getAllSites, getLaunchChecklist } from '@/lib/platform/content'
+import { getAnalyticsOverview, listDomainRecords, listPublishJobs } from '@/lib/platform/store'
 
 const statCards = [
-  { label: "Published Content", key: "jobs", icon: FileText },
-  { label: "Pending Reviews", key: "queued", icon: SquarePen },
-  { label: "Active Domains", key: "domains", icon: Server },
-];
+  { label: 'Published Content', key: 'jobs', icon: FileText },
+  { label: 'Pending Reviews', key: 'queued', icon: SquarePen },
+  { label: 'Active Domains', key: 'domains', icon: Server },
+]
 
 export default async function DashboardPage() {
-  const sites = getAllSites();
-  const liveSites = getAllRenderableSites();
-  const domains = listDomainRecords();
-  const jobs = listPublishJobs();
-  const analytics = getAnalyticsOverview();
-  const checklist = await getLaunchChecklist();
-  let leadOverview = { total: 0, last_30_days: 0, open: 0 };
-  let recentLeads = [];
-  let leadDbReady = false;
+  const sites = getAllSites()
+  const liveSites = getAllRenderableSites()
+  const domains = listDomainRecords()
+  const jobs = listPublishJobs()
+  const analytics = getAnalyticsOverview()
+  const gaSnapshot = await getGoogleAnalyticsSnapshot()
+  const checklist = await getLaunchChecklist()
+  let leadOverview = { total: 0, last_30_days: 0, open: 0 }
+  let recentLeads = []
+  let leadDbReady = false
 
   if (hasLeadDatabase()) {
     try {
-      await ensureLeadSubmissionsTable();
-      leadOverview = await getLeadSubmissionOverview();
-      recentLeads = await listRecentLeadSubmissions(5);
-      leadDbReady = true;
+      await ensureLeadSubmissionsTable()
+      leadOverview = await getLeadSubmissionOverview()
+      recentLeads = await listRecentLeadSubmissions(5)
+      leadDbReady = true
     } catch {
-      leadDbReady = false;
+      leadDbReady = false
     }
   }
 
   const counts = {
     jobs: jobs.length,
-    queued: jobs.filter((job) => job.reviewStatus !== "published").length,
+    queued: jobs.filter((job) => job.reviewStatus !== 'published').length,
     domains: domains.length,
-  };
+  }
 
   return (
     <div className="p-4 md:p-8">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-8xl">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-2xl tracking-tight text-foreground">Dashboard</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <h1 className="text-foreground text-2xl tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground mt-1 text-sm">
               Manage content, workflows, and infrastructure for Austin Leads.
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <select className="shadow-theme-sm cursor-pointer appearance-none rounded-md border border-border bg-background px-3 py-1.5 pr-8 text-sm text-muted-foreground outline-none focus:ring-2 focus:ring-foreground">
+            <select className="shadow-theme-sm border-border bg-background text-muted-foreground focus:ring-foreground cursor-pointer appearance-none rounded-md border px-3 py-1.5 pr-8 text-sm outline-none focus:ring-2">
               <option>Last 30 days</option>
               <option>Last 7 days</option>
               <option>All time</option>
@@ -67,65 +69,63 @@ export default async function DashboardPage() {
 
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-6">
           {statCards.map((metric) => {
-            const Icon = metric.icon;
+            const Icon = metric.icon
 
             return (
               <Card key={metric.key} className="shadow-theme-sm">
                 <CardHeader className="flex flex-row items-start justify-between pb-4">
-                  <span className="text-sm font-medium text-muted-foreground">{metric.label}</span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground">
+                  <span className="text-muted-foreground text-sm font-medium">{metric.label}</span>
+                  <div className="border-border bg-muted text-muted-foreground flex h-8 w-8 items-center justify-center rounded-full border">
                     <Icon className="h-4 w-4" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-baseline gap-2">
-                    <h2 className="text-3xl tracking-tight text-foreground">
-                      {counts[metric.key]}
-                    </h2>
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {metric.key === "domains"
-                        ? `${liveSites.filter((site) => site.tier === "hero").length} Hero Domains`
-                        : metric.key === "queued"
-                          ? "Action required"
-                          : "Current queue"}
+                    <h2 className="text-foreground text-3xl tracking-tight">{counts[metric.key]}</h2>
+                    <span className="text-muted-foreground text-sm font-medium">
+                      {metric.key === 'domains'
+                        ? `${liveSites.filter((site) => site.tier === 'hero').length} Hero Domains`
+                        : metric.key === 'queued'
+                          ? 'Action required'
+                          : 'Current queue'}
                     </span>
                   </div>
                 </CardContent>
               </Card>
-            );
+            )
           })}
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
-          <div className="lg:col-span-2 flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:col-span-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-base text-foreground">Publishing Workflow</h3>
+              <h3 className="text-foreground text-base">Publishing Workflow</h3>
             </div>
 
-            <div className="shadow-theme-sm overflow-hidden rounded-xl border border-border bg-card">
-              <div className="grid grid-cols-12 gap-4 border-b border-border bg-muted/40 px-5 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <div className="shadow-theme-sm border-border bg-card overflow-hidden rounded-xl border">
+              <div className="border-border bg-muted/40 text-muted-foreground grid grid-cols-12 gap-4 border-b px-5 py-3 text-sm font-medium tracking-wider uppercase">
                 <div className="col-span-6 md:col-span-5">Title</div>
                 <div className="col-span-3 hidden md:block">Site</div>
-                <div className="col-span-4 md:col-span-2 text-left">Status</div>
+                <div className="col-span-4 text-left md:col-span-2">Status</div>
                 <div className="col-span-2 hidden text-right md:block">Date</div>
               </div>
 
               {jobs.slice(0, 6).map((job) => (
                 <div
                   key={job.id}
-                  className="grid grid-cols-12 gap-4 border-b border-border px-5 py-4 text-sm last:border-b-0"
+                  className="border-border grid grid-cols-12 gap-4 border-b px-5 py-4 text-sm last:border-b-0"
                 >
                   <div className="col-span-6 md:col-span-5">
-                    <div className="font-medium text-foreground">{job.title}</div>
-                    <div className="text-xs text-muted-foreground">{job.contentType}</div>
+                    <div className="text-foreground font-medium">{job.title}</div>
+                    <div className="text-muted-foreground text-sm">{job.contentType}</div>
                   </div>
-                  <div className="col-span-3 hidden text-muted-foreground md:block">{job.siteSlug}</div>
+                  <div className="text-muted-foreground col-span-3 hidden md:block">{job.siteSlug}</div>
                   <div className="col-span-4 md:col-span-2">
-                    <span className="rounded-full bg-muted px-2 py-1 text-xs font-medium text-foreground">
-                      {job.status.replace(/_/g, " ")}
+                    <span className="bg-muted text-foreground rounded-full px-2 py-1 text-sm font-medium">
+                      {job.status.replace(/_/g, ' ')}
                     </span>
                   </div>
-                  <div className="col-span-2 hidden text-right text-xs text-muted-foreground md:block">
+                  <div className="text-muted-foreground col-span-2 hidden text-right text-sm md:block">
                     {new Date(job.updatedAt).toLocaleDateString()}
                   </div>
                 </div>
@@ -141,22 +141,78 @@ export default async function DashboardPage() {
                 <CardTitle className="text-base">Analytics</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="rounded-xl border border-border bg-muted/30 p-4">
-                  <div className="text-sm font-medium text-foreground">Connected providers</div>
-                  <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-                    {analytics.connectedProviders}
+                {gaSnapshot?.status === 'available' ? (
+                  <>
+                    <div className="border-border bg-muted/30 rounded-xl border p-4">
+                      <div className="text-foreground text-sm font-medium">
+                        GA4 last {gaSnapshot.windowDays} days
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-3">
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Users
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.totalUsers.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Sessions
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.sessions.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Page views
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.pageViews.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
+                            Conversions
+                          </div>
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                            {gaSnapshot.conversions.toLocaleString('en-US')}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                      Property {gaSnapshot.propertyId}
+                      {gaSnapshot.measurementId ? ` · ${gaSnapshot.measurementId}` : ''} · Engagement rate{' '}
+                      {gaSnapshot.engagementRate.toFixed(1)}%
+                    </div>
+                  </>
+                ) : gaSnapshot?.status === 'error' ? (
+                  <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                    Google Analytics is configured, but the admin could not read the reporting API.{' '}
+                    {gaSnapshot.error}
                   </div>
-                </div>
-                <div className="rounded-xl border border-border bg-muted/30 p-4">
-                  <div className="text-sm font-medium text-foreground">Active goals</div>
-                  <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-                    {analytics.configuredGoals}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
-                  Real analytics is now instrumentation-first. The admin surface shows provider status and KPI
-                  configuration until live data sources are connected.
-                </div>
+                ) : (
+                  <>
+                    <div className="border-border bg-muted/30 rounded-xl border p-4">
+                      <div className="text-foreground text-sm font-medium">Connected providers</div>
+                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                        {analytics.connectedProviders}
+                      </div>
+                    </div>
+                    <div className="border-border bg-muted/30 rounded-xl border p-4">
+                      <div className="text-foreground text-sm font-medium">Active goals</div>
+                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                        {analytics.configuredGoals}
+                      </div>
+                    </div>
+                    <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                      GA4 reporting appears unavailable. Add GOOGLE_ANALYTICS_PROPERTY_ID and service account
+                      credentials to surface live reporting here.
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -166,44 +222,58 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-xl border border-border bg-muted/30 p-4">
-                    <div className="text-sm font-medium text-foreground">Total</div>
-                    <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{leadOverview.total}</div>
+                  <div className="border-border bg-muted/30 rounded-xl border p-4">
+                    <div className="text-foreground text-sm font-medium">Total</div>
+                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                      {leadOverview.total}
+                    </div>
                   </div>
-                  <div className="rounded-xl border border-border bg-muted/30 p-4">
-                    <div className="text-sm font-medium text-foreground">Last 30 days</div>
-                    <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{leadOverview.last_30_days}</div>
+                  <div className="border-border bg-muted/30 rounded-xl border p-4">
+                    <div className="text-foreground text-sm font-medium">Last 30 days</div>
+                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                      {leadOverview.last_30_days}
+                    </div>
                   </div>
-                  <div className="rounded-xl border border-border bg-muted/30 p-4">
-                    <div className="text-sm font-medium text-foreground">Open</div>
-                    <div className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{leadOverview.open}</div>
+                  <div className="border-border bg-muted/30 rounded-xl border p-4">
+                    <div className="text-foreground text-sm font-medium">Open</div>
+                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                      {leadOverview.open}
+                    </div>
                   </div>
                 </div>
 
                 {!leadDbReady ? (
-                  <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
-                    Add `DATABASE_URL` or `NEON_DATABASE_URL`, then run `pnpm db:setup` to enable live lead capture and dashboard reporting.
+                  <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                    Add `DATABASE_URL` or `NEON_DATABASE_URL`, then run `pnpm db:setup` to enable live lead
+                    capture and dashboard reporting.
                   </div>
                 ) : recentLeads.length ? (
-                  <div className="overflow-hidden rounded-xl border border-border">
+                  <div className="border-border overflow-hidden rounded-xl border">
                     {recentLeads.map((lead) => (
-                      <div key={lead.id} className="grid gap-1 border-b border-border px-4 py-3 text-sm last:border-b-0">
-                        <div className="font-medium text-foreground">{lead.full_name}</div>
-                        <div className="text-muted-foreground">{lead.email}{lead.phone ? ` · ${lead.phone}` : ""}</div>
-                        <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                          {lead.service_interest || lead.source_type} · {lead.source_domain} · {lead.page_path}
+                      <div
+                        key={lead.id}
+                        className="border-border grid gap-1 border-b px-4 py-3 text-sm last:border-b-0"
+                      >
+                        <div className="text-foreground font-medium">{lead.full_name}</div>
+                        <div className="text-muted-foreground">
+                          {lead.email}
+                          {lead.phone ? ` · ${lead.phone}` : ''}
+                        </div>
+                        <div className="text-muted-foreground text-sm tracking-[0.16em] uppercase">
+                          {lead.service_interest || lead.source_type} · {lead.source_domain} ·{' '}
+                          {lead.page_path}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+                  <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
                     The database is connected, but no lead submissions have been captured yet.
                   </div>
                 )}
                 <Link
                   href="/crm"
-                  className="inline-flex items-center rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  className="border-border bg-background text-foreground hover:bg-muted inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium transition-colors"
                 >
                   Open CRM
                 </Link>
@@ -215,13 +285,13 @@ export default async function DashboardPage() {
                 <CardTitle className="text-base">Infrastructure</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+                <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
                   {domains.length} domains are tracked in the inventory.
                 </div>
-                <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
-                  {sites.filter((site) => site.tier === "redirect").length} domains are modeled as redirects.
+                <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
+                  {sites.filter((site) => site.tier === 'redirect').length} domains are modeled as redirects.
                 </div>
-                <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+                <div className="border-border bg-muted/30 text-muted-foreground rounded-xl border p-4 text-sm leading-6">
                   Domain connection and verification stay managed through the dedicated Domains route.
                 </div>
               </CardContent>
@@ -230,5 +300,5 @@ export default async function DashboardPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

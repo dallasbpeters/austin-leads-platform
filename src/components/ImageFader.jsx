@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 export default function ImageFader({
   images = [
@@ -26,7 +27,7 @@ export default function ImageFader({
   backgroundColor,
   overlayBlur = 0,
   showOverlay = true,
-  useGradient = false,
+  useGradient = true,
   showDots = true,
   dotColor = '#fff',
   dotActiveColor = '#111',
@@ -77,16 +78,16 @@ export default function ImageFader({
       }}
     >
       <AnimatePresence initial={false} mode="wait">
-        <motion.img
+        <motion.div
           key={index}
-          src={cur.src}
-          alt={cur.alt ?? ''}
           loading="lazy"
           decoding="async"
-          initial={{ opacity: 0.5, blur: 10 }}
-          animate={{ opacity: 1, blur: 0 }}
-          exit={{ opacity: 0.5, blur: 10 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0.5}}
           transition={{ duration: fadeSec, ease: 'linear' }}
+          className={cn(imageClassName)}
+          draggable={false}
           style={{
             position: 'absolute',
             inset: 0,
@@ -96,12 +97,26 @@ export default function ImageFader({
             objectPosition,
             borderRadius,
             pointerEvents: 'none',
-            backgroundColor: backgroundColor,
-            willChange: 'opacity, filter',
           }}
-          className={cn(imageClassName)}
-          draggable={false}
-        />
+        >
+          <Image
+            src={cur.src}
+            alt={cur.alt ?? ''}
+            fill
+            sizes="100vw"
+            className="object-cover"
+            draggable={false}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition,
+              pointerEvents: 'none',
+              backgroundColor: backgroundColor,
+              willChange: 'opacity, filter',
+            }}
+          />
+        </motion.div>
       </AnimatePresence>
 
       {showOverlay && (overlayBlur > 0 || overlayColor !== 'rgba(0,0,0,0)') && (

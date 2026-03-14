@@ -1,18 +1,19 @@
-"use client";
+'use client'
 
-import { startTransition } from "react";
-import { CheckCircle2, Clock3, LoaderCircle, RefreshCcw, XCircle } from "lucide-react";
+import Link from 'next/link'
+import { startTransition } from 'react'
+import { CheckCircle2, Clock3, LoaderCircle, RefreshCcw, XCircle } from 'lucide-react'
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { usePublishManager } from "@/hooks/usePublishManager";
-import { publishStatusTone } from "@/services/admin/publish";
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Textarea } from '@/components/ui/textarea'
+import { usePublishManager } from '@/hooks/usePublishManager'
+import { publishStatusTone } from '@/services/admin/publish'
 
 const statusIcon = {
   queued: Clock3,
@@ -20,36 +21,34 @@ const statusIcon = {
   approved: CheckCircle2,
   rejected: XCircle,
   published: CheckCircle2,
-};
+}
 
 function JobStatus({ status }) {
-  const Icon = statusIcon[status] || LoaderCircle;
+  const Icon = statusIcon[status] || LoaderCircle
 
   return (
-    <Badge variant={publishStatusTone[status] || "outline"} className="inline-flex items-center gap-1.5">
+    <Badge variant={publishStatusTone[status] || 'outline'} className="inline-flex items-center gap-1.5">
       <Icon className="h-3.5 w-3.5" />
-      {status.replace(/_/g, " ")}
+      {status.replace(/_/g, ' ')}
     </Badge>
-  );
+  )
 }
 
 export default function PublishClient({ initialJobs, sites }) {
   const { form, jobs, loading, changeJob, refreshJobs, setForm, submitJob } = usePublishManager({
     initialJobs,
     sites,
-  });
+  })
 
   return (
     <div className="space-y-8 p-6 lg:p-10">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.22em] text-muted-foreground">AI publishing</p>
-          <h1 className="mt-2 text-3xl tracking-tight text-foreground">
-            Queue-assisted content drafting
-          </h1>
-          <p className="mt-3 max-w-3xl text-base leading-7 text-muted-foreground">
-            This phase ships the publishing workflow, review states, and Sanity handoff contract.
-            Real provider execution can replace the placeholder gateway later without rebuilding the UI.
+          <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">AI publishing</p>
+          <h1 className="text-foreground mt-2 text-3xl tracking-tight">Queue-assisted content drafting</h1>
+          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+            This phase ships the publishing workflow, review states, and Sanity handoff contract. Real
+            provider execution can replace the placeholder gateway later without rebuilding the UI.
           </p>
         </div>
         <Button variant="outline" onClick={() => startTransition(refreshJobs)} disabled={loading}>
@@ -61,13 +60,29 @@ export default function PublishClient({ initialJobs, sites }) {
       <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
         <Card>
           <CardHeader>
-            <CardTitle>Create draft job</CardTitle>
+            <CardTitle>Preferred workflow: draft in Sanity</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="text-muted-foreground mb-5 space-y-3 text-sm leading-7">
+              <p>
+                The current recommendation is to use the hosted Sanity Studio for AI-assisted drafting and final
+                editing. The Studio tool creates a real draft document first, then lets Sanity Agent build the first
+                pass inside the actual CMS.
+              </p>
+              <p>
+                Use this admin page only as a legacy queue prototype. It is not the primary editorial path.
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/studio">Open Studio</Link>
+              </Button>
+            </div>
             <form className="grid gap-4" onSubmit={submitJob}>
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-foreground">Target site</label>
-                <Select value={form.siteSlug} onValueChange={(value) => setForm((current) => ({ ...current, siteSlug: value }))}>
+                <label className="text-foreground text-sm font-medium">Target site</label>
+                <Select
+                  value={form.siteSlug}
+                  onValueChange={(value) => setForm((current) => ({ ...current, siteSlug: value }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a site" />
                   </SelectTrigger>
@@ -82,8 +97,11 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-foreground">Content type</label>
-                <Select value={form.contentType} onValueChange={(value) => setForm((current) => ({ ...current, contentType: value }))}>
+                <label className="text-foreground text-sm font-medium">Content type</label>
+                <Select
+                  value={form.contentType}
+                  onValueChange={(value) => setForm((current) => ({ ...current, contentType: value }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Choose content type" />
                   </SelectTrigger>
@@ -96,7 +114,7 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-foreground">Working title</label>
+                <label className="text-foreground text-sm font-medium">Working title</label>
                 <Input
                   value={form.title}
                   onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
@@ -105,7 +123,7 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-foreground">Prompt / brief</label>
+                <label className="text-foreground text-sm font-medium">Prompt / brief</label>
                 <Textarea
                   rows={5}
                   value={form.prompt}
@@ -115,25 +133,25 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-foreground">Reference sources</label>
+                <label className="text-foreground text-sm font-medium">Reference sources</label>
                 <Textarea
                   rows={4}
                   value={form.sources}
                   onChange={(event) => setForm((current) => ({ ...current, sources: event.target.value }))}
-                  placeholder={"One URL per line"}
+                  placeholder={'One URL per line'}
                 />
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
-                  <label className="text-sm font-medium text-foreground">Provider</label>
+                  <label className="text-foreground text-sm font-medium">Provider</label>
                   <Input
                     value={form.provider}
                     onChange={(event) => setForm((current) => ({ ...current, provider: event.target.value }))}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-sm font-medium text-foreground">Model</label>
+                  <label className="text-foreground text-sm font-medium">Model</label>
                   <Input
                     value={form.model}
                     onChange={(event) => setForm((current) => ({ ...current, model: event.target.value }))}
@@ -142,7 +160,7 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <Button className="mt-2" disabled={loading || !form.prompt || !form.siteSlug} type="submit">
-                {loading ? "Creating..." : "Create draft job"}
+                {loading ? 'Creating...' : 'Create draft job'}
               </Button>
             </form>
           </CardContent>
@@ -173,33 +191,25 @@ export default function PublishClient({ initialJobs, sites }) {
                     {jobs.map((job) => (
                       <TableRow key={job.id}>
                         <TableCell>
-                          <div className="font-medium text-foreground">{job.title}</div>
-                          <div className="text-xs text-muted-foreground">{job.contentType}</div>
+                          <div className="text-foreground font-medium">{job.title}</div>
+                          <div className="text-muted-foreground text-sm">{job.contentType}</div>
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{job.siteSlug}</TableCell>
+                        <TableCell className="text-muted-foreground text-sm">{job.siteSlug}</TableCell>
                         <TableCell>
                           <JobStatus status={job.status} />
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {job.reviewStatus.replace(/_/g, " ")}
+                        <TableCell className="text-muted-foreground text-sm">
+                          {job.reviewStatus.replace(/_/g, ' ')}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => changeJob(job.id, "approve")}
-                            >
+                            <Button variant="outline" size="sm" onClick={() => changeJob(job.id, 'approve')}>
                               Approve
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => changeJob(job.id, "reject")}
-                            >
+                            <Button variant="outline" size="sm" onClick={() => changeJob(job.id, 'reject')}>
                               Reject
                             </Button>
-                            <Button size="sm" onClick={() => changeJob(job.id, "publish")}>
+                            <Button size="sm" onClick={() => changeJob(job.id, 'publish')}>
                               Publish
                             </Button>
                           </div>
@@ -218,14 +228,14 @@ export default function PublishClient({ initialJobs, sites }) {
               </CardHeader>
               <CardContent className="grid gap-4 md:grid-cols-2">
                 {[
-                  ["queued", "Job was created and is waiting for provider execution."],
-                  ["draft_ready", "Draft content exists and is ready for human review."],
-                  ["approved", "Editorial review passed and the job is ready to publish."],
-                  ["published", "The draft was handed off to the CMS layer."],
+                  ['queued', 'Job was created and is waiting for provider execution.'],
+                  ['draft_ready', 'Draft content exists and is ready for human review.'],
+                  ['approved', 'Editorial review passed and the job is ready to publish.'],
+                  ['published', 'The draft was handed off to the CMS layer.'],
                 ].map(([label, body]) => (
-                  <div className="rounded-xl border border-border bg-muted/30 p-4" key={label}>
-                    <div className="font-medium text-foreground">{label}</div>
-                    <div className="mt-2 text-sm leading-6 text-muted-foreground">{body}</div>
+                  <div className="border-border bg-muted/30 rounded-xl border p-4" key={label}>
+                    <div className="text-foreground font-medium">{label}</div>
+                    <div className="text-muted-foreground mt-2 text-sm leading-6">{body}</div>
                   </div>
                 ))}
               </CardContent>
@@ -234,5 +244,5 @@ export default function PublishClient({ initialJobs, sites }) {
         </Tabs>
       </div>
     </div>
-  );
+  )
 }

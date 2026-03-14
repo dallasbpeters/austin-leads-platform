@@ -2,7 +2,8 @@
 
 import 'leaflet/dist/leaflet.css'
 
-import { CircleMarker, LayerGroup, MapContainer, Popup, TileLayer } from 'react-leaflet'
+import { useEffect, useState } from 'react'
+import { CircleMarker, LayerGroup, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet'
 
 function hailRadius(point) {
   const magnitude = Number(point?.magnitude)
@@ -28,23 +29,93 @@ function hailColor(point) {
   return '#f59e0b'
 }
 
+function formatPointDate(value) {
+  if (!value) {
+    return 'Recent event'
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
+function FitMapToPoints({ center, points }) {
+  const map = useMap()
+
+  useEffect(() => {
+    const coordinates = [
+      [center.latitude, center.longitude],
+      ...points.map((point) => [point.latitude, point.longitude]),
+    ].filter(([latitude, longitude]) => Number.isFinite(latitude) && Number.isFinite(longitude))
+
+    if (coordinates.length > 1) {
+      map.fitBounds(coordinates, {
+        padding: [36, 36],
+        maxZoom: 11,
+      })
+    } else {
+      map.setView([center.latitude, center.longitude], 10)
+    }
+  }, [center.latitude, center.longitude, map, points])
+
+  return null
+}
+
 export default function HailLayerMap({ center, hailLayer }) {
+  const [isMounted, setIsMounted] = useState(false)
   const hailSignatures = hailLayer?.hailSignatures || []
   const stormReports = hailLayer?.stormReports || []
+  const allPoints = [...hailSignatures, ...stormReports]
+  const mapKey = `${center.latitude}:${center.longitude}`
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return <div className="h-full min-h-[24rem] w-full bg-slate-100" />
+  }
 
   return (
     <MapContainer
+      key={mapKey}
       center={[center.latitude, center.longitude]}
-      className="h-full min-h-[22rem] w-full"
-      scrollWheelZoom={false}
+      className="h-full min-h-[24rem] w-full"
       zoom={10}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; OpenStreetMap contributors &copy; CARTO'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
+      <FitMapToPoints center={center} points={allPoints} />
 
       <LayerGroup>
+        <CircleMarker
+          center={[center.latitude, center.longitude]}
+          color="#102230"
+          fillColor="#f97316"
+          fillOpacity={0.95}
+          radius={10}
+          stroke
+          weight={3}
+        >
+          <Popup>
+            <div className="space-y-1 text-sm">
+              <div className="font-semibold">Property search area</div>
+              <div>{center.name || 'Selected location'}</div>
+            </div>
+          </Popup>
+        </CircleMarker>
+
         {hailSignatures.map((point) => (
           <CircleMarker
             center={[point.latitude, point.longitude]}
@@ -59,9 +130,10 @@ export default function HailLayerMap({ center, hailLayer }) {
             <Popup>
               <div className="space-y-1 text-sm">
                 <div className="font-semibold">Radar hail signature</div>
-                <div>{point.date || 'Recent event'}</div>
+                <div>{formatPointDate(point.date)}</div>
                 {point.magnitude ? <div>Max size: {point.magnitude} in</div> : null}
                 {point.probability ? <div>Probability: {point.probability}%</div> : null}
+                {point.severeProbability ? <div>Severe probability: {point.severeProbability}%</div> : null}
               </div>
             </Popup>
           </CircleMarker>
@@ -81,7 +153,7 @@ export default function HailLayerMap({ center, hailLayer }) {
             <Popup>
               <div className="space-y-1 text-sm">
                 <div className="font-semibold">Storm report</div>
-                <div>{point.date || 'Recent report'}</div>
+                <div>{formatPointDate(point.date)}</div>
                 {point.city ? <div>{point.city}</div> : null}
                 {point.magnitude ? <div>Reported hail: {point.magnitude} in</div> : null}
               </div>

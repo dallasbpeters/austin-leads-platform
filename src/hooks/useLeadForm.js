@@ -3,18 +3,20 @@
 import { useMemo, useState } from 'react'
 
 import { submitLead } from '@/services/leads'
+import { normalizeLeadServiceInterest } from '@/lib/leads/service-options'
 
-function defaultState() {
+function defaultState(defaultServiceInterest) {
   return {
     fullName: '',
     email: '',
     phone: '',
     notes: '',
+    serviceInterest: normalizeLeadServiceInterest(defaultServiceInterest),
   }
 }
 
 export function useLeadForm({ context }) {
-  const [form, setForm] = useState(defaultState)
+  const [form, setForm] = useState(() => defaultState(context?.serviceInterest))
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
 
@@ -31,7 +33,7 @@ export function useLeadForm({ context }) {
         ...form,
       })
 
-      setForm(defaultState())
+      setForm(defaultState(context?.serviceInterest))
       setStatus('success')
       setMessage('We have received your request and will be in touch within the next 24 hours.')
     } catch (error) {

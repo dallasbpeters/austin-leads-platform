@@ -2,11 +2,12 @@ import Button from './Button'
 import Card from './Card'
 import Image from 'next/image'
 import ImageFader from './ImageFader'
+import { getDevSectionAttributes } from './dev/DevTrace'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
-import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
+import { getHeroImageUrl, getImageAlt, hasImageSource } from '@/lib/platform/imageSource'
 
-export default function Hero({ heroSection = null }) {
-  const heroImageUrl = getImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
+export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }) {
+  const heroImageUrl = getHeroImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
   const hasHeroImage = hasImageSource(heroSection?.heroAsset, heroSection?.heroImage)
   const heroTextColor = heroSection?.heroTextColor || (hasHeroImage ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
@@ -20,7 +21,7 @@ export default function Hero({ heroSection = null }) {
     },
     ...(heroSection?.items || [])
       .map((item) => ({
-        src: getImageUrl(item?.imageAsset, item?.image),
+        src: getHeroImageUrl(item?.imageAsset, item?.image),
         alt: getImageAlt(item?.imageAsset, item?.image, item?.title || ''),
       }))
       .filter((image) => image.src),
@@ -30,18 +31,25 @@ export default function Hero({ heroSection = null }) {
   const hasRotatingHeroImages = rotatingHeroImages.length > 0
 
   return (
-    <section className="radial-grid-bg type-accent text-color-body relative h-[80vh] overflow-x-hidden">
+    <section
+      className="radial-grid-bg type-accent text-body relative min-h-[80vh] overflow-hidden"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/Hero.jsx',
+        content: 'homepage hero copy + hero media from homepage record',
+      })}
+    >
       {hasRotatingHeroImages ? (
         <ImageFader
           borderRadius="0"
           images={rotatingHeroImages}
           interval={10000}
-          fadeDuration={1200}
+          fadeDuration={600}
           overlayStyle={overlayStyle}
           showOverlay={Boolean(overlayStyle)}
           showDots={false}
           objectPosition="center"
-          className="absolute inset-0 z-0 min-h-[80vh]"
+          className="absolute inset-0 z-2 min-h-[80vh]"
           imageClassName="object-top"
           backgroundColor={'#000000'}
         />
@@ -51,9 +59,9 @@ export default function Hero({ heroSection = null }) {
             src="/assets/hero-bg.png"
             alt=""
             fill
-            className="absolute inset-0 z-0 object-cover object-top opacity-10"
+            className="absolute inset-0 z-2 object-cover object-top opacity-10"
           />
-          {overlayStyle ? <div className="absolute inset-0 z-10" style={overlayStyle} /> : null}
+          {overlayStyle ? <div className="absolute inset-0 z-3" style={overlayStyle} /> : null}
         </>
       )}
       <div className="relative z-20 mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-4 py-30">
@@ -61,14 +69,14 @@ export default function Hero({ heroSection = null }) {
           <div className="solar-fade-up">
             <div className="mb-8 inline-flex items-center gap-4">
               <div className="relative flex h-3 w-3">
-                <span className="bg-color-primary-300 absolute inset-0 animate-ping rounded-full opacity-75"></span>
-                <span className="bg-color-primary relative h-3 w-3 rounded-full"></span>
+                <span className="bg-primary-300 absolute inset-0 animate-ping rounded-full opacity-75"></span>
+                <span className="bg-primary relative h-3 w-3 rounded-full"></span>
               </div>
               <span
                 className="text-[12px] font-bold tracking-[0.4em] uppercase"
                 style={{ color: heroTextColor || 'var(--color-primary)' }}
               >
-                Texas roofing and solar guidance for homeowners
+                Solar and Roofing for Texas Homeowners
               </span>
             </div>
 
@@ -83,7 +91,7 @@ export default function Hero({ heroSection = null }) {
                   WebkitTextStrokeColor: heroTextColor || 'black',
                 }}
               >
-                & Roofing Pros.
+                & Roofing
               </span>
             </h1>
 
@@ -96,13 +104,13 @@ export default function Hero({ heroSection = null }) {
                 <div className="hidden h-12 w-px bg-white/10 md:block"></div>
                 <div>
                   <span
-                    className="mb-1 block text-[10px] font-bold tracking-[0.2em] uppercase"
+                    className="mb-1 block text-[12px] font-bold tracking-[0.2em] uppercase"
                     style={{ color: softTextColor || 'var(--color-slate-500)' }}
                   >
                     We'll help you understand
                   </span>
                   <span
-                    className="block text-sm font-medium"
+                    className="block text-[15px] font-medium"
                     style={{ color: heroTextColor || 'var(--color-slate-800)' }}
                   >
                     Hail damage, roof replacement, insurance options, and solar savings
@@ -114,7 +122,7 @@ export default function Hero({ heroSection = null }) {
 
           <div className="solar-fade-up solar-fade-up-delay">
             <Card
-              className="p-8 backdrop-blur-[12px]"
+              className="p-8 backdrop-blur-md"
               radius="lg"
               style={
                 hasHeroImage
@@ -133,9 +141,9 @@ export default function Hero({ heroSection = null }) {
                 whether solar works for your Texas home.
               </p>
               <div className="mt-6 flex gap-2">
-                <div className="bg-color-primary h-1 w-8 rounded-full"></div>
-                <div className="bg-color-primary h-1 w-2 rounded-full"></div>
-                <div className="bg-color-primary h-1 w-2 rounded-full"></div>
+                <div className="bg-primary h-1 w-8 rounded-full"></div>
+                <div className="bg-primary h-1 w-2 rounded-full"></div>
+                <div className="bg-primary h-1 w-2 rounded-full"></div>
               </div>
             </Card>
           </div>

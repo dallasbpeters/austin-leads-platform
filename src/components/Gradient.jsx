@@ -23,7 +23,13 @@ export default function Gradient({ className, style, zIndex = -1 }) {
         ...style,
       }}
     >
-      <UnicornScene jsonFilePath="/unicorn/strand_remix.json" width="100%" height="100%" scale={1} dpi={1.5} />
+      <UnicornScene
+        jsonFilePath="/unicorn/strand_remix.json"
+        width="100%"
+        height="100%"
+        scale={1}
+        dpi={1.5}
+      />
     </div>
   )
 }

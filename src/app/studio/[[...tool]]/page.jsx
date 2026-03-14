@@ -1,11 +1,11 @@
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation'
 
-import { canonicalStudioUrl } from "@/sanity/env";
+import { runtimeStudioUrl } from '@/sanity/env'
 
 export default async function StudioPage({ params }) {
-  const resolvedParams = await params;
-  const toolPath = Array.isArray(resolvedParams?.tool) ? resolvedParams.tool.join("/") : "";
-  const target = toolPath ? `${canonicalStudioUrl}/${toolPath}` : canonicalStudioUrl;
+  const resolvedParams = await params
+  const toolPath = Array.isArray(resolvedParams?.tool) ? resolvedParams.tool.join('/') : ''
+  const target = toolPath ? `${runtimeStudioUrl}/${toolPath}` : runtimeStudioUrl
 
-  redirect(target);
+  redirect(target)
 }

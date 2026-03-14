@@ -7,12 +7,16 @@ import {
   Flash,
   HomeShield,
   HomeSimple,
-  SunLight,
   Thunderstorm,
   WarningTriangle,
   WindowTabs,
   Wrench,
 } from 'iconoir-react'
+import * as IconoirIcons from 'iconoir-react'
+
+import { cn } from '@/lib/utils'
+
+import Image from 'next/image'
 
 import Footer from '@/components/Footer'
 import GuideCardGrid from '@/components/GuideCardGrid'
@@ -20,15 +24,32 @@ import HailWeatherLookup from '@/components/HailWeatherLookup'
 import Header from '@/components/Header'
 import ConsultationSection from '@/components/ConsultationSection'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
+import QuoteSection from '@/components/QuoteSection'
+import LogoCloud from '@/components/logo-cloud'
+import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
-import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
+import { getHeroImageUrl, getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
+import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken } from '@/lib/sanity/stega'
+import { roofingServices } from '@/lib/platform/service-catalog'
 
-function HeroSection({ page, section }) {
-  const heroImageUrl = getImageUrl(section.heroAsset, section.heroImage)
+function slugifySectionToken(value) {
+  return toRuntimeToken(value)
+}
+
+function getSectionDomId(section, index) {
+  if (section?.anchor) return slugifySectionToken(section.anchor)
+  if (section?.id) return slugifySectionToken(section.id)
+
+  const token = slugifySectionToken(section?.title || section?.eyebrow || section?.question || '')
+  return token ? `${section.type}-${token}` : `${section.type}-${index + 1}`
+}
+
+function HeroSection({ page, section, sectionId }) {
+  const heroImageUrl = getHeroImageUrl(section.heroAsset, section.heroImage)
   const hasHeroImage = hasImageSource(section.heroAsset, section.heroImage)
   const heroTitle = page?.pageType === 'post' ? page.title : section.title
   const heroTextColor = section.heroTextColor || (hasHeroImage ? '#ffffff' : '')
@@ -45,20 +66,35 @@ function HeroSection({ page, section }) {
     : undefined
 
   return (
-    <section className="border-border/60 relative grid h-[60vh] place-content-center overflow-hidden border-b bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))]">
+    <section
+      className="border-border/60 relative grid min-h-[60vh] place-content-center overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))] py-12 lg:py-32"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:HeroSection',
+        content: `page record from ${page?.source || 'fixture'} + hero section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:HeroSection"
+        content={`page record from ${page?.source || 'fixture'} + hero section from ${section?._type || 'page section'}`}
+      />
       {hasHeroImage ? (
         <>
-          <div className="absolute inset-0">
-            <img
+          <div className="absolute inset-0 z-2">
+            <Image
+              width={3000}
+              height={3000}
+              quality={100}
+              sizes="100vw"
               alt={getImageAlt(section.heroAsset, section.heroImage, heroTitle)}
               className="h-full w-full object-cover"
               src={heroImageUrl}
             />
           </div>
-          <div className="absolute inset-0" style={overlayStyle} />
+          <div className="absolute inset-0 z-3" style={overlayStyle} />
         </>
       ) : null}
-      {/* {!hasHeroImage && overlayStyle ? <div className="absolute inset-0" style={overlayStyle} /> : null} */}
+      {!hasHeroImage && overlayStyle ? <div className="absolute inset-0" style={overlayStyle} /> : null}
       <div
         className={
           hasHeroImage
@@ -91,16 +127,30 @@ function HeroSection({ page, section }) {
           </div>
           {section.actions?.length ? (
             <div className="flex flex-wrap gap-3 pt-2">
-              {section.actions.map((action) => (
-                <Button asChild key={action.href} variant={action.variant || 'default'} size="lg">
-                  <Link href={action.href}>{action.label}</Link>
-                </Button>
-              ))}
+              {section.actions.map((action, index) => {
+                const href = cleanRuntimeHref(action.href)
+
+                if (!href) {
+                  return null
+                }
+
+                return (
+                  <Button
+                    asChild
+                    key={buildRuntimeKey('hero-action', action.href, action.label, index)}
+                    variant={action.variant || (index === 0 ? 'default' : 'tertiary')}
+                    shape="pill"
+                    size="lg"
+                  >
+                    <Link href={href}>{action.label}</Link>
+                  </Button>
+                )
+              })}
             </div>
           ) : null}
         </div>
         {hasHeroImage ? (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 content-center space-y-4">
             <Card
               className={
                 hasHeroImage
@@ -110,7 +160,7 @@ function HeroSection({ page, section }) {
             >
               <CardHeader className="pb-4">
                 <CardTitle
-                  className="text-muted-foreground text-sm font-medium tracking-[0.2em] uppercase"
+                  className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase"
                   style={heroMutedStyle}
                 >
                   Snapshot
@@ -124,7 +174,7 @@ function HeroSection({ page, section }) {
                         ? 'rounded-xl border border-white/15 bg-white/8 px-4 py-4'
                         : 'border-border/70 bg-card/90 rounded-xl border px-4 py-4'
                     }
-                    key={metric.label}
+                    key={buildRuntimeKey('hero-metric', metric.label, metric.value)}
                   >
                     <div
                       className="text-muted-foreground text-xs tracking-[0.18em] uppercase"
@@ -133,7 +183,7 @@ function HeroSection({ page, section }) {
                       {metric.label}
                     </div>
                     <div
-                      className="text-foreground mt-2 text-2xl font-semibold tracking-tight"
+                      className="text-foreground text-lg font-semibold tracking-tight"
                       style={heroTextStyle}
                     >
                       {metric.value}
@@ -149,36 +199,64 @@ function HeroSection({ page, section }) {
   )
 }
 
-function StorySection({ section }) {
+function StorySection({ section, sectionId }) {
   return (
-    <section className="border-border/60 bg-background border-b">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:px-10">
+    <section
+      className="border-border/60 bg-background border-b"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:StorySection',
+        content: `story section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:StorySection"
+        content={`story section from ${section?._type || 'page section'}`}
+      />
+      <div className="mx-auto grid max-w-7xl grid-cols-1 place-items-start px-6 py-24 lg:px-10">
         <Badge variant="outline" className="border-secondary/20 bg-secondary text-foreground">
           {section.eyebrow}
         </Badge>
-        <h2 className="text-foreground mx-auto mt-6 max-w-6xl text-3xl tracking-tight md:text-5xl">
+        <h2 className="font-display text-foreground mt-6 w-full max-w-5xl text-3xl tracking-tight md:text-6xl">
           {section.title}
         </h2>
-        <p className="text-muted-foreground mx-auto mt-6 max-w-6xl text-lg leading-8">{section.body}</p>
+        <p className="text-muted-foreground mt-6 max-w-5xl text-lg leading-8">{section.body}</p>
       </div>
     </section>
   )
 }
 
-function CardGridSection({ section }) {
+function CardGridSection({ section, sectionId }) {
   return (
-    <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,246,242,0.96))]">
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,246,242,0.96))]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:CardGridSection',
+        content: `highlight cards from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:CardGridSection"
+        content={`highlight cards from ${section?._type || 'page section'}`}
+      />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="mb-8 max-w-3xl">
+        <div className="mb-8 grid max-w-3xl gap-2">
           <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
+          {section.subtitle ? (
+            <p className="text-foreground mb-4 text-xl leading-8">{section.subtitle}</p>
+          ) : null}
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {section.items?.map((item) => (
-            <Card key={item.title} className="shadow-theme-sm border-border/80 bg-card/95">
+        <div className="grid gap-8 md:grid-cols-3">
+          {section.items?.map((item, index) => (
+            <Card
+              key={buildRuntimeKey('card-grid-item', item.title, item.question, index)}
+              className="grid grid-cols-1 place-content-start pt-8"
+            >
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-7">
+              <CardContent className="text-muted-foreground text-md leading-6">
                 {item.body || item.answer}
               </CardContent>
             </Card>
@@ -189,17 +267,17 @@ function CardGridSection({ section }) {
   )
 }
 
-function GuideGridSection({ section }) {
+function GuideGridSection({ section, sectionId }) {
   const palette = [
-    'bg-color-secondary-700 text-white',
-    'bg-[var(--color-secondary-alt)] text-white',
+    'bg-primary text-white',
+    'bg-tertiary text-white',
     'bg-blue-400 text-white',
-    'bg-[var(--site-secondary)] text-white',
+    'bg-[var(--color-tertiary-alt)] text-foreground',
     'bg-blue-200 text-foreground',
     'bg-[var(--color-secondary-alt)] text-white',
   ]
 
-  const cards = (section.items || []).slice(0, 6).map((item, index) => ({
+  const cards = (section.items || []).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
     copy: item.body || item.answer,
@@ -209,29 +287,31 @@ function GuideGridSection({ section }) {
   }))
 
   return (
-    <section className="border-border/60 border-b bg-[linear-gradient(to_right,var(--color-grid-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-grid-line)_1px,transparent_1px)] bg-[size:24px_24px]">
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(to_right,var(--color-grid-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-grid-line)_1px,transparent_1px)] bg-size-[24px_24px]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:GuideGridSection',
+        content: `guide grid from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:GuideGridSection"
+        content={`guide grid from ${section?._type || 'page section'}`}
+      />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="mb-8 max-w-3xl">
-          <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
+          <h2 className="text-foreground mb-4 text-3xl md:text-4xl">{section.title}</h2>
+          {section.body ? <p className="text-muted-foreground text-lg leading-8">{section.body}</p> : null}
         </div>
-        <GuideCardGrid cards={cards} columnsClassName="md:grid-cols-2 xl:grid-cols-3" palette={palette} />
+        <GuideCardGrid
+          cards={cards}
+          columnsClassName="sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          palette={palette}
+        />
       </div>
     </section>
   )
-}
-const iconMap = {
-  'solar:map-point-linear': Thunderstorm,
-  'solar:home-linear': HomeShield,
-  'solar:wad-of-money-linear': SunLight,
-  thunderstorm: Thunderstorm,
-  hail: Thunderstorm,
-  roofing: HomeShield,
-  solar: SunLight,
-  sunlight: SunLight,
-}
-
-function getResourceIcon(iconName) {
-  return iconMap[iconName] || HomeSimple
 }
 
 const serviceIconMap = {
@@ -241,6 +321,7 @@ const serviceIconMap = {
   windows: WindowTabs,
   heatpump: AirConditioner,
   solarbattery: BatteryCharging,
+  detachreset: Wrench,
   shingles: HomeSimple,
   metalroofing: HomeShield,
   stormdamage: Thunderstorm,
@@ -276,6 +357,42 @@ const serviceImageMap = {
     url: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
     alt: 'Solar array installation under a bright sky',
   },
+  detachreset: {
+    url: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+    alt: 'Solar array on a residential roof ready for coordinated detach and reset work',
+  },
+  shingles: {
+    url: 'https://images.unsplash.com/photo-1762726012995-81c2f26e6a4b?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Close-up of weathered roof shingles and eaves',
+  },
+  metalroofing: {
+    url: 'https://images.unsplash.com/photo-1718948173667-fbd912b6d1fa?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'House with a standing seam metal roof',
+  },
+  stormdamage: {
+    url: 'https://images.unsplash.com/photo-1767385945380-37deed400d81?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Storm-damaged structure with torn metal roofing',
+  },
+  commercialroofing: {
+    url: 'https://images.unsplash.com/photo-1737256359080-9354dbcc21ef?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Large commercial building roof under clear sky',
+  },
+  hailinspection: {
+    url: 'https://images.unsplash.com/photo-1656646549671-000665d8d8bc?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Aerial view of a residential roof for inspection',
+  },
+  rodent: {
+    url: 'https://images.unsplash.com/photo-1694248581706-a645f65a2f27?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Close-up of rooftop solar panels protected from pest intrusion',
+  },
+  electrical: {
+    url: 'https://images.unsplash.com/photo-1759692071712-adc78a8516c8?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Electrical panel and power equipment',
+  },
+  evcharger: {
+    url: 'https://images.unsplash.com/photo-1724963914478-77af9eba1c50?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Electric vehicle plugged into a home charger',
+  },
 }
 
 function getServiceIcon(item) {
@@ -283,7 +400,13 @@ function getServiceIcon(item) {
     return serviceIconMap[item.icon]
   }
 
-  const title = `${item.title || ''} ${item.eyebrow || ''}`.toLowerCase()
+  // Support PascalCase iconoir icon names from Sanity dropdowns
+  if (item.icon && IconoirIcons[item.icon]) {
+    return IconoirIcons[item.icon]
+  }
+
+  const title =
+    `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return AreaSearch
   if (title.includes('insulation') || title.includes('air sealing')) return HomeShield
@@ -303,18 +426,43 @@ function getServiceImage(item) {
     }
   }
 
+  if (item.imageUrl) {
+    return {
+      url: cleanRuntimeString(item.imageUrl),
+      alt: cleanRuntimeString(item.imageAlt || item.alt || item.title || item.question),
+    }
+  }
+
+  if (item.image) {
+    return {
+      url: getImageUrl(null, item.image),
+      alt: getImageAlt(null, item.image, item.title || item.question),
+    }
+  }
+
   if (item.icon && serviceImageMap[item.icon]) {
     return serviceImageMap[item.icon]
   }
 
-  const title = `${item.title || ''} ${item.eyebrow || ''}`.toLowerCase()
+  const title =
+    `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return serviceImageMap.audit
   if (title.includes('insulation') || title.includes('air sealing')) return serviceImageMap.insulation
   if (title.includes('duct')) return serviceImageMap.ducts
   if (title.includes('window')) return serviceImageMap.windows
   if (title.includes('heat pump')) return serviceImageMap.heatpump
+  if (title.includes('detach') || title.includes('reset')) return serviceImageMap.detachreset
   if (title.includes('battery') || title.includes('solar')) return serviceImageMap.solarbattery
+  if (title.includes('shingle')) return serviceImageMap.shingles
+  if (title.includes('metal')) return serviceImageMap.metalroofing
+  if (title.includes('storm damage') || title.includes('restoration')) return serviceImageMap.stormdamage
+  if (title.includes('commercial')) return serviceImageMap.commercialroofing
+  if (title.includes('hail') || title.includes('wind damage')) return serviceImageMap.hailinspection
+  if (title.includes('rodent')) return serviceImageMap.rodent
+  if (title.includes('electrical')) return serviceImageMap.electrical
+  if (title.includes('charger') || title.includes('car charger') || title.includes('ev'))
+    return serviceImageMap.evcharger
 
   return {
     url: getImageUrl(item.imageAsset, item.image),
@@ -322,7 +470,7 @@ function getServiceImage(item) {
   }
 }
 
-function ServiceGridSection({ section }) {
+function ServiceGridSection({ section, sectionId }) {
   const items = (section.items || []).map((item) => {
     const serviceImage = getServiceImage(item)
 
@@ -355,8 +503,38 @@ function ServiceGridSection({ section }) {
     }
   })
 
+  function renderServiceMedia(item, overlayClassName) {
+    if (!item.imageUrl) {
+      return <div className={`absolute inset-0 ${overlayClassName}`} />
+    }
+
+    return (
+      <>
+        <Image
+          width={2000}
+          height={2000}
+          src={item.imageUrl}
+          alt={item.imageAlt}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+        />
+        <div className={`absolute inset-0 ${overlayClassName}`} />
+      </>
+    )
+  }
+
   return (
-    <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))]">
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:ServiceGridSection',
+        content: `service grid from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:ServiceGridSection"
+        content={`service grid from ${section?._type || 'page section'}`}
+      />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="mb-10 max-w-3xl">
           {section.eyebrow ? (
@@ -365,6 +543,9 @@ function ServiceGridSection({ section }) {
             </Badge>
           ) : null}
           <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          {section.subtitle ? (
+            <p className="text-foreground/80 mt-4 text-lg leading-8">{section.subtitle}</p>
+          ) : null}
           {section.body ? (
             <p className="text-muted-foreground mt-4 text-base leading-8">{section.body}</p>
           ) : null}
@@ -373,29 +554,30 @@ function ServiceGridSection({ section }) {
           {items.map((item) => {
             const Icon = getServiceIcon(item)
             const content = (
-              <Card className="relative aspect-[1/1]" variant="media" radius="lg">
-                <img
-                  src={item.imageUrl}
-                  alt={item.imageAlt}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>
+              <Card className="relative aspect-square" variant="media" radius="lg">
+                {renderServiceMedia(
+                  item,
+                  'bg-[linear-gradient(to_top,rgba(1,60,66,1)_30%,rgba(11,59,66,0.1),transparent)]',
+                )}
                 <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]">
-                    <Icon className="h-5 w-5" strokeWidth={2.2} />
+                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <Icon className="h-8 w-8" strokeWidth={2} />
                   </div>
                   <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
-                  <div className="mt-1 text-sm font-semibold text-white/70">{item.copy}</div>
+                  <div className="text-md mt-1 font-semibold text-white/70">{item.copy}</div>
                 </div>
               </Card>
             )
 
             if (!item.href) {
-              return <div key={item.title}>{content}</div>
+              return <div key={buildRuntimeKey('service-item', item.title, item.href)}>{content}</div>
             }
 
             return (
-              <Link key={item.title} href={item.href}>
+              <Link
+                key={buildRuntimeKey('service-item', item.title, item.href)}
+                href={cleanRuntimeHref(item.href)}
+              >
                 {content}
               </Link>
             )
@@ -406,33 +588,34 @@ function ServiceGridSection({ section }) {
             {section.roofingTitle ? (
               <h3 className="text-foreground mb-4 text-lg">{section.roofingTitle}</h3>
             ) : null}
-            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {roofingItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const content = (
-                  <Card className="relative aspect-[4/5] overflow-hidden" variant="media" radius="lg">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.imageAlt}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.92),rgba(11,59,66,0.4),transparent)]" />
+                  <Card className="relative aspect-4/5 overflow-hidden" variant="media" radius="lg">
+                    {renderServiceMedia(
+                      item,
+                      'bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]',
+                    )}
                     <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]">
+                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
                       </div>
                       <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
-                      <p className="mt-2 text-sm leading-6 text-white/82">{item.copy}</p>
+                      <p className="text-md mt-2 leading-6 text-white/82">{item.copy}</p>
                     </div>
                   </Card>
                 )
 
                 if (!item.href) {
-                  return <div key={item.title}>{content}</div>
+                  return <div key={buildRuntimeKey('roofing-item', item.title, item.href)}>{content}</div>
                 }
 
                 return (
-                  <Link key={item.title} href={item.href}>
+                  <Link
+                    key={buildRuntimeKey('roofing-item', item.title, item.href)}
+                    href={cleanRuntimeHref(item.href)}
+                  >
                     {content}
                   </Link>
                 )
@@ -445,33 +628,34 @@ function ServiceGridSection({ section }) {
             {section.secondaryTitle ? (
               <h3 className="text-foreground mb-4 text-lg">{section.secondaryTitle}</h3>
             ) : null}
-            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {secondaryItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const content = (
-                  <Card className="relative aspect-[1/1] overflow-hidden" variant="media" radius="lg">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.imageAlt}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.92),rgba(11,59,66,0.4),transparent)]" />
+                  <Card className="relative aspect-square overflow-hidden" variant="media" radius="lg">
+                    {renderServiceMedia(
+                      item,
+                      'bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]',
+                    )}
                     <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]">
+                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
                       </div>
                       <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
-                      <p className="mt-2 text-sm leading-6 text-white/82">{item.copy}</p>
+                      <p className="text-md mt-2 leading-6 text-white/82">{item.copy}</p>
                     </div>
                   </Card>
                 )
 
                 if (!item.href) {
-                  return <div key={item.title}>{content}</div>
+                  return <div key={buildRuntimeKey('secondary-item', item.title, item.href)}>{content}</div>
                 }
 
                 return (
-                  <Link key={item.title} href={item.href}>
+                  <Link
+                    key={buildRuntimeKey('secondary-item', item.title, item.href)}
+                    href={cleanRuntimeHref(item.href)}
+                  >
                     {content}
                   </Link>
                 )
@@ -484,23 +668,37 @@ function ServiceGridSection({ section }) {
   )
 }
 
-function StepsSection({ section }) {
+function StepsSection({ section, sectionId }) {
   return (
-    <section className="border-border/60 bg-background border-b">
+    <section
+      className="radial-grid-bg bg-secondary-100 border-border/60 border-b"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:StepsSection',
+        content: `steps section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:StepsSection"
+        content={`steps section from ${section?._type || 'page section'}`}
+      />
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
         <div className="mb-10 max-w-3xl">
           <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           {section.items?.map((item, index) => (
-            <Card key={item.title} className="border-border/80 bg-card">
+            <Card
+              key={buildRuntimeKey('step-item', item.title, index)}
+              className="border-border/80 bg-card pt-12 pb-8"
+            >
               <CardHeader className="gap-4">
-                <Badge className="bg-secondary/90 text-secondary-foreground w-fit rounded-full px-3 py-1">
-                  Step {index + 1}
+                <Badge className="bg-primary border-primary ring-primary text-secondary-foreground size-8 w-fit rounded-full text-lg ring-1">
+                  {index + 1}
                 </Badge>
                 <CardTitle className="text-foreground text-xl">{item.title}</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-7">{item.body}</CardContent>
+              <CardContent className="text-muted-foreground text-md leading-6">{item.body}</CardContent>
             </Card>
           ))}
         </div>
@@ -509,20 +707,34 @@ function StepsSection({ section }) {
   )
 }
 
-function FaqSection({ section }) {
+function FaqSection({ section, sectionId }) {
   return (
-    <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(249,247,244,0.98),rgba(255,255,255,0.98))]">
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(249,247,244,0.98),rgba(255,255,255,0.98))]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:FaqSection',
+        content: `faq section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:FaqSection"
+        content={`faq section from ${section?._type || 'page section'}`}
+      />
       <div className="mx-auto max-w-5xl px-6 py-20 lg:px-10">
         <div className="mb-10 max-w-3xl">
           <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
         </div>
         <div className="space-y-4">
-          {section.items?.map((item) => (
-            <Card key={item.question} className="border-border/80 bg-card">
+          {section.items?.map((item, index) => (
+            <Card
+              key={buildRuntimeKey('faq-item', item.question, index)}
+              className="border-border/80 bg-card"
+            >
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.question}</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm leading-7">{item.answer}</CardContent>
+              <CardContent className="text-muted-foreground text-md leading-6">{item.answer}</CardContent>
             </Card>
           ))}
         </div>
@@ -531,21 +743,255 @@ function FaqSection({ section }) {
   )
 }
 
-function HailMapSection({ section }) {
+function HailMapSection({ section, sectionId }) {
   return (
-    <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,244,239,0.98))]">
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
+    <section
+      className="border-border/60 bg-gradient border-b"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:HailMapSection',
+        content: `hail lookup section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:HailMapSection"
+        content={`hail lookup section from ${section?._type || 'page section'}`}
+      />
+      <div className="mx-auto max-w-[1600px] px-6 py-20 lg:px-10">
         <HailWeatherLookup section={section} />
       </div>
     </section>
   )
 }
 
-function CtaSection({ page, section, site, pathname }) {
-  return <ConsultationSection site={site} />
+function QuoteBannerSection({ section, sectionId }) {
+  return (
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(247,244,239,0.98),rgba(255,255,255,0.98))]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:QuoteBannerSection',
+        content: `quote section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:QuoteBannerSection"
+        content={`quote section from ${section?._type || 'page section'}`}
+      />
+      <QuoteSection
+        variant="primary"
+        eyebrow={section.eyebrow || 'KEY MESSAGE'}
+        quoteText={section.body || section.title || ''}
+        attribution={section.title || 'Texas Solar and Roofing Pros'}
+        sectionId={`${sectionId}-content`}
+      />
+    </section>
+  )
 }
 
-function CtaBannerSection({ page, section, site }) {
+function AboutProfileSection({ section, sectionId }) {
+  const people = section.people?.length
+    ? section.people
+    : [
+        {
+          label: section.personLabel,
+          name: section.personName,
+          role: section.personRole,
+          blurb: section.personBlurb,
+          profileImage: section.profileImage,
+          profileImageAsset: section.profileImageAsset,
+          certificationLabel: section.certificationLabel,
+          certificationTitle: section.certificationTitle,
+          badgeImage: section.badgeImage,
+          badgeImageAsset: section.badgeImageAsset,
+        },
+        {
+          label: section.secondaryPersonLabel,
+          name: section.secondaryPersonName,
+          role: section.secondaryPersonRole,
+          blurb: section.secondaryPersonBlurb,
+          profileImage: section.secondaryProfileImage,
+          profileImageAsset: section.secondaryProfileImageAsset,
+        },
+      ].filter((person) => person?.name)
+
+  return (
+    <section
+      className="border-border/60 border-b bg-gradient"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:AboutProfileSection',
+        content: `about profile section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:AboutProfileSection"
+        content={`about profile section from ${section?._type || 'page section'}`}
+      />
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 py-20 lg:px-10">
+        <div className="mb-10 max-w-3xl">
+          {section.eyebrow ? (
+            <Badge variant="outline" className="border-primary/20 bg-primary/5 text-foreground">
+              {section.eyebrow}
+            </Badge>
+          ) : null}
+          <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          {section.body ? (
+            <p className="text-muted-foreground mt-4 text-base leading-8">{section.body}</p>
+          ) : null}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 content-start gap-6">
+          {people.map((person, index) => {
+            const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
+            const profileImageAlt = getImageAlt(
+              person.profileImageAsset,
+              person.profileImage,
+              person.name || 'Profile image',
+            )
+            const badgeImageUrl = getImageUrl(person.badgeImageAsset, person.badgeImage)
+            const badgeImageAlt = getImageAlt(
+              person.badgeImageAsset,
+              person.badgeImage,
+              person.certificationTitle || 'Certification badge',
+            )
+            const resolvedBadgeImageUrl =
+              badgeImageUrl ||
+              (person.certificationTitle?.includes('NABCEP')
+                ? 'https://www.nabcep.org/wp-content/uploads/2020/01/PVTS-Registered-Seal.jpg'
+                : '')
+            const resolvedBadgeImageAlt = badgeImageAlt || person.certificationTitle || 'Certification badge'
+
+            const profileCardBackgrounds = [
+              "linear-gradient(45deg, var(--color-primary), var(--color-tidal)), url('https://grainy-gradients.vercel.app/noise.svg')",
+              "linear-gradient(45deg, var(--color-metterhorn), var(--color-sweetcorn)), url('https://grainy-gradients.vercel.app/noise.svg')",
+              "linear-gradient(45deg, var(--color-secondary), var(--color-tertiary)), url('https://grainy-gradients.vercel.app/noise.svg')",
+            ]
+
+            return (
+                <Card key={buildRuntimeKey('about-person', person.name, index)
+                  
+                } 
+                radius="lg" className='bg-card pt-8 aspect-3/3 items-end grid grid-cols-1 content-between'
+                style={{
+                  background: profileCardBackgrounds[index % profileCardBackgrounds.length],
+                  backgroundBlendMode: 'multiply',
+                  }}>
+                  <Image
+                  width={700}
+                  height={700}
+                  src={profileImageUrl}
+                  alt={profileImageAlt}
+                  className='absolute inset-0 size-full object-cover grayscale filter'
+                  
+                />
+                  <CardHeader className="relative z-10 flex items-center gap-4">
+                    <div className="flex items-start">
+                      <div className="grid gap-2">
+                        <div className="text-white text-xs tracking-[0.2em] uppercase">
+                          {person.label || 'Profile'}
+                        </div>
+                        <CardTitle className="text-white text-3xl tracking-tight leading-3">
+                          {person.name}
+                        </CardTitle>
+                        {person.role ? (
+                          <p className="text-white text-lg leading-7 font-semibold">{person.role}</p>
+                        ) : null}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative z-10 grid gap-4 h-30 grid-cols-1 content-end"
+                  >
+                    {person.blurb ? (
+                      <p className="text-white text-base leading-6">{person.blurb}</p>
+                    ) : null}
+                    {person.certificationTitle ? (
+                      <div className="border-border/80 grid gap-3">
+                        <div className="flex items-center gap-3">
+                          {resolvedBadgeImageUrl ? (
+                            <Image
+                              width={320}
+                              height={320}
+                              src={resolvedBadgeImageUrl}
+                              alt={resolvedBadgeImageAlt}
+                              className="size-20 object-contain rounded-xl bg-white"
+                            />
+                          ) : null}
+                          <div className="grid gap-1">
+                            {person.certificationLabel ? (
+                              <div className="text-white text-xs tracking-[0.2em] uppercase">
+                                {person.certificationLabel}
+                              </div>
+                            ) : null}
+                            <div className="text-white text-base leading-6 font-semibold">
+                              {person.certificationTitle}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </CardContent>
+                  <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-black),rgba(11,59,66,0.2),transparent)]"></div>
+                </Card>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function RoofingLogoCloudSection({ sectionId }) {
+  return (
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,239,0.96))]"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:RoofingLogoCloudSection',
+        content: 'local JSX roofing certification logo cloud',
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:RoofingLogoCloudSection"
+        content="local JSX roofing certification logo cloud"
+      />
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <LogoCloud />
+      </div>
+    </section>
+  )
+}
+
+function CtaSection({ page, section, site, pathname, sectionId }) {
+  const pathnameSegments = (pathname || '').split('/').filter(Boolean)
+  const topLevelPath = cleanRuntimeString(pathnameSegments[0])
+  const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
+  const roofingServiceSlugs = new Set(roofingServices.map((service) => service.slug))
+  const isRoofingContext =
+    topLevelPath === 'roofing' ||
+    topLevelPath === 'hail-damage' ||
+    (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug))
+  const pageSlug = cleanRuntimeString(page?.slug)
+  const pagePath = pageSlug ? `/${pageSlug}` : pathname || '/'
+
+  return (
+    <>
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:CtaSection"
+        content={`shared consultation section fallback for page from ${page?.source || 'fixture'}`}
+      />
+      <ConsultationSection
+        site={site}
+        sectionId={sectionId}
+        variant={isRoofingContext ? 'roofingInspection' : 'default'}
+        pagePath={pagePath}
+        pageTitle={page?.title || 'Texas Solar and Roofing Pros'}
+      />
+    </>
+  )
+}
+
+function CtaBannerSection({ page, section, site, sectionId }) {
+  const slug = cleanRuntimeString(page?.slug)
   const leadContext = {
     sourceType: 'cross-lead',
     sourceSection: 'cta-banner',
@@ -553,7 +999,7 @@ function CtaBannerSection({ page, section, site }) {
     siteSlug: site?.slug || 'texas-solar-and-roofing-pros',
     siteName: site?.name || 'Texas Solar and Roofing Pros',
     sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
-    pagePath: page?.slug ? `/${page.slug}` : '/',
+    pagePath: slug ? `/${slug}` : '/',
     pageTitle: page?.title || section?.title || 'Guide CTA',
     metadata: {
       entryPoint: 'guide-cta-banner',
@@ -561,11 +1007,22 @@ function CtaBannerSection({ page, section, site }) {
   }
 
   return (
-    <section className="border-border/60 border-b bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white">
+    <section
+      className="border-border/60 border-b bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white"
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:CtaBannerSection',
+        content: `cross-lead banner from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:CtaBannerSection"
+        content={`cross-lead banner from ${section?._type || 'page section'}`}
+      />
       <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
         <div className="space-y-4">
           {section.eyebrow ? (
-            <p className="text-sm tracking-[0.22em] text-white/58 uppercase">{section.eyebrow}</p>
+            <p className="text-md tracking-[0.22em] text-white/58 uppercase">{section.eyebrow}</p>
           ) : null}
           <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">{section.title}</h2>
           <p className="max-w-2xl text-base leading-8 text-white/78">{section.body}</p>
@@ -595,6 +1052,8 @@ function CtaBannerSection({ page, section, site }) {
 const sectionRenderers = {
   hero: HeroSection,
   story: StorySection,
+  aboutProfile: AboutProfileSection,
+  quote: QuoteBannerSection,
   highlights: CardGridSection,
   guideGrid: GuideGridSection,
   serviceGrid: ServiceGridSection,
@@ -609,6 +1068,16 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
   const useSolarShell = isPrimarySiteSlug(site.slug)
   const sections = page.sections || []
   const hasLeadCaptureSection = sections.some((section) => section.type === 'cta')
+  const pageSlug = cleanRuntimeString(page.slug)
+  const firstLeadCaptureSectionIndex = sections.findIndex((section) => section.type === 'cta')
+  const pathnameSegments = (pathname || '').split('/').filter(Boolean)
+  const topLevelPath = cleanRuntimeString(pathnameSegments[0])
+  const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
+  const roofingServiceSlugs = new Set(roofingServices.map((service) => service.slug))
+  const showRoofingLogoCloud =
+    useSolarShell &&
+    (topLevelPath === 'roofing' || (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug)))
+  const suppressDefaultLeadCapture = pageSlug === 'privacy-policy' || pageSlug === 'terms'
   const style = {
     '--site-primary': site.brand?.primary || 'var(--color-primary)',
     '--site-secondary': site.brand?.secondary || 'var(--color-secondary)',
@@ -619,28 +1088,46 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
   return (
     <div
       className="bg-background text-foreground min-h-screen"
+      {...getDevSectionAttributes({
+        id: 'public-site-root',
+        markup: 'src/components/platform/PublicSite.jsx',
+        content: `page "${page.title}" from ${page.source || 'fixture'}`,
+        note: `route ${pathname || '/'} using ${useSolarShell ? 'solar shell' : 'generic shell'}`,
+      })}
       style={{
         ...style,
         backgroundColor: 'var(--site-surface)',
       }}
     >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx"
+        content={`page "${page.title}" from ${page.source || 'fixture'}`}
+        note={`route ${pathname || '/'} using ${useSolarShell ? 'solar shell' : 'generic shell'}`}
+      />
       {useSolarShell ? (
         <Header />
       ) : (
-        <header className="border-border/60 bg-background/90 sticky top-0 z-40 border-b backdrop-blur">
+        <header
+          className="border-border/60 bg-background/90 sticky top-0 z-40 border-b backdrop-blur"
+          {...getDevSectionAttributes({
+            id: 'site-header',
+            markup: 'src/components/platform/PublicSite.jsx:GenericHeader',
+            content: 'generic public-site shell header',
+          })}
+        >
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-10">
             <Link href="/" className="flex min-w-0 flex-col">
-              <span className="text-muted-foreground text-sm tracking-[0.22em] uppercase">
+              <span className="text-muted-foreground text-md tracking-[0.22em] uppercase">
                 {site.brand?.eyebrow}
               </span>
               <span className="text-foreground text-xl font-semibold tracking-tight">{site.name}</span>
             </Link>
             <nav className="hidden items-center gap-6 md:flex">
-              {navigation.map((item) => (
+              {navigation.map((item, index) => (
                 <Link
-                  key={item.href}
-                  className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
-                  href={item.href}
+                  key={buildRuntimeKey('site-nav-item', item.href, item.label, index)}
+                  className="text-muted-foreground hover:text-foreground text-md font-medium transition-colors"
+                  href={cleanRuntimeHref(item.href)}
                 >
                   {item.label}
                 </Link>
@@ -653,7 +1140,13 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
         </header>
       )}
 
-      <main>
+      <main
+        {...getDevSectionAttributes({
+          id: 'public-site-main',
+          markup: 'src/components/platform/PublicSite.jsx',
+          content: `rendered sections for "${page.title}"`,
+        })}
+      >
         {sections.map((section, index) => {
           const Component = sectionRenderers[section.type]
 
@@ -661,33 +1154,51 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
             return null
           }
 
+          const sectionId = getSectionDomId(section, index)
+
           return (
-            <Component
-              key={`${section.type}-${index}`}
-              page={page}
-              section={section}
-              site={site}
-              pathname={pathname}
-            />
+            <div key={buildRuntimeKey('page-section', section._key, section.type, sectionId, index)}>
+              {showRoofingLogoCloud && index === firstLeadCaptureSectionIndex ? (
+                <RoofingLogoCloudSection sectionId="roofing-certifications" />
+              ) : null}
+              <Component
+                page={page}
+                section={section}
+                site={site}
+                pathname={pathname}
+                sectionId={sectionId}
+              />
+            </div>
           )
         })}
 
-        {!hasLeadCaptureSection ? (
-          <CtaSection page={page} section={null} site={site} pathname={pathname} />
+        {showRoofingLogoCloud && firstLeadCaptureSectionIndex === -1 ? (
+          <RoofingLogoCloudSection sectionId="roofing-certifications" />
+        ) : null}
+
+        {!hasLeadCaptureSection && !suppressDefaultLeadCapture ? (
+          <CtaSection page={page} section={null} site={site} pathname={pathname} sectionId="cta-contact" />
         ) : null}
       </main>
 
       {useSolarShell ? (
         <Footer />
       ) : (
-        <footer className="border-border/60 bg-background border-t">
+        <footer
+          className="border-border/60 bg-background border-t"
+          {...getDevSectionAttributes({
+            id: 'site-footer',
+            markup: 'src/components/platform/PublicSite.jsx:GenericFooter',
+            content: 'generic public-site shell footer',
+          })}
+        >
           <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 lg:flex-row lg:items-end lg:justify-between lg:px-10">
             <div className="space-y-2">
-              <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">{site.categoryLabel}</p>
+              <p className="text-muted-foreground text-sm tracking-[0.2em] uppercase">{site.categoryLabel}</p>
               <h2 className="text-foreground text-2xl tracking-tight">{site.name}</h2>
-              <p className="text-muted-foreground max-w-2xl text-sm leading-7">{site.seo?.description}</p>
+              <p className="text-muted-foreground text-md max-w-2xl leading-6">{site.seo?.description}</p>
             </div>
-            <div className="text-muted-foreground space-y-2 text-sm">
+            <div className="text-muted-foreground text-md space-y-2">
               <div>{site.organization?.phone}</div>
               <div>{site.organization?.email}</div>
               <div>{site.organization?.serviceArea?.join(' · ')}</div>
