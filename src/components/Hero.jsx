@@ -76,12 +76,18 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           className="absolute min-h-[80vh] inset-0 z-0"
           imageClassName="object-top"
           backgroundColor="#000000"
+          initialPriority
         />
       ) : primaryHeroImage ? (
         <>
-          <img
+          <Image
             src={primaryHeroImage.src}
             alt={primaryHeroImage.alt || ''}
+            fill
+            priority
+            fetchPriority="high"
+            quality={82}
+            sizes="100vw"
             className="absolute h-full w-full inset-0 object-center object-cover z-0"
           />
           <div className="absolute inset-0 z-10" style={overlayStyle} />
@@ -91,6 +97,10 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           src="/assets/hero-bg.png"
           alt=""
           fill
+          priority
+          fetchPriority="high"
+          quality={70}
+          sizes="100vw"
           className="absolute opacity-10 inset-0 object-cover object-top"
         />
       )}

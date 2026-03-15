@@ -36,6 +36,7 @@ export default function ImageFader({
   imageClassName,
   overlayStyle,
   style,
+  initialPriority = false,
 }) {
   const [index, setIndex] = useState(0)
   const timer = useRef()
@@ -104,6 +105,9 @@ export default function ImageFader({
             alt={cur.alt ?? ''}
             fill
             sizes="100vw"
+            quality={82}
+            priority={initialPriority && index === 0}
+            fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
             className="object-cover"
             draggable={false}
             style={{

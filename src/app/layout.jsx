@@ -38,7 +38,7 @@ export default async function RootLayout({ children }) {
       <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">
         <Script
           src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
         />
         {children}
         {!isDraftMode ? <VercelToolbar /> : null}
