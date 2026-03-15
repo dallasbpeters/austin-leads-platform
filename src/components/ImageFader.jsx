@@ -105,7 +105,7 @@ export default function ImageFader({
             alt={cur.alt ?? ''}
             fill
             sizes="100vw"
-            quality={82}
+            quality={70}
             priority={initialPriority && index === 0}
             fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
             className="object-cover"

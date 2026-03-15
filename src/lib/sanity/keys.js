@@ -44,7 +44,7 @@ function normalizeSectionItemType(section, item) {
     }
   }
 
-  if (section?.type === 'highlights' || section?.type === 'steps') {
+  if (section?.type === 'highlights' || section?.type === 'steps' || section?.type === 'calculator') {
     return {
       ...item,
       _type: 'sectionContentItem',

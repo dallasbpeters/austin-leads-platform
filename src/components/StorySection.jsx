@@ -2,16 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getDevSectionAttributes } from './dev/DevTrace'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 export default function StorySection({ section = null, sectionId = 'how-it-works' }) {
   const ref = useRef(null)
   const [activeWordCount, setActiveWordCount] = useState(0)
   const title = section?.title || ''
-  const body =
-    section?.body ||
+  const body = portableTextToPlainText(section?.body) ||
     'Most homeowners do not start with a clean, simple solar question. They start with storm damage, an aging roof, an insurance claim, or a project they do not want to get wrong. This site is built to help you understand the roofing side, the solar side, and where those decisions affect each other.'
-  const emphasis =
-    section?.subtitle ||
+  const emphasis = portableTextToPlainText(section?.subtitle) ||
     section?.subheading ||
     'Start with the issue in front of you. Get clear on the next step.'
   const bodyWords = useMemo(() => body.match(/\S+|\s+/g) || [], [body])
@@ -86,7 +85,7 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
       <div className="w-[min(72rem,calc(100%-3rem))] mx-auto py-32 text-center">
         <h2
           ref={ref}
-          className="m-0 text-[clamp(1.5rem,4vw,2.25rem)] text-neutral-800 tracking-[-0.02em] type-accent"
+          className="m-0 font-500 text-[clamp(1.5rem,4vw,2.25rem)] text-neutral-800 tracking-[-0.02em] type-accent"
         >
           {title ? `${title} ` : null}
           {bodyParts.map((part) =>
@@ -102,7 +101,7 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
             ),
           )}
           {' '}
-          <span className="text-neutral-400 italic type-display">
+          <span className="text-neutral-400 italic type-display font-500">
             {emphasisWords.map((part, index) => (
               <span key={`emphasis-${index}-${part}`}>{part}</span>
             ))}

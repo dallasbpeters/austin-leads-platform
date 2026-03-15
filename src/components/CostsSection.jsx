@@ -1,4 +1,5 @@
 import { getDevSectionAttributes } from './dev/DevTrace'
+import PortableTextContent from './PortableTextContent'
 
 const fallbackStatItems = [
   {
@@ -50,8 +51,12 @@ export default function CostsSection({ section = null, sectionId = 'costs', edit
           {eyebrow}
         </p>
         <h2 className="mb-6 text-[clamp(2.25rem,5vw,3.5rem)] text-slate-900">{title}</h2>
-        <p className="font-semibold leading-7 text-[1.125rem] text-neutral-500">{body}</p>
-        <p className="mt-3 font-semibold leading-7 text-[1.125rem] text-neutral-500">{subtitle}</p>
+        <PortableTextContent as="div" value={body} className="font-semibold leading-7 text-[1.125rem] text-neutral-500" />
+        <PortableTextContent
+          as="div"
+          value={subtitle}
+          className="mt-3 font-semibold leading-7 text-[1.125rem] text-neutral-500"
+        />
 
         <div className="grid gap-12 my-16 lg:grid-cols-3">
           {stats.map((item) => (
@@ -60,7 +65,11 @@ export default function CostsSection({ section = null, sectionId = 'costs', edit
               <p className="mb-3 font-semibold text-cyan-800 text-sm tracking-[0.2em] uppercase">
                 {item.title || item.eyebrow}
               </p>
-              <p className="font-semibold leading-7 text-[0.9375rem] text-neutral-500">{item.body}</p>
+              <PortableTextContent
+                as="div"
+                value={item.body}
+                className="font-semibold leading-7 text-[0.9375rem] text-neutral-500"
+              />
             </div>
           ))}
         </div>
@@ -75,7 +84,11 @@ export default function CostsSection({ section = null, sectionId = 'costs', edit
             <p className="font-semibold leading-[1.35] text-[clamp(1.5rem,4vw,1.875rem)] text-neutral-900">
               {paybackTitle}
             </p>
-            <p className="mt-3 font-semibold leading-7 text-base text-neutral-500">{paybackBody}</p>
+            <PortableTextContent
+              as="div"
+              value={paybackBody}
+              className="mt-3 font-semibold leading-7 text-base text-neutral-500"
+            />
           </div>
         </div>
       </div>

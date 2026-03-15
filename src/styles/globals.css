@@ -416,7 +416,14 @@ body.admin-body-locked {
   }
 }
 
+@layer base {
+  
+}
+
 @layer utilites {
+  .text-base {
+    font-size: 1.2rem;
+  }
   .text-primary {
     color: var(--color-primary);
   }
@@ -492,6 +499,8 @@ body.admin-body-locked {
   .text-cyan-800 {
     color: var(--color-cyan-800);
   }
+
+ 
   .font-wght-450 {
     font-variation-settings: 'wght' 450;
   }

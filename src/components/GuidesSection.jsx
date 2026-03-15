@@ -1,14 +1,16 @@
 import Link from 'next/link'
 
 import GuideCardGrid from './GuideCardGrid'
+import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getFeaturedSolarGuideCards } from '@/lib/platform/guides'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 const guides = getFeaturedSolarGuideCards(3)
 
 export default function GuidesSection({ section = null, sectionId = 'go-deeper', editAttributes = {} }) {
   const title = section?.title || 'Go Deeper'
-  const body = section?.body || ''
+  const body = portableTextToPlainText(section?.body)
   const ctaLabel = section?.ctaLabel || 'Browse all guides'
   const icon = section?.icon || 'arrow-right'
 
@@ -30,7 +32,7 @@ export default function GuidesSection({ section = null, sectionId = 'go-deeper',
       <div className="max-w-7xl w-full mx-auto px-4">
         <div className="mb-8">
           <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] text-secondary type-accent">{title}</h2>
-          {body ? <p className="max-w-3xl mt-3 leading-7 text-base text-slate-600">{body}</p> : null}
+          {body ? <PortableTextContent as="div" value={body} className="max-w-3xl mt-3 leading-7 text-base text-slate-600" /> : null}
         </div>
         <GuideCardGrid
           cards={guides}

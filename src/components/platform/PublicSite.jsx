@@ -27,6 +27,7 @@ import Header from '@/components/Header'
 import IncentivesSection from '@/components/IncentivesSection'
 import ConsultationSection from '@/components/ConsultationSection'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
+import PortableTextContent from '@/components/PortableTextContent'
 import QuoteSection from '@/components/QuoteSection'
 import ResourcesSection from '@/components/ResourcesSection'
 import SnapshotSection from '@/components/SnapshotSection'
@@ -44,6 +45,7 @@ import { isPrimarySiteSlug } from '@/lib/platform/content'
 import { getHeroImageUrl, getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken } from '@/lib/sanity/stega'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { roofingServices } from '@/lib/platform/service-catalog'
 
 function slugifySectionToken(value) {
@@ -95,7 +97,7 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
             <Image
               width={3000}
               height={3000}
-              quality={82}
+              quality={68}
               sizes="100vw"
               priority
               fetchPriority="high"
@@ -134,9 +136,12 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
             >
               {heroTitle}
             </h1>
-            <p className="max-w-2xl leading-8 text-lg text-muted-foreground" style={heroMutedStyle}>
-              {section.body}
-            </p>
+            <PortableTextContent
+              as="div"
+              value={section.body}
+              className="max-w-2xl leading-8 text-lg text-muted-foreground"
+              style={heroMutedStyle}
+            />
           </div>
           {section.actions?.length ? (
             <div className="flex flex-wrap gap-3 pt-2">
@@ -236,7 +241,7 @@ function StorySection({ section, sectionId, editAttributes = {} }) {
         <h2 className="max-w-5xl w-full mt-6 font-display text-3xl text-foreground tracking-tight md:text-6xl">
           {section.title}
         </h2>
-        <p className="max-w-5xl mt-6 leading-8 text-lg text-muted-foreground">{section.body}</p>
+        <PortableTextContent as="div" value={section.body} className="max-w-5xl mt-6 leading-8 text-lg text-muted-foreground" />
       </div>
     </section>
   )
@@ -261,7 +266,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
         <div className="grid max-w-3xl gap-2 mb-8">
           <h2 className="text-3xl text-foreground md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
-            <p className="mb-4 leading-8 text-foreground text-xl">{section.subtitle}</p>
+            <PortableTextContent as="div" value={section.subtitle} className="mb-4 leading-8 text-foreground text-xl" />
           ) : null}
         </div>
         <div className="grid gap-8 md:grid-cols-3">
@@ -297,7 +302,7 @@ function GuideGridSection({ section, sectionId, editAttributes = {} }) {
   const cards = (section.items || []).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
-    copy: item.body || item.answer,
+    copy: portableTextToPlainText(item.body || item.answer),
     icon: item.icon,
     href: item.href,
     image: getImageUrl(item.imageAsset, item.image),
@@ -323,7 +328,9 @@ function GuideGridSection({ section, sectionId, editAttributes = {} }) {
       <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
         <div className="max-w-3xl mb-8">
           <h2 className="mb-4 text-3xl text-foreground md:text-4xl">{section.title}</h2>
-          {section.body ? <p className="leading-8 text-lg text-muted-foreground">{section.body}</p> : null}
+          {section.body ? (
+            <PortableTextContent as="div" value={section.body} className="leading-8 text-lg text-muted-foreground" />
+          ) : null}
         </div>
         <GuideCardGrid
           cards={cards}
@@ -499,7 +506,7 @@ function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
 
     return {
       ...item,
-      copy: item.body || item.answer || '',
+      copy: portableTextToPlainText(item.body || item.answer),
       imageUrl: serviceImage.url,
       imageAlt: serviceImage.alt,
     }
@@ -510,7 +517,7 @@ function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
 
     return {
       ...item,
-      copy: item.body || item.answer || '',
+      copy: portableTextToPlainText(item.body || item.answer),
       imageUrl: serviceImage.url,
       imageAlt: serviceImage.alt,
     }
@@ -520,7 +527,7 @@ function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
 
     return {
       ...item,
-      copy: item.body || item.answer || '',
+      copy: portableTextToPlainText(item.body || item.answer),
       imageUrl: serviceImage.url,
       imageAlt: serviceImage.alt,
     }
@@ -568,10 +575,10 @@ function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
           ) : null}
           <h2 className="mt-5 text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
-            <p className="mt-4 leading-8 text-foreground/80 text-lg">{section.subtitle}</p>
+            <PortableTextContent as="div" value={section.subtitle} className="mt-4 leading-8 text-foreground/80 text-lg" />
           ) : null}
           {section.body ? (
-            <p className="mt-4 leading-8 text-base text-muted-foreground">{section.body}</p>
+            <PortableTextContent as="div" value={section.body} className="mt-4 leading-8 text-base text-muted-foreground" />
           ) : null}
         </div>
         <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
@@ -723,7 +730,9 @@ function StepsSection({ section, sectionId, editAttributes = {} }) {
                 </Badge>
                 <CardTitle className="text-foreground text-xl">{item.title}</CardTitle>
               </CardHeader>
-              <CardContent className="leading-6 text-md text-muted-foreground">{item.body}</CardContent>
+              <CardContent>
+                <PortableTextContent as="div" value={item.body} className="leading-6 text-md text-muted-foreground" />
+              </CardContent>
             </Card>
           ))}
         </div>
@@ -760,7 +769,9 @@ function FaqSection({ section, sectionId, editAttributes = {} }) {
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.question}</CardTitle>
               </CardHeader>
-              <CardContent className="leading-6 text-md text-muted-foreground">{item.answer}</CardContent>
+              <CardContent>
+                <PortableTextContent as="div" value={item.answer} className="leading-6 text-md text-muted-foreground" />
+              </CardContent>
             </Card>
           ))}
         </div>
@@ -809,7 +820,7 @@ function QuoteBannerSection({ section, sectionId, editAttributes = {} }) {
       <QuoteSection
         variant="primary"
         eyebrow={section.eyebrow || 'KEY MESSAGE'}
-        quoteText={section.body || section.title || ''}
+        quoteText={portableTextToPlainText(section.body) || section.title || ''}
         attribution={section.title || 'Texas Solar and Roofing Pros'}
         sectionId={`${sectionId}-content`}
       />
@@ -866,7 +877,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
           ) : null}
           <h2 className="mt-5 text-3xl text-foreground leading-1 tracking-tight md:text-4xl">{section.title}</h2>
           {section.body ? (
-            <p className="mt-2 leading-8 text-base text-muted-foreground">{section.body}</p>
+            <PortableTextContent as="div" value={section.body} className="mt-2 leading-8 text-base text-muted-foreground" />
           ) : null}
         </div>
         <div className="grid content-start gap-6 grid-cols-1 md:grid-cols-2">
@@ -1073,7 +1084,7 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
             <p className="text-sm text-white/58 tracking-[0.22em] uppercase">{section.eyebrow}</p>
           ) : null}
           <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">{section.title}</h2>
-          <p className="max-w-2xl leading-8 text-base text-white/78">{section.body}</p>
+          <PortableTextContent as="div" value={section.body} className="max-w-2xl leading-8 text-base text-white/78" />
           {avatarName ? (
             <div className="max-w-xl pt-2">
               <div className="flex items-center gap-4">
@@ -1091,7 +1102,9 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
                   ) : null}
                   <div className="font-semibold text-lg text-white">{avatarName}</div>
                   {avatarRole ? <div className="text-sm text-white/72">{avatarRole}</div> : null}
-                  {avatarBlurb ? <p className="mt-3 text-sm leading-6 text-white/80">{avatarBlurb}</p> : null}
+                  {avatarBlurb ? (
+                    <PortableTextContent as="div" value={avatarBlurb} className="mt-3 text-sm leading-6 text-white/80" />
+                  ) : null}
                 </div>
               </div>
             </div>

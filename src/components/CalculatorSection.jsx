@@ -3,8 +3,10 @@
 import { useMemo, useState } from 'react'
 import Button from './Button'
 import Card from './Card'
+import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { Slider } from '@/components/ui/slider'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 const DEFAULT_BILL = 200
 const MIN_BILL = 50
@@ -88,17 +90,17 @@ export default function CalculatorSection({
   const [bill, setBill] = useState(DEFAULT_BILL)
   const results = useMemo(() => calculate(bill), [bill])
   const title = section?.title || 'See what solar could save'
-  const body =
-    section?.body ||
+  const body = section?.body ||
     "Enter your average monthly electric bill and we'll estimate system size, possible savings, and a likely payback range. Solar stands on its own here, even when roofing decisions affect the bigger project."
-  const disclaimer = section?.subtitle || 'Based on typical Texas residential production assumptions and current utility-rate ranges'
+  const disclaimer =
+    section?.subtitle || 'Based on typical Texas residential production assumptions and current utility-rate ranges'
   const ctaLabel = section?.ctaLabel || 'Talk through your solar options'
   const ctaHref = section?.ctaHref || '#estimate'
   const ctaNote = section?.eyebrow || 'Free estimate · No commitment · Takes 2 minutes'
   const cards = fallbackCards.map((card, index) => ({
     ...card,
     title: section?.items?.[index]?.title || card.title,
-    detail: section?.items?.[index]?.body || card.detail,
+    detail: portableTextToPlainText(section?.items?.[index]?.body) || card.detail,
   }))
 
   return (
@@ -122,9 +124,7 @@ export default function CalculatorSection({
       <div className="relative w-[min(72rem,calc(100%-3rem))] mx-auto z-1">
         <div className="mb-14 text-center">
           <h2 className="m-0 text-[clamp(3.875rem,4vw,5.25rem)] text-foreground type-display">{title}</h2>
-          <p className="max-w-208 mt-3 mx-auto text-base text-foreground">
-            {body}
-          </p>
+          <PortableTextContent as="div" value={body} className="max-w-208 mt-3 mx-auto text-base text-foreground" />
         </div>
 
         <Card
@@ -180,7 +180,7 @@ export default function CalculatorSection({
                   d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
                 ></path>
               </svg>
-              {disclaimer}
+              {portableTextToPlainText(disclaimer)}
             </div>
           </div>
 

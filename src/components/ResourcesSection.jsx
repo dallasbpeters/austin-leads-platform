@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import Card from './Card'
 import { getDevSectionAttributes } from './dev/DevTrace'
+import PortableTextContent from './PortableTextContent'
 import Link from 'next/link'
 
 const defaultItems = [
@@ -91,7 +92,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
       <div className="w-[min(80rem,calc(100%-3rem))] mx-auto">
         <div className="max-w-3xl mb-16 mx-auto text-center">
           <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] text-secondary type-accent">{title}</h2>
-          <p className="m-0 text-[clamp(1rem,4vw,1.25rem)] text-foreground type-accent">{body}</p>
+          <PortableTextContent as="div" value={body} className="m-0 text-[clamp(1rem,4vw,1.25rem)] text-foreground type-accent" />
         </div>
 
         <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
@@ -114,7 +115,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
                       <Icon className="h-8 w-8" strokeWidth={2} />
                     </div>
                     <div className="font-bold leading-[1.1] text-[1.875rem] type-accent">{item.title}</div>
-                    <div className="mt-1 font-semibold text-sm text-white/70">{item.copy}</div>
+                    <PortableTextContent as="div" value={item.copy} className="mt-1 font-semibold text-sm text-white/70" />
                   </div>
                 </Card>
               </Link>

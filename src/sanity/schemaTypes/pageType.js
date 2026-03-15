@@ -11,11 +11,56 @@ const hideUnlessHeroMediaMode =
   (...modes) =>
   ({ parent }) =>
     !modes.includes(resolveHeroMediaMode(parent))
+const richTextToPreviewString = (value) => {
+  if (typeof value === 'string') return value
+  if (!Array.isArray(value)) return ''
+
+  return value
+    .map((block) => {
+      if (typeof block === 'string') return block
+      if (Array.isArray(block?.children)) {
+        return block.children.map((child) => child?.text || '').join('')
+      }
+
+      return ''
+    })
+    .filter(Boolean)
+    .join(' ')
+}
 const previewText = (value, fallback) => {
-  if (typeof value !== 'string') return fallback
-  const normalized = value.replace(/\s+/g, ' ').trim()
+  const normalized = richTextToPreviewString(value).replace(/\s+/g, ' ').trim()
   if (!normalized) return fallback
   return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
+}
+
+const portableTextSimpleType = {
+  name: 'portableTextSimple',
+  title: 'Rich text',
+  type: 'array',
+  of: [
+    {
+      type: 'block',
+      styles: [{ title: 'Normal', value: 'normal' }],
+      lists: [
+        { title: 'Bullet', value: 'bullet' },
+        { title: 'Numbered', value: 'number' },
+      ],
+      marks: {
+        decorators: [
+          { title: 'Strong', value: 'strong' },
+          { title: 'Emphasis', value: 'em' },
+        ],
+        annotations: [
+          {
+            name: 'link',
+            type: 'object',
+            title: 'Link',
+            fields: [{ name: 'href', type: 'url', title: 'URL' }],
+          },
+        ],
+      },
+    },
+  ],
 }
 
 const publicSiteServiceIconOptions = [
@@ -418,19 +463,19 @@ const pageItemType = {
     {
       name: 'subtitleLabel',
       title: 'Subtitle Label',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional label for the subtitle.'),
     },
     {
       name: 'subtitleValue',
       title: 'Subtitle Value',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional longer description or supporting text for the item.'),
     },
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Supporting text for the item.'),
     },
     {
@@ -442,7 +487,7 @@ const pageItemType = {
     {
       name: 'answer',
       title: 'Answer',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Answer text for FAQ-style items.'),
     },
     {
@@ -514,7 +559,7 @@ const sectionContentItemType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Supporting copy for the item.'),
     },
@@ -604,7 +649,7 @@ const pageFaqItemType = {
     {
       name: 'answer',
       title: 'Answer',
-      type: 'text',
+      type: 'portableTextSimple',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Answer shown when the FAQ item is opened.'),
     },
@@ -648,7 +693,7 @@ const resourceCardType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Short supporting copy for the card.'),
     },
     {
@@ -709,7 +754,7 @@ const resourceGridSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional supporting copy above the resource cards.'),
     },
     {
@@ -761,7 +806,7 @@ const guideGridSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional supporting copy above the guide grid.'),
     },
     {
@@ -819,13 +864,13 @@ const serviceGridSectionType = {
     {
       name: 'subtitle',
       title: 'Subtitle',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional supporting line above the body copy.'),
     },
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Short supporting copy introducing the service group.'),
     },
     {
@@ -909,7 +954,7 @@ const aboutProfilePersonType = {
     {
       name: 'blurb',
       title: 'Blurb',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Short profile summary for this person.'),
     },
     {
@@ -988,7 +1033,7 @@ const aboutProfileSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Supporting copy introducing the profile and certification block.'),
     },
     {
@@ -1037,14 +1082,14 @@ const legacyPageSectionFields = [
   {
     name: 'subtitle',
     title: 'Subtitle',
-    type: 'text',
+    type: 'portableTextSimple',
     hidden: hideUnlessSectionTypes('highlights', 'serviceGrid'),
     options: canvasPurpose('Optional supporting line shown above cards or service groups.'),
   },
   {
     name: 'body',
     title: 'Body',
-    type: 'text',
+    type: 'portableTextSimple',
     hidden: hideUnlessSectionTypes(
       'hero',
       'story',
@@ -1226,13 +1271,13 @@ const heroSectionType = {
     {
       name: 'cardCopy',
       title: 'Card copy',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Supporting copy shown in the hero card.'),
     },
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Supporting hero copy.'),
     },
     ...heroSpecificFields,
@@ -1279,7 +1324,7 @@ const storySectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Main explanatory copy for the story section.'),
     },
@@ -1324,13 +1369,13 @@ const calculatorSectionType = {
     {
       name: 'subtitle',
       title: 'Subtitle',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Short disclaimer shown below the calculator controls.'),
     },
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Supporting copy that introduces the calculator.'),
     },
     {
@@ -1393,13 +1438,13 @@ const costsSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Main explanatory copy for costs and pricing context.'),
     },
     {
       name: 'subtitle',
       title: 'Subtitle',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional supporting line under the main costs intro.'),
     },
     {
@@ -1458,7 +1503,7 @@ const guidesSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional copy above the guide card grid.'),
     },
     {
@@ -1507,7 +1552,7 @@ const snapshotSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Supporting intro copy for the snapshot metrics.'),
     },
     {
@@ -1553,7 +1598,7 @@ const incentivesSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Long-form supporting copy (multiple paragraphs allowed).'),
     },
     {
@@ -1614,7 +1659,7 @@ const testimonialsSectionType = {
     {
       name: 'body',
       title: 'Subtitle',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Secondary line shown under the testimonials heading.'),
     },
   ],
@@ -1651,7 +1696,7 @@ const highlightsSectionType = {
     {
       name: 'subtitle',
       title: 'Subtitle',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional supporting line above the highlight cards.'),
     },
     {
@@ -1774,7 +1819,7 @@ const quoteSectionType = {
     {
       name: 'body',
       title: 'Quote',
-      type: 'text',
+      type: 'portableTextSimple',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Quote text shown in the banner.'),
     },
@@ -1819,7 +1864,7 @@ const ctaSectionType = {
     {
       name: 'body',
       title: 'Copy',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Short supporting copy below the CTA headline.'),
     },
     {
@@ -1850,7 +1895,7 @@ const ctaSectionType = {
     {
       name: 'avatarBlurb',
       title: 'Avatar blurb',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional short note shown next to the consultation CTA.'),
     },
     {
@@ -1905,7 +1950,7 @@ const ctaBannerSectionType = {
     {
       name: 'body',
       title: 'Copy',
-      type: 'text',
+      type: 'portableTextSimple',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Supporting copy shown beside the lead form.'),
     },
@@ -1936,7 +1981,7 @@ const ctaBannerSectionType = {
     {
       name: 'avatarBlurb',
       title: 'Avatar blurb',
-      type: 'text',
+      type: 'portableTextSimple',
       options: canvasPurpose('Optional short note shown next to the cross-lead CTA.'),
     },
     {
@@ -1986,7 +2031,7 @@ const hailMapSectionType = {
     {
       name: 'body',
       title: 'Body',
-      type: 'text',
+      type: 'portableTextSimple',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Short explanation of how to use the map and storm evidence list.'),
     },
@@ -2365,6 +2410,7 @@ const pageDocuments = [
 ]
 
 export default [
+  portableTextSimpleType,
   heroImageUrlsType,
   heroImageType,
   uploadedImageType,

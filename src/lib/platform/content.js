@@ -6,6 +6,7 @@ import { pages, sites } from './fixtures'
 import { defaultLaunchChecklist } from './launchChecklist'
 import { hasImageSource } from './imageSource'
 import { withSectionKeys } from '@/lib/sanity/keys'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 const sectionProjection = `
   _type,
@@ -1592,7 +1593,7 @@ export function createJsonLd(site, page, pathname = '/') {
         name: item.question,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: item.answer,
+          text: portableTextToPlainText(item.answer),
         },
       })),
     })

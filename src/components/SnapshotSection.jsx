@@ -2,6 +2,7 @@ import Card from './Card'
 import { HomeSimple } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
 import { getDevSectionAttributes } from './dev/DevTrace'
+import PortableTextContent from './PortableTextContent'
 
 const items = [
   {
@@ -89,9 +90,7 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
             {eyebrow}
           </p>
           <h2 className="mb-4 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
-          <p className="m-0 font-semibold text-base text-white/70 type-accent">
-            {body}
-          </p>
+          <PortableTextContent as="div" value={body} className="m-0 font-semibold text-base text-white/70 type-accent" />
         </div>
 
         <div className="grid gap-6 max-[640px]:grid-cols-1 max-[900px]:grid-cols-2 md:grid-cols-4">
@@ -101,7 +100,11 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
                 {renderIcon(item.icon)}
               </div>
               <div className="mb-2 font-bold text-[1.875rem] type-accent">{item.value}</div>
-              <div className="font-semibold leading-6 text-sm text-white/60 type-accent">{item.copy}</div>
+              <PortableTextContent
+                as="div"
+                value={item.copy}
+                className="font-semibold leading-6 text-sm text-white/60 type-accent"
+              />
             </Card>
           ))}
         </div>

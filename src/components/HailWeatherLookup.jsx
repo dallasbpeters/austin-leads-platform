@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import PortableTextContent from '@/components/PortableTextContent'
 import { cleanRuntimeHref } from '@/lib/sanity/stega'
 
 const HailLayerMap = dynamic(() => import('@/components/HailLayerMap'), {
@@ -91,7 +92,7 @@ export default function HailWeatherLookup({ section }) {
         </Badge>
         <div className="space-y-4">
           <h2 className="text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
-          <p className="max-w-2xl leading-8 text-base text-muted-foreground">{section.body}</p>
+          <PortableTextContent as="div" value={section.body} className="max-w-2xl leading-8 text-base text-muted-foreground" />
         </div>
 
         <form

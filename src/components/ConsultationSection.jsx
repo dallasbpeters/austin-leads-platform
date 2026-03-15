@@ -1,6 +1,7 @@
 import Card from './Card'
 import Gradient from './Gradient'
 import LeadCaptureForm from './LeadCaptureForm'
+import PortableTextContent from './PortableTextContent'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { getDevSectionAttributes } from './dev/DevTrace'
@@ -97,7 +98,7 @@ export default function ConsultationSection({
       <div className="grid relative items-center max-w-7xl gap-16 mx-auto px-4 lg:px-16 sm:px-6 z-20 grid-cols-1 py-12 md:grid-cols-[1.1fr_1fr]">
         <div {...editAttributes}>
           <h2 className="mb-4 leading-[1em]! text-[clamp(2.875rem,6vw,3.75rem)] text-secondary type-display">{headline}</h2>
-          <p className="font-semibold text-base text-slate-500 type-accent">{copy}</p>
+          <PortableTextContent as="div" value={copy} className="font-semibold text-base text-slate-500 type-accent" />
           {avatarName ? (
             <div className="max-w-xl mt-8">
               <div className="flex items-center gap-4">
@@ -116,7 +117,11 @@ export default function ConsultationSection({
                   <div className="font-semibold text-foreground text-lg">{avatarName}</div>
                   {avatarRole ? <div className="text-muted-foreground text-sm">{avatarRole}</div> : null}
                   {avatarBlurb ? (
-                    <p className="mt-3 leading-6 text-muted-foreground text-sm">{avatarBlurb}</p>
+                    <PortableTextContent
+                      as="div"
+                      value={avatarBlurb}
+                      className="mt-3 leading-6 text-muted-foreground text-sm"
+                    />
                   ) : null}
                 </div>
               </div>

@@ -30,6 +30,7 @@ export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
   const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID
+  const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
 
   return (
     <html lang="en">
@@ -38,10 +39,10 @@ export default async function RootLayout({ children }) {
       <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">
         <Script
           src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         {children}
-        {!isDraftMode ? <VercelToolbar /> : null}
+        {shouldShowVercelToolbar ? <VercelToolbar /> : null}
         <SanityLive />
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />

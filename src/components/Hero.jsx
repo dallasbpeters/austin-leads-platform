@@ -2,6 +2,7 @@ import Button from './Button'
 import Card from './Card'
 import Image from 'next/image'
 import ImageFader from './ImageFader'
+import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getImageAlt, hasImageSource } from '@/lib/platform/imageSource'
@@ -86,7 +87,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             fill
             priority
             fetchPriority="high"
-            quality={82}
+            quality={70}
             sizes="100vw"
             className="absolute h-full w-full inset-0 object-center object-cover z-0"
           />
@@ -124,7 +125,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             </div>
 
             <h1
-              className="mb-10 leading-[0.85]! text-[clamp(4.5rem,12vw,10rem)] text-black tracking-[-0.04em] type-display"
+              className="mb-10 leading-none! text-[clamp(4.5rem,12vw,9rem)] text-black tracking-[-0.02em] type-display"
               style={heroTextColor ? { color: heroTextColor } : undefined}
             >
               {titlePrimary}
@@ -144,17 +145,17 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
                 {primaryActionLabel}
               </Button>
 
-              <div className="flex items-center gap-6">
-                <div className="hidden md:block h-12 w-px bg-white/10"></div>
+              <div className="flex items-center gap-10">
+                <div className="hidden md:block h-12 w-px bg-white/60"></div>
                 <div>
                   <span
-                    className="block mb-1 font-bold text-[10px] tracking-[0.2em] uppercase"
+                    className="block mb-1 font-bold text-[12px] tracking-[0.2em] uppercase"
                     style={{ color: softTextColor || 'var(--color-slate-500)' }}
                   >
                     {inlineMetricLabel}
                   </span>
                   <span
-                    className="block font-medium text-sm"
+                    className="block font-medium text-md"
                     style={{ color: heroTextColor || 'var(--color-slate-800)' }}
                   >
                     {inlineMetricValue}
@@ -177,12 +178,12 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
                   : undefined
               }
             >
-              <p
+              <PortableTextContent
+                as="div"
+                value={cardCopy}
                 className="m-0 font-wght-650 leading-7 text-lg"
                 style={{ color: heroTextColor || 'var(--color-text-strong)' }}
-              >
-                {cardCopy}
-              </p>
+              />
               <div className="flex gap-2 mt-6">
                 <div className="h-1 w-8 bg-primary rounded-full"></div>
                 <div className="h-1 w-2 bg-primary rounded-full"></div>

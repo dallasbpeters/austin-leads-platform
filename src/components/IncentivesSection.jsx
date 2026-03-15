@@ -1,9 +1,11 @@
 import Button from './Button'
+import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 function splitParagraphs(value) {
-  return String(value || '')
+  return portableTextToPlainText(value)
     .split(/\n\s*\n/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
@@ -31,7 +33,7 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
 
   return (
     <section
-      className="py-24 bg-warm"
+      className="py-24 px-6 bg-warm"
       {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
@@ -42,9 +44,9 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
       <div className="grid items-center max-w-6xl gap-16 mx-auto max-[900px]:grid-cols-1 md:grid-cols-2">
         <div className="grid gap-4 place-items-start">
           <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] text-secondary type-accent">{title}</h2>
-          <div className="font-semibold leading-7 text-base text-slate-500 type-accent">
+          <div className="font-normal leading-7 text-base text-slate-500 type-accent">
             {resolvedParagraphs.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
+              <PortableTextContent key={paragraph} as="p" value={paragraph} />
             ))}
           </div>
           <Button href={ctaHref} pill variant="primary" size="md">

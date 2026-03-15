@@ -29,6 +29,7 @@
     "@google-analytics/data": "^5.2.1",
     "@neondatabase/serverless": "^1.0.2",
     "@next/third-parties": "16.1.6",
+    "@portabletext/react": "^6.0.3",
     "@sanity/color-input": "^6.0.4",
     "@sentry/react": "^10.43.0",
     "@types/react": "^19.2.14",

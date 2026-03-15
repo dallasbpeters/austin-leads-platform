@@ -1,5 +1,6 @@
 import { Card } from '@/components/ui/card'
 import { getDevSectionAttributes } from './dev/DevTrace'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 const fallbackReviews = [
   {
@@ -139,7 +140,7 @@ export default function Testimonials({
 }) {
   const resolvedReviews = reviews.length ? reviews.slice(0, 3) : fallbackReviews
   const title = section?.title || 'What customers are saying'
-  const subtitle = section?.body || 'about Texas Solar and Roofing Pros'
+  const subtitle = portableTextToPlainText(section?.body) || 'about Texas Solar and Roofing Pros'
 
   return (
     <section
