@@ -3,18 +3,43 @@
 import Link from 'next/link'
 import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import * as IconoirIcons from 'iconoir-react'
+import {
+  AirConditioner,
+  AreaSearch,
+  BatteryCharging,
+  Car,
+  Flash,
+  HomeShield,
+  HomeSimple,
+  Thunderstorm,
+  WindowTabs,
+  Wrench,
+} from 'iconoir-react'
 
 import { Badge } from '@/components/ui/badge'
 import { buildRuntimeKey, cleanRuntimeHref } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
 const defaultPalette = [
+  'bg-[var(--color-metterhorn)] text-white',
   'bg-primary text-primary-foreground',
-  'bg-[var(--color-secondary-alt)] text-white',
+  'bg-[var(--color-sweetcorn)] text-foreground',
+  'bg-[var(--color-secondary-alt)] text-secondary-foreground',
+  'bg-[var(--color-tidal)] text-foreground',
   'bg-[var(--color-blue-400)] text-white',
   'bg-secondary text-secondary-foreground',
-  'bg-secondary text-secondary-foreground text-white',
-  'bg-[var(--color-blue-400)]  text-white',
+  'bg-[var(--color-tasman)] text-foreground',
+  'bg-[var(--color-voodoo)] text-white',
+  'bg-[var(--color-chalet-green)] text-white',
+  'bg-[var(--color-heather)] text-foreground',
+  'bg-[var(--color-wattle)] text-foreground',
+  'bg-[var(--color-charade)] text-white',
+  'bg-[var(--color-ceramic)] text-foreground',
+  'bg-[var(--color-tapa-green)] text-white',
+  'bg-[var(--color-sea-mist)] text-foreground',
+  'bg-[var(--color-black-current)] text-white',
+  'bg-[var(--color-confetti)] text-foreground',
 ]
 
 const containerVariants = {
@@ -41,6 +66,40 @@ const itemVariants = {
   },
 }
 
+const serviceIconMap = {
+  audit: AreaSearch,
+  insulation: HomeShield,
+  ducts: AirConditioner,
+  windows: WindowTabs,
+  heatpump: AirConditioner,
+  solarbattery: BatteryCharging,
+  detachreset: Wrench,
+  shingles: HomeSimple,
+  metalroofing: HomeSimple,
+  stormdamage: Thunderstorm,
+  commercialroofing: HomeSimple,
+  hailinspection: Thunderstorm,
+  rodent: HomeShield,
+  electrical: Flash,
+  evcharger: Car,
+}
+
+function resolveGuideCardIcon(iconName) {
+  if (typeof iconName !== 'string') return null
+  const normalizedName = iconName.trim()
+  if (!normalizedName) return null
+
+  if (serviceIconMap[normalizedName]) {
+    return serviceIconMap[normalizedName]
+  }
+
+  if (IconoirIcons[normalizedName]) {
+    return IconoirIcons[normalizedName]
+  }
+
+  return null
+}
+
 function normalizeCardProps(props) {
   if (props.card) {
     return {
@@ -49,6 +108,7 @@ function normalizeCardProps(props) {
       toneClassName: props.toneClassName,
       eyebrow: props.eyebrow ?? props.card.eyebrow,
       ctaLabel: props.ctaLabel ?? props.card.ctaLabel,
+      icon: props.icon ?? props.card.icon,
     }
   }
 
@@ -63,10 +123,13 @@ function normalizeCardProps(props) {
     className: props.className,
     toneClassName: props.toneClassName,
     ctaLabel: props.ctaLabel,
+    icon: props.icon,
   }
 }
 
 function GuideCardBody({ card }) {
+  const CardIcon = resolveGuideCardIcon(card.icon)
+
   return (
     <motion.article
       animate="rest"
@@ -93,7 +156,7 @@ function GuideCardBody({ card }) {
       whileHover="hover"
     >
       <div className="flex items-center justify-between text-current/88">
-        <ArrowIcon />
+        {CardIcon ? <CardIcon className="size-6" /> : <ArrowIcon />}
         {card.number ? <span className="font-semibold text-[2rem]">{card.number}</span> : null}
       </div>
       {card.eyebrow ? (
@@ -143,7 +206,6 @@ export default function GuideCardGrid({
   cards = [],
   className,
   columnsClassName = 'md:grid-cols-3',
-  palette = defaultPalette,
   enableFiltering = false,
   pageSize = 6,
 }) {
@@ -218,7 +280,7 @@ export default function GuideCardGrid({
               </Badge>
             )
           })}
-          <div className="ml-auto pt-1 sm:pt-0 text-muted-foreground text-sm basis-full sm:basis-auto">
+          <div className="ml-auto pt-1 sm:pt-0 font-bold text-muted-foreground text-sm basis-full sm:basis-auto">
             {filteredCards.length} {filteredCards.length === 1 ? 'guide' : 'guides'}
           </div>
         </div>
@@ -237,7 +299,7 @@ export default function GuideCardGrid({
               key={buildRuntimeKey('guide-card', card.href, card.title, card.number, index)}
               variants={itemVariants}
             >
-              <GuideCard card={card} toneClassName={palette[index % palette.length]} />
+              <GuideCard card={card} toneClassName={defaultPalette[index % defaultPalette.length]} />
             </motion.div>
           ))}
         </motion.div>

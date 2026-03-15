@@ -14,8 +14,6 @@ import {
 } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
 
-import { cn } from '@/lib/utils'
-
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
@@ -294,19 +292,11 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
 }
 
 function GuideGridSection({ section, sectionId, editAttributes = {} }) {
-  const palette = [
-    'bg-primary text-white',
-    'bg-tertiary text-white',
-    'bg-blue-400 text-white',
-    'bg-[var(--color-tertiary-alt)] text-foreground',
-    'bg-blue-200 text-foreground',
-    'bg-[var(--color-secondary-alt)] text-white',
-  ]
-
   const cards = (section.items || []).map((item, index) => ({
     number: item.number || String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
     copy: item.body || item.answer,
+    icon: item.icon,
     href: item.href,
     image: getImageUrl(item.imageAsset, item.image),
     imageAlt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
@@ -336,7 +326,6 @@ function GuideGridSection({ section, sectionId, editAttributes = {} }) {
         <GuideCardGrid
           cards={cards}
           columnsClassName="sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-          palette={palette}
           enableFiltering
           pageSize={6}
         />
@@ -450,7 +439,8 @@ function getServiceIcon(item) {
 }
 
 function getServiceImage(item) {
-  if (item.imageAsset?.asset?._ref) {
+  // Sanity projection can provide either asset._ref or asset.url.
+  if (item.imageAsset?.asset?._ref || item.imageAsset?.asset?.url) {
     return {
       url: getImageUrl(item.imageAsset, item.image),
       alt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
@@ -1112,7 +1102,7 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
               compact
               buttonLabel={section.ctaLabel || 'Request a roofing intro'}
               className="grid gap-4"
-              inputClassName="rounded-md border border-white/16 bg-white/6 px-3 py-2 text-white placeholder:text-white/48"
+              inputClassName="border-b px-3 py-2 text-white placeholder:text-white/48"
               labelClassName="text-white/70"
               checkboxClassName="accent-white"
               messageClassName="text-left"

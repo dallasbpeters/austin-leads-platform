@@ -714,6 +714,144 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
   }
 }
 
+function slugFromHref(href) {
+  const value = cleanRuntimeString(href)
+
+  if (!value) {
+    return ''
+  }
+
+  return value
+    .replace(/^https?:\/\/[^/]+/i, '')
+    .replace(/^\/+/, '')
+}
+
+async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlug }) {
+  if (!page?.sections?.some((section) => section.type === 'serviceGrid')) {
+    return page
+  }
+
+  const equivalentSiteSlugs = getEquivalentSiteSlugs(siteSlug)
+  const localServicePages = pages.filter(
+    (candidate) =>
+      equivalentSiteSlugs.includes(candidate.siteSlug) &&
+      ['page', 'servicePage', 'locationPage'].includes(candidate.pageType) &&
+      candidate.slug &&
+      candidate.slug !== '/',
+  )
+
+  const localServiceMap = new Map(
+    localServicePages.map((servicePage) => {
+      const heroSection = servicePage.sections?.find((section) => section.type === 'hero') || null
+
+      return [
+        servicePage.slug,
+        {
+          heroImage: heroSection?.heroImage ?? null,
+          heroAsset: heroSection?.heroAsset ?? null,
+        },
+      ]
+    }),
+  )
+
+  const serviceSlugs = Array.from(
+    new Set(
+      page.sections
+        .filter((section) => section.type === 'serviceGrid')
+        .flatMap((section) => [...(section.items || []), ...(section.roofingItems || []), ...(section.secondaryItems || [])])
+        .map((item) => slugFromHref(item?.href))
+        .filter(Boolean),
+    ),
+  )
+
+  let sanityServiceMap = new Map()
+
+  if (client && serviceSlugs.length) {
+    try {
+      const sanityServicePages = await client.fetch(
+        groq`*[
+          _type in ["page", "servicePage", "locationPage"] &&
+          site->slug.current in $siteSlugs &&
+          slug.current in $slugs
+        ]{
+          "slug": slug.current,
+          sections[]{
+            type,
+            heroImage,
+            heroAsset{
+              altText,
+              alt,
+              asset->{
+                url,
+                metadata{
+                  dimensions{
+                    width,
+                    height
+                  }
+                }
+              }
+            }
+          }
+        }`,
+        { siteSlugs: equivalentSiteSlugs, slugs: serviceSlugs },
+        fetchOptions,
+      )
+
+      sanityServiceMap = new Map(
+        (sanityServicePages || []).map((servicePage) => {
+          const heroSection = servicePage.sections?.find((section) => section.type === 'hero') || null
+
+          return [
+            servicePage.slug,
+            {
+              heroImage: heroSection?.heroImage ?? null,
+              heroAsset: heroSection?.heroAsset ?? null,
+            },
+          ]
+        }),
+      )
+    } catch {}
+  }
+
+  const syncItemWithHeroMedia = (item) => {
+    const slug = slugFromHref(item?.href)
+    const servicePage = sanityServiceMap.get(slug) || localServiceMap.get(slug)
+
+    if (!servicePage) {
+      return item
+    }
+
+    const nextImage = servicePage.heroImage ?? item.image ?? null
+    const nextAsset = servicePage.heroAsset ?? item.imageAsset ?? null
+
+    if (!nextImage && !nextAsset) {
+      return item
+    }
+
+    return {
+      ...item,
+      image: nextImage,
+      imageAsset: nextAsset,
+    }
+  }
+
+  return {
+    ...page,
+    sections: page.sections.map((section) => {
+      if (section.type !== 'serviceGrid') {
+        return section
+      }
+
+      return {
+        ...section,
+        items: (section.items || []).map(syncItemWithHeroMedia),
+        roofingItems: (section.roofingItems || []).map(syncItemWithHeroMedia),
+        secondaryItems: (section.secondaryItems || []).map(syncItemWithHeroMedia),
+      }
+    }),
+  }
+}
+
 function normalizeHost(host) {
   return (host || '')
     .replace(/^https?:\/\//, '')
@@ -994,7 +1132,7 @@ export async function getPageForRequest(site, slugParts = []) {
     if (rawPage) {
       const page = sanitizePageRuntimeFields(rawPage)
 
-      const syncedPage = await syncGuideGridSectionItems({
+      const guideSyncedPage = await syncGuideGridSectionItems({
         client,
         fetchOptions,
         page: {
@@ -1005,7 +1143,14 @@ export async function getPageForRequest(site, slugParts = []) {
         siteSlug: site.slug,
       })
 
-      return withPageSource(syncedPage, 'sanity')
+      const serviceSyncedPage = await syncServiceGridSectionItems({
+        client,
+        fetchOptions,
+        page: guideSyncedPage,
+        siteSlug: site.slug,
+      })
+
+      return withPageSource(serviceSyncedPage, 'sanity')
     }
   } catch {}
 

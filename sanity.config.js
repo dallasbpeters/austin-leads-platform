@@ -2,6 +2,7 @@ import { defineConfig } from 'sanity'
 import { colorInput } from '@sanity/color-input'
 import { structureTool } from 'sanity/structure'
 import { presentationTool } from 'sanity/presentation'
+import { geminiAIImages } from 'sanity-plugin-gemini-ai-images'
 
 import {
   dataset,
@@ -29,6 +30,9 @@ export default defineConfig({
   basePath: studioUrl,
   plugins: [
     colorInput(),
+    geminiAIImages({
+      apiEndpoint: '/api/gemini/generate-image',
+    }),
     structureTool(),
     presentationTool({
       previewUrl: {

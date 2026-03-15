@@ -1456,6 +1456,7 @@ export function getFeaturedSolarGuideCards(limit = 3) {
     href: `/guides/${guide.slug}`,
     image: guide.image.urls.regular,
     imageAlt: guide.image.alt,
+    icon: guide.icon,
   }))
 }
 
@@ -1467,6 +1468,7 @@ export function getSolarGuideGridItems() {
     body: guide.cardCopy,
     href: `/guides/${guide.slug}`,
     image: guide.image,
+    icon: guide.icon,
   }))
 }
 
@@ -1480,6 +1482,7 @@ export function getSolarGuidePages(siteSlug = 'texas-solar-and-roofing-pros') {
     pageType: 'post',
     templateLevel: 'hero',
     sections: guide.sections,
+    icon: guide.icon,
   }))
 }
 

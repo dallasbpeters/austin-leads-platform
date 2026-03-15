@@ -10,6 +10,7 @@ export default function GuidesSection({ section = null, sectionId = 'go-deeper',
   const title = section?.title || 'Go Deeper'
   const body = section?.body || ''
   const ctaLabel = section?.ctaLabel || 'Browse all guides'
+  const icon = section?.icon || 'arrow-right'
 
   return (
     <section
@@ -33,11 +34,11 @@ export default function GuidesSection({ section = null, sectionId = 'go-deeper',
         </div>
         <GuideCardGrid
           cards={guides}
-          palette={['bg-primary text-white', 'bg-secondary text-white', 'bg-tertiary text-white']}
+          icon={icon}
         />
         <div className="flex justify-end mt-8">
           <Link
-            className="font-semibold text-secondary text-sm tracking-[0.18em] btn type-accent uppercase"
+            className="font-semibold px-4 py-2 rounded-full text-sm tracking-[0.18em] btn bg-primary text-primary-foreground type-accent uppercase"
             href="/guides"
           >
             {ctaLabel}
