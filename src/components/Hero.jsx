@@ -168,7 +168,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
               }
             >
               <p
-                className="m-0 font-light leading-7 text-lg"
+                className="m-0 font-wght-650 leading-7 text-lg"
                 style={{ color: heroTextColor || 'var(--color-text-strong)' }}
               >
                 {cardCopy}
