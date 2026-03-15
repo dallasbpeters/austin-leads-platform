@@ -26,8 +26,6 @@
   "packageManager": "pnpm@10.32.1",
   "dependencies": {
     "@emotion/styled": "^11.14.1",
-    "@fontsource/dm-serif-display": "^5.2.8",
-    "@fontsource/manrope": "^5.2.8",
     "@google-analytics/data": "^5.2.1",
     "@neondatabase/serverless": "^1.0.2",
     "@next/third-parties": "16.1.6",

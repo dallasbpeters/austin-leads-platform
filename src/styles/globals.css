@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import './supreme.css';
+@import './bespoke-serif.css';
 
 :root {
   --color-primary-h: 205;
@@ -48,6 +50,7 @@
   --color-tidal: oklch(95.49% 0.11 118.86deg);
   --color-voodoo: oklch(32.87% 0.06 332.81deg);
   --color-chalet-green: oklch(45.52% 0.08 127.48deg);
+
   --color-tasman: oklch(87.92% 0.03 140.12deg);
   --color-metterhorn: oklch(32.6% 0.04 350.45deg);
   --color-heather: oklch(84.9% 0.03 244.95deg);
@@ -96,9 +99,9 @@
   --color-blue-400: #546bf3;
   --color-white: #ffffff;
   --color-black: var(--color-text-strong);
-  --font-sans: 'Manrope', sans-serif;
-  --font-display: 'gf_DM_Serif_Display variant0', serif;
-  --font-accent: 'Manrope', sans-serif;
+  --font-sans: 'Supreme-Variable', sans-serif;
+  --font-display: 'BespokeSerif-Variable', serif;
+  --font-accent: 'Supreme-Variable', sans-serif;
   --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.01);
   --shadow-md: 0 12px 28px rgba(15, 23, 42, 0.1);
@@ -488,6 +491,12 @@ body.admin-body-locked {
 
   .text-cyan-800 {
     color: var(--color-cyan-800);
+  }
+  .font-wght-450 {
+    font-variation-settings: 'wght' 450;
+  }
+  .font-wght-650 {
+    font-variation-settings: 'wght' 650;
   }
 
   .bg-warm {

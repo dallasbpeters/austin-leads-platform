@@ -11,12 +11,6 @@ importers:
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(react@19.2.4)
-      '@fontsource/dm-serif-display':
-        specifier: ^5.2.8
-        version: 5.2.8
-      '@fontsource/manrope':
-        specifier: ^5.2.8
-        version: 5.2.8
       '@google-analytics/data':
         specifier: ^5.2.1
         version: 5.2.1
@@ -1130,12 +1124,6 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
-
-  '@fontsource/dm-serif-display@5.2.8':
-    resolution: {integrity: sha512-GYSDSlGU6vyhv9a5MwaiVNf9HCuSVpK8hEFRyG4NNDHCDeHiX7YHDAcWsaoLKKcfXLgWG9YkBkk9T3SxM4rAjQ==}
-
-  '@fontsource/manrope@5.2.8':
-    resolution: {integrity: sha512-gJHJmcuUk7qWcNCfcAri/DJQtXtBYqi9yKratr4jXhSo0I3xUtNNKI+igQIcw5c+m95g0vounk8ZnX/kb8o0TA==}
 
   '@google-analytics/data@5.2.1':
     resolution: {integrity: sha512-JZdRY4OGPx0RnAdsFu0k/mD5x7mVXATKccSi5bB5ncbgaBbfLOz2cCjNna6dHxwDchYYZv1Zm/sISZHKtCclgw==}
@@ -7874,10 +7862,6 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
 
   '@floating-ui/utils@0.2.11': {}
-
-  '@fontsource/dm-serif-display@5.2.8': {}
-
-  '@fontsource/manrope@5.2.8': {}
 
   '@google-analytics/data@5.2.1':
     dependencies:

@@ -1,6 +1,8 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { LoaderCircle } from 'lucide-react'
+import { sendGAEvent } from '@next/third-parties/google'
 
 import Button from '@/components/Button'
 import { useLeadForm } from '@/hooks/useLeadForm'
@@ -20,6 +22,58 @@ export default function LeadCaptureForm({
 }) {
   const { disabled, form, message, setForm, status, handleSubmit } = useLeadForm({ context })
   const privacyFieldId = `${toRuntimeToken(context.sourceSection || 'lead') || 'lead'}-privacy`
+  const formRef = useRef(null)
+  const hasTrackedViewRef = useRef(false)
+
+  useEffect(() => {
+    const element = formRef.current
+    if (!element || hasTrackedViewRef.current) {
+      return
+    }
+
+    const trackView = () => {
+      if (hasTrackedViewRef.current) {
+        return
+      }
+
+      hasTrackedViewRef.current = true
+
+      try {
+        sendGAEvent('event', 'lead_form_view', {
+          form_id: 'lead_capture_form',
+          lead_type: context?.sourceType || 'consultation',
+          source_section: context?.sourceSection || 'unknown',
+          site_slug: context?.siteSlug || 'unknown',
+          page_path:
+            context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
+          service_interest: form.serviceInterest || 'unknown',
+        })
+      } catch {
+        // Do not block UX if analytics is unavailable.
+      }
+    }
+
+    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') {
+      trackView()
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          trackView()
+          observer.disconnect()
+        }
+      },
+      {
+        threshold: 0.35,
+      },
+    )
+
+    observer.observe(element)
+
+    return () => observer.disconnect()
+  }, [context, form.serviceInterest])
 
   const updateField = (field) => (event) => {
     const value = event.target.value
@@ -27,7 +81,7 @@ export default function LeadCaptureForm({
   }
 
   return (
-    <form className={cn("flex flex-col relative gap-6", className)} onSubmit={handleSubmit}>
+    <form ref={formRef} className={cn("flex flex-col relative gap-6", className)} onSubmit={handleSubmit}>
       <div className="inline-block text-md leading-8">
         <label className={cn("inline mr-2 font-semibold ", labelClassName)}>My Name is</label>
         <input

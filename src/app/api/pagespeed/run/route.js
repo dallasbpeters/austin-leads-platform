@@ -81,10 +81,10 @@ export async function POST(request) {
     const apiUrl = new URL(PAGESPEED_ENDPOINT)
     apiUrl.searchParams.set('url', url)
     apiUrl.searchParams.set('strategy', strategy)
-    apiUrl.searchParams.set('category', 'PERFORMANCE')
-    apiUrl.searchParams.set('category', 'SEO')
-    apiUrl.searchParams.set('category', 'BEST_PRACTICES')
-    apiUrl.searchParams.set('category', 'ACCESSIBILITY')
+    apiUrl.searchParams.append('category', 'performance')
+    apiUrl.searchParams.append('category', 'seo')
+    apiUrl.searchParams.append('category', 'best-practices')
+    apiUrl.searchParams.append('category', 'accessibility')
 
     if (PAGESPEED_API_KEY) {
       apiUrl.searchParams.set('key', PAGESPEED_API_KEY)
