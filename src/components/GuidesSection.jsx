@@ -6,10 +6,15 @@ import { getFeaturedSolarGuideCards } from '@/lib/platform/guides'
 
 const guides = getFeaturedSolarGuideCards(3)
 
-export default function GuidesSection({ sectionId = 'go-deeper' }) {
+export default function GuidesSection({ section = null, sectionId = 'go-deeper', editAttributes = {} }) {
+  const title = section?.title || 'Go Deeper'
+  const body = section?.body || ''
+  const ctaLabel = section?.ctaLabel || 'Browse all guides'
+
   return (
     <section
-      className="bg-warm py-24"
+      className="py-24 bg-warm"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/GuidesSection.jsx',
@@ -21,20 +26,21 @@ export default function GuidesSection({ sectionId = 'go-deeper' }) {
         backgroundSize: '24px 24px',
       }}
     >
-      <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
+      <div className="max-w-7xl w-full mx-auto px-4">
         <div className="mb-8">
-          <h2 className="type-accent text-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">Go Deeper</h2>
+          <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] text-secondary type-accent">{title}</h2>
+          {body ? <p className="max-w-3xl mt-3 leading-7 text-base text-slate-600">{body}</p> : null}
         </div>
         <GuideCardGrid
           cards={guides}
           palette={['bg-primary text-white', 'bg-secondary text-white', 'bg-tertiary text-white']}
         />
-        <div className="mt-8 flex justify-end">
+        <div className="flex justify-end mt-8">
           <Link
-            className="btn btn type-accent text-secondary text-sm font-semibold tracking-[0.18em] uppercase"
+            className="font-semibold text-secondary text-sm tracking-[0.18em] btn type-accent uppercase"
             href="/guides"
           >
-            Browse all guides
+            {ctaLabel}
           </Link>
         </div>
       </div>

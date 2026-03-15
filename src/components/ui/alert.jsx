@@ -7,10 +7,10 @@ function Alert({ className, variant = 'default', ...props }) {
     <div
       role="alert"
       className={cn(
-        'relative w-full rounded-lg border px-4 py-3 text-sm',
+        "relative w-full px-4 py-3 text-sm border rounded-lg",
         variant === 'destructive'
-          ? 'border-destructive/40 bg-destructive/5 text-destructive'
-          : 'border-border bg-card text-card-foreground',
+          ? "text-destructive bg-destructive/5 border-destructive/40"
+          : "text-card-foreground bg-card border-border",
         className,
       )}
       {...props}

@@ -7,7 +7,7 @@ export function formatAnalyticsNumber(value) {
 export function buildDefaultAnalyticsGoalForm(sites) {
   return {
     name: '',
-    scope: 'site',
+    goalLevel: 'site',
     siteSlug: sites[0]?.slug || 'all',
     eventName: '',
     targetValue: '',

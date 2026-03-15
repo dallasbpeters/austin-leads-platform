@@ -19,20 +19,32 @@ import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
+import Band from '@/components/Band'
+import CalculatorSection from '@/components/CalculatorSection'
+import CostsSection from '@/components/CostsSection'
 import GuideCardGrid from '@/components/GuideCardGrid'
+import GuidesSection from '@/components/GuidesSection'
 import HailWeatherLookup from '@/components/HailWeatherLookup'
 import Header from '@/components/Header'
+import IncentivesSection from '@/components/IncentivesSection'
 import ConsultationSection from '@/components/ConsultationSection'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
 import QuoteSection from '@/components/QuoteSection'
+import ResourcesSection from '@/components/ResourcesSection'
+import SnapshotSection from '@/components/SnapshotSection'
+import SolarSwitch from '@/components/SolarSwitch'
+import Testimonials from '@/components/Testimonials'
 import LogoCloud from '@/components/logo-cloud'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
+import { getGuideMetaByHref } from '@/lib/platform/guides'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
 import { getHeroImageUrl, getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
+import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken } from '@/lib/sanity/stega'
 import { roofingServices } from '@/lib/platform/service-catalog'
 
@@ -48,7 +60,7 @@ function getSectionDomId(section, index) {
   return token ? `${section.type}-${token}` : `${section.type}-${index + 1}`
 }
 
-function HeroSection({ page, section, sectionId }) {
+function HeroSection({ page, section, sectionId, editAttributes = {} }) {
   const heroImageUrl = getHeroImageUrl(section.heroAsset, section.heroImage)
   const hasHeroImage = hasImageSource(section.heroAsset, section.heroImage)
   const heroTitle = page?.pageType === 'post' ? page.title : section.title
@@ -67,7 +79,8 @@ function HeroSection({ page, section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 relative grid min-h-[60vh] place-content-center overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))] py-12 lg:py-32"
+      className="grid relative min-h-[60vh] py-12 lg:py-32 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),transparent_52%),linear-gradient(180deg,var(--site-surface),rgba(255,255,255,0.92))] border-border/60 overflow-hidden place-content-center"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:HeroSection',
@@ -98,8 +111,8 @@ function HeroSection({ page, section, sectionId }) {
       <div
         className={
           hasHeroImage
-            ? 'relative z-10 mx-auto grid max-w-7xl place-content-center gap-10 px-6 py-24 lg:grid-cols-[1.35fr_0.95fr] lg:px-10'
-            : 'max-w-8xl relative z-10 mx-auto grid place-content-center gap-10 px-6 py-24 lg:grid-cols-1 lg:px-10'
+            ? "grid relative max-w-7xl gap-10 mx-auto px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-[1.35fr_0.95fr]"
+            : "grid relative max-w-7xl gap-10 mx-auto px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-1"
         }
       >
         <div className="space-y-6">
@@ -107,8 +120,8 @@ function HeroSection({ page, section, sectionId }) {
             variant="outline"
             className={
               heroTextColor
-                ? 'border-transparent bg-transparent'
-                : 'border-primary/20 bg-primary/5 text-foreground'
+                ? "bg-transparent border-transparent"
+                : "text-foreground bg-primary/5 border-primary/20"
             }
             style={badgeStyle}
           >
@@ -116,12 +129,12 @@ function HeroSection({ page, section, sectionId }) {
           </Badge>
           <div className="space-y-4">
             <h1
-              className="text-foreground max-w-4xl text-4xl tracking-tight md:text-6xl"
+              className="max-w-4xl text-4xl text-foreground tracking-tight md:text-6xl"
               style={heroTextStyle}
             >
               {heroTitle}
             </h1>
-            <p className="text-muted-foreground max-w-2xl text-lg leading-8" style={heroMutedStyle}>
+            <p className="max-w-2xl leading-8 text-lg text-muted-foreground" style={heroMutedStyle}>
               {section.body}
             </p>
           </div>
@@ -150,17 +163,17 @@ function HeroSection({ page, section, sectionId }) {
           ) : null}
         </div>
         {hasHeroImage ? (
-          <div className="grid grid-cols-1 content-center space-y-4">
+          <div className="grid content-center space-y-4 grid-cols-1">
             <Card
               className={
                 hasHeroImage
-                  ? 'shadow-theme-glass gap-0 border-white/15 bg-white/8 backdrop-blur'
-                  : 'shadow-theme-glass-soft border-border/70 bg-background/10 gap-0 backdrop-blur'
+                  ? "gap-0 bg-white/8 border-white/15 shadow-theme-glass backdrop-blur"
+                  : "gap-0 bg-background/10 border-border/70 shadow-theme-glass-soft backdrop-blur"
               }
             >
               <CardHeader className="pb-4">
                 <CardTitle
-                  className="text-muted-foreground text-xs font-medium tracking-[0.2em] uppercase"
+                  className="font-medium text-muted-foreground text-xs tracking-[0.2em] uppercase"
                   style={heroMutedStyle}
                 >
                   Snapshot
@@ -171,8 +184,8 @@ function HeroSection({ page, section, sectionId }) {
                   <div
                     className={
                       hasHeroImage
-                        ? 'rounded-xl border border-white/15 bg-white/8 px-4 py-4'
-                        : 'border-border/70 bg-card/90 rounded-xl border px-4 py-4'
+                        ? "px-4 py-4 bg-white/8 border border-white/15 rounded-xl"
+                        : "px-4 py-4 bg-card/90 border border-border/70 rounded-xl"
                     }
                     key={buildRuntimeKey('hero-metric', metric.label, metric.value)}
                   >
@@ -183,7 +196,7 @@ function HeroSection({ page, section, sectionId }) {
                       {metric.label}
                     </div>
                     <div
-                      className="text-foreground text-lg font-semibold tracking-tight"
+                      className="font-semibold text-foreground text-lg tracking-tight"
                       style={heroTextStyle}
                     >
                       {metric.value}
@@ -199,10 +212,11 @@ function HeroSection({ page, section, sectionId }) {
   )
 }
 
-function StorySection({ section, sectionId }) {
+function StorySection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="border-border/60 bg-background border-b"
+      className="bg-background border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:StorySection',
@@ -213,23 +227,26 @@ function StorySection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:StorySection"
         content={`story section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-7xl grid-cols-1 place-items-start px-6 py-24 lg:px-10">
-        <Badge variant="outline" className="border-secondary/20 bg-secondary text-foreground">
-          {section.eyebrow}
-        </Badge>
-        <h2 className="font-display text-foreground mt-6 w-full max-w-5xl text-3xl tracking-tight md:text-6xl">
+      <div className="grid max-w-7xl mx-auto px-6 py-24 lg:px-10 grid-cols-1 place-items-start">
+        {section.eyebrow ? (
+          <Badge variant="outline" className="text-foreground bg-secondary border-secondary/20">
+            {section.eyebrow}
+          </Badge>
+        ) : null}
+        <h2 className="max-w-5xl w-full mt-6 font-display text-3xl text-foreground tracking-tight md:text-6xl">
           {section.title}
         </h2>
-        <p className="text-muted-foreground mt-6 max-w-5xl text-lg leading-8">{section.body}</p>
+        <p className="max-w-5xl mt-6 leading-8 text-lg text-muted-foreground">{section.body}</p>
       </div>
     </section>
   )
 }
 
-function CardGridSection({ section, sectionId }) {
+function CardGridSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,246,242,0.96))]"
+      className="bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,246,242,0.96))] border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:CardGridSection',
@@ -240,34 +257,43 @@ function CardGridSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:CardGridSection"
         content={`highlight cards from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="mb-8 grid max-w-3xl gap-2">
-          <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
+      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+        <div className="grid max-w-3xl gap-2 mb-8">
+          <h2 className="text-3xl text-foreground md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
-            <p className="text-foreground mb-4 text-xl leading-8">{section.subtitle}</p>
+            <p className="mb-4 leading-8 text-foreground text-xl">{section.subtitle}</p>
           ) : null}
         </div>
         <div className="grid gap-8 md:grid-cols-3">
-          {section.items?.map((item, index) => (
-            <Card
-              key={buildRuntimeKey('card-grid-item', item.title, item.question, index)}
-              className="grid grid-cols-1 place-content-start pt-8"
-            >
-              <CardHeader>
-                <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
-              </CardHeader>
-              <CardContent className="text-muted-foreground text-md leading-6">
-                {item.body || item.answer}
-              </CardContent>
-            </Card>
-          ))}
+          {section.items?.map((item, index) => {
+            const Icon = getServiceIcon(item)
+
+            return (
+              <Card
+                key={buildRuntimeKey('card-grid-item', item.title, item.question, index)}
+                className="grid py-8 grid-cols-1 place-content-start"
+              >
+                <CardHeader className="gap-4">
+                  {Icon ? (
+                    <div className="flex items-center justify-center text-primary bg-primary/8 rounded-full size-12">
+                      <Icon className="size-5" />
+                    </div>
+                  ) : null}
+                  <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
+                </CardHeader>
+                <CardContent className="leading-6 text-md text-muted-foreground">
+                  {item.body || item.answer}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       </div>
     </section>
   )
 }
 
-function GuideGridSection({ section, sectionId }) {
+function GuideGridSection({ section, sectionId, editAttributes = {} }) {
   const palette = [
     'bg-primary text-white',
     'bg-tertiary text-white',
@@ -284,11 +310,14 @@ function GuideGridSection({ section, sectionId }) {
     href: item.href,
     image: getImageUrl(item.imageAsset, item.image),
     imageAlt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
+    category: item.category || getGuideMetaByHref(item.href).category,
+    tags: Array.isArray(item.tags) && item.tags.length ? item.tags : getGuideMetaByHref(item.href).tags,
   }))
 
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(to_right,var(--color-grid-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-grid-line)_1px,transparent_1px)] bg-size-[24px_24px]"
+      className="bg-[linear-gradient(to_right,var(--color-grid-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-grid-line)_1px,transparent_1px)] bg-size-[24px_24px] border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:GuideGridSection',
@@ -299,15 +328,17 @@ function GuideGridSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:GuideGridSection"
         content={`guide grid from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="mb-8 max-w-3xl">
-          <h2 className="text-foreground mb-4 text-3xl md:text-4xl">{section.title}</h2>
-          {section.body ? <p className="text-muted-foreground text-lg leading-8">{section.body}</p> : null}
+      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+        <div className="max-w-3xl mb-8">
+          <h2 className="mb-4 text-3xl text-foreground md:text-4xl">{section.title}</h2>
+          {section.body ? <p className="leading-8 text-lg text-muted-foreground">{section.body}</p> : null}
         </div>
         <GuideCardGrid
           cards={cards}
           columnsClassName="sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           palette={palette}
+          enableFiltering
+          pageSize={6}
         />
       </div>
     </section>
@@ -470,7 +501,7 @@ function getServiceImage(item) {
   }
 }
 
-function ServiceGridSection({ section, sectionId }) {
+function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
   const items = (section.items || []).map((item) => {
     const serviceImage = getServiceImage(item)
 
@@ -515,7 +546,7 @@ function ServiceGridSection({ section, sectionId }) {
           height={2000}
           src={item.imageUrl}
           alt={item.imageAlt}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+          className="absolute h-full w-full duration-500 transition-transform inset-0 object-cover hover:scale-105"
         />
         <div className={`absolute inset-0 ${overlayClassName}`} />
       </>
@@ -524,7 +555,8 @@ function ServiceGridSection({ section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))]"
+      className="bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))] border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:ServiceGridSection',
@@ -535,36 +567,36 @@ function ServiceGridSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:ServiceGridSection"
         content={`service grid from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="mb-10 max-w-3xl">
+      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+        <div className="max-w-3xl mb-10">
           {section.eyebrow ? (
-            <Badge variant="outline" className="border-primary/20 bg-primary/5 text-foreground">
+            <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <h2 className="mt-5 text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
-            <p className="text-foreground/80 mt-4 text-lg leading-8">{section.subtitle}</p>
+            <p className="mt-4 leading-8 text-foreground/80 text-lg">{section.subtitle}</p>
           ) : null}
           {section.body ? (
-            <p className="text-muted-foreground mt-4 text-base leading-8">{section.body}</p>
+            <p className="mt-4 leading-8 text-base text-muted-foreground">{section.body}</p>
           ) : null}
         </div>
         <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
           {items.map((item) => {
             const Icon = getServiceIcon(item)
             const content = (
-              <Card className="relative aspect-square" variant="media" radius="lg">
+              <Card className="relative aspect-3/4" variant="media" radius="lg">
                 {renderServiceMedia(
                   item,
                   'bg-[linear-gradient(to_top,rgba(1,60,66,1)_30%,rgba(11,59,66,0.1),transparent)]',
                 )}
-                <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <div className="absolute p-8 text-white bottom-0 inset-x-0">
+                  <div className="items-center justify-center h-16 w-16 mb-4 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
                     <Icon className="h-8 w-8" strokeWidth={2} />
                   </div>
-                  <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
-                  <div className="text-md mt-1 font-semibold text-white/70">{item.copy}</div>
+                  <div className="font-bold leading-[1.1] text-[1.875rem] type-accent">{item.title}</div>
+                  <div className="mt-1 font-semibold text-md text-white/70">{item.copy}</div>
                 </div>
               </Card>
             )
@@ -584,11 +616,11 @@ function ServiceGridSection({ section, sectionId }) {
           })}
         </div>
         {roofingItems.length ? (
-          <div className="border-border/60 mt-8 border-t pt-8">
+          <div className="mt-8 pt-8 border-border/60 border-t">
             {section.roofingTitle ? (
-              <h3 className="text-foreground mb-4 text-lg">{section.roofingTitle}</h3>
+              <h3 className="mb-4 text-foreground text-lg">{section.roofingTitle}</h3>
             ) : null}
-            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 lg:grid-cols-3 max-[900px]:grid-cols-1 md:grid-cols-2">
               {roofingItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const content = (
@@ -597,12 +629,12 @@ function ServiceGridSection({ section, sectionId }) {
                       item,
                       'bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]',
                     )}
-                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <div className="absolute p-5 text-white bottom-0 inset-x-0">
+                      <div className="items-center justify-center h-10 w-10 mb-3 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
                       </div>
-                      <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
-                      <p className="text-md mt-2 leading-6 text-white/82">{item.copy}</p>
+                      <div className="font-bold leading-[1.05] text-[1.375rem] type-accent">{item.title}</div>
+                      <p className="mt-2 leading-6 text-md text-white/82">{item.copy}</p>
                     </div>
                   </Card>
                 )
@@ -624,11 +656,11 @@ function ServiceGridSection({ section, sectionId }) {
           </div>
         ) : null}
         {secondaryItems.length ? (
-          <div className="border-border/60 mt-8 border-t pt-8">
+          <div className="mt-8 pt-8 border-border/60 border-t">
             {section.secondaryTitle ? (
-              <h3 className="text-foreground mb-4 text-lg">{section.secondaryTitle}</h3>
+              <h3 className="mb-4 text-foreground text-lg">{section.secondaryTitle}</h3>
             ) : null}
-            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 lg:grid-cols-3 max-[900px]:grid-cols-1 md:grid-cols-2">
               {secondaryItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const content = (
@@ -637,12 +669,12 @@ function ServiceGridSection({ section, sectionId }) {
                       item,
                       'bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]',
                     )}
-                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <div className="absolute p-5 text-white bottom-0 inset-x-0">
+                      <div className="items-center justify-center h-10 w-10 mb-3 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
                       </div>
-                      <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
-                      <p className="text-md mt-2 leading-6 text-white/82">{item.copy}</p>
+                      <div className="font-bold leading-[1.05] text-[1.375rem] type-accent">{item.title}</div>
+                      <p className="mt-2 leading-6 text-md text-white/82">{item.copy}</p>
                     </div>
                   </Card>
                 )
@@ -668,10 +700,11 @@ function ServiceGridSection({ section, sectionId }) {
   )
 }
 
-function StepsSection({ section, sectionId }) {
+function StepsSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="radial-grid-bg bg-secondary-100 border-border/60 border-b"
+      className="bg-secondary-100 border-b border-border/60 radial-grid-bg"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:StepsSection',
@@ -682,23 +715,23 @@ function StepsSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:StepsSection"
         content={`steps section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
-        <div className="mb-10 max-w-3xl">
-          <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+        <div className="max-w-3xl mb-10">
+          <h2 className="text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {section.items?.map((item, index) => (
             <Card
               key={buildRuntimeKey('step-item', item.title, index)}
-              className="border-border/80 bg-card pt-12 pb-8"
+              className="pb-8 pt-12 bg-card border-border/80"
             >
               <CardHeader className="gap-4">
-                <Badge className="bg-primary border-primary ring-primary text-secondary-foreground size-8 w-fit rounded-full text-lg ring-1">
+                <Badge className="text-lg text-secondary-foreground bg-primary border-primary rounded-full ring-1 ring-primary size-8">
                   {index + 1}
                 </Badge>
                 <CardTitle className="text-foreground text-xl">{item.title}</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-md leading-6">{item.body}</CardContent>
+              <CardContent className="leading-6 text-md text-muted-foreground">{item.body}</CardContent>
             </Card>
           ))}
         </div>
@@ -707,10 +740,11 @@ function StepsSection({ section, sectionId }) {
   )
 }
 
-function FaqSection({ section, sectionId }) {
+function FaqSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(249,247,244,0.98),rgba(255,255,255,0.98))]"
+      className="bg-[linear-gradient(180deg,rgba(249,247,244,0.98),rgba(255,255,255,0.98))] border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:FaqSection',
@@ -721,20 +755,20 @@ function FaqSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:FaqSection"
         content={`faq section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-5xl px-6 py-20 lg:px-10">
-        <div className="mb-10 max-w-3xl">
-          <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+        <div className="max-w-3xl mb-10">
+          <h2 className="text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
         </div>
         <div className="space-y-4">
           {section.items?.map((item, index) => (
             <Card
               key={buildRuntimeKey('faq-item', item.question, index)}
-              className="border-border/80 bg-card"
+              className="bg-card border-border/80"
             >
               <CardHeader>
                 <CardTitle className="text-foreground text-xl">{item.question}</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-md leading-6">{item.answer}</CardContent>
+              <CardContent className="leading-6 text-md text-muted-foreground">{item.answer}</CardContent>
             </Card>
           ))}
         </div>
@@ -743,10 +777,11 @@ function FaqSection({ section, sectionId }) {
   )
 }
 
-function HailMapSection({ section, sectionId }) {
+function HailMapSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="border-border/60 bg-gradient border-b"
+      className="bg-gradient border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:HailMapSection',
@@ -757,17 +792,18 @@ function HailMapSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:HailMapSection"
         content={`hail lookup section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-[1600px] px-6 py-20 lg:px-10">
+      <div className="max-w-[1600px] mx-auto px-6 py-20 lg:px-10">
         <HailWeatherLookup section={section} />
       </div>
     </section>
   )
 }
 
-function QuoteBannerSection({ section, sectionId }) {
+function QuoteBannerSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(247,244,239,0.98),rgba(255,255,255,0.98))]"
+      className="bg-[linear-gradient(180deg,rgba(247,244,239,0.98),rgba(255,255,255,0.98))] border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:QuoteBannerSection',
@@ -789,7 +825,7 @@ function QuoteBannerSection({ section, sectionId }) {
   )
 }
 
-function AboutProfileSection({ section, sectionId }) {
+function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
   const people = section.people?.length
     ? section.people
     : [
@@ -817,7 +853,8 @@ function AboutProfileSection({ section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 border-b bg-gradient"
+      className="bg-gradient border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:AboutProfileSection',
@@ -828,19 +865,19 @@ function AboutProfileSection({ section, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:AboutProfileSection"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 py-20 lg:px-10">
-        <div className="mb-10 max-w-3xl">
+      <div className="grid max-w-7xl gap-6 mx-auto px-6 py-20 lg:px-10 grid-cols-1">
+        <div className="max-w-3xl mb-10">
           {section.eyebrow ? (
-            <Badge variant="outline" className="border-primary/20 bg-primary/5 text-foreground">
+            <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <h2 className="mt-5 text-3xl text-foreground leading-1 tracking-tight md:text-4xl">{section.title}</h2>
           {section.body ? (
-            <p className="text-muted-foreground mt-4 text-base leading-8">{section.body}</p>
+            <p className="mt-2 leading-8 text-base text-muted-foreground">{section.body}</p>
           ) : null}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 content-start gap-6">
+        <div className="grid content-start gap-6 grid-cols-1 md:grid-cols-2">
           {people.map((person, index) => {
             const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
             const profileImageAlt = getImageAlt(
@@ -863,75 +900,72 @@ function AboutProfileSection({ section, sectionId }) {
 
             const profileCardBackgrounds = [
               "linear-gradient(45deg, var(--color-primary), var(--color-tidal)), url('https://grainy-gradients.vercel.app/noise.svg')",
-              "linear-gradient(45deg, var(--color-metterhorn), var(--color-sweetcorn)), url('https://grainy-gradients.vercel.app/noise.svg')",
+              "linear-gradient(45deg, var(--color-black-current) 25%, var(--color-sweetcorn)), url('https://grainy-gradients.vercel.app/noise.svg')",
               "linear-gradient(45deg, var(--color-secondary), var(--color-tertiary)), url('https://grainy-gradients.vercel.app/noise.svg')",
             ]
 
             return (
-                <Card key={buildRuntimeKey('about-person', person.name, index)
-                  
-                } 
-                radius="lg" className='bg-card pt-8 aspect-3/3 items-end grid grid-cols-1 content-between'
+              <Card
+                key={buildRuntimeKey('about-person', person.name, index)}
+                radius="lg"
+                className="grid content-between items-end pt-8 bg-card aspect-3/3 grid-cols-1"
                 style={{
                   background: profileCardBackgrounds[index % profileCardBackgrounds.length],
                   backgroundBlendMode: 'multiply',
-                  }}>
-                  <Image
+                }}
+              >
+                <Image
                   width={700}
                   height={700}
                   src={profileImageUrl}
                   alt={profileImageAlt}
-                  className='absolute inset-0 size-full object-cover grayscale filter'
-                  
+                  className="absolute filter grayscale inset-0 object-cover size-full"
                 />
-                  <CardHeader className="relative z-10 flex items-center gap-4">
-                    <div className="flex items-start">
-                      <div className="grid gap-2">
-                        <div className="text-white text-xs tracking-[0.2em] uppercase">
-                          {person.label || 'Profile'}
-                        </div>
-                        <CardTitle className="text-white text-3xl tracking-tight leading-3">
-                          {person.name}
-                        </CardTitle>
-                        {person.role ? (
-                          <p className="text-white text-lg leading-7 font-semibold">{person.role}</p>
-                        ) : null}
+                <CardHeader className="flex relative items-center gap-4 z-10">
+                  <div className="flex items-start">
+                    <div className="grid gap-1">
+                      <div className="text-white text-xs tracking-[0.2em] uppercase">
+                        {person.label || 'Profile'}
                       </div>
+                      <CardTitle className="leading-4 text-3xl text-white tracking-tight">
+                        {person.name}
+                      </CardTitle>
+                      {person.role ? (
+                        <p className="font-semibold leading-4 text-lg text-white">{person.role}</p>
+                      ) : null}
                     </div>
-                  </CardHeader>
-                  <CardContent className="relative z-10 grid gap-4 h-30 grid-cols-1 content-end"
-                  >
-                    {person.blurb ? (
-                      <p className="text-white text-base leading-6">{person.blurb}</p>
-                    ) : null}
-                    {person.certificationTitle ? (
-                      <div className="border-border/80 grid gap-3">
-                        <div className="flex items-center gap-3">
-                          {resolvedBadgeImageUrl ? (
-                            <Image
-                              width={320}
-                              height={320}
-                              src={resolvedBadgeImageUrl}
-                              alt={resolvedBadgeImageAlt}
-                              className="size-20 object-contain rounded-xl bg-white"
-                            />
-                          ) : null}
-                          <div className="grid gap-1">
-                            {person.certificationLabel ? (
-                              <div className="text-white text-xs tracking-[0.2em] uppercase">
-                                {person.certificationLabel}
-                              </div>
-                            ) : null}
-                            <div className="text-white text-base leading-6 font-semibold">
-                              {person.certificationTitle}
+                  </div>
+                </CardHeader>
+                <CardContent className="grid relative content-end h-30 gap-4 grid-cols-1 z-10">
+                  {person.blurb ? <p className="leading-6 text-base text-white">{person.blurb}</p> : null}
+                  {person.certificationTitle ? (
+                    <div className="grid gap-3 border-border/80">
+                      <div className="flex items-center gap-3">
+                        {resolvedBadgeImageUrl ? (
+                          <Image
+                            width={320}
+                            height={320}
+                            src={resolvedBadgeImageUrl}
+                            alt={resolvedBadgeImageAlt}
+                            className="bg-white rounded-full object-contain size-20"
+                          />
+                        ) : null}
+                        <div className="grid gap-1">
+                          {person.certificationLabel ? (
+                            <div className="text-white text-xs tracking-[0.2em] uppercase">
+                              {person.certificationLabel}
                             </div>
+                          ) : null}
+                          <div className="font-semibold leading-6 text-base text-white">
+                            {person.certificationTitle}
                           </div>
                         </div>
                       </div>
-                    ) : null}
-                  </CardContent>
-                  <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-black),rgba(11,59,66,0.2),transparent)]"></div>
-                </Card>
+                    </div>
+                  ) : null}
+                </CardContent>
+                <div className="absolute bg-[linear-gradient(to_top,var(--color-black),rgba(11,59,66,0.2),transparent)] inset-0"></div>
+              </Card>
             )
           })}
         </div>
@@ -940,28 +974,29 @@ function AboutProfileSection({ section, sectionId }) {
   )
 }
 
-function RoofingLogoCloudSection({ sectionId }) {
+function RoofingLogoCloudSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,239,0.96))]"
+      className="bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,239,0.96))] border-b border-border/60"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:RoofingLogoCloudSection',
-        content: 'local JSX roofing certification logo cloud',
+        content: `logos marquee section from ${section?._type || 'local fallback section'}`,
       })}
     >
       <DevTrace
         markup="src/components/platform/PublicSite.jsx:RoofingLogoCloudSection"
-        content="local JSX roofing certification logo cloud"
+        content={`logos marquee section from ${section?._type || 'local fallback section'}`}
       />
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="max-w-7xl mx-auto px-6 lg:px-10">
         <LogoCloud />
       </div>
     </section>
   )
 }
 
-function CtaSection({ page, section, site, pathname, sectionId }) {
+function CtaSection({ page, section, site, pathname, sectionId, editAttributes }) {
   const pathnameSegments = (pathname || '').split('/').filter(Boolean)
   const topLevelPath = cleanRuntimeString(pathnameSegments[0])
   const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
@@ -981,17 +1016,38 @@ function CtaSection({ page, section, site, pathname, sectionId }) {
       />
       <ConsultationSection
         site={site}
+        section={section}
         sectionId={sectionId}
         variant={isRoofingContext ? 'roofingInspection' : 'default'}
         pagePath={pagePath}
         pageTitle={page?.title || 'Texas Solar and Roofing Pros'}
+        editAttributes={editAttributes}
       />
     </>
   )
 }
 
-function CtaBannerSection({ page, section, site, sectionId }) {
+function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
   const slug = cleanRuntimeString(page?.slug)
+  const avatarEyebrow = section?.avatarEyebrow || section?.personLabel || ''
+  const avatarName = section?.avatarName || section?.personName || ''
+  const avatarRole = section?.avatarRole || section?.personRole || ''
+  const avatarBlurb = section?.avatarBlurb || section?.personBlurb || ''
+  const avatarImageUrl = getImageUrl(
+    section?.avatarImageAsset || section?.profileImageAsset,
+    section?.avatarImage || section?.profileImage,
+  )
+  const avatarImageAlt = getImageAlt(
+    section?.avatarImageAsset || section?.profileImageAsset,
+    section?.avatarImage || section?.profileImage,
+    avatarName,
+  )
+  const avatarInitials = String(avatarName || '')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('')
   const leadContext = {
     sourceType: 'cross-lead',
     sourceSection: 'cta-banner',
@@ -1008,7 +1064,7 @@ function CtaBannerSection({ page, section, site, sectionId }) {
 
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white"
+      className="py-20 text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:CtaBannerSection',
@@ -1019,18 +1075,37 @@ function CtaBannerSection({ page, section, site, sectionId }) {
         markup="src/components/platform/PublicSite.jsx:CtaBannerSection"
         content={`cross-lead banner from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
-        <div className="space-y-4">
+      <div className="grid max-w-7xl gap-12 mx-auto px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="space-y-4" {...editAttributes}>
           {section.eyebrow ? (
-            <p className="text-md tracking-[0.22em] text-white/58 uppercase">{section.eyebrow}</p>
+            <p className="text-sm text-white/58 tracking-[0.22em] uppercase">{section.eyebrow}</p>
           ) : null}
           <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">{section.title}</h2>
-          <p className="max-w-2xl text-base leading-8 text-white/78">{section.body}</p>
+          <p className="max-w-2xl leading-8 text-base text-white/78">{section.body}</p>
+          {avatarName ? (
+            <div className="max-w-xl pt-2">
+              <div className="flex items-center gap-4">
+                <Avatar size="xl" className="bg-white/10 ring-1 ring-white/20 size-16">
+                  {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
+                  <AvatarFallback className="font-semibold text-base text-white bg-white/12">
+                    {avatarInitials || 'TS'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  {avatarEyebrow ? (
+                    <div className="mb-1 font-semibold text-white/58 text-[11px] tracking-[0.22em] uppercase">
+                      {avatarEyebrow}
+                    </div>
+                  ) : null}
+                  <div className="font-semibold text-lg text-white">{avatarName}</div>
+                  {avatarRole ? <div className="text-sm text-white/72">{avatarRole}</div> : null}
+                  {avatarBlurb ? <p className="mt-3 text-sm leading-6 text-white/80">{avatarBlurb}</p> : null}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
-        <Card className="gap-0 border-white/12 bg-white/6 text-white backdrop-blur">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl text-white">Get matched with a roofing pro</CardTitle>
-          </CardHeader>
+        <Card className="gap-0 text-white bg-white/6 border-white/12 backdrop-blur">
           <CardContent>
             <LeadCaptureForm
               context={leadContext}
@@ -1049,9 +1124,76 @@ function CtaBannerSection({ page, section, site, sectionId }) {
   )
 }
 
+function BandSection({ section, sectionId, editAttributes = {} }) {
+  return (
+    <section
+      className="bg-transparent"
+      {...editAttributes}
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:BandSection',
+        content: `band section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:BandSection"
+        content={`band section from ${section?._type || 'page section'}`}
+      />
+      <Band
+        colors={Array.isArray(section.colors) && section.colors.length ? section.colors : undefined}
+        tint={section.tint || undefined}
+        minHeight={typeof section.minHeight === 'number' ? section.minHeight : undefined}
+        maxHeight={typeof section.maxHeight === 'number' ? section.maxHeight : undefined}
+        rotate={Boolean(section.rotate)}
+        scrollStart={typeof section.scrollStart === 'number' ? section.scrollStart : undefined}
+        scrollEnd={typeof section.scrollEnd === 'number' ? section.scrollEnd : undefined}
+        reverse={Boolean(section.reverse)}
+        autoAnimate={Boolean(section.autoAnimate)}
+        speed={typeof section.speed === 'number' ? section.speed : undefined}
+        amplitude={typeof section.amplitude === 'number' ? section.amplitude : undefined}
+      />
+    </section>
+  )
+}
+
+function SolarSwitchSection({ section, sectionId, editAttributes = {} }) {
+  return (
+    <section
+      className="bg-background border-b border-border/60"
+      {...editAttributes}
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/PublicSite.jsx:SolarSwitchSection',
+        content: `solar switch section from ${section?._type || 'page section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/PublicSite.jsx:SolarSwitchSection"
+        content={`solar switch section from ${section?._type || 'page section'}`}
+      />
+      <SolarSwitch
+        leadingWords={
+          Array.isArray(section.leadingWords) && section.leadingWords.length
+            ? section.leadingWords
+            : undefined
+        }
+        accentWord={section.accentWord || undefined}
+        trailingText={section.trailingText || undefined}
+      />
+    </section>
+  )
+}
+
 const sectionRenderers = {
   hero: HeroSection,
   story: StorySection,
+  calculator: CalculatorSection,
+  costs: CostsSection,
+  guides: GuidesSection,
+  snapshot: SnapshotSection,
+  incentives: IncentivesSection,
+  testimonials: Testimonials,
+  resourceGrid: ResourcesSection,
   aboutProfile: AboutProfileSection,
   quote: QuoteBannerSection,
   highlights: CardGridSection,
@@ -1059,6 +1201,9 @@ const sectionRenderers = {
   serviceGrid: ServiceGridSection,
   faq: FaqSection,
   hailMap: HailMapSection,
+  band: BandSection,
+  logos: RoofingLogoCloudSection,
+  solarSwitch: SolarSwitchSection,
   steps: StepsSection,
   cta: CtaSection,
   ctaBanner: CtaBannerSection,
@@ -1067,9 +1212,13 @@ const sectionRenderers = {
 export default function PublicSite({ site, page, pathname, navigation, jsonLd }) {
   const useSolarShell = isPrimarySiteSlug(site.slug)
   const sections = page.sections || []
-  const hasLeadCaptureSection = sections.some((section) => section.type === 'cta')
+  const leadCaptureSectionTypes = new Set(['cta', 'ctaBanner'])
+  const hasLeadCaptureSection = sections.some((section) => leadCaptureSectionTypes.has(section.type))
+  const hasLogosSection = sections.some((section) => section.type === 'logos')
   const pageSlug = cleanRuntimeString(page.slug)
-  const firstLeadCaptureSectionIndex = sections.findIndex((section) => section.type === 'cta')
+  const firstLeadCaptureSectionIndex = sections.findIndex((section) =>
+    leadCaptureSectionTypes.has(section.type),
+  )
   const pathnameSegments = (pathname || '').split('/').filter(Boolean)
   const topLevelPath = cleanRuntimeString(pathnameSegments[0])
   const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
@@ -1077,7 +1226,11 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
   const showRoofingLogoCloud =
     useSolarShell &&
     (topLevelPath === 'roofing' || (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug)))
-  const suppressDefaultLeadCapture = pageSlug === 'privacy-policy' || pageSlug === 'terms'
+  const showFallbackRoofingLogoCloud = showRoofingLogoCloud && !hasLogosSection
+  const suppressDefaultLeadCapture =
+    pageSlug === 'privacy-policy' || pageSlug === 'terms' || pageSlug === 'services/detach-and-reset'
+  const pageEditAttrs = getSanityPageEditAttributes(page, 'title')
+  const pageSectionsEditAttrs = getSanityPageEditAttributes(page, 'sections')
   const style = {
     '--site-primary': site.brand?.primary || 'var(--color-primary)',
     '--site-secondary': site.brand?.secondary || 'var(--color-secondary)',
@@ -1087,13 +1240,14 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
 
   return (
     <div
-      className="bg-background text-foreground min-h-screen"
+      className="min-h-screen text-foreground bg-background"
       {...getDevSectionAttributes({
         id: 'public-site-root',
         markup: 'src/components/platform/PublicSite.jsx',
         content: `page "${page.title}" from ${page.source || 'fixture'}`,
         note: `route ${pathname || '/'} using ${useSolarShell ? 'solar shell' : 'generic shell'}`,
       })}
+      {...pageEditAttrs}
       style={{
         ...style,
         backgroundColor: 'var(--site-surface)',
@@ -1108,25 +1262,25 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
         <Header />
       ) : (
         <header
-          className="border-border/60 bg-background/90 sticky top-0 z-40 border-b backdrop-blur"
+          className="sticky bg-background/90 border-b border-border/60 backdrop-blur top-0 z-40"
           {...getDevSectionAttributes({
             id: 'site-header',
             markup: 'src/components/platform/PublicSite.jsx:GenericHeader',
             content: 'generic public-site shell header',
           })}
         >
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-10">
-            <Link href="/" className="flex min-w-0 flex-col">
-              <span className="text-muted-foreground text-md tracking-[0.22em] uppercase">
+          <div className="flex items-center justify-between max-w-7xl gap-6 mx-auto px-6 py-4 lg:px-10">
+            <Link href="/" className="flex flex-col min-w-0">
+              <span className="text-md text-muted-foreground tracking-[0.22em] uppercase">
                 {site.brand?.eyebrow}
               </span>
-              <span className="text-foreground text-xl font-semibold tracking-tight">{site.name}</span>
+              <span className="font-semibold text-foreground text-xl tracking-tight">{site.name}</span>
             </Link>
-            <nav className="hidden items-center gap-6 md:flex">
+            <nav className="hidden md:flex items-center gap-6">
               {navigation.map((item, index) => (
                 <Link
                   key={buildRuntimeKey('site-nav-item', item.href, item.label, index)}
-                  className="text-muted-foreground hover:text-foreground text-md font-medium transition-colors"
+                  className="font-medium text-md text-muted-foreground hover:text-foreground transition-colors"
                   href={cleanRuntimeHref(item.href)}
                 >
                   {item.label}
@@ -1146,6 +1300,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
           markup: 'src/components/platform/PublicSite.jsx',
           content: `rendered sections for "${page.title}"`,
         })}
+        {...pageSectionsEditAttrs}
       >
         {sections.map((section, index) => {
           const Component = sectionRenderers[section.type]
@@ -1155,10 +1310,14 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
           }
 
           const sectionId = getSectionDomId(section, index)
+          const sectionEditAttrs = getSanitySectionEditAttributes(page, section)
 
           return (
-            <div key={buildRuntimeKey('page-section', section._key, section.type, sectionId, index)}>
-              {showRoofingLogoCloud && index === firstLeadCaptureSectionIndex ? (
+            <div
+              key={buildRuntimeKey('page-section', section._key, section.type, sectionId, index)}
+              {...sectionEditAttrs}
+            >
+              {showFallbackRoofingLogoCloud && index === firstLeadCaptureSectionIndex ? (
                 <RoofingLogoCloudSection sectionId="roofing-certifications" />
               ) : null}
               <Component
@@ -1167,13 +1326,16 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
                 site={site}
                 pathname={pathname}
                 sectionId={sectionId}
+                editAttributes={sectionEditAttrs}
               />
             </div>
           )
         })}
 
-        {showRoofingLogoCloud && firstLeadCaptureSectionIndex === -1 ? (
-          <RoofingLogoCloudSection sectionId="roofing-certifications" />
+        {showFallbackRoofingLogoCloud && firstLeadCaptureSectionIndex === -1 ? (
+          <div {...pageSectionsEditAttrs}>
+            <RoofingLogoCloudSection sectionId="roofing-certifications" />
+          </div>
         ) : null}
 
         {!hasLeadCaptureSection && !suppressDefaultLeadCapture ? (
@@ -1185,20 +1347,20 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
         <Footer />
       ) : (
         <footer
-          className="border-border/60 bg-background border-t"
+          className="bg-background border-border/60 border-t"
           {...getDevSectionAttributes({
             id: 'site-footer',
             markup: 'src/components/platform/PublicSite.jsx:GenericFooter',
             content: 'generic public-site shell footer',
           })}
         >
-          <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 lg:flex-row lg:items-end lg:justify-between lg:px-10">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between max-w-7xl gap-6 mx-auto px-6 py-10 lg:px-10">
             <div className="space-y-2">
               <p className="text-muted-foreground text-sm tracking-[0.2em] uppercase">{site.categoryLabel}</p>
-              <h2 className="text-foreground text-2xl tracking-tight">{site.name}</h2>
-              <p className="text-muted-foreground text-md max-w-2xl leading-6">{site.seo?.description}</p>
+              <h2 className="text-2xl text-foreground tracking-tight">{site.name}</h2>
+              <p className="max-w-2xl leading-6 text-md text-muted-foreground">{site.seo?.description}</p>
             </div>
-            <div className="text-muted-foreground text-md space-y-2">
+            <div className="space-y-2 text-md text-muted-foreground">
               <div>{site.organization?.phone}</div>
               <div>{site.organization?.email}</div>
               <div>{site.organization?.serviceArea?.join(' · ')}</div>

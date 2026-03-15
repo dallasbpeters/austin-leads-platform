@@ -17,10 +17,9 @@ async function main() {
     throw new Error('SANITY_API_WRITE_TOKEN is required.')
   }
 
-  const docs = await client.fetch(
-    `*[_type in $types && defined(sections)]{_id,_type,title,sections}`,
-    { types: DOC_TYPES },
-  )
+  const docs = await client.fetch(`*[_type in $types && defined(sections)]{_id,_type,title,sections}`, {
+    types: DOC_TYPES,
+  })
 
   let updated = 0
 

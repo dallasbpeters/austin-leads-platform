@@ -64,7 +64,7 @@ function normalizeItems(section) {
   }))
 }
 
-export default function ResourcesSection({ section = null, sectionId = 'resources' }) {
+export default function ResourcesSection({ section = null, sectionId = 'resources', editAttributes = {} }) {
   const items = normalizeItems(section)
   const title = section?.title || 'Start with what you need help with'
   const body =
@@ -73,7 +73,8 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
 
   return (
     <section
-      className="bg-warm py-24"
+      className="py-24 bg-warm"
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/ResourcesSection.jsx',
@@ -87,10 +88,10 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
         backgroundSize: '24px 24px',
       }}
     >
-      <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
-        <div className="mx-auto mb-16 max-w-3xl text-center">
-          <h2 className="type-accent text-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
-          <p className="type-accent text-foreground m-0 text-[clamp(1rem,4vw,1.25rem)]">{body}</p>
+      <div className="w-[min(80rem,calc(100%-3rem))] mx-auto">
+        <div className="max-w-3xl mb-16 mx-auto text-center">
+          <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] text-secondary type-accent">{title}</h2>
+          <p className="m-0 text-[clamp(1rem,4vw,1.25rem)] text-foreground type-accent">{body}</p>
         </div>
 
         <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
@@ -105,15 +106,15 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
                     alt={item.alt}
                     width={700}
                     height={700}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="absolute h-full w-full duration-500 transition-transform inset-0 object-cover hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"></div>
-                  <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                    <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                  <div className="absolute bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)] inset-0"></div>
+                  <div className="absolute p-8 text-white bottom-0 inset-x-0">
+                    <div className="items-center justify-center h-14 w-14 mb-4 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
                       <Icon className="h-8 w-8" strokeWidth={2} />
                     </div>
-                    <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
-                    <div className="mt-1 text-sm font-semibold text-white/70">{item.copy}</div>
+                    <div className="font-bold leading-[1.1] text-[1.875rem] type-accent">{item.title}</div>
+                    <div className="mt-1 font-semibold text-sm text-white/70">{item.copy}</div>
                   </div>
                 </Card>
               </Link>

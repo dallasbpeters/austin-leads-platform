@@ -1,59 +1,63 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getDevSectionAttributes } from './dev/DevTrace'
 
-export default function StorySection({ sectionId = 'how-it-works' }) {
+export default function StorySection({ section = null, sectionId = 'how-it-works' }) {
   const ref = useRef(null)
+  const [activeWordCount, setActiveWordCount] = useState(0)
+  const title = section?.title || ''
+  const body =
+    section?.body ||
+    'Most homeowners do not start with a clean, simple solar question. They start with storm damage, an aging roof, an insurance claim, or a project they do not want to get wrong. This site is built to help you understand the roofing side, the solar side, and where those decisions affect each other.'
+  const emphasis =
+    section?.subtitle ||
+    section?.subheading ||
+    'Start with the issue in front of you. Get clear on the next step.'
+  const bodyWords = useMemo(() => body.match(/\S+|\s+/g) || [], [body])
+  const emphasisWords = useMemo(() => emphasis.match(/\S+|\s+/g) || [], [emphasis])
+  const bodyParts = useMemo(() => {
+    let wordIndex = 0
+
+    return bodyWords.map((part, index) => {
+      if (part.trim().length === 0) {
+        return {
+          key: `body-space-${index}`,
+          text: part,
+          wordIndex: null,
+        }
+      }
+
+      const nextPart = {
+        key: `body-${index}-${part}`,
+        text: part,
+        wordIndex,
+      }
+      wordIndex += 1
+      return nextPart
+    })
+  }, [bodyWords])
 
   useEffect(() => {
     const container = ref.current
     if (!container) {
       return undefined
     }
-
-    const wrapWords = (node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const words = node.textContent?.match(/\S+|\s+/g) || []
-        const fragment = document.createDocumentFragment()
-
-        words.forEach((word) => {
-          if (word.trim().length > 0) {
-            const span = document.createElement('span')
-            span.textContent = word
-            span.className = 'solar-k-word'
-            span.dataset.kWord = 'true'
-            fragment.appendChild(span)
-          } else {
-            fragment.appendChild(document.createTextNode(word))
-          }
-        })
-
-        node.replaceWith(fragment)
-        return
-      }
-
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        Array.from(node.childNodes).forEach(wrapWords)
-      }
-    }
-
-    if (!container.querySelector('[data-k-word]')) {
-      Array.from(container.childNodes).forEach(wrapWords)
-      container.dataset.processed = 'true'
-    }
+    const timers = []
+    const totalWordCount = bodyParts.filter((part) => part.wordIndex !== null).length
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const words = container.querySelectorAll('[data-k-word]')
+            setActiveWordCount(0)
 
-            words.forEach((word, index) => {
-              window.setTimeout(() => {
-                word.classList.add('is-active')
+            for (let index = 0; index < totalWordCount; index += 1) {
+              const timerId = window.setTimeout(() => {
+                setActiveWordCount((current) => Math.max(current, index + 1))
               }, index * 40)
-            })
+              timers.push(timerId)
+            }
 
             observer.unobserve(container)
           }
@@ -63,29 +67,45 @@ export default function StorySection({ sectionId = 'how-it-works' }) {
     )
 
     observer.observe(container)
-    return () => observer.disconnect()
-  }, [])
+    return () => {
+      observer.disconnect()
+      timers.forEach((timerId) => window.clearTimeout(timerId))
+    }
+  }, [bodyParts])
 
   return (
     <section
-      className="overflow-hidden bg-white"
+      className="bg-white overflow-hidden"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/StorySection.jsx',
-        content: 'local JSX copy',
+        content: section ? 'story copy from Sanity-backed homepage section' : 'local fallback story copy',
         note: 'karaoke text reveal section',
       })}
     >
-      <div className="mx-auto w-[min(72rem,calc(100%-3rem))] py-32 text-center">
+      <div className="w-[min(72rem,calc(100%-3rem))] mx-auto py-32 text-center">
         <h2
           ref={ref}
-          className="type-accent m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em] text-neutral-800"
+          className="m-0 text-[clamp(1.5rem,4vw,2.25rem)] text-neutral-800 tracking-[-0.02em] type-accent"
         >
-          Most homeowners do not start with a clean, simple solar question. They start with storm damage, an
-          aging roof, an insurance claim, or a project they do not want to get wrong. This site is built to
-          help you understand the roofing side, the solar side, and where those decisions affect each other.{' '}
-          <span className="type-display text-neutral-400 italic">
-            Start with the issue in front of you. Get clear on the next step.
+          {title ? `${title} ` : null}
+          {bodyParts.map((part) =>
+            part.wordIndex !== null ? (
+              <span
+                key={part.key}
+                className={`solar-k-word ${activeWordCount > part.wordIndex ? 'is-active' : ''}`}
+              >
+                {part.text}
+              </span>
+            ) : (
+              <span key={part.key}>{part.text}</span>
+            ),
+          )}
+          {' '}
+          <span className="text-neutral-400 italic type-display">
+            {emphasisWords.map((part, index) => (
+              <span key={`emphasis-${index}-${part}`}>{part}</span>
+            ))}
           </span>
         </h2>
       </div>

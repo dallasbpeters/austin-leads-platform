@@ -7,8 +7,7 @@ const fallbackReviews = [
     author: 'Michael R.',
     reviewerLocation: 'Austin, TX',
     stars: 5,
-    body:
-      'The team at Texas Solar and Roofing Pros made the entire process seamless. From the initial consultation to the final installation, they were professional, knowledgeable, and always on time. My energy bills have dropped significantly, and I could not be happier with my new solar panels.',
+    body: 'The team at Texas Solar and Roofing Pros made the entire process seamless. From the initial consultation to the final installation, they were professional, knowledgeable, and always on time. My energy bills have dropped significantly, and I could not be happier with my new solar panels.',
     reviewerPhoto: {
       alt: 'Michael R.',
       asset: { url: 'https://randomuser.me/api/portraits/men/32.jpg' },
@@ -19,8 +18,7 @@ const fallbackReviews = [
     author: 'Lisa G.',
     reviewerLocation: 'Round Rock, TX',
     stars: 5,
-    body:
-      'After a major hailstorm, I needed a new roof and decided to add solar at the same time. The crew handled both projects flawlessly. They explained everything clearly, worked efficiently, and left my property spotless. Highly recommend for anyone considering roofing or solar.',
+    body: 'After a major hailstorm, I needed a new roof and decided to add solar at the same time. The crew handled both projects flawlessly. They explained everything clearly, worked efficiently, and left my property spotless. Highly recommend for anyone considering roofing or solar.',
     reviewerPhoto: {
       alt: 'Lisa G.',
       asset: { url: 'https://randomuser.me/api/portraits/women/44.jpg' },
@@ -31,8 +29,7 @@ const fallbackReviews = [
     author: 'David S.',
     reviewerLocation: 'Cedar Park, TX',
     stars: 5,
-    body:
-      'I was nervous about switching to solar, but Texas Solar and Roofing Pros answered all my questions and provided transparent pricing. The installation was quick, and now I am seeing real savings every month. Excellent service from start to finish.',
+    body: 'I was nervous about switching to solar, but Texas Solar and Roofing Pros answered all my questions and provided transparent pricing. The installation was quick, and now I am seeing real savings every month. Excellent service from start to finish.',
     reviewerPhoto: {
       alt: 'David S.',
       asset: { url: 'https://randomuser.me/api/portraits/men/65.jpg' },
@@ -95,49 +92,60 @@ function ReviewerAvatar({ review }) {
   }
 
   return (
-    <div className="bg-primary/20 text-foreground flex h-14 w-14 items-center justify-center rounded-full text-sm font-semibold tracking-[0.12em] uppercase">
+    <div className="flex items-center justify-center h-14 w-14 font-semibold text-foreground text-sm tracking-[0.12em] bg-(--color-tasman) rounded-full uppercase">
       {initials || 'TS'}
     </div>
   )
 }
 
-export default function Testimonials({ reviews = [] }) {
+export default function Testimonials({
+  reviews = [],
+  section = null,
+  sectionId = 'testimonials-homepage',
+  editAttributes = {},
+}) {
   const resolvedReviews = reviews.length ? reviews.slice(0, 3) : fallbackReviews
+  const title = section?.title || 'What customers are saying'
+  const subtitle = section?.body || 'about Texas Solar and Roofing Pros'
 
   return (
     <section
-      className="radial-grid-bg bg-secondary-100 py-24"
+      className="py-24 bg-secondary-100 radial-grid-bg"
+      {...editAttributes}
       {...getDevSectionAttributes({
-        id: 'testimonials-homepage',
+        id: sectionId,
         markup: 'src/components/Testimonials.jsx',
         content: reviews.length ? 'homepage reviews from Sanity' : 'local fallback testimonial content',
       })}
-    >
-      <div className="mr-auto mb-20 ml-auto max-w-7xl text-center sm:px-6 lg:px-8">
-        <h2 className="text-foreground dynamic-zoom-in animate-delay-200 mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
-          What customers are saying
-          <span className="bg-primary block bg-clip-text leading-relaxed font-medium tracking-tight text-transparent">
-            about Texas Solar and Roofing Pros
+      >
+      <div className="max-w-7xl mb-20 ml-auto mr-auto lg:px-8 sm:px-6 text-center">
+        <h2 className="mb-6 font-medium text-4xl text-foreground tracking-tight sm:text-6xl animate-delay-200 dynamic-zoom-in">
+          {title}
+          <span className="block font-medium leading-relaxed text-transparent tracking-tight bg-clip-text bg-primary">
+            {subtitle}
           </span>
         </h2>
       </div>
 
-      <div className="dynamic-slide-in animate-delay-400 relative mx-auto max-w-7xl px-10">
+      <div className="relative max-w-7xl mx-auto px-10 animate-delay-400 dynamic-slide-in">
         <div className="overflow-hidden">
-          <div className="testimonial-scroll grid gap-6 sm:grid-cols-1 md:grid-cols-3">
+          <div className="grid gap-6 testimonial-scroll md:grid-cols-3 sm:grid-cols-1">
             {resolvedReviews.map((review) => (
-              <Card key={review.id || review.author} className="card--dark-glass relative p-10 backdrop-blur-sm">
+              <Card
+                key={review.id || review.author}
+                className="relative p-10 backdrop-blur-sm card--dark-glass"
+              >
                 <div className="flex items-center gap-1">
                   <Ratings stars={review.stars} />
-                  <span className="ml-2 text-sm text-gray-400">{Number(review.stars || 5).toFixed(1)}</span>
+                  <span className="ml-2 text-gray-400 text-sm">{Number(review.stars || 5).toFixed(1)}</span>
                 </div>
-                <p className="text-foreground mb-6 leading-relaxed">"{review.body}"</p>
+                <p className="mb-6 leading-relaxed text-foreground">"{review.body}"</p>
                 <div className="flex items-center gap-4">
                   <ReviewerAvatar review={review} />
                   <div>
-                    <div className="text-foreground text-lg font-semibold">{review.author}</div>
+                    <div className="font-semibold text-foreground text-lg">{review.author}</div>
                     {review.reviewerLocation ? (
-                      <div className="text-sm text-gray-400">{review.reviewerLocation}</div>
+                      <div className="text-gray-400 text-sm">{review.reviewerLocation}</div>
                     ) : null}
                   </div>
                 </div>

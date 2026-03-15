@@ -22,7 +22,6 @@ export function getDevSectionAttributes({ id, markup, content, note } = {}) {
   return {
     id,
     'data-vercel-edit-target': '',
-    'data-sanity-edit-target': '',
     ...getDevTraceAttributes({ markup, content, note }),
   }
 }

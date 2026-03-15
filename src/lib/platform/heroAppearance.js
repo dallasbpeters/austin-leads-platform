@@ -116,7 +116,10 @@ export function getHeroOverlayAppearance(section) {
 
   if (typeof section?.heroGradient === 'string' && section.heroGradient.trim()) {
     return {
-      overlayOpacity: typeof section?.heroOverlayOpacity === 'number' ? section.heroOverlayOpacity : DEFAULT_HERO_OVERLAY_END_OPACITY,
+      overlayOpacity:
+        typeof section?.heroOverlayOpacity === 'number'
+          ? section.heroOverlayOpacity
+          : DEFAULT_HERO_OVERLAY_END_OPACITY,
       overlayStartColor:
         section?.heroOverlayStartColor || section?.heroOverlayColor || DEFAULT_HERO_OVERLAY_COLOR,
       overlayEndColor:
@@ -124,7 +127,9 @@ export function getHeroOverlayAppearance(section) {
         section?.heroOverlayStartColor ||
         section?.heroOverlayColor ||
         DEFAULT_HERO_OVERLAY_COLOR,
-      overlayDirection: normalizeHeroOverlayDirection(section?.heroOverlayDirection || DEFAULT_HERO_OVERLAY_DIRECTION),
+      overlayDirection: normalizeHeroOverlayDirection(
+        section?.heroOverlayDirection || DEFAULT_HERO_OVERLAY_DIRECTION,
+      ),
       overlayStartOpacity:
         typeof section?.heroOverlayStartOpacity === 'number'
           ? section.heroOverlayStartOpacity
@@ -148,7 +153,9 @@ export function getHeroOverlayAppearance(section) {
     typeof section?.heroOverlayEndColor === 'string' ||
     typeof section?.heroOverlayDirection === 'string'
   const overlayOpacity =
-    typeof section?.heroOverlayOpacity === 'number' ? section.heroOverlayOpacity : DEFAULT_HERO_OVERLAY_END_OPACITY
+    typeof section?.heroOverlayOpacity === 'number'
+      ? section.heroOverlayOpacity
+      : DEFAULT_HERO_OVERLAY_END_OPACITY
   const overlayStartColor =
     section?.heroOverlayStartColor || section?.heroOverlayColor || DEFAULT_HERO_OVERLAY_COLOR
   const overlayEndColor = section?.heroOverlayEndColor || overlayStartColor

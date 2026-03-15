@@ -21,7 +21,8 @@ function getCurrentOrigin(host, forwardedProto) {
     return null
   }
 
-  const protocol = forwardedProto || (host.includes('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https')
+  const protocol =
+    forwardedProto || (host.includes('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https')
   return `${protocol}://${host}`
 }
 
@@ -99,10 +100,12 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
   const fallbackCanonical = getPrimaryUrl(site, pathname)
   const canonical = page.seo?.canonicalUrl || site.seo?.canonicalUrl || fallbackCanonical
-  const currentOrigin = getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
+  const currentOrigin =
+    getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
   const title = page.seo?.title || page.title || site.seo?.title || site.name
   const description = page.seo?.description || page.description || site.seo?.description
-  const ogImage = page.seo?.ogImage || site.seo?.ogImage || buildOgImageUrl(currentOrigin, site, page, pathname)
+  const ogImage =
+    page.seo?.ogImage || site.seo?.ogImage || buildOgImageUrl(currentOrigin, site, page, pathname)
   const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
 
   return {
@@ -163,6 +166,7 @@ export async function renderCurrentSitePage(slugParts = []) {
 
     return (
       <App
+        homepage={homepage}
         heroSection={heroSection}
         resourcesSection={resourcesSection}
         reviews={reviews}

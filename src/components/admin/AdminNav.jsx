@@ -24,6 +24,7 @@ const items = [
   { href: '/domains', label: 'Domains', icon: Globe2 },
   { href: '/settings', label: 'Settings', icon: Settings2 },
   { href: '/studio', label: 'Studio', icon: Bot },
+  { href: '/', label: 'Live Site', icon: Globe2 },
 ]
 
 export default function AdminNav() {
@@ -32,7 +33,7 @@ export default function AdminNav() {
   return (
     <nav className="grid gap-4">
       <div>
-        <div className="text-muted-foreground mb-1 px-3 text-xs font-medium tracking-[0.18em] uppercase">
+        <div className="mb-1 px-3 font-medium text-muted-foreground text-xs tracking-[0.18em] uppercase">
           Overview
         </div>
         {items.slice(0, 2).map((item) => {
@@ -44,10 +45,10 @@ export default function AdminNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                "flex items-center gap-3 px-3 py-2 font-medium text-sm rounded-lg transition-colors",
                 active
-                  ? 'bg-muted text-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  ? "text-foreground bg-muted"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
               <Icon className="h-4 w-4" />
@@ -58,7 +59,7 @@ export default function AdminNav() {
       </div>
 
       <div>
-        <div className="text-muted-foreground mb-1 px-3 text-xs font-medium tracking-[0.18em] uppercase">
+        <div className="mb-1 px-3 font-medium text-muted-foreground text-xs tracking-[0.18em] uppercase">
           Workspace
         </div>
         {items.slice(2).map((item) => {
@@ -70,10 +71,10 @@ export default function AdminNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                "flex items-center gap-3 px-3 py-2 font-medium text-sm rounded-lg transition-colors",
                 active
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                  ? "text-primary-foreground bg-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted",
               )}
             >
               <Icon className="h-4 w-4" />

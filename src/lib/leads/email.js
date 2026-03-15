@@ -118,8 +118,26 @@ function formatFromAddress(settings) {
 
 export async function sendLeadNotificationEmail(lead) {
   const settings = await getLeadRoutingSettings()
+  const logContext = {
+    leadId: lead.id || null,
+    siteSlug: lead.siteSlug,
+    siteName: lead.siteName,
+    pagePath: lead.pagePath,
+    serviceInterest: lead.serviceInterest || null,
+    emailNotificationsEnabled: settings.emailNotificationsEnabled,
+    hasResendApiKey: hasLeadEmailProvider(),
+    hasFromEmail: Boolean(settings.fromEmail),
+    hasNotificationToEmail: Boolean(settings.notificationToEmail),
+    hasTemplateId: Boolean(settings.resendTemplateId),
+    fromEmail: settings.fromEmail || null,
+    notificationToEmail: settings.notificationToEmail || null,
+  }
 
   if (!settings.emailNotificationsEnabled) {
+    console.info('Lead notification email skipped.', {
+      ...logContext,
+      reason: 'Lead email notifications are disabled.',
+    })
     return {
       status: 'skipped',
       reason: 'Lead email notifications are disabled.',
@@ -127,6 +145,10 @@ export async function sendLeadNotificationEmail(lead) {
   }
 
   if (!hasLeadEmailProvider()) {
+    console.warn('Lead notification email skipped.', {
+      ...logContext,
+      reason: 'Resend API key is not configured.',
+    })
     return {
       status: 'skipped',
       reason: 'Resend API key is not configured.',
@@ -134,6 +156,10 @@ export async function sendLeadNotificationEmail(lead) {
   }
 
   if (!settings.fromEmail) {
+    console.warn('Lead notification email skipped.', {
+      ...logContext,
+      reason: 'Sender email is not configured.',
+    })
     return {
       status: 'skipped',
       reason: 'Sender email is not configured.',
@@ -141,6 +167,10 @@ export async function sendLeadNotificationEmail(lead) {
   }
 
   if (!settings.notificationToEmail) {
+    console.warn('Lead notification email skipped.', {
+      ...logContext,
+      reason: 'Lead recipient email is not configured.',
+    })
     return {
       status: 'skipped',
       reason: 'Lead recipient email is not configured.',
@@ -154,6 +184,14 @@ export async function sendLeadNotificationEmail(lead) {
     replyTo: lead.email,
     subject: `${settings.subjectPrefix}: ${lead.fullName} (${lead.siteName})`,
   }
+
+  console.info('Sending lead notification email via Resend.', {
+    ...logContext,
+    from: basePayload.from,
+    to: basePayload.to,
+    replyTo: basePayload.replyTo,
+    subject: basePayload.subject,
+  })
 
   const { data, error } = settings.resendTemplateId
     ? await resend.emails.send({
@@ -170,8 +208,19 @@ export async function sendLeadNotificationEmail(lead) {
       })
 
   if (error) {
+    console.error('Resend returned an error for lead notification email.', {
+      ...logContext,
+      subject: basePayload.subject,
+      error,
+    })
     throw new Error(error.message || 'Unable to send lead notification email.')
   }
+
+  console.info('Lead notification email sent via Resend.', {
+    ...logContext,
+    subject: basePayload.subject,
+    resendId: data?.id || null,
+  })
 
   return {
     status: 'sent',

@@ -80,6 +80,111 @@ function normalizeSwdiPoint(row, fallbackType) {
   }
 }
 
+function toDateKey(value) {
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return null
+  }
+
+  return date.toISOString().slice(0, 10)
+}
+
+function milesBetween(latitudeA, longitudeA, latitudeB, longitudeB) {
+  const toRadians = (value) => (value * Math.PI) / 180
+  const earthRadiusMiles = 3958.8
+  const dLat = toRadians(latitudeB - latitudeA)
+  const dLon = toRadians(longitudeB - longitudeA)
+  const lat1 = toRadians(latitudeA)
+  const lat2 = toRadians(latitudeB)
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
+
+  return 2 * earthRadiusMiles * Math.asin(Math.sqrt(a))
+}
+
+function buildStormEvents({ location, hailPoints, reportPoints }) {
+  const groups = new Map()
+
+  for (const point of [...hailPoints, ...reportPoints]) {
+    const dateKey = toDateKey(point.date)
+
+    if (!dateKey) {
+      continue
+    }
+
+    const distanceMiles = milesBetween(location.latitude, location.longitude, point.latitude, point.longitude)
+
+    if (!groups.has(dateKey)) {
+      groups.set(dateKey, {
+        date: dateKey,
+        hailSignatures: [],
+        stormReports: [],
+        maxHailSize: null,
+        nearestDistanceMiles: null,
+      })
+    }
+
+    const group = groups.get(dateKey)
+    const numericMagnitude = Number(point.magnitude)
+
+    if (point.type === 'hail-signature') {
+      group.hailSignatures.push({ ...point, distanceMiles })
+    } else {
+      group.stormReports.push({ ...point, distanceMiles })
+    }
+
+    if (Number.isFinite(numericMagnitude)) {
+      group.maxHailSize =
+        group.maxHailSize === null ? numericMagnitude : Math.max(group.maxHailSize, numericMagnitude)
+    }
+
+    group.nearestDistanceMiles =
+      group.nearestDistanceMiles === null
+        ? distanceMiles
+        : Math.min(group.nearestDistanceMiles, distanceMiles)
+  }
+
+  return Array.from(groups.values())
+    .map((group) => {
+      const hailSignatureCount = group.hailSignatures.length
+      const stormReportCount = group.stormReports.length
+      const evidenceCount = hailSignatureCount + stormReportCount
+      const hasDualSource = hailSignatureCount > 0 && stormReportCount > 0
+
+      return {
+        id: `storm-${group.date}`,
+        date: group.date,
+        validationLevel: hasDualSource ? 'strong' : 'supporting',
+        headline: hasDualSource ? 'Radar and report evidence found nearby' : 'Storm evidence found nearby',
+        summary: [
+          hailSignatureCount
+            ? `${hailSignatureCount} radar hail ${hailSignatureCount === 1 ? 'signature' : 'signatures'}`
+            : null,
+          stormReportCount
+            ? `${stormReportCount} hail ${stormReportCount === 1 ? 'report' : 'reports'}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(' + '),
+        sourceSummary: hasDualSource
+          ? 'NOAA SWDI radar + NOAA storm reports'
+          : hailSignatureCount
+            ? 'NOAA SWDI radar hail signatures'
+            : 'NOAA hail reports',
+        evidenceCount,
+        hailSignatureCount,
+        stormReportCount,
+        maxHailSize: group.maxHailSize,
+        nearestDistanceMiles:
+          group.nearestDistanceMiles === null ? null : Number(group.nearestDistanceMiles.toFixed(1)),
+      }
+    })
+    .sort((a, b) => b.date.localeCompare(a.date))
+}
+
 function weatherCodeLabel(code) {
   const labels = {
     0: 'Clear',
@@ -363,7 +468,9 @@ export async function GET(request) {
     if (reportRowsResult.status !== 'fulfilled') {
       console.error('SWDI storm report lookup failed', {
         error:
-          reportRowsResult.reason instanceof Error ? reportRowsResult.reason.message : reportRowsResult.reason,
+          reportRowsResult.reason instanceof Error
+            ? reportRowsResult.reason.message
+            : reportRowsResult.reason,
         latitude: location.latitude,
         longitude: location.longitude,
       })
@@ -385,6 +492,11 @@ export async function GET(request) {
       .filter(Boolean)
       .filter((row) => !row.event || /hail/i.test(row.event))
       .slice(0, 250)
+    const stormEvents = buildStormEvents({
+      location,
+      hailPoints,
+      reportPoints,
+    })
     const risk =
       forecastData.status === 'fulfilled' || alerts.status === 'fulfilled'
         ? deriveRisk({
@@ -414,6 +526,7 @@ export async function GET(request) {
         hailSignatures: hailPoints,
         stormReports: reportPoints,
       },
+      stormEvents,
       updatedAt: new Date().toISOString(),
     })
   } catch (error) {

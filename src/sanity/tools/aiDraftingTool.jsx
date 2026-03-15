@@ -243,16 +243,25 @@ export function AiDraftingTool() {
   }
 
   return (
-    <div style={{ padding: '1.5rem', display: 'grid', gap: '1.25rem', maxWidth: '960px', marginInline: 'auto' }}>
+    <div
+      style={{ padding: '1.5rem', display: 'grid', gap: '1.25rem', maxWidth: '960px', marginInline: 'auto' }}
+    >
       <div style={{ display: 'grid', gap: '0.5rem' }}>
-        <div style={{ fontSize: '0.8rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6b7280' }}>
+        <div
+          style={{
+            fontSize: '0.8rem',
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: '#6b7280',
+          }}
+        >
           Draft assistant
         </div>
         <h1 style={{ fontSize: '2rem', lineHeight: 1.1, margin: 0 }}>Create structured drafts in Sanity</h1>
         <p style={{ margin: 0, color: '#4b5563', lineHeight: 1.7 }}>
-          Use this tool to create a draft page or guide directly in Sanity. It creates the required draft document
-          first, then asks Sanity Agent to turn that draft into a structured first pass that editors can finish in
-          Studio.
+          Use this tool to create a draft page or guide directly in Sanity. It creates the required draft
+          document first, then asks Sanity Agent to turn that draft into a structured first pass that editors
+          can finish in Studio.
         </p>
       </div>
 
@@ -353,7 +362,13 @@ export function AiDraftingTool() {
           background: 'white',
         }}
       >
-        <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+        <div
+          style={{
+            display: 'grid',
+            gap: '1rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          }}
+        >
           <Field label="Site">
             <select
               value={form.siteId}
@@ -427,7 +442,13 @@ export function AiDraftingTool() {
           </div>
         </Field>
 
-        <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+        <div
+          style={{
+            display: 'grid',
+            gap: '1rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          }}
+        >
           <Field
             label="Hero image URL"
             hint={
@@ -463,7 +484,12 @@ export function AiDraftingTool() {
             value={form.brief}
             onChange={(event) => setForm((current) => ({ ...current, brief: event.target.value }))}
             placeholder="Describe the angle, audience, claims to avoid, and what the page should help the homeowner decide."
-            style={{ padding: '0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db', resize: 'vertical' }}
+            style={{
+              padding: '0.8rem',
+              borderRadius: '0.6rem',
+              border: '1px solid #d1d5db',
+              resize: 'vertical',
+            }}
           />
         </Field>
 
@@ -473,7 +499,12 @@ export function AiDraftingTool() {
             value={form.sources}
             onChange={(event) => setForm((current) => ({ ...current, sources: event.target.value }))}
             placeholder="https://example.com/source-1"
-            style={{ padding: '0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db', resize: 'vertical' }}
+            style={{
+              padding: '0.8rem',
+              borderRadius: '0.6rem',
+              border: '1px solid #d1d5db',
+              resize: 'vertical',
+            }}
           />
         </Field>
 
@@ -499,7 +530,8 @@ export function AiDraftingTool() {
             {submitting ? 'Creating draft…' : 'Create draft'}
           </button>
           <span style={{ color: '#6b7280', fontSize: '0.9rem' }}>
-            Drafts are created directly in Studio, then handed to Sanity Agent when the schema id is configured.
+            Drafts are created directly in Studio, then handed to Sanity Agent when the schema id is
+            configured.
           </span>
         </div>
       </form>

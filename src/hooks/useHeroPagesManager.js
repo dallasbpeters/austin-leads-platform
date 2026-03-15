@@ -314,11 +314,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
 
       setSelectedPageId(fallbackPage?.id || '')
       setQuery(
-        fallbackPage
-          ? buildDefaultHeroQuery(fallbackPage)
-          : page.site
-            ? buildSiteHeroQuery(page.site)
-            : '',
+        fallbackPage ? buildDefaultHeroQuery(fallbackPage) : page.site ? buildSiteHeroQuery(page.site) : '',
       )
       setResults([])
       setSearchPage(1)

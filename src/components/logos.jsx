@@ -1,7 +1,13 @@
 import Image from 'next/image'
 
 export const Logo01 = (props) => (
-  <Image src="/images/GAF+Commercial+logo-1920w.webp" alt="GAF Commercial" width={300} height={300} {...props} />
+  <Image
+    src="/images/GAF+Commercial+logo-1920w.webp"
+    alt="GAF Commercial"
+    width={300}
+    height={300}
+    {...props}
+  />
 )
 
 export const Logo02 = (props) => (
@@ -15,7 +21,13 @@ export const Logo02 = (props) => (
 )
 
 export const Logo03 = (props) => (
-  <Image src="/images/IKO+RoofSelect+logo-1920w.webp" alt="IKO RoofSelect" width={734} height={716} {...props} />
+  <Image
+    src="/images/IKO+RoofSelect+logo-1920w.webp"
+    alt="IKO RoofSelect"
+    width={734}
+    height={716}
+    {...props}
+  />
 )
 
 export const Logo04 = (props) => (

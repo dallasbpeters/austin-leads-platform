@@ -224,11 +224,11 @@ const launchChecklistDefinition = {
     },
     {
       title: 'Exposure and distribution',
-      description:
-        'Get the live site into real local channels so it is not waiting passively for discovery.',
+      description: 'Get the live site into real local channels so it is not waiting passively for discovery.',
       tasks: [
         {
-          title: 'Publish and distribute the first wave of guides through email, social, and partner channels',
+          title:
+            'Publish and distribute the first wave of guides through email, social, and partner channels',
           notes:
             'Use the launch guides as shareable assets, not just SEO pages. Add UTMs so traffic sources can be measured.',
           status: 'todo',
@@ -244,7 +244,8 @@ const launchChecklistDefinition = {
           priority: 'high',
         },
         {
-          title: 'Build referral and partner outreach with roofers, insurance-facing contacts, and local home-service relationships',
+          title:
+            'Build referral and partner outreach with roofers, insurance-facing contacts, and local home-service relationships',
           notes:
             'Use the site as the destination for referrals, inspection follow-up, and educational content handoff.',
           status: 'todo',
@@ -260,7 +261,8 @@ const launchChecklistDefinition = {
           priority: 'medium',
         },
         {
-          title: 'Review weekly lead quality and tighten the pages that are getting traffic but not producing consultations',
+          title:
+            'Review weekly lead quality and tighten the pages that are getting traffic but not producing consultations',
           notes:
             'Use CRM status, service-interest selection, and page attribution to decide which pages need stronger proof, better CTAs, or different traffic sources.',
           status: 'todo',

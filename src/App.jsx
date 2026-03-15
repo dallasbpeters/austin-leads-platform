@@ -13,8 +13,10 @@ import Band from './components/Band'
 import Testimonails from './components/Testimonials'
 import QuoteSection from './components/QuoteSection'
 import DevTrace from './components/dev/DevTrace'
+import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 
 export default function App({
+  homepage = null,
   heroSection = null,
   resourcesSection = null,
   reviews = [],
@@ -22,6 +24,30 @@ export default function App({
   jsonLd = null,
   homepageSource = 'fixture',
 }) {
+  const homepageSections = homepage?.sections || []
+  const findSection = (type) => homepageSections.find((section) => section.type === type) || null
+  const homepageEditAttrs = getSanityPageEditAttributes(homepage, 'sections')
+  const storySection = findSection('story')
+  const calculatorSection = findSection('calculator')
+  const costsSection = findSection('costs')
+  const guidesSection = findSection('guides')
+  const snapshotSection = findSection('snapshot')
+  const incentivesSection = findSection('incentives')
+  const testimonialsSection = findSection('testimonials')
+  const quoteSection = findSection('quote')
+  const ctaSection = findSection('cta')
+  const heroEditAttrs = getSanitySectionEditAttributes(homepage, heroSection, 'heroTitle')
+  const storyEditAttrs = getSanitySectionEditAttributes(homepage, storySection)
+  const calculatorEditAttrs = getSanitySectionEditAttributes(homepage, calculatorSection)
+  const costsEditAttrs = getSanitySectionEditAttributes(homepage, costsSection)
+  const guidesEditAttrs = getSanitySectionEditAttributes(homepage, guidesSection)
+  const snapshotEditAttrs = getSanitySectionEditAttributes(homepage, snapshotSection)
+  const incentivesEditAttrs = getSanitySectionEditAttributes(homepage, incentivesSection)
+  const testimonialsEditAttrs = getSanitySectionEditAttributes(homepage, testimonialsSection)
+  const quoteEditAttrs = getSanitySectionEditAttributes(homepage, quoteSection)
+  const resourcesEditAttrs = getSanitySectionEditAttributes(homepage, resourcesSection)
+  const consultationEditAttrs = getSanitySectionEditAttributes(homepage, ctaSection)
+
   return (
     <>
       <DevTrace
@@ -31,53 +57,104 @@ export default function App({
       />
       <DevTrace markup="src/components/Header.jsx" content="local JSX nav and service catalog links" />
       <Header />
-      <main>
+      <main {...getSanityPageEditAttributes(homepage, 'title')}>
         <DevTrace
           markup="src/components/Hero.jsx"
           content={`local JSX hero copy + hero media from homepage record (${homepageSource})`}
         />
-        <Hero heroSection={heroSection} />
-        <Band
-          colors={['#2660AE', '#1C447F', '#0C333A', 'var(--color-secondary-alt)', 'var(--color-amber-600)']}
-          tint="var(--color-secondary-950)"
-          maxHeight={12}
+        <div {...heroEditAttrs}>
+          <Hero heroSection={heroSection} />
+        </div>
+        <div {...homepageEditAttrs}>
+          <Band
+            colors={['#2660AE', '#1C447F', '#0C333A', 'var(--color-secondary-alt)', 'var(--color-amber-600)']}
+            tint="var(--color-secondary-950)"
+            maxHeight={12}
+          />
+        </div>
+        <DevTrace
+          markup="src/components/StorySection.jsx"
+          content={storySection ? `homepage story from ${homepageSource}` : 'local fallback story copy'}
         />
-        <DevTrace markup="src/components/StorySection.jsx" content="local JSX copy" />
-        <StorySection />
+        <div {...storyEditAttrs}>
+          <StorySection section={storySection} />
+        </div>
         <DevTrace
           markup="src/components/CalculatorSection.jsx"
-          content="local JSX copy and local calculator logic"
+          content={calculatorSection ? `homepage calculator copy from ${homepageSource}` : 'local JSX copy and local calculator logic'}
         />
-        <CalculatorSection />
-        <DevTrace markup="src/components/CostsSection.jsx" content="local JSX copy" />
-        <CostsSection />
+        <div {...calculatorEditAttrs}>
+          <CalculatorSection section={calculatorSection} />
+        </div>
+        <DevTrace
+          markup="src/components/CostsSection.jsx"
+          content={costsSection ? `homepage costs copy from ${homepageSource}` : 'local JSX copy'}
+        />
+        <div {...costsEditAttrs}>
+          <CostsSection section={costsSection} />
+        </div>
         <DevTrace
           markup="src/components/GuidesSection.jsx"
-          content="local JSX section + guide cards from guides library"
+          content={
+            guidesSection
+              ? `homepage guides framing copy from ${homepageSource} + guide cards from guides library`
+              : 'local JSX section + guide cards from guides library'
+          }
         />
-        <GuidesSection />
-        <DevTrace markup="src/components/SnapshotSection.jsx" content="local JSX copy" />
-        <SnapshotSection />
-        <Band />
-        <DevTrace markup="src/components/IncentivesSection.jsx" content="local JSX copy" />
-        <IncentivesSection />
+        <div {...guidesEditAttrs}>
+          <GuidesSection section={guidesSection} />
+        </div>
+        <DevTrace
+          markup="src/components/SnapshotSection.jsx"
+          content={snapshotSection ? `homepage snapshot copy from ${homepageSource}` : 'local JSX copy'}
+        />
+        <div {...snapshotEditAttrs}>
+          <SnapshotSection section={snapshotSection} />
+        </div>
+        <div {...homepageEditAttrs}>
+          <Band />
+        </div>
+        <DevTrace
+          markup="src/components/IncentivesSection.jsx"
+          content={incentivesSection ? `homepage incentives copy from ${homepageSource}` : 'local JSX copy'}
+        />
+        <div {...incentivesEditAttrs}>
+          <IncentivesSection section={incentivesSection} />
+        </div>
         <DevTrace
           markup="src/components/Testimonials.jsx"
-          content={`homepage reviews from ${reviews.length ? 'sanity' : 'local fallback testimonials'}`}
+          content={
+            testimonialsSection
+              ? `homepage testimonials heading from ${homepageSource} and reviews from ${reviews.length ? 'sanity' : 'local fallback testimonials'}`
+              : `homepage reviews from ${reviews.length ? 'sanity' : 'local fallback testimonials'}`
+          }
         />
-        <Testimonails reviews={reviews} />
-        <DevTrace markup="src/components/QuoteSection.jsx" content="local JSX quote content" />
-        <QuoteSection />
+        <div {...testimonialsEditAttrs}>
+          <Testimonails reviews={reviews} section={testimonialsSection} />
+        </div>
+        <DevTrace
+          markup="src/components/QuoteSection.jsx"
+          content={quoteSection ? `homepage quote from ${homepageSource}` : 'local fallback quote content'}
+        />
+        <div {...quoteEditAttrs}>
+          <QuoteSection
+            quoteText={quoteSection?.body}
+            eyebrow={quoteSection?.eyebrow}
+            attribution={quoteSection?.title}
+          />
+        </div>
         <DevTrace
           markup="src/components/ResourcesSection.jsx"
           content={`typed homepage resource grid from ${resourcesSection ? homepageSource : 'local fallback cards'}`}
         />
-        <ResourcesSection section={resourcesSection} />
+        <div {...resourcesEditAttrs}>
+          <ResourcesSection section={resourcesSection} />
+        </div>
         <DevTrace
           markup="src/components/ConsultationSection.jsx"
-          content="local JSX section + live lead form"
+          content={ctaSection ? `homepage cta from ${homepageSource}` : 'local fallback cta + live lead form'}
         />
-        <ConsultationSection site={site} />
+        <ConsultationSection site={site} section={ctaSection} editAttributes={consultationEditAttrs} />
       </main>
       <DevTrace markup="src/components/Footer.jsx" content="local JSX footer + service catalog links" />
       <Footer />

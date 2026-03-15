@@ -28,14 +28,14 @@ export default function LeadCaptureForm({
   }
 
   return (
-    <form className={cn('flex flex-col gap-6 relative', className)} onSubmit={handleSubmit}>
+    <form className={cn("flex flex-col relative gap-6", className)} onSubmit={handleSubmit}>
       <div>
-        <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Full Name</label>
+        <label className={cn("block mb-2 font-semibold text-sm", labelClassName)}>Full Name</label>
         <input
           type="text"
           placeholder="e.g. Jane Doe"
           className={cn(
-            'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
+            "w-full px-0 py-2 text-sm bg-transparent border-0 border-b outline-none",
             inputClassName,
           )}
           value={form.fullName}
@@ -47,12 +47,12 @@ export default function LeadCaptureForm({
 
       <div className={cn('grid gap-6 md:grid-cols-2', compact && 'grid-cols-1')}>
         <div>
-          <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Email Address</label>
+          <label className={cn("block mb-2 font-semibold text-sm", labelClassName)}>Email Address</label>
           <input
             type="email"
             placeholder="jane@example.com"
             className={cn(
-              'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
+              "w-full px-0 py-2 text-sm bg-transparent border-0 border-b outline-none",
               inputClassName,
             )}
             value={form.email}
@@ -62,12 +62,12 @@ export default function LeadCaptureForm({
           />
         </div>
         <div>
-          <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Phone Number</label>
+          <label className={cn("block mb-2 font-semibold text-sm", labelClassName)}>Phone Number</label>
           <input
             type="tel"
             placeholder="(512) 000-0000"
             className={cn(
-              'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
+              "w-full px-0 py-2 text-sm bg-transparent border-0 border-b outline-none",
               inputClassName,
             )}
             value={form.phone}
@@ -78,11 +78,13 @@ export default function LeadCaptureForm({
       </div>
 
       <div>
-        <label htmlFor="service-interest" className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Service interested in</label>
+        <label htmlFor="service-interest" className={cn("block mb-2 font-semibold text-sm", labelClassName)}>
+          Service interested in
+        </label>
         <select
-        id="service-interest"
+          id="service-interest"
           className={cn(
-            'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
+            "w-full px-0 py-2 text-sm bg-transparent border-0 border-b outline-none",
             inputClassName,
           )}
           value={form.serviceInterest}
@@ -102,14 +104,11 @@ export default function LeadCaptureForm({
         <input
           type="checkbox"
           id={privacyFieldId}
-          className={cn('mt-1 h-4 w-4', checkboxClassName)}
+          className={cn("h-4 w-4 mt-1", checkboxClassName)}
           defaultChecked
           disabled={disabled}
         />
-        <label
-          htmlFor={privacyFieldId}
-          className={cn('text-sm font-semibold', labelClassName)}
-        >
+        <label htmlFor={privacyFieldId} className={cn("font-semibold text-sm", labelClassName)}>
           {checkboxLabel}
         </label>
       </div>
@@ -117,10 +116,10 @@ export default function LeadCaptureForm({
       {message ? (
         <div
           className={cn(
-            'absolute -bottom-18 rounded-sm border px-4 py-3 text-sm',
+            "absolute px-4 py-3 text-sm border rounded-sm -top-20",
             status === 'success'
-              ? 'border-emerald-200 bg-emerald-500 text-emerald-50'
-              : 'border-rose-200 bg-rose-50 text-rose-900',
+              ? "text-emerald-50 bg-emerald-500 border-emerald-200"
+              : "text-rose-900 bg-rose-50 border-rose-200",
             messageClassName,
           )}
         >
@@ -129,7 +128,7 @@ export default function LeadCaptureForm({
       ) : null}
 
       <Button pill type="submit" size="lg" fullWidth disabled={disabled}>
-        {disabled ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
+        {disabled ? <LoaderCircle className="h-4 w-4 mr-2 animate-spin" /> : null}
         {buttonLabel}
       </Button>
     </form>

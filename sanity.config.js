@@ -1,4 +1,5 @@
 import { defineConfig } from 'sanity'
+import { colorInput } from '@sanity/color-input'
 import { structureTool } from 'sanity/structure'
 import { presentationTool } from 'sanity/presentation'
 
@@ -27,6 +28,7 @@ export default defineConfig({
   dataset,
   basePath: studioUrl,
   plugins: [
+    colorInput(),
     structureTool(),
     presentationTool({
       previewUrl: {

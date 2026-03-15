@@ -27,7 +27,7 @@ function JobStatus({ status }) {
   const Icon = statusIcon[status] || LoaderCircle
 
   return (
-    <Badge variant={publishStatusTone[status] || 'outline'} className="inline-flex items-center gap-1.5">
+    <Badge variant={publishStatusTone[status] || 'outline'} className="items-center gap-1.5 inline-flex">
       <Icon className="h-3.5 w-3.5" />
       {status.replace(/_/g, ' ')}
     </Badge>
@@ -41,18 +41,18 @@ export default function PublishClient({ initialJobs, sites }) {
   })
 
   return (
-    <div className="space-y-8 p-6 lg:p-10">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+    <div className="p-6 space-y-8 lg:p-10">
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">AI publishing</p>
-          <h1 className="text-foreground mt-2 text-3xl tracking-tight">Queue-assisted content drafting</h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <h1 className="mt-2 text-3xl text-foreground tracking-tight">Queue-assisted content drafting</h1>
+          <p className="max-w-3xl mt-3 leading-7 text-base text-muted-foreground">
             This phase ships the publishing workflow, review states, and Sanity handoff contract. Real
             provider execution can replace the placeholder gateway later without rebuilding the UI.
           </p>
         </div>
         <Button variant="outline" onClick={() => startTransition(refreshJobs)} disabled={loading}>
-          <RefreshCcw className="mr-2 h-4 w-4" />
+          <RefreshCcw className="h-4 w-4 mr-2" />
           Refresh queue
         </Button>
       </div>
@@ -63,11 +63,11 @@ export default function PublishClient({ initialJobs, sites }) {
             <CardTitle>Preferred workflow: draft in Sanity</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground mb-5 space-y-3 text-sm leading-7">
+            <div className="mb-5 space-y-3 leading-7 text-muted-foreground text-sm">
               <p>
-                The current recommendation is to use the hosted Sanity Studio for AI-assisted drafting and final
-                editing. The Studio tool creates a real draft document first, then lets Sanity Agent build the first
-                pass inside the actual CMS.
+                The current recommendation is to use the hosted Sanity Studio for AI-assisted drafting and
+                final editing. The Studio tool creates a real draft document first, then lets Sanity Agent
+                build the first pass inside the actual CMS.
               </p>
               <p>
                 Use this admin page only as a legacy queue prototype. It is not the primary editorial path.
@@ -78,7 +78,7 @@ export default function PublishClient({ initialJobs, sites }) {
             </div>
             <form className="grid gap-4" onSubmit={submitJob}>
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Target site</label>
+                <label className="font-medium text-foreground text-sm">Target site</label>
                 <Select
                   value={form.siteSlug}
                   onValueChange={(value) => setForm((current) => ({ ...current, siteSlug: value }))}
@@ -97,7 +97,7 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Content type</label>
+                <label className="font-medium text-foreground text-sm">Content type</label>
                 <Select
                   value={form.contentType}
                   onValueChange={(value) => setForm((current) => ({ ...current, contentType: value }))}
@@ -114,7 +114,7 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Working title</label>
+                <label className="font-medium text-foreground text-sm">Working title</label>
                 <Input
                   value={form.title}
                   onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
@@ -123,7 +123,7 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Prompt / brief</label>
+                <label className="font-medium text-foreground text-sm">Prompt / brief</label>
                 <Textarea
                   rows={5}
                   value={form.prompt}
@@ -133,7 +133,7 @@ export default function PublishClient({ initialJobs, sites }) {
               </div>
 
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Reference sources</label>
+                <label className="font-medium text-foreground text-sm">Reference sources</label>
                 <Textarea
                   rows={4}
                   value={form.sources}
@@ -144,14 +144,14 @@ export default function PublishClient({ initialJobs, sites }) {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
-                  <label className="text-foreground text-sm font-medium">Provider</label>
+                  <label className="font-medium text-foreground text-sm">Provider</label>
                   <Input
                     value={form.provider}
                     onChange={(event) => setForm((current) => ({ ...current, provider: event.target.value }))}
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-foreground text-sm font-medium">Model</label>
+                  <label className="font-medium text-foreground text-sm">Model</label>
                   <Input
                     value={form.model}
                     onChange={(event) => setForm((current) => ({ ...current, model: event.target.value }))}
@@ -191,7 +191,7 @@ export default function PublishClient({ initialJobs, sites }) {
                     {jobs.map((job) => (
                       <TableRow key={job.id}>
                         <TableCell>
-                          <div className="text-foreground font-medium">{job.title}</div>
+                          <div className="font-medium text-foreground">{job.title}</div>
                           <div className="text-muted-foreground text-sm">{job.contentType}</div>
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">{job.siteSlug}</TableCell>
@@ -233,9 +233,9 @@ export default function PublishClient({ initialJobs, sites }) {
                   ['approved', 'Editorial review passed and the job is ready to publish.'],
                   ['published', 'The draft was handed off to the CMS layer.'],
                 ].map(([label, body]) => (
-                  <div className="border-border bg-muted/30 rounded-xl border p-4" key={label}>
-                    <div className="text-foreground font-medium">{label}</div>
-                    <div className="text-muted-foreground mt-2 text-sm leading-6">{body}</div>
+                  <div className="p-4 bg-muted/30 border border-border rounded-xl" key={label}>
+                    <div className="font-medium text-foreground">{label}</div>
+                    <div className="mt-2 leading-6 text-muted-foreground text-sm">{body}</div>
                   </div>
                 ))}
               </CardContent>

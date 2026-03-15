@@ -1,8 +1,4 @@
-import {
-  getLeadRoutingSettingsRow,
-  hasLeadDatabase,
-  upsertLeadRoutingSettingsRow,
-} from './db.mjs'
+import { getLeadRoutingSettingsRow, hasLeadDatabase, upsertLeadRoutingSettingsRow } from './db.mjs'
 
 const DEFAULT_RECIPIENT = 'kathy@texassolarandroofing.com'
 const DEFAULT_FROM_NAME = 'Texas Solar and Roofing Pros'

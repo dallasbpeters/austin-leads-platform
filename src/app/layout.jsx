@@ -42,13 +42,13 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
-      <body className="bg-background text-foreground has-[admin-theme]:overflow-hidden">
+      <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">
         <Script
           src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"
           strategy="beforeInteractive"
         />
         {children}
-        <VercelToolbar />
+        {!isDraftMode ? <VercelToolbar /> : null}
         <SanityLive />
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />

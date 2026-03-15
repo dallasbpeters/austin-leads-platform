@@ -1,8 +1,9 @@
+
 # Austin Leads Platform
 
 Austin Leads Platform is a multi-tenant Next.js application for Texas local-service lead generation. It combines:
 
-- a preserved custom homepage for `Austin Solar Pros`
+- a preserved custom homepage for `Texas Solar & Roofing Pros`
 - a generic public renderer for the rest of the tenant pages
 - a protected internal admin for operations
 - Sanity as the working CMS
@@ -16,7 +17,7 @@ This repo is not a generic brochure site. It is one engine serving multiple doma
 
 - `/` renders the preserved Austin Solar homepage from [`src/App.jsx`](./src/App.jsx)
 - the generic tenant renderer lives in [`src/components/platform/PublicSite.jsx`](./src/components/platform/PublicSite.jsx)
-- catch-all public routing lives in [`src/app/(site)/[[...slug]]/page.jsx`](./src/app/(site)/[[...slug]]/page.jsx)
+- catch-all public routing lives in [`src/app/(site)/[[...slug]]/page.jsx`](<./src/app/(site)/[[...slug]]/page.jsx>)
 - tenant/content resolution lives in [`src/lib/platform/content.js`](./src/lib/platform/content.js)
 
 Current public page families include:
