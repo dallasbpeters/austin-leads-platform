@@ -1,0 +1,26 @@
+/**
+* @license
+*
+* Font Family: Bespoke Serif
+* Designed by: Jeremie Hornus, Theo Guillard, Morgane Pambrun, Alisa Nowak, Joachim Vu
+* URL: https://www.fontshare.com/fonts/bespoke-serif
+* © 2026 Indian Type Foundry
+*
+/**
+* This is a variable font
+* You can control variable axes as shown below:
+* font-variation-settings: wght 300.0wght 800.0;
+*
+* available axes:
+'wght' (range from 300.0 to 800.0'wght' (range from 300.0 to 800.0
+*/
+@font-face {
+  font-family: 'BespokeSerif-Variable';
+  src: url('/fonts/BespokeSerif-Variable.woff2') format('woff2'),
+       url('/fonts/BespokeSerif-Variable.woff') format('woff'),
+       url('/fonts/BespokeSerif-Variable.ttf') format('truetype');
+  font-weight: 300 800;
+  font-display: swap;
+  font-style: normal;
+}
+

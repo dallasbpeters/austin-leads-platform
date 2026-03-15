@@ -95,8 +95,10 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
             <Image
               width={3000}
               height={3000}
-              quality={100}
+              quality={82}
               sizes="100vw"
+              priority
+              fetchPriority="high"
               alt={getImageAlt(section.heroAsset, section.heroImage, heroTitle)}
               className="h-full w-full object-cover"
               src={heroImageUrl}

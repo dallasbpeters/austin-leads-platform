@@ -56,7 +56,7 @@ export default function CostsSection({ section = null, sectionId = 'costs', edit
         <div className="grid gap-12 my-16 lg:grid-cols-3">
           {stats.map((item) => (
             <div key={item._key || item.title}>
-              <p className="mb-3 font-semibold text-5xl text-neutral-900">{item.number || item.title}</p>
+              <p className="mb-3 font-bold text-6xl text-neutral-900">{item.number || item.title}</p>
               <p className="mb-3 font-semibold text-cyan-800 text-sm tracking-[0.2em] uppercase">
                 {item.title || item.eyebrow}
               </p>
