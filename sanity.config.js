@@ -14,6 +14,7 @@ import {
   studioUrl,
 } from './src/sanity/env'
 import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
+import { pageSpeedTool } from './src/sanity/tools/pageSpeedTool'
 import { schemaTypes } from './src/sanity/schemaTypes'
 import { presentationDocuments, presentationLocations } from './src/sanity/presentation'
 
@@ -56,7 +57,7 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
-  tools: (prev) => [...prev, aiDraftingTool()],
+  tools: (prev) => [...prev, aiDraftingTool(), pageSpeedTool()],
   studio: {
     components: {
       layout: (props) => props.renderDefault(props),
