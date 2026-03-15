@@ -81,7 +81,7 @@ function buildDerivedFallbackPoints({ title, brief, sources, contentType }) {
         contentType === 'post'
           ? `What to understand first`
           : contentType === 'servicePage'
-            ? `What the scope should cover`
+            ? `What the plan should cover`
             : `Key point ${index + 1}`,
       body: item,
     }))
@@ -89,7 +89,8 @@ function buildDerivedFallbackPoints({ title, brief, sources, contentType }) {
 
   return [
     {
-      title: contentType === 'post' ? 'What this guide helps clarify' : 'What the homeowner is trying to solve',
+      title:
+        contentType === 'post' ? 'What this guide helps clarify' : 'What the homeowner is trying to solve',
       body:
         first ||
         `Use this draft to explain the real homeowner decision around ${cleanTitle || 'the topic'} in plain language.`,
@@ -102,9 +103,7 @@ function buildDerivedFallbackPoints({ title, brief, sources, contentType }) {
     },
     {
       title: contentType === 'post' ? 'What should happen next' : 'What the next step should be',
-      body:
-        third ||
-        `Give the reader a clearer next step so the page does not stop at explanation alone.`,
+      body: third || `Give the reader a clearer next step so the page does not stop at explanation alone.`,
     },
   ]
 }
@@ -146,7 +145,7 @@ function buildDerivedFallbackSteps({ title, brief, sources, contentType }) {
               `Start with the real problem that leads someone to look into ${cleanTitle || 'this service'}.`,
           },
           {
-            title: 'Show what a good scope should include',
+            title: 'Show what a good plan should include',
             body:
               sourceHints[0] ||
               briefSentences[1] ||
@@ -205,7 +204,7 @@ export function buildFallbackDraftContent(input) {
         `This guide should help Texas homeowners understand how ${cleanTitle || 'this topic'} works in real life before they make a decision.`
       : input.contentType === 'servicePage'
         ? firstBriefSentence ||
-          `This page should explain when ${cleanTitle || 'this service'} makes sense, what a good scope includes, and what the homeowner should do next.`
+          `This page should explain when ${cleanTitle || 'this service'} makes sense, what a good plan includes, and what the homeowner should do next.`
         : input.contentType === 'locationPage'
           ? firstBriefSentence ||
             `This page should explain what homeowners in this market need to know about ${cleanTitle || 'the issue'} before they commit to a next step.`
@@ -245,12 +244,13 @@ export function buildFallbackDraftContent(input) {
     faq: [
       {
         question: 'What should this page help the reader decide?',
-        answer:
-          firstBriefSentence ||
-          faqIntro,
+        answer: firstBriefSentence || faqIntro,
       },
       {
-        question: input.contentType === 'post' ? 'What details should be clarified in the body?' : 'What details should be clarified before publishing?',
+        question:
+          input.contentType === 'post'
+            ? 'What details should be clarified in the body?'
+            : 'What details should be clarified before publishing?',
         answer:
           sourceLines[0] ||
           secondBriefSentence ||
@@ -303,8 +303,7 @@ export function buildFallbackDraftSections(draft) {
 
 export function buildDraftSkeleton(input) {
   const schemaType = toDraftSchemaType(input.contentType)
-  const normalizedSlug =
-    slugifyDraftValue(input.slug || input.title) || `draft-${Date.now().toString(36)}`
+  const normalizedSlug = slugifyDraftValue(input.slug || input.title) || `draft-${Date.now().toString(36)}`
   const normalizedDocumentIdPart =
     sanitizeDraftDocumentIdPart(normalizedSlug) || `draft-${Date.now().toString(36)}`
   const baseDocumentId = `${schemaType}-${normalizedDocumentIdPart}`.slice(0, 120)

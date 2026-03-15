@@ -47,18 +47,18 @@
 
   --color-tidal: oklch(95.49% 0.11 118.86deg);
   --color-voodoo: oklch(32.87% 0.06 332.81deg);
-  --color-chalet-green:oklch(45.52% 0.08 127.48deg);
-  --color-tasman:oklch(87.92% 0.03 140.12deg);
-  --color-metterhorn:oklch(32.6% 0.04 350.45deg);
-  --color-heather:oklch(84.9% 0.03 244.95deg);
-  --color-charade:oklch(28.29% 0.03 270.21deg);
-  --color-wattle:oklch(87.43% 0.16 108.14deg);
-  --color-ceramic:oklch(98.39% 0.01 125.5deg);
-  --color-tapa-green:oklch(36.1% 0.03 164.74deg);
-  --color-sea-mist:oklch(86.57% 0.03 156.49deg);
-  --color-sweetcorn:oklch(93.57% 0.13 101.75deg);
-  --color-black-current:oklch(32.05% 0.04 322.94deg);
-  --color-confetti:oklch(84.99% 0.14 104.07deg);
+  --color-chalet-green: oklch(45.52% 0.08 127.48deg);
+  --color-tasman: oklch(87.92% 0.03 140.12deg);
+  --color-metterhorn: oklch(32.6% 0.04 350.45deg);
+  --color-heather: oklch(84.9% 0.03 244.95deg);
+  --color-charade: oklch(28.29% 0.03 270.21deg);
+  --color-wattle: oklch(87.43% 0.16 108.14deg);
+  --color-ceramic: oklch(98.39% 0.01 125.5deg);
+  --color-tapa-green: oklch(36.1% 0.03 164.74deg);
+  --color-sea-mist: oklch(86.57% 0.03 156.49deg);
+  --color-sweetcorn: oklch(93.57% 0.13 101.75deg);
+  --color-black-current: oklch(32.05% 0.04 322.94deg);
+  --color-confetti: oklch(84.99% 0.14 104.07deg);
 
   --color-warm-bg: hsl(calc(var(--color-primary-h) - 2) 54% 199%);
   --color-surface: hsl(calc(var(--color-primary-h) - 2) 34% 95%);
@@ -164,7 +164,7 @@
   --sidebar-accent-foreground: hsl(0 0% 11%);
   --sidebar-border: hsl(0 0% 89%);
   --sidebar-ring: hsl(0 0% 11%);
-  --shadow-xs: 0 ;
+  --shadow-xs: 0;
   --shadow-sm: 0;
   --shadow-md: 0;
   --shadow-lg: 0;
@@ -297,7 +297,7 @@ body.admin-body-locked {
       transform 200ms ease-out,
       box-shadow 200ms ease-out,
       background-color 200ms ease-out,
-      color 200ms ease-out,
+      color 200ms ease-out;
   }
 
   .btn:disabled {
@@ -531,15 +531,15 @@ body.admin-body-locked {
   .bg-primary-700 {
     background-color: var(--color-primary-700);
   }
-  
+
   .bg-primary-800 {
     background-color: var(--color-primary-800);
   }
-  
+
   .bg-primary-900 {
     background-color: var(--color-primary-900);
   }
-  
+
   .bg-secondary {
     background-color: var(--color-secondary);
     color: var(--color-secondary-foreground);

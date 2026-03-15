@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils'
 export default function LeadCaptureForm({
   context,
   buttonLabel = 'Request a Consultation',
-  compact = false,
   checkboxLabel = 'I agree to be contacted about my inquiry. We do not sell your information.',
   className,
   inputClassName,
@@ -28,61 +27,28 @@ export default function LeadCaptureForm({
   }
 
   return (
-    <form className={cn('flex flex-col gap-6 relative', className)} onSubmit={handleSubmit}>
-      <div>
-        <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Full Name</label>
+    <form className={cn("flex flex-col relative gap-6", className)} onSubmit={handleSubmit}>
+      <div className="inline-block text-md leading-8">
+        <label className={cn("inline mr-2 font-semibold ", labelClassName)}>My Name is</label>
         <input
           type="text"
-          placeholder="e.g. Jane Doe"
+          placeholder="first name last name"
           className={cn(
-            'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
+            " w-80 text-inherit inline px-0 py-2 bg-transparent border-0 border-b outline-none",
             inputClassName,
           )}
           value={form.fullName}
           onChange={updateField('fullName')}
           disabled={disabled}
           required
-        />
-      </div>
-
-      <div className={cn('grid gap-6 md:grid-cols-2', compact && 'grid-cols-1')}>
-        <div>
-          <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Email Address</label>
-          <input
-            type="email"
-            placeholder="jane@example.com"
-            className={cn(
-              'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
-              inputClassName,
-            )}
-            value={form.email}
-            onChange={updateField('email')}
-            disabled={disabled}
-            required
-          />
-        </div>
-        <div>
-          <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Phone Number</label>
-          <input
-            type="tel"
-            placeholder="(512) 000-0000"
-            className={cn(
-              'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
-              inputClassName,
-            )}
-            value={form.phone}
-            onChange={updateField('phone')}
-            disabled={disabled}
-          />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="service-interest" className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Service interested in</label>
+        /><br/>
+        <label htmlFor="service-interest" className={cn("inline mr-2 font-semibold", labelClassName)}>
+          and I am interested in
+        </label>
         <select
-        id="service-interest"
+          id="service-interest"
           className={cn(
-            'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
+            "text-inherit inline mr-4 px-0 py-2 bg-transparent border-0 border-b outline-none",
             inputClassName,
           )}
           value={form.serviceInterest}
@@ -96,20 +62,46 @@ export default function LeadCaptureForm({
             </option>
           ))}
         </select>
+        <br/>
+          <label className={cn("inline mr-2 font-semibold", labelClassName)}>Please contact me at:</label>
+          <input
+            type="email"
+            placeholder="email address"
+            className={cn(
+              "w-60 text-inherit inline px-0 py-2 bg-transparent border-0 border-b outline-none",
+              inputClassName,
+            )}
+            value={form.email}
+            onChange={updateField('email')}
+            disabled={disabled}
+            required
+          />
+           <br/>
+          <label className={cn("inline mr-2 font-semibold", labelClassName)}>or my phone number:</label>
+          <input
+            type="tel"
+            placeholder="phone number"
+            className={cn(
+              "w-60 text-inherit inline px-0 py-2 bg-transparent border-0 border-b outline-none",
+              inputClassName,
+            )}
+            value={form.phone}
+            onChange={updateField('phone')}
+            disabled={disabled}
+          />
+
+        
       </div>
 
       <div className="flex items-start gap-3 pt-2">
         <input
           type="checkbox"
           id={privacyFieldId}
-          className={cn('mt-1 h-4 w-4', checkboxClassName)}
+          className={cn("h-4 w-4 mt-0.5", checkboxClassName)}
           defaultChecked
           disabled={disabled}
         />
-        <label
-          htmlFor={privacyFieldId}
-          className={cn('text-sm font-semibold', labelClassName)}
-        >
+        <label htmlFor={privacyFieldId} className={cn("font-semibold text-sm", labelClassName)}>
           {checkboxLabel}
         </label>
       </div>
@@ -117,10 +109,10 @@ export default function LeadCaptureForm({
       {message ? (
         <div
           className={cn(
-            'absolute -bottom-18 rounded-sm border px-4 py-3 text-sm',
+            "absolute px-4 py-3 text-sm border rounded-sm -top-20",
             status === 'success'
-              ? 'border-emerald-200 bg-emerald-500 text-emerald-50'
-              : 'border-rose-200 bg-rose-50 text-rose-900',
+              ? "text-emerald-50 bg-emerald-500 border-emerald-200"
+              : "text-rose-900 bg-rose-50 border-rose-200",
             messageClassName,
           )}
         >
@@ -129,7 +121,7 @@ export default function LeadCaptureForm({
       ) : null}
 
       <Button pill type="submit" size="lg" fullWidth disabled={disabled}>
-        {disabled ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
+        {disabled ? <LoaderCircle className="h-4 w-4 mr-2 animate-spin" /> : null}
         {buttonLabel}
       </Button>
     </form>

@@ -15,7 +15,10 @@ try {
     const eqIndex = trimmed.indexOf('=')
     if (eqIndex === -1) continue
     const key = trimmed.slice(0, eqIndex).trim()
-    const value = trimmed.slice(eqIndex + 1).trim().replace(/^["']|["']$/g, '')
+    const value = trimmed
+      .slice(eqIndex + 1)
+      .trim()
+      .replace(/^["']|["']$/g, '')
     if (!process.env[key]) process.env[key] = value
   }
 } catch {
@@ -43,7 +46,6 @@ const client = createClient({
 })
 
 const fixtureSiteSlug = 'texas-solar-and-roofing-pros'
-const legacySiteSlug = 'austin-solar-pros'
 const siteFixture = sites.find((site) => site.slug === fixtureSiteSlug)
 
 if (!siteFixture) {
@@ -54,7 +56,7 @@ if (!siteFixture) {
 async function ensureSite() {
   const existing = await client.fetch(
     `*[_type == "site" && (slug.current in $siteSlugs || primaryDomain == $primaryDomain)][0]{_id,"slug":slug.current}`,
-    { siteSlugs: [fixtureSiteSlug, legacySiteSlug], primaryDomain: siteFixture.primaryDomain },
+    { siteSlugs: [fixtureSiteSlug], primaryDomain: siteFixture.primaryDomain },
   )
 
   if (existing?._id) {
@@ -88,9 +90,9 @@ async function ensureSite() {
   }
 }
 
-function toSanityDocument(page, siteId, existingId) {
+function toSanityDocument(page, siteId) {
   return {
-    _id: existingId || page.id,
+    _id: page.id,
     _type: page.pageType === 'post' ? 'post' : 'page',
     title: page.title,
     description: page.description,
@@ -108,93 +110,11 @@ function toSanityDocument(page, siteId, existingId) {
   }
 }
 
-function mergeSeedSections(seedSections, existingSections = []) {
-  const keyedExistingSections = new Map((existingSections || []).map((section) => [section.type, section]))
-
-  return withSectionKeys(
-    (seedSections || []).map((section) => {
-      const existingSection = keyedExistingSections.get(section.type)
-
-      if (!existingSection) {
-        return section
-      }
-
-      const mergedSection = {
-        ...section,
-        heroAsset: existingSection.heroAsset || section.heroAsset,
-        heroTextColor: existingSection.heroTextColor || section.heroTextColor,
-        heroOverlayColor: existingSection.heroOverlayColor || section.heroOverlayColor,
-        heroOverlayStartColor: existingSection.heroOverlayStartColor || section.heroOverlayStartColor,
-        heroOverlayEndColor: existingSection.heroOverlayEndColor || section.heroOverlayEndColor,
-        heroOverlayDirection: existingSection.heroOverlayDirection || section.heroOverlayDirection,
-        heroOverlayStartOpacity: existingSection.heroOverlayStartOpacity ?? section.heroOverlayStartOpacity,
-        heroOverlayEndOpacity: existingSection.heroOverlayEndOpacity ?? section.heroOverlayEndOpacity,
-        heroOverlayOpacity: existingSection.heroOverlayOpacity ?? section.heroOverlayOpacity,
-      }
-
-      if (!Array.isArray(section.items) || !Array.isArray(existingSection.items)) {
-        return mergedSection
-      }
-
-      const existingItemsByTitle = new Map(
-        existingSection.items.map((item) => [item.title || item.question, item]),
-      )
-
-      return {
-        ...mergedSection,
-        items: section.items.map((item) => {
-          const existingItem = existingItemsByTitle.get(item.title || item.question)
-
-          if (!existingItem) {
-            return item
-          }
-
-          return {
-            ...item,
-            imageAsset: existingItem.imageAsset || item.imageAsset,
-          }
-        }),
-      }
-    }),
+async function hasExistingPage(siteSlug, slug) {
+  return client.fetch(
+    `defined(*[_type in ["page", "post"] && site->slug.current == $siteSlug && slug.current == $slug][0]._id)`,
+    { siteSlug, slug: slug || '/' },
   )
-}
-
-async function upsertPage(page, siteId, siteSlugForQuery) {
-  const existing = await client.fetch(
-    `*[_type in ["page", "post"] && site->slug.current == $siteSlug && slug.current == $slug][0]{
-      _id,
-      sections[]{
-        type,
-        heroAsset,
-        heroImage,
-        heroTextColor,
-        heroOverlayColor,
-        heroOverlayStartColor,
-        heroOverlayEndColor,
-        heroOverlayDirection,
-        heroOverlayStartOpacity,
-        heroOverlayEndOpacity,
-        heroOverlayOpacity,
-        items[]{
-          title,
-          question,
-          image,
-          imageAsset
-        }
-      }
-    }`,
-    { siteSlug: siteSlugForQuery, slug: page.slug || '/' },
-  )
-
-  const document = toSanityDocument(
-    {
-      ...page,
-      sections: mergeSeedSections(page.sections, existing?.sections),
-    },
-    siteId,
-    existing?._id,
-  )
-  await client.createOrReplace(document)
 }
 
 async function main() {
@@ -204,11 +124,24 @@ async function main() {
       page.siteSlug === fixtureSiteSlug && (page.slug === 'guides' || page.slug.startsWith('guides/')),
   )
 
+  let createdCount = 0
+  let skippedCount = 0
+
   for (const page of guidePages) {
-    await upsertPage(page, siteRecord._id, siteRecord.slug)
+    const exists = await hasExistingPage(siteRecord.slug, page.slug)
+
+    if (exists) {
+      skippedCount += 1
+      continue
+    }
+
+    await client.create(toSanityDocument(page, siteRecord._id))
+    createdCount += 1
   }
 
-  console.log(`Seeded ${guidePages.length} guide documents for ${siteRecord.slug}.`)
+  console.log(
+    `Seeded ${createdCount} missing guide documents for ${siteRecord.slug}. Skipped ${skippedCount} existing guides.`,
+  )
 }
 
 main().catch((error) => {

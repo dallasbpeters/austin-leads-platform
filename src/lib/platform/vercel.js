@@ -1,9 +1,45 @@
+import { existsSync, readFileSync } from 'node:fs'
+import path from 'node:path'
+
 const API_BASE = 'https://api.vercel.com'
 
+let linkedProjectConfig = null
+
+function getLinkedProjectConfig() {
+  if (linkedProjectConfig !== null) {
+    return linkedProjectConfig
+  }
+
+  const configPath = path.join(process.cwd(), '.vercel', 'project.json')
+
+  if (!existsSync(configPath)) {
+    linkedProjectConfig = null
+    return linkedProjectConfig
+  }
+
+  try {
+    const parsed = JSON.parse(readFileSync(configPath, 'utf8'))
+    linkedProjectConfig = {
+      projectId: parsed?.projectId || '',
+      projectName: parsed?.projectName || '',
+      orgId: parsed?.orgId || '',
+    }
+  } catch {
+    linkedProjectConfig = null
+  }
+
+  return linkedProjectConfig
+}
+
 function getVercelConfig() {
+  const linkedProject = getLinkedProjectConfig()
   const token = process.env.VERCEL_TOKEN
-  const projectIdOrName = process.env.VERCEL_PROJECT_ID || process.env.VERCEL_PROJECT_NAME
-  const teamId = process.env.VERCEL_TEAM_ID
+  const projectIdOrName =
+    process.env.VERCEL_PROJECT_ID ||
+    process.env.VERCEL_PROJECT_NAME ||
+    linkedProject?.projectId ||
+    linkedProject?.projectName
+  const teamId = process.env.VERCEL_TEAM_ID || linkedProject?.orgId
   const slug = process.env.VERCEL_TEAM_SLUG
 
   return {

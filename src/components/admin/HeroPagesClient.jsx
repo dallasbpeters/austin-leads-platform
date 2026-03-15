@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 
 function ResultCard({ photo, onSelect, saving, canSelect }) {
   return (
-    <Card className="border-border/70 bg-background overflow-hidden">
+    <Card className="bg-background border-border/70 overflow-hidden">
       <div className="bg-muted aspect-square">
         <img
           alt={photo.alt}
@@ -27,16 +27,16 @@ function ResultCard({ photo, onSelect, saving, canSelect }) {
           src={photo.urls.small || photo.urls.regular || photo.urls.thumb}
         />
       </div>
-      <CardContent className="space-y-3 p-4">
+      <CardContent className="p-4 space-y-3">
         <div className="space-y-1">
-          <p className="text-foreground line-clamp-2 text-sm font-medium">{photo.alt}</p>
+          <p className="font-medium text-foreground text-sm line-clamp-2">{photo.alt}</p>
           <p className="text-muted-foreground text-sm">
             {photo.user?.name ? `Photo by ${photo.user.name}` : 'Unsplash contributor'}
           </p>
         </div>
         <div className="flex items-center justify-between gap-3">
           <a
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
+            className="items-center gap-1 text-muted-foreground text-sm hover:text-foreground inline-flex"
             href={photo.links.html}
             rel="noreferrer"
             target="_blank"
@@ -97,7 +97,9 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
       return
     }
 
-    const confirmed = window.confirm(`Delete "${selectedPage.title}"? This removes the hero page from Sanity.`)
+    const confirmed = window.confirm(
+      `Delete "${selectedPage.title}"? This removes the hero page from Sanity.`,
+    )
 
     if (!confirmed) {
       return
@@ -107,14 +109,14 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
   }
 
   return (
-    <div className="space-y-8 p-6 lg:p-10">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+    <div className="p-6 space-y-8 lg:p-10">
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Hero pages</p>
-          <h1 className="text-foreground mt-2 text-3xl tracking-tight">
+          <h1 className="mt-2 text-3xl text-foreground tracking-tight">
             Search Unsplash and attach hero images
           </h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <p className="max-w-3xl mt-3 leading-7 text-base text-muted-foreground">
             Choose a hero-tier page, search Unsplash from the admin, then store the selected image metadata
             directly on the hero section in Sanity.
           </p>
@@ -138,13 +140,13 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
             <CardContent>
               <form className="space-y-4" onSubmit={createPage}>
                 {!canCreatePages ? (
-                  <div className="border-border bg-muted/20 text-muted-foreground rounded-xl border border-dashed px-4 py-4 text-sm leading-7">
+                  <div className="px-4 py-4 leading-7 text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
                     Add `SANITY_API_WRITE_TOKEN` to create pages from this admin.
                   </div>
                 ) : null}
 
                 {!heroSites.length ? (
-                  <div className="border-border bg-muted/20 text-muted-foreground rounded-xl border border-dashed px-4 py-4 text-sm leading-7">
+                  <div className="px-4 py-4 leading-7 text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
                     No hero-tier site documents exist in Sanity yet. Create or import site documents first,
                     then you can add pages here.
                   </div>
@@ -236,7 +238,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                       }
                       type="submit"
                     >
-                      {creating ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
+                      {creating ? <LoaderCircle className="h-4 w-4 mr-2 animate-spin" /> : null}
                       Create page
                     </Button>
                   </>
@@ -245,52 +247,40 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
             </CardContent>
           </Card>
 
-          
-              {heroSites.length ? (
-                heroSites.map((site) => {
-                  const sitePages = pages.filter((entry) => entry.site?.id === site.id)
-                  const page = sitePages[0]
-                  const active = site.id === selectedSiteId
-                  const hasHeroMedia = hasImageSource(
-                    page?.heroSection?.heroAsset,
-                    page?.heroSection?.heroImage,
-                  )
-                  
+          {heroSites.length ? (
+            heroSites.map((site) => {
+              const sitePages = pages.filter((entry) => entry.site?.id === site.id)
+              const page = sitePages[0]
+              const active = site.id === selectedSiteId
+              const hasHeroMedia = hasImageSource(page?.heroSection?.heroAsset, page?.heroSection?.heroImage)
 
-                  return (
-                    <Card
-                    key={site.id}
-                    onClick={() => selectSite(site)}
-                    >
-            <CardHeader>
-              <CardTitle>{site.name}</CardTitle>
-              <CardDescription>{site.primaryDomain}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-
-                        <Badge variant={active ? 'secondary' : 'default'}>
-                          {active ? 'Editing' : 'Select'}
-                        </Badge>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <Badge variant={sitePages.length ? 'outline' : 'outline'}>
-                          {sitePages.length
-                            ? `${sitePages.length} hero page${sitePages.length === 1 ? '' : 's'}`
-                            : 'No hero pages'}
-                        </Badge>
-                        <Badge variant={hasHeroMedia ? 'outline' : 'outline'}>
-                          {hasHeroMedia ? 'Image set' : 'No image'}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                    </Card>
-                  )
-                })
-              ) : (
-                <div className="border-border bg-muted/20 text-muted-foreground rounded-xl border border-dashed px-4 py-8 text-sm leading-7">
-                  No hero sites are available yet. Create or import hero-tier site records first.
-                </div>
-              )}
-           
+              return (
+                <Card key={site.id} onClick={() => selectSite(site)}>
+                  <CardHeader>
+                    <CardTitle>{site.name}</CardTitle>
+                    <CardDescription>{site.primaryDomain}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <Badge variant={active ? 'secondary' : 'default'}>{active ? 'Editing' : 'Select'}</Badge>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      <Badge variant={sitePages.length ? 'outline' : 'outline'}>
+                        {sitePages.length
+                          ? `${sitePages.length} hero page${sitePages.length === 1 ? '' : 's'}`
+                          : 'No hero pages'}
+                      </Badge>
+                      <Badge variant={hasHeroMedia ? 'outline' : 'outline'}>
+                        {hasHeroMedia ? 'Image set' : 'No image'}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })
+          ) : (
+            <div className="px-4 py-8 leading-7 text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
+              No hero sites are available yet. Create or import hero-tier site records first.
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -304,12 +294,12 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                   <div className="text-muted-foreground text-sm tracking-[0.18em] uppercase">
                     {selectedSite?.name || 'No site selected'}
                   </div>
-                  <h2 className="text-foreground text-2xl tracking-tight">
+                  <h2 className="text-2xl text-foreground tracking-tight">
                     {selectedPage?.heroSection?.title ||
                       selectedPage?.title ||
                       (selectedSite ? `${selectedSite.name} homepage` : 'No hero site selected')}
                   </h2>
-                  <p className="text-muted-foreground text-sm leading-7">
+                  <p className="leading-7 text-muted-foreground text-sm">
                     {selectedPage?.heroSection?.body ||
                       (selectedPage
                         ? 'This homepage is ready for a hero image.'
@@ -339,9 +329,9 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                           variant="outline"
                         >
                           {deletingPageId === selectedPage.id ? (
-                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                            <LoaderCircle className="h-4 w-4 mr-2 animate-spin" />
                           ) : (
-                            <Trash2 className="mr-2 h-4 w-4" />
+                            <Trash2 className="h-4 w-4 mr-2" />
                           )}
                           Delete page
                         </Button>
@@ -351,10 +341,10 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                 </div>
 
                 {selectedSite ? (
-                  <div className="border-border bg-muted/20 space-y-3 rounded-xl border p-4">
+                  <div className="p-4 space-y-3 bg-muted/20 border border-border rounded-xl">
                     <div>
-                      <div className="text-foreground text-sm font-medium">Pages for this site</div>
-                      <div className="text-muted-foreground mt-1 text-sm leading-6">
+                      <div className="font-medium text-foreground text-sm">Pages for this site</div>
+                      <div className="mt-1 leading-6 text-muted-foreground text-sm">
                         Switch between hero pages attached to {selectedSite.name}.
                       </div>
                     </div>
@@ -371,10 +361,10 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                           return (
                             <button
                               className={cn(
-                                'w-full rounded-xl border px-4 py-4 text-left transition-colors',
+                                "w-full px-4 py-4 text-left border rounded-xl transition-colors",
                                 active
-                                  ? 'shadow-theme-sm border-primary bg-primary/8 ring-primary/15 ring-1'
-                                  : 'border-border bg-background hover:border-border/90 hover:bg-background',
+                                  ? "bg-primary/8 border-primary shadow-theme-sm ring-1 ring-primary/15"
+                                  : "bg-background border-border hover:bg-background hover:border-border/90",
                               )}
                               key={page.id}
                               onClick={() => selectPage(page)}
@@ -382,10 +372,10 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                             >
                               <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div className="min-w-0">
-                                  <div className="text-foreground truncate text-sm font-medium">
+                                  <div className="font-medium text-foreground text-sm truncate">
                                     {page.title}
                                   </div>
-                                  <div className="text-muted-foreground mt-1 text-sm">
+                                  <div className="mt-1 text-muted-foreground text-sm">
                                     {page.slug ? `/${page.slug}` : '/'}
                                   </div>
                                 </div>
@@ -393,7 +383,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                                   {active ? 'Editing' : 'Open'}
                                 </Badge>
                               </div>
-                              <div className="mt-3 flex flex-wrap gap-2">
+                              <div className="flex flex-wrap gap-2 mt-3">
                                 <Badge variant="outline">
                                   {page.pageType === 'home'
                                     ? 'Home'
@@ -412,14 +402,14 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                         })}
                       </div>
                     ) : (
-                      <div className="border-border bg-background text-muted-foreground rounded-xl border border-dashed px-4 py-4 text-sm leading-7">
+                      <div className="px-4 py-4 leading-7 text-muted-foreground text-sm bg-background border border-border border-dashed rounded-xl">
                         This site has no hero pages yet. Create one from the form on the left.
                       </div>
                     )}
                   </div>
                 ) : null}
 
-                <form className="flex flex-col gap-3 md:flex-row" onSubmit={searchPhotos}>
+                <form className="flex flex-col md:flex-row gap-3" onSubmit={searchPhotos}>
                   <Input
                     disabled={!unsplashEnabled}
                     onChange={(event) => setQuery(event.target.value)}
@@ -428,34 +418,34 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                   />
                   <Button disabled={!unsplashEnabled || !query || loading} type="submit">
                     {loading ? (
-                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                      <LoaderCircle className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
-                      <Search className="mr-2 h-4 w-4" />
+                      <Search className="h-4 w-4 mr-2" />
                     )}
                     Search Unsplash
                   </Button>
                 </form>
 
                 {message ? (
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                  <div className="px-4 py-3 text-emerald-900 text-sm bg-emerald-50 border border-emerald-200 rounded-xl">
                     {message}
                   </div>
                 ) : null}
 
                 {error ? (
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+                  <div className="px-4 py-3 text-rose-900 text-sm bg-rose-50 border border-rose-200 rounded-xl">
                     {error}
                   </div>
                 ) : null}
 
                 {!unsplashEnabled ? (
-                  <div className="border-border bg-muted/20 text-muted-foreground rounded-xl border border-dashed px-4 py-4 text-sm leading-7">
+                  <div className="px-4 py-4 leading-7 text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
                     Add `UNSPLASH_ACCESS_KEY` to your local env and Vercel envs to enable image search here.
                   </div>
                 ) : null}
 
                 {!selectedPage ? (
-                  <div className="border-border bg-muted/20 text-muted-foreground rounded-xl border border-dashed px-4 py-4 text-sm leading-7">
+                  <div className="px-4 py-4 leading-7 text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
                     Search is enabled, but you need to create a homepage for the active site before you can
                     save an image to Sanity.
                   </div>
@@ -463,12 +453,12 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
 
                 {selectedPage ? (
                   <form
-                    className="border-border bg-muted/20 space-y-4 rounded-xl border p-4"
+                    className="p-4 space-y-4 bg-muted/20 border border-border rounded-xl"
                     onSubmit={saveAppearance}
                   >
                     <div>
-                      <div className="text-foreground text-sm font-medium">Hero appearance</div>
-                      <div className="text-muted-foreground mt-1 text-sm leading-6">
+                      <div className="font-medium text-foreground text-sm">Hero appearance</div>
+                      <div className="mt-1 leading-6 text-muted-foreground text-sm">
                         Use these controls when the hero image needs darker or lighter text treatment.
                       </div>
                     </div>
@@ -511,7 +501,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                       <Label>Overlay gradient</Label>
                       <div className="flex items-center gap-3">
                         <div
-                          className="border-border h-10 min-w-0 flex-1 rounded-lg border"
+                          className="h-10 min-w-0 border border-border rounded-lg flex-1"
                           style={{ backgroundImage: overlayGradient }}
                         />
                         <Popover open={gradientPickerOpen} onOpenChange={setGradientPickerOpen}>
@@ -543,7 +533,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                           Start opacity: {appearanceForm.heroOverlayStartOpacity}
                         </Label>
                         <input
-                          className="accent-primary w-full"
+                          className="w-full accent-primary"
                           id="hero-overlay-start-opacity"
                           max="1"
                           min="0"
@@ -564,7 +554,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                           End opacity: {appearanceForm.heroOverlayEndOpacity}
                         </Label>
                         <input
-                          className="accent-primary w-full"
+                          className="w-full accent-primary"
                           id="hero-overlay-end-opacity"
                           max="1"
                           min="0"
@@ -582,14 +572,14 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                     </div>
 
                     <Button disabled={savingAppearance} type="submit" variant="outline">
-                      {savingAppearance ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
+                      {savingAppearance ? <LoaderCircle className="h-4 w-4 mr-2 animate-spin" /> : null}
                       Save appearance
                     </Button>
                   </form>
                 ) : null}
               </div>
 
-              <Card className="border-border/70 bg-background overflow-hidden">
+              <Card className="bg-background border-border/70 overflow-hidden">
                 {hasImageSource(
                   selectedPage?.heroSection?.heroAsset,
                   selectedPage?.heroSection?.heroImage,
@@ -609,10 +599,10 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                         )}
                       />
                     </div>
-                    <CardContent className="space-y-3 p-4">
+                    <CardContent className="p-4 space-y-3">
                       <div>
-                        <div className="text-foreground text-sm font-medium">Current hero image</div>
-                        <div className="text-muted-foreground mt-1 text-sm">
+                        <div className="font-medium text-foreground text-sm">Current hero image</div>
+                        <div className="mt-1 text-muted-foreground text-sm">
                           {selectedPage?.heroSection?.heroAsset?.asset?.url
                             ? 'Using uploaded Sanity asset'
                             : selectedPage?.heroSection?.heroImage?.creditName
@@ -622,7 +612,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                       </div>
                       {selectedPage?.heroSection?.heroImage?.unsplashUrl ? (
                         <a
-                          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-sm"
+                          className="items-center gap-1 text-muted-foreground text-sm hover:text-foreground inline-flex"
                           href={selectedPage.heroSection.heroImage.unsplashUrl}
                           rel="noreferrer"
                           target="_blank"
@@ -634,13 +624,13 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                     </CardContent>
                   </>
                 ) : (
-                  <CardContent className="flex min-h-60 flex-col items-center justify-center gap-3 p-6 text-center">
-                    <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
-                      <ImagePlus className="text-muted-foreground h-5 w-5" />
+                  <CardContent className="flex flex-col items-center justify-center min-h-60 gap-3 p-6 text-center">
+                    <div className="flex items-center justify-center h-12 w-12 bg-muted rounded-full">
+                      <ImagePlus className="h-5 w-5 text-muted-foreground" />
                     </div>
                     <div>
-                      <div className="text-foreground text-sm font-medium">No image selected yet</div>
-                      <div className="text-muted-foreground mt-1 text-sm leading-6">
+                      <div className="font-medium text-foreground text-sm">No image selected yet</div>
+                      <div className="mt-1 leading-6 text-muted-foreground text-sm">
                         {selectedPage
                           ? "Search Unsplash and save a photo to this page's hero section."
                           : 'Create or select a hero page to start searching.'}
@@ -674,14 +664,14 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                   {searchPage < totalPages ? (
                     <div className="flex justify-center">
                       <Button disabled={loadingMore} onClick={loadMorePhotos} type="button" variant="outline">
-                        {loadingMore ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        {loadingMore ? <LoaderCircle className="h-4 w-4 mr-2 animate-spin" /> : null}
                         Load more
                       </Button>
                     </div>
                   ) : null}
                 </div>
               ) : (
-                <div className="border-border bg-muted/20 text-muted-foreground rounded-xl border border-dashed px-6 py-10 text-center text-sm leading-7">
+                <div className="px-6 py-10 leading-7 text-center text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
                   {loading
                     ? 'Searching Unsplash...'
                     : selectedPage

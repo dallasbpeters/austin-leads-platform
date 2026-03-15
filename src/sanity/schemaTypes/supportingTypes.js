@@ -260,5 +260,5 @@ export default [
       { name: 'target', title: 'Target (legacy)', type: 'string', hidden: true },
       { name: 'statusCode', title: 'Status code (legacy)', type: 'number', hidden: true },
     ],
-  }
+  },
 ]

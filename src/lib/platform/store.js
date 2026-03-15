@@ -135,7 +135,7 @@ export function createAnalyticsGoal(input) {
   const goal = {
     id: `goal-${crypto.randomUUID()}`,
     name: input.name,
-    scope: input.scope ?? 'site',
+    goalLevel: input.goalLevel ?? input.scope ?? 'site',
     siteSlug: input.siteSlug ?? 'all',
     eventName: input.eventName,
     targetValue: Number(input.targetValue) || 0,

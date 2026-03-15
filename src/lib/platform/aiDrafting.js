@@ -1,6 +1,7 @@
 import { groq } from 'next-sanity'
 
 import { sanityAgentWriteClient, sanityWriteClient } from '@/sanity/client'
+import { withSectionKeys } from '@/lib/sanity/keys'
 import {
   buildDraftSkeleton,
   sanitizeDraftDocumentIdPart,
@@ -11,6 +12,23 @@ import {
 import { buildSanityAgentPublishingInstruction } from '@/sanity/agent/publishingInstructions'
 
 const SANITY_AGENT_SCHEMA_ID = process.env.SANITY_AGENT_SCHEMA_ID || ''
+
+async function normalizeDraftSections(documentId) {
+  const draft = await sanityWriteClient.fetch(groq`*[_id == $documentId][0]{_id,sections}`, { documentId })
+
+  if (!draft?._id || !Array.isArray(draft.sections)) {
+    return false
+  }
+
+  const normalizedSections = withSectionKeys(draft.sections)
+
+  if (JSON.stringify(normalizedSections) === JSON.stringify(draft.sections)) {
+    return false
+  }
+
+  await sanityWriteClient.patch(draft._id).set({ sections: normalizedSections }).commit()
+  return true
+}
 
 async function runSanityAgentGenerate({ documentId, schemaType, input }) {
   if (!sanityAgentWriteClient?.agent?.action?.generate || !SANITY_AGENT_SCHEMA_ID) {
@@ -44,8 +62,7 @@ async function runSanityAgentGenerate({ documentId, schemaType, input }) {
       },
       neighboringTitles: {
         type: 'groq',
-        query:
-          '*[_type == $schemaType && site._ref == $siteId][0...12].title',
+        query: '*[_type == $schemaType && site._ref == $siteId][0...12].title',
         params: {
           schemaType,
           siteId: input.siteId,
@@ -66,8 +83,7 @@ export async function createAiDraftDocument(input) {
   }
 
   const schemaType = toDraftSchemaType(input.contentType)
-  const normalizedSlug =
-    slugifyDraftValue(input.slug || input.title) || `draft-${Date.now().toString(36)}`
+  const normalizedSlug = slugifyDraftValue(input.slug || input.title) || `draft-${Date.now().toString(36)}`
 
   const existing = await sanityWriteClient.fetch(
     groq`*[_type == $schemaType && site._ref == $siteId && slug.current == $slug][0]{_id}`,
@@ -79,13 +95,16 @@ export async function createAiDraftDocument(input) {
   )
 
   const fallbackDocumentId = `${schemaType}-${sanitizeDraftDocumentIdPart(normalizedSlug)}`.slice(0, 120)
-  const baseDocumentId = String(existing?._id || fallbackDocumentId).replace(/^drafts\./, '').slice(0, 120)
+  const baseDocumentId = String(existing?._id || fallbackDocumentId)
+    .replace(/^drafts\./, '')
+    .slice(0, 120)
   const draftId = `drafts.${baseDocumentId}`
 
   const { skeleton } = buildDraftSkeleton(input)
   skeleton._id = draftId
 
   await sanityWriteClient.createOrReplace(skeleton)
+  await normalizeDraftSections(draftId)
 
   let generateResult = {
     mode: 'fallback',
@@ -110,6 +129,8 @@ export async function createAiDraftDocument(input) {
       }
     }
   }
+
+  await normalizeDraftSections(draftId)
 
   return {
     ok: true,

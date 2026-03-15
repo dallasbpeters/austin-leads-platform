@@ -10,11 +10,11 @@ const FALLBACK_CONFIG = {
   headline: 'Roof inspections and storm claims',
   copy: 'Start with the main service categories and we will get you back to the right place.',
   primaryLinks: [
-    {
-      href: '/roofing',
-      title: 'Roofing',
-      body: 'Repairs, replacement, storm scope, and inspection planning.',
-    },
+        {
+          href: '/roofing',
+          title: 'Roofing',
+          body: 'Repairs, replacement, storm damage, and inspection planning.',
+        },
     {
       href: '/hail-damage',
       title: 'Hail damage',
@@ -78,7 +78,7 @@ function getNotFoundConfig(pathname = '') {
         {
           href: '/insurance-basics',
           title: 'Insurance basics',
-          body: 'Start with claims, scope, depreciation, and supplement questions.',
+          body: 'Start with claims, estimates, depreciation, and supplement questions.',
         },
       ],
       featureLink: {
@@ -144,7 +144,8 @@ function getNotFoundConfig(pathname = '') {
       featureLink: {
         href: '/services/solar-and-battery-installations',
         eyebrow: 'Solar service',
-        title: 'Jump to the solar and battery service page if you need a direct project conversation instead of a guide.',
+        title:
+          'Jump to the solar and battery service page if you need a direct project conversation instead of a guide.',
       },
       buttons: [
         { href: '/solar', label: 'Open solar', variant: 'default' },
@@ -162,42 +163,33 @@ export default function ContextualNotFound() {
   const config = getNotFoundConfig(pathname)
 
   return (
-    <div className="grid w-full gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+    <div className="grid lg:items-center w-full gap-10 lg:grid-cols-[1.1fr_0.9fr]">
       <section className="max-w-2xl">
         <p className="text-muted-foreground text-xs tracking-[0.28em] uppercase">404</p>
-        <h1 className="text-foreground type-display mt-5 text-5xl leading-none tracking-tight sm:text-6xl">
+        <h1 className="mt-5 leading-none text-5xl text-foreground tracking-tight sm:text-6xl type-display">
           This page went missing somewhere between the roofline and the panel layout.
         </h1>
-        <p className="text-foreground/72 mt-6 max-w-xl text-lg leading-8">
-          {config.copy}
-        </p>
+        <p className="max-w-xl mt-6 leading-8 text-foreground/72 text-lg">{config.copy}</p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 mt-8">
           {config.buttons.map((button) => (
-            <Button
-              asChild
-              key={button.href}
-              size="lg"
-              variant={button.variant}
-            >
+            <Button asChild key={button.href} size="lg" variant={button.variant}>
               <Link href={button.href}>{button.label}</Link>
             </Button>
           ))}
         </div>
       </section>
 
-      <section className="border-border/70 bg-card/70 shadow-theme-glass-soft relative overflow-hidden rounded-[2rem] border p-6 sm:p-8">
+      <section className="relative p-6 sm:p-8 bg-card/70 border border-border/70 rounded-[2rem] shadow-theme-glass-soft overflow-hidden">
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(234,88,12,0.45)] to-transparent"
+          className="absolute h-px bg-gradient-to-r from-transparent inset-x-0 to-transparent top-0 via-[rgba(234,88,12,0.45)]"
         />
 
         <div className="grid gap-4">
-          <div className="border-border/70 bg-background/80 rounded-3xl border px-5 py-4">
-            <p className="text-muted-foreground text-xs tracking-[0.22em] uppercase">
-              {config.kicker}
-            </p>
-            <p className="text-foreground mt-3 text-xl">{config.headline}</p>
+          <div className="px-5 py-4 bg-background/80 border border-border/70 rounded-3xl">
+            <p className="text-muted-foreground text-xs tracking-[0.22em] uppercase">{config.kicker}</p>
+            <p className="mt-3 text-foreground text-xl">{config.headline}</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -205,22 +197,20 @@ export default function ContextualNotFound() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="border-border/70 bg-background/80 hover:bg-accent/60 rounded-3xl border p-5 transition-colors"
+                className="p-5 bg-background/80 border border-border/70 rounded-3xl hover:bg-accent/60 transition-colors"
               >
                 <p className="text-foreground text-lg">{link.title}</p>
-                <p className="text-muted-foreground mt-2 text-sm leading-7">{link.body}</p>
+                <p className="mt-2 leading-7 text-muted-foreground text-sm">{link.body}</p>
               </Link>
             ))}
           </div>
 
           <Link
             href={config.featureLink.href}
-            className="border-border/70 bg-[linear-gradient(135deg,rgba(15,23,42,0.95),rgba(30,41,59,0.88))] rounded-[1.75rem] border p-6 text-white transition-transform hover:-translate-y-0.5"
+            className="p-6 text-white bg-[linear-gradient(135deg,rgba(15,23,42,0.95),rgba(30,41,59,0.88))] border border-border/70 rounded-[1.75rem] transition-transform hover:-translate-y-0.5"
           >
-            <p className="text-xs tracking-[0.24em] uppercase text-white/65">
-              {config.featureLink.eyebrow}
-            </p>
-            <p className="mt-3 text-2xl leading-tight">{config.featureLink.title}</p>
+            <p className="text-white/65 text-xs tracking-[0.24em] uppercase">{config.featureLink.eyebrow}</p>
+            <p className="mt-3 leading-tight text-2xl">{config.featureLink.title}</p>
           </Link>
         </div>
       </section>

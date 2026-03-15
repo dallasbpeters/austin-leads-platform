@@ -93,7 +93,7 @@ export default function HailLayerMap({ center, hailLayer }) {
       zoom={10}
     >
       <TileLayer
-        attribution='&copy; OpenStreetMap contributors &copy; CARTO'
+        attribution="&copy; OpenStreetMap contributors &copy; CARTO"
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
       <FitMapToPoints center={center} points={allPoints} />

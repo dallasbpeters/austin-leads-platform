@@ -85,6 +85,7 @@ export function normalizeSectionType(section) {
       _type: 'resourceGridSection',
       type: 'resourceGrid',
       title: section.title,
+      body: section.body,
       items: normalizedItems,
     })
   }
@@ -100,6 +101,27 @@ export function normalizeSectionType(section) {
     })
   }
 
+  if (section.type === 'serviceGrid') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'serviceGridSection',
+      type: 'serviceGrid',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      subtitle: section.subtitle,
+      body: section.body,
+      items: normalizedItems,
+      roofingTitle: section.roofingTitle,
+      roofingItems: withObjectArrayKeys(section.roofingItems || [], 'roofing-item', 'title').map((item) =>
+        normalizeSectionItemType(section, item),
+      ),
+      secondaryTitle: section.secondaryTitle,
+      secondaryItems: withObjectArrayKeys(section.secondaryItems || [], 'secondary-item', 'title').map(
+        (item) => normalizeSectionItemType(section, item),
+      ),
+    })
+  }
+
   if (section.type === 'story') {
     return omitUndefined({
       _key: section._key,
@@ -111,12 +133,92 @@ export function normalizeSectionType(section) {
     })
   }
 
+  if (section.type === 'calculator') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'calculatorSection',
+      type: 'calculator',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      subtitle: section.subtitle,
+      body: section.body,
+      items: normalizedItems,
+      ctaLabel: section.ctaLabel,
+      ctaHref: section.ctaHref,
+    })
+  }
+
+  if (section.type === 'costs') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'costsSection',
+      type: 'costs',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      subtitle: section.subtitle,
+      body: section.body,
+      items: normalizedItems,
+      secondaryTitle: section.secondaryTitle,
+      secondaryItems: withObjectArrayKeys(section.secondaryItems || [], 'secondary-item', 'title').map((item) =>
+        normalizeSectionItemType(section, item),
+      ),
+    })
+  }
+
+  if (section.type === 'guides') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'guidesSection',
+      type: 'guides',
+      title: section.title,
+      body: section.body,
+      ctaLabel: section.ctaLabel,
+    })
+  }
+
+  if (section.type === 'snapshot') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'snapshotSection',
+      type: 'snapshot',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+      items: normalizedItems,
+    })
+  }
+
+  if (section.type === 'incentives') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'incentivesSection',
+      type: 'incentives',
+      title: section.title,
+      body: section.body,
+      image: section.image,
+      imageAsset: section.imageAsset,
+      ctaLabel: section.ctaLabel,
+      ctaHref: section.ctaHref,
+    })
+  }
+
+  if (section.type === 'testimonials') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'testimonialsSection',
+      type: 'testimonials',
+      title: section.title,
+      body: section.body,
+    })
+  }
+
   if (section.type === 'highlights') {
     return omitUndefined({
       _key: section._key,
       _type: 'highlightsSection',
       type: 'highlights',
       title: section.title,
+      subtitle: section.subtitle,
       items: normalizedItems,
     })
   }
@@ -149,7 +251,90 @@ export function normalizeSectionType(section) {
       title: section.title,
       body: section.body,
       ctaLabel: section.ctaLabel,
-      ctaHref: section.ctaHref,
+      avatarEyebrow: section.avatarEyebrow || section.personLabel,
+      avatarName: section.avatarName || section.personName,
+      avatarRole: section.avatarRole || section.personRole,
+      avatarBlurb: section.avatarBlurb || section.personBlurb,
+      avatarImage: section.avatarImage || section.profileImage,
+      avatarImageAsset: section.avatarImageAsset || section.profileImageAsset,
+    })
+  }
+
+  if (section.type === 'quote') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'quoteSection',
+      type: 'quote',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+    })
+  }
+
+  if (section.type === 'ctaBanner') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'ctaBannerSection',
+      type: 'ctaBanner',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+      ctaLabel: section.ctaLabel,
+      avatarEyebrow: section.avatarEyebrow || section.personLabel,
+      avatarName: section.avatarName || section.personName,
+      avatarRole: section.avatarRole || section.personRole,
+      avatarBlurb: section.avatarBlurb || section.personBlurb,
+      avatarImage: section.avatarImage || section.profileImage,
+      avatarImageAsset: section.avatarImageAsset || section.profileImageAsset,
+    })
+  }
+
+  if (section.type === 'hailMap') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'hailMapSection',
+      type: 'hailMap',
+      title: section.title,
+      body: section.body,
+    })
+  }
+
+  if (section.type === 'band') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'bandSection',
+      type: 'band',
+      colors: section.colors,
+      tint: section.tint,
+      minHeight: section.minHeight,
+      maxHeight: section.maxHeight,
+      rotate: section.rotate,
+      scrollStart: section.scrollStart,
+      scrollEnd: section.scrollEnd,
+      reverse: section.reverse,
+      autoAnimate: section.autoAnimate,
+      speed: section.speed,
+      amplitude: section.amplitude,
+    })
+  }
+
+  if (section.type === 'logos') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'logosSection',
+      type: 'logos',
+      title: section.title,
+    })
+  }
+
+  if (section.type === 'solarSwitch') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'solarSwitchSection',
+      type: 'solarSwitch',
+      leadingWords: section.leadingWords,
+      accentWord: section.accentWord,
+      trailingText: section.trailingText,
     })
   }
 
@@ -192,22 +377,6 @@ export function normalizeSectionType(section) {
       title: section.title,
       body: section.body,
       people,
-      profileImage: section.profileImage,
-      profileImageAsset: section.profileImageAsset,
-      personLabel: section.personLabel,
-      personName: section.personName,
-      personRole: section.personRole,
-      personBlurb: section.personBlurb,
-      certificationLabel: section.certificationLabel,
-      certificationTitle: section.certificationTitle,
-      badgeImage: section.badgeImage,
-      badgeImageAsset: section.badgeImageAsset,
-      secondaryProfileImage: section.secondaryProfileImage,
-      secondaryProfileImageAsset: section.secondaryProfileImageAsset,
-      secondaryPersonLabel: section.secondaryPersonLabel,
-      secondaryPersonName: section.secondaryPersonName,
-      secondaryPersonRole: section.secondaryPersonRole,
-      secondaryPersonBlurb: section.secondaryPersonBlurb,
     })
   }
 
@@ -215,10 +384,15 @@ export function normalizeSectionType(section) {
     return baseSection
   }
 
-  return {
-    ...baseSection,
-    _type: 'pageSection',
-  }
+  // Never emit legacy pageSection objects; fall back to a valid story section.
+  return omitUndefined({
+    _key: section._key,
+    _type: 'storySection',
+    type: 'story',
+    eyebrow: section.eyebrow,
+    title: section.title || section.question || 'Section',
+    body: section.body || section.answer || section.subtitleValue || section.subtitle,
+  })
 }
 
 export function withSectionKeys(sections) {
@@ -226,7 +400,9 @@ export function withSectionKeys(sections) {
     const normalizedSection = normalizeSectionType(section)
 
     const keyedSection = {
-      _key: normalizedSection?._key || createKey('section', index, normalizedSection?.title || normalizedSection?.type),
+      _key:
+        normalizedSection?._key ||
+        createKey('section', index, normalizedSection?.title || normalizedSection?.type),
       ...normalizedSection,
     }
 
@@ -234,8 +410,28 @@ export function withSectionKeys(sections) {
       keyedSection.metrics = withObjectArrayKeys(normalizedSection.metrics, 'metric', 'label')
     }
 
+    if (Array.isArray(normalizedSection?.actions)) {
+      keyedSection.actions = withObjectArrayKeys(normalizedSection.actions, 'action', 'label')
+    }
+
+    if (Array.isArray(normalizedSection?.heroSlides)) {
+      keyedSection.heroSlides = withObjectArrayKeys(normalizedSection.heroSlides, 'hero-slide', 'title')
+    }
+
     if (Array.isArray(normalizedSection?.items)) {
       keyedSection.items = withObjectArrayKeys(normalizedSection.items, 'item', 'title')
+    }
+
+    if (Array.isArray(normalizedSection?.roofingItems)) {
+      keyedSection.roofingItems = withObjectArrayKeys(normalizedSection.roofingItems, 'roofing-item', 'title')
+    }
+
+    if (Array.isArray(normalizedSection?.secondaryItems)) {
+      keyedSection.secondaryItems = withObjectArrayKeys(
+        normalizedSection.secondaryItems,
+        'secondary-item',
+        'title',
+      )
     }
 
     if (Array.isArray(normalizedSection?.people)) {

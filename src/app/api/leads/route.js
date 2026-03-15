@@ -67,6 +67,17 @@ export async function POST(request) {
   }
 
   const submission = await createLeadSubmission(leadInput)
+  console.info('Lead submission stored.', {
+    leadId: submission.id,
+    siteSlug: leadInput.siteSlug,
+    siteName: leadInput.siteName,
+    pagePath: leadInput.pagePath,
+    serviceInterest: leadInput.serviceInterest || null,
+    sourceSection: leadInput.sourceSection || null,
+    sourceType: leadInput.sourceType,
+    email: leadInput.email,
+    phone: leadInput.phone || null,
+  })
 
   let notification = { status: 'skipped' }
 
@@ -76,6 +87,10 @@ export async function POST(request) {
       id: submission.id,
       createdAt: submission.created_at,
       status: submission.status,
+    })
+    console.info('Lead notification result.', {
+      leadId: submission.id,
+      notification,
     })
   } catch (error) {
     console.error('Lead notification email failed.', {

@@ -74,7 +74,7 @@ export default function ImageFader({
         minWidth: 100,
         minHeight: 100,
         borderRadius,
-        background: backgroundColor,
+        backgroundColor,
       }}
     >
       <AnimatePresence initial={false} mode="wait">
@@ -84,7 +84,7 @@ export default function ImageFader({
           decoding="async"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0.5}}
+          exit={{ opacity: 0.5 }}
           transition={{ duration: fadeSec, ease: 'linear' }}
           className={cn(imageClassName)}
           draggable={false}
@@ -129,10 +129,15 @@ export default function ImageFader({
             width: '100%',
             height: '100%',
             pointerEvents: 'none',
-            background: overlayStyle?.backgroundImage
-              ? undefined
+            backgroundImage: overlayStyle?.backgroundImage
+              ? overlayStyle.backgroundImage
               : useGradient
                 ? `linear-gradient(to bottom, transparent 0%, ${overlayColor} 80%)`
+                : undefined,
+            backgroundColor: overlayStyle?.backgroundImage
+              ? overlayStyle?.backgroundColor
+              : useGradient
+                ? undefined
                 : overlayColor,
             backdropFilter: overlayBlur > 0 ? `blur(${overlayBlur}px)` : undefined,
             borderRadius,

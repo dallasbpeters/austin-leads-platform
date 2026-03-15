@@ -60,6 +60,7 @@ async function getSanityRedirects() {
 const nextConfig = {
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
   images: {
+    qualities: [100, 75],
     remotePatterns: [
       {
         protocol: 'https',

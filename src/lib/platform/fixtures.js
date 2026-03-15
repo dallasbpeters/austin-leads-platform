@@ -85,13 +85,6 @@ const portfolioDomains = [
     slug: 'austin-solar-solutions',
   },
   {
-    domain: 'austinsolarpros.com',
-    seoScore: 10,
-    tier: 'Redirect',
-    category: 'solarRoofing',
-    slug: 'austin-solar-pros',
-  },
-  {
     domain: 'austinsolarhomes.com',
     seoScore: 40,
     tier: 'Mid',
@@ -214,11 +207,21 @@ function buildLeadForm(domain, categoryLabel, nameOverride) {
 
 function getSiteSeoDescription(slug, title, categoryLabel) {
   if (slug === 'texas-solar-and-roofing-pros') {
-    return 'Roofing and solar services for homeowners across Austin and Central Texas, including installation, repairs, inspections, and storm-damage help.'
+    return 'Solar, roofing, and energy services for Texas homeowners. Inspections, installations, storm damage, and guidance from start to finish.'
   }
 
   return `${title} — honest ${categoryLabel.toLowerCase()} guidance for Austin and Texas homeowners who want real answers before making a decision.`
 }
+
+const allCatalogServices = [...mainServices, ...roofingServices, ...specialtyServices]
+
+const solarPagePrimaryServiceSlugs = [
+  'solar-and-battery-installations',
+  'detach-and-reset',
+  'electrical-services',
+]
+
+const solarPageRelatedServiceSlugs = ['rodent-deterrent', 'car-chargers']
 
 export const sites = portfolioDomains.map((entry, index) => {
   const tier = tierMap[entry.tier]
@@ -299,8 +302,8 @@ const solarHomeSections = [
   },
   {
     type: 'cta',
-    title: "Not sure if your home is a good solar candidate? Let's find out.",
-    body: 'Whether you are buying a home, comparing neighborhoods, or just tired of high energy bills, a quick conversation about your specific house is the fastest way to get a real answer.',
+    title: 'Talk with a solar pro.',
+    body: 'A short conversation can tell you whether your home is a good fit for solar.',
     ctaLabel: 'Request a free consultation',
     ctaHref: '/#consultation',
   },
@@ -320,6 +323,8 @@ export const pages = [
       {
         type: 'hero',
         eyebrow: 'Texas solar + roofing',
+        titlePrimary: 'Texas Solar',
+        titleAccent: '& Roofing',
         title: "Storm damage? High electric bills? Let's figure out what your house actually needs.",
         body: 'Maybe it is hail damage. Maybe the roof is 20 years old. Maybe your electric bill hit $400 last summer and you are wondering if solar is the move. Whatever brought you here, the goal is the same: figure out what is going on with the house and handle it in the right order.',
         heroImage: {
@@ -329,6 +334,35 @@ export const pages = [
           },
           alt: 'Texas home with rooftop solar panels',
         },
+        heroSlides: [
+          {
+            title: 'Solar installation',
+            image: {
+              urls: {
+                regular: '/images/solar-install.png',
+              },
+              alt: 'Solar installation on a residential roof',
+            },
+          },
+          {
+            title: 'Roof installation',
+            image: {
+              urls: {
+                regular: '/images/roof-install.png',
+              },
+              alt: 'Roof installation work on a Texas home',
+            },
+          },
+          {
+            title: 'Storm damage',
+            image: {
+              urls: {
+                regular: '/images/storm-damage.jpg',
+              },
+              alt: 'Storm-damaged roof used for the homepage hero',
+            },
+          },
+        ],
         metrics: [
           { label: 'Who we help', value: 'Texas homeowners' },
           { label: 'What we cover', value: 'Roofing + solar' },
@@ -344,6 +378,112 @@ export const pages = [
         eyebrow: 'Our approach',
         title: 'Fix what is broken first. Then talk about upgrades.',
         body: 'Too many companies try to sell solar and roofing as one big package deal. That is not how homes work. If your roof has storm damage, handle that first. If your HVAC is bleeding money, address that. Solar is a smart move for a lot of Texas homes, but only when the timing is right and the roof underneath is solid.',
+      },
+      {
+        type: 'calculator',
+        eyebrow: 'Free estimate · No commitment · Takes 2 minutes',
+        title: 'See what solar could save',
+        body: "Enter your average monthly electric bill and we'll estimate system size, possible savings, and a likely payback range. Solar stands on its own here, even when roofing decisions affect the bigger project.",
+        subtitle:
+          'Based on typical Texas residential production assumptions and current utility-rate ranges',
+        ctaLabel: 'Talk through your solar options',
+        ctaHref: '#estimate',
+        items: [
+          {
+            title: 'System Size',
+            body: '~panels sized for your roof',
+          },
+          {
+            title: 'Year 1 Savings',
+            body: 'Avg monthly savings back in your pocket',
+          },
+          {
+            title: '25-Year Savings',
+            body: 'With 2.5% annual rate increase',
+          },
+          {
+            title: 'Payback Period',
+            body: 'After federal credit and a typical local rebate',
+          },
+        ],
+      },
+      {
+        type: 'costs',
+        eyebrow: 'Solar Costs',
+        title: 'What Does Solar Actually Cost?',
+        body: 'A residential solar installation in Texas often lands between $18,000 and $28,000 before incentives. The final number depends on system size, equipment, electrical work, and how much energy the home actually uses.',
+        subtitle:
+          'If you are trying to decide whether solar is worth it, start with the numbers that matter most: total project cost, incentives, expected production, and realistic payback.',
+        items: [
+          {
+            number: '30%',
+            title: 'Federal Tax Credit',
+            body: "The federal Investment Tax Credit lets you claim 30% of your total solar cost against your federal taxes. On a $22,000 system, that's $6,600 back.",
+          },
+          {
+            number: '$$$',
+            title: 'Texas Utility Context',
+            body: 'Savings depend on your actual utility, electric rate, usage pattern, and whether the system is sized to offset the right amount of annual consumption.',
+          },
+          {
+            number: '$0',
+            title: 'Property Tax Increase',
+            body: "Solar panels can increase your home's value, but Texas law exempts that added value from property taxes. Your tax bill does not automatically go up just because the home appraises higher.",
+          },
+        ],
+        secondaryTitle: 'Realistic Payback',
+        secondaryItems: [
+          {
+            title: 'Most homeowners still see solar break even in roughly 7–9 years.',
+            body: 'The strongest quotes clearly separate contract cost, incentives, and expected production so you can compare options without guessing where the savings are supposed to come from.',
+          },
+        ],
+      },
+      {
+        type: 'guides',
+        title: 'Go Deeper',
+        body: '',
+        ctaLabel: 'Browse all guides',
+      },
+      {
+        type: 'snapshot',
+        eyebrow: 'Texas Snapshot',
+        title: 'The numbers people usually ask for.',
+        body: "Most homeowners walk into their first quote with zero frame of reference. These are the cost ranges, timelines, and coverage benchmarks we see on Central Texas projects — so you're not starting from scratch. Your numbers will vary based on roof size, material, and carrier, but at least you'll know what ballpark you're in.",
+        items: [
+          {
+            icon: 'Wallet',
+            number: '$18k-$28k',
+            body: 'Typical residential solar range before credits and roof-related adders',
+          },
+          {
+            icon: 'Clock',
+            number: '10+ years',
+            body: 'Roof age is where insurance and timing questions usually start',
+          },
+          {
+            icon: 'Leaf',
+            number: '2 years',
+            body: 'A common claim window for detach-and-reset conversations after roof work',
+          },
+          {
+            icon: 'StatUp',
+            number: '7–9 years',
+            body: 'Typical solar payback range once the roof plan is already solid',
+          },
+        ],
+      },
+      {
+        type: 'incentives',
+        title: 'Roof insurance and claim realities',
+        body: 'Roof claims get expensive when the details are misunderstood. This section is here to explain hail damage, aging roofs, RCV vs ACV policies, claim timing, and when detach and reset becomes part of the job.\n\nThe goal is simple: help you understand whether you are looking at normal roof wear, storm damage with an insurance angle, or a roofing project that needs to be planned correctly before solar enters the picture.',
+        ctaLabel: 'Review roofing + insurance basics',
+        ctaHref: '/resources/roof-insurance-and-claim-realities',
+      },
+      {
+        type: 'testimonials',
+        title: 'What customers are saying',
+        body: 'about Texas Solar and Roofing Pros',
       },
       {
         type: 'highlights',
@@ -380,7 +520,7 @@ export const pages = [
             body: 'The guides cover cost breakdowns, incentive details, battery options, financing, insurance claims, and roof readiness in plain language.',
           },
           {
-            title: 'Request a consultation once you know what you are dealing with',
+            title: 'Request a consultation when you are ready for a real next step',
             body: 'That way the conversation is about your house, not a generic pitch that could apply to anyone in the zip code.',
           },
         ],
@@ -408,9 +548,52 @@ export const pages = [
         ],
       },
       {
+        type: 'resourceGrid',
+        title: 'Start with what you need help with',
+        body: 'The most common solar and roofing questions, organized by category so you can find what you need faster.',
+        items: [
+          {
+            icon: 'Thunderstorm',
+            title: 'Hail Damage',
+            body: 'Storm history, roof damage signs, and what to do after a hail event.',
+            href: '/hail-damage',
+            image: {
+              urls: {
+                regular: '/images/hail-damage.png',
+              },
+              alt: 'Texas roof with visible hail and storm damage',
+            },
+          },
+          {
+            icon: 'HomeShield',
+            title: 'Roof Insurance and Claim Realities',
+            body: 'Claim language, detach-and-reset timing, depreciation, and the insurance details that change the job.',
+            href: '/resources/roof-insurance-and-claim-realities',
+            image: {
+              urls: {
+                regular: '/images/storm-damage.jpg',
+              },
+              alt: 'Storm-damaged roof used for insurance and claim guidance',
+            },
+          },
+          {
+            icon: 'SunLight',
+            title: 'Solar + Savings',
+            body: 'System cost, savings, incentives, and whether solar actually pencils out for your house.',
+            href: '/solar-costs',
+            image: {
+              urls: {
+                regular: '/images/solar-install.png',
+              },
+              alt: 'Residential solar installation on a Texas home',
+            },
+          },
+        ],
+      },
+      {
         type: 'cta',
-        title: 'Tell us what is going on with the house. We will point you in the right direction.',
-        body: 'Whether it is a roof that took hail, an electric bill that makes no sense, or a solar project you want to plan the right way, a short conversation about your specific home is the best starting point.',
+        title: 'Talk with our team.',
+        body: 'A short conversation can help you choose the right next step for your home.',
         ctaLabel: 'Request a free consultation',
         ctaHref: '/#consultation',
       },
@@ -439,8 +622,8 @@ export const pages = [
           alt: 'Solar panels on a residential roof during daylight',
         },
         metrics: [
-          { label: 'Typical range', value: '$18k\u2013$32k' },
-          { label: 'Avg. payback', value: '7\u20139 years' },
+          { label: 'Typical range', value: '$18k-$32k' },
+          { label: 'Avg. payback', value: '7-9 years' },
           { label: 'Buyer intent', value: 'High' },
         ],
       },
@@ -547,7 +730,7 @@ export const pages = [
           },
           {
             title: 'Separate emergency repairs from long-term upgrades',
-            body: 'Some projects are about fixing damage right now. Others are about improving the home over the next 5\u201310 years. Keeping those decisions separate saves you money and headaches.',
+            body: 'Some projects are about fixing damage right now. Others are about improving the home over the next 5-10 years. Keeping those decisions separate saves you money and headaches.',
           },
           {
             title: 'Let the house condition set the order',
@@ -582,8 +765,8 @@ export const pages = [
       },
       {
         type: 'cta',
-        title: 'Tell us what the house is doing and we will help you figure out where to start.',
-        body: 'Storm damage, sky-high bills, aging equipment, or a solar project you want to plan carefully. Whatever it is, the next step should be a real conversation about your home, not a cookie-cutter sales call.',
+        title: 'Talk with our team.',
+        body: 'We will help you figure out where to start and what the right next step looks like.',
         ctaLabel: 'Request a free consultation',
         ctaHref: '/#consultation',
       },
@@ -595,16 +778,15 @@ export const pages = [
     slug: 'solar',
     title: 'Solar',
     description:
-      'Solar guidance for Texas homeowners who want to know the real savings before committing to a system.',
+      'Solar installation, battery backup, detach and reset, and related electrical services for homes across Austin and Central Texas.',
     pageType: 'servicePage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
         eyebrow: 'Solar for Texas homes',
-        title:
-          "Will solar actually save you money? Let's look at the numbers before anyone tries to sell you panels.",
-        body: 'This is for homeowners who want to compare system size, electric bill impact, tax credits, financing, and payback before they commit. If the math works, great. If it does not, you should know that upfront.',
+        title: 'Solar services for installation, storage, roof coordination, and electrical prep.',
+        body: 'A shorter way to see the solar-side services we offer, from new installs to battery backup and detach-and-reset.',
         heroImage: {
           urls: {
             regular:
@@ -613,51 +795,64 @@ export const pages = [
           alt: 'Residential solar array in sunlight',
         },
         metrics: [
-          { label: 'Focus', value: 'Real savings' },
-          { label: 'Covers', value: 'Cost, credits, payoff' },
-          { label: 'Built for', value: 'Planning stage' },
+          { label: 'Focus', value: 'Solar + storage' },
+          { label: 'Also handles', value: 'Detach + reset' },
+          { label: 'Service area', value: 'Austin + Central Texas' },
         ],
       },
       {
-        type: 'highlights',
-        title: 'What a useful solar conversation should cover',
-        items: [
-          {
-            title: 'System size that matches your home, not a sales target',
-            body: 'Your roof layout, shade, energy use, and goals all affect the right system size. We show you what matters instead of pushing the biggest system possible.',
-          },
-          {
-            title: 'Cost and financing with the assumptions laid bare',
-            body: 'Cash price, financed price, what the tax credit actually covers, and realistic payback. No dressed-up numbers or best-case-only projections.',
-          },
-          {
-            title: 'Whether now is the right time or you should wait',
-            body: 'Sometimes the smart move is to fix the roof first, upgrade the HVAC, or wait for a better financing window. We help you figure that out.',
-          },
-        ],
+        type: 'story',
+        eyebrow: 'Solar overview',
+        title: 'Solar is not just panels.',
+        body: 'It is the install, the battery plan, the roof coordination, and the electrical work that has to be right before the project moves cleanly.',
+      },
+      {
+        type: 'solarSwitch',
+        leadingWords: ['Protect', 'your', 'home', 'and', 'lower', 'monthly', 'costs', 'with'],
+        accentWord: 'solar',
+        trailingText: 'without sacrificing roof integrity.',
+      },
+      {
+        type: 'serviceGrid',
+        eyebrow: 'Solar services',
+        title: 'What we help with on the solar side',
+        body: 'The install itself, the roof coordination around it, and the electrical work that supports it.',
+        items: allCatalogServices
+          .filter((service) => solarPagePrimaryServiceSlugs.includes(service.slug))
+          .map((service) => ({
+            ...service,
+            href: `/services/${service.slug}`,
+          })),
+        secondaryTitle: 'Related services',
+        secondaryItems: specialtyServices
+          .filter((service) => solarPageRelatedServiceSlugs.includes(service.slug))
+          .map((service) => ({
+            ...service,
+            href: `/services/${service.slug}`,
+          })),
       },
       {
         type: 'faq',
         title: 'Solar questions',
         items: [
           {
-            question: 'Can I evaluate solar without it turning into a roofing conversation?',
+            question: 'Can you help if the roof has to be handled before solar?',
             answer:
-              'Yes. Solar should stand on its own for homeowners focused on savings. If your roof changes the picture, we will tell you, but we are not going to hijack your solar research with a roofing upsell.',
+              'Yes. That is a common part of the job. We help sort out whether roofing work, detach-and-reset, or electrical prep needs to happen before the install.',
           },
           {
-            question: 'How is this different from a typical solar installer page?',
+            question: 'Do I need battery backup with solar?',
             answer:
-              'Most installer pages exist to get you to click "Get a Quote" as fast as possible. We explain the assumptions behind the savings so you actually understand the math before you talk to anyone.',
+              'Not always. It depends on outage concerns, budget, and what you want the system to do during a grid failure.',
           },
         ],
       },
       {
         type: 'cta',
-        title: 'Want the full picture? The guide library goes deeper.',
-        body: 'Our guides cover costs, batteries, incentives, financing options, and roof readiness in the kind of detail a quick service page cannot.',
-        ctaLabel: 'Browse the solar guides',
-        ctaHref: '/guides',
+        title: 'Talk with a solar pro.',
+        body: 'We will help you pick the right next step.',
+        ctaLabel: 'Request a consultation',
+        ctaHref: '#consultation',
       },
     ],
   },
@@ -667,16 +862,15 @@ export const pages = [
     slug: 'roofing',
     title: 'Roofing',
     description:
-      'Straight-talk roofing help for Texas homeowners dealing with hail damage, aging roofs, insurance claims, and replacement decisions.',
+      'Roofing services for homeowners across Austin and Central Texas, including inspections, repairs, replacement, storm restoration, and insurance-related roof work.',
     pageType: 'servicePage',
     templateLevel: 'hero',
     sections: [
       {
         type: 'hero',
         eyebrow: 'Roofing in Texas',
-        title:
-          'Hail damage, insurance headaches, and an aging roof all hitting at once? We can help you sort it out.',
-        body: 'When a storm rolls through, everything gets complicated fast: the roof, the claim, the adjuster, and if you have solar, the detach-and-reset question nobody warned you about. This side of the site helps you handle it in the right order.',
+        title: 'Roofing services for inspection, repair, replacement, and storm work.',
+        body: 'A shorter way to see the roofing services we offer, from inspections and replacement to storm restoration and roof work tied to solar.',
         heroImage: {
           urls: {
             regular:
@@ -685,55 +879,49 @@ export const pages = [
           alt: 'Residential roof viewed from above for inspection and replacement planning',
         },
         metrics: [
-          { label: 'Focus', value: 'Storm + roof condition' },
-          { label: 'Covers', value: 'Claims, RCV/ACV, replacement' },
-          { label: 'Built for', value: 'Roof triage' },
+          { label: 'Focus', value: 'Roof condition + storm damage' },
+          { label: 'Also handles', value: 'Claims + detach/reset' },
+          { label: 'Service area', value: 'Austin + Central Texas' },
         ],
       },
       {
-        type: 'steps',
-        title: 'What a useful roofing conversation helps you do',
-        items: [
-          {
-            title: 'Figure out if the storm actually damaged your roof',
-            body: 'Bad weather does not automatically mean roof damage. Start with a real inspection and actual evidence, not a door-knocker who showed up the day after the hail.',
-          },
-          {
-            title: 'Understand the insurance language before it costs you',
-            body: 'RCV vs. ACV, depreciation holdback, age thresholds, and detach-and-reset line items all affect what you are actually working with after the adjuster leaves.',
-          },
-          {
-            title: 'Separate the urgency from the sales pressure',
-            body: 'A damaged roof is urgent. A roofer pressuring you to sign before the insurance check clears is not. We help you tell the difference.',
-          },
-          {
-            title: 'Connect the roof back to solar when it matters',
-            body: 'If panels are already up there or solar is in your future plans, the roof decision affects the solar timeline. We make sure those two conversations stay connected.',
-          },
-        ],
+        type: 'story',
+        eyebrow: 'Roofing overview',
+        title: 'Roofing work usually starts with condition, not assumptions.',
+        body: 'Sometimes the roof needs a repair. Sometimes it needs replacement. Sometimes the real issue is storm damage, insurance timing, or roof work that has to happen before solar can move.',
+      },
+      {
+        type: 'serviceGrid',
+        eyebrow: 'Roofing services',
+        title: 'What we help with on the roofing side',
+        body: 'Inspection, replacement, storm restoration, and the roof work that often has to be handled before solar can move.',
+        items: roofingServices.map((service) => ({
+          ...service,
+          href: `/services/${service.slug}`,
+        })),
       },
       {
         type: 'faq',
         title: 'Roofing questions',
         items: [
           {
-            question: 'Why do you keep roofing separate from solar on this site?',
+            question: 'Can you inspect the roof before I decide on replacement?',
             answer:
-              'Because a homeowner who just got hit by hail needs roof answers, not a solar pitch. We connect the two when it matters, but the first visit should answer the first question.',
+              'Yes. Inspection is usually the right place to start when the roof condition is unclear or storm damage may be involved.',
           },
           {
-            question: 'Where does detach-and-reset fit in?',
+            question: 'Do you handle roofing work tied to solar projects?',
             answer:
-              'Both places. It starts as a roofing and insurance issue (who pays, how it is scoped), but it also affects solar project planning and total cost. We cover it on both sides so nothing falls through the cracks.',
+              'Yes. We help with the roof work that has to be resolved before a solar install, including detach-and-reset situations.',
           },
         ],
       },
       {
         type: 'cta',
-        title: 'Dealing with hail damage, an insurance claim, or a solar detach question?',
-        body: 'The hail damage page walks you through what to document, what to ask before the claim gets messy, and how to handle detach-and-reset when solar is already on the roof.',
-        ctaLabel: 'Go to the hail damage page',
-        ctaHref: '/hail-damage',
+        title: 'Talk with a roofing pro.',
+        body: 'We will help you figure out the right next step for the roof.',
+        ctaLabel: 'Request a consultation',
+        ctaHref: '#consultation',
       },
     ],
   },
@@ -794,8 +982,7 @@ export const pages = [
     siteSlug: 'texas-solar-and-roofing-pros',
     slug: 'about',
     title: 'About',
-    description:
-      "Who we are, how we work, and why we built a site that puts the homeowner's question first.",
+    description: "Who we are, how we work, and why we built a site that puts the homeowner's question first.",
     pageType: 'page',
     templateLevel: 'hero',
     sections: [
@@ -825,7 +1012,8 @@ export const pages = [
       {
         type: 'aboutProfile',
         eyebrow: 'Meet the team',
-        title: 'Kathie Millen and Tandra Peters help homeowners sort out the roof, the solar timing, and the insurance questions before the project drifts.',
+        title:
+          'Kathie Millen and Tandra Peters help homeowners sort out the roof, the solar timing, and the insurance questions before the project drifts.',
         body: 'Kathie brings the solar side into focus when roof condition, production, detach-and-reset, and project timing all have to line up. Tandra brings the roofing perspective, inspection mindset, and on-the-ground practicality that helps families understand what the roof is actually telling them and what the next step should be.',
         people: [
           {
@@ -906,7 +1094,7 @@ export const pages = [
         eyebrow: 'Hail damage + insurance',
         title:
           'Hail hit your home? Here is how to handle the roof, the claim, and the solar panels without getting burned.',
-        body: 'The real challenge is not the storm. It is figuring out whether the roof shows real damage, whether the insurance scope covers everything, and how to handle detach-and-reset if solar is already up there. That is where projects get slow, expensive, and confusing.',
+        body: 'The real challenge is not the storm. It is figuring out whether the roof actually has damage, what the insurance estimate covers, and how to handle removing and reinstalling solar if it is already on the roof. That is where projects get slow, expensive, and confusing.',
         heroImage: {
           urls: {
             regular: '/images/hail-damage.png',
@@ -924,13 +1112,13 @@ export const pages = [
         eyebrow: 'What homeowners are actually dealing with',
         title:
           'The stress starts when the roofer, the insurance company, and the solar crew all act like someone else is handling the hard part.',
-        body: 'The storm headline is not the problem. The problem is whether the roof evidence supports the claim, whether the adjuster missed code items or supplements, and whether anyone has defined the detach-and-reset plan before the reroof crew shows up. That is what we help you sort out.',
+        body: 'The storm headlines fade fast. The real problem is whether the roof damage actually matches the claim, whether the insurance estimate caught all the work needed, and whether anyone has planned how to remove and reinstall solar before the reroof crew shows up. That is what we help you sort out.',
       },
       {
         type: 'quote',
         eyebrow: 'Our promise',
         title: 'Texas Solar and Roofing Pros',
-        body: 'We help you sort out three things before any work starts: the roof condition, the insurance scope, and the solar removal-and-reinstall plan. When those three stay aligned, the project goes smoother and costs less.',
+        body: 'We help you figure out three things before any work starts: the roof condition, what the insurance estimate covers, and the plan for removing and reinstalling solar. When those three stay aligned, the project goes smoother and costs less.',
       },
       {
         type: 'highlights',
@@ -941,12 +1129,12 @@ export const pages = [
             body: 'A bad storm in the area does not mean your roof is damaged. The real question is whether your roof shows consistent hail impact that changes the repair decision, not just scattered cosmetic marks.',
           },
           {
-            title: 'How your policy language changes what you are actually working with',
-            body: 'RCV vs. ACV, depreciation holdback, deductibles, and age-related exclusions all affect the real budget after the adjuster writes the first scope. You need to understand those terms before you sign anything.',
+            title: 'How your policy language changes what you are working with',
+            body: 'Replacement cost value versus actual cash value, depreciation deductions, deductibles, and age-related exclusions all affect the money available after the adjuster writes the estimate. You need to understand those terms before you sign anything.',
           },
           {
-            title: "Whether the adjuster's first scope is actually complete",
-            body: 'It usually is not. Code items, supplements, ventilation, decking issues, and other legitimate line items often need to be documented before the reroof budget makes sense.',
+            title: 'Whether the insurance estimate actually covers everything',
+            body: 'Usually it does not. Code items, additional line items, ventilation, decking issues, and other legitimate work often need to be documented after the initial estimate. That is why supplements happen before the reroof budget actually makes sense.',
           },
         ],
       },
@@ -954,12 +1142,13 @@ export const pages = [
         type: 'story',
         eyebrow: 'When solar is already on the roof',
         title: 'Panels on the roof turn a roofing claim into a three-way coordination problem.',
-        body: 'Now you need the reroof and the solar work sequenced correctly. That means documenting system condition before removal, defining who handles detach-and-reset, checking for panel or wiring damage, and making sure the reinstall is not treated as an afterthought.',
+        body: 'Now you need the reroof and the solar work sequenced correctly. That means documenting system condition before removal, defining who handles removal and reinstallation, checking for panel or wiring damage, and making sure the reinstall is not treated as an afterthought.',
       },
       {
         type: 'serviceGrid',
         title: 'What Hail Actually Does to a Texas Roof',
-        subtitle: 'Hailstorms roll through Texas every year. If your home was in the path, the damage might not be obvious from the ground — but ignoring it gets expensive fast.',
+        subtitle:
+          'Hailstorms roll through Texas every year. If your home was in the path, the damage might not be obvious from the ground — but ignoring it gets expensive fast.',
         items: [
           {
             title: 'Roof leaks that start small and get worse',
@@ -967,20 +1156,21 @@ export const pages = [
             imageUrl: '/images/water-dripping-from-ceiling-damaged-interior-space-winter-season.jpg',
           },
           {
-            title: 'Mold you won\'t see until it\'s a problem',
-            body: 'That moisture has to go somewhere. It feeds mold behind walls and under insulation — the kind you don\'t notice until you smell it or someone in the house starts getting sick.',
+            title: "Mold you won't see until it's a problem",
+            body: "That moisture has to go somewhere. It feeds mold behind walls and under insulation — the kind you don't notice until you smell it or someone in the house starts getting sick.",
             imageUrl: '/images/concrete-roof-wood-sky.jpg',
           },
           {
             title: 'Missing or cracked tiles that leave the house exposed',
             body: 'Hail knocks tiles loose or shatters them outright. Every gap is an open door for rain, pests, and heat loss. The longer it sits, the more damage spreads underneath.',
-            imageUrl: '/images/overlapping-rows-yellow-ceramic-roofing-tiles-mounted-wooden-boards-covering-residential-building-roof-construction.jpg',
+            imageUrl:
+              '/images/overlapping-rows-yellow-ceramic-roofing-tiles-mounted-wooden-boards-covering-residential-building-roof-construction.jpg',
           },
         ],
       },
       {
         type: 'steps',
-        title: 'How to keep the roof, insurance, and solar scopes aligned',
+        title: 'How to keep the roof, insurance, and solar repairs aligned',
         items: [
           {
             title: 'Start with photos, notes, and storm timing',
@@ -988,22 +1178,22 @@ export const pages = [
           },
           {
             title: 'Get a real roof inspection, not just a weather recap',
-            body: 'The inspection should tell you whether the roof actually shows storm damage, whether repair is realistic, and whether a claim or full replacement is justified.',
+            body: 'The inspection should tell you whether the roof actually has storm damage, whether repair is realistic, and whether a claim or full replacement makes sense.',
           },
           {
-            title: 'Review the policy and scope before approving any work',
-            body: 'Do not assume the first adjuster scope is complete. Check depreciation, code items, exclusions, and likely supplements before treating the budget as final.',
+            title: 'Review the policy and estimate before approving any work',
+            body: 'Do not assume the first adjuster estimate covers everything. Check depreciation, code items, exclusions, and likely additional line items before treating the budget as final.',
           },
           {
-            title: 'Lock down detach-and-reset responsibilities early',
-            body: 'If solar panels are on the roof, define who removes them, who reinstalls them, how condition is documented, and what happens if solar components are also damaged. Do this before the reroof, not during.',
+            title: 'Lock down removal and reinstallation responsibilities early',
+            body: 'If solar panels are on the roof, define who removes them, who reinstalls them, how condition is documented, and what happens if solar components are also damaged. Do this before the reroof starts, not during.',
           },
         ],
       },
       {
         type: 'hailMap',
         title: 'Use the storm map as supporting evidence, not the whole decision.',
-        body: 'Check recent storm activity for your property and compare it to what the roof inspection actually finds. The map supports the conversation. It does not replace boots on the roof.',
+        body: 'Check recent storm activity for your property and compare it to what the roof inspection actually finds. The map supports the conversation. It does not replace someone looking at the roof in person.',
         items: [
           {
             title: 'Anchor the timeline',
@@ -1011,11 +1201,11 @@ export const pages = [
           },
           {
             title: 'Back up your documentation',
-            body: 'The map is most useful when it supports your photos, notes, and a roof-level inspection instead of standing alone.',
+            body: 'The map is most useful when it supports your photos, notes, and an in-person roof inspection instead of standing alone.',
           },
           {
             title: 'Keep the next step simple',
-            body: 'If the roof concerns, inspection findings, and storm timing all line up, move into scope review and claim questions without overcomplicating it.',
+            body: 'If the roof damage, inspection findings, and storm timing all line up, move into estimate review and claim questions without overcomplicating it.',
           },
         ],
         ctaLabel: 'Request a roof review',
@@ -1028,24 +1218,112 @@ export const pages = [
           {
             question: 'Does hail always mean I need a new roof?',
             answer:
-              'No. Some roofs show minor or repairable damage. Others show enough impact to justify replacement. The useful inspection is the one that tells you the difference honestly, not the one that always says "you need a new roof."',
+              'No. Some roofs show minor damage that can be repaired. Others show enough impact across the surface to justify replacement. The useful inspection is one that tells you the difference honestly. A good inspection looks at impact patterns, baseline roof age, and what makes financial sense rather than just recommending replacement on every hail claim.',
           },
           {
-            question: 'What is RCV vs. ACV and why should I care?',
+            question: 'What is RCV vs. ACV and why does it matter?',
             answer:
-              'It changes how much money you are actually working with. Replacement cost value and actual cash value are not the same thing, and depreciation or policy limits can leave you covering a much bigger gap than expected.',
+              'Replacement cost value (RCV) is what it would cost to replace the roof new. Actual cash value (ACV) subtracts depreciation. Your policy may have one or the other, and some policies have depreciation holdback, which means you get part of the payout now and the rest after repairs are completed. This changes how much money you actually have available right now. If your policy has a $5,000 deductible and your ACV payout is $6,000, you are only working with $1,000 until the roof work is done and you get the remaining depreciation back.',
           },
           {
-            question: 'Who pays for detach-and-reset when solar is already on the roof?',
+            question: 'Who pays for removing and reinstalling solar when the roof needs work?',
             answer:
-              'Sometimes insurance contributes, sometimes it does not, and sometimes it depends on how the scope is written. That is why this needs to be nailed down before the reroof starts, not argued about halfway through.',
+              'Sometimes the insurance claim includes it. Sometimes it does not. It depends on how the estimate is written and whether the damage is attributed to the same storm that hit the roof. This is exactly why it needs to be discussed and documented before the reroof crew shows up. If solar removal and reinstallation costs $3,000 and nobody clarified who is paying, you could end up covering that out of pocket when the insurance estimate did not include it.',
           },
           {
-            question: 'What if the roof claim is approved but my solar panels are also damaged?',
+            question: 'What if the roof claim is approved but the solar panels are also damaged?',
             answer:
-              'That should be caught before reinstall. A good detach-and-reset plan documents system condition during removal so damaged panels, wiring, or mounts do not become a surprise after the roof is done.',
+              'A good removal and reinstallation plan documents the condition of panels, wiring, mounts, and equipment before they come off the roof. That way if damage is discovered during removal, it is documented and can be added to the claim while the file is still active. If the solar work is treated as an afterthought and panels are reinstalled without that documentation, you could end up paying for repairs that should have been covered by the same storm claim.',
+          },
+          {
+            question: 'How long does the whole process take from inspection to finished roof?',
+            answer:
+              'That depends on whether you have solar, whether the claim needs supplements, and whether there are delays in the supply chain. A straightforward roof-only claim can move from inspection to finished work in 4 to 8 weeks. If solar removal and reinstallation is involved, add another 2 to 3 weeks because you have to schedule removal before roofing, then schedule reinstallation after. Weather delays and material availability can add time on either end.',
           },
         ],
+      },
+    ],
+  },
+  {
+    id: 'page-roof-insurance-claim-realities',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'resources/roof-insurance-and-claim-realities',
+    title: 'Roof Insurance and Claim Realities',
+    description:
+      'What Texas homeowners need to understand about roof insurance claims, storm documentation, deductibles, depreciation, and where solar complicates the job.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'hero',
+        eyebrow: 'Roofing + insurance',
+        title: 'Roof insurance and claim realities',
+        body: 'Storm claims get expensive when the estimate, the roof condition, and the solar conversation are all treated like separate problems. This page is here to simplify what actually matters before work starts.',
+        heroImage: {
+          urls: {
+            regular:
+              'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=2200',
+          },
+          alt: 'Homeowner insurance paperwork on a desk',
+        },
+        actions: [
+          { label: 'Talk through a claim', href: '#consultation', variant: 'default' },
+          { label: 'Use the hail map', href: '/hail-damage', variant: 'secondary' },
+        ],
+      },
+      {
+        type: 'story',
+        eyebrow: 'What homeowners run into',
+        title:
+          'The roof problem is usually clear. The paperwork and estimate are where the project starts drifting.',
+        body: 'Most homeowners are not confused about whether something happened to the roof. They are confused about whether the policy covers it, whether the first estimate is complete, and who is paying when solar has to come off before roofing work can begin.',
+      },
+      {
+        type: 'highlights',
+        title: 'What usually changes the outcome',
+        items: [
+          {
+            title: 'Storm proof matters',
+            body: 'Dates, location, inspection notes, and photos make the claim stronger when the adjuster is trying to separate storm damage from age and wear.',
+          },
+          {
+            title: 'The first estimate is rarely the final answer',
+            body: 'Flashing, code items, ventilation changes, decking issues, and solar detach and reset work often get added later if they were not fully captured the first time.',
+          },
+          {
+            title: 'Solar changes the sequencing',
+            body: 'If the panels have to come off, that needs to be planned before roofing is scheduled. Otherwise the claim, the roof crew, and the reinstall timing start colliding.',
+          },
+        ],
+      },
+      {
+        type: 'faq',
+        title: 'Claim questions that come up fast',
+        items: [
+          {
+            question: 'Does insurance always pay for detach and reset?',
+            answer:
+              'No. Sometimes it is included in the claim, sometimes it has to be justified, and sometimes it is left out entirely until someone raises it. That is why it needs to be discussed early.',
+          },
+          {
+            question: 'Does hail automatically mean full roof replacement?',
+            answer:
+              'No. Some roofs can be repaired. Some cannot. The useful inspection is the one that separates cosmetic marks, repairable damage, and damage severe enough to justify replacement.',
+          },
+          {
+            question: 'Why does the estimate still change after approval?',
+            answer:
+              'Because the first estimate is a starting point. Additional line items are common once crews inspect details more closely or work begins and hidden issues are found.',
+          },
+        ],
+      },
+      {
+        type: 'cta',
+        title:
+          'If the roof claim and the solar question are tangled together, get clarity before signing the next step.',
+        body: 'A short review can save a lot of avoidable confusion around timing, coverage, and who is actually paying for what.',
+        ctaLabel: 'Request a roof review',
+        ctaHref: '#consultation',
       },
     ],
   },
@@ -1055,7 +1333,7 @@ export const pages = [
     slug: 'insurance-basics',
     title: 'Insurance Basics for Roof and Storm Claims',
     description:
-      'A plain-language guide to RCV, ACV, deductibles, supplements, depreciation, and how roof and solar scopes get out of sync after a storm claim.',
+      'A plain-language guide to replacement cost value, actual cash value, deductibles, additional line items, depreciation, and how roof and solar work get out of sync after a storm claim.',
     pageType: 'page',
     templateLevel: 'hero',
     sections: [
@@ -1063,7 +1341,7 @@ export const pages = [
         type: 'hero',
         eyebrow: 'Insurance basics',
         title: 'Understand the claim before the paperwork starts driving the project.',
-        body: 'Roof claims get expensive when the language is unclear. Deductibles, depreciation, supplements, exclusions, and detach-and-reset all change the real number you are working with. This page is here to make those pieces easier to sort before you sign anything.',
+        body: 'Roof claims get expensive when the language is unclear. Deductibles, depreciation, additional line items, exclusions, and removing and reinstalling solar all change the actual amount you are working with. This page is here to make those pieces easier to sort before you sign anything.',
         heroImage: {
           urls: {
             regular:
@@ -1076,7 +1354,7 @@ export const pages = [
           { label: 'See hail damage help', href: '/hail-damage', variant: 'secondary' },
         ],
         metrics: [
-          { label: 'What this covers', value: 'Roof + solar claims' },
+          { label: 'Claim type', value: 'Roof + solar claims' },
           { label: 'Focus', value: 'Scope and payout clarity' },
           { label: 'Best for', value: 'Storm-driven roof decisions' },
         ],
@@ -1084,8 +1362,9 @@ export const pages = [
       {
         type: 'story',
         eyebrow: 'Why this matters',
-        title: 'Most of the trouble starts after the storm, when the numbers and scope stop matching the house.',
-        body: 'The adjuster summary is not the same thing as a finished scope. Homeowners get trapped between roof quotes, depreciation holdback, deductible expectations, policy exclusions, and the solar question nobody raised early enough. The goal is to understand where the money is supposed to come from, what is still missing from the scope, and what should be clarified before work starts.',
+        title:
+          'Most of the trouble starts after the storm, when the estimate does not match what the house actually needs.',
+        body: 'The adjuster estimate is usually just the starting point. Homeowners get trapped between roof quotes, depreciation holdback, deductible timing, policy exclusions, and the solar question nobody raised early enough. The goal is to understand where the money is coming from, what work might be missing from the initial estimate, and what should be clarified before work starts.',
       },
       {
         type: 'highlights',
@@ -1093,33 +1372,33 @@ export const pages = [
         items: [
           {
             title: 'RCV vs. ACV',
-            body: 'Replacement cost value and actual cash value are not interchangeable. One usually assumes recoverable depreciation. The other can leave you covering a much larger gap out of pocket.',
+            body: 'Replacement cost value is what a new roof costs. Actual cash value subtracts what the roof has depreciated. One usually gets paid back after work is done. The other may come with a holdback. Knowing which one applies to you changes whether you have enough money now or if you are waiting for the second payment.',
           },
           {
-            title: 'Deductible reality',
-            body: 'The deductible is part of the project math from day one. If the scope is thin or the payout is delayed, that deductible feels bigger fast.',
+            title: 'Deductible timing',
+            body: 'The deductible is part of the project math from day one. If the estimate is smaller than you expected or the payout is delayed, that deductible eats up a bigger piece of what you actually have to work with right away.',
           },
           {
-            title: 'Supplements',
-            body: 'A supplement is what gets written when the original scope missed real work. That is common, especially when flashing, code items, or solar detach-and-reset were not accounted for up front.',
+            title: 'Additional line items',
+            body: 'An additional line item is what gets added when the initial estimate missed real work. That is common, especially when flashing details, code-required items, or removing and reinstalling solar were not accounted for in the first inspection. Do not treat the first estimate as final.',
           },
         ],
       },
       {
         type: 'steps',
-        title: 'How to keep the claim from turning into a scope mess',
+        title: 'How to keep the claim from turning into a mess',
         items: [
           {
-            title: 'Read the adjuster scope before signing a roof contract',
-            body: 'Make sure the scope actually reflects the roof condition, code items, accessories, and any solar-related work before the project starts moving.',
+            title: 'Read the estimate before signing a roof contract',
+            body: 'Make sure the estimate actually covers the roof condition, code-required items, accessories, and any solar-related work before the project starts moving forward.',
           },
           {
-            title: 'Separate roof work from solar work, but line them up early',
-            body: 'Detach-and-reset should be discussed before the reroof, not after materials are ordered and schedules are locked.',
+            title: 'Separate roof work from solar work, but plan them together',
+            body: 'Removing and reinstalling solar should be discussed before the reroof starts, not after materials are ordered and schedules are locked. Different crews, different timing, but one project.',
           },
           {
-            title: 'Clarify missing items while the file is still active',
-            body: 'If something is missing, document it and push the supplement conversation early. Waiting until install day is how projects stall.',
+            title: 'Clarify missing items while the insurance file is still active',
+            body: 'If something is missing from the estimate, document it and push the conversation for additional line items early. Waiting until work starts is how projects stall and costs spike.',
           },
         ],
       },
@@ -1130,24 +1409,34 @@ export const pages = [
           {
             question: 'What is depreciation holdback?',
             answer:
-              'It is the part of the replacement cost that often gets paid later, after the work is completed and documented. If you do not account for that timing, the project cash flow can get tight fast.',
+              'If your policy is written on a replacement cost basis, you may not get the full amount up front. The insurance company pays part of the bill now, and the remainder after the work is completed and documented. This is called depreciation holdback. If the roof work costs $12,000 and depreciation is $3,000, you might get $9,000 initially and the remaining $3,000 after invoices are submitted and approved. If you do not account for that timing, the project cash flow can get very tight because your contractor usually needs payment upfront or shortly after the work is done, not weeks later.',
           },
           {
-            question: 'Why does the first adjuster scope feel incomplete so often?',
+            question: 'Why does the first insurance estimate feel incomplete so often?',
             answer:
-              'Because roofs, flashing details, code requirements, and solar-related work are not always fully captured in an initial inspection. Supplements are common when the first scope is thin.',
+              'Because roofs, flashing details, code requirements, and solar-related work are not always fully captured in an initial inspection. An adjuster may spend a few hours on the roof, photograph the impact, and write an estimate based on what they saw. But flashing issues, ventilation problems, decking damage, or other details that only show up once work starts are not in that first estimate. Additional line items are normal, not a sign that something went wrong. This is why you should not treat the first estimate as the final budget.',
           },
           {
-            question: 'Does insurance always pay for detach-and-reset?',
+            question: 'Does insurance always pay for removing and reinstalling solar?',
             answer:
-              'No. Sometimes it is covered, sometimes it is partially covered, and sometimes it has to be justified separately. That is why it needs to be discussed while the roof scope is still being built.',
+              'No. Sometimes it is covered under the same storm claim, sometimes it is partially covered, and sometimes it has to be justified separately with additional documentation. Whether it gets included depends on how the estimate is written and whether the damage is tied to the same weather event. That is why removing and reinstalling solar needs to be discussed with your insurance adjuster while the estimate is still being finalized, not after the reroof is already scheduled.',
+          },
+          {
+            question: 'What if the estimate seems too low compared to other quotes?',
+            answer:
+              'Do not assume the insurance estimate is final or that your contractor has to stay within it. The adjuster is not a roofer. They estimate based on a limited inspection and standard pricing. Your roofing contractor may find additional work once they are on the roof. You can request additional line items to be added to the insurance file while it is still active. It is much easier to add work to the claim before the file is closed than it is to fight for coverage after the roof is already done.',
+          },
+          {
+            question: 'How do I know if my homeowners insurance is actually going to cover this claim?',
+            answer:
+              'Read your policy and look at what is covered under storm damage. Most policies cover damage from hail, wind, and fallen trees. Some have exclusions for damage related to age, lack of maintenance, or gradual deterioration. If your roof is 25 years old and fails during a hailstorm, the damage is usually covered even if age contributed to the failure. But if the damage is not clearly tied to a specific storm event, the claim could be denied. That is why documentation, photos, and storm timing matter. If you are not sure whether your claim will be accepted, ask your insurance agent or the adjuster directly. Do not assume.',
           },
         ],
       },
       {
         type: 'cta',
-        title: 'If the roof, the claim, and the solar question are all colliding at once, we can help you sort the scope before it gets expensive.',
-        body: 'A short conversation can save a lot of avoidable friction when the paperwork and the house are telling different stories.',
+        title: 'Talk with our team.',
+        body: 'We will help you sort out the claim, the roof, and the right next step.',
         ctaLabel: 'Request a consultation',
         ctaHref: '#consultation',
       },
@@ -1216,7 +1505,7 @@ We may use trusted providers for hosting, analytics, CRM, email, form handling, 
 
 The site is intended to provide general information about roofing, solar, storm damage, energy upgrades, insurance-related issues, and related services. It is not legal, tax, insurance, engineering, or project-specific advice for your situation.
 
-Using the site or submitting a form does not by itself create a contract, guarantee service availability, or guarantee project pricing. Final recommendations depend on property-specific facts such as roof condition, electrical conditions, storm scope, policy terms, utility data, and actual inspection findings.
+Using the site or submitting a form does not by itself create a contract, guarantee service availability, or guarantee project pricing. Final recommendations depend on property-specific facts such as roof condition, electrical conditions, storm evidence, policy terms, utility data, and actual inspection findings.
 
 The site may reference or rely on third-party tools, links, analytics, maps, and other platforms. We are not responsible for third-party content or systems outside our control.`,
       },
@@ -1276,6 +1565,12 @@ The site may reference or rely on third-party tools, links, analytics, maps, and
         type: 'guideGrid',
         title: 'Browse the guides',
         items: getSolarGuideGridItems(),
+      },
+      {
+        type: 'cta',
+        title: 'Talk with our team',
+        body: 'Roof problem? We guide next steps.',
+        ctaLabel: 'Reach out to our team',
       },
     ],
   },
@@ -1455,7 +1750,7 @@ export const initialAnalyticsGoals = [
   {
     id: 'goal-1',
     name: 'Hero site lead form submit',
-    scope: 'site',
+    goalLevel: 'site',
     siteSlug: 'texas-solar-and-roofing-pros',
     eventName: 'lead_form_submitted',
     targetValue: 180,
@@ -1467,7 +1762,7 @@ export const initialAnalyticsGoals = [
   {
     id: 'goal-2',
     name: 'AI referral traffic',
-    scope: 'portfolio',
+    goalLevel: 'portfolio',
     siteSlug: 'all',
     eventName: 'ai_referral_session',
     targetValue: 250,
@@ -1479,7 +1774,7 @@ export const initialAnalyticsGoals = [
   {
     id: 'goal-3',
     name: 'Domain verification completion',
-    scope: 'portfolio',
+    goalLevel: 'portfolio',
     siteSlug: 'all',
     eventName: 'verified_domain_count',
     targetValue: 12,

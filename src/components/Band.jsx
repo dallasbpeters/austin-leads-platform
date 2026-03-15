@@ -8,7 +8,7 @@ import {
   useSpring,
   useTransform,
 } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const defaultBandColors = [
   'var(--color-secondary-950)',
@@ -57,17 +57,14 @@ export default function Band({
     offset: ['start end', 'end start'],
   })
 
-  const bands = useMemo(
-    () => [
-      { opacity: 0.88 },
-      { opacity: 0.72 },
-      { opacity: 0.56 },
-      { opacity: 0.38 },
-      { opacity: 0.18 },
-      { opacity: 0.06 },
-    ],
-    [],
-  )
+  const bands = [
+    { opacity: 0.88 },
+    { opacity: 0.72 },
+    { opacity: 0.56 },
+    { opacity: 0.38 },
+    { opacity: 0.18 },
+    { opacity: 0.06 },
+  ]
 
   const height = useTransform(
     scrollYProgress,
@@ -136,9 +133,8 @@ export default function Band({
   const step = 100 / (numStops - 1)
   const autoOffset = autoAnimate ? Math.sin(time * speed) * amplitude : 0
 
-  const stopPositions = useMemo(
-    () => palette.map((_, index) => Math.max(0, Math.min(100, index * step + mouseOffset + autoOffset))),
-    [palette, step, mouseOffset, autoOffset],
+  const stopPositions = palette.map((_, index) =>
+    Math.max(0, Math.min(100, index * step + mouseOffset + autoOffset)),
   )
 
   const customProperties = stopPositions.reduce((accumulator, position, index) => {

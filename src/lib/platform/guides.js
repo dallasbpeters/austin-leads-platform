@@ -94,7 +94,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Panels are only one piece of performance',
-            body: 'Panel brand matters less than most marketing suggests. Roof orientation, pitch, shading, inverter strategy, and system sizing tend to have a bigger effect on real-world production. A south-facing roof at 15 to 30 degrees pitch in central Texas will typically outproduce a west-facing roof by 10 to 15 percent with the same equipment, and shade from a single large oak tree can reduce a roof plane\'s output by 25 percent or more.',
+            body: "Panel brand matters less than most marketing suggests. Roof orientation, pitch, shading, inverter strategy, and system sizing tend to have a bigger effect on real-world production. A south-facing roof at 15 to 30 degrees pitch in central Texas will typically outproduce a west-facing roof by 10 to 15 percent with the same equipment, and shade from a single large oak tree can reduce a roof plane's output by 25 percent or more.",
           },
           {
             _type: 'pageItem',
@@ -290,7 +290,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Check whether export value equals retail rate',
-            body: 'If the proposal quietly assumes exported solar is worth full retail rate and your utility does not offer that, the payback estimate is inflated. Ask the installer to show you the specific export credit value they used in the model and verify it against your utility\'s current published rate.',
+            body: "If the proposal quietly assumes exported solar is worth full retail rate and your utility does not offer that, the payback estimate is inflated. Ask the installer to show you the specific export credit value they used in the model and verify it against your utility's current published rate.",
           },
           {
             _type: 'pageItem',
@@ -342,7 +342,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'How much can I realistically save with solar in Texas?',
             answer:
-              'It depends entirely on your bill size, roof, utility, and financing choice. A homeowner with a $200 monthly electric bill, a south-facing roof, and a cash purchase may see a payback period of 7 to 9 years and meaningful savings after that for the remaining 15 to 20 years of the system\'s life. A homeowner with a $100 bill, a shaded roof, and a high-fee financed loan may barely break even. The honest answer is project-specific — be skeptical of anyone quoting savings without knowing your details.',
+              "It depends entirely on your bill size, roof, utility, and financing choice. A homeowner with a $200 monthly electric bill, a south-facing roof, and a cash purchase may see a payback period of 7 to 9 years and meaningful savings after that for the remaining 15 to 20 years of the system's life. A homeowner with a $100 bill, a shaded roof, and a high-fee financed loan may barely break even. The honest answer is project-specific — be skeptical of anyone quoting savings without knowing your details.",
           },
         ],
       },
@@ -403,7 +403,7 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'How to think about incentives',
         title: 'Incentives should improve a project that already makes sense — not rescue one that does not.',
-        body: 'If the economics only work when every incentive assumption is maximized and every program stays active, the project is fragile. A strong solar investment should pencil out conservatively on its own, and incentives should make a good deal better rather than turn a marginal one into a go.\n\nThat said, the federal Investment Tax Credit alone can reduce the effective cost of a residential solar system by roughly 30 percent. On a $24,000 installation, that is a $7,200 reduction in federal tax liability — real money that significantly accelerates payback. The Texas property-tax exemption adds another layer of protection that matters more than most homeowners realize, especially in counties where appraisal increases have been aggressive.\n\nThe mistake happens when quotes stack incentives without verifying each one independently, or when local utility programs are presented as guaranteed when they are actually budget-limited or subject to annual changes. The homeowner\'s job is to understand which incentives are reliable, which are conditional, and what the project looks like if a conditional one falls through.',
+        body: "If the economics only work when every incentive assumption is maximized and every program stays active, the project is fragile. A strong solar investment should pencil out conservatively on its own, and incentives should make a good deal better rather than turn a marginal one into a go.\n\nThat said, the federal Investment Tax Credit alone can reduce the effective cost of a residential solar system by roughly 30 percent. On a $24,000 installation, that is a $7,200 reduction in federal tax liability — real money that significantly accelerates payback. The Texas property-tax exemption adds another layer of protection that matters more than most homeowners realize, especially in counties where appraisal increases have been aggressive.\n\nThe mistake happens when quotes stack incentives without verifying each one independently, or when local utility programs are presented as guaranteed when they are actually budget-limited or subject to annual changes. The homeowner's job is to understand which incentives are reliable, which are conditional, and what the project looks like if a conditional one falls through.",
       },
       {
         _type: 'pageSection',
@@ -418,7 +418,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Texas property-tax exemption for solar and wind',
-            body: 'Under Texas Tax Code Section 11.27, residential solar energy devices are exempt from property tax assessment. That means installing a $24,000 solar system will not increase your property tax bill — even though it increases your home\'s market value. In Travis County, where effective property tax rates run around 1.5 to 1.8 percent, that exemption saves homeowners roughly $360 to $430 per year on a system of that size. Over the life of the system, that is meaningful.',
+            body: "Under Texas Tax Code Section 11.27, residential solar energy devices are exempt from property tax assessment. That means installing a $24,000 solar system will not increase your property tax bill — even though it increases your home's market value. In Travis County, where effective property tax rates run around 1.5 to 1.8 percent, that exemption saves homeowners roughly $360 to $430 per year on a system of that size. Over the life of the system, that is meaningful.",
           },
           {
             _type: 'pageItem',
@@ -445,12 +445,12 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Look for current source material on local programs',
-            body: 'If a local utility program is mentioned, you should be able to find the current terms on that utility\'s website. If the installer\'s information does not match what the utility publishes — or if the utility page has not been updated recently — treat the incentive as unverified until you can confirm it directly.',
+            body: "If a local utility program is mentioned, you should be able to find the current terms on that utility's website. If the installer's information does not match what the utility publishes — or if the utility page has not been updated recently — treat the incentive as unverified until you can confirm it directly.",
           },
           {
             _type: 'pageItem',
             title: 'Ask how the credit is treated in the financing model',
-            body: 'Some solar loans assume the homeowner applies the federal credit as a lump-sum payment to the loan within 18 months. If that happens, the monthly payment drops. If it does not happen — because the homeowner\'s tax situation differs — the payment stays higher than advertised. This assumption should be stated explicitly in the financing terms, not buried in the fine print.',
+            body: "Some solar loans assume the homeowner applies the federal credit as a lump-sum payment to the loan within 18 months. If that happens, the monthly payment drops. If it does not happen — because the homeowner's tax situation differs — the payment stays higher than advertised. This assumption should be stated explicitly in the financing terms, not buried in the fine print.",
           },
           {
             _type: 'pageItem',
@@ -540,7 +540,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'story',
         eyebrow: 'Why this matters',
-        title: 'A detach and reset done wrong can void warranties, damage equipment, or delay the whole project by weeks.',
+        title:
+          'A detach and reset done wrong can void warranties, damage equipment, or delay the whole project by weeks.',
         body: 'The panels themselves are usually fine — they are built to last 25 to 30 years and can handle being removed and reinstalled. The risk is in how the work is coordinated. If the solar company and roofing crew are not working from the same timeline, panels sit on the ground longer than necessary. If racking penetrations are not properly resealed on the new roof, leaks develop at the very points that are supposed to be watertight. If electrical disconnects are handled carelessly, inverters or wiring can be damaged. And if nobody checks whether the original solar warranty survives the removal process, the homeowner may discover after the fact that their 25-year panel warranty is no longer honored.\n\nIn Texas, where hail damage triggers thousands of roof replacements every spring and summer, this is not an edge case — it is one of the most common solar-and-roofing coordination scenarios in the state. The Texas Department of Insurance reports that hail and wind claims make up the majority of homeowner insurance claims statewide. A significant number of those roofs have solar on them, and that number grows every year.\n\nThe homeowners who come through the process cleanly are the ones who understand the steps, get the coordination in writing, and make sure warranty and insurance questions are answered before the first panel comes off the roof — not after.',
       },
       {
@@ -561,7 +562,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Step 3: The roof is replaced or repaired',
-            body: 'Once the panels and racking are clear, the roofer has full access. New underlayment, any necessary decking repairs, and new roofing material go down. The roofer should know exactly where the racking penetrations were located and plan flashing around the reinstall points. If the roofing and solar companies are coordinating, the roofer can pre-install flashing boots or standoff bases per the solar company\'s specifications — saving time on the reinstall.',
+            body: "Once the panels and racking are clear, the roofer has full access. New underlayment, any necessary decking repairs, and new roofing material go down. The roofer should know exactly where the racking penetrations were located and plan flashing around the reinstall points. If the roofing and solar companies are coordinating, the roofer can pre-install flashing boots or standoff bases per the solar company's specifications — saving time on the reinstall.",
           },
           {
             _type: 'pageItem',
@@ -633,7 +634,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'Will my solar warranty still be valid after a detach and reset?',
             answer:
-              'It depends on who does the work and how it is documented. Some manufacturers — like SunPower and Enphase — require the original installer or an authorized service partner to perform the work. Others accept any licensed solar professional with proper documentation. The key is to verify the manufacturer\'s requirements before the project begins and keep records of who performed the work, when, and what was done. Getting warranty confirmation in writing after the reinstall is complete is the safest approach.',
+              "It depends on who does the work and how it is documented. Some manufacturers — like SunPower and Enphase — require the original installer or an authorized service partner to perform the work. Others accept any licensed solar professional with proper documentation. The key is to verify the manufacturer's requirements before the project begins and keep records of who performed the work, when, and what was done. Getting warranty confirmation in writing after the reinstall is complete is the safest approach.",
           },
           {
             _type: 'pageItem',
@@ -751,7 +752,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'File the insurance claim promptly if damage is confirmed',
-            body: 'Contact your insurance company to open a claim as soon as professional inspection confirms damage. Provide the storm date, your documentation, and the roofer\'s inspection report. Request a claim number and your adjuster\'s contact information. Most insurers prefer notification within 30 days of the storm — even though the legal deadline may be longer — and immediate reporting demonstrates good faith effort to protect the property.',
+            body: "Contact your insurance company to open a claim as soon as professional inspection confirms damage. Provide the storm date, your documentation, and the roofer's inspection report. Request a claim number and your adjuster's contact information. Most insurers prefer notification within 30 days of the storm — even though the legal deadline may be longer — and immediate reporting demonstrates good faith effort to protect the property.",
           },
           {
             _type: 'pageItem',
@@ -788,12 +789,12 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Signing with the first contractor who knocks on the door',
-            body: 'After a major hail event, storm-chasing contractors flood affected neighborhoods — sometimes within hours. Not all of them will be around in six months to honor a warranty. Before signing with any roofer, verify their Texas contractor license, confirm current liability and workers\' compensation insurance, check their physical business address, and ask for local references. A company that has been serving central Texas for years has a very different accountability profile than one that arrived last Tuesday.',
+            body: "After a major hail event, storm-chasing contractors flood affected neighborhoods — sometimes within hours. Not all of them will be around in six months to honor a warranty. Before signing with any roofer, verify their Texas contractor license, confirm current liability and workers' compensation insurance, check their physical business address, and ask for local references. A company that has been serving central Texas for years has a very different accountability profile than one that arrived last Tuesday.",
           },
           {
             _type: 'pageItem',
             title: 'Accepting a claim denial without questioning it',
-            body: 'If the adjuster says there is no damage but your professional roofer disagrees, you have options. You can request a re-inspection with a different adjuster, provide your roofer\'s detailed report and photos as supplemental evidence, or hire a public adjuster for an independent evaluation. Claim denials are not always final — they are sometimes a starting point for negotiation, especially when the homeowner has strong documentation.',
+            body: "If the adjuster says there is no damage but your professional roofer disagrees, you have options. You can request a re-inspection with a different adjuster, provide your roofer's detailed report and photos as supplemental evidence, or hire a public adjuster for an independent evaluation. Claim denials are not always final — they are sometimes a starting point for negotiation, especially when the homeowner has strong documentation.",
           },
         ],
       },
@@ -893,7 +894,7 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'The Texas factor',
         title: 'Texas roofs age faster than the warranty implies.',
-        body: 'A shingle rated for 25 or 30 years in a manufacturer\'s controlled test does not always last that long on a house in central Texas. Sustained summer heat that pushes attic temperatures above 140°F, intense UV exposure across 200-plus clear-sky days per year, daily thermal cycling that expands and contracts roofing materials, and periodic hail events that strip granules and crack mat material — all of these accelerate aging well beyond what the warranty timeline suggests.\n\nStandard three-tab asphalt shingles, still found on many older Texas homes, typically deliver 12 to 18 years of reliable service in central Texas conditions. Architectural (dimensional) shingles perform better — 18 to 25 years is a reasonable expectation with decent ventilation. Class 4 impact-resistant shingles can extend that to 25 years or more, while standing-seam metal roofing commonly lasts 40 to 60 years with proper installation.\n\nBut these are averages. A roof that has taken two or three significant hail hits in its first decade may be functionally compromised well before its age would suggest. And a roof that looks acceptable from the curb can still be losing granules, developing soft spots under the shingle mat, or holding moisture in the underlayment. That is why age alone is not the only indicator — condition matters, and condition in Texas changes faster than most homeowners expect.',
+        body: "A shingle rated for 25 or 30 years in a manufacturer's controlled test does not always last that long on a house in central Texas. Sustained summer heat that pushes attic temperatures above 140°F, intense UV exposure across 200-plus clear-sky days per year, daily thermal cycling that expands and contracts roofing materials, and periodic hail events that strip granules and crack mat material — all of these accelerate aging well beyond what the warranty timeline suggests.\n\nStandard three-tab asphalt shingles, still found on many older Texas homes, typically deliver 12 to 18 years of reliable service in central Texas conditions. Architectural (dimensional) shingles perform better — 18 to 25 years is a reasonable expectation with decent ventilation. Class 4 impact-resistant shingles can extend that to 25 years or more, while standing-seam metal roofing commonly lasts 40 to 60 years with proper installation.\n\nBut these are averages. A roof that has taken two or three significant hail hits in its first decade may be functionally compromised well before its age would suggest. And a roof that looks acceptable from the curb can still be losing granules, developing soft spots under the shingle mat, or holding moisture in the underlayment. That is why age alone is not the only indicator — condition matters, and condition in Texas changes faster than most homeowners expect.",
       },
       {
         _type: 'pageSection',
@@ -903,7 +904,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Heavy granule accumulation in gutters and downspouts',
-            body: 'Some granule loss is normal on new shingles, but heavy accumulation in the gutters — especially after storms or a hot summer — signals that the shingle\'s protective layer is breaking down faster than expected. When you start seeing bare asphalt patches on the shingles themselves, the waterproofing function is already compromised.',
+            body: "Some granule loss is normal on new shingles, but heavy accumulation in the gutters — especially after storms or a hot summer — signals that the shingle's protective layer is breaking down faster than expected. When you start seeing bare asphalt patches on the shingles themselves, the waterproofing function is already compromised.",
           },
           {
             _type: 'pageItem',
@@ -981,7 +982,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'What should I do about the roof if I am planning to add solar soon?',
             answer:
-              'If the roof is within five years of needing replacement, doing the roof first is almost always the right call. Solar panels are designed to last 25 to 30 years. Installing them on a roof that will need work in year 5 means paying $2,000 to $5,000 for a detach-and-reset to remove and reinstall the panels during the roof replacement. Plan the roof first, then install solar on a surface that can match the system\'s lifespan.',
+              "If the roof is within five years of needing replacement, doing the roof first is almost always the right call. Solar panels are designed to last 25 to 30 years. Installing them on a roof that will need work in year 5 means paying $2,000 to $5,000 for a detach-and-reset to remove and reinstall the panels during the roof replacement. Plan the roof first, then install solar on a surface that can match the system's lifespan.",
           },
           {
             _type: 'pageItem',
@@ -1402,7 +1403,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Compare the 10-year and 20-year total cost picture',
-            body: 'Map out cumulative cost at year 10, year 15, and year 20 for both cash and financed scenarios. Include the electric bill savings in both cases. This shows you exactly when each option breaks even and how much total value each one delivers over the system\'s life.',
+            body: "Map out cumulative cost at year 10, year 15, and year 20 for both cash and financed scenarios. Include the electric bill savings in both cases. This shows you exactly when each option breaks even and how much total value each one delivers over the system's life.",
           },
         ],
       },
@@ -1439,7 +1440,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'What about using a home equity loan or HELOC instead of a solar loan?',
             answer:
-              'Home equity products often offer lower interest rates and no dealer fees, which can significantly reduce total financing cost compared to solar-specific loans. The tradeoff is that your home is the collateral, the approval process may be longer, and the interest may or may not be tax-deductible depending on current tax law and how the funds are used. For homeowners with available equity and good credit, it is worth comparing a HELOC alongside the solar lender\'s offer.',
+              "Home equity products often offer lower interest rates and no dealer fees, which can significantly reduce total financing cost compared to solar-specific loans. The tradeoff is that your home is the collateral, the approval process may be longer, and the interest may or may not be tax-deductible depending on current tax law and how the funds are used. For homeowners with available equity and good credit, it is worth comparing a HELOC alongside the solar lender's offer.",
           },
         ],
       },
@@ -1455,6 +1456,7 @@ export function getFeaturedSolarGuideCards(limit = 3) {
     href: `/guides/${guide.slug}`,
     image: guide.image.urls.regular,
     imageAlt: guide.image.alt,
+    icon: guide.icon,
   }))
 }
 
@@ -1466,6 +1468,7 @@ export function getSolarGuideGridItems() {
     body: guide.cardCopy,
     href: `/guides/${guide.slug}`,
     image: guide.image,
+    icon: guide.icon,
   }))
 }
 
@@ -1479,5 +1482,74 @@ export function getSolarGuidePages(siteSlug = 'texas-solar-and-roofing-pros') {
     pageType: 'post',
     templateLevel: 'hero',
     sections: guide.sections,
+    icon: guide.icon,
   }))
+}
+
+function slugFromGuideHref(href) {
+  const value = String(href || '').trim()
+
+  if (!value) {
+    return ''
+  }
+
+  return value
+    .replace(/^https?:\/\/[^/]+/i, '')
+    .replace(/^\/guides\//, '')
+    .replace(/^guides\//, '')
+    .replace(/^\/+/, '')
+    .toLowerCase()
+}
+
+export function getGuideMetaByHref(href) {
+  const slug = slugFromGuideHref(href)
+
+  if (!slug) {
+    return {
+      category: 'Guides',
+      tags: ['Homeowner guide'],
+    }
+  }
+
+  const taxonomyRules = [
+    {
+      match: /(cost|payback|finance|loan|price|rebate|incentive|credit)/,
+      category: 'Cost and incentives',
+      tags: ['Pricing', 'Tax credit', 'Payback'],
+    },
+    {
+      match: /(storm|hail|claim|insurance)/,
+      category: 'Storm and insurance',
+      tags: ['Hail', 'Claims', 'Roof risk'],
+    },
+    {
+      match: /(detach|reset|roof|planning)/,
+      category: 'Roof and solar planning',
+      tags: ['Project sequencing', 'Roof condition', 'Install planning'],
+    },
+    {
+      match: /(battery|backup|outage|warrant)/,
+      category: 'Equipment and protection',
+      tags: ['Battery backup', 'Coverage', 'Reliability'],
+    },
+    {
+      match: /(how-solar-works|solar-works)/,
+      category: 'Solar basics',
+      tags: ['System basics', 'Grid behavior', 'First-time research'],
+    },
+  ]
+
+  const matchedRule = taxonomyRules.find((rule) => rule.match.test(slug))
+
+  if (matchedRule) {
+    return {
+      category: matchedRule.category,
+      tags: matchedRule.tags,
+    }
+  }
+
+  return {
+    category: 'Solar guidance',
+    tags: ['Texas homeowners', 'Decision support'],
+  }
 }

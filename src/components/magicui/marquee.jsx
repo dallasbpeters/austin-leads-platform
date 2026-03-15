@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
 
 export function Marquee({
   className,
@@ -13,27 +13,29 @@ export function Marquee({
     <div
       {...props}
       className={cn(
-        "group flex overflow-hidden p-2 [--duration:40s] [--gap:1rem] [gap:var(--gap)]",
+        "flex p-2 [--duration:40s] [--gap:1rem] [gap:var(--gap)] group overflow-hidden",
         {
-          "flex-row": !vertical,
-          "flex-col": vertical,
+          'flex-row': !vertical,
+          'flex-col': vertical,
         },
-        className
-      )}>
+        className,
+      )}
+    >
       {Array(repeat)
         .fill(0)
         .map((_, i) => (
           <div
-            className={cn("flex shrink-0 justify-around [gap:var(--gap)]", {
-              "animate-marquee flex-row": !vertical,
-              "animate-marquee-vertical flex-col": vertical,
-              "group-hover:[animation-play-state:paused]": pauseOnHover,
-              "[animation-direction:reverse]": reverse,
+            className={cn("flex justify-around [gap:var(--gap)] shrink-0", {
+              "flex-row animate-marquee": !vertical,
+              "flex-col animate-marquee-vertical": vertical,
+              'group-hover:[animation-play-state:paused]': pauseOnHover,
+              '[animation-direction:reverse]': reverse,
             })}
-            key={i}>
+            key={i}
+          >
             {children}
           </div>
         ))}
     </div>
-  );
+  )
 }

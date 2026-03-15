@@ -14,7 +14,10 @@ try {
     const eqIndex = trimmed.indexOf('=')
     if (eqIndex === -1) continue
     const key = trimmed.slice(0, eqIndex).trim()
-    const value = trimmed.slice(eqIndex + 1).trim().replace(/^["']|["']$/g, '')
+    const value = trimmed
+      .slice(eqIndex + 1)
+      .trim()
+      .replace(/^["']|["']$/g, '')
     if (!process.env[key]) process.env[key] = value
   }
 } catch {
@@ -42,7 +45,6 @@ const client = createClient({
 })
 
 const fixtureSiteSlug = 'texas-solar-and-roofing-pros'
-const legacySiteSlug = 'austin-solar-pros'
 const siteFixture = sites.find((site) => site.slug === fixtureSiteSlug)
 
 if (!siteFixture) {
@@ -60,7 +62,7 @@ function getDocumentType(page) {
 async function ensureSite() {
   const existing = await client.fetch(
     `*[_type == "site" && (slug.current in $siteSlugs || primaryDomain == $primaryDomain)][0]{_id,"slug":slug.current}`,
-    { siteSlugs: [fixtureSiteSlug, legacySiteSlug], primaryDomain: siteFixture.primaryDomain },
+    { siteSlugs: [fixtureSiteSlug], primaryDomain: siteFixture.primaryDomain },
   )
 
   if (existing?._id) {

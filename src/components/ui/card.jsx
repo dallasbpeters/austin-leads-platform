@@ -7,7 +7,7 @@ function Card({ className, ...props }) {
     <div
       data-slot="card"
       className={cn(
-        'shadow-theme-sm border-border bg-card text-card-foreground flex flex-col gap-2 rounded-xl border py-4 contain-paint',
+        "flex flex-col gap-2 py-4 text-card-foreground bg-card border border-border rounded-xl shadow-theme-sm contain-paint",
         className,
       )}
       {...props}
@@ -20,7 +20,7 @@ function CardHeader({ className, ...props }) {
     <div
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+        "grid items-start px-6 [.border-b]:pb-6 @container/card-header auto-rows-min grid-rows-[auto_auto] has-data-[slot=card-action]:grid-cols-[1fr_auto]",
         className,
       )}
       {...props}
@@ -29,7 +29,7 @@ function CardHeader({ className, ...props }) {
 }
 
 function CardTitle({ className, ...props }) {
-  return <div data-slot="card-title" className={cn('leading-none font-bold', className)} {...props} />
+  return <div data-slot="card-title" className={cn("font-bold leading-none", className)} {...props} />
 }
 
 function CardDescription({ className, ...props }) {
@@ -42,7 +42,7 @@ function CardAction({ className, ...props }) {
   return (
     <div
       data-slot="card-action"
-      className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)}
+      className={cn("justify-self-end self-start col-start-2 row-span-2 row-start-1", className)}
       {...props}
     />
   )

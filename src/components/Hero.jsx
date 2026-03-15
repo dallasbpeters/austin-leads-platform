@@ -9,30 +9,54 @@ import { getHeroImageUrl, getImageAlt, hasImageSource } from '@/lib/platform/ima
 export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }) {
   const heroImageUrl = getHeroImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
   const hasHeroImage = hasImageSource(heroSection?.heroAsset, heroSection?.heroImage)
-  const heroTextColor = heroSection?.heroTextColor || (hasHeroImage ? '#ffffff' : undefined)
+  const heroSlides = Array.isArray(heroSection?.heroSlides)
+    ? heroSection.heroSlides
+        .map((item) => ({
+          src: getHeroImageUrl(item?.imageAsset, item?.image),
+          alt: getImageAlt(item?.imageAsset, item?.image, item?.title || ''),
+        }))
+        .filter((image) => image.src)
+    : []
+  const usesSlidesOnly = heroSection?.heroMediaMode === 'slides'
+  const hasHeroSlides = heroSlides.length > 0
+  const hasHeroBackdropMedia = hasHeroImage || hasHeroSlides
+  const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
   const softTextColor = heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined
-  const cardBackground = hasHeroImage ? 'rgba(255, 255, 255, 0.08)' : undefined
-  const cardBorder = hasHeroImage ? 'rgba(255, 255, 255, 0.16)' : undefined
-  const rotatingHeroImages = [
+  const cardBackground = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.08)' : undefined
+  const cardBorder = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.16)' : undefined
+  const rotatingHeroImages = (usesSlidesOnly && hasHeroSlides ? heroSlides : hasHeroSlides ? heroSlides : [
     {
       src: heroImageUrl,
       alt: getImageAlt(heroSection?.heroAsset, heroSection?.heroImage, ''),
     },
-    ...(heroSection?.items || [])
-      .map((item) => ({
-        src: getHeroImageUrl(item?.imageAsset, item?.image),
-        alt: getImageAlt(item?.imageAsset, item?.image, item?.title || ''),
-      }))
-      .filter((image) => image.src),
-  ].filter(
-    (image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index,
-  )
-  const hasRotatingHeroImages = rotatingHeroImages.length > 0
+  ]).filter((image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index)
+  const primaryHeroImage = rotatingHeroImages[0] || null
+  const hasRotatingHeroImages = rotatingHeroImages.length > 1
+
+  const eyebrow = heroSection?.eyebrow || 'Austin averages 228 sunny days a year'
+  const titlePrimary = heroSection?.titlePrimary || 'Solar &'
+  const titleAccent = heroSection?.titleAccent || 'Roofing, simplified.'
+  const primaryAction = heroSection?.actions?.[0] || null
+  const primaryActionLabel = primaryAction?.label || 'Talk to a Solar Pro'
+  const primaryActionHref = primaryAction?.href || '#consultation'
+  const inlineMetric = Array.isArray(heroSection?.metrics)
+    ? heroSection.metrics.find((metric) => metric?.label && metric?.value) || null
+    : null
+  const inlineMetricLabel = inlineMetric?.label || 'Typical Austin Payback'
+  const inlineMetricValue = inlineMetric?.value || '7–9 years'
+  const cardCopy =
+    heroSection?.cardCopy ||
+    heroSection?.body ||
+    'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
 
   return (
     <section
-      className="radial-grid-bg type-accent text-body relative min-h-[80vh] overflow-hidden"
+      className="relative min-h-[80vh] text-body overflow-x-hidden type-accent"
+      style={{
+        backgroundImage: 'radial-gradient(var(--color-grid) 1px, transparent 1px)',
+        backgroundSize: '24px 24px',
+      }}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/Hero.jsx',
@@ -49,71 +73,81 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           showOverlay={Boolean(overlayStyle)}
           showDots={false}
           objectPosition="center"
-          className="absolute inset-0 z-2 min-h-[80vh]"
+          className="absolute min-h-[80vh] inset-0 z-0"
           imageClassName="object-top"
-          backgroundColor={'#000000'}
+          backgroundColor="#000000"
         />
-      ) : (
+      ) : primaryHeroImage ? (
         <>
-          <Image
-            src="/assets/hero-bg.png"
-            alt=""
-            fill
-            className="absolute inset-0 z-2 object-cover object-top opacity-10"
+          <img
+            src={primaryHeroImage.src}
+            alt={primaryHeroImage.alt || ''}
+            className="absolute h-full w-full inset-0 object-center object-cover z-0"
           />
-          {overlayStyle ? <div className="absolute inset-0 z-3" style={overlayStyle} /> : null}
+          <div className="absolute inset-0 z-10" style={overlayStyle} />
         </>
+      ) : (
+        <Image
+          src="/assets/hero-bg.png"
+          alt=""
+          fill
+          className="absolute opacity-10 inset-0 object-cover object-top"
+        />
       )}
-      <div className="relative z-20 mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-4 py-30">
-        <div className="grid w-full items-end gap-12 pb-12 lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]">
+      <div className="flex relative items-center min-h-[80vh] w-[min(80rem,calc(100%-3rem))] mx-auto px-4 py-30 z-20">
+        <div className="grid items-end w-full gap-12 pb-12 lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]">
           <div className="solar-fade-up">
-            <div className="mb-8 inline-flex items-center gap-4">
-              <div className="relative flex h-3 w-3">
-                <span className="bg-primary-300 absolute inset-0 animate-ping rounded-full opacity-75"></span>
-                <span className="bg-primary relative h-3 w-3 rounded-full"></span>
+            <div className="items-center gap-4 mb-8 inline-flex">
+              <div className="flex relative h-3 w-3">
+                <span
+                  className="absolute rounded-full opacity-75 animate-ping inset-0"
+                  style={{ backgroundColor: 'var(--color-primary-300)' }}
+                ></span>
+                <span className="relative h-3 w-3 bg-primary rounded-full"></span>
               </div>
               <span
-                className="text-[12px] font-bold tracking-[0.4em] uppercase"
+                className="font-bold text-[12px] tracking-[0.4em] uppercase"
                 style={{ color: heroTextColor || 'var(--color-primary)' }}
               >
-                Solar and Roofing for Texas Homeowners
+                {eyebrow}
               </span>
             </div>
 
             <h1
-              className="type-display -leading-1 mb-10 text-[clamp(4.5rem,12vw,10rem)] tracking-[-0.04em] text-black"
+              className="mb-10 leading-[0.85]! text-[clamp(4.5rem,12vw,10rem)] text-black tracking-[-0.04em] type-display"
               style={heroTextColor ? { color: heroTextColor } : undefined}
             >
-              Texas Solar
+              {titlePrimary}
+              <br />
               <span
                 className="text-transparent [-webkit-text-stroke-width:1px]"
                 style={{
                   WebkitTextStrokeColor: heroTextColor || 'black',
                 }}
               >
-                & Roofing
+                {titleAccent}
               </span>
             </h1>
 
-            <div className="flex flex-wrap items-center gap-10 max-md:flex-col max-md:items-start">
-              <Button href="#consultation" size="lg" pill>
-                Connect with an expert
+            <div className="flex flex-wrap max-md:flex-col items-center max-md:items-start gap-10">
+              <Button href={primaryActionHref} size="lg" pill>
+                {primaryActionLabel}
               </Button>
 
               <div className="flex items-center gap-6">
-                <div className="hidden h-12 w-px bg-white/10 md:block"></div>
+                <div className="hidden md:block h-12 w-px bg-white/10"></div>
                 <div>
                   <span
-                    className="mb-1 block text-[12px] font-bold tracking-[0.2em] uppercase"
+                    className="block mb-1 font-bold text-[10px] tracking-[0.2em] uppercase"
                     style={{ color: softTextColor || 'var(--color-slate-500)' }}
                   >
-                    We'll help you understand
+                    {inlineMetricLabel}
                   </span>
                   <span
-                    className="block text-[15px] font-medium"
+                    className="block font-medium text-sm"
                     style={{ color: heroTextColor || 'var(--color-slate-800)' }}
                   >
-                    Hail damage, roof replacement, insurance options, and solar savings
+                    {inlineMetricValue}
                   </span>
                 </div>
               </div>
@@ -134,16 +168,15 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
               }
             >
               <p
-                className="m-0 text-lg leading-7 font-light"
+                className="m-0 font-light leading-7 text-lg"
                 style={{ color: heroTextColor || 'var(--color-text-strong)' }}
               >
-                Clear answers on hail and storm damage, roof repairs, dealing with your insurance company, and
-                whether solar works for your Texas home.
+                {cardCopy}
               </p>
-              <div className="mt-6 flex gap-2">
-                <div className="bg-primary h-1 w-8 rounded-full"></div>
-                <div className="bg-primary h-1 w-2 rounded-full"></div>
-                <div className="bg-primary h-1 w-2 rounded-full"></div>
+              <div className="flex gap-2 mt-6">
+                <div className="h-1 w-8 bg-primary rounded-full"></div>
+                <div className="h-1 w-2 bg-primary rounded-full"></div>
+                <div className="h-1 w-2 bg-primary rounded-full"></div>
               </div>
             </Card>
           </div>

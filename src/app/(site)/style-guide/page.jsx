@@ -73,8 +73,7 @@ const publicGroupDefinitions = [
   {
     title: 'Alias colors',
     description: 'Supporting aliases mapped from the main theme variables.',
-    match: (token) =>
-      /^--color-(slate|gray|neutral|cyan|sky|orange|yellow|blue|white|black)/.test(token),
+    match: (token) => /^--color-(slate|gray|neutral|cyan|sky|orange|yellow|blue|white|black)/.test(token),
   },
 ]
 
@@ -171,19 +170,19 @@ export default async function StyleGuidePage() {
   const { publicGroups, semanticVariables, adminVariables } = await loadStyleGuideData()
 
   return (
-    <main className="bg-[linear-gradient(180deg,var(--background),var(--card))] min-h-screen">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <div className="border-border bg-card/76 rounded-[2.25rem] border px-6 py-8 shadow-none backdrop-blur sm:px-8">
+    <main className="min-h-screen bg-[linear-gradient(180deg,var(--background),var(--card))]">
+      <div className="flex flex-col max-w-[1440px] w-full gap-8 mx-auto px-4 py-6 lg:px-8 lg:py-8 sm:px-6">
+        <div className="px-6 py-8 sm:px-8 bg-card/76 border border-border rounded-[2.25rem] shadow-none backdrop-blur">
           <div className="max-w-4xl space-y-4">
-            <div className="text-muted-foreground text-sm font-semibold tracking-[0.24em] uppercase">
+            <div className="font-semibold text-muted-foreground text-sm tracking-[0.24em] uppercase">
               Internal Reference
             </div>
-            <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
+            <h1 className="font-bold text-4xl text-foreground tracking-tight sm:text-5xl">
               Theme style guide
             </h1>
-            <p className="text-muted-foreground max-w-3xl text-base leading-7">
-              Generated directly from <code>src/styles/globals.css</code>, so the swatches stay in
-              sync with the actual theme file. This page is intentionally blocked from crawlers.
+            <p className="max-w-3xl leading-7 text-base text-muted-foreground">
+              Generated directly from <code>src/styles/globals.css</code>, so the swatches stay in sync with
+              the actual theme file. This page is intentionally blocked from crawlers.
             </p>
           </div>
         </div>

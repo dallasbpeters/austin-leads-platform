@@ -108,14 +108,7 @@ export async function getLeadRoutingSettingsRow(id = 'default') {
 }
 
 export async function upsertLeadRoutingSettingsRow(
-  {
-    emailNotificationsEnabled,
-    notificationToEmail,
-    fromName,
-    fromEmail,
-    subjectPrefix,
-    resendTemplateId,
-  },
+  { emailNotificationsEnabled, notificationToEmail, fromName, fromEmail, subjectPrefix, resendTemplateId },
   id = 'default',
 ) {
   const sql = getSql()

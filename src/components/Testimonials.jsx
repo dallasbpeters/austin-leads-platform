@@ -7,8 +7,7 @@ const fallbackReviews = [
     author: 'Michael R.',
     reviewerLocation: 'Austin, TX',
     stars: 5,
-    body:
-      'The team at Texas Solar and Roofing Pros made the entire process seamless. From the initial consultation to the final installation, they were professional, knowledgeable, and always on time. My energy bills have dropped significantly, and I could not be happier with my new solar panels.',
+    body: 'The team at Texas Solar and Roofing Pros made the entire process seamless. From the initial consultation to the final installation, they were professional, knowledgeable, and always on time. My energy bills have dropped significantly, and I could not be happier with my new solar panels.',
     reviewerPhoto: {
       alt: 'Michael R.',
       asset: { url: 'https://randomuser.me/api/portraits/men/32.jpg' },
@@ -19,8 +18,7 @@ const fallbackReviews = [
     author: 'Lisa G.',
     reviewerLocation: 'Round Rock, TX',
     stars: 5,
-    body:
-      'After a major hailstorm, I needed a new roof and decided to add solar at the same time. The crew handled both projects flawlessly. They explained everything clearly, worked efficiently, and left my property spotless. Highly recommend for anyone considering roofing or solar.',
+    body: 'After a major hailstorm, I needed a new roof and decided to add solar at the same time. The crew handled both projects flawlessly. They explained everything clearly, worked efficiently, and left my property spotless. Highly recommend for anyone considering roofing or solar.',
     reviewerPhoto: {
       alt: 'Lisa G.',
       asset: { url: 'https://randomuser.me/api/portraits/women/44.jpg' },
@@ -31,8 +29,7 @@ const fallbackReviews = [
     author: 'David S.',
     reviewerLocation: 'Cedar Park, TX',
     stars: 5,
-    body:
-      'I was nervous about switching to solar, but Texas Solar and Roofing Pros answered all my questions and provided transparent pricing. The installation was quick, and now I am seeing real savings every month. Excellent service from start to finish.',
+    body: 'I was nervous about switching to solar, but Texas Solar and Roofing Pros answered all my questions and provided transparent pricing. The installation was quick, and now I am seeing real savings every month. Excellent service from start to finish.',
     reviewerPhoto: {
       alt: 'David S.',
       asset: { url: 'https://randomuser.me/api/portraits/men/65.jpg' },
@@ -95,49 +92,94 @@ function ReviewerAvatar({ review }) {
   }
 
   return (
-    <div className="bg-primary/20 text-foreground flex h-14 w-14 items-center justify-center rounded-full text-sm font-semibold tracking-[0.12em] uppercase">
+    <div className="flex items-center justify-center size-12 font-semibold text-white text-sm tracking-[0.12em] bg-(--color-metterhorn) rounded-full uppercase">
       {initials || 'TS'}
     </div>
   )
 }
 
-export default function Testimonials({ reviews = [] }) {
+const GoogleLogo = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1556 1587"
+    width="1.5em"
+    height="1.5em"
+    {...props}
+  >
+    <g id="Layer">
+      <path
+        id="Layer"
+        fill="#4285f4"
+        d="M1555.26 810.89C1555.26 745.67 1549.96 698.07 1538.51 648.72L793.5 648.72L793.5 943.1L1230.8 943.1C1221.99 1016.26 1174.38 1126.44 1068.58 1200.47L1067.09 1210.33L1302.65 1392.76L1318.97 1394.39C1468.85 1256 1555.26 1052.4 1555.26 810.89Z"
+      />
+      <path
+        id="Layer"
+        fill="#34a853"
+        d="M793.5 1586.53C1007.74 1586.53 1187.6 1516.02 1318.97 1394.39L1068.58 1200.47C1001.57 1247.19 911.64 1279.8 793.5 1279.8C583.66 1279.8 405.57 1141.42 342.08 950.16L332.78 950.95L87.84 1140.45L84.64 1149.35C215.12 1408.48 483.15 1586.53 793.5 1586.53Z"
+      />
+      <path
+        id="Layer"
+        fill="#fbbc05"
+        d="M342.08 950.16C325.33 900.8 315.64 847.91 315.64 793.27C315.64 738.62 325.33 685.73 341.2 636.37L340.76 625.86L92.75 433.32L84.64 437.17C30.86 544.71 0 665.46 0 793.27C0 921.07 30.86 1041.82 84.64 1149.35L342.08 950.16Z"
+      />
+      <path
+        id="Layer"
+        fill="#eb4335"
+        d="M793.5 306.73C942.5 306.73 1043.01 371.07 1100.32 424.84L1324.26 206.25C1186.72 78.45 1007.74 0 793.5 0C483.15 0 215.12 178.04 84.64 437.17L341.2 636.37C405.57 445.11 583.66 306.73 793.5 306.73Z"
+      />
+    </g>
+  </svg>
+);
+
+export default function Testimonials({
+  reviews = [],
+  section = null,
+  sectionId = 'testimonials-homepage',
+  editAttributes = {},
+}) {
   const resolvedReviews = reviews.length ? reviews.slice(0, 3) : fallbackReviews
+  const title = section?.title || 'What customers are saying'
+  const subtitle = section?.body || 'about Texas Solar and Roofing Pros'
 
   return (
     <section
-      className="radial-grid-bg bg-secondary-100 py-24"
+      className="py-24 bg-secondary-100 radial-grid-bg"
+      {...editAttributes}
       {...getDevSectionAttributes({
-        id: 'testimonials-homepage',
+        id: sectionId,
         markup: 'src/components/Testimonials.jsx',
         content: reviews.length ? 'homepage reviews from Sanity' : 'local fallback testimonial content',
       })}
-    >
-      <div className="mr-auto mb-20 ml-auto max-w-7xl text-center sm:px-6 lg:px-8">
-        <h2 className="text-foreground dynamic-zoom-in animate-delay-200 mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
-          What customers are saying
-          <span className="bg-primary block bg-clip-text leading-relaxed font-medium tracking-tight text-transparent">
-            about Texas Solar and Roofing Pros
+      >
+      <div className="max-w-7xl mb-20 ml-auto mr-auto lg:px-8 sm:px-6 text-center">
+        <h2 className="mb-6 font-medium text-4xl text-foreground tracking-tight sm:text-6xl animate-delay-200 dynamic-zoom-in">
+          {title}
+          <span className="block font-medium leading-relaxed text-transparent tracking-tight bg-clip-text bg-primary">
+            {subtitle}
           </span>
         </h2>
       </div>
 
-      <div className="dynamic-slide-in animate-delay-400 relative mx-auto max-w-7xl px-10">
+      <div className="relative max-w-7xl mx-auto px-10 animate-delay-400 dynamic-slide-in">
         <div className="overflow-hidden">
-          <div className="testimonial-scroll grid gap-6 sm:grid-cols-1 md:grid-cols-3">
+          <div className="grid gap-6 testimonial-scroll md:grid-cols-3 sm:grid-cols-1">
             {resolvedReviews.map((review) => (
-              <Card key={review.id || review.author} className="card--dark-glass relative p-10 backdrop-blur-sm">
+              <Card
+                key={review.id || review.author}
+                className="relative p-8 backdrop-blur-sm card--dark-glass"
+              >
                 <div className="flex items-center gap-1">
                   <Ratings stars={review.stars} />
-                  <span className="ml-2 text-sm text-gray-400">{Number(review.stars || 5).toFixed(1)}</span>
+                  <span className="ml-2 grow text-gray-400 text-sm">{Number(review.stars || 5).toFixed(1)}</span>
+                  <GoogleLogo />
                 </div>
-                <p className="text-foreground mb-6 leading-relaxed">"{review.body}"</p>
+                <p className="border-b border-border pb-3 mb-1 leading-relaxed text-foreground">"{review.body}"</p>
                 <div className="flex items-center gap-4">
                   <ReviewerAvatar review={review} />
                   <div>
-                    <div className="text-foreground text-lg font-semibold">{review.author}</div>
+                    <div className="font-semibold text-foreground text-lg">{review.author}</div>
                     {review.reviewerLocation ? (
-                      <div className="text-sm text-gray-400">{review.reviewerLocation}</div>
+                      <div className="text-gray-400 text-sm">{review.reviewerLocation}</div>
                     ) : null}
                   </div>
                 </div>

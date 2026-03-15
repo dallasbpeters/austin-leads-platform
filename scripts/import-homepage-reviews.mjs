@@ -14,8 +14,7 @@ const fallbackReviews = [
     author: 'Michael R.',
     reviewerLocation: 'Austin, TX',
     stars: 5,
-    body:
-      'The team at Texas Solar and Roofing Pros made the entire process seamless. From the initial consultation to the final installation, they were professional, knowledgeable, and always on time. My energy bills have dropped significantly, and I could not be happier with my new solar panels.',
+    body: 'The team at Texas Solar and Roofing Pros made the entire process seamless. From the initial consultation to the final installation, they were professional, knowledgeable, and always on time. My energy bills have dropped significantly, and I could not be happier with my new solar panels.',
     reviewerPhoto: {
       alt: 'Michael R.',
       url: 'https://randomuser.me/api/portraits/men/32.jpg',
@@ -26,8 +25,7 @@ const fallbackReviews = [
     author: 'Lisa G.',
     reviewerLocation: 'Round Rock, TX',
     stars: 5,
-    body:
-      'After a major hailstorm, I needed a new roof and decided to add solar at the same time. The crew handled both projects flawlessly. They explained everything clearly, worked efficiently, and left my property spotless. Highly recommend for anyone considering roofing or solar.',
+    body: 'After a major hailstorm, I needed a new roof and decided to add solar at the same time. The crew handled both projects flawlessly. They explained everything clearly, worked efficiently, and left my property spotless. Highly recommend for anyone considering roofing or solar.',
     reviewerPhoto: {
       alt: 'Lisa G.',
       url: 'https://randomuser.me/api/portraits/women/44.jpg',
@@ -38,8 +36,7 @@ const fallbackReviews = [
     author: 'David S.',
     reviewerLocation: 'Cedar Park, TX',
     stars: 5,
-    body:
-      'I was nervous about switching to solar, but Texas Solar and Roofing Pros answered all my questions and provided transparent pricing. The installation was quick, and now I am seeing real savings every month. Excellent service from start to finish.',
+    body: 'I was nervous about switching to solar, but Texas Solar and Roofing Pros answered all my questions and provided transparent pricing. The installation was quick, and now I am seeing real savings every month. Excellent service from start to finish.',
     reviewerPhoto: {
       alt: 'David S.',
       url: 'https://randomuser.me/api/portraits/men/65.jpg',
@@ -49,7 +46,7 @@ const fallbackReviews = [
 
 async function resolvePrimarySite() {
   const site = await client.fetch(
-    `*[_type == "site" && slug.current in ["texas-solar-and-roofing-pros", "austin-solar-pros"]][0]{
+    `*[_type == "site" && slug.current == "texas-solar-and-roofing-pros"][0]{
       _id,
       name,
       slug

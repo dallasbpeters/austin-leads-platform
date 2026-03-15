@@ -11,9 +11,30 @@ const sectionProjection = `
   _type,
   _key,
   type,
+  heroMediaMode,
   eyebrow,
   title,
+  titlePrimary,
+  titleAccent,
+  cardCopy,
+  subtitle,
   body,
+  leadingWords,
+  accentWord,
+  trailingText,
+  colors,
+  tint,
+  minHeight,
+  maxHeight,
+  rotate,
+  scrollStart,
+  scrollEnd,
+  reverse,
+  autoAnimate,
+  speed,
+  amplitude,
+  roofingTitle,
+  secondaryTitle,
   people[]{
     _key,
     label,
@@ -126,6 +147,38 @@ const sectionProjection = `
       }
     }
   },
+  heroSlides[]{
+    _key,
+    title,
+    image,
+    imageAsset{
+      altText,
+      alt,
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    }
+  },
+  image,
+  imageAsset{
+    altText,
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
   metrics,
   actions[]{
     label,
@@ -157,8 +210,94 @@ const sectionProjection = `
       }
     }
   },
+  roofingItems[]{
+    _key,
+    number,
+    eyebrow,
+    title,
+    body,
+    question,
+    answer,
+    href,
+    icon,
+    image,
+    imageAsset{
+      altText,
+      alt,
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    }
+  },
+  secondaryItems[]{
+    _key,
+    number,
+    eyebrow,
+    title,
+    body,
+    question,
+    answer,
+    href,
+    icon,
+    image,
+    imageAsset{
+      altText,
+      alt,
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    }
+  },
   ctaLabel,
-  ctaHref
+  ctaHref,
+  avatarEyebrow,
+  avatarName,
+  avatarRole,
+  avatarBlurb,
+  avatarImage,
+  avatarImageAsset{
+    altText,
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  personLabel,
+  personName,
+  personRole,
+  personBlurb,
+  profileImage,
+  profileImageAsset{
+    altText,
+    alt,
+    asset->{
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  }
 `
 
 function cleanRuntimeString(value) {
@@ -207,6 +346,33 @@ function sanitizePerson(person) {
   }
 }
 
+function resolveSanityColorValue(value) {
+  if (!value) {
+    return value
+  }
+
+  if (value?.color) {
+    return resolveSanityColorValue(value.color)
+  }
+
+  if (typeof value === 'string') {
+    return cleanRuntimeString(value)
+  }
+
+  if (typeof value?.hex === 'string' && value.hex.trim()) {
+    return value.hex
+  }
+
+  const rgb = value?.rgb
+
+  if (rgb && Number.isFinite(rgb.r) && Number.isFinite(rgb.g) && Number.isFinite(rgb.b)) {
+    const alpha = Number.isFinite(rgb.a) ? rgb.a : 1
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
+  }
+
+  return value
+}
+
 function sanitizeSection(section) {
   if (!section) {
     return section
@@ -217,12 +383,67 @@ function sanitizeSection(section) {
     _type: cleanRuntimeString(section._type),
     _key: cleanRuntimeString(section._key),
     type: cleanRuntimeString(section.type),
+    heroMediaMode: cleanRuntimeString(section.heroMediaMode),
+    subtitle: cleanRuntimeString(section.subtitle),
+    cardCopy: cleanRuntimeString(section.cardCopy),
+    leadingWords: Array.isArray(section.leadingWords)
+      ? section.leadingWords.map((word) => cleanRuntimeString(word)).filter(Boolean)
+      : section.leadingWords,
+    accentWord: cleanRuntimeString(section.accentWord),
+    trailingText: cleanRuntimeString(section.trailingText),
+    colors: Array.isArray(section.colors)
+      ? section.colors.map(resolveSanityColorValue).filter(Boolean)
+      : section.colors,
+    tint: resolveSanityColorValue(section.tint),
+    titlePrimary: cleanRuntimeString(section.titlePrimary),
+    titleAccent: cleanRuntimeString(section.titleAccent),
+    roofingTitle: cleanRuntimeString(section.roofingTitle),
+    secondaryTitle: cleanRuntimeString(section.secondaryTitle),
     heroGradient: cleanRuntimeString(section.heroGradient),
-    heroTextColor: cleanRuntimeString(section.heroTextColor),
-    heroOverlayColor: cleanRuntimeString(section.heroOverlayColor),
-    heroOverlayStartColor: cleanRuntimeString(section.heroOverlayStartColor),
-    heroOverlayEndColor: cleanRuntimeString(section.heroOverlayEndColor),
+    heroTextColor: resolveSanityColorValue(section.heroTextColor),
+    heroOverlayColor: resolveSanityColorValue(section.heroOverlayColor),
+    heroOverlayStartColor: resolveSanityColorValue(section.heroOverlayStartColor),
+    heroOverlayEndColor: resolveSanityColorValue(section.heroOverlayEndColor),
     heroOverlayDirection: cleanRuntimeString(section.heroOverlayDirection),
+    minHeight:
+      typeof section.minHeight === 'number'
+        ? section.minHeight
+        : section.minHeight
+          ? Number(section.minHeight)
+          : section.minHeight,
+    maxHeight:
+      typeof section.maxHeight === 'number'
+        ? section.maxHeight
+        : section.maxHeight
+          ? Number(section.maxHeight)
+          : section.maxHeight,
+    rotate: Boolean(section.rotate),
+    scrollStart:
+      typeof section.scrollStart === 'number'
+        ? section.scrollStart
+        : section.scrollStart
+          ? Number(section.scrollStart)
+          : section.scrollStart,
+    scrollEnd:
+      typeof section.scrollEnd === 'number'
+        ? section.scrollEnd
+        : section.scrollEnd
+          ? Number(section.scrollEnd)
+          : section.scrollEnd,
+    reverse: Boolean(section.reverse),
+    autoAnimate: Boolean(section.autoAnimate),
+    speed:
+      typeof section.speed === 'number'
+        ? section.speed
+        : section.speed
+          ? Number(section.speed)
+          : section.speed,
+    amplitude:
+      typeof section.amplitude === 'number'
+        ? section.amplitude
+        : section.amplitude
+          ? Number(section.amplitude)
+          : section.amplitude,
     people: Array.isArray(section.people) ? section.people.map(sanitizePerson) : section.people,
     personLabel: cleanRuntimeString(section.personLabel),
     personName: cleanRuntimeString(section.personName),
@@ -236,8 +457,19 @@ function sanitizeSection(section) {
     secondaryPersonBlurb: cleanRuntimeString(section.secondaryPersonBlurb),
     ctaLabel: cleanRuntimeString(section.ctaLabel),
     ctaHref: cleanRuntimeString(section.ctaHref),
+    avatarEyebrow: cleanRuntimeString(section.avatarEyebrow),
+    avatarName: cleanRuntimeString(section.avatarName),
+    avatarRole: cleanRuntimeString(section.avatarRole),
+    avatarBlurb: cleanRuntimeString(section.avatarBlurb),
     actions: Array.isArray(section.actions) ? section.actions.map(sanitizeAction) : section.actions,
+    heroSlides: Array.isArray(section.heroSlides) ? section.heroSlides.map(sanitizeItem) : section.heroSlides,
     items: Array.isArray(section.items) ? section.items.map(sanitizeItem) : section.items,
+    roofingItems: Array.isArray(section.roofingItems)
+      ? section.roofingItems.map(sanitizeItem)
+      : section.roofingItems,
+    secondaryItems: Array.isArray(section.secondaryItems)
+      ? section.secondaryItems.map(sanitizeItem)
+      : section.secondaryItems,
   }
 }
 
@@ -248,16 +480,21 @@ function sanitizePageRuntimeFields(page) {
 
   return {
     ...page,
+    _type: cleanRuntimeString(page._type),
     id: cleanRuntimeString(page.id),
     slug: cleanRuntimeString(page.slug),
     pageType: cleanRuntimeString(page.pageType),
     templateLevel: cleanRuntimeString(page.templateLevel),
     heroGradient: cleanRuntimeString(page.heroGradient),
-    heroTextColor: cleanRuntimeString(page.heroTextColor),
-    heroOverlayColor: cleanRuntimeString(page.heroOverlayColor),
-    heroOverlayStartColor: cleanRuntimeString(page.heroOverlayStartColor),
-    heroOverlayEndColor: cleanRuntimeString(page.heroOverlayEndColor),
+    heroTextColor: resolveSanityColorValue(page.heroTextColor),
+    heroOverlayColor: resolveSanityColorValue(page.heroOverlayColor),
+    heroOverlayStartColor: resolveSanityColorValue(page.heroOverlayStartColor),
+    heroOverlayEndColor: resolveSanityColorValue(page.heroOverlayEndColor),
     heroOverlayDirection: cleanRuntimeString(page.heroOverlayDirection),
+    heroTitlePrimary: cleanRuntimeString(page.heroTitlePrimary),
+    heroTitleAccent: cleanRuntimeString(page.heroTitleAccent),
+    cardCopy: cleanRuntimeString(page.cardCopy),
+    heroSlides: Array.isArray(page.heroSlides) ? page.heroSlides.map(sanitizeItem) : page.heroSlides,
     sections: Array.isArray(page.sections) ? page.sections.map(sanitizeSection) : page.sections,
     heroActions: Array.isArray(page.heroActions) ? page.heroActions.map(sanitizeAction) : page.heroActions,
   }
@@ -301,38 +538,50 @@ function buildHomepageHeroSection(page) {
   }
 
   const sectionHero = page.sections?.find((section) => section.type === 'hero') ?? null
+
+  if (sectionHero) {
+    return sectionHero
+  }
+
   const hasFlatHeroContent =
     page.heroEyebrow ||
     page.heroTitle ||
+    page.heroTitlePrimary ||
+    page.heroTitleAccent ||
     page.heroBody ||
+    page.cardCopy ||
     hasImageSource(page.heroAsset, page.heroImage) ||
+    (page.heroSlides?.length ?? 0) > 0 ||
     (page.heroMetrics?.length ?? 0) > 0 ||
     (page.heroActions?.length ?? 0) > 0
 
   if (!hasFlatHeroContent) {
-    return sectionHero
+    return null
   }
 
   return {
-    ...(sectionHero || {}),
     _type: 'heroSection',
     type: 'hero',
-    eyebrow: page.heroEyebrow ?? sectionHero?.eyebrow ?? null,
-    title: page.heroTitle ?? sectionHero?.title ?? page.title ?? null,
-    body: page.heroBody ?? sectionHero?.body ?? page.description ?? null,
-    heroGradient: page.heroGradient ?? sectionHero?.heroGradient ?? null,
-    heroTextColor: page.heroTextColor ?? sectionHero?.heroTextColor ?? null,
-    heroOverlayColor: page.heroOverlayColor ?? sectionHero?.heroOverlayColor ?? null,
-    heroOverlayStartColor: page.heroOverlayStartColor ?? sectionHero?.heroOverlayStartColor ?? null,
-    heroOverlayEndColor: page.heroOverlayEndColor ?? sectionHero?.heroOverlayEndColor ?? null,
-    heroOverlayDirection: page.heroOverlayDirection ?? sectionHero?.heroOverlayDirection ?? null,
-    heroOverlayStartOpacity: page.heroOverlayStartOpacity ?? sectionHero?.heroOverlayStartOpacity ?? null,
-    heroOverlayEndOpacity: page.heroOverlayEndOpacity ?? sectionHero?.heroOverlayEndOpacity ?? null,
-    heroOverlayOpacity: page.heroOverlayOpacity ?? sectionHero?.heroOverlayOpacity ?? null,
-    heroAsset: page.heroAsset ?? sectionHero?.heroAsset ?? null,
-    heroImage: page.heroImage ?? sectionHero?.heroImage ?? null,
-    metrics: page.heroMetrics ?? sectionHero?.metrics ?? [],
-    actions: page.heroActions ?? sectionHero?.actions ?? [],
+    eyebrow: page.heroEyebrow || null,
+    title: page.heroTitle || page.title || null,
+    titlePrimary: page.heroTitlePrimary || null,
+    titleAccent: page.heroTitleAccent || null,
+    cardCopy: page.cardCopy || null,
+    body: page.heroBody || page.description || null,
+    heroGradient: page.heroGradient ?? null,
+    heroTextColor: page.heroTextColor ?? null,
+    heroOverlayColor: page.heroOverlayColor ?? null,
+    heroOverlayStartColor: page.heroOverlayStartColor ?? null,
+    heroOverlayEndColor: page.heroOverlayEndColor ?? null,
+    heroOverlayDirection: page.heroOverlayDirection ?? null,
+    heroOverlayStartOpacity: page.heroOverlayStartOpacity ?? null,
+    heroOverlayEndOpacity: page.heroOverlayEndOpacity ?? null,
+    heroOverlayOpacity: page.heroOverlayOpacity ?? null,
+    heroAsset: page.heroAsset ?? null,
+    heroImage: page.heroImage ?? null,
+    heroSlides: Array.isArray(page.heroSlides) ? page.heroSlides : [],
+    metrics: Array.isArray(page.heroMetrics) ? page.heroMetrics : [],
+    actions: Array.isArray(page.heroActions) ? page.heroActions : [],
   }
 }
 
@@ -465,6 +714,144 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
   }
 }
 
+function slugFromHref(href) {
+  const value = cleanRuntimeString(href)
+
+  if (!value) {
+    return ''
+  }
+
+  return value
+    .replace(/^https?:\/\/[^/]+/i, '')
+    .replace(/^\/+/, '')
+}
+
+async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlug }) {
+  if (!page?.sections?.some((section) => section.type === 'serviceGrid')) {
+    return page
+  }
+
+  const equivalentSiteSlugs = getEquivalentSiteSlugs(siteSlug)
+  const localServicePages = pages.filter(
+    (candidate) =>
+      equivalentSiteSlugs.includes(candidate.siteSlug) &&
+      ['page', 'servicePage', 'locationPage'].includes(candidate.pageType) &&
+      candidate.slug &&
+      candidate.slug !== '/',
+  )
+
+  const localServiceMap = new Map(
+    localServicePages.map((servicePage) => {
+      const heroSection = servicePage.sections?.find((section) => section.type === 'hero') || null
+
+      return [
+        servicePage.slug,
+        {
+          heroImage: heroSection?.heroImage ?? null,
+          heroAsset: heroSection?.heroAsset ?? null,
+        },
+      ]
+    }),
+  )
+
+  const serviceSlugs = Array.from(
+    new Set(
+      page.sections
+        .filter((section) => section.type === 'serviceGrid')
+        .flatMap((section) => [...(section.items || []), ...(section.roofingItems || []), ...(section.secondaryItems || [])])
+        .map((item) => slugFromHref(item?.href))
+        .filter(Boolean),
+    ),
+  )
+
+  let sanityServiceMap = new Map()
+
+  if (client && serviceSlugs.length) {
+    try {
+      const sanityServicePages = await client.fetch(
+        groq`*[
+          _type in ["page", "servicePage", "locationPage"] &&
+          site->slug.current in $siteSlugs &&
+          slug.current in $slugs
+        ]{
+          "slug": slug.current,
+          sections[]{
+            type,
+            heroImage,
+            heroAsset{
+              altText,
+              alt,
+              asset->{
+                url,
+                metadata{
+                  dimensions{
+                    width,
+                    height
+                  }
+                }
+              }
+            }
+          }
+        }`,
+        { siteSlugs: equivalentSiteSlugs, slugs: serviceSlugs },
+        fetchOptions,
+      )
+
+      sanityServiceMap = new Map(
+        (sanityServicePages || []).map((servicePage) => {
+          const heroSection = servicePage.sections?.find((section) => section.type === 'hero') || null
+
+          return [
+            servicePage.slug,
+            {
+              heroImage: heroSection?.heroImage ?? null,
+              heroAsset: heroSection?.heroAsset ?? null,
+            },
+          ]
+        }),
+      )
+    } catch {}
+  }
+
+  const syncItemWithHeroMedia = (item) => {
+    const slug = slugFromHref(item?.href)
+    const servicePage = sanityServiceMap.get(slug) || localServiceMap.get(slug)
+
+    if (!servicePage) {
+      return item
+    }
+
+    const nextImage = servicePage.heroImage ?? item.image ?? null
+    const nextAsset = servicePage.heroAsset ?? item.imageAsset ?? null
+
+    if (!nextImage && !nextAsset) {
+      return item
+    }
+
+    return {
+      ...item,
+      image: nextImage,
+      imageAsset: nextAsset,
+    }
+  }
+
+  return {
+    ...page,
+    sections: page.sections.map((section) => {
+      if (section.type !== 'serviceGrid') {
+        return section
+      }
+
+      return {
+        ...section,
+        items: (section.items || []).map(syncItemWithHeroMedia),
+        roofingItems: (section.roofingItems || []).map(syncItemWithHeroMedia),
+        secondaryItems: (section.secondaryItems || []).map(syncItemWithHeroMedia),
+      }
+    }),
+  }
+}
+
 function normalizeHost(host) {
   return (host || '')
     .replace(/^https?:\/\//, '')
@@ -472,7 +859,7 @@ function normalizeHost(host) {
     .toLowerCase()
 }
 
-const PRIMARY_SITE_SLUGS = ['texas-solar-and-roofing-pros', 'austin-solar-pros']
+const PRIMARY_SITE_SLUGS = ['texas-solar-and-roofing-pros']
 
 export function isPrimarySiteSlug(siteSlug) {
   return PRIMARY_SITE_SLUGS.includes(siteSlug)
@@ -671,6 +1058,7 @@ export async function getPageForRequest(site, slugParts = []) {
     const rawPage = await client.fetch(
       groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
         _id,
+        _type,
         _createdAt,
         _updatedAt,
         "id": _id,
@@ -682,7 +1070,10 @@ export async function getPageForRequest(site, slugParts = []) {
         "slug": slug.current,
         heroEyebrow,
         heroTitle,
+        heroTitlePrimary,
+        heroTitleAccent,
         heroBody,
+        cardCopy,
         heroGradient,
         heroTextColor,
         heroOverlayColor,
@@ -693,6 +1084,24 @@ export async function getPageForRequest(site, slugParts = []) {
         heroOverlayEndOpacity,
         heroOverlayOpacity,
         heroImage,
+        heroSlides[]{
+          _key,
+          title,
+          image,
+          imageAsset{
+            altText,
+            alt,
+            asset->{
+              url,
+              metadata{
+                dimensions{
+                  width,
+                  height
+                }
+              }
+            }
+          }
+        },
         heroAsset{
           altText,
           alt,
@@ -723,7 +1132,7 @@ export async function getPageForRequest(site, slugParts = []) {
     if (rawPage) {
       const page = sanitizePageRuntimeFields(rawPage)
 
-      const syncedPage = await syncGuideGridSectionItems({
+      const guideSyncedPage = await syncGuideGridSectionItems({
         client,
         fetchOptions,
         page: {
@@ -734,7 +1143,14 @@ export async function getPageForRequest(site, slugParts = []) {
         siteSlug: site.slug,
       })
 
-      return withPageSource(syncedPage, 'sanity')
+      const serviceSyncedPage = await syncServiceGridSectionItems({
+        client,
+        fetchOptions,
+        page: guideSyncedPage,
+        siteSlug: site.slug,
+      })
+
+      return withPageSource(serviceSyncedPage, 'sanity')
     }
   } catch {}
 
@@ -829,7 +1245,10 @@ export async function getHeroPages({ stega = false } = {}) {
         "slug": select(slug.current == "/" => "", slug.current),
         heroEyebrow,
         heroTitle,
+        heroTitlePrimary,
+        heroTitleAccent,
         heroBody,
+        cardCopy,
         heroGradient,
         heroTextColor,
         heroOverlayColor,

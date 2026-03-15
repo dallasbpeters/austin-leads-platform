@@ -13,7 +13,11 @@ export async function requestJson(url, init) {
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null)
-    throw new Error(payload?.error || 'Request failed.')
+    const message =
+      payload?.error ||
+      payload?.message ||
+      (response.status ? `Request failed (${response.status}).` : 'Request failed.')
+    throw new Error(message)
   }
 
   return response.json()

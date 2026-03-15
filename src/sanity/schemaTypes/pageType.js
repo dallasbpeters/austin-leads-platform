@@ -1,11 +1,16 @@
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
-const hideUnlessHomepage = ({ document }) => document?.pageType !== 'home'
 const isSectionType = (parent, ...types) => types.includes(parent?.type)
 const hideUnlessSectionTypes =
   (...types) =>
   ({ parent }) =>
     !isSectionType(parent, ...types)
+const resolveHeroMediaMode = (parent) =>
+  parent?.heroMediaMode || (Array.isArray(parent?.heroSlides) && parent.heroSlides.length ? 'slides' : 'single')
+const hideUnlessHeroMediaMode =
+  (...modes) =>
+  ({ parent }) =>
+    !modes.includes(resolveHeroMediaMode(parent))
 const previewText = (value, fallback) => {
   if (typeof value !== 'string') return fallback
   const normalized = value.replace(/\s+/g, ' ').trim()
@@ -13,13 +18,209 @@ const previewText = (value, fallback) => {
   return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
 }
 
-const hasLegacyAboutPeople = (parent) =>
-  Boolean(
-    parent?.personName ||
-      parent?.profileName ||
-      parent?.secondaryPersonName ||
-      parent?.secondaryProfileName,
-  )
+const publicSiteServiceIconOptions = [
+  { title: 'Audit', value: 'audit' },
+  { title: 'Insulation', value: 'insulation' },
+  { title: 'Ducts', value: 'ducts' },
+  { title: 'Windows', value: 'windows' },
+  { title: 'Heat Pump', value: 'heatpump' },
+  { title: 'Solar Battery', value: 'solarbattery' },
+  { title: 'Detach & Reset', value: 'detachreset' },
+  { title: 'Shingles', value: 'shingles' },
+  { title: 'Metal Roofing', value: 'metalroofing' },
+  { title: 'Storm Damage', value: 'stormdamage' },
+  { title: 'Commercial Roofing', value: 'commercialroofing' },
+  { title: 'Hail Inspection', value: 'hailinspection' },
+  { title: 'Rodent', value: 'rodent' },
+  { title: 'Electrical', value: 'electrical' },
+  { title: 'EV Charger', value: 'evcharger' },
+]
+
+const publicSiteIconoirOptions = [
+  // Solar & Energy
+  { title: 'Sun / Solar', value: 'SunLight' },
+  { title: 'Cloud Sunny', value: 'CloudSunny' },
+  { title: 'Light Bulb', value: 'LightBulbOn' },
+  { title: 'Energy Usage', value: 'EnergyUsageWindow' },
+  { title: 'Web Energy Consumption', value: 'WebWindowEnergyConsumption' },
+  { title: 'Flash / Electricity', value: 'Flash' },
+  { title: 'Magnet Energy', value: 'MagnetEnergy' },
+  { title: 'Brain Electricity', value: 'BrainElectricity' },
+  { title: 'EV Charge', value: 'EvCharge' },
+  { title: 'EV Plug', value: 'EvPlug' },
+  { title: 'EV Station', value: 'EvStation' },
+  { title: 'EV Tag', value: 'EvTag' },
+  { title: 'Plug Type A', value: 'PlugTypeA' },
+  // Battery & Storage
+  { title: 'Battery Full', value: 'BatteryFull' },
+  { title: 'Battery Charging', value: 'BatteryCharging' },
+  { title: 'Battery 75%', value: 'Battery75' },
+  { title: 'Battery 50%', value: 'Battery50' },
+  { title: 'Battery 25%', value: 'Battery25' },
+  { title: 'Battery Empty', value: 'BatteryEmpty' },
+  { title: 'Battery Warning', value: 'BatteryWarning' },
+  // Weather & Storm
+  { title: 'Thunderstorm', value: 'Thunderstorm' },
+  { title: 'Heavy Rain', value: 'HeavyRain' },
+  { title: 'Rain', value: 'Rain' },
+  { title: 'Wind', value: 'Wind' },
+  { title: 'Cloud', value: 'Cloud' },
+  { title: 'Snow', value: 'Snow' },
+  { title: 'Snowflake', value: 'SnowFlake' },
+  { title: 'Temperature High', value: 'TemperatureHigh' },
+  { title: 'Temperature Low', value: 'TemperatureLow' },
+  { title: 'Temperature Up', value: 'TemperatureUp' },
+  { title: 'Temperature Down', value: 'TemperatureDown' },
+  { title: 'Droplet', value: 'Droplet' },
+  { title: 'Sea and Sun', value: 'SeaAndSun' },
+  // Home & Building
+  { title: 'Home', value: 'Home' },
+  { title: 'Home Simple', value: 'HomeSimple' },
+  { title: 'Home Simple Door', value: 'HomeSimpleDoor' },
+  { title: 'Home Shield / Secure', value: 'HomeShield' },
+  { title: 'Home Temperature In', value: 'HomeTemperatureIn' },
+  { title: 'Home Temperature Out', value: 'HomeTemperatureOut' },
+  { title: 'Home Sale', value: 'HomeSale' },
+  { title: 'Home User', value: 'HomeUser' },
+  { title: 'House Rooms', value: 'HouseRooms' },
+  { title: 'Building', value: 'Building' },
+  { title: 'Garage', value: 'Garage' },
+  { title: 'Elevator', value: 'Elevator' },
+  { title: 'Bed', value: 'Bed' },
+  { title: 'Bathroom', value: 'Bathroom' },
+  // Roofing & Construction
+  { title: 'Hammer', value: 'Hammer' },
+  { title: 'Wrench', value: 'Wrench' },
+  { title: 'Tools', value: 'Tools' },
+  { title: 'Ruler', value: 'Ruler' },
+  { title: 'Ruler Combine', value: 'RulerCombine' },
+  { title: 'Design Pencil', value: 'DesignPencil' },
+  { title: 'Precision Tool', value: 'PrecisionTool' },
+  { title: 'Pipe 3D', value: 'Pipe3d' },
+  // Climate & HVAC
+  { title: 'Air Conditioner', value: 'AirConditioner' },
+  { title: 'Heating', value: 'HeatingSquare' },
+  { title: 'Cooling', value: 'CoolingSquare' },
+  { title: 'Bonfire / Heat', value: 'Bonfire' },
+  { title: 'Fire Flame', value: 'FireFlame' },
+  // Nature & Eco
+  { title: 'Leaf', value: 'Leaf' },
+  { title: 'Tree', value: 'Tree' },
+  { title: 'Pine Tree', value: 'PineTree' },
+  { title: 'Ecology Book', value: 'EcologyBook' },
+  { title: 'Watering Soil', value: 'WateringSoil' },
+  // Safety & Protection
+  { title: 'Shield', value: 'Shield' },
+  { title: 'Shield Check', value: 'ShieldCheck' },
+  { title: 'Shield Alert', value: 'ShieldAlert' },
+  { title: 'Shield Broken', value: 'ShieldBroken' },
+  { title: 'Shield Search', value: 'ShieldSearch' },
+  { title: 'Shield Question', value: 'ShieldQuestion' },
+  { title: 'Health Shield', value: 'HealthShield' },
+  { title: 'Lock', value: 'Lock' },
+  { title: 'Key', value: 'Key' },
+  { title: 'Warning Triangle', value: 'WarningTriangle' },
+  { title: 'Warning Circle', value: 'WarningCircle' },
+  { title: 'Warning Hexagon', value: 'WarningHexagon' },
+  // Money & Finance
+  { title: 'Dollar', value: 'Dollar' },
+  { title: 'Dollar Circle', value: 'DollarCircle' },
+  { title: 'Cash', value: 'Cash' },
+  { title: 'Lot of Cash', value: 'LotOfCash' },
+  { title: 'Hand Cash', value: 'HandCash' },
+  { title: 'Hand Card', value: 'HandCard' },
+  { title: 'Credit Card', value: 'CreditCard' },
+  { title: 'Coins', value: 'Coins' },
+  { title: 'Coins Swap', value: 'CoinsSwap' },
+  { title: 'Wallet', value: 'Wallet' },
+  { title: 'Piggy Bank', value: 'PiggyBank' },
+  { title: 'Bank', value: 'Bank' },
+  { title: 'Send Dollars', value: 'SendDollars' },
+  { title: 'Receive Dollars', value: 'ReceiveDollars' },
+  { title: 'Percentage', value: 'Percentage' },
+  { title: 'Percentage Circle', value: 'PercentageCircle' },
+  // Communication
+  { title: 'Phone', value: 'Phone' },
+  { title: 'Mail', value: 'Mail' },
+  { title: 'Mail Open', value: 'MailOpen' },
+  { title: 'Send', value: 'Send' },
+  { title: 'Send Diagonal', value: 'SendDiagonal' },
+  { title: 'Chat Bubble', value: 'ChatBubble' },
+  { title: 'Chat Lines', value: 'ChatLines' },
+  { title: 'Megaphone', value: 'Megaphone' },
+  // People & Users
+  { title: 'User', value: 'User' },
+  { title: 'User Circle', value: 'UserCircle' },
+  { title: 'User Badge Check', value: 'UserBadgeCheck' },
+  { title: 'User Star', value: 'UserStar' },
+  { title: 'People Tag', value: 'PeopleTag' },
+  { title: 'Group', value: 'Group' },
+  { title: 'Profile Circle', value: 'ProfileCircle' },
+  { title: 'Community', value: 'Community' },
+  // Documents & Data
+  { title: 'Book', value: 'Book' },
+  { title: 'Open Book', value: 'OpenBook' },
+  { title: 'Book Stack', value: 'BookStack' },
+  { title: 'Clipboard Check', value: 'ClipboardCheck' },
+  { title: 'Doc Star', value: 'DocStar' },
+  { title: 'Doc Magnifying Glass', value: 'DocMagnifyingGlass' },
+  { title: 'Submit Document', value: 'SubmitDocument' },
+  { title: 'Task List', value: 'TaskList' },
+  { title: 'Stats Report', value: 'StatsReport' },
+  { title: 'Graph Up', value: 'GraphUp' },
+  { title: 'Graph Down', value: 'GraphDown' },
+  { title: 'Stat Up', value: 'StatUp' },
+  { title: 'Stat Down', value: 'StatDown' },
+  // Status & Validation
+  { title: 'Check Circle', value: 'CheckCircle' },
+  { title: 'Check Square', value: 'CheckSquare' },
+  { title: 'Double Check', value: 'DoubleCheck' },
+  { title: 'Badge Check', value: 'BadgeCheck' },
+  { title: 'Star', value: 'Star' },
+  { title: 'Three Stars', value: 'ThreeStars' },
+  { title: 'Trophy', value: 'Trophy' },
+  { title: 'Medal', value: 'Medal' },
+  { title: 'Bright Star', value: 'BrightStar' },
+  { title: 'Heart', value: 'Heart' },
+  { title: 'Leaderboard Star', value: 'LeaderboardStar' },
+  // Search & Navigation
+  { title: 'Search', value: 'Search' },
+  { title: 'Area Search', value: 'AreaSearch' },
+  { title: 'Map', value: 'Map' },
+  { title: 'Map Pin', value: 'MapPin' },
+  { title: 'Compass', value: 'Compass' },
+  { title: 'Globe', value: 'Globe' },
+  { title: 'Pin', value: 'Pin' },
+  // Scheduling & Time
+  { title: 'Calendar', value: 'Calendar' },
+  { title: 'Calendar Check', value: 'CalendarCheck' },
+  { title: 'Calendar Plus', value: 'CalendarPlus' },
+  { title: 'Clock', value: 'Clock' },
+  { title: 'Clock Rotate', value: 'ClockRotateRight' },
+  // Media & Visual
+  { title: 'Camera', value: 'Camera' },
+  { title: 'Eye', value: 'Eye' },
+  { title: 'Media Image', value: 'MediaImage' },
+  { title: 'Info Circle', value: 'InfoCircle' },
+  { title: 'Question Mark', value: 'QuestionMark' },
+  // Transport & Delivery
+  { title: 'Truck', value: 'Truck' },
+  { title: 'Delivery Truck', value: 'DeliveryTruck' },
+  { title: 'Car', value: 'Car' },
+  { title: 'Package', value: 'Package' },
+  { title: 'Box', value: 'Box' },
+  // Actions
+  { title: 'Download', value: 'Download' },
+  { title: 'Upload', value: 'Upload' },
+  { title: 'Refresh', value: 'Refresh' },
+  { title: 'Settings', value: 'Settings' },
+  { title: 'Filter', value: 'Filter' },
+  { title: 'Sort', value: 'Sort' },
+  { title: 'Share', value: 'ShareIos' },
+  { title: 'Link', value: 'Link' },
+]
+
+const publicSiteIconOptions = [...publicSiteServiceIconOptions, ...publicSiteIconoirOptions]
 
 const heroImageUrlsType = {
   name: 'heroImageUrls',
@@ -90,6 +291,30 @@ const uploadedImageType = {
       hidden: true,
     },
   ],
+}
+
+const bandColorStopType = {
+  name: 'bandColorStop',
+  title: 'Band Color',
+  type: 'object',
+  fields: [
+    {
+      name: 'color',
+      title: 'Color',
+      type: 'color',
+      validation: (Rule) => Rule.required(),
+    },
+  ],
+  preview: {
+    select: {
+      colorHex: 'color.hex',
+    },
+    prepare({ colorHex }) {
+      return {
+        title: colorHex || 'Band color',
+      }
+    },
+  },
 }
 
 const pageMetricType = {
@@ -231,189 +456,7 @@ const pageItemType = {
       title: 'Icon',
       type: 'string',
       options: {
-        list: [
-          // Solar & Energy
-          { title: 'Sun / Solar', value: 'SunLight' },
-          { title: 'Cloud Sunny', value: 'CloudSunny' },
-          { title: 'Light Bulb', value: 'LightBulbOn' },
-          { title: 'Energy Usage', value: 'EnergyUsageWindow' },
-          { title: 'Web Energy Consumption', value: 'WebWindowEnergyConsumption' },
-          { title: 'Flash / Electricity', value: 'Flash' },
-          { title: 'Magnet Energy', value: 'MagnetEnergy' },
-          { title: 'Brain Electricity', value: 'BrainElectricity' },
-          { title: 'EV Charge', value: 'EvCharge' },
-          { title: 'EV Plug', value: 'EvPlug' },
-          { title: 'EV Station', value: 'EvStation' },
-          { title: 'EV Tag', value: 'EvTag' },
-          { title: 'Plug Type A', value: 'PlugTypeA' },
-          // Battery & Storage
-          { title: 'Battery Full', value: 'BatteryFull' },
-          { title: 'Battery Charging', value: 'BatteryCharging' },
-          { title: 'Battery 75%', value: 'Battery75' },
-          { title: 'Battery 50%', value: 'Battery50' },
-          { title: 'Battery 25%', value: 'Battery25' },
-          { title: 'Battery Empty', value: 'BatteryEmpty' },
-          { title: 'Battery Warning', value: 'BatteryWarning' },
-          // Weather & Storm
-          { title: 'Thunderstorm', value: 'Thunderstorm' },
-          { title: 'Heavy Rain', value: 'HeavyRain' },
-          { title: 'Rain', value: 'Rain' },
-          { title: 'Wind', value: 'Wind' },
-          { title: 'Cloud', value: 'Cloud' },
-          { title: 'Snow', value: 'Snow' },
-          { title: 'Snowflake', value: 'SnowFlake' },
-          { title: 'Temperature High', value: 'TemperatureHigh' },
-          { title: 'Temperature Low', value: 'TemperatureLow' },
-          { title: 'Temperature Up', value: 'TemperatureUp' },
-          { title: 'Temperature Down', value: 'TemperatureDown' },
-          { title: 'Droplet', value: 'Droplet' },
-          { title: 'Sea and Sun', value: 'SeaAndSun' },
-          // Home & Building
-          { title: 'Home', value: 'Home' },
-          { title: 'Home Simple', value: 'HomeSimple' },
-          { title: 'Home Simple Door', value: 'HomeSimpleDoor' },
-          { title: 'Home Shield / Secure', value: 'HomeShield' },
-          { title: 'Home Temperature In', value: 'HomeTemperatureIn' },
-          { title: 'Home Temperature Out', value: 'HomeTemperatureOut' },
-          { title: 'Home Sale', value: 'HomeSale' },
-          { title: 'Home User', value: 'HomeUser' },
-          { title: 'House Rooms', value: 'HouseRooms' },
-          { title: 'Building', value: 'Building' },
-          { title: 'Garage', value: 'Garage' },
-          { title: 'Elevator', value: 'Elevator' },
-          { title: 'Bed', value: 'Bed' },
-          { title: 'Bathroom', value: 'Bathroom' },
-          // Roofing & Construction
-          { title: 'Hammer', value: 'Hammer' },
-          { title: 'Wrench', value: 'Wrench' },
-          { title: 'Tools', value: 'Tools' },
-          { title: 'Ruler', value: 'Ruler' },
-          { title: 'Ruler Combine', value: 'RulerCombine' },
-          { title: 'Design Pencil', value: 'DesignPencil' },
-          { title: 'Precision Tool', value: 'PrecisionTool' },
-          { title: 'Pipe 3D', value: 'Pipe3d' },
-          // Climate & HVAC
-          { title: 'Air Conditioner', value: 'AirConditioner' },
-          { title: 'Heating', value: 'HeatingSquare' },
-          { title: 'Cooling', value: 'CoolingSquare' },
-          { title: 'Bonfire / Heat', value: 'Bonfire' },
-          { title: 'Fire Flame', value: 'FireFlame' },
-          // Nature & Eco
-          { title: 'Leaf', value: 'Leaf' },
-          { title: 'Tree', value: 'Tree' },
-          { title: 'Pine Tree', value: 'PineTree' },
-          { title: 'Ecology Book', value: 'EcologyBook' },
-          { title: 'Watering Soil', value: 'WateringSoil' },
-          // Safety & Protection
-          { title: 'Shield', value: 'Shield' },
-          { title: 'Shield Check', value: 'ShieldCheck' },
-          { title: 'Shield Alert', value: 'ShieldAlert' },
-          { title: 'Shield Broken', value: 'ShieldBroken' },
-          { title: 'Shield Search', value: 'ShieldSearch' },
-          { title: 'Shield Question', value: 'ShieldQuestion' },
-          { title: 'Health Shield', value: 'HealthShield' },
-          { title: 'Lock', value: 'Lock' },
-          { title: 'Key', value: 'Key' },
-          { title: 'Warning Triangle', value: 'WarningTriangle' },
-          { title: 'Warning Circle', value: 'WarningCircle' },
-          { title: 'Warning Hexagon', value: 'WarningHexagon' },
-          // Money & Finance
-          { title: 'Dollar', value: 'Dollar' },
-          { title: 'Dollar Circle', value: 'DollarCircle' },
-          { title: 'Cash', value: 'Cash' },
-          { title: 'Lot of Cash', value: 'LotOfCash' },
-          { title: 'Hand Cash', value: 'HandCash' },
-          { title: 'Hand Card', value: 'HandCard' },
-          { title: 'Credit Card', value: 'CreditCard' },
-          { title: 'Coins', value: 'Coins' },
-          { title: 'Coins Swap', value: 'CoinsSwap' },
-          { title: 'Wallet', value: 'Wallet' },
-          { title: 'Piggy Bank', value: 'PiggyBank' },
-          { title: 'Bank', value: 'Bank' },
-          { title: 'Send Dollars', value: 'SendDollars' },
-          { title: 'Receive Dollars', value: 'ReceiveDollars' },
-          { title: 'Percentage', value: 'Percentage' },
-          { title: 'Percentage Circle', value: 'PercentageCircle' },
-          // Communication
-          { title: 'Phone', value: 'Phone' },
-          { title: 'Mail', value: 'Mail' },
-          { title: 'Mail Open', value: 'MailOpen' },
-          { title: 'Send', value: 'Send' },
-          { title: 'Send Diagonal', value: 'SendDiagonal' },
-          { title: 'Chat Bubble', value: 'ChatBubble' },
-          { title: 'Chat Lines', value: 'ChatLines' },
-          { title: 'Megaphone', value: 'Megaphone' },
-          // People & Users
-          { title: 'User', value: 'User' },
-          { title: 'User Circle', value: 'UserCircle' },
-          { title: 'User Badge Check', value: 'UserBadgeCheck' },
-          { title: 'User Star', value: 'UserStar' },
-          { title: 'People Tag', value: 'PeopleTag' },
-          { title: 'Group', value: 'Group' },
-          { title: 'Profile Circle', value: 'ProfileCircle' },
-          { title: 'Community', value: 'Community' },
-          // Documents & Data
-          { title: 'Book', value: 'Book' },
-          { title: 'Open Book', value: 'OpenBook' },
-          { title: 'Book Stack', value: 'BookStack' },
-          { title: 'Clipboard Check', value: 'ClipboardCheck' },
-          { title: 'Doc Star', value: 'DocStar' },
-          { title: 'Doc Magnifying Glass', value: 'DocMagnifyingGlass' },
-          { title: 'Submit Document', value: 'SubmitDocument' },
-          { title: 'Task List', value: 'TaskList' },
-          { title: 'Stats Report', value: 'StatsReport' },
-          { title: 'Graph Up', value: 'GraphUp' },
-          { title: 'Graph Down', value: 'GraphDown' },
-          { title: 'Stat Up', value: 'StatUp' },
-          { title: 'Stat Down', value: 'StatDown' },
-          // Status & Validation
-          { title: 'Check Circle', value: 'CheckCircle' },
-          { title: 'Check Square', value: 'CheckSquare' },
-          { title: 'Double Check', value: 'DoubleCheck' },
-          { title: 'Badge Check', value: 'BadgeCheck' },
-          { title: 'Star', value: 'Star' },
-          { title: 'Three Stars', value: 'ThreeStars' },
-          { title: 'Trophy', value: 'Trophy' },
-          { title: 'Medal', value: 'Medal' },
-          { title: 'Bright Star', value: 'BrightStar' },
-          { title: 'Heart', value: 'Heart' },
-          { title: 'Leaderboard Star', value: 'LeaderboardStar' },
-          // Search & Navigation
-          { title: 'Search', value: 'Search' },
-          { title: 'Area Search', value: 'AreaSearch' },
-          { title: 'Map', value: 'Map' },
-          { title: 'Map Pin', value: 'MapPin' },
-          { title: 'Compass', value: 'Compass' },
-          { title: 'Globe', value: 'Globe' },
-          { title: 'Pin', value: 'Pin' },
-          // Scheduling & Time
-          { title: 'Calendar', value: 'Calendar' },
-          { title: 'Calendar Check', value: 'CalendarCheck' },
-          { title: 'Calendar Plus', value: 'CalendarPlus' },
-          { title: 'Clock', value: 'Clock' },
-          { title: 'Clock Rotate', value: 'ClockRotateRight' },
-          // Media & Visual
-          { title: 'Camera', value: 'Camera' },
-          { title: 'Eye', value: 'Eye' },
-          { title: 'Media Image', value: 'MediaImage' },
-          { title: 'Info Circle', value: 'InfoCircle' },
-          { title: 'Question Mark', value: 'QuestionMark' },
-          // Transport & Delivery
-          { title: 'Truck', value: 'Truck' },
-          { title: 'Delivery Truck', value: 'DeliveryTruck' },
-          { title: 'Car', value: 'Car' },
-          { title: 'Package', value: 'Package' },
-          { title: 'Box', value: 'Box' },
-          // Actions
-          { title: 'Download', value: 'Download' },
-          { title: 'Upload', value: 'Upload' },
-          { title: 'Refresh', value: 'Refresh' },
-          { title: 'Settings', value: 'Settings' },
-          { title: 'Filter', value: 'Filter' },
-          { title: 'Sort', value: 'Sort' },
-          { title: 'Share', value: 'ShareIos' },
-          { title: 'Link', value: 'Link' },
-        ],
+        list: publicSiteIconOptions,
         layout: 'dropdown',
         ...canvasPurpose('Select the icon that best matches this card or item.'),
       },
@@ -462,12 +505,6 @@ const sectionContentItemType = {
   type: 'object',
   fields: [
     {
-      name: 'eyebrow',
-      title: 'Eyebrow',
-      type: 'string',
-      options: canvasPurpose('Optional short supporting label for the item.'),
-    },
-    {
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -486,16 +523,7 @@ const sectionContentItemType = {
       title: 'Icon',
       type: 'string',
       options: {
-        list: [
-          { title: 'Check Circle', value: 'CheckCircle' },
-          { title: 'Shield', value: 'Shield' },
-          { title: 'Hammer', value: 'Hammer' },
-          { title: 'Sun / Solar', value: 'SunLight' },
-          { title: 'Question Mark', value: 'QuestionMark' },
-          { title: 'Info Circle', value: 'InfoCircle' },
-          { title: 'Warning Triangle', value: 'WarningTriangle' },
-          { title: 'Map Pin', value: 'MapPin' },
-        ],
+        list: publicSiteIconOptions,
         layout: 'dropdown',
         ...canvasPurpose('Optional icon for highlight or step items.'),
       },
@@ -517,6 +545,45 @@ const sectionContentItemType = {
       return {
         title: title || 'Section item',
         subtitle: previewText(subtitle || eyebrow, 'Supporting content'),
+      }
+    },
+  },
+}
+
+const heroSlideItemType = {
+  name: 'heroSlideItem',
+  title: 'Hero Slide',
+  type: 'object',
+  fields: [
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Internal label for this slide.'),
+    },
+    {
+      name: 'image',
+      title: 'External image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'imageAsset',
+      title: 'Uploaded image',
+      type: 'uploadedImage',
+      options: canvasExclude,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      assetUrl: 'imageAsset.asset.url',
+      imageAlt: 'image.alt',
+    },
+    prepare({ title, assetUrl, imageAlt }) {
+      return {
+        title: title || 'Hero slide',
+        subtitle: assetUrl ? 'Uploaded image' : imageAlt || 'External image',
       }
     },
   },
@@ -566,64 +633,7 @@ const resourceCardType = {
       title: 'Icon',
       type: 'string',
       options: {
-        list: [
-          // Solar & Energy
-          { title: 'Sun / Solar', value: 'SunLight' },
-          { title: 'Cloud Sunny', value: 'CloudSunny' },
-          { title: 'Light Bulb', value: 'LightBulbOn' },
-          { title: 'Energy Usage', value: 'EnergyUsageWindow' },
-          { title: 'Flash / Electricity', value: 'Flash' },
-          { title: 'EV Charge', value: 'EvCharge' },
-          { title: 'EV Station', value: 'EvStation' },
-          // Battery & Storage
-          { title: 'Battery Full', value: 'BatteryFull' },
-          { title: 'Battery Charging', value: 'BatteryCharging' },
-          { title: 'Battery Warning', value: 'BatteryWarning' },
-          // Weather & Storm
-          { title: 'Thunderstorm', value: 'Thunderstorm' },
-          { title: 'Heavy Rain', value: 'HeavyRain' },
-          { title: 'Wind', value: 'Wind' },
-          { title: 'Cloud', value: 'Cloud' },
-          { title: 'Temperature High', value: 'TemperatureHigh' },
-          { title: 'Droplet', value: 'Droplet' },
-          // Home & Building
-          { title: 'Home', value: 'Home' },
-          { title: 'Home Shield / Secure', value: 'HomeShield' },
-          { title: 'Home Sale', value: 'HomeSale' },
-          { title: 'Building', value: 'Building' },
-          { title: 'Garage', value: 'Garage' },
-          // Roofing & Construction
-          { title: 'Hammer', value: 'Hammer' },
-          { title: 'Wrench', value: 'Wrench' },
-          { title: 'Tools', value: 'Tools' },
-          // Climate & HVAC
-          { title: 'Air Conditioner', value: 'AirConditioner' },
-          { title: 'Heating', value: 'HeatingSquare' },
-          { title: 'Cooling', value: 'CoolingSquare' },
-          { title: 'Fire Flame', value: 'FireFlame' },
-          // Safety & Protection
-          { title: 'Shield', value: 'Shield' },
-          { title: 'Shield Check', value: 'ShieldCheck' },
-          { title: 'Shield Alert', value: 'ShieldAlert' },
-          { title: 'Warning Triangle', value: 'WarningTriangle' },
-          // Money & Finance
-          { title: 'Dollar', value: 'Dollar' },
-          { title: 'Cash', value: 'Cash' },
-          { title: 'Credit Card', value: 'CreditCard' },
-          { title: 'Coins', value: 'Coins' },
-          { title: 'Percentage', value: 'Percentage' },
-          // People & Status
-          { title: 'User', value: 'User' },
-          { title: 'Group', value: 'Group' },
-          { title: 'Check Circle', value: 'CheckCircle' },
-          { title: 'Star', value: 'Star' },
-          { title: 'Search', value: 'Search' },
-          { title: 'Map Pin', value: 'MapPin' },
-          { title: 'Calendar', value: 'Calendar' },
-          { title: 'Clock', value: 'Clock' },
-          { title: 'Phone', value: 'Phone' },
-          { title: 'Leaf', value: 'Leaf' },
-        ],
+        list: publicSiteIconOptions,
         layout: 'dropdown',
         ...canvasPurpose('Select the card icon.'),
       },
@@ -697,6 +707,12 @@ const resourceGridSectionType = {
       options: canvasPurpose('Section heading.'),
     },
     {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Optional supporting copy above the resource cards.'),
+    },
+    {
       name: 'items',
       title: 'Cards',
       type: 'array',
@@ -708,12 +724,13 @@ const resourceGridSectionType = {
   preview: {
     select: {
       title: 'title',
+      body: 'body',
       cardCount: 'items.length',
     },
-    prepare({ title, cardCount }) {
+    prepare({ title, body, cardCount }) {
       return {
         title: title || 'Resource grid',
-        subtitle: `${cardCount || 0} cards`,
+        subtitle: previewText(body, `${cardCount || 0} cards`),
       }
     },
   },
@@ -766,6 +783,100 @@ const guideGridSectionType = {
       return {
         title: title || 'Guide grid',
         subtitle: previewText(body, `${cardCount || 0} guides`),
+      }
+    },
+  },
+}
+
+const serviceGridSectionType = {
+  name: 'serviceGridSection',
+  title: 'Service Grid Section',
+  type: 'object',
+  initialValue: {
+    type: 'serviceGrid',
+  },
+  fields: [
+    {
+      name: 'type',
+      title: 'Section type',
+      type: 'string',
+      hidden: true,
+      options: canvasExclude,
+    },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional short label above the section heading.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading for the service grid.'),
+    },
+    {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'text',
+      options: canvasPurpose('Optional supporting line above the body copy.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Short supporting copy introducing the service group.'),
+    },
+    {
+      name: 'items',
+      title: 'Primary services',
+      type: 'array',
+      validation: (Rule) => Rule.min(1),
+      of: [{ type: 'pageItem' }],
+      options: canvasPurpose('Primary service cards shown first in the grid.'),
+    },
+    {
+      name: 'roofingTitle',
+      title: 'Roofing group title',
+      type: 'string',
+      options: canvasPurpose('Optional heading for an additional roofing-related card group.'),
+    },
+    {
+      name: 'roofingItems',
+      title: 'Roofing services',
+      type: 'array',
+      of: [{ type: 'pageItem' }],
+      options: canvasPurpose('Optional additional roofing service cards.'),
+    },
+    {
+      name: 'secondaryTitle',
+      title: 'Secondary group title',
+      type: 'string',
+      options: canvasPurpose('Optional heading for a second supporting service group.'),
+    },
+    {
+      name: 'secondaryItems',
+      title: 'Secondary services',
+      type: 'array',
+      of: [{ type: 'pageItem' }],
+      options: canvasPurpose('Optional supporting service cards shown after the primary group.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      primaryCount: 'items.length',
+      roofingCount: 'roofingItems.length',
+      secondaryCount: 'secondaryItems.length',
+    },
+    prepare({ title, eyebrow, primaryCount, roofingCount, secondaryCount }) {
+      const countSummary = `${primaryCount || 0} primary / ${roofingCount || 0} roofing / ${secondaryCount || 0} secondary`
+
+      return {
+        title: title || 'Service grid',
+        subtitle: previewText(eyebrow, countSummary),
       }
     },
   },
@@ -885,182 +996,8 @@ const aboutProfileSectionType = {
       title: 'People',
       type: 'array',
       of: [{ type: 'aboutProfilePerson' }],
-      validation: (Rule) =>
-        Rule.custom((value, context) => {
-          const count = Array.isArray(value) ? value.length : 0
-
-          if (count > 2) {
-            return 'Add no more than 2 people.'
-          }
-
-          if (count === 0 && hasLegacyAboutPeople(context.parent)) {
-            return true
-          }
-
-          return true
-        }),
+      validation: (Rule) => Rule.max(2),
       options: canvasPurpose('Profile cards shown in this section.'),
-    },
-    {
-      name: 'profileImage',
-      title: 'Profile image',
-      type: 'heroImage',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'profileImageAsset',
-      title: 'Uploaded profile image',
-      type: 'uploadedImage',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'personLabel',
-      title: 'Profile label',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Small label above the person name.'),
-    },
-    {
-      name: 'profileName',
-      title: 'Legacy profile name',
-      type: 'string',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'personName',
-      title: 'Person name',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Name shown in the profile card.'),
-    },
-    {
-      name: 'profileRole',
-      title: 'Legacy profile role',
-      type: 'string',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'personRole',
-      title: 'Person role',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Short role or descriptor shown below the name.'),
-    },
-    {
-      name: 'profileBody',
-      title: 'Legacy profile blurb',
-      type: 'text',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'personBlurb',
-      title: 'Profile blurb',
-      type: 'text',
-      hidden: true,
-      options: canvasPurpose('Short profile summary.'),
-    },
-    {
-      name: 'certificationLabel',
-      title: 'Certification label',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Small label above the certification title.'),
-    },
-    {
-      name: 'certificationTitle',
-      title: 'Certification title',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Certification or credential title.'),
-    },
-    {
-      name: 'badgeImage',
-      title: 'Certification badge image',
-      type: 'heroImage',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'badgeImageAsset',
-      title: 'Uploaded certification badge image',
-      type: 'uploadedImage',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'certificationImageUrl',
-      title: 'Legacy certification image URL',
-      type: 'url',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'secondaryProfileImage',
-      title: 'Secondary profile image',
-      type: 'heroImage',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'secondaryProfileImageAsset',
-      title: 'Uploaded secondary profile image',
-      type: 'uploadedImage',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'secondaryPersonLabel',
-      title: 'Secondary profile label',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Small label above the secondary profile name.'),
-    },
-    {
-      name: 'secondaryProfileName',
-      title: 'Legacy secondary profile name',
-      type: 'string',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'secondaryPersonName',
-      title: 'Secondary person name',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Name shown in the secondary profile card.'),
-    },
-    {
-      name: 'secondaryProfileRole',
-      title: 'Legacy secondary profile role',
-      type: 'string',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'secondaryPersonRole',
-      title: 'Secondary person role',
-      type: 'string',
-      hidden: true,
-      options: canvasPurpose('Short role or descriptor shown below the secondary name.'),
-    },
-    {
-      name: 'secondaryProfileBody',
-      title: 'Legacy secondary profile blurb',
-      type: 'text',
-      hidden: true,
-      options: canvasExclude,
-    },
-    {
-      name: 'secondaryPersonBlurb',
-      title: 'Secondary profile blurb',
-      type: 'text',
-      hidden: true,
-      options: canvasPurpose('Short profile summary for the secondary person.'),
     },
   ],
   preview: {
@@ -1082,13 +1019,13 @@ const heroOnlyField = (field) => ({
   hidden: ({ parent }) => parent?.type !== 'hero',
 })
 
-const genericSectionFields = [
+const legacyPageSectionFields = [
   { name: 'type', title: 'Section type', type: 'string', options: canvasExclude },
   {
     name: 'eyebrow',
     title: 'Eyebrow',
     type: 'string',
-    hidden: hideUnlessSectionTypes('story'),
+    hidden: hideUnlessSectionTypes('hero', 'story', 'quote', 'ctaBanner'),
     options: canvasPurpose('Short overline or kicker text that introduces the section.'),
   },
   {
@@ -1098,31 +1035,34 @@ const genericSectionFields = [
     options: canvasPurpose('Primary heading for this section.'),
   },
   {
+    name: 'subtitle',
+    title: 'Subtitle',
+    type: 'text',
+    hidden: hideUnlessSectionTypes('highlights', 'serviceGrid'),
+    options: canvasPurpose('Optional supporting line shown above cards or service groups.'),
+  },
+  {
     name: 'body',
     title: 'Body',
     type: 'text',
-    hidden: hideUnlessSectionTypes('story', 'cta'),
+    hidden: hideUnlessSectionTypes(
+      'hero',
+      'story',
+      'quote',
+      'cta',
+      'ctaBanner',
+      'guideGrid',
+      'serviceGrid',
+      'hailMap',
+      'resourceGrid',
+    ),
     options: canvasPurpose('Main body copy for this section.'),
-  },
-  {
-    name: 'subheadingLabel',
-    title: 'Subheading Label',
-    type: 'text',
-    hidden: true,
-    options: canvasPurpose('Optional label for the subheading.'),
-  },
-  {
-    name: 'subheading',
-    title: 'Subheading',
-    type: 'text',
-    hidden: true,
-    options: canvasPurpose('Optional subheading or secondary heading for this section.'),
   },
   {
     name: 'items',
     title: 'Items',
     type: 'array',
-    hidden: hideUnlessSectionTypes('highlights', 'steps', 'faq'),
+    hidden: hideUnlessSectionTypes('highlights', 'steps', 'faq', 'guideGrid', 'serviceGrid'),
     options: canvasPurpose(
       'Repeatable content items like cards, FAQs, or supporting bullets for the section.',
     ),
@@ -1132,29 +1072,78 @@ const genericSectionFields = [
     name: 'ctaLabel',
     title: 'CTA label',
     type: 'string',
-    hidden: hideUnlessSectionTypes('cta'),
-    options: canvasPurpose('Label for the main call-to-action button or link.'),
+    hidden: hideUnlessSectionTypes('cta', 'ctaBanner'),
+    options: canvasPurpose('Label for the main call-to-action button or form submit action.'),
   },
   {
-    name: 'ctaHref',
-    title: 'CTA href',
+    name: 'roofingTitle',
+    title: 'Roofing group title',
     type: 'string',
-    hidden: hideUnlessSectionTypes('cta'),
-    options: canvasPurpose('Link target or anchor for the call-to-action.'),
+    hidden: hideUnlessSectionTypes('serviceGrid'),
+    options: canvasPurpose('Optional heading for a second roofing service group.'),
+  },
+  {
+    name: 'roofingItems',
+    title: 'Roofing services',
+    type: 'array',
+    hidden: hideUnlessSectionTypes('serviceGrid'),
+    of: [{ type: 'pageItem' }],
+    options: canvasPurpose('Optional additional roofing service cards.'),
+  },
+  {
+    name: 'secondaryTitle',
+    title: 'Secondary group title',
+    type: 'string',
+    hidden: hideUnlessSectionTypes('serviceGrid'),
+    options: canvasPurpose('Optional heading for a second supporting service group.'),
+  },
+  {
+    name: 'secondaryItems',
+    title: 'Secondary services',
+    type: 'array',
+    hidden: hideUnlessSectionTypes('serviceGrid'),
+    of: [{ type: 'pageItem' }],
+    options: canvasPurpose('Optional supporting service cards shown after the primary group.'),
   },
 ]
 
 const heroSpecificFields = [
+  {
+    name: 'heroMediaMode',
+    title: 'Hero media mode',
+    type: 'string',
+    initialValue: 'single',
+    options: {
+      list: [
+        { title: 'Single image', value: 'single' },
+        { title: 'Slides only', value: 'slides' },
+      ],
+      layout: 'radio',
+      ...canvasPurpose('Choose whether this hero uses one image or a slides-only background set.'),
+    },
+  },
+  {
+    name: 'titlePrimary',
+    title: 'Split headline part 1',
+    type: 'string',
+    options: canvasPurpose('Primary homepage hero word or phrase shown in the solid style.'),
+  },
+  {
+    name: 'titleAccent',
+    title: 'Split headline part 2',
+    type: 'string',
+    options: canvasPurpose('Secondary homepage hero word or phrase shown in the outlined style.'),
+  },
   { name: 'heroGradient', title: 'Hero gradient', type: 'text', options: canvasExclude },
-  { name: 'heroTextColor', title: 'Hero text color', type: 'string', options: canvasExclude },
-  { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'string', options: canvasExclude },
+  { name: 'heroTextColor', title: 'Hero text color', type: 'color', options: canvasExclude },
+  { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'color', options: canvasExclude },
   {
     name: 'heroOverlayStartColor',
     title: 'Hero overlay start color',
-    type: 'string',
+    type: 'color',
     options: canvasExclude,
   },
-  { name: 'heroOverlayEndColor', title: 'Hero overlay end color', type: 'string', options: canvasExclude },
+  { name: 'heroOverlayEndColor', title: 'Hero overlay end color', type: 'color', options: canvasExclude },
   { name: 'heroOverlayDirection', title: 'Hero overlay direction', type: 'string', options: canvasExclude },
   {
     name: 'heroOverlayStartOpacity',
@@ -1169,8 +1158,28 @@ const heroSpecificFields = [
     options: canvasExclude,
   },
   { name: 'heroOverlayOpacity', title: 'Hero overlay opacity', type: 'number', options: canvasExclude },
-  { name: 'heroImage', title: 'Hero image', type: 'heroImage', options: canvasExclude },
-  { name: 'heroAsset', title: 'Uploaded hero image', type: 'uploadedImage', options: canvasExclude },
+  {
+    name: 'heroImage',
+    title: 'Hero image',
+    type: 'heroImage',
+    options: canvasExclude,
+    hidden: hideUnlessHeroMediaMode('single'),
+  },
+  {
+    name: 'heroAsset',
+    title: 'Uploaded hero image',
+    type: 'uploadedImage',
+    options: canvasExclude,
+    hidden: hideUnlessHeroMediaMode('single'),
+  },
+  {
+    name: 'heroSlides',
+    title: 'Hero slides',
+    type: 'array',
+    of: [{ type: 'heroSlideItem' }],
+    options: canvasPurpose('Optional rotating background images for the homepage hero.'),
+    hidden: hideUnlessHeroMediaMode('slides'),
+  },
   {
     name: 'metrics',
     title: 'Metrics',
@@ -1194,17 +1203,52 @@ const heroSectionType = {
   initialValue: {
     type: 'hero',
   },
-  fields: [...genericSectionFields, ...heroSpecificFields],
+  fields: [
+    {
+      name: 'type',
+      title: 'Section type',
+      type: 'string',
+      hidden: true,
+      options: canvasExclude,
+    },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline or kicker text above the hero headline.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Hero title used on generic pages and guides.'),
+    },
+    {
+      name: 'cardCopy',
+      title: 'Card copy',
+      type: 'text',
+      options: canvasPurpose('Supporting copy shown in the hero card.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Supporting hero copy.'),
+    },
+    ...heroSpecificFields,
+  ],
   preview: {
     select: {
       title: 'title',
+      titlePrimary: 'titlePrimary',
+      titleAccent: 'titleAccent',
       eyebrow: 'eyebrow',
       body: 'body',
     },
-    prepare({ title, eyebrow, body }) {
+    prepare({ title, titlePrimary, titleAccent, eyebrow, body }) {
       return {
-        title: title || eyebrow || 'Hero section',
-        subtitle: previewText(body, 'hero'),
+        title: titlePrimary || title || eyebrow || 'Hero section',
+        subtitle: previewText(body, titleAccent || 'hero'),
       }
     },
   },
@@ -1255,6 +1299,339 @@ const storySectionType = {
   },
 }
 
+const calculatorSectionType = {
+  name: 'calculatorSection',
+  title: 'Calculator Section',
+  type: 'object',
+  initialValue: {
+    type: 'calculator',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline above the calculator call to action.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main calculator heading.'),
+    },
+    {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'text',
+      options: canvasPurpose('Short disclaimer shown below the calculator controls.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Supporting copy that introduces the calculator.'),
+    },
+    {
+      name: 'items',
+      title: 'Result cards',
+      type: 'array',
+      of: [{ type: 'sectionContentItem' }],
+      validation: (Rule) => Rule.max(4),
+      options: canvasPurpose('Optional labels and card details for calculator result cards.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'string',
+      options: canvasPurpose('Label for the calculator call-to-action button.'),
+    },
+    {
+      name: 'ctaHref',
+      title: 'CTA href',
+      type: 'string',
+      options: canvasPurpose('Link target for the calculator call-to-action button.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Calculator section',
+        subtitle: previewText(subtitle, 'Solar calculator'),
+      }
+    },
+  },
+}
+
+const costsSectionType = {
+  name: 'costsSection',
+  title: 'Costs Section',
+  type: 'object',
+  initialValue: {
+    type: 'costs',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline above the costs section heading.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Primary heading for the costs section.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Main explanatory copy for costs and pricing context.'),
+    },
+    {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'text',
+      options: canvasPurpose('Optional supporting line under the main costs intro.'),
+    },
+    {
+      name: 'items',
+      title: 'Cost stats',
+      type: 'array',
+      of: [{ type: 'pageItem' }],
+      options: canvasPurpose('Cost statistic cards with number, title, and supporting copy.'),
+    },
+    {
+      name: 'secondaryTitle',
+      title: 'Payback eyebrow',
+      type: 'string',
+      options: canvasPurpose('Small label above the payback summary row.'),
+    },
+    {
+      name: 'secondaryItems',
+      title: 'Payback details',
+      type: 'array',
+      of: [{ type: 'pageItem' }],
+      validation: (Rule) => Rule.max(1),
+      options: canvasPurpose('Optional single payback summary item with title and body.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      count: 'items.length',
+    },
+    prepare({ title, subtitle, count }) {
+      return {
+        title: title || 'Costs section',
+        subtitle: previewText(subtitle, `${count || 0} cost stats`),
+      }
+    },
+  },
+}
+
+const guidesSectionType = {
+  name: 'guidesSection',
+  title: 'Guides Section',
+  type: 'object',
+  initialValue: {
+    type: 'guides',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Heading above the guide card grid.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Optional copy above the guide card grid.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'string',
+      options: canvasPurpose('Label for the “Browse all guides” link.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Guides section',
+        subtitle: previewText(subtitle, 'Guide grid intro'),
+      }
+    },
+  },
+}
+
+const snapshotSectionType = {
+  name: 'snapshotSection',
+  title: 'Snapshot Section',
+  type: 'object',
+  initialValue: {
+    type: 'snapshot',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline above the snapshot heading.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main snapshot section heading.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Supporting intro copy for the snapshot metrics.'),
+    },
+    {
+      name: 'items',
+      title: 'Snapshot cards',
+      type: 'array',
+      of: [{ type: 'pageItem' }],
+      validation: (Rule) => Rule.max(4),
+      options: canvasPurpose('Metric cards with value/title/body and optional icon.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      count: 'items.length',
+    },
+    prepare({ title, subtitle, count }) {
+      return {
+        title: title || 'Snapshot section',
+        subtitle: previewText(subtitle, `${count || 0} snapshot cards`),
+      }
+    },
+  },
+}
+
+const incentivesSectionType = {
+  name: 'incentivesSection',
+  title: 'Incentives Section',
+  type: 'object',
+  initialValue: {
+    type: 'incentives',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Headline for the incentives or insurance guidance section.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      options: canvasPurpose('Long-form supporting copy (multiple paragraphs allowed).'),
+    },
+    {
+      name: 'imageAsset',
+      title: 'Uploaded image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Optional image shown beside the roofing and insurance copy.'),
+    },
+    {
+      name: 'image',
+      title: 'External image',
+      type: 'heroImage',
+      options: canvasPurpose('Optional external image fallback for this section.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'string',
+      options: canvasPurpose('Button label for the incentives/insurance section.'),
+    },
+    {
+      name: 'ctaHref',
+      title: 'CTA href',
+      type: 'string',
+      options: canvasPurpose('Destination URL for the incentives/insurance section CTA.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Incentives section',
+        subtitle: previewText(subtitle, 'Incentive guidance'),
+      }
+    },
+  },
+}
+
+const testimonialsSectionType = {
+  name: 'testimonialsSection',
+  title: 'Testimonials Section',
+  type: 'object',
+  initialValue: {
+    type: 'testimonials',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Primary heading above customer testimonials.'),
+    },
+    {
+      name: 'body',
+      title: 'Subtitle',
+      type: 'text',
+      options: canvasPurpose('Secondary line shown under the testimonials heading.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Testimonials section',
+        subtitle: previewText(subtitle, 'Customer proof'),
+      }
+    },
+  },
+}
+
 const highlightsSectionType = {
   name: 'highlightsSection',
   title: 'Highlights Section',
@@ -1272,6 +1649,12 @@ const highlightsSectionType = {
       options: canvasPurpose('Section heading for the highlights block.'),
     },
     {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'text',
+      options: canvasPurpose('Optional supporting line above the highlight cards.'),
+    },
+    {
       name: 'items',
       title: 'Highlights',
       type: 'array',
@@ -1283,12 +1666,13 @@ const highlightsSectionType = {
   preview: {
     select: {
       title: 'title',
+      subtitle: 'subtitle',
       itemCount: 'items.length',
     },
-    prepare({ title, itemCount }) {
+    prepare({ title, subtitle, itemCount }) {
       return {
         title: title || 'Highlights section',
-        subtitle: `${itemCount || 0} items`,
+        subtitle: previewText(subtitle, `${itemCount || 0} items`),
       }
     },
   },
@@ -1372,9 +1756,53 @@ const faqSectionType = {
   },
 }
 
+const quoteSectionType = {
+  name: 'quoteSection',
+  title: 'Quote Section',
+  type: 'object',
+  initialValue: {
+    type: 'quote',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Small overline shown above the quote.'),
+    },
+    {
+      name: 'body',
+      title: 'Quote',
+      type: 'text',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Quote text shown in the banner.'),
+    },
+    {
+      name: 'title',
+      title: 'Attribution',
+      type: 'string',
+      options: canvasPurpose('Name or attribution shown under the quote.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      body: 'body',
+    },
+    prepare({ title, eyebrow, body }) {
+      return {
+        title: title || eyebrow || 'Quote section',
+        subtitle: previewText(body, 'Quote'),
+      }
+    },
+  },
+}
+
 const ctaSectionType = {
   name: 'ctaSection',
-  title: 'CTA Section',
+  title: 'Call to Action Section',
   type: 'object',
   initialValue: {
     type: 'cta',
@@ -1383,30 +1811,59 @@ const ctaSectionType = {
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
-      title: 'Title',
+      title: 'Headline',
       type: 'string',
       validation: (Rule) => Rule.required(),
-      options: canvasPurpose('Main CTA headline.'),
+      options: canvasPurpose('Main call-to-action headline.'),
     },
     {
       name: 'body',
-      title: 'Body',
+      title: 'Copy',
       type: 'text',
-      options: canvasPurpose('Supporting CTA copy.'),
+      options: canvasPurpose('Short supporting copy below the CTA headline.'),
     },
     {
       name: 'ctaLabel',
-      title: 'CTA label',
+      title: 'Button label',
       type: 'string',
       validation: (Rule) => Rule.required(),
-      options: canvasPurpose('Label for the CTA button or link.'),
+      options: canvasPurpose('Label for the primary CTA button or link.'),
     },
     {
-      name: 'ctaHref',
-      title: 'CTA href',
+      name: 'avatarEyebrow',
+      title: 'Avatar eyebrow',
       type: 'string',
-      validation: (Rule) => Rule.required(),
-      options: canvasPurpose('Link target or anchor for the CTA.'),
+      options: canvasPurpose('Optional small label above the avatar name.'),
+    },
+    {
+      name: 'avatarName',
+      title: 'Avatar name',
+      type: 'string',
+      options: canvasPurpose('Optional person name shown with the consultation CTA.'),
+    },
+    {
+      name: 'avatarRole',
+      title: 'Avatar role',
+      type: 'string',
+      options: canvasPurpose('Optional short role shown under the avatar name.'),
+    },
+    {
+      name: 'avatarBlurb',
+      title: 'Avatar blurb',
+      type: 'text',
+      options: canvasPurpose('Optional short note shown next to the consultation CTA.'),
+    },
+    {
+      name: 'avatarImage',
+      title: 'Avatar image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'avatarImageAsset',
+      title: 'Uploaded avatar image',
+      type: 'uploadedImage',
+      options: canvasExclude,
     },
   ],
   preview: {
@@ -1423,11 +1880,319 @@ const ctaSectionType = {
   },
 }
 
+const ctaBannerSectionType = {
+  name: 'ctaBannerSection',
+  title: 'Cross-Lead Banner Section',
+  type: 'object',
+  initialValue: {
+    type: 'ctaBanner',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional label above the banner.'),
+    },
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main banner headline.'),
+    },
+    {
+      name: 'body',
+      title: 'Copy',
+      type: 'text',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Supporting copy shown beside the lead form.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'Button label',
+      type: 'string',
+      options: canvasPurpose('Lead form submit label override.'),
+    },
+    {
+      name: 'avatarEyebrow',
+      title: 'Avatar eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional small label above the avatar name.'),
+    },
+    {
+      name: 'avatarName',
+      title: 'Avatar name',
+      type: 'string',
+      options: canvasPurpose('Optional person name shown with the cross-lead CTA.'),
+    },
+    {
+      name: 'avatarRole',
+      title: 'Avatar role',
+      type: 'string',
+      options: canvasPurpose('Optional short role shown under the avatar name.'),
+    },
+    {
+      name: 'avatarBlurb',
+      title: 'Avatar blurb',
+      type: 'text',
+      options: canvasPurpose('Optional short note shown next to the cross-lead CTA.'),
+    },
+    {
+      name: 'avatarImage',
+      title: 'Avatar image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'avatarImageAsset',
+      title: 'Uploaded avatar image',
+      type: 'uploadedImage',
+      options: canvasExclude,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      body: 'body',
+    },
+    prepare({ title, eyebrow, body }) {
+      return {
+        title: title || eyebrow || 'Cross-lead banner',
+        subtitle: previewText(body, 'Lead banner'),
+      }
+    },
+  },
+}
+
+const hailMapSectionType = {
+  name: 'hailMapSection',
+  title: 'Hail Map Section',
+  type: 'object',
+  initialValue: {
+    type: 'hailMap',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Heading shown above the hail lookup.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Short explanation of how to use the map and storm evidence list.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+    },
+    prepare({ title, body }) {
+      return {
+        title: title || 'Hail map section',
+        subtitle: previewText(body, 'Storm evidence lookup'),
+      }
+    },
+  },
+}
+
+const bandSectionType = {
+  name: 'bandSection',
+  title: 'Band Section',
+  type: 'object',
+  initialValue: {
+    type: 'band',
+    minHeight: 2,
+    maxHeight: 24,
+    rotate: false,
+    scrollStart: 0,
+    scrollEnd: 0.8,
+    reverse: false,
+    autoAnimate: false,
+    speed: 1,
+    amplitude: 10,
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'colors',
+      title: 'Band colors',
+      type: 'array',
+      of: [{ type: 'bandColorStop' }],
+      validation: (Rule) => Rule.min(1),
+      options: canvasPurpose('Color stops used in the animated band gradient.'),
+    },
+    {
+      name: 'tint',
+      title: 'Tint color',
+      type: 'color',
+      options: canvasPurpose('Tint layered over each band row.'),
+    },
+    {
+      name: 'minHeight',
+      title: 'Min height',
+      type: 'number',
+      options: canvasPurpose('Smallest row height, in rem-equivalent units used by the component.'),
+    },
+    {
+      name: 'maxHeight',
+      title: 'Max height',
+      type: 'number',
+      options: canvasPurpose('Largest row height, in rem-equivalent units used by the component.'),
+    },
+    {
+      name: 'rotate',
+      title: 'Rotate 180 degrees',
+      type: 'boolean',
+      initialValue: false,
+    },
+    {
+      name: 'scrollStart',
+      title: 'Scroll start',
+      type: 'number',
+      options: canvasPurpose('Scroll progress where the height transition starts, usually between 0 and 1.'),
+    },
+    {
+      name: 'scrollEnd',
+      title: 'Scroll end',
+      type: 'number',
+      options: canvasPurpose('Scroll progress where the height transition ends, usually between 0 and 1.'),
+    },
+    {
+      name: 'reverse',
+      title: 'Reverse height transition',
+      type: 'boolean',
+      initialValue: false,
+    },
+    {
+      name: 'autoAnimate',
+      title: 'Auto animate',
+      type: 'boolean',
+      initialValue: false,
+    },
+    {
+      name: 'speed',
+      title: 'Animation speed',
+      type: 'number',
+      options: canvasPurpose('Sine-wave speed used when auto animate is enabled.'),
+    },
+    {
+      name: 'amplitude',
+      title: 'Animation amplitude',
+      type: 'number',
+      options: canvasPurpose('How far the color stops drift when auto animate is enabled.'),
+    },
+  ],
+  preview: {
+    select: {
+      colorCount: 'colors.length',
+      autoAnimate: 'autoAnimate',
+      rotate: 'rotate',
+    },
+    prepare({ colorCount, autoAnimate, rotate }) {
+      const flags = [`${colorCount || 0} colors`, autoAnimate ? 'animated' : null, rotate ? 'rotated' : null]
+        .filter(Boolean)
+        .join(' • ')
+
+      return {
+        title: 'Band section',
+        subtitle: flags || 'Decorative divider',
+      }
+    },
+  },
+}
+
+const logosSectionType = {
+  name: 'logosSection',
+  title: 'Logos Marquee Section',
+  type: 'object',
+  initialValue: {
+    type: 'logos',
+    title: 'Certifications marquee',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Internal label',
+      type: 'string',
+      options: canvasPurpose('Optional internal label for this marquee section.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+    },
+    prepare({ title }) {
+      return {
+        title: title || 'Logos marquee',
+        subtitle: 'Roofing certifications and partner logos',
+      }
+    },
+  },
+}
+
+const solarSwitchSectionType = {
+  name: 'solarSwitchSection',
+  title: 'Solar Switch Section',
+  type: 'object',
+  initialValue: {
+    type: 'solarSwitch',
+    leadingWords: ['Protect', 'your', 'home', 'and', 'lower', 'monthly', 'costs', 'with'],
+    accentWord: 'solar',
+    trailingText: 'without sacrificing roof integrity.',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'leadingWords',
+      title: 'Leading words',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: canvasPurpose('Words shown before the highlighted solar word.'),
+    },
+    {
+      name: 'accentWord',
+      title: 'Highlighted word',
+      type: 'string',
+      options: canvasPurpose('Word shown inside the animated switch treatment.'),
+    },
+    {
+      name: 'trailingText',
+      title: 'Trailing text',
+      type: 'string',
+      options: canvasPurpose('Closing phrase shown after the highlighted word.'),
+    },
+  ],
+  preview: {
+    select: {
+      accentWord: 'accentWord',
+      trailingText: 'trailingText',
+      leadingCount: 'leadingWords.length',
+    },
+    prepare({ accentWord, trailingText, leadingCount }) {
+      return {
+        title: accentWord ? `Solar switch: ${accentWord}` : 'Solar switch section',
+        subtitle: previewText(trailingText, `${leadingCount || 0} leading words`),
+      }
+    },
+  },
+}
+
 const pageSectionType = {
   name: 'pageSection',
-  title: 'Page Section',
+  title: 'Legacy Page Section',
   type: 'object',
-  fields: [...genericSectionFields, ...heroSpecificFields.map(heroOnlyField)],
+  fields: [...legacyPageSectionFields, ...heroSpecificFields.map(heroOnlyField)],
   preview: {
     select: {
       title: 'title',
@@ -1518,120 +2283,6 @@ const baseFields = [
     validation: (Rule) => Rule.required(),
   },
   {
-    name: 'heroEyebrow',
-    title: 'Hero Eyebrow',
-    type: 'string',
-    hidden: hideUnlessHomepage,
-    options: canvasPurpose('Short kicker text above the homepage hero headline.'),
-  },
-  {
-    name: 'heroTitle',
-    title: 'Hero Title',
-    type: 'string',
-    hidden: hideUnlessHomepage,
-    options: canvasPurpose('Main homepage hero headline.'),
-  },
-  {
-    name: 'heroBody',
-    title: 'Hero Body',
-    type: 'text',
-    hidden: hideUnlessHomepage,
-    options: canvasPurpose('Supporting copy under the homepage hero headline.'),
-  },
-  {
-    name: 'heroGradient',
-    title: 'Hero Gradient',
-    type: 'text',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroTextColor',
-    title: 'Hero Text Color',
-    type: 'string',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroOverlayColor',
-    title: 'Hero Overlay Color',
-    type: 'string',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroOverlayStartColor',
-    title: 'Hero Overlay Start Color',
-    type: 'string',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroOverlayEndColor',
-    title: 'Hero Overlay End Color',
-    type: 'string',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroOverlayDirection',
-    title: 'Hero Overlay Direction',
-    type: 'string',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroOverlayStartOpacity',
-    title: 'Hero Overlay Start Opacity',
-    type: 'number',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroOverlayEndOpacity',
-    title: 'Hero Overlay End Opacity',
-    type: 'number',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroOverlayOpacity',
-    title: 'Hero Overlay Opacity',
-    type: 'number',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroAsset',
-    title: 'Uploaded Hero Image',
-    type: 'uploadedImage',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroImage',
-    title: 'External Hero Image',
-    type: 'heroImage',
-    hidden: hideUnlessHomepage,
-    options: canvasExclude,
-  },
-  {
-    name: 'heroMetrics',
-    title: 'Hero Metrics',
-    type: 'array',
-    hidden: hideUnlessHomepage,
-    of: [{ type: 'pageMetric' }],
-    options: canvasPurpose('Short proof-point pairs shown in the homepage hero panel.'),
-  },
-  {
-    name: 'heroActions',
-    title: 'Hero Actions',
-    type: 'array',
-    hidden: hideUnlessHomepage,
-    of: [{ type: 'pageAction' }],
-    options: canvasPurpose('Buttons or links shown in the homepage hero.'),
-  },
-  {
     name: 'sections',
     title: 'Sections',
     type: 'array',
@@ -1641,14 +2292,26 @@ const baseFields = [
     of: [
       { type: 'heroSection' },
       { type: 'storySection' },
+      { type: 'calculatorSection' },
+      { type: 'costsSection' },
+      { type: 'guidesSection' },
+      { type: 'snapshotSection' },
+      { type: 'incentivesSection' },
+      { type: 'testimonialsSection' },
       { type: 'highlightsSection' },
       { type: 'stepsSection' },
       { type: 'faqSection' },
+      { type: 'quoteSection' },
       { type: 'ctaSection' },
+      { type: 'ctaBannerSection' },
+      { type: 'hailMapSection' },
+      { type: 'bandSection' },
+      { type: 'logosSection' },
+      { type: 'solarSwitchSection' },
+      { type: 'serviceGridSection' },
       { type: 'resourceGridSection' },
       { type: 'guideGridSection' },
       { type: 'aboutProfileSection' },
-      { type: 'pageSection' },
     ],
   },
 ]
@@ -1705,18 +2368,33 @@ export default [
   heroImageUrlsType,
   heroImageType,
   uploadedImageType,
+  bandColorStopType,
   pageMetricType,
   pageActionType,
   pageItemType,
   sectionContentItemType,
+  heroSlideItemType,
   pageFaqItemType,
   resourceCardType,
   heroSectionType,
   storySectionType,
+  calculatorSectionType,
+  costsSectionType,
+  guidesSectionType,
+  snapshotSectionType,
+  incentivesSectionType,
+  testimonialsSectionType,
   highlightsSectionType,
   stepsSectionType,
   faqSectionType,
+  quoteSectionType,
   ctaSectionType,
+  ctaBannerSectionType,
+  hailMapSectionType,
+  bandSectionType,
+  logosSectionType,
+  solarSwitchSectionType,
+  serviceGridSectionType,
   resourceGridSectionType,
   guideGridSectionType,
   aboutProfilePersonType,

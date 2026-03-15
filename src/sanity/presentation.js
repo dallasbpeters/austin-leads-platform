@@ -1,48 +1,48 @@
 import { defineDocuments, defineLocations } from 'sanity/presentation'
 
-const PAGE_TYPES = ['page', 'servicePage', 'locationPage', 'post']
-const SINGLE_SLUG_PAGE_TYPES = ['page', 'servicePage', 'locationPage', 'post']
+const PAGE_DOCUMENT_FILTER = `_type in ["page", "servicePage", "locationPage", "post"]`
 
-const SINGLE_PAGE_ROUTES = [
-  '/about',
-  '/roofing',
-  '/solar',
-  '/hail-damage',
-  '/services',
-  '/guides',
-  '/privacy-policy',
-  '/terms',
-  '/insurance-basics',
-]
+function resolveFromAnyPath(params) {
+  const rawPath = params?.path
+  let pathParts = []
+
+  if (Array.isArray(rawPath)) {
+    pathParts = rawPath.filter(Boolean)
+  } else if (typeof rawPath === 'string' && rawPath.length) {
+    const normalizedPath = rawPath
+      .replace(/^https?:\/\/[^/]+/i, '')
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/^\/+/, '')
+
+    pathParts = normalizedPath.split('/').filter(Boolean)
+  }
+
+  const isPreviewPath = pathParts[0] === 'preview'
+  const slugParts = isPreviewPath ? pathParts.slice(2) : pathParts
+  const slug = slugParts.join('/')
+
+  if (!slug) {
+    return {
+      filter: `${PAGE_DOCUMENT_FILTER} && (pageType == "home" || slug.current == "/")`,
+      params: {},
+    }
+  }
+
+  return {
+    filter: `${PAGE_DOCUMENT_FILTER} && slug.current == $slug`,
+    params: { slug },
+  }
+}
 
 export const presentationDocuments = defineDocuments([
   {
     route: '/',
-    filter: `_type in $types && pageType == "home"`,
-    params: { types: PAGE_TYPES },
-  },
-  ...SINGLE_PAGE_ROUTES.map((route) => ({
-    route,
-    filter: `_type in $types && slug.current == $slug`,
-    params: {
-      types: SINGLE_SLUG_PAGE_TYPES,
-      slug: route.slice(1),
-    },
-  })),
-  {
-    route: '/services/:serviceSlug',
-    filter: `_type == "servicePage" && slug.current == ("services/" + $serviceSlug)`,
+    resolve: resolveFromAnyPath,
   },
   {
-    route: '/guides/:guideSlug',
-    filter: `_type in ["post", "page"] && slug.current == ("guides/" + $guideSlug)`,
-  },
-  {
-    route: '/:slug',
-    resolve: (params) => ({
-      filter: `_type in ["page", "locationPage", "post"] && slug.current == $slug`,
-      params: { slug: params.slug },
-    }),
+    route: '/:path*',
+    resolve: resolveFromAnyPath,
   },
 ])
 

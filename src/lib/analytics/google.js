@@ -8,7 +8,9 @@ const DEFAULT_WINDOW_DAYS = 30
 function normalizePropertyId(propertyId) {
   if (!propertyId) return ''
 
-  return String(propertyId).replace(/^properties\//, '').trim()
+  return String(propertyId)
+    .replace(/^properties\//, '')
+    .trim()
 }
 
 function normalizePrivateKey(privateKey) {
@@ -52,8 +54,7 @@ export function getGoogleAnalyticsConfig() {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID || ''
   const propertyId = normalizePropertyId(process.env.GOOGLE_ANALYTICS_PROPERTY_ID)
   const credentials =
-    parseServiceAccountJson(process.env.GOOGLE_ANALYTICS_SERVICE_ACCOUNT_JSON) ||
-    getInlineServiceAccount()
+    parseServiceAccountJson(process.env.GOOGLE_ANALYTICS_SERVICE_ACCOUNT_JSON) || getInlineServiceAccount()
 
   return {
     measurementId,

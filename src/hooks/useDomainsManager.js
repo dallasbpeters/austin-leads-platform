@@ -14,6 +14,7 @@ import {
 export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   const [domains, setDomains] = useState(initialDomains)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [form, setForm] = useState(buildDefaultDomainForm(sites))
   const [editingDomain, setEditingDomain] = useState(null)
@@ -36,11 +37,17 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   }, [vercelEnabled])
 
   async function refreshDomains() {
+    setError('')
     setLoading(true)
 
     try {
       const data = await fetchDomains()
       setDomains(data.domains)
+      if (data.syncError) {
+        setError(data.syncError)
+      }
+    } catch (nextError) {
+      setError(nextError.message || 'Unable to refresh domains.')
     } finally {
       setLoading(false)
     }
@@ -48,23 +55,29 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
 
   async function addDomain(event) {
     event.preventDefault()
+    setError('')
     setLoading(true)
 
     try {
       await createDomainRecord(form)
       setForm(buildDefaultDomainForm(sites))
       await refreshDomains()
+    } catch (nextError) {
+      setError(nextError.message || 'Unable to add domain.')
     } finally {
       setLoading(false)
     }
   }
 
   async function verifyDomain(domain) {
+    setError('')
     setLoading(true)
 
     try {
       await verifyDomainRecord(domain)
       await refreshDomains()
+    } catch (nextError) {
+      setError(nextError.message || 'Unable to verify domain.')
     } finally {
       setLoading(false)
     }
@@ -89,18 +102,22 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   }
 
   async function saveDomain(domain) {
+    setError('')
     setLoading(true)
 
     try {
       await updateDomainRecordRequest(domain, editForm)
       await refreshDomains()
       cancelEditing()
+    } catch (nextError) {
+      setError(nextError.message || 'Unable to save domain.')
     } finally {
       setLoading(false)
     }
   }
 
   async function removeDomain(domain) {
+    setError('')
     setLoading(true)
 
     try {
@@ -109,6 +126,8 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
       if (editingDomain === domain) {
         cancelEditing()
       }
+    } catch (nextError) {
+      setError(nextError.message || 'Unable to delete domain.')
     } finally {
       setLoading(false)
     }
@@ -118,6 +137,7 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
     domains,
     editForm,
     editingDomain,
+    error,
     form,
     loading,
     query,

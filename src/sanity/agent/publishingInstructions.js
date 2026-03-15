@@ -29,8 +29,9 @@ Structure requirements:
 Schema requirements:
 - Only use the existing document schema. Do not invent new top-level fields.
 - The sections array should use:
-  - a hero section object with \`type: "hero"\`
-  - page section objects with \`type\` values like \`"story"\`, \`"highlights"\`, \`"steps"\`, \`"faq"\`, or \`"cta"\`
+  - typed section objects that match this schema (for example: \`heroSection\`, \`storySection\`, \`highlightsSection\`, \`stepsSection\`, \`faqSection\`, \`ctaSection\`)
+  - valid \`type\` values such as \`"hero"\`, \`"story"\`, \`"highlights"\`, \`"steps"\`, \`"faq"\`, and \`"cta"\`
+- Never output legacy \`_type: "pageSection"\` objects.
 - For \`highlights\` and \`steps\`, populate \`items\` with objects shaped like page items:
   - use \`title\` and \`body\`
   - optionally use \`eyebrow\`, \`href\`, or \`icon\` when they truly help
