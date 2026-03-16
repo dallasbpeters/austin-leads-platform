@@ -5,6 +5,14 @@ import { unstable_noStore as noStore } from 'next/cache'
 
 const DEFAULT_WINDOW_DAYS = 30
 
+function normalizePublicTagId(value) {
+  if (!value) return ''
+
+  return String(value)
+    .trim()
+    .replace(/^['"]+|['"]+$/g, '')
+}
+
 function normalizePropertyId(propertyId) {
   if (!propertyId) return ''
 
@@ -50,8 +58,8 @@ function getInlineServiceAccount() {
 }
 
 export function getGoogleAnalyticsConfig() {
-  const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || ''
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || ''
+  const measurementId = normalizePublicTagId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID)
+  const gtmId = normalizePublicTagId(process.env.NEXT_PUBLIC_GTM_ID)
   const propertyId = normalizePropertyId(process.env.GOOGLE_ANALYTICS_PROPERTY_ID)
   const credentials =
     parseServiceAccountJson(process.env.GOOGLE_ANALYTICS_SERVICE_ACCOUNT_JSON) || getInlineServiceAccount()

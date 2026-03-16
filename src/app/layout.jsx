@@ -7,6 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import '../styles/globals.css'
 import { SanityLive } from '@/sanity/live'
+import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 
 export const metadata = {
   title: 'Austin Leads Platform',
@@ -28,8 +29,7 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
-  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID
+  const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig()
   const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
 
   return (
