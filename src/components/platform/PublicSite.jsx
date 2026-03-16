@@ -1028,7 +1028,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
 function RoofingLogoCloudSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,239,0.96))] border-b border-border/60"
+      className="bg-card border-b border-border/60"
       {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
