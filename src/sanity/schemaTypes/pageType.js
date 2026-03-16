@@ -267,6 +267,26 @@ const publicSiteIconoirOptions = [
 ]
 
 const publicSiteIconOptions = [...publicSiteServiceIconOptions, ...publicSiteIconoirOptions]
+const guideCardColorOptions = [
+  { title: 'Primary', value: 'primary' },
+  { title: 'Sweetcorn', value: 'sweetcorn' },
+  { title: 'Voodoo', value: 'voodoo' },
+  { title: 'Tidal', value: 'tidal' },
+  { title: 'Secondary Alt', value: 'secondaryAlt' },
+  { title: 'Blue 400', value: 'blue400' },
+  { title: 'Secondary', value: 'secondary' },
+  { title: 'Tasman', value: 'tasman' },
+  { title: 'Chalet Green', value: 'chaletGreen' },
+  { title: 'Metterhorn', value: 'metterhorn' },
+  { title: 'Heather', value: 'heather' },
+  { title: 'Wattle', value: 'wattle' },
+  { title: 'Charade', value: 'charade' },
+  { title: 'Ceramic', value: 'ceramic' },
+  { title: 'Tapa Green', value: 'tapaGreen' },
+  { title: 'Sea Mist', value: 'seaMist' },
+  { title: 'Black Current', value: 'blackCurrent' },
+  { title: 'Confetti', value: 'confetti' },
+]
 
 const heroImageUrlsType = {
   name: 'heroImageUrls',
@@ -540,6 +560,103 @@ const pageItemType = {
       return {
         title: title || question || 'Content item',
         subtitle: previewText(subtitle || answer || eyebrow, 'Supporting content'),
+      }
+    },
+  },
+}
+
+const guideCardItemType = {
+  name: 'guideCardItem',
+  title: 'Guide Card Item',
+  type: 'object',
+  fields: [
+    {
+      name: 'number',
+      title: 'Number',
+      type: 'string',
+      options: canvasPurpose('Optional short index label such as 01, 02, or 03.'),
+    },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional short overline or supporting label for the guide card.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Guide card title.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Guide card summary copy.'),
+    },
+    {
+      name: 'href',
+      title: 'Href',
+      type: 'string',
+      options: canvasPurpose('Link target for this guide card.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'string',
+      options: canvasPurpose('Optional guide-card CTA label.'),
+    },
+    {
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: {
+        list: publicSiteIconOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Select the icon that best matches this guide card.'),
+      },
+    },
+    {
+      name: 'color',
+      title: 'Card color',
+      type: 'string',
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Choose a fixed color for this guide card.'),
+      },
+    },
+    {
+      name: 'image',
+      title: 'External image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'imageAsset',
+      title: 'Uploaded image',
+      type: 'uploadedImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'imageUrl',
+      title: 'Image URL',
+      type: 'string',
+      options: canvasPurpose('Optional direct image path or URL for this guide card.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      href: 'href',
+    },
+    prepare({ title, subtitle, href }) {
+      return {
+        title: title || 'Guide card',
+        subtitle: previewText(subtitle, href || 'Guide card content'),
       }
     },
   },
@@ -1519,16 +1636,26 @@ const guidesSectionType = {
       type: 'string',
       options: canvasPurpose('Label for the “Browse all guides” link.'),
     },
+    {
+      name: 'items',
+      title: 'Guide cards',
+      type: 'array',
+      of: [{ type: 'guideCardItem' }],
+      validation: (Rule) => Rule.max(6),
+      options: canvasPurpose('Optional guide cards for this section. If empty, app fallback cards are used.'),
+    },
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'body',
+      items: 'items',
     },
-    prepare({ title, subtitle }) {
+    prepare({ title, subtitle, items }) {
+      const count = arrayCount(items)
       return {
         title: title || 'Guides section',
-        subtitle: previewText(subtitle, 'Guide grid intro'),
+        subtitle: previewText(subtitle, count ? `${count} guide cards` : 'Guide grid intro'),
       }
     },
   },
@@ -1670,16 +1797,31 @@ const testimonialsSectionType = {
       type: 'portableTextSimple',
       options: canvasPurpose('Secondary line shown under the testimonials heading.'),
     },
+    {
+      name: 'reviews',
+      title: 'Reviews',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'review' }],
+        },
+      ],
+      validation: (Rule) => Rule.max(6),
+      options: canvasPurpose('Optional review references. If empty, site-level reviews are used.'),
+    },
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'body',
+      reviews: 'reviews',
     },
-    prepare({ title, subtitle }) {
+    prepare({ title, subtitle, reviews }) {
+      const reviewCount = arrayCount(reviews)
       return {
         title: title || 'Testimonials section',
-        subtitle: previewText(subtitle, 'Customer proof'),
+        subtitle: previewText(subtitle, reviewCount ? `${reviewCount} selected reviews` : 'Customer proof'),
       }
     },
   },
@@ -2288,6 +2430,13 @@ const baseFields = [
     options: canvasPurpose('Short summary or supporting description for the page.'),
   },
   {
+    name: 'heroImage',
+    title: 'Hero image (legacy)',
+    type: 'heroImage',
+    hidden: true,
+    options: canvasExclude,
+  },
+  {
     name: 'seo',
     title: 'SEO',
     type: 'object',
@@ -2437,6 +2586,7 @@ export default [
   pageMetricType,
   pageActionType,
   pageItemType,
+  guideCardItemType,
   sectionContentItemType,
   heroSlideItemType,
   pageFaqItemType,

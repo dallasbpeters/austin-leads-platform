@@ -184,6 +184,10 @@ export async function renderCurrentSitePage(slugParts = []) {
   }
 
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
+  const hasTestimonialsSection = Array.isArray(page.sections)
+    ? page.sections.some((section) => section.type === 'testimonials')
+    : false
+  const reviews = hasTestimonialsSection ? await getHomepageReviewsForSite(site.slug) : []
 
   return (
     <PublicSite
@@ -192,6 +196,7 @@ export async function renderCurrentSitePage(slugParts = []) {
       pathname={pathname}
       navigation={getNavigationForSite(site.slug)}
       jsonLd={createJsonLd(site, page, pathname)}
+      reviews={reviews}
     />
   )
 }

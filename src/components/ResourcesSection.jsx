@@ -119,7 +119,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
                     height={700}
                     className="absolute h-full w-full duration-500 transition-transform inset-0 object-cover hover:scale-105"
                   />
-                  <div className="absolute bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)] inset-0"></div>
+                  <div className="absolute bg-[linear-gradient(to_top,var(--color-charade),rgba(11,59,66,0.2),transparent)] inset-0"></div>
                   <div className="absolute p-8 text-white bottom-0 inset-x-0">
                     <div className="items-center justify-center h-14 w-14 mb-4 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
                       <Icon className="h-8 w-8" strokeWidth={2} />

@@ -39,12 +39,21 @@ export default function ImageFader({
   initialPriority = false,
 }) {
   const [index, setIndex] = useState(0)
+  const [isInteractive, setIsInteractive] = useState(false)
   const timer = useRef()
 
   const fadeSec = Math.max(0, Number(fadeDuration)) / 1000
   const count = images.length
 
   useEffect(() => {
+    setIsInteractive(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isInteractive) {
+      return undefined
+    }
+
     if (count < 2) {
       return undefined
     }
@@ -52,7 +61,7 @@ export default function ImageFader({
     if (timer.current) clearTimeout(timer.current)
     timer.current = window.setTimeout(() => setIndex((i) => (i + 1) % count), interval)
     return () => timer.current && clearTimeout(timer.current)
-  }, [count, index, interval])
+  }, [count, index, interval, isInteractive])
 
   const jumpTo = (i) => {
     if (timer.current) clearTimeout(timer.current)
@@ -62,6 +71,28 @@ export default function ImageFader({
   if (!count) return null
 
   const cur = images[index]
+
+  const staticImage = (
+    <Image
+      src={cur.src}
+      alt={cur.alt ?? ''}
+      fill
+      sizes="100vw"
+      quality={68}
+      priority={initialPriority && index === 0}
+      fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
+      className="object-cover"
+      draggable={false}
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        objectPosition,
+        pointerEvents: 'none',
+        backgroundColor: backgroundColor,
+      }}
+    />
+  )
 
   return (
     <div
@@ -78,17 +109,34 @@ export default function ImageFader({
         backgroundColor,
       }}
     >
-      <AnimatePresence initial={false} mode="wait">
-        <motion.div
-          key={index}
-          loading="lazy"
-          decoding="async"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0.5 }}
-          transition={{ duration: fadeSec, ease: 'linear' }}
+      {isInteractive ? (
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0.5 }}
+            transition={{ duration: fadeSec, ease: 'linear' }}
+            className={cn(imageClassName)}
+            draggable={false}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition,
+              borderRadius,
+              pointerEvents: 'none',
+              willChange: 'opacity',
+            }}
+          >
+            {staticImage}
+          </motion.div>
+        </AnimatePresence>
+      ) : (
+        <div
           className={cn(imageClassName)}
-          draggable={false}
           style={{
             position: 'absolute',
             inset: 0,
@@ -100,28 +148,9 @@ export default function ImageFader({
             pointerEvents: 'none',
           }}
         >
-          <Image
-            src={cur.src}
-            alt={cur.alt ?? ''}
-            fill
-            sizes="100vw"
-            quality={70}
-            priority={initialPriority && index === 0}
-            fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
-            className="object-cover"
-            draggable={false}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition,
-              pointerEvents: 'none',
-              backgroundColor: backgroundColor,
-              willChange: 'opacity, filter',
-            }}
-          />
-        </motion.div>
-      </AnimatePresence>
+          {staticImage}
+        </div>
+      )}
 
       {showOverlay && (overlayBlur > 0 || overlayColor !== 'rgba(0,0,0,0)') && (
         <div
@@ -150,7 +179,7 @@ export default function ImageFader({
         />
       )}
 
-      {showDots && count > 1 && (
+      {isInteractive && showDots && count > 1 && (
         <div
           style={{
             position: 'absolute',

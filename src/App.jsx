@@ -32,7 +32,7 @@ export default function App({
   const storySection = findSection('story', 'storySection')
   const calculatorSection = findSection('calculator', 'calculatorSection')
   const costsSection = findSection('costs', 'costsSection')
-  const guidesSection = findSection('guides', 'guidesSection')
+  const guidesSection = findSection('guides', 'guidesSection') || findSection('guideGrid', 'guideGridSection')
   const snapshotSection = findSection('snapshot', 'snapshotSection')
   const incentivesSection = findSection('incentives', 'incentivesSection')
   const testimonialsSection = findSection('testimonials', 'testimonialsSection')
@@ -146,7 +146,7 @@ export default function App({
           }
         />
         <div {...guidesEditAttrs}>
-          <GuidesSection section={guidesSection} />
+          <GuidesSection section={guidesSection} page={homepage} />
         </div>
         <DevTrace
           markup="src/components/SnapshotSection.jsx"

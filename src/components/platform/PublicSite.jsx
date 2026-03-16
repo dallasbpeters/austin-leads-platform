@@ -22,7 +22,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import Band from '@/components/Band'
 import CalculatorSection from '@/components/CalculatorSection'
 import CostsSection from '@/components/CostsSection'
-import GuideCardGrid from '@/components/GuideCardGrid'
+import GuideCardGrid from '@/components/GuideCard'
 import GuidesSection from '@/components/GuidesSection'
 import Header from '@/components/Header'
 import IncentivesSection from '@/components/IncentivesSection'
@@ -114,8 +114,8 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
       <div
         className={
           hasHeroImage
-            ? "grid relative max-w-7xl gap-10 mx-auto px-3 md:px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-[1.35fr_0.95fr]"
-            : "grid relative max-w-7xl gap-10 mx-auto px-3 md:px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-1"
+            ? "grid relative max-w-7xl gap-10 mx-auto px-3 md:px-6 py-14 lg:px-10 place-content-center z-10 lg:grid-cols-[1.35fr_0.95fr]"
+            : "grid relative max-w-7xl gap-10 mx-auto px-3 md:px-6 py-14 lg:px-10 place-content-center z-10 lg:grid-cols-1"
         }
       >
         <div className="space-y-6">
@@ -309,6 +309,7 @@ function GuideGridSection({ section, sectionId, editAttributes = {} }) {
     title: item.title || item.question,
     copy: portableTextToPlainText(item.body || item.answer),
     icon: item.icon,
+    color: item.color,
     href: item.href,
     image: getImageUrl(item.imageAsset, item.image),
     imageAlt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
@@ -603,7 +604,7 @@ function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
               <Card className="relative aspect-3/4" variant="media" radius="lg">
                 {renderServiceMedia(
                   item,
-                  'bg-[linear-gradient(to_top,rgba(1,60,66,1)_30%,rgba(11,59,66,0.1),transparent)]',
+                  'bg-[linear-gradient(to_top,var(--color-charade)_30%,rgba(11,59,66,0.1),transparent)]',
                 )}
                 <div className="absolute p-8 text-white bottom-0 inset-x-0">
                   <div className="items-center justify-center h-16 w-16 mb-4 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
@@ -1262,7 +1263,7 @@ const sectionRenderers = {
   ctaBanner: CtaBannerSection,
 }
 
-export default function PublicSite({ site, page, pathname, navigation, jsonLd }) {
+export default function PublicSite({ site, page, pathname, navigation, jsonLd, reviews = [] }) {
   const useSolarShell = isPrimarySiteSlug(site.slug)
   const sections = page.sections || []
   const leadCaptureSectionTypes = new Set(['cta', 'ctaBanner'])
@@ -1378,6 +1379,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
                 section={section}
                 site={site}
                 pathname={pathname}
+                reviews={reviews}
                 sectionId={sectionId}
                 editAttributes={sectionEditAttrs}
               />

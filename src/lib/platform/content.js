@@ -186,6 +186,26 @@ const sectionProjection = `
     href,
     variant
   },
+  reviews[]->{
+    _id,
+    "id": _id,
+    author,
+    body,
+    reviewerLocation,
+    "stars": coalesce(stars, rating, 5),
+    reviewerPhoto{
+      alt,
+      asset->{
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    }
+  },
   items[]{
     _key,
     number,
@@ -196,6 +216,7 @@ const sectionProjection = `
     answer,
     href,
     icon,
+    color,
     image,
     imageAsset{
       altText,
@@ -221,6 +242,7 @@ const sectionProjection = `
     answer,
     href,
     icon,
+    color,
     image,
     imageAsset{
       altText,
@@ -246,6 +268,7 @@ const sectionProjection = `
     answer,
     href,
     icon,
+    color,
     image,
     imageAsset{
       altText,
@@ -463,6 +486,7 @@ function sanitizeSection(section) {
     avatarRole: cleanRuntimeString(section.avatarRole),
     avatarBlurb: cleanRuntimeString(section.avatarBlurb),
     actions: Array.isArray(section.actions) ? section.actions.map(sanitizeAction) : section.actions,
+    reviews: Array.isArray(section.reviews) ? section.reviews.map(sanitizeReview) : section.reviews,
     heroSlides: Array.isArray(section.heroSlides) ? section.heroSlides.map(sanitizeItem) : section.heroSlides,
     items: Array.isArray(section.items) ? section.items.map(sanitizeItem) : section.items,
     roofingItems: Array.isArray(section.roofingItems)

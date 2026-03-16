@@ -153,7 +153,15 @@ export default [
         title: 'Stars',
         type: 'number',
         initialValue: 5,
-        validation: (Rule) => Rule.required().min(1).max(5).integer(),
+        validation: (Rule) =>
+          Rule.required()
+            .min(1)
+            .max(5)
+            .custom((value) => {
+              if (typeof value !== 'number') return true
+              const isHalfStep = Math.abs(value * 2 - Math.round(value * 2)) < 0.001
+              return isHalfStep || 'Use whole or half stars (for example 4, 4.5, 5).'
+            }),
       },
       {
         name: 'rating',

@@ -87,7 +87,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             fill
             priority
             fetchPriority="high"
-            quality={70}
+            quality={68}
             sizes="100vw"
             className="absolute h-full w-full inset-0 object-center object-cover z-0"
           />
@@ -100,7 +100,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           fill
           priority
           fetchPriority="high"
-          quality={70}
+          quality={68}
           sizes="100vw"
           className="absolute opacity-10 inset-0 object-cover object-top"
         />

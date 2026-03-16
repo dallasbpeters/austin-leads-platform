@@ -8,7 +8,6 @@ import * as React from 'react'
 import { Menu, Xmark } from 'iconoir-react'
 
 import { Button } from './ui/button'
-import { Collapsible, CollapsibleContent } from './ui/collapsible'
 
 import { Separator } from './ui/separator'
 
@@ -30,7 +29,7 @@ function NavList() {
         <Link
           key={href}
           href={href}
-          className={`flex items-start justify-start gap-2 px-2 py-2 font-semi-bold text-foreground text-sm hover:text-primary rounded-full hover:bg-transparent btn ${className}`}
+          className={`flex items-start justify-start gap-2 px-2 py-4 font-semi-bold text-foreground text-sm hover:text-primary rounded-full hover:bg-transparent btn ${className}`}
         >
           {label}
         </Link>
@@ -59,7 +58,7 @@ export default function Header() {
         content: 'local JSX nav and service catalog links',
       })}
     >
-      <div className="w-full mx-auto px-4 md:px-3 md:px-6 py-4 bg-card rounded-none md:rounded-full shadow-sm">
+      <div className="w-full mx-auto px-4 md:px-6 py-3 bg-card rounded-none md:rounded-full shadow-sm">
         <div className="flex items-center justify-between">
           <Link href="/" title="Texas Solar & Roofing Pros" className="grid items-center gap-2 grid-flow-col">
             <Logo />
@@ -86,18 +85,23 @@ export default function Header() {
         </div>
       </div>
 
-      <Collapsible open={openNav}>
-        {openNav ? (
-          <CollapsibleContent
-            id={mobileMenuId}
-            className="w-full mx-auto px-4 py-2 bg-card border-b border-border md:border md:border-border rounded-none md:rounded-md shadow-sm"
+      <div
+        id={mobileMenuId}
+        aria-hidden={!openNav}
+        className={`lg:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
+          openNav ? 'max-h-128 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="w-full mx-auto px-4 py-2 bg-card border-b border-border md:border md:border-border rounded-none md:rounded-md shadow-sm">
+          <div
+            className={`mt-2 space-y-1 transition-all duration-200 ${
+              openNav ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
+            }`}
           >
-            <div className="mt-2 space-y-1 -translate-x-2">
-              <NavList />
-            </div>
-          </CollapsibleContent>
-        ) : null}
-      </Collapsible>
+            <NavList />
+          </div>
+        </div>
+      </div>
     </nav>
   )
 }

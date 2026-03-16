@@ -100,6 +100,7 @@ export default function Band({
         ref={ref}
         className={className}
         style={{
+          position: 'relative',
           width: '100%',
           transform: rotate ? 'rotate(180deg)' : undefined,
           ...style,
@@ -151,6 +152,7 @@ export default function Band({
       ref={ref}
       className={className}
       style={{
+        position: 'relative',
         width: '100%',
         transform: rotate ? 'rotate(180deg)' : undefined,
         ...style,

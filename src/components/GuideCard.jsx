@@ -22,16 +22,16 @@ import { buildRuntimeKey, cleanRuntimeHref } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
 const defaultPalette = [
-  'bg-[var(--color-metterhorn)] text-white',
   'bg-primary text-primary-foreground',
   'bg-[var(--color-sweetcorn)] text-foreground',
-  'bg-[var(--color-secondary-alt)] text-secondary-foreground',
+  'bg-[var(--color-voodoo)] text-white',
   'bg-[var(--color-tidal)] text-foreground',
+  'bg-[var(--color-secondary-alt)] text-secondary-foreground',
   'bg-[var(--color-blue-400)] text-white',
   'bg-secondary text-secondary-foreground',
   'bg-[var(--color-tasman)] text-foreground',
-  'bg-[var(--color-voodoo)] text-white',
   'bg-[var(--color-chalet-green)] text-white',
+  'bg-[var(--color-metterhorn)] text-white',
   'bg-[var(--color-heather)] text-foreground',
   'bg-[var(--color-wattle)] text-foreground',
   'bg-[var(--color-charade)] text-white',
@@ -41,6 +41,38 @@ const defaultPalette = [
   'bg-[var(--color-black-current)] text-white',
   'bg-[var(--color-confetti)] text-foreground',
 ]
+
+const guideCardToneClassByKey = {
+  primary: 'bg-primary text-primary-foreground',
+  sweetcorn: 'bg-[var(--color-sweetcorn)] text-foreground',
+  voodoo: 'bg-[var(--color-voodoo)] text-white',
+  tidal: 'bg-[var(--color-tidal)] text-foreground',
+  secondaryAlt: 'bg-[var(--color-secondary-alt)] text-secondary-foreground',
+  blue400: 'bg-[var(--color-blue-400)] text-white',
+  secondary: 'bg-secondary text-secondary-foreground',
+  tasman: 'bg-[var(--color-tasman)] text-foreground',
+  chaletGreen: 'bg-[var(--color-chalet-green)] text-white',
+  metterhorn: 'bg-[var(--color-metterhorn)] text-white',
+  heather: 'bg-[var(--color-heather)] text-foreground',
+  wattle: 'bg-[var(--color-wattle)] text-foreground',
+  charade: 'bg-[var(--color-charade)] text-white',
+  ceramic: 'bg-[var(--color-ceramic)] text-foreground',
+  tapaGreen: 'bg-[var(--color-tapa-green)] text-white',
+  seaMist: 'bg-[var(--color-sea-mist)] text-foreground',
+  blackCurrent: 'bg-[var(--color-black-current)] text-white',
+  confetti: 'bg-[var(--color-confetti)] text-foreground',
+}
+
+function resolveGuideCardToneClass(colorKey, index) {
+  if (typeof colorKey === 'string') {
+    const normalizedKey = colorKey.trim()
+    if (normalizedKey && guideCardToneClassByKey[normalizedKey]) {
+      return guideCardToneClassByKey[normalizedKey]
+    }
+  }
+
+  return defaultPalette[index % defaultPalette.length]
+}
 
 const containerVariants = {
   hidden: {},
@@ -127,6 +159,8 @@ function normalizeCardProps(props) {
       eyebrow: props.eyebrow ?? props.card.eyebrow,
       ctaLabel: props.ctaLabel ?? props.card.ctaLabel,
       icon: props.icon ?? props.card.icon,
+      color: props.color ?? props.card.color,
+      editAttributes: props.editAttributes ?? props.card.editAttributes,
     }
   }
 
@@ -142,6 +176,8 @@ function normalizeCardProps(props) {
     toneClassName: props.toneClassName,
     ctaLabel: props.ctaLabel,
     icon: props.icon,
+    color: props.color,
+    editAttributes: props.editAttributes,
   }
 }
 
@@ -177,7 +213,7 @@ function GuideCardBody({ card }) {
       whileHover="hover"
     >
       <div className="flex items-center justify-between text-current/88">
-        {CardIcon ? <CardIcon className="size-6" /> : <ArrowIcon />}
+        {CardIcon ? <CardIcon className="size-8" /> : <ArrowIcon />}
         {card.number ? <span className="font-semibold text-[2rem]">{card.number}</span> : null}
       </div>
       {card.eyebrow ? (
@@ -318,9 +354,10 @@ export default function GuideCardGrid({
           {paginatedCards.map((card, index) => (
             <motion.div
               key={buildRuntimeKey('guide-card', card.href, card.title, card.number, index)}
+              {...(card.editAttributes || {})}
               variants={itemVariants}
             >
-              <GuideCard card={card} toneClassName={defaultPalette[index % defaultPalette.length]} />
+              <GuideCard card={card} toneClassName={resolveGuideCardToneClass(card.color, index)} />
             </motion.div>
           ))}
         </motion.div>

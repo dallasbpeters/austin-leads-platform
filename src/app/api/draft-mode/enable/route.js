@@ -1,7 +1,15 @@
 import { draftMode } from 'next/headers'
 import { NextResponse } from 'next/server'
 
+import { frontendOriginAllowlist, localFrontendUrl } from '@/sanity/env'
+
+function buildAllowedOrigins(requestUrl) {
+  const requestOrigin = new URL(requestUrl).origin
+  return new Set([requestOrigin, localFrontendUrl, ...frontendOriginAllowlist].filter(Boolean))
+}
+
 function resolveRedirectPath(requestUrl) {
+  const allowedOrigins = buildAllowedOrigins(requestUrl)
   const params = new URL(requestUrl).searchParams
   const candidates = [
     params.get('redirect'),
@@ -17,11 +25,10 @@ function resolveRedirectPath(requestUrl) {
       continue
     }
 
-    // Accept absolute URLs only when same-origin, otherwise require a root-relative path.
+    // Allow absolute URLs for known frontend origins; otherwise require a root-relative path.
     try {
       const asUrl = new URL(candidate, requestUrl)
-      const requestOrigin = new URL(requestUrl).origin
-      if (asUrl.origin === requestOrigin) {
+      if (allowedOrigins.has(asUrl.origin)) {
         return `${asUrl.pathname}${asUrl.search}${asUrl.hash}`
       }
     } catch {}
