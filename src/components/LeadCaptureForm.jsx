@@ -2,10 +2,10 @@
 
 import { useEffect, useRef } from 'react'
 import { LoaderCircle } from 'lucide-react'
-import { sendGAEvent } from '@next/third-parties/google'
 
 import Button from '@/components/Button'
 import { useLeadForm } from '@/hooks/useLeadForm'
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import { LEAD_SERVICE_OPTIONS } from '@/lib/leads/service-options'
 import { toRuntimeToken } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
@@ -41,19 +41,14 @@ export default function LeadCaptureForm({
 
       hasTrackedViewRef.current = true
 
-      try {
-        sendGAEvent('event', 'lead_form_view', {
-          form_id: 'lead_capture_form',
-          lead_type: context?.sourceType || 'consultation',
-          source_section: context?.sourceSection || 'unknown',
-          site_slug: context?.siteSlug || 'unknown',
-          page_path:
-            context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
-          service_interest: form.serviceInterest || 'unknown',
-        })
-      } catch {
-        // Do not block UX if analytics is unavailable.
-      }
+      trackAnalyticsEvent('lead_form_view', {
+        form_id: 'lead_capture_form',
+        lead_type: context?.sourceType || 'consultation',
+        source_section: context?.sourceSection || 'unknown',
+        site_slug: context?.siteSlug || 'unknown',
+        page_path: context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
+        service_interest: form.serviceInterest || 'unknown',
+      })
     }
 
     if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') {

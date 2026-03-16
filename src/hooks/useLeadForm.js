@@ -1,9 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { sendGAEvent } from '@next/third-parties/google'
 
 import { submitLead } from '@/services/leads'
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import { normalizeLeadServiceInterest } from '@/lib/leads/service-options'
 
 function defaultState(defaultServiceInterest) {
@@ -36,11 +36,7 @@ export function useLeadForm({ context }) {
   }
 
   function trackLeadEvent(eventName, params) {
-    try {
-      sendGAEvent('event', eventName, params)
-    } catch {
-      // Keep lead submission resilient even if analytics is unavailable.
-    }
+    trackAnalyticsEvent(eventName, params)
   }
 
   async function handleSubmit(event) {
