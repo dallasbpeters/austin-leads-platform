@@ -26,28 +26,31 @@ export default function App({
   homepageSource = 'fixture',
 }) {
   const homepageSections = homepage?.sections || []
-  const findSection = (type) => homepageSections.find((section) => section.type === type) || null
+  const findSection = (type, sanityType = '') =>
+    homepageSections.find((section) => section.type === type || (sanityType && section._type === sanityType)) || null
   const homepageEditAttrs = getSanityPageEditAttributes(homepage, 'sections')
-  const storySection = findSection('story')
-  const calculatorSection = findSection('calculator')
-  const costsSection = findSection('costs')
-  const guidesSection = findSection('guides')
-  const snapshotSection = findSection('snapshot')
-  const incentivesSection = findSection('incentives')
-  const testimonialsSection = findSection('testimonials')
-  const quoteSection = findSection('quote')
-  const ctaSection = findSection('cta')
+  const storySection = findSection('story', 'storySection')
+  const calculatorSection = findSection('calculator', 'calculatorSection')
+  const costsSection = findSection('costs', 'costsSection')
+  const guidesSection = findSection('guides', 'guidesSection')
+  const snapshotSection = findSection('snapshot', 'snapshotSection')
+  const incentivesSection = findSection('incentives', 'incentivesSection')
+  const testimonialsSection = findSection('testimonials', 'testimonialsSection')
+  const quoteSection = findSection('quote', 'quoteSection')
+  const ctaSection = findSection('cta', 'ctaSection')
+  const sectionEditAttrs = (section, fallbackPath = 'sections') =>
+    section ? getSanitySectionEditAttributes(homepage, section, fallbackPath) : {}
   const heroEditAttrs = getSanitySectionEditAttributes(homepage, heroSection, 'heroTitle')
-  const storyEditAttrs = getSanitySectionEditAttributes(homepage, storySection)
-  const calculatorEditAttrs = getSanitySectionEditAttributes(homepage, calculatorSection)
-  const costsEditAttrs = getSanitySectionEditAttributes(homepage, costsSection)
-  const guidesEditAttrs = getSanitySectionEditAttributes(homepage, guidesSection)
-  const snapshotEditAttrs = getSanitySectionEditAttributes(homepage, snapshotSection)
-  const incentivesEditAttrs = getSanitySectionEditAttributes(homepage, incentivesSection)
-  const testimonialsEditAttrs = getSanitySectionEditAttributes(homepage, testimonialsSection)
-  const quoteEditAttrs = getSanitySectionEditAttributes(homepage, quoteSection)
-  const resourcesEditAttrs = getSanitySectionEditAttributes(homepage, resourcesSection)
-  const consultationEditAttrs = getSanitySectionEditAttributes(homepage, ctaSection)
+  const storyEditAttrs = sectionEditAttrs(storySection)
+  const calculatorEditAttrs = sectionEditAttrs(calculatorSection)
+  const costsEditAttrs = sectionEditAttrs(costsSection)
+  const guidesEditAttrs = sectionEditAttrs(guidesSection)
+  const snapshotEditAttrs = sectionEditAttrs(snapshotSection)
+  const incentivesEditAttrs = sectionEditAttrs(incentivesSection)
+  const testimonialsEditAttrs = sectionEditAttrs(testimonialsSection)
+  const quoteEditAttrs = sectionEditAttrs(quoteSection)
+  const resourcesEditAttrs = sectionEditAttrs(resourcesSection)
+  const consultationEditAttrs = sectionEditAttrs(ctaSection)
 
   return (
     <>
@@ -133,17 +136,18 @@ export default function App({
         <div {...testimonialsEditAttrs}>
           <Testimonails reviews={reviews} section={testimonialsSection} />
         </div>
-        <DevTrace
-          markup="src/components/QuoteSection.jsx"
-          content={quoteSection ? `homepage quote from ${homepageSource}` : 'local fallback quote content'}
-        />
-        <div {...quoteEditAttrs}>
-          <QuoteSection
-            quoteText={portableTextToPlainText(quoteSection?.body)}
-            eyebrow={quoteSection?.eyebrow}
-            attribution={quoteSection?.title}
-          />
-        </div>
+        {quoteSection ? (
+          <>
+            <DevTrace markup="src/components/QuoteSection.jsx" content={`homepage quote from ${homepageSource}`} />
+            <div {...quoteEditAttrs}>
+              <QuoteSection
+                quoteText={portableTextToPlainText(quoteSection?.body) || ''}
+                eyebrow={quoteSection?.eyebrow}
+                attribution={quoteSection?.title}
+              />
+            </div>
+          </>
+        ) : null}
         <DevTrace
           markup="src/components/ResourcesSection.jsx"
           content={`typed homepage resource grid from ${resourcesSection ? homepageSource : 'local fallback cards'}`}

@@ -1056,8 +1056,87 @@ export async function getPageForRequest(site, slugParts = []) {
 
   try {
     const siteSlugs = getEquivalentSiteSlugs(site.slug)
+    const requestedSlug = getPageKey(slugParts)
+    const isHomepageRequest = requestedSlug === ''
     const rawPage = await client.fetch(
-      groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
+      isHomepageRequest
+        ? groq`*[
+          _type in ["page", "servicePage", "locationPage", "post"] &&
+          site->slug.current in $siteSlugs &&
+          (
+            coalesce(slug.current, "") in ["", "/"] ||
+            pageType == "home"
+          )
+        ] | order((pageType == "home") desc, _updatedAt desc)[0]{
+        _id,
+        _type,
+        _createdAt,
+        _updatedAt,
+        "id": _id,
+        title,
+        seo,
+        description,
+        pageType,
+        templateLevel,
+        "slug": slug.current,
+        heroEyebrow,
+        heroTitle,
+        heroTitlePrimary,
+        heroTitleAccent,
+        heroBody,
+        cardCopy,
+        heroGradient,
+        heroTextColor,
+        heroOverlayColor,
+        heroOverlayStartColor,
+        heroOverlayEndColor,
+        heroOverlayDirection,
+        heroOverlayStartOpacity,
+        heroOverlayEndOpacity,
+        heroOverlayOpacity,
+        heroImage,
+        heroSlides[]{
+          _key,
+          title,
+          image,
+          imageAsset{
+            altText,
+            alt,
+            asset->{
+              url,
+              metadata{
+                dimensions{
+                  width,
+                  height
+                }
+              }
+            }
+          }
+        },
+        heroAsset{
+          altText,
+          alt,
+          asset->{
+            url,
+            metadata{
+              dimensions{
+                width,
+                height
+              }
+            }
+          }
+        },
+        heroMetrics,
+        heroActions[]{
+          label,
+          href,
+          variant
+        },
+        sections[]{
+          ${sectionProjection}
+        }
+      }`
+        : groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
         _id,
         _type,
         _createdAt,
@@ -1126,7 +1205,7 @@ export async function getPageForRequest(site, slugParts = []) {
           ${sectionProjection}
         }
       }`,
-      { siteSlugs, slug: getPageKey(slugParts) || '/' },
+      { siteSlugs, slug: requestedSlug || '/' },
       fetchOptions,
     )
 
