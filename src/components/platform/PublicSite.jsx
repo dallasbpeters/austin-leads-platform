@@ -1041,7 +1041,19 @@ function RoofingLogoCloudSection({ section, sectionId, editAttributes = {} }) {
         content={`logos marquee section from ${section?._type || 'local fallback section'}`}
       />
       <div className="max-w-7xl mx-auto px-3 md:px-6 lg:px-10">
-        <LogoCloud />
+        {section?.title || section?.body ? (
+          <div className="pt-16 text-center" {...editAttributes}>
+            {section?.title ? <h2 className="text-3xl tracking-tight md:text-4xl">{section.title}</h2> : null}
+            {section?.body ? (
+              <PortableTextContent
+                as="div"
+                value={section.body}
+                className="max-w-3xl mx-auto mt-4 leading-8 text-base text-muted-foreground"
+              />
+            ) : null}
+          </div>
+        ) : null}
+        <LogoCloud items={section?.items} />
       </div>
     </section>
   )
@@ -1084,7 +1096,7 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
   const avatarName = section?.avatarName || section?.personName || ''
   const avatarRole = section?.avatarRole || section?.personRole || ''
   const avatarBlurb = section?.avatarBlurb || section?.personBlurb || ''
-  const avatarColor = section?.avatarColor || section?.personColor || ''
+  const avatarColor = section?.avatarColor || ''
   const avatarImageUrl = getImageUrl(
     section?.avatarImageAsset || section?.profileImageAsset,
     section?.avatarImage || section?.profileImage,
@@ -1100,6 +1112,7 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() || '')
     .join('')
+  const avatarStyle = avatarColor ? { backgroundColor: avatarColor } : undefined
   const leadContext = {
     sourceType: 'cross-lead',
     sourceSection: 'cta-banner',
@@ -1137,9 +1150,12 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
           {avatarName ? (
             <div className="max-w-xl pt-2">
               <div className="flex items-center gap-4">
-                <Avatar size="xl" className={cn("bg-white/10 ring-1 ring-white/20 size-16", avatarColor ? `bg-${avatarColor}` : '')}>
+                <Avatar size="xl" className="bg-white/10 ring-1 ring-white/20 size-16" style={avatarStyle}>
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
-                  <AvatarFallback className={cn("font-semibold text-base text-white bg-white/12", avatarColor ? `bg-${avatarColor}` : '')}>
+                  <AvatarFallback
+                    className="font-semibold text-base text-white bg-white/12"
+                    style={avatarStyle}
+                  >
                     {avatarInitials || 'TS'}
                   </AvatarFallback>
                 </Avatar>

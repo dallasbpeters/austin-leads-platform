@@ -713,6 +713,53 @@ const sectionContentItemType = {
   },
 }
 
+const logoMarqueeItemType = {
+  name: 'logoMarqueeItem',
+  title: 'Logo Marquee Item',
+  type: 'object',
+  fields: [
+    {
+      name: 'title',
+      title: 'Logo label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Used as the logo alt text and internal label.'),
+    },
+    {
+      name: 'href',
+      title: 'Link',
+      type: 'string',
+      options: canvasPurpose('Optional external URL for this logo.'),
+    },
+    {
+      name: 'image',
+      title: 'External image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'imageAsset',
+      title: 'Uploaded image',
+      type: 'uploadedImage',
+      options: canvasExclude,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      assetUrl: 'imageAsset.asset.url',
+      imageAlt: 'image.alt',
+      href: 'href',
+    },
+    prepare({ title, assetUrl, imageAlt, href }) {
+      return {
+        title: title || 'Logo',
+        subtitle: href || assetUrl || imageAlt || 'Marquee logo item',
+      }
+    },
+  },
+}
+
 const heroSlideItemType = {
   name: 'heroSlideItem',
   title: 'Hero Slide',
@@ -2322,25 +2369,47 @@ const logosSectionType = {
   type: 'object',
   initialValue: {
     type: 'logos',
-    title: 'Certifications marquee',
+    internalLabel: 'Certifications marquee',
   },
   fields: [
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
-      name: 'title',
+      name: 'internalLabel',
       title: 'Internal label',
       type: 'string',
       options: canvasPurpose('Optional internal label for this marquee section.'),
     },
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      options: canvasPurpose('Optional headline above the marquee.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional supporting copy above the marquee.'),
+    },
+    {
+      name: 'items',
+      title: 'Logos',
+      type: 'array',
+      of: [{ type: 'logoMarqueeItem' }],
+      options: canvasPurpose('Optional custom logos for this marquee. Defaults are used when left empty.'),
+    },
   ],
   preview: {
     select: {
+      internalLabel: 'internalLabel',
       title: 'title',
+      items: 'items',
     },
-    prepare({ title }) {
+    prepare({ internalLabel, title, items }) {
+      const count = arrayCount(items)
       return {
-        title: title || 'Logos marquee',
-        subtitle: 'Roofing certifications and partner logos',
+        title: internalLabel || title || 'Logos marquee',
+        subtitle: `${count || 0} custom logos${title ? ` • ${title}` : ''}`,
       }
     },
   },
@@ -2588,6 +2657,7 @@ export default [
   pageItemType,
   guideCardItemType,
   sectionContentItemType,
+  logoMarqueeItemType,
   heroSlideItemType,
   pageFaqItemType,
   resourceCardType,

@@ -1,6 +1,15 @@
 import { defineDocuments, defineLocations } from 'sanity/presentation'
 
 const PAGE_DOCUMENT_FILTER = `_type in ["page", "servicePage", "locationPage", "post"]`
+const INTERNAL_PATH_PREFIXES = ['api', '_next', 'studio']
+
+function isIgnoredPresentationPath(pathParts) {
+  if (!pathParts.length) {
+    return false
+  }
+
+  return INTERNAL_PATH_PREFIXES.includes(pathParts[0])
+}
 
 function resolveFromAnyPath(params) {
   const rawPath = params?.path
@@ -16,6 +25,10 @@ function resolveFromAnyPath(params) {
       .replace(/^\/+/, '')
 
     pathParts = normalizedPath.split('/').filter(Boolean)
+  }
+
+  if (isIgnoredPresentationPath(pathParts)) {
+    return null
   }
 
   const isPreviewPath = pathParts[0] === 'preview'

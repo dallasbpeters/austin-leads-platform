@@ -1,11 +1,9 @@
-import { stegaClean } from 'next-sanity'
-
 export function isPortableTextValue(value) {
   return Array.isArray(value)
 }
 
 function cleanText(value) {
-  return typeof value === 'string' ? stegaClean(value) : ''
+  return typeof value === 'string' ? value : ''
 }
 
 export function portableTextToPlainText(value) {

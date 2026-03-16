@@ -55,6 +55,7 @@ export default function ConsultationSection({
   const avatarName = section?.avatarName || section?.personName || ''
   const avatarRole = section?.avatarRole || section?.personRole || ''
   const avatarBlurb = section?.avatarBlurb || section?.personBlurb || ''
+  const avatarColor = section?.avatarColor || ''
   const avatarImageUrl = getImageUrl(
     section?.avatarImageAsset || section?.profileImageAsset,
     section?.avatarImage || section?.profileImage,
@@ -70,6 +71,7 @@ export default function ConsultationSection({
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() || '')
     .join('')
+  const avatarStyle = avatarColor ? { backgroundColor: avatarColor } : undefined
   const leadContext = {
     sourceType: 'consultation',
     sourceSection: content.sourceSection,
@@ -102,9 +104,12 @@ export default function ConsultationSection({
           {avatarName ? (
             <div className="max-w-xl mt-8">
               <div className="flex items-center gap-4">
-                <Avatar size="xl" className="bg-primary ring-1 ring-black/5 size-16">
+                <Avatar size="xl" className="bg-primary ring-1 ring-black/5 size-16" style={avatarStyle}>
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
-                  <AvatarFallback className="font-semibold text-base text-secondary-foreground bg-secondary">
+                  <AvatarFallback
+                    className="font-semibold text-base text-secondary-foreground bg-secondary"
+                    style={avatarStyle}
+                  >
                     {avatarInitials || 'TS'}
                   </AvatarFallback>
                 </Avatar>

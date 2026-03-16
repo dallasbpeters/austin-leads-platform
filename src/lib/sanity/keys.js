@@ -324,6 +324,8 @@ export function normalizeSectionType(section) {
       _type: 'logosSection',
       type: 'logos',
       title: section.title,
+      body: section.body,
+      items: Array.isArray(section.items) ? section.items : undefined,
     })
   }
 

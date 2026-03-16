@@ -17,14 +17,14 @@ const SolarSwitch = ({
       return
     }
 
-    const activationRatio = 0.72
+    const activationRatio = 0.9
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsActive(entry.intersectionRatio >= activationRatio)
       },
       {
         threshold: [0, activationRatio, 1],
-        rootMargin: '0px 0px -14% 0px',
+        rootMargin: '0px 0px -50% 0px',
       },
     )
 
