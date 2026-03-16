@@ -1042,8 +1042,8 @@ function RoofingLogoCloudSection({ section, sectionId, editAttributes = {} }) {
       />
       <div className="max-w-7xl mx-auto px-3 md:px-6 lg:px-10">
         {section?.title || section?.body ? (
-          <div className="pt-16 text-center" {...editAttributes}>
-            {section?.title ? <h2 className="text-3xl tracking-tight md:text-4xl">{section.title}</h2> : null}
+          <div className="pt-16 text-left" {...editAttributes}>
+            {section?.title ? <h2 className="text-xl tracking-tight md:text-2xl">{section.title}</h2> : null}
             {section?.body ? (
               <PortableTextContent
                 as="div"
