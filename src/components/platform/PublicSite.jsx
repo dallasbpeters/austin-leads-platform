@@ -2,6 +2,7 @@ import Link from 'next/link'
 import {
   AirConditioner,
   AreaSearch,
+  FastArrowRight,
   BatteryCharging,
   Car,
   Flash,
@@ -14,6 +15,7 @@ import {
 } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
 
+import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
@@ -22,7 +24,6 @@ import CalculatorSection from '@/components/CalculatorSection'
 import CostsSection from '@/components/CostsSection'
 import GuideCardGrid from '@/components/GuideCardGrid'
 import GuidesSection from '@/components/GuidesSection'
-import HailWeatherLookup from '@/components/HailWeatherLookup'
 import Header from '@/components/Header'
 import IncentivesSection from '@/components/IncentivesSection'
 import ConsultationSection from '@/components/ConsultationSection'
@@ -286,8 +287,12 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
                   ) : null}
                   <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
                 </CardHeader>
-                <CardContent className="leading-6 text-md text-muted-foreground">
-                  {item.body || item.answer}
+                <CardContent>
+                  <PortableTextContent
+                    as="div"
+                    value={item.body || item.answer}
+                    className="leading-6 text-md text-muted-foreground"
+                  />
                 </CardContent>
               </Card>
             )
@@ -781,6 +786,9 @@ function FaqSection({ section, sectionId, editAttributes = {} }) {
 }
 
 function HailMapSection({ section, sectionId, editAttributes = {} }) {
+  const ctaLabel = section?.ctaLabel || 'Open interactive hail map'
+  const ctaHref = section?.ctaHref?.startsWith('/') ? cleanRuntimeHref(section.ctaHref) : '/hail-map'
+
   return (
     <section
       className="bg-gradient border-b border-border/60"
@@ -795,8 +803,31 @@ function HailMapSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:HailMapSection"
         content={`hail lookup section from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-[1600px] mx-auto px-6 py-20 lg:px-10">
-        <HailWeatherLookup section={section} />
+      <div className="max-w-7xl mx-auto px-6 py-10 lg:px-10">
+        <Link
+          href={ctaHref}
+          className="block rounded-2xl border border-white/12 bg-[linear-gradient(90deg,hsl(var(--color-secondary-h)_35%_14%),hsl(var(--color-secondary-h)_30%_11%))] p-6 text-white transition-transform hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_10px_30px_rgba(0,0,0,0.22)] md:p-8"
+        >
+          <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
+            <div className="space-y-3">
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                {section?.title || 'Check hail risk and recent storm signals near your property'}
+              </h2>
+              {section?.body ? (
+                <PortableTextContent as="div" value={section.body} className="max-w-3xl leading-7 text-white/78" />
+              ) : (
+                <p className="max-w-3xl leading-7 text-white/78">
+                  Open the dedicated hail map page to search your address and compare storm evidence with your roof
+                  inspection.
+                </p>
+              )}
+            </div>
+            <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/8 px-5 py-3 font-semibold text-sm text-white">
+              {ctaLabel}
+              <FastArrowRight className="size-4" />
+            </div>
+          </div>
+        </Link>
       </div>
     </section>
   )
@@ -903,7 +934,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
 
             const profileCardBackgrounds = [
               "linear-gradient(45deg, var(--color-primary), var(--color-tidal)), url('https://grainy-gradients.vercel.app/noise.svg')",
-              "linear-gradient(45deg, var(--color-black-current) 25%, var(--color-sweetcorn)), url('https://grainy-gradients.vercel.app/noise.svg')",
+              "linear-gradient(45deg, var(--color-primary) 25%, var(--color-sweetcorn)), url('https://grainy-gradients.vercel.app/noise.svg')",
               "linear-gradient(45deg, var(--color-secondary), var(--color-tertiary)), url('https://grainy-gradients.vercel.app/noise.svg')",
             ]
 
@@ -940,7 +971,9 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
                   </div>
                 </CardHeader>
                 <CardContent className="grid relative content-end h-30 gap-4 grid-cols-1 z-10">
-                  {person.blurb ? <p className="leading-6 text-base text-white">{person.blurb}</p> : null}
+                  {person.blurb ? (
+                    <PortableTextContent as="div" value={person.blurb} className="leading-6 text-base text-white" />
+                  ) : null}
                   {person.certificationTitle ? (
                     <div className="grid gap-3 border-border/80">
                       <div className="flex items-center gap-3">
@@ -967,7 +1000,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
                     </div>
                   ) : null}
                 </CardContent>
-                <div className="absolute bg-[linear-gradient(to_top,var(--color-black),rgba(11,59,66,0.2),transparent)] inset-0"></div>
+                <div className="absolute bg-[linear-gradient(to_top,var(--color-black)_15%,rgba(11,59,66,0.2),transparent)] inset-0"></div>
               </Card>
             )
           })}
@@ -1036,6 +1069,7 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
   const avatarName = section?.avatarName || section?.personName || ''
   const avatarRole = section?.avatarRole || section?.personRole || ''
   const avatarBlurb = section?.avatarBlurb || section?.personBlurb || ''
+  const avatarColor = section?.avatarColor || section?.personColor || ''
   const avatarImageUrl = getImageUrl(
     section?.avatarImageAsset || section?.profileImageAsset,
     section?.avatarImage || section?.profileImage,
@@ -1088,9 +1122,9 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
           {avatarName ? (
             <div className="max-w-xl pt-2">
               <div className="flex items-center gap-4">
-                <Avatar size="xl" className="bg-white/10 ring-1 ring-white/20 size-16">
+                <Avatar size="xl" className={cn("bg-white/10 ring-1 ring-white/20 size-16", avatarColor ? `bg-${avatarColor}` : '')}>
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
-                  <AvatarFallback className="font-semibold text-base text-white bg-white/12">
+                  <AvatarFallback className={cn("font-semibold text-base text-white bg-white/12", avatarColor ? `bg-${avatarColor}` : '')}>
                     {avatarInitials || 'TS'}
                   </AvatarFallback>
                 </Avatar>

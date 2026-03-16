@@ -57,7 +57,7 @@ const SolarSwitch = ({
         >
           <span
             className="inline-block relative ml-4 pr-10 sm:pl-10 font-semibold leading-[1.45em] text-white tracking-[-0.02em] duration-500 transition-all pointer-events-none solar-text z-20"
-            style={{ transform: isActive ? 'translateX(-32px)' : 'translateX(-15px)' }}
+            style={{ transform: isActive ? 'translateX(-32px)' : 'translateX(30px)' }}
           >
             {accentWord}
           </span>
@@ -65,7 +65,8 @@ const SolarSwitch = ({
             className="absolute h-8 w-8 md:h-11 md:w-11 sm:h-10 sm:w-10 rounded-full duration-500 transition-all -translate-y-1/2 left-1/2 orange-circle pointer-events-none top-1/2 z-30"
             style={{
               background: 'linear-gradient(rgb(255, 222, 107) 0%, rgb(255, 117, 17) 117.52%)',
-              transform: isActive ? 'translateX(2.2rem)' : 'translateX(-4.22rem)',
+              transform: isActive ? 'translateX(2.2rem)' : 'translateX(-5.22rem)',
+              boxShadow: isActive ? '0 0 10px 0 rgb(255, 222, 107)' : '0 0 10px 0 rgba(255, 222, 107, 0.5)',
             }}
           />
         </span>

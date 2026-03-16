@@ -33,6 +33,14 @@ const RICH_TEXT_KEYS = new Set([
   'subtitleLabel',
   'subtitleValue',
 ])
+const OBJECT_FIELD_KEYS = new Set([
+  'imageAsset',
+  'heroAsset',
+  'avatarImageAsset',
+  'profileImageAsset',
+  'badgeImageAsset',
+  'secondaryProfileImageAsset',
+])
 
 function textToPortableText(value) {
   if (typeof value !== 'string') return value
@@ -68,6 +76,11 @@ function normalizeRichTextFields(value) {
 
   for (const key of Object.keys(next)) {
     const fieldValue = next[key]
+
+    if (OBJECT_FIELD_KEYS.has(key) && fieldValue === null) {
+      delete next[key]
+      continue
+    }
 
     if (RICH_TEXT_KEYS.has(key)) {
       next[key] = textToPortableText(fieldValue)

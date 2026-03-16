@@ -14,6 +14,7 @@ import Testimonails from './components/Testimonials'
 import QuoteSection from './components/QuoteSection'
 import DevTrace from './components/dev/DevTrace'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 export default function App({
   homepage = null,
@@ -138,7 +139,7 @@ export default function App({
         />
         <div {...quoteEditAttrs}>
           <QuoteSection
-            quoteText={quoteSection?.body}
+            quoteText={portableTextToPlainText(quoteSection?.body)}
             eyebrow={quoteSection?.eyebrow}
             attribution={quoteSection?.title}
           />

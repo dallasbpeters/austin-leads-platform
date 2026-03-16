@@ -723,7 +723,7 @@ const resourceCardType = {
     prepare({ title, subtitle }) {
       return {
         title: title || 'Resource card',
-        subtitle: subtitle || 'Homepage resource card',
+        subtitle: previewText(subtitle, 'Homepage resource card'),
       }
     },
   },
@@ -1903,6 +1903,12 @@ const ctaSectionType = {
       title: 'Avatar image',
       type: 'heroImage',
       options: canvasExclude,
+    },
+    {
+      name: 'avatarColor',
+      title: 'Avatar color',
+      type: 'color',
+      options: canvasPurpose('Color of the avatar image.'),
     },
     {
       name: 'avatarImageAsset',

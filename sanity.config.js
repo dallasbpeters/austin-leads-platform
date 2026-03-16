@@ -32,7 +32,8 @@ export default defineConfig({
   plugins: [
     colorInput(),
     geminiAIImages({
-      apiEndpoint: '/api/gemini/generate-image',
+      apiEndpoint: `${studioPreviewOrigin}/api/gemini/generate-image`,
+      enableStandaloneTool: true,
     }),
     structureTool(),
     presentationTool({
