@@ -167,7 +167,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
 
           <div className="solar-fade-up solar-fade-up-delay">
             <Card
-              className="p-8 backdrop-blur-md"
+              className="p-6 backdrop-blur-md"
               radius="lg"
               style={
                 hasHeroImage

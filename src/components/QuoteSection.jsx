@@ -110,7 +110,7 @@ export default function QuoteSection({
   return (
     <section
       ref={sectionRef}
-      className="relative max-w-7xl mx-auto px-4 py-20 lg:px-8 sm:px-6 quoteRevealSection z-10"
+      className="relative max-w-7xl mx-auto px-4 py-20 lg:px-8 sm:px-3 md:px-6 quoteRevealSection z-10"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/QuoteSection.jsx',

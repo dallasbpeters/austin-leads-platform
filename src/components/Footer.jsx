@@ -19,7 +19,7 @@ export default function Footer() {
         content: 'local JSX footer + service catalog links',
       })}
     >
-      <div className="max-w-7xl mx-auto px-4 py-12 lg:px-8 sm:px-6 z-2">
+      <div className="max-w-7xl mx-auto px-4 py-12 lg:px-8 sm:px-3 md:px-6 z-2">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-2">
             <Link

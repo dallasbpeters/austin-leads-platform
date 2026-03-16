@@ -95,7 +95,7 @@ export default function ConsultationSection({
           'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
       }}
     >
-      <div className="grid relative items-center max-w-7xl gap-16 mx-auto px-4 lg:px-16 sm:px-6 z-20 grid-cols-1 py-12 md:grid-cols-[1.1fr_1fr]">
+      <div className="grid relative items-center max-w-7xl gap-16 mx-auto px-4 lg:px-16 sm:px-3 md:px-6 z-20 grid-cols-1 py-12 md:grid-cols-[1.1fr_1fr]">
         <div {...editAttributes}>
           <h2 className="mb-4 leading-[1em]! text-[clamp(2.875rem,6vw,3.75rem)] text-secondary type-display">{headline}</h2>
           <PortableTextContent as="div" value={copy} className="font-semibold text-base text-slate-500 type-accent" />

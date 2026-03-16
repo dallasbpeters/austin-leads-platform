@@ -36,7 +36,7 @@ const SolarSwitch = ({
   }, [])
 
   return (
-    <section ref={sectionRef} className="grid max-w-7xl w-full mx-auto px-4 py-14 lg:px-8 sm:px-6 grid-cols-1 place-items-center">
+    <section ref={sectionRef} className="grid max-w-7xl w-full mx-auto px-4 py-14 lg:px-8 sm:px-3 md:px-6 grid-cols-1 place-items-center">
       <div className="relative max-w-5xl font-bold leading-[1.45em] text-[clamp(2rem,4.9vw,2.75rem)] text-center text-foreground tracking-[-0.02em]">
         {leadingWords.map((word) => (
           <span

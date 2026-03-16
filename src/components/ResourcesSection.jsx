@@ -46,7 +46,17 @@ const iconMap = {
 }
 
 function getResourceIcon(iconName) {
-  return iconMap[iconName] || IconoirIcons[iconName] || HomeSimple
+  return iconMap[iconName] || IconoirIcons[iconName] || null
+}
+
+function inferResourceIcon(item) {
+  const text = `${item?.title || ''} ${item?.copy || ''} ${item?.href || ''}`.toLowerCase()
+
+  if (text.includes('hail') || text.includes('storm')) return Thunderstorm
+  if (text.includes('roof') || text.includes('insurance') || text.includes('claim')) return HomeShield
+  if (text.includes('solar') || text.includes('savings') || text.includes('incentive')) return SunLight
+
+  return HomeShield
 }
 
 function normalizeItems(section) {
@@ -97,7 +107,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
 
         <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
           {items.map((item) => {
-            const Icon = getResourceIcon(item.icon)
+            const Icon = getResourceIcon(item.icon) || inferResourceIcon(item)
 
             return (
               <Link key={item.title} href={item.href}>

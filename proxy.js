@@ -75,4 +75,15 @@ export default proxy
 
 export const config = {
   matcher: ['/((?!_next|favicon.ico).*)'],
+  missing: [
+    {
+      type: 'header',
+      key: 'next-router-prefetch',
+    },
+    {
+      type: 'header',
+      key: 'purpose',
+      value: 'prefetch',
+    },
+  ],
 }

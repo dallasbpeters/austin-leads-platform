@@ -1,5 +1,4 @@
 import { draftMode } from 'next/headers'
-import Script from 'next/script'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { Analytics } from '@vercel/analytics/react'
 import { VercelToolbar } from '@vercel/toolbar/next'
@@ -37,13 +36,9 @@ export default async function RootLayout({ children }) {
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
       <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">
-        <Script
-          src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"
-          strategy="lazyOnload"
-        />
         {children}
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}
-        <SanityLive />
+        {isDraftMode ? <SanityLive /> : null}
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />
         <SpeedInsights />

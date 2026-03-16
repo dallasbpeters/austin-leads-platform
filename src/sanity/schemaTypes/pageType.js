@@ -32,6 +32,7 @@ const previewText = (value, fallback) => {
   if (!normalized) return fallback
   return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
 }
+const arrayCount = (value) => (Array.isArray(value) ? value.length : 0)
 
 const portableTextSimpleType = {
   name: 'portableTextSimple',
@@ -770,9 +771,10 @@ const resourceGridSectionType = {
     select: {
       title: 'title',
       body: 'body',
-      cardCount: 'items.length',
+      items: 'items',
     },
-    prepare({ title, body, cardCount }) {
+    prepare({ title, body, items }) {
+      const cardCount = arrayCount(items)
       return {
         title: title || 'Resource grid',
         subtitle: previewText(body, `${cardCount || 0} cards`),
@@ -822,9 +824,10 @@ const guideGridSectionType = {
     select: {
       title: 'title',
       body: 'body',
-      cardCount: 'items.length',
+      items: 'items',
     },
-    prepare({ title, body, cardCount }) {
+    prepare({ title, body, items }) {
+      const cardCount = arrayCount(items)
       return {
         title: title || 'Guide grid',
         subtitle: previewText(body, `${cardCount || 0} guides`),
@@ -912,11 +915,14 @@ const serviceGridSectionType = {
     select: {
       title: 'title',
       eyebrow: 'eyebrow',
-      primaryCount: 'items.length',
-      roofingCount: 'roofingItems.length',
-      secondaryCount: 'secondaryItems.length',
+      items: 'items',
+      roofingItems: 'roofingItems',
+      secondaryItems: 'secondaryItems',
     },
-    prepare({ title, eyebrow, primaryCount, roofingCount, secondaryCount }) {
+    prepare({ title, eyebrow, items, roofingItems, secondaryItems }) {
+      const primaryCount = arrayCount(items)
+      const roofingCount = arrayCount(roofingItems)
+      const secondaryCount = arrayCount(secondaryItems)
       const countSummary = `${primaryCount || 0} primary / ${roofingCount || 0} roofing / ${secondaryCount || 0} secondary`
 
       return {
@@ -1473,9 +1479,10 @@ const costsSectionType = {
     select: {
       title: 'title',
       subtitle: 'body',
-      count: 'items.length',
+      items: 'items',
     },
-    prepare({ title, subtitle, count }) {
+    prepare({ title, subtitle, items }) {
+      const count = arrayCount(items)
       return {
         title: title || 'Costs section',
         subtitle: previewText(subtitle, `${count || 0} cost stats`),
@@ -1568,9 +1575,10 @@ const snapshotSectionType = {
     select: {
       title: 'title',
       subtitle: 'body',
-      count: 'items.length',
+      items: 'items',
     },
-    prepare({ title, subtitle, count }) {
+    prepare({ title, subtitle, items }) {
+      const count = arrayCount(items)
       return {
         title: title || 'Snapshot section',
         subtitle: previewText(subtitle, `${count || 0} snapshot cards`),
@@ -1712,9 +1720,10 @@ const highlightsSectionType = {
     select: {
       title: 'title',
       subtitle: 'subtitle',
-      itemCount: 'items.length',
+      items: 'items',
     },
-    prepare({ title, subtitle, itemCount }) {
+    prepare({ title, subtitle, items }) {
+      const itemCount = arrayCount(items)
       return {
         title: title || 'Highlights section',
         subtitle: previewText(subtitle, `${itemCount || 0} items`),
@@ -1751,9 +1760,10 @@ const stepsSectionType = {
   preview: {
     select: {
       title: 'title',
-      itemCount: 'items.length',
+      items: 'items',
     },
-    prepare({ title, itemCount }) {
+    prepare({ title, items }) {
+      const itemCount = arrayCount(items)
       return {
         title: title || 'Steps section',
         subtitle: `${itemCount || 0} items`,
@@ -1790,9 +1800,10 @@ const faqSectionType = {
   preview: {
     select: {
       title: 'title',
-      itemCount: 'items.length',
+      items: 'items',
     },
-    prepare({ title, itemCount }) {
+    prepare({ title, items }) {
+      const itemCount = arrayCount(items)
       return {
         title: title || 'FAQ section',
         subtitle: `${itemCount || 0} questions`,
@@ -2145,11 +2156,12 @@ const bandSectionType = {
   ],
   preview: {
     select: {
-      colorCount: 'colors.length',
+      colors: 'colors',
       autoAnimate: 'autoAnimate',
       rotate: 'rotate',
     },
-    prepare({ colorCount, autoAnimate, rotate }) {
+    prepare({ colors, autoAnimate, rotate }) {
+      const colorCount = arrayCount(colors)
       const flags = [`${colorCount || 0} colors`, autoAnimate ? 'animated' : null, rotate ? 'rotated' : null]
         .filter(Boolean)
         .join(' • ')
@@ -2228,9 +2240,10 @@ const solarSwitchSectionType = {
     select: {
       accentWord: 'accentWord',
       trailingText: 'trailingText',
-      leadingCount: 'leadingWords.length',
+      leadingWords: 'leadingWords',
     },
-    prepare({ accentWord, trailingText, leadingCount }) {
+    prepare({ accentWord, trailingText, leadingWords }) {
+      const leadingCount = arrayCount(leadingWords)
       return {
         title: accentWord ? `Solar switch: ${accentWord}` : 'Solar switch section',
         subtitle: previewText(trailingText, `${leadingCount || 0} leading words`),

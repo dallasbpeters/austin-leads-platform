@@ -33,7 +33,7 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
 
   return (
     <section
-      className="py-24 px-6 bg-warm"
+      className="py-24 px-3 md:px-6 bg-warm"
       {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,

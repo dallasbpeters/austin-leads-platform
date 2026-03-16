@@ -671,7 +671,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                   ) : null}
                 </div>
               ) : (
-                <div className="px-6 py-10 leading-7 text-center text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
+                <div className="px-3 md:px-6 py-10 leading-7 text-center text-muted-foreground text-sm bg-muted/20 border border-border border-dashed rounded-xl">
                   {loading
                     ? 'Searching Unsplash...'
                     : selectedPage

@@ -682,9 +682,9 @@ export const solarGuides = [
     slug: 'texas-storm-damage-roof-insurance-claims',
     title: 'Texas Storm Damage: Roof Inspection and Insurance Claims',
     cardCopy:
-      'Hail, wind, what to look for after a storm, how the insurance process works, and where homeowners lose money by waiting.',
+      'Hail and wind response in Texas: what to document, how claims timelines work, and how to avoid preventable delays.',
     description:
-      'A practical guide to storm damage roof inspection and insurance claims in Texas — what to check after hail or wind, how the adjuster process works, and the timeline mistakes that cost homeowners money.',
+      'A practical Texas guide to storm-damage roof claims: post-storm documentation, adjuster process, deductible requirements, and timing rules that affect coverage.',
     image: createStaticHeroImage({
       alt: 'Dark storm clouds over a Texas residential neighborhood',
       color: '#4a5568',
@@ -703,7 +703,7 @@ export const solarGuides = [
         type: 'hero',
         eyebrow: 'Guide 05',
         title: 'What to do about your roof after a Texas storm',
-        body: 'Texas gets hit hard. The state averages over 400 reported hailstorms per year — more than any other state — and central Texas sits squarely in what meteorologists call Hail Alley. The question after a major storm is not just whether the roof looks damaged from the ground. It is whether the damage meets the threshold for an insurance claim, and what the homeowner should do before time and weather make things worse.',
+        body: 'Texas regularly sees severe storm activity, and storms are the largest category of billion-dollar weather losses in the state according to NOAA/NCEI. After a hail or wind event, the goal is simple: document conditions early, get a professional inspection, and move through the claim process on a clear timeline.',
         heroImage: createStaticHeroImage({
           alt: 'Dark storm clouds over a Texas residential neighborhood',
           color: '#4a5568',
@@ -727,7 +727,7 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'Why urgency matters',
         title: 'Storm damage does not always look obvious — but it gets worse with every season you wait.',
-        body: 'Hail bruises shingles in ways that are hard to see from the ground. A 1-inch hailstone — roughly quarter-sized — striking an asphalt shingle at terminal velocity can crack the mat, knock protective granules loose, and compromise the waterproofing layer without leaving an obvious mark visible from 30 feet below. Hailstones 1.5 inches and larger almost always cause functional damage to standard roofing materials, and Texas storms regularly produce hail in the 1 to 3 inch range.\n\nOnce that damage exists, the clock starts. Granule loss accelerates UV degradation of the exposed asphalt. Cracked or lifted shingles let moisture reach the underlayment and eventually the decking. What starts as cosmetic damage can become a leak, mold issue, or structural problem if it sits through another Texas summer — where sustained 100-degree heat, thermal cycling, and afternoon storms put additional stress on already-compromised materials.\n\nTexas insurance policies also have filing deadlines. Most homeowner policies require claims to be filed within one to two years of the storm date, though some carriers have tightened that window. Waiting too long can mean losing coverage for damage that was absolutely claimable. And here is the part most homeowners miss: the filing deadline starts with the storm, not with the day you notice a problem inside the house. By the time you see a water stain on the ceiling, the claim window may already be closing.',
+        body: 'Roof damage is often easiest to prove right after the event, when fresh evidence is available. Waiting can make causation harder to document because additional weather, normal wear, and temporary repairs can blur the timeline. Texas Department of Insurance guidance also emphasizes prompt reporting and complete documentation. Acting quickly usually improves clarity for both the homeowner and the carrier.',
       },
       {
         _type: 'pageSection',
@@ -742,59 +742,59 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Document everything you can see — photos, video, and dates',
-            body: 'Take photos and video of all visible damage from the ground, including wide shots of the roofline and close-ups of any debris, dents, or missing material. Note the date of the storm and save local weather reports or National Weather Service hail size data for your area. This documentation becomes part of your claim file and establishes the storm date if there is ever a question about timing.',
+            body: 'Take clear photos and video of visible conditions from the ground, including roofline views, soft-metal impacts (gutters/downspouts), and related exterior damage. Record the storm date and keep weather alerts/reports for your area. Organized documentation makes the adjuster review faster and reduces back-and-forth.',
           },
           {
             _type: 'pageItem',
             title: 'Schedule a professional roof inspection within 72 hours',
-            body: 'A qualified roofer can identify hail hits, wind lift, bruising, granule loss, cracked flashing, and compromised sealant that you cannot see from the ground. Most reputable roofing companies offer free storm-damage inspections and provide a written report with photos. Get this done quickly — within 72 hours if possible — because early documentation strengthens the insurance claim and helps establish the timeline.',
+            body: 'A qualified inspection can identify damage patterns that are not visible from the ground. Ask for a written report with photos and line-item notes. You do not need to commit to a contractor to get inspection evidence; the immediate goal is an accurate condition record.',
           },
           {
             _type: 'pageItem',
             title: 'File the insurance claim promptly if damage is confirmed',
-            body: "Contact your insurance company to open a claim as soon as professional inspection confirms damage. Provide the storm date, your documentation, and the roofer's inspection report. Request a claim number and your adjuster's contact information. Most insurers prefer notification within 30 days of the storm — even though the legal deadline may be longer — and immediate reporting demonstrates good faith effort to protect the property.",
+            body: "Open the claim with your carrier as soon as damage is confirmed. Share your storm date and documentation package, and request the claim number and adjuster contact details. Under Texas prompt-payment rules, carriers generally must acknowledge claims within 15 days, decide within 15 business days after receiving required items, and pay within 5 business days after approval.",
           },
           {
             _type: 'pageItem',
             title: 'Have your roofer present during the adjuster inspection',
-            body: 'The insurance adjuster works for the insurance company. A qualified roofer at the inspection advocates for complete damage identification. They can point out damage the adjuster might overlook, provide context about how specific damage affects the roof system, and ensure the scope of the claim reflects the actual repair needs — not just the most obvious surface issues.',
+            body: 'Having your inspection professional present can improve technical clarity during the field review. The objective is a complete, well-documented scope so there is less dispute later.',
           },
           {
             _type: 'pageItem',
             title: 'Do not sign a roofing contract before the claim is settled',
-            body: 'You need to know what insurance will cover before committing to a scope and price. A reputable roofer will not pressure you to sign before the claim process is complete. Be especially cautious of contractors who show up uninvited after a storm and push for an immediate signature — legitimate local companies do not need to chase storms door to door.',
+            body: 'Review the estimate and claim scope before committing to final pricing. Also remember Texas Insurance Code Chapter 707 requires the insured to pay the deductible; no contractor can legally waive or absorb it.',
           },
         ],
       },
       {
         _type: 'pageSection',
         type: 'highlights',
-        title: 'What Texas homeowners get wrong about storm damage claims',
+        title: 'Common storm-claim friction points and how to avoid delays',
         items: [
           {
             _type: 'pageItem',
-            title: 'Assuming no visible leak means no damage',
-            body: 'Most hail damage is not visible from inside the house until months later when compromised shingles start failing under UV exposure and thermal cycling. Granule loss, hairline cracks, and bruised mat material can all exist without a single interior leak — until the next heavy rain finds the weakened spots. By then, the claim window may be closing or closed.',
+            title: 'Treating interior leaks as the first signal',
+            body: 'By the time interior symptoms appear, documentation is usually weaker and repair scope may be larger. Ground-level exterior evidence and early professional inspection are usually more useful than waiting for indoor signs.',
           },
           {
             _type: 'pageItem',
             title: 'Waiting too long to file',
-            body: 'Texas insurers generally require claims within one to two years of the storm date, but some carriers and policies have shorter windows. Beyond the legal deadline, waiting reduces your leverage — the insurer can argue that subsequent weather, wear, or neglect contributed to the current condition. Filing promptly, even if you are not sure the damage is severe, protects your options.',
+            body: 'Policies define reporting windows and claim obligations. Even when coverage exists, delay can complicate causation and scope discussions. Prompt filing generally gives the cleanest path to resolution.',
           },
           {
             _type: 'pageItem',
-            title: 'Not having a roofer present during the adjuster visit',
-            body: 'Adjusters are trained to assess damage, but they are also trained to manage claim costs. A qualified roofer at the inspection ensures all damage is identified, documented with photos, and included in the claim scope. Homeowners who skip this step frequently receive initial claim estimates that undervalue the repair — sometimes by thousands of dollars — and then face a longer supplemental claim process to close the gap.',
+            title: 'Limited documentation at inspection time',
+            body: 'If field notes and photos are incomplete, supplemental requests take longer. A clear damage packet and a technical representative at inspection can reduce revision cycles.',
           },
           {
             _type: 'pageItem',
-            title: 'Signing with the first contractor who knocks on the door',
-            body: "After a major hail event, storm-chasing contractors flood affected neighborhoods — sometimes within hours. Not all of them will be around in six months to honor a warranty. Before signing with any roofer, verify their Texas contractor license, confirm current liability and workers' compensation insurance, check their physical business address, and ask for local references. A company that has been serving central Texas for years has a very different accountability profile than one that arrived last Tuesday.",
+            title: 'Choosing a contractor before vetting credentials',
+            body: 'Before signing, verify local operating history, insurance, references, and scope transparency. A documented scope and accountability after install matter more than speed alone.',
           },
           {
             _type: 'pageItem',
-            title: 'Accepting a claim denial without questioning it',
-            body: "If the adjuster says there is no damage but your professional roofer disagrees, you have options. You can request a re-inspection with a different adjuster, provide your roofer's detailed report and photos as supplemental evidence, or hire a public adjuster for an independent evaluation. Claim denials are not always final — they are sometimes a starting point for negotiation, especially when the homeowner has strong documentation.",
+            title: 'Stopping after the first scope disagreement',
+            body: 'If inspection findings differ, you can request re-inspection and submit supplemental documentation. Keep all communications and reports organized so the file can be re-evaluated efficiently.',
           },
         ],
       },
@@ -825,13 +825,13 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'How long does the insurance claim process take in Texas?',
             answer:
-              'From filing to settlement, the process typically takes 2 to 8 weeks for straightforward claims. Complex claims — those involving supplemental damage found during tear-off, disputes about scope, or multiple structures — can take several months. Under Texas law, insurers must acknowledge receipt of a claim within 15 days and approve or deny within 15 business days after receiving all required documentation. Delays beyond those timeframes may be grounds for a complaint to the Texas Department of Insurance.',
+              'Simple claims can resolve in weeks; complex files can take longer. Texas prompt-payment rules generally require acknowledgement within 15 days, a decision within 15 business days after required documentation is received, and payment within 5 business days after approval.',
           },
           {
             _type: 'pageItem',
             question: 'What size hail causes roof damage that requires repair?',
             answer:
-              'Hail as small as 1 inch in diameter — about the size of a quarter — can cause functional damage to standard asphalt shingles, especially when accompanied by the high winds common in Texas storms. Hailstones 1.5 inches and larger almost always require professional inspection and likely repair. At 2 inches and above, significant damage to most residential roofing materials is virtually certain. The National Weather Service documents that Texas storms frequently produce hail exceeding 2 inches in diameter.',
+              'There is no single universal threshold because damage depends on material type, roof age, wind, impact angle, and installation condition. Any storm with notable hail or wind should be evaluated by a professional inspection rather than judged by diameter alone.',
           },
           {
             _type: 'pageItem',

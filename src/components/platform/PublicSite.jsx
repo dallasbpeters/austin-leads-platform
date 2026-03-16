@@ -7,7 +7,6 @@ import {
   Car,
   Flash,
   HomeShield,
-  HomeSimple,
   Thunderstorm,
   WarningTriangle,
   WindowTabs,
@@ -19,6 +18,7 @@ import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import Band from '@/components/Band'
 import CalculatorSection from '@/components/CalculatorSection'
 import CostsSection from '@/components/CostsSection'
@@ -114,8 +114,8 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
       <div
         className={
           hasHeroImage
-            ? "grid relative max-w-7xl gap-10 mx-auto px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-[1.35fr_0.95fr]"
-            : "grid relative max-w-7xl gap-10 mx-auto px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-1"
+            ? "grid relative max-w-7xl gap-10 mx-auto px-3 md:px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-[1.35fr_0.95fr]"
+            : "grid relative max-w-7xl gap-10 mx-auto px-3 md:px-6 py-24 lg:px-10 place-content-center z-10 lg:grid-cols-1"
         }
       >
         <div className="space-y-6">
@@ -185,7 +185,7 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
                   Snapshot
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4">
+              <CardContent className="grid gap-3 px-3">
                 {section.metrics?.map((metric) => (
                   <div
                     className={
@@ -233,7 +233,7 @@ function StorySection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:StorySection"
         content={`story section from ${section?._type || 'page section'}`}
       />
-      <div className="grid max-w-7xl mx-auto px-6 py-24 lg:px-10 grid-cols-1 place-items-start">
+      <div className="grid max-w-7xl mx-auto px-3 md:px-6 py-24 lg:px-10 grid-cols-1 place-items-start">
         {section.eyebrow ? (
           <Badge variant="outline" className="text-foreground bg-secondary border-secondary/20">
             {section.eyebrow}
@@ -263,7 +263,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:CardGridSection"
         content={`highlight cards from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
         <div className="grid max-w-3xl gap-2 mb-8">
           <h2 className="text-3xl text-foreground md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
@@ -330,7 +330,7 @@ function GuideGridSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:GuideGridSection"
         content={`guide grid from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
         <div className="max-w-3xl mb-8">
           <h2 className="mb-4 text-3xl text-foreground md:text-4xl">{section.title}</h2>
           {section.body ? (
@@ -356,10 +356,10 @@ const serviceIconMap = {
   heatpump: AirConditioner,
   solarbattery: BatteryCharging,
   detachreset: Wrench,
-  shingles: HomeSimple,
+  shingles: HomeShield,
   metalroofing: HomeShield,
   stormdamage: Thunderstorm,
-  commercialroofing: Wrench,
+  commercialroofing: HomeShield,
   hailinspection: AreaSearch,
   rodent: WarningTriangle,
   electrical: Flash,
@@ -439,17 +439,27 @@ function getServiceIcon(item) {
     return IconoirIcons[item.icon]
   }
 
-  const title =
-    `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
+  const title = `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''} ${portableTextToPlainText(item.body || item.answer) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return AreaSearch
+  if (title.includes('hail')) return Thunderstorm
+  if (title.includes('storm')) return Thunderstorm
+  if (title.includes('insurance')) return HomeShield
+  if (title.includes('roof')) return HomeShield
+  if (title.includes('shingle')) return HomeShield
+  if (title.includes('metal')) return HomeShield
+  if (title.includes('commercial')) return HomeShield
   if (title.includes('insulation') || title.includes('air sealing')) return HomeShield
   if (title.includes('duct')) return AirConditioner
   if (title.includes('window')) return WindowTabs
   if (title.includes('heat pump')) return AirConditioner
+  if (title.includes('warranty')) return HomeShield
+  if (title.includes('incentive') || title.includes('rebate')) return Flash
+  if (title.includes('electrical')) return Flash
+  if (title.includes('charger') || title.includes('ev')) return Car
   if (title.includes('battery') || title.includes('solar')) return BatteryCharging
 
-  return HomeSimple
+  return AreaSearch
 }
 
 function getServiceImage(item) {
@@ -571,7 +581,7 @@ function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:ServiceGridSection"
         content={`service grid from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
         <div className="max-w-3xl mb-10">
           {section.eyebrow ? (
             <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
@@ -719,7 +729,7 @@ function StepsSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:StepsSection"
         content={`steps section from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
         <div className="max-w-3xl mb-10">
           <h2 className="text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
         </div>
@@ -761,24 +771,28 @@ function FaqSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:FaqSection"
         content={`faq section from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-6 py-20 lg:px-10">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
         <div className="max-w-3xl mb-10">
           <h2 className="text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
         </div>
         <div className="space-y-4">
+          <Card className="bg-card border-border/80 p-4">
+          <Accordion type="single" collapsible>
           {section.items?.map((item, index) => (
-            <Card
+            <AccordionItem
               key={buildRuntimeKey('faq-item', item.question, index)}
-              className="bg-card border-border/80"
+              value={item.question}
+              className="border-b border-border/80"
             >
-              <CardHeader>
-                <CardTitle className="text-foreground text-xl">{item.question}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <PortableTextContent as="div" value={item.answer} className="leading-6 text-md text-muted-foreground" />
-              </CardContent>
-            </Card>
+              <AccordionTrigger className="text-foreground text-xl">{item.question}</AccordionTrigger>
+              <AccordionContent>
+                <PortableTextContent as="div" value={item.answer} className="leading-6 text-lg text-muted-foreground" />
+              </AccordionContent>
+            </AccordionItem>
+
           ))}
+          </Accordion>
+          </Card>
         </div>
       </div>
     </section>
@@ -803,7 +817,7 @@ function HailMapSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:HailMapSection"
         content={`hail lookup section from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-6 py-10 lg:px-10">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 py-10 lg:px-10">
         <Link
           href={ctaHref}
           className="block rounded-2xl border border-white/12 bg-[linear-gradient(90deg,hsl(var(--color-secondary-h)_35%_14%),hsl(var(--color-secondary-h)_30%_11%))] p-6 text-white transition-transform hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_10px_30px_rgba(0,0,0,0.22)] md:p-8"
@@ -899,7 +913,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:AboutProfileSection"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
-      <div className="grid max-w-7xl gap-6 mx-auto px-6 py-20 lg:px-10 grid-cols-1">
+      <div className="grid max-w-7xl gap-6 mx-auto px-3 md:px-6 py-20 lg:px-10 grid-cols-1">
         <div className="max-w-3xl mb-10">
           {section.eyebrow ? (
             <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
@@ -1025,7 +1039,7 @@ function RoofingLogoCloudSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:RoofingLogoCloudSection"
         content={`logos marquee section from ${section?._type || 'local fallback section'}`}
       />
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+      <div className="max-w-7xl mx-auto px-3 md:px-6 lg:px-10">
         <LogoCloud />
       </div>
     </section>
@@ -1112,7 +1126,7 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
         markup="src/components/platform/PublicSite.jsx:CtaBannerSection"
         content={`cross-lead banner from ${section?._type || 'page section'}`}
       />
-      <div className="grid max-w-7xl gap-12 mx-auto px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid max-w-7xl gap-12 mx-auto px-3 md:px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-4" {...editAttributes}>
           {section.eyebrow ? (
             <p className="text-sm text-white/58 tracking-[0.22em] uppercase">{section.eyebrow}</p>
@@ -1308,7 +1322,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
             content: 'generic public-site shell header',
           })}
         >
-          <div className="flex items-center justify-between max-w-7xl gap-6 mx-auto px-6 py-4 lg:px-10">
+          <div className="flex items-center justify-between max-w-7xl gap-6 mx-auto px-3 md:px-6 py-4 lg:px-10">
             <Link href="/" className="flex flex-col min-w-0">
               <span className="text-md text-muted-foreground tracking-[0.22em] uppercase">
                 {site.brand?.eyebrow}
@@ -1393,7 +1407,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd })
             content: 'generic public-site shell footer',
           })}
         >
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between max-w-7xl gap-6 mx-auto px-6 py-10 lg:px-10">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between max-w-7xl gap-6 mx-auto px-3 md:px-6 py-10 lg:px-10">
             <div className="space-y-2">
               <p className="text-muted-foreground text-sm tracking-[0.2em] uppercase">{site.categoryLabel}</p>
               <h2 className="text-2xl text-foreground tracking-tight">{site.name}</h2>

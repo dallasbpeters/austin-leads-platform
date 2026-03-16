@@ -74,20 +74,38 @@ const serviceIconMap = {
   heatpump: AirConditioner,
   solarbattery: BatteryCharging,
   detachreset: Wrench,
-  shingles: HomeSimple,
-  metalroofing: HomeSimple,
+  shingles: HomeShield,
+  metalroofing: HomeShield,
   stormdamage: Thunderstorm,
-  commercialroofing: HomeSimple,
+  commercialroofing: HomeShield,
   hailinspection: Thunderstorm,
   rodent: HomeShield,
   electrical: Flash,
   evcharger: Car,
 }
 
-function resolveGuideCardIcon(iconName) {
-  if (typeof iconName !== 'string') return null
+function inferGuideCardIconFromText(value) {
+  const text = String(value || '').toLowerCase()
+
+  if (!text) return null
+  if (text.includes('hail') || text.includes('storm')) return Thunderstorm
+  if (text.includes('roof') || text.includes('insurance') || text.includes('warranty')) return HomeShield
+  if (text.includes('audit') || text.includes('inspect')) return AreaSearch
+  if (text.includes('duct')) return AirConditioner
+  if (text.includes('window')) return WindowTabs
+  if (text.includes('electrical')) return Flash
+  if (text.includes('charger') || text.includes('ev')) return Car
+  if (text.includes('battery') || text.includes('solar')) return BatteryCharging
+
+  return null
+}
+
+function resolveGuideCardIcon(iconName, fallbackText = '') {
+  if (typeof iconName !== 'string') {
+    return inferGuideCardIconFromText(fallbackText)
+  }
   const normalizedName = iconName.trim()
-  if (!normalizedName) return null
+  if (!normalizedName) return inferGuideCardIconFromText(fallbackText)
 
   if (serviceIconMap[normalizedName]) {
     return serviceIconMap[normalizedName]
@@ -97,7 +115,7 @@ function resolveGuideCardIcon(iconName) {
     return IconoirIcons[normalizedName]
   }
 
-  return null
+  return inferGuideCardIconFromText(fallbackText)
 }
 
 function normalizeCardProps(props) {
@@ -128,7 +146,10 @@ function normalizeCardProps(props) {
 }
 
 function GuideCardBody({ card }) {
-  const CardIcon = resolveGuideCardIcon(card.icon)
+  const CardIcon = resolveGuideCardIcon(
+    card.icon,
+    `${card.title || ''} ${card.copy || ''} ${card.category || ''}`,
+  )
 
   return (
     <motion.article

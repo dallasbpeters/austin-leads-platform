@@ -3,7 +3,7 @@ import { Logo01, Logo02, Logo03, Logo04, Logo05, Logo06 } from './logos'
 
 const LogoCloud = () => {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-6">
+    <div className="max-w-7xl mx-auto px-3 md:px-6 py-6">
       <Marquee
         pauseOnHover
         style={{

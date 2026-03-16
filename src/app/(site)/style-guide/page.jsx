@@ -171,8 +171,8 @@ export default async function StyleGuidePage() {
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,var(--background),var(--card))]">
-      <div className="flex flex-col max-w-[1440px] w-full gap-8 mx-auto px-4 py-6 lg:px-8 lg:py-8 sm:px-6">
-        <div className="px-6 py-8 sm:px-8 bg-card/76 border border-border rounded-[2.25rem] shadow-none backdrop-blur">
+      <div className="flex flex-col max-w-[1440px] w-full gap-8 mx-auto px-4 py-6 lg:px-8 lg:py-8 sm:px-3 md:px-6">
+        <div className="px-3 md:px-6 py-8 sm:px-8 bg-card/76 border border-border rounded-[2.25rem] shadow-none backdrop-blur">
           <div className="max-w-4xl space-y-4">
             <div className="font-semibold text-muted-foreground text-sm tracking-[0.24em] uppercase">
               Internal Reference

@@ -39,7 +39,7 @@ export default async function HailMapPage() {
       <Header />
 
       <section className="pt-40 border-b border-border/60 bg-[linear-gradient(180deg,rgba(17,30,41,0.98),rgba(17,30,41,0.94))]">
-        <div className="max-w-7xl mx-auto px-6 py-7 lg:px-10">
+        <div className="max-w-7xl mx-auto px-3 md:px-6 py-7 lg:px-10">
           <Link
             href="/hail-damage"
             className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-white/62 uppercase transition-colors hover:text-white"
@@ -55,13 +55,13 @@ export default async function HailMapPage() {
       </section>
 
       <section className=" bg-gradient">
-        <div className="max-w-7xl mx-auto px-6 py-10 lg:px-10">
+        <div className="max-w-7xl mx-auto px-3 md:px-6 py-10 lg:px-10">
           <HailWeatherLookup section={hailSection} />
         </div>
       </section>
 
       <section className="py-20 text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]">
-        <div className="grid max-w-7xl gap-12 mx-auto px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid max-w-7xl gap-12 mx-auto px-3 md:px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-4">
             <p className="text-sm text-white/58 tracking-[0.22em] uppercase">Roofing consultation</p>
             <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">Request a hail damage review</h2>

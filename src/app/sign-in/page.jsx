@@ -18,7 +18,7 @@ export default async function SignInPage({ searchParams }) {
   const callbackUrl = params?.callbackUrl || '/dashboard'
 
   return (
-    <main className="flex items-center justify-center min-h-screen px-6 py-20 bg-[linear-gradient(180deg,rgba(249,247,244,0.98),rgba(255,255,255,1))]">
+    <main className="flex items-center justify-center min-h-screen px-3 md:px-6 py-20 bg-[linear-gradient(180deg,rgba(249,247,244,0.98),rgba(255,255,255,1))]">
       <div className="grid lg:items-center max-w-5xl w-full gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-5">
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Platform security</p>

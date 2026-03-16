@@ -1,6 +1,7 @@
 import Card from './Card'
 import { HomeSimple } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
+import { Wallet, StatUp, Leaf, Clock } from 'iconoir-react'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import PortableTextContent from './PortableTextContent'
 
@@ -27,6 +28,24 @@ const items = [
   },
 ]
 
+const iconifyFallbackIconMap = {
+  'solar:wallet-money-linear': Wallet,
+  'solar:chart-square-linear': StatUp,
+  'solar:leaf-linear': Leaf,
+  'solar:history-linear': Clock,
+}
+
+function inferSnapshotIcon(item) {
+  const text = `${item?.value || ''} ${item?.copy || ''}`.toLowerCase()
+
+  if (text.includes('payback') || text.includes('savings') || text.includes('$')) return Wallet
+  if (text.includes('year') || text.includes('timeline') || text.includes('window')) return Clock
+  if (text.includes('roof') || text.includes('claim') || text.includes('insurance')) return StatUp
+  if (text.includes('solar') || text.includes('energy')) return Leaf
+
+  return StatUp
+}
+
 export default function SnapshotSection({ section = null, sectionId = 'texas-snapshot', editAttributes = {} }) {
   const eyebrow = section?.eyebrow || 'Texas Snapshot'
   const title = section?.title || 'The numbers people usually ask for.'
@@ -42,17 +61,21 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
         }))
       : items
 
-  const renderIcon = (iconName) => {
+  const renderIcon = (item) => {
+    const iconName = item?.icon
+
     if (!iconName) {
-      return <HomeSimple className="size-6" strokeWidth={2} />
+      const InferredIcon = inferSnapshotIcon(item)
+      return <InferredIcon className="size-6" strokeWidth={2} />
     }
 
-    // Support iconify ids (e.g. "solar:wallet-money-linear") and Iconoir PascalCase names from Sanity.
+    // Support legacy iconify ids and Iconoir PascalCase names from Sanity.
     if (iconName.includes(':')) {
-      return <iconify-icon icon={iconName} className="text-xl" />
+      const Icon = iconifyFallbackIconMap[iconName] || inferSnapshotIcon(item)
+      return <Icon className="size-6" strokeWidth={2} />
     }
 
-    const Icon = IconoirIcons[iconName] || HomeSimple
+    const Icon = IconoirIcons[iconName] || inferSnapshotIcon(item)
     return <Icon className="size-6" strokeWidth={2} />
   }
 
@@ -97,7 +120,7 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
           {resolvedItems.map((item) => (
             <Card key={item.value} className="p-8" variant="darkGlass">
               <div className="items-center justify-center h-10 w-10 mb-6 text-white bg-white/10 rounded-full inline-flex">
-                {renderIcon(item.icon)}
+                {renderIcon(item)}
               </div>
               <div className="mb-2 font-bold text-[1.875rem] type-accent">{item.value}</div>
               <PortableTextContent
