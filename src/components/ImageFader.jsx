@@ -72,6 +72,21 @@ export default function ImageFader({
 
   const cur = images[index]
 
+  const variants = {
+    initial: {
+        opacity: 0,
+        filter: 'blur(10px)',
+    },
+    animate: {
+        opacity: 1,
+        filter: 'blur(0px)',
+    },
+    exit: {
+        opacity: 0.5,
+        filter: 'blur(10px)',
+    },
+}
+
   const staticImage = (
     <Image
       src={cur.src}
@@ -113,10 +128,14 @@ export default function ImageFader({
         <AnimatePresence initial={false} mode="wait">
           <motion.div
             key={index}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0.5 }}
-            transition={{ duration: fadeSec, ease: 'linear' }}
+            variants={variants}
+                        initial='initial'
+                        animate='animate'
+                        exit='exit'
+                        transition={{
+                          type: "tween",
+                          duration: fadeSec,
+                      }}
             className={cn(imageClassName)}
             draggable={false}
             style={{

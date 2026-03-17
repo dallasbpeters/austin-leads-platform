@@ -69,7 +69,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           borderRadius="0"
           images={rotatingHeroImages}
           interval={10000}
-          fadeDuration={600}
+          fadeDuration={300}
           overlayStyle={overlayStyle}
           showOverlay={Boolean(overlayStyle)}
           showDots={false}

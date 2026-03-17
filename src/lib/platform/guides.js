@@ -45,6 +45,8 @@ export const solarGuides = [
     id: 'guide-how-solar-works-texas',
     number: '01',
     slug: 'how-solar-works-texas',
+    icon: 'SunLight',
+    relatedServices: ['solar-and-battery-installations'],
     title: 'How Solar Actually Works on a Texas Home',
     cardCopy:
       'Panels, inverters, the grid, and what actually changes on the electric bill once a system goes live in Texas.',
@@ -93,26 +95,31 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'SunLight',
             title: 'Panels are only one piece of performance',
             body: "Panel brand matters less than most marketing suggests. Roof orientation, pitch, shading, inverter strategy, and system sizing tend to have a bigger effect on real-world production. A south-facing roof at 15 to 30 degrees pitch in central Texas will typically outproduce a west-facing roof by 10 to 15 percent with the same equipment, and shade from a single large oak tree can reduce a roof plane's output by 25 percent or more.",
           },
           {
             _type: 'pageItem',
+            icon: 'ElectronicsChip',
             title: 'The inverter is the operating brain',
             body: 'It converts DC to AC, manages grid-safety shutdowns, and often determines how monitoring, battery add-ons, and future expansion work. String inverters work well on unshaded, uniform roofs. Microinverters or DC optimizers handle complex roof layouts and partial shading better because each panel operates independently. The inverter choice also affects what happens when you want to add storage later — not all configurations are battery-ready.',
           },
           {
             _type: 'pageItem',
+            icon: 'Flash',
             title: 'The grid still matters every single day',
             body: 'Most Texas residential systems are grid-tied. That means your utility rate structure, export-credit policy, and interconnection rules directly affect the economics. Austin Energy, Oncor, CenterPoint, and the various Texas co-ops all handle solar exports differently. Some offer close to retail value for exported power, others offer significantly less. That single variable — what your exported kWh is actually worth — can shift payback by years.',
           },
           {
             _type: 'pageItem',
+            icon: 'BatteryCharging',
             title: 'Storage is a separate decision with separate economics',
             body: 'A battery adds backup capability and load shifting, but it is not required for a solid solar project. Battery storage typically adds $10,000 to $18,000 to a residential system depending on capacity and configuration. It should be evaluated on its own cost and value — not bundled into the solar proposal to make the overall package look more impressive without clear economic justification.',
           },
           {
             _type: 'pageItem',
+            icon: 'ScaleFrameReduce',
             title: 'System size should match usage, not roof space',
             body: 'A typical Texas home uses 1,000 to 1,500 kWh per month. A 6 to 10 kW system often handles 70 to 100 percent of that, depending on roof layout and utility export policy. Filling every available roof surface sounds appealing, but if your utility credits exports at a fraction of retail rate, oversizing a system produces diminishing returns.',
           },
@@ -183,7 +190,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'How long does a solar installation take from signing to being live?',
             answer:
-              'In the Austin area, most residential installations take 2 to 4 months from contract to permission to operate. The physical installation itself is usually 1 to 3 days. The rest of the time is permitting, utility interconnection paperwork, and scheduling. If your utility requires an inspection or has a queue for interconnection approval, that can add weeks. Ask your installer for a realistic timeline specific to your utility territory.',
+              'In the Austin area, most residential installations take 2 to 4 months from contract to permission to operate. The physical installation itself is usually 1 to 3 days. The rest of the time is permitting, utility interconnection paperwork, and scheduling. If your utility requires an inspection or has a queue for interconnection approval, that can add weeks. Our solar and battery installation service covers every step from site assessment through interconnection so nothing falls through the cracks.',
           },
           {
             _type: 'pageItem',
@@ -203,6 +210,8 @@ export const solarGuides = [
     id: 'guide-solar-costs-and-payback-texas',
     number: '02',
     slug: 'solar-costs-and-payback-texas',
+    icon: 'Calculator',
+    relatedServices: ['solar-and-battery-installations', 'energy-audits'],
     title: 'What Solar Costs and What Drives Payback',
     cardCopy:
       'Installed price, tax-credit math, financing cost, export value, and the variables that actually determine whether a system pays for itself.',
@@ -220,7 +229,7 @@ export const solarGuides = [
         type: 'hero',
         eyebrow: 'Guide 02',
         title: 'What homeowners should actually expect solar to cost',
-        body: 'The real answer is not a national average and it is not the monthly payment on a postcard. It is the installed price, expected production, export value, financing structure, and how the federal credit is being treated in the numbers. All of those things vary by project.',
+        body: 'The real answer is not a national average and it is not the monthly payment on a postcard. It is the installed price, expected production, export value, and financing structure. All of those things vary by project.',
         heroImage: createStaticHeroImage({
           alt: 'Calculator, utility bill, and warm-toned tabletop still life',
           color: '#d59b53',
@@ -238,7 +247,7 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'Reading quotes honestly',
         title: 'The cleanest comparison is cost, production, and total paid over time.',
-        body: 'Most homeowners get pushed to compare proposals on the wrong variable. One quote leads with a low monthly payment, another highlights the tax-credit-adjusted cost, and a third looks cheaper because the production assumptions are weaker or the equipment scope is thinner.\n\nThe useful comparison strips all of that down to a few numbers: installed price before incentives, expected annual production in kWh, how exported power is valued, financing terms and total paid over the life of the loan, and break-even timing under assumptions you can actually verify. In the Austin market, installed cost for a typical residential system currently ranges from roughly $2.50 to $3.50 per watt before the federal credit, depending on equipment, installer, and project complexity. A 8 kW system at $3.00 per watt is $24,000 before the federal credit — which at 30 percent brings the effective cost to roughly $16,800.\n\nBut that number only means something when paired with the production estimate, the utility rate, and the export-credit structure. A system that produces 12,000 kWh per year in a utility territory where exports are credited at full retail rate has a very different payback profile than the same system in a territory that credits exports at avoided cost — which can be 40 to 60 percent less. These details are not fine print. They are the difference between a 7-year payback and a 12-year payback.',
+        body: 'Most homeowners get pushed to compare proposals on the wrong variable. One quote leads with a low monthly payment, another looks cheaper because the production assumptions are weaker, and a third uses thinner equipment to hit a lower price point.\n\nThe useful comparison strips all of that down to a few numbers: installed price, expected annual production in kWh, how exported power is valued, financing terms and total paid over the life of the loan, and break-even timing under assumptions you can actually verify. In the Austin market, installed cost for a typical residential system currently ranges from roughly $2.50 to $3.50 per watt depending on equipment, installer, and project complexity. An 8 kW system at $3.00 per watt is $24,000.\n\nBut that number only means something when paired with the production estimate, the utility rate, and the export-credit structure. A system that produces 12,000 kWh per year in a utility territory where exports are credited at full retail rate has a very different payback profile than the same system in a territory that credits exports at avoided cost — which can be 40 to 60 percent less. These details are not fine print. They are the difference between an 8-year payback and a 13-year payback.',
       },
       {
         _type: 'pageSection',
@@ -247,31 +256,37 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'HandCash',
             title: 'Installed price per watt',
             body: 'This is the starting comparison point. In central Texas, expect $2.50 to $3.50 per watt for a quality installation with tier-one equipment. Anything significantly below that range deserves scrutiny — it may reflect thinner equipment, subcontracted labor, or optimistic scope assumptions. Anything above it should come with a clear explanation of what additional value justifies the premium.',
           },
           {
             _type: 'pageItem',
-            title: 'Federal Investment Tax Credit (ITC)',
-            body: 'The residential clean energy credit currently covers 30 percent of the installed system cost, including battery storage if added. This credit reduces your federal tax liability — it is not a check from the government and it is not a discount at signing. If your federal tax liability in the year of installation is less than the credit amount, the remainder rolls forward to future tax years. Make sure your quote explains this clearly.',
+            icon: 'GraphDown',
+            title: 'Equipment cost trends',
+            body: 'Panel and battery prices have dropped over 70 percent in the last decade, making the installed cost per watt significantly lower than even a few years ago. This is now the single biggest factor working in your favor — not incentives, but the hardware itself getting cheaper while performance improves.',
           },
           {
             _type: 'pageItem',
+            icon: 'Flash',
             title: 'Utility export value',
             body: 'If exported power is credited below retail rate, oversizing a system becomes much harder to justify. Austin Energy currently offers a Value of Solar rate for exported generation that differs from the retail rate. Other Texas utilities handle it differently. This single variable changes system sizing strategy more than almost any other factor in the proposal.',
           },
           {
             _type: 'pageItem',
+            icon: 'Percentage',
             title: 'Financing structure and dealer fees',
             body: 'Dealer fees — sometimes called origination fees or channel fees — can add 15 to 30 percent to the financed amount on some solar loans, even though the monthly payment looks similar to a loan without them. A $24,000 system financed with a 25 percent dealer fee actually becomes a $30,000 loan. That difference gets buried in the term and rate, but it is real money that extends the payback timeline significantly.',
           },
           {
             _type: 'pageItem',
+            icon: 'Activity',
             title: 'Your actual usage profile',
             body: 'A home that uses 1,500 kWh per month with heavy daytime AC load captures more direct value from solar than a 900 kWh home that runs most of its power after sunset. Usage pattern — not just total usage — determines how much of the solar production you consume directly versus how much gets exported at a potentially lower credit rate.',
           },
           {
             _type: 'pageItem',
+            icon: 'Wrench',
             title: 'Upcoming roof or electrical work',
             body: 'If the home needs a roof replacement within the next five years or a panel upgrade to support the solar system, that scope should be part of the real project cost. Installing solar on a roof that needs replacement soon means paying for a detach-and-reset later — typically $2,000 to $5,000 depending on system size — plus the cost and hassle of coordinating two separate projects.',
           },
@@ -318,7 +333,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'What should I compare between solar installers?',
             answer:
-              'Installed price per watt, equipment brand and specs, expected annual production in kWh, warranties on panels, inverters, and workmanship, financing terms and total cost over time, export-credit assumptions, and how the quote treats the federal tax credit. If any of those are missing, the comparison is incomplete. The best way to evaluate proposals is to put them side by side in a spreadsheet with the same line items.',
+              'Installed price per watt, equipment brand and specs, expected annual production in kWh, warranties on panels, inverters, and workmanship, financing terms and total cost over time, and export-credit assumptions. If any of those are missing, the comparison is incomplete. The best way to evaluate proposals is to put them side by side in a spreadsheet with the same line items.',
           },
           {
             _type: 'pageItem',
@@ -342,7 +357,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'How much can I realistically save with solar in Texas?',
             answer:
-              "It depends entirely on your bill size, roof, utility, and financing choice. A homeowner with a $200 monthly electric bill, a south-facing roof, and a cash purchase may see a payback period of 7 to 9 years and meaningful savings after that for the remaining 15 to 20 years of the system's life. A homeowner with a $100 bill, a shaded roof, and a high-fee financed loan may barely break even. The honest answer is project-specific — be skeptical of anyone quoting savings without knowing your details.",
+              "It depends entirely on your bill size, roof, utility, and financing choice. A homeowner with a $200 monthly electric bill, a south-facing roof, and a cash purchase may see a payback period of 7 to 9 years and meaningful savings after that for the remaining 15 to 20 years of the system's life. A homeowner with a $100 bill, a shaded roof, and a high-fee financed loan may barely break even. The honest answer is project-specific — an energy audit can help you understand your usage before sizing a system, and our solar and battery installation service builds the proposal around your actual numbers.",
           },
         ],
       },
@@ -350,17 +365,19 @@ export const solarGuides = [
   },
 
   // ─────────────────────────────────────────────
-  // GUIDE 03 — Solar Incentives and Tax Credits
+  // GUIDE 03 — Solar Incentives in Texas
   // ─────────────────────────────────────────────
   {
     id: 'guide-texas-solar-incentives',
     number: '03',
     slug: 'texas-solar-incentives-and-tax-credits',
-    title: 'Solar Incentives and Tax Credits in Texas',
+    icon: 'Percentage',
+    relatedServices: ['solar-and-battery-installations'],
+    title: 'Solar Incentives in Texas',
     cardCopy:
-      'The federal credit, the Texas property-tax exemption, and how to verify local incentive claims before they drive your decision.',
+      'The Texas property-tax exemption, local utility programs, and how to verify incentive claims before they drive your decision.',
     description:
-      'A practical guide to solar incentives for Texas homeowners — the federal residential clean energy credit, property-tax protection, and how to verify changing local program details.',
+      'A practical guide to solar incentives for Texas homeowners — the property-tax exemption, local utility programs, and how to verify changing program details.',
     image: createStaticHeroImage({
       alt: 'Warm daylight over a solar-ready Austin neighborhood',
       color: '#7a9cb8',
@@ -378,8 +395,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'hero',
         eyebrow: 'Guide 03',
-        title: 'Which solar incentives actually affect the project',
-        body: 'Incentive pages get messy when sites promise more certainty than they can deliver. The better approach: know which incentives materially affect the project, understand which ones are time-sensitive, and verify local details yourself before letting them drive the math.',
+        title: 'Which solar incentives still affect your project',
+        body: 'The federal residential solar tax credit expired at the end of 2025. That changes the math but does not eliminate incentives entirely. Texas property-tax protection and local utility programs still matter. Know what applies, verify the details, and do not let outdated claims drive your decision.',
         heroImage: createStaticHeroImage({
           alt: 'Warm daylight over a solar-ready Austin neighborhood',
           color: '#7a9cb8',
@@ -403,30 +420,34 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'How to think about incentives',
         title: 'Incentives should improve a project that already makes sense — not rescue one that does not.',
-        body: "If the economics only work when every incentive assumption is maximized and every program stays active, the project is fragile. A strong solar investment should pencil out conservatively on its own, and incentives should make a good deal better rather than turn a marginal one into a go.\n\nThat said, the federal Investment Tax Credit alone can reduce the effective cost of a residential solar system by roughly 30 percent. On a $24,000 installation, that is a $7,200 reduction in federal tax liability — real money that significantly accelerates payback. The Texas property-tax exemption adds another layer of protection that matters more than most homeowners realize, especially in counties where appraisal increases have been aggressive.\n\nThe mistake happens when quotes stack incentives without verifying each one independently, or when local utility programs are presented as guaranteed when they are actually budget-limited or subject to annual changes. The homeowner's job is to understand which incentives are reliable, which are conditional, and what the project looks like if a conditional one falls through.",
+        body: "If the economics only work when every incentive assumption is maximized and every program stays active, the project is fragile. A strong solar investment should pencil out on the equipment and energy savings alone.\n\nWith the federal tax credit no longer available, the math is simpler now. Your project cost is your project cost — no waiting on tax filings, no re-amortization assumptions, no confusion about what is a credit versus a rebate. The Texas property-tax exemption still matters, especially in counties where appraisal increases have been aggressive. And local utility programs can still improve the numbers.\n\nThe mistake happens when quotes reference outdated incentives or present local programs as guaranteed when they are actually budget-limited or subject to annual changes. The homeowner's job is to understand which incentives are current, which are conditional, and what the project looks like without them.",
       },
       {
         _type: 'pageSection',
         type: 'highlights',
-        title: 'The incentives Texas homeowners should care about most',
+        title: 'The incentives that still apply in Texas',
         items: [
           {
             _type: 'pageItem',
-            title: 'Federal Residential Clean Energy Credit (ITC)',
-            body: 'This is typically the single largest incentive in the stack — 30 percent of the total installed cost of the system, including battery storage. The credit applies to your federal income tax liability for the year the system is placed in service. If your tax liability is less than the credit amount, the unused portion carries forward to future tax years. The 30 percent rate is currently scheduled through 2032, stepping down to 26 percent in 2033 and 22 percent in 2034.',
-          },
-          {
-            _type: 'pageItem',
+            icon: 'HomeShield',
             title: 'Texas property-tax exemption for solar and wind',
-            body: "Under Texas Tax Code Section 11.27, residential solar energy devices are exempt from property tax assessment. That means installing a $24,000 solar system will not increase your property tax bill — even though it increases your home's market value. In Travis County, where effective property tax rates run around 1.5 to 1.8 percent, that exemption saves homeowners roughly $360 to $430 per year on a system of that size. Over the life of the system, that is meaningful.",
+            body: "Under Texas Tax Code Section 11.27, residential solar energy devices are exempt from property tax assessment. That means installing a solar system will not increase your property tax bill — even though it increases your home's market value. In Travis County, where effective property tax rates run around 1.5 to 1.8 percent, that exemption saves homeowners hundreds per year. Over the life of the system, that is meaningful.",
           },
           {
             _type: 'pageItem',
+            icon: 'Flash',
             title: 'Local utility programs and rebates',
             body: 'Some Texas utilities and electric co-ops offer additional incentives — performance-based credits, rebates, or favorable export rates. But program details change. Austin Energy has adjusted its Value of Solar rate multiple times. Co-op incentive programs have budgets that run out. Any quote that relies on a local rebate should cite the specific program name, current terms, and expiration date. If it does not, ask.',
           },
           {
             _type: 'pageItem',
+            icon: 'WarningCircle',
+            title: 'The federal solar tax credit has expired',
+            body: 'The 30 percent federal residential clean energy credit expired at the end of 2025. If you see a quote or website still referencing it, that is outdated information. Any installer still promoting a 30 percent federal credit is either behind or being misleading. Your project economics should be evaluated without it.',
+          },
+          {
+            _type: 'pageItem',
+            icon: 'InfoCircle',
             title: 'No state income tax means no state solar credit',
             body: 'Texas does not have a state income tax, which means there is no state-level solar tax credit. Some solar marketing implies a "state incentive" by referencing the property-tax exemption or local utility programs. Those are real, but they are not a state tax credit. If a proposal mentions a state incentive, ask exactly what it is and verify independently.',
           },
@@ -440,7 +461,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'Check whether the quote explains eligibility clearly',
-            body: 'A credible proposal should state what the incentive is, who qualifies, what the dollar amount or percentage is, and what assumptions it is making. If the quote just shows you a lower net number without explaining how it got there, ask for the math. The federal credit is straightforward — 30 percent of installed cost. Local programs are where things get murky.',
+            body: 'A credible proposal should state what each incentive is, who qualifies, what the dollar amount or percentage is, and what assumptions it is making. If the quote just shows you a lower net number without explaining how it got there, ask for the math. Local programs are where things get murky.',
           },
           {
             _type: 'pageItem',
@@ -449,13 +470,13 @@ export const solarGuides = [
           },
           {
             _type: 'pageItem',
-            title: 'Ask how the credit is treated in the financing model',
-            body: "Some solar loans assume the homeowner applies the federal credit as a lump-sum payment to the loan within 18 months. If that happens, the monthly payment drops. If it does not happen — because the homeowner's tax situation differs — the payment stays higher than advertised. This assumption should be stated explicitly in the financing terms, not buried in the fine print.",
+            title: 'Watch for quotes still referencing the federal tax credit',
+            body: 'The 30 percent federal credit expired at the end of 2025. If a proposal still includes it in the savings math, the numbers are wrong. Ask for an updated quote that reflects current incentives only.',
           },
           {
             _type: 'pageItem',
             title: 'Verify each incentive independently before stacking them',
-            body: 'Multiple incentives can sometimes stack, but eligibility, timing, and program rules all matter. The federal credit is reliable and well-documented. The Texas property-tax exemption is codified in state law. Local utility programs are variable. Verify each piece on its own before letting the combined savings number drive the decision.',
+            body: 'Multiple incentives can sometimes stack, but eligibility, timing, and program rules all matter. The Texas property-tax exemption is codified in state law and reliable. Local utility programs are variable. Verify each piece on its own before letting the combined savings number drive the decision.',
           },
         ],
       },
@@ -466,15 +487,9 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
-            question: 'Does the federal tax credit lower the price I pay the installer?',
+            question: 'Is the federal solar tax credit still available?',
             answer:
-              'No. The credit reduces your federal tax liability when you file your return for the year the system is placed in service. You still pay the full contract price to the installer at signing or through your financing agreement. The credit comes back to you as a reduction in the taxes you owe — or as a larger refund if you have already paid more than your liability through withholding. Quotes should clearly distinguish between the contract price and the post-incentive effective cost.',
-          },
-          {
-            _type: 'pageItem',
-            question: 'Can I always stack federal, state, and local incentives together?',
-            answer:
-              'Texas does not have a state solar tax credit, so the typical stack is the federal ITC plus the property-tax exemption plus any local utility incentives. The federal credit and property-tax exemption are reliable. Local programs are conditional — verify current terms, budget availability, and eligibility requirements independently. Do not assume the full stack applies to your situation without checking each piece.',
+              'No. The 30 percent federal residential clean energy credit expired at the end of 2025. If an installer or website still references it, that information is outdated. Your project should be evaluated on current costs, current utility rates, and the incentives that are still active — primarily the Texas property-tax exemption and any local utility programs.',
           },
           {
             _type: 'pageItem',
@@ -484,9 +499,9 @@ export const solarGuides = [
           },
           {
             _type: 'pageItem',
-            question: 'What happens to the federal credit if I do not owe enough in taxes?',
+            question: 'What incentives are still available for Texas homeowners?',
             answer:
-              'The residential clean energy credit is non-refundable, meaning it can reduce your tax liability to zero but will not generate a refund beyond what you have already paid. However, any unused credit carries forward to subsequent tax years. If you owe $5,000 in federal taxes and your credit is $7,200, you use $5,000 this year and carry the remaining $2,200 forward. Consult a tax professional for your specific situation.',
+              'The Texas property-tax exemption is the most reliable — it is codified in state law and applies automatically. Beyond that, some local utilities and electric co-ops offer rebates, performance credits, or favorable export rates. These programs vary by provider and can change, so verify current terms directly with your utility before relying on them in your decision. Our solar and battery installation service includes a current incentive review as part of every proposal so the numbers reflect what actually applies to your project.',
           },
           {
             _type: 'pageItem',
@@ -506,6 +521,8 @@ export const solarGuides = [
     id: 'guide-solar-panel-detach-and-reset',
     number: '04',
     slug: 'solar-panel-detach-and-reset',
+    icon: 'Wrench',
+    relatedServices: ['detach-and-reset', 'shingle-roofing', 'metal-roofing'],
     title: 'Solar Panel Detach and Reset for Roof Replacement',
     cardCopy:
       'What happens to the panels when the roof needs work — the process, the cost, who handles what, and the questions most homeowners forget to ask.',
@@ -583,31 +600,37 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'ClipboardCheck',
             title: 'Know who is responsible for what — in writing',
             body: 'The solar company handles the electrical work, panel removal, storage, and reinstallation. The roofer handles the roof. If those scopes overlap or nobody owns the handoff — especially around flashing, penetrations, and waterproofing — things get missed. Get the coordination plan and scope boundaries documented before work begins, not negotiated during the project.',
           },
           {
             _type: 'pageItem',
+            icon: 'HandCash',
             title: 'Understand the cost before work begins',
             body: 'A detach and reset is a separate line item — typically $2,000 to $5,000 for a standard residential system, depending on system size, roof complexity, and whether any equipment needs replacement. It is not included in the roofing bid and not typically covered under the original solar contract. Get an itemized quote from the solar company before approving the roofing project.',
           },
           {
             _type: 'pageItem',
+            icon: 'ShieldCheck',
             title: 'Check your solar warranty before anyone touches the system',
             body: 'Some manufacturers require the original installer or a certified partner to perform removal and reinstallation for the warranty to remain valid. Others accept any licensed solar contractor with documentation. If an uncertified crew handles the work, the panel and inverter warranties may not survive. Contact the manufacturer directly to confirm their requirements before the project starts.',
           },
           {
             _type: 'pageItem',
+            icon: 'Camera',
             title: 'Document equipment condition before and after',
             body: 'Every panel should be photographed and its serial number recorded before removal. After reinstall, production monitoring should confirm the system is performing at or near its pre-removal output within the first week. Any decline in production should be investigated immediately — it could indicate a damaged panel, a wiring issue, or an inverter problem introduced during the process.',
           },
           {
             _type: 'pageItem',
+            icon: 'PageSearch',
             title: 'Insurance claims may cover D&R cost — but only if you ask',
             body: 'If the roof is being replaced due to storm damage, the detach-and-reset cost is often recoverable as part of the insurance claim. Many adjusters will include solar removal and reinstall in the roof replacement scope if the panels are in the way of the covered work. But this is not automatic — you need to request it specifically and get the line item included in the claim before settlement. Waiting until after the claim is finalized usually means paying out of pocket.',
           },
           {
             _type: 'pageItem',
+            icon: 'Clock',
             title: 'Timeline: expect 1 to 3 weeks of system downtime',
             body: 'The solar removal itself takes a day. The roof replacement takes 1 to 5 days depending on scope. The reinstall takes another day. Add scheduling gaps between crews, weather delays, and permitting, and most homeowners should expect their system to be offline for 1 to 3 weeks. If you are producing significant power — especially during Texas summer months — that downtime has a real dollar value worth factoring into the project timeline.',
           },
@@ -658,7 +681,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'Can I upgrade my solar system during the detach and reset?',
             answer:
-              'Yes, and this is actually a cost-effective time to do it. Since the panels are already coming off and going back on, adding panels, upgrading the inverter, or adding battery storage during the reinstall avoids a second mobilization and often reduces the incremental cost of the upgrade. If you have been considering expanding your system or adding backup power, discuss the options with your solar contractor before the D&R begins.',
+              'Yes, and this is actually a cost-effective time to do it. Since the panels are already coming off and going back on, adding panels, upgrading the inverter, or adding battery storage during the reinstall avoids a second mobilization and often reduces the incremental cost of the upgrade. Our detach-and-reset service coordinates the full process — removal, roofing, reinstall, and any upgrades — under one scope so nothing gets lost between crews.',
           },
         ],
       },
@@ -680,6 +703,8 @@ export const solarGuides = [
     id: 'guide-texas-storm-damage-roof-insurance',
     number: '05',
     slug: 'texas-storm-damage-roof-insurance-claims',
+    icon: 'Thunderstorm',
+    relatedServices: ['storm-damage-restoration', 'hail-and-wind-damage-roof-inspection'],
     title: 'Texas Storm Damage: Roof Inspection and Insurance Claims',
     cardCopy:
       'Hail and wind response in Texas: what to document, how claims timelines work, and how to avoid preventable delays.',
@@ -773,26 +798,31 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'DropletHalf',
             title: 'Treating interior leaks as the first signal',
             body: 'By the time interior symptoms appear, documentation is usually weaker and repair scope may be larger. Ground-level exterior evidence and early professional inspection are usually more useful than waiting for indoor signs.',
           },
           {
             _type: 'pageItem',
+            icon: 'Timer',
             title: 'Waiting too long to file',
             body: 'Policies define reporting windows and claim obligations. Even when coverage exists, delay can complicate causation and scope discussions. Prompt filing generally gives the cleanest path to resolution.',
           },
           {
             _type: 'pageItem',
+            icon: 'Camera',
             title: 'Limited documentation at inspection time',
             body: 'If field notes and photos are incomplete, supplemental requests take longer. A clear damage packet and a technical representative at inspection can reduce revision cycles.',
           },
           {
             _type: 'pageItem',
+            icon: 'WarningTriangle',
             title: 'Choosing a contractor before vetting credentials',
             body: 'Before signing, verify local operating history, insurance, references, and scope transparency. A documented scope and accountability after install matter more than speed alone.',
           },
           {
             _type: 'pageItem',
+            icon: 'RefreshDouble',
             title: 'Stopping after the first scope disagreement',
             body: 'If inspection findings differ, you can request re-inspection and submit supplemental documentation. Keep all communications and reports organized so the file can be re-evaluated efficiently.',
           },
@@ -813,7 +843,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'What if the adjuster and my roofer disagree about the damage?',
             answer:
-              'This happens regularly. You have the right to request a re-inspection, provide supplemental evidence from your roofer, or hire a public adjuster to perform an independent assessment. Many disputes are resolved through the supplemental claim process, where additional damage found during tear-off or documented by a second professional opinion results in an adjusted claim amount. Keep detailed records of all communications.',
+              'This happens regularly. You have the right to request a re-inspection, provide supplemental evidence from your roofer, or hire a public adjuster to perform an independent assessment. Many disputes are resolved through the supplemental claim process, where additional damage found during tear-off or documented by a second professional opinion results in an adjusted claim amount. Our storm damage restoration service includes adjuster coordination and supplemental documentation so the claim scope reflects the actual damage.',
           },
           {
             _type: 'pageItem',
@@ -831,7 +861,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'What size hail causes roof damage that requires repair?',
             answer:
-              'There is no single universal threshold because damage depends on material type, roof age, wind, impact angle, and installation condition. Any storm with notable hail or wind should be evaluated by a professional inspection rather than judged by diameter alone.',
+              'There is no single universal threshold because damage depends on material type, roof age, wind, impact angle, and installation condition. Any storm with notable hail or wind should be evaluated by a professional inspection rather than judged by diameter alone. Our hail and wind damage roof inspection covers the full exterior assessment with a written report you can use for your claim.',
           },
           {
             _type: 'pageItem',
@@ -859,6 +889,8 @@ export const solarGuides = [
     id: 'guide-when-to-replace-roof-texas',
     number: '06',
     slug: 'when-to-replace-your-roof-texas',
+    icon: 'HomeSimple',
+    relatedServices: ['shingle-roofing', 'metal-roofing', 'hail-and-wind-damage-roof-inspection'],
     title: 'When Does a Texas Roof Actually Need Replacing',
     cardCopy:
       'Age, material life, damage signs, and the honest conversation about whether to repair, replace, or plan ahead.',
@@ -903,26 +935,31 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'DropletHalf',
             title: 'Heavy granule accumulation in gutters and downspouts',
             body: "Some granule loss is normal on new shingles, but heavy accumulation in the gutters — especially after storms or a hot summer — signals that the shingle's protective layer is breaking down faster than expected. When you start seeing bare asphalt patches on the shingles themselves, the waterproofing function is already compromised.",
           },
           {
             _type: 'pageItem',
+            icon: 'WarningTriangle',
             title: 'Curling, cracking, or blistering across multiple shingles',
             body: 'These are visible signs of material breakdown. Curling edges lift in wind and allow water underneath. Cracking exposes the mat to UV and moisture. Blistering indicates trapped moisture in the shingle itself. Once these symptoms appear across a large area — not just a few isolated shingles — the roof is telling you it is in decline.',
           },
           {
             _type: 'pageItem',
+            icon: 'HomeSimple',
             title: 'Soft spots or sagging on the roof deck',
             body: 'If you can see sag lines from the ground or feel soft, spongy areas when walking the attic, moisture has likely compromised the decking. This usually means the roof has failed in that area — water has been getting through the shingle and underlayment layers long enough to damage the structural wood. This is not a repair situation; it is a replacement signal.',
           },
           {
             _type: 'pageItem',
+            icon: 'Wrench',
             title: 'Repeated leaks or patch repairs in different areas',
             body: 'One repair is routine maintenance. Two in different areas is a yellow flag. Three or more suggests the roof is declining system-wide, and continued patching will cost more over the next few years than a single replacement would. Track your repair history — when the cost of patches starts approaching 30 percent of a replacement, the math typically favors replacing.',
           },
           {
             _type: 'pageItem',
+            icon: 'Clock',
             title: 'Age beyond expected material life for your climate',
             body: 'If the roof is 15 or more years old with standard asphalt shingles and has been through multiple Texas hail seasons, a professional inspection is worth the time even if nothing looks obviously wrong from the ground. Many roof failures in Texas happen not because the roof suddenly breaks, but because cumulative damage crosses a threshold that the next storm exploits.',
           },
@@ -988,7 +1025,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'How much does a roof replacement cost in central Texas?',
             answer:
-              'For a typical 2,000 to 2,500 square foot home, a full replacement with architectural shingles runs roughly $8,000 to $15,000 depending on roof complexity, material grade, tear-off requirements, and any decking repairs needed. Impact-resistant shingles add 10 to 20 percent to the material cost. Metal roofing is significantly more — often $15,000 to $30,000 or more — but lasts substantially longer. Always get multiple written estimates with the same scope and materials specified for an accurate comparison.',
+              'For a typical 2,000 to 2,500 square foot home, a full replacement with architectural shingles runs roughly $8,000 to $15,000 depending on roof complexity, material grade, tear-off requirements, and any decking repairs needed. Impact-resistant shingles add 10 to 20 percent to the material cost. Metal roofing is significantly more — often $15,000 to $30,000 or more — but lasts substantially longer. Our shingle roofing and metal roofing services cover the full scope from tear-off through final inspection.',
           },
         ],
       },
@@ -1002,6 +1039,8 @@ export const solarGuides = [
     id: 'guide-roof-and-solar-project-planning',
     number: '07',
     slug: 'planning-roof-and-solar-together',
+    icon: 'ClipboardCheck',
+    relatedServices: ['solar-and-battery-installations', 'shingle-roofing', 'metal-roofing'],
     title: 'Planning a Roof and Solar Project Together',
     cardCopy:
       'Sequencing, bundling, cost coordination, and why the order you do things in can save or cost you thousands.',
@@ -1058,21 +1097,25 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'HandCash',
             title: 'You avoid the detach-and-reset cost entirely',
             body: 'If the roof is replaced before solar is installed, there are no panels to remove and reinstall. That saves $2,000 to $5,000 in D&R cost, eliminates system downtime, and removes the warranty risk that comes with removal and reinstallation. This is the single biggest financial reason to get the sequence right.',
           },
           {
             _type: 'pageItem',
+            icon: 'SunLight',
             title: 'The roof can be optimized for solar from the start',
             body: 'Material choice, flashing approach, vent placement, and even pipe boot locations can be coordinated with the planned solar layout. A roofer who knows where panels will go can avoid placing vents or obstructions in prime panel zones and can pre-install compatible flashing systems that make the solar installation cleaner and more watertight.',
           },
           {
             _type: 'pageItem',
+            icon: 'Calendar',
             title: 'One timeline instead of two separate disruptions',
             body: 'When both scopes are planned together, the homeowner goes through one coordinated project cycle instead of two separate mobilizations, permit processes, and inspection schedules spread across months or years. Less disruption, fewer scheduling dependencies, and a clearer overall timeline.',
           },
           {
             _type: 'pageItem',
+            icon: 'ShieldCheck',
             title: 'Solar goes onto a roof with full remaining life',
             body: 'A 25-year solar system should sit on a roof that can match that timeline. Starting with a new roof — especially one with impact-resistant materials that reduce future storm-damage risk — eliminates the single biggest threat to a solar investment: premature panel removal due to roof failure underneath.',
           },
@@ -1120,7 +1163,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'Can one company handle both roofing and solar?',
             answer:
-              'Some companies handle both. The advantage is a single point of coordination — one timeline, one scope agreement, and clear accountability for the handoff between roof completion and solar installation. You also avoid the finger-pointing that can happen when two separate companies disagree about flashing, penetration responsibility, or warranty boundaries. If you use separate contractors, get the scope boundaries and timeline dependencies in writing before either project starts.',
+              'Some companies handle both. The advantage is a single point of coordination — one timeline, one scope agreement, and clear accountability for the handoff between roof completion and solar installation. Our roofing and solar and battery installation services are designed to work as a combined scope so the material choices, flashing plan, and timeline are coordinated from the start. If you use separate contractors, get the scope boundaries and timeline dependencies in writing before either project starts.',
           },
           {
             _type: 'pageItem',
@@ -1154,6 +1197,8 @@ export const solarGuides = [
     id: 'guide-solar-battery-backup',
     number: '08',
     slug: 'solar-battery-backup-guide',
+    icon: 'BatteryCharging',
+    relatedServices: ['solar-and-battery-installations'],
     title: 'Solar Battery Backup: When Storage Is Worth the Money',
     cardCopy:
       'When a battery changes the economics, what it actually does in an outage, and how to keep the decision grounded in reality.',
@@ -1237,21 +1282,25 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'ListSelect',
             title: 'Backup scope is implied instead of specified',
             body: 'The homeowner needs to know exactly which circuits stay on during an outage, how long the battery will sustain those loads under realistic conditions, and what the recharge timeline looks like if the outage extends into a second day. If the proposal says "backup power" without specifying supported loads and expected runtime, it is not a complete proposal.',
           },
           {
             _type: 'pageItem',
+            icon: 'Calculator',
             title: 'Battery value gets blended into solar payback',
             body: 'Combining the numbers makes the overall system look better than the individual components justify. A solar system with an 8-year payback and a battery with no clear economic payback becomes a "combined system" with a "10-year payback" — which hides the fact that the battery portion may never pay for itself in pure dollar terms. That does not mean it is not worth buying. It means the value should be framed as resilience, not return on investment.',
           },
           {
             _type: 'pageItem',
+            icon: 'WarningTriangle',
             title: 'Capacity numbers are misleading without load context',
             body: 'A 13.5 kWh battery sounds like a lot, but a Texas home running the AC, refrigerator, and lights can draw 4 to 6 kW continuously. At that rate, a single battery provides roughly 2 to 3 hours of runtime — not the "all day" backup that marketing materials sometimes imply. Runtime is a function of load, not just capacity.',
           },
           {
             _type: 'pageItem',
+            icon: 'PlusCircle',
             title: 'Future expansion options are not always discussed',
             body: 'Some battery systems — like the Enphase IQ ecosystem — allow easy addition of units over time. Others have more rigid configurations. If you might want to expand storage later, the equipment choice you make now determines whether that is straightforward or requires significant additional work. Ask about expandability before signing.',
           },
@@ -1278,7 +1327,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'Can I add storage later instead of buying it now?',
             answer:
-              'Often yes, but the cost and complexity depend on the equipment you install now. Inverters like the Enphase IQ series and SolarEdge Energy Hub are designed for battery-ready configurations that make future storage additions straightforward. Other inverter types may require additional hardware or a separate battery inverter. Asking about future expandability before signing the initial solar contract can save significant cost later.',
+              'Often yes, but the cost and complexity depend on the equipment you install now. Inverters like the Enphase IQ series and SolarEdge Energy Hub are designed for battery-ready configurations that make future storage additions straightforward. Other inverter types may require additional hardware or a separate battery inverter. Our solar and battery installation service designs every system to be storage-ready so adding a battery later does not require reworking the original install.',
           },
           {
             _type: 'pageItem',
@@ -1304,6 +1353,8 @@ export const solarGuides = [
     id: 'guide-cash-vs-financing-solar-roofing',
     number: '09',
     slug: 'cash-vs-financing-solar-and-roofing',
+    icon: 'HandCash',
+    relatedServices: ['solar-and-battery-installations', 'shingle-roofing'],
     title: 'Cash vs. Financing for Solar and Roofing Projects',
     cardCopy:
       'Cash, loans, dealer fees, early payoff, and the financing details that actually change total cost on solar and roofing work.',
@@ -1351,7 +1402,7 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'How financing can mislead',
         title: 'A low monthly payment can still hide an expensive project.',
-        body: 'Here is how it works in practice. A solar system has a cash price of $24,000. Financed through a solar-specific lender with a 25-year term and embedded dealer fees of 25 percent, the actual loan amount becomes $30,000. At a 5 percent interest rate over 25 years, the monthly payment is roughly $175 — which the installer compares to your $200 electric bill. It sounds like savings.\n\nBut total paid over the life of that loan is approximately $52,500. The same system bought in cash for $24,000 — less the 30 percent federal tax credit bringing the effective cost to $16,800 — pays for itself in 7 to 9 years and then produces free electricity for another 15 to 20 years. The financed version does not break even until year 12 or later, and the total lifetime cost is more than three times the post-incentive cash price.\n\nThis does not mean financing is always wrong. Preserving cash for other priorities has real value, and not every homeowner can or should write a $24,000 check. But the homeowner should know what financing costs them — in real dollars, over real time — and make that choice with full visibility. The same dynamics apply to roofing projects, where financing terms and fee structures can vary just as widely.',
+        body: 'Here is how it works in practice. A solar system has a cash price of $24,000. Financed through a solar-specific lender with a 25-year term and embedded dealer fees of 25 percent, the actual loan amount becomes $30,000. At a 5 percent interest rate over 25 years, the monthly payment is roughly $175 — which the installer compares to your $200 electric bill. It sounds like savings.\n\nBut total paid over the life of that loan is approximately $52,500. The same system bought in cash for $24,000 pays for itself in 8 to 11 years through energy savings and then produces free electricity for another 15 to 20 years. The financed version does not break even until year 14 or later, and the total lifetime cost is more than double the cash price.\n\nThis does not mean financing is always wrong. Preserving cash for other priorities has real value, and not every homeowner can or should write a $24,000 check. But the homeowner should know what financing costs them — in real dollars, over real time — and make that choice with full visibility. The same dynamics apply to roofing projects, where financing terms and fee structures can vary just as widely.',
       },
       {
         _type: 'pageSection',
@@ -1360,21 +1411,25 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
+            icon: 'Calculator',
             title: 'Total paid over the life of the project',
             body: 'This is the clearest single number for understanding whether financing is helping or quietly inflating the cost. Ask for it. If the financed total is 50 to 100 percent more than the cash price, that gap is the cost of financing — and the homeowner should decide whether that tradeoff is worth the monthly payment convenience.',
           },
           {
             _type: 'pageItem',
+            icon: 'WarningTriangle',
             title: 'Dealer fees embedded in the financed price',
             body: 'Many solar-specific loans include dealer fees — sometimes called origination fees or channel fees — of 15 to 30 percent. These are added to the loan balance before interest, which means you pay interest on the fee itself over the life of the loan. A $24,000 system with a 25 percent dealer fee becomes a $30,000 loan. Compare the cash price to the financed amount — if there is a significant gap, dealer fees are in play.',
           },
           {
             _type: 'pageItem',
-            title: 'Tax-credit assumptions in the loan structure',
-            body: 'Some solar loans assume the homeowner applies the federal tax credit as a lump-sum payment to the loan within 12 to 18 months. If that happens, the monthly payment drops to the advertised level. If the homeowner does not apply the credit — because their tax situation differs or they simply choose not to — the payment stays higher. This should be clearly disclosed in the loan terms.',
+            icon: 'Calendar',
+            title: 'Re-amortization assumptions in the loan structure',
+            body: 'Some solar loans are structured with a re-amortization event — they assume you will make a large lump-sum payment within 12 to 18 months to reduce the balance. If that payment does not happen, the monthly payment stays higher than what was advertised. This was common when the federal tax credit was available, but the structure still exists in some loan products. Ask whether the quoted payment assumes a lump-sum paydown.',
           },
           {
             _type: 'pageItem',
+            icon: 'OpenNewWindow',
             title: 'Early payoff and exit flexibility',
             body: 'What happens if you sell the home, refinance the mortgage, or want to pay off the system early? Some solar loans have prepayment penalties. Others allow flexible payoff but keep the dealer fee embedded. For roofing financing, similar questions apply around lien structure and transfer options. Understanding your exit options before signing prevents surprises later.',
           },
@@ -1397,8 +1452,8 @@ export const solarGuides = [
           },
           {
             _type: 'pageItem',
-            title: 'Ask what happens if the tax credit is not applied to the loan',
-            body: 'If the loan assumes a re-amortization event — where the federal tax credit is applied as a lump sum to reduce the balance — ask what the monthly payment is without that assumption. This gives you the worst-case monthly number, which is what you should budget for.',
+            title: 'Ask what happens without the lump-sum paydown',
+            body: 'If the loan assumes a re-amortization event — where a lump sum is applied to reduce the balance — ask what the monthly payment is without that assumption. This gives you the worst-case monthly number, which is what you should budget for.',
           },
           {
             _type: 'pageItem',
@@ -1428,13 +1483,13 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'What financing detail do homeowners miss most often?',
             answer:
-              'Dealer fees. Most homeowners focus on the interest rate and monthly payment without noticing that the financed amount is 15 to 30 percent higher than the cash price. That markup gets compounded by interest over the entire loan term. The second most-missed detail is the tax-credit re-amortization assumption — where the loan assumes you will make a large lump-sum payment that may or may not happen.',
+              'Dealer fees. Most homeowners focus on the interest rate and monthly payment without noticing that the financed amount is 15 to 30 percent higher than the cash price. That markup gets compounded by interest over the entire loan term. The second most-missed detail is the re-amortization assumption — where the loan assumes you will make a large lump-sum payment that may or may not happen.',
           },
           {
             _type: 'pageItem',
             question: 'Can I finance both a roof replacement and solar together?',
             answer:
-              'Some lenders and contractors offer combined project financing that covers both the roof and solar installation. This can simplify the process and sometimes improve terms by increasing the total project value — which the federal tax credit applies to for the solar portion. The same comparison rules apply: total cost, fee transparency, flexible terms, and clear documentation of what is covered.',
+              'Some lenders and contractors offer combined project financing that covers both the roof and solar installation. This can simplify the process and sometimes improve terms by increasing the total project value. Our solar and battery installation and roofing services can be scoped together with a single financing structure so you see the complete picture before signing. The same comparison rules apply: total cost, fee transparency, flexible terms, and clear documentation of what is covered.',
           },
           {
             _type: 'pageItem',
@@ -1482,6 +1537,7 @@ export function getSolarGuidePages(siteSlug = 'texas-solar-and-roofing-pros') {
     pageType: 'post',
     templateLevel: 'hero',
     sections: guide.sections,
+    relatedServices: guide.relatedServices || [],
     icon: guide.icon,
   }))
 }
@@ -1515,7 +1571,7 @@ export function getGuideMetaByHref(href) {
     {
       match: /(cost|payback|finance|loan|price|rebate|incentive|credit)/,
       category: 'Cost and incentives',
-      tags: ['Pricing', 'Tax credit', 'Payback'],
+      tags: ['Pricing', 'Incentives', 'Payback'],
     },
     {
       match: /(storm|hail|claim|insurance)/,

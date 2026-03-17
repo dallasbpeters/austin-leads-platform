@@ -36,8 +36,7 @@ function calculate(rawBill) {
   const fixedCosts = 1800
   const grossCost = systemKw * 1000 * costPerWatt + fixedCosts
   const localRebate = systemKw >= 8 ? 2500 : systemKw >= 6 ? 1800 : 1200
-  const federalCredit = grossCost * 0.3
-  const netCost = Math.max(grossCost - federalCredit - localRebate, 0)
+  const netCost = Math.max(grossCost - localRebate, 0)
   const year1Savings = annualKwh * rate
   const monthlySavings = year1Savings / 12
   const payback = year1Savings > 0 ? netCost / year1Savings : 0
@@ -76,7 +75,7 @@ const fallbackCards = [
   },
   {
     title: 'Payback Period',
-    detail: 'After federal credit and a typical local rebate',
+    detail: 'After available local rebates',
     suffix: 'years',
     accent: true,
   },

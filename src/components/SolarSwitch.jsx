@@ -10,7 +10,17 @@ const SolarSwitch = ({
   trailingText = 'without sacrificing roof integrity.',
 }) => {
   const sectionRef = useRef(null)
+  const textRef = useRef(null)
   const [isActive, setIsActive] = useState(false)
+  const [textWidth, setTextWidth] = useState(0)
+
+  const circleSize = 32
+  const gap = 12
+  const horizontalPadding = 16
+  const wrapperHeight = 70
+  const wrapperWidth = Math.max(textWidth, 1) + circleSize + gap + horizontalPadding * 2
+  const textTranslateX = isActive ? 0 : circleSize + gap
+  const circleTranslateX = isActive ? textWidth + gap : 0
 
   useEffect(() => {
     if (!sectionRef.current || typeof IntersectionObserver === 'undefined') {
@@ -35,45 +45,79 @@ const SolarSwitch = ({
     }
   }, [])
 
+  useEffect(() => {
+    if (!textRef.current || typeof ResizeObserver === 'undefined') {
+      return
+    }
+
+    const measure = () => {
+      setTextWidth(Math.ceil(textRef.current?.getBoundingClientRect().width || 0))
+    }
+
+    measure()
+
+    const resizeObserver = new ResizeObserver(() => {
+      measure()
+    })
+
+    resizeObserver.observe(textRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [accentWord])
+
   return (
-    <section ref={sectionRef} className="grid max-w-7xl w-full mx-auto px-4 py-14 lg:px-8 sm:px-3 md:px-6 grid-cols-1 place-items-center">
-      <div className="relative max-w-5xl font-bold leading-[1.45em] text-[clamp(2rem,4.9vw,2.75rem)] text-center text-foreground tracking-[-0.02em]">
+    <section
+      ref={sectionRef}
+      className="mx-auto grid w-full max-w-7xl grid-cols-1 place-items-center px-4 py-14 sm:px-3 md:px-6 lg:px-8"
+    >
+      <div className="text-foreground relative max-w-5xl text-center text-[clamp(2rem,4.9vw,2.75rem)] leading-[1.25em] font-bold tracking-[-0.02em]">
         {leadingWords.map((word) => (
           <span
             key={word}
-            className="inline-block relative mr-2 duration-500 transition-opacity"
+            className="relative mr-2 inline-block transition-opacity duration-500"
             style={{ opacity: isActive ? 1 : 0.45 }}
           >
             {word}
           </span>
         ))}
 
-        <span className="relative items-center h-20 pr-4 rounded-full align-baseline inline-flex overflow-visible solar-wrapper"
-        style={{
+        <span
+          className="solar-wrapper relative inline-flex overflow-hidden rounded-full align-middle leading-none transition-colors duration-500"
+          style={{
             backgroundColor: isActive ? 'var(--color-primary)' : '#CCCCCC',
-            paddingRight: isActive ? '100px' : '0px',
-            width: '13rem',
+            width: `${wrapperWidth}px`,
+            height: `${wrapperHeight}px`,
+            verticalAlign: '-0.48em',
           }}
         >
           <span
-            className="inline-block relative ml-4 pr-10 sm:pl-10 font-semibold leading-[1.45em] text-white tracking-[-0.02em] duration-500 transition-all pointer-events-none solar-text z-20"
-            style={{ transform: isActive ? 'translateX(-32px)' : 'translateX(30px)' }}
+            ref={textRef}
+            className="leading- solar-text pointer-events-none absolute top-1/2 left-4 z-20 inline-block whitespace-nowrap font-semibold tracking-[-0.02em] text-white transition-transform duration-500"
+            style={{
+              transform: `translate(${textTranslateX}px, -50%)`,
+            }}
           >
             {accentWord}
           </span>
           <span
-            className="absolute h-8 w-8 md:h-11 md:w-11 sm:h-10 sm:w-10 rounded-full duration-500 transition-all -translate-y-1/2 left-1/2 orange-circle pointer-events-none top-1/2 z-30"
+            className="orange-circle pointer-events-none absolute top-1/2 left-4 z-30 block rounded-full transition-transform duration-500"
             style={{
               background: 'linear-gradient(rgb(255, 222, 107) 0%, rgb(255, 117, 17) 117.52%)',
-              transform: isActive ? 'translateX(2.2rem)' : 'translateX(-5.22rem)',
+              transform: `translate(${circleTranslateX}px, -50%)`,
               boxShadow: isActive ? '0 0 10px 0 rgb(255, 222, 107)' : '0 0 10px 0 rgba(255, 222, 107, 0.5)',
+              width: `${circleSize}px`,
+              height: `${circleSize}px`,
             }}
           />
         </span>
-
         <span
-          className="ml-3 font-bold leading-[1.15] tracking-[-0.02em] duration-500 transition-opacity"
-          style={{ opacity: isActive ? 0.5 : 0.15 }}
+          className="ml-3 inline-block align-middle font-bold tracking-[-0.02em] transition-opacity duration-500"
+          style={{
+            opacity: isActive ? 0.5 : 0.15,
+            verticalAlign: '-0.08em',
+          }}
         >
           {trailingText}
         </span>

@@ -66,15 +66,13 @@ export function normalizeSectionType(section) {
     return section
   }
 
-  const normalizedItems = (section.items || []).map((item) => normalizeSectionItemType(section, item))
-  const baseSection = {
-    ...section,
-    items: normalizedItems,
-  }
+  const normalizedItems = Array.isArray(section.items)
+    ? section.items.map((item) => normalizeSectionItemType(section, item))
+    : undefined
 
   if (section.type === 'hero') {
     return {
-      ...baseSection,
+      ...section,
       _type: 'heroSection',
     }
   }
@@ -352,6 +350,8 @@ export function normalizeSectionType(section) {
               name: section.personName,
               role: section.personRole,
               blurb: section.personBlurb,
+              cardGradientStart: 'primary',
+              cardGradientEnd: 'tidal',
               profileImage: section.profileImage,
               profileImageAsset: section.profileImageAsset,
               certificationLabel: section.certificationLabel,
@@ -366,6 +366,8 @@ export function normalizeSectionType(section) {
               name: section.secondaryPersonName,
               role: section.secondaryPersonRole,
               blurb: section.secondaryPersonBlurb,
+              cardGradientStart: 'primary',
+              cardGradientEnd: 'sweetcorn',
               profileImage: section.secondaryProfileImage,
               profileImageAsset: section.secondaryProfileImageAsset,
             }),
@@ -383,7 +385,10 @@ export function normalizeSectionType(section) {
   }
 
   if (section._type && section._type !== 'object' && section._type !== 'pageSection') {
-    return baseSection
+    return {
+      ...section,
+      ...(normalizedItems ? { items: normalizedItems } : {}),
+    }
   }
 
   // Never emit legacy pageSection objects; fall back to a valid story section.

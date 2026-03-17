@@ -263,15 +263,15 @@ export const mainServices = [
       heroBody: `A heat pump handles heating and cooling but uses significantly less energy. For Texas homeowners with high summer bills and mild winters, it's one of the best comfort investments you can make.`,
       storyTitle: `One system does both, for a fraction of what you're paying now.`,
       storyBody:
-        'You probably have a furnace for winter and an AC for summer: two separate systems, neither very efficient. A heat pump replaces both. In summer it removes heat; in winter it adds heat from outside. Because it moves heat instead of generating it, it uses 2-3x less energy. With federal tax credits and utility rebates, the payback time is quick.',
+        'You probably have a furnace for winter and an AC for summer: two separate systems, neither very efficient. A heat pump replaces both. In summer it removes heat; in winter it adds heat from outside. Because it moves heat instead of generating it, it uses 2-3x less energy. With utility rebates available, the payback time is quick.',
       highlights: [
         {
           title: '2-3x more efficient than traditional furnaces',
           body: `A gas furnace burns fuel to make heat. A heat pump moves heat with electricity, so it's much more efficient. The difference shows on every bill.`,
         },
         {
-          title: 'Federal tax credits and utility rebates available',
-          body: 'The Inflation Reduction Act offers up to $2,000 in tax credits for qualifying installations. Texas utilities often add rebates on top. We help you identify every incentive you qualify for.',
+          title: 'Utility rebates available for qualifying installs',
+          body: 'Texas utilities offer rebates for high-efficiency heat pump installations. We help you identify every incentive you qualify for and handle the paperwork.',
         },
         {
           title: 'Variable-speed models reduce temperature swings',
@@ -289,7 +289,7 @@ export const mainServices = [
         },
         {
           title: 'Commission the system: verify charge, measure static pressure, check every register',
-          body: 'Refrigerant charge is verified using superheat and subcooling, not just pressure. Static pressure is measured to confirm the duct system works with the new equipment. Airflow is checked at every register. We program the thermostat and walk you through the tax credit process.',
+          body: 'Refrigerant charge is verified using superheat and subcooling, not just pressure. Static pressure is measured to confirm the duct system works with the new equipment. Airflow is checked at every register. We program the thermostat and walk you through everything.',
         },
       ],
       faq: [
@@ -313,7 +313,7 @@ export const mainServices = [
     eyebrow: 'Generate and store power',
     subtitleLabel: 'Best when',
     subtitleValue: `You're ready to control your energy bill long-term`,
-    body: 'Solar panels turn your roof into a power source, and a battery keeps critical systems running when the grid goes down. The 30% federal tax credit covers about a third of the installed cost.',
+    body: 'Solar panels turn your roof into a power source, and a battery keeps critical systems running when the grid goes down. Panels cost less than half what they did ten years ago.',
     image: {
       urls: {
         regular:
@@ -326,15 +326,15 @@ export const mainServices = [
       heroBody: `After grid failures in 2021 and blackouts since, Texas homeowners learned the grid isn't always reliable. Solar and battery storage let you generate your own power, lower your bill, and keep critical systems running during outages.`,
       storyTitle: `Your roof is already collecting energy. You're just not using it.`,
       storyBody:
-        'That sunlight turns into heat your AC has to fight. Solar panels convert it into electricity instead. Add a battery for backup power with no fuel, noise, or maintenance. Panels cost 70% less than ten years ago. The federal tax credit covers 30%. We design your system around your real bills, not estimates.',
+        'That sunlight turns into heat your AC has to fight. Solar panels convert it into electricity instead. Add a battery for backup power with no fuel, noise, or maintenance. Panels cost 70% less than ten years ago. We design your system around your real bills, not estimates.',
       highlights: [
         {
           title: 'Custom system design based on your actual usage',
           body: 'Panel count, battery size, and inverter capacity match how your household actually uses energy. No generic designs.',
         },
         {
-          title: '30% federal tax credit on total installed cost',
-          body: 'The credit covers 30% of everything: panels, batteries, inverter, wiring, labor, and permits. Dollar-for-dollar federal tax credit.',
+          title: 'Panels cost 70% less than a decade ago',
+          body: 'Equipment costs have dropped dramatically. Combined with financing options and utility buyback programs, payback timelines keep getting shorter.',
         },
         {
           title: 'Battery backup keeps critical systems running',
@@ -348,7 +348,7 @@ export const mainServices = [
         },
         {
           title: 'Custom system design, financing options, permits, and utility interconnection',
-          body: `Your proposal includes panel count, inverter type, battery sizing (if applicable), projected savings, and payback timeline with and without the 30% federal tax credit. We handle building permits, electrical permits, and the utility interconnection application -- that's typically 2-4 weeks of paperwork you never have to touch.`,
+          body: `Your proposal includes panel count, inverter type, battery sizing (if applicable), projected savings, and payback timeline. We handle building permits, electrical permits, and the utility interconnection application -- that's typically 2-4 weeks of paperwork you never have to touch.`,
         },
         {
           title: 'Install in 1-2 days, pass city inspection, and activate with live monitoring',
@@ -370,7 +370,7 @@ export const mainServices = [
         },
         {
           question: 'How much does a solar system cost in Texas?',
-          answer: 'A typical residential system runs $15,000-30,000 before the 30% federal tax credit. After the credit, most systems land at $10,500-21,000. Battery adds $8,000-15,000 depending on capacity. Your proposal breaks down every line item.',
+          answer: 'A typical residential system in Texas runs $15,000-30,000 depending on size, equipment, and roof complexity. Battery adds $8,000-15,000 depending on capacity. Your proposal breaks down every line item so you see exactly where the money goes.',
         },
         {
           question: 'Can I finance solar with no money down?',
@@ -417,12 +417,8 @@ export const mainServices = [
           answer: `If your roof has less than 10 years of life left, do the roof first. Putting panels on a roof that needs replacing soon means paying to remove and reinstall them later. We'll give you an honest answer on timing.`,
         },
         {
-          question: 'What is the federal solar tax credit?',
-          answer: 'A 30% dollar-for-dollar federal tax credit on total installed cost -- panels, battery, inverter, wiring, labor, and permits. You claim it when you file taxes for the year the system was installed.',
-        },
-        {
           question: 'Do I get incentives if I lease instead of buy?',
-          answer: 'No. The federal tax credit and other incentives go to the system owner. If you lease, the leasing company gets them. Ownership is almost always better financially if you can finance or pay cash.',
+          answer: 'No. Available incentives go to the system owner. If you lease, the leasing company keeps them. Ownership is almost always better financially if you can finance or pay cash.',
         },
         {
           question: 'What are solar buyback programs?',
@@ -950,7 +946,7 @@ export const specialtyServices = [
       heroBody:
         'Public charging is slow, expensive, and inconvenient. A Level 2 home charger lets you plug in and wake up full. We handle the electrical work, permit, and installation.',
       storyTitle: 'Charge at home like you charge your phone.',
-      storyBody: `You don't drive to a gas station to charge your phone. A Level 2 charger uses a 240-volt circuit (like your dryer) and adds 25-30 miles per hour. Plug in after dinner, wake up full. Home electricity in Texas averages 12-14 cents per kWh versus 30-50 cents at public chargers. That's hundreds saved per year. The 30% federal tax credit covers up to $1,000 of installation.`,
+      storyBody: `You don't drive to a gas station to charge your phone. A Level 2 charger uses a 240-volt circuit (like your dryer) and adds 25-30 miles per hour. Plug in after dinner, wake up full. Home electricity in Texas averages 12-14 cents per kWh versus 30-50 cents at public chargers. That's hundreds saved per year.`,
       highlights: [
         {
           title: 'Full charge overnight, every night',
@@ -961,8 +957,8 @@ export const specialtyServices = [
           body: 'Home electricity runs 12-14 cents per kWh in Texas. Public fast chargers charge 30-50 cents. Charging at home, especially off-peak, saves hundreds per year.',
         },
         {
-          title: '30% federal tax credit on installation',
-          body: 'The federal government offers a 30% credit (up to $1,000) on residential EV charger installation: labor, parts, and permits.',
+          title: 'Simple, one-day installation',
+          body: 'Most installs take a single day. We handle the permit, run a dedicated 240V circuit, mount the charger, and test it with your vehicle before we leave.',
         },
       ],
       steps: [
@@ -978,7 +974,7 @@ export const specialtyServices = [
         {
           title:
             'Test charging rate with your actual vehicle, pass city inspection, and set up off-peak scheduling',
-          body: 'We plug in your car and verify the expected amperage and 25-30 miles per hour. The city inspector checks the circuit and installation. We walk you through the app, set up off-peak charging, and show you how to file the tax credit.',
+          body: 'We plug in your car and verify the expected amperage and 25-30 miles per hour. The city inspector checks the circuit and installation. We walk you through the app and set up off-peak charging so you pay the lowest rate.',
         },
       ],
       faq: [

@@ -33,6 +33,10 @@ const previewText = (value, fallback) => {
   return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
 }
 const arrayCount = (value) => (Array.isArray(value) ? value.length : 0)
+const ctaThemeOptions = [
+  { title: 'Light', value: 'light' },
+  { title: 'Dark', value: 'dark' },
+]
 
 const portableTextSimpleType = {
   name: 'portableTextSimple',
@@ -516,6 +520,28 @@ const pageItemType = {
       title: 'Href',
       type: 'string',
       options: canvasPurpose('Optional link target for this item when it should open another page.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'string',
+      options: canvasPurpose('Optional CTA label for guide and card-style items.'),
+    },
+    {
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      options: canvasPurpose('Optional category label for filtering or grouping card-style items.'),
+    },
+    {
+      name: 'color',
+      title: 'Card color',
+      type: 'string',
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Optional fixed color token for card-style items.'),
+      },
     },
     {
       name: 'icon',
@@ -1128,6 +1154,28 @@ const aboutProfilePersonType = {
       options: canvasPurpose('Short profile summary for this person.'),
     },
     {
+      name: 'cardGradientStart',
+      title: 'Card gradient start',
+      type: 'string',
+      initialValue: 'primary',
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Theme color token for the start of this person card gradient.'),
+      },
+    },
+    {
+      name: 'cardGradientEnd',
+      title: 'Card gradient end',
+      type: 'string',
+      initialValue: 'tidal',
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Theme color token for the end of this person card gradient.'),
+      },
+    },
+    {
       name: 'profileImage',
       title: 'Profile image',
       type: 'heroImage',
@@ -1168,6 +1216,14 @@ const aboutProfilePersonType = {
     select: {
       title: 'name',
       subtitle: 'role',
+      cardGradientStart: 'cardGradientStart',
+      cardGradientEnd: 'cardGradientEnd',
+    },
+    prepare({ title, subtitle, cardGradientStart, cardGradientEnd }) {
+      return {
+        title: title || 'About profile person',
+        subtitle: `${subtitle || 'Profile card'} • ${cardGradientStart || 'primary'} to ${cardGradientEnd || 'tidal'}`,
+      }
     },
   },
 }
@@ -2051,6 +2107,7 @@ const ctaSectionType = {
   type: 'object',
   initialValue: {
     type: 'cta',
+    theme: 'light',
   },
   fields: [
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
@@ -2073,6 +2130,17 @@ const ctaSectionType = {
       type: 'string',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Label for the primary CTA button or link.'),
+    },
+    {
+      name: 'theme',
+      title: 'Theme',
+      type: 'string',
+      initialValue: 'light',
+      options: {
+        list: ctaThemeOptions,
+        layout: 'radio',
+        ...canvasPurpose('Choose the visual style for this CTA section.'),
+      },
     },
     {
       name: 'avatarEyebrow',
@@ -2131,12 +2199,111 @@ const ctaSectionType = {
   },
 }
 
+
+const scrollTextSectionType = {
+  name: 'scrollTextSection',
+  title: 'Scroll Text Section',
+  type: 'object',
+  initialValue: {
+    type: 'scrollText',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'text',
+      title: 'Texts',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: canvasPurpose('Texts to scroll.'),
+    },
+    {
+      name: 'fontSize',
+      title: 'Font size',
+      type: 'number',
+      options: canvasPurpose('Font size of the text.'),
+    },
+    {
+      name: 'textColor',
+      title: 'Text color',
+      type: 'color',
+      options: canvasPurpose('Color of the text.'),
+    },
+    {
+      name: 'showIcon',
+      title: 'Show icon',
+      type: 'boolean',
+      options: canvasPurpose('Show icon.'),
+    },
+    {
+      name: 'showFlag',
+      title: 'Show Texas flag',
+      type: 'boolean',
+      options: canvasPurpose('Show a Texas flag icon next to each scrolling text item.'),
+    },
+    {
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: canvasPurpose('Icon to show.'),
+    },
+    {
+      name: 'velocity',
+      title: 'Velocity',
+      type: 'number',
+      options: canvasPurpose('Velocity of the scroll.'),
+    },
+    {
+      name: 'direction',
+      title: 'Direction',
+      type: 'string',
+      options: canvasPurpose('Direction of the scroll.'),
+    },
+    {
+      name: 'startPosition',
+      title: 'Start position',
+      type: 'number',
+      options: canvasPurpose('Start position of the scroll.'),
+    },
+    {
+      name: 'damping',
+      title: 'Damping',
+      type: 'number',
+      options: canvasPurpose('Damping of the scroll.'),
+    },
+    {
+      name: 'stiffness',
+      title: 'Stiffness',
+      type: 'number',
+      options: canvasPurpose('Stiffness of the scroll.'),
+    },
+    {
+      name: 'numCopies',
+      title: 'Number of copies',
+      type: 'number',
+      options: canvasPurpose('Number of copies to show.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      text: 'text',
+    },
+    prepare({ title, text }) {
+      return {
+        title: title || 'Scroll text section',
+        subtitle: previewText(text, 'Texts to scroll'),
+      }
+    },
+  },
+}
+
 const ctaBannerSectionType = {
   name: 'ctaBannerSection',
   title: 'Cross-Lead Banner Section',
   type: 'object',
   initialValue: {
     type: 'ctaBanner',
+    theme: 'dark',
   },
   fields: [
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
@@ -2165,6 +2332,17 @@ const ctaBannerSectionType = {
       title: 'Button label',
       type: 'string',
       options: canvasPurpose('Lead form submit label override.'),
+    },
+    {
+      name: 'theme',
+      title: 'Theme',
+      type: 'string',
+      initialValue: 'dark',
+      options: {
+        list: ctaThemeOptions,
+        layout: 'radio',
+        ...canvasPurpose('Choose the visual style for this cross-lead CTA banner.'),
+      },
     },
     {
       name: 'avatarEyebrow',
@@ -2213,6 +2391,62 @@ const ctaBannerSectionType = {
       return {
         title: title || eyebrow || 'Cross-lead banner',
         subtitle: previewText(body, 'Lead banner'),
+      }
+    },
+  },
+}
+
+const secondaryCTASectionType = {
+
+  name: 'secondaryCTASection',
+  title: 'Secondary CTA Section',
+  type: 'object',
+  initialValue: {
+    type: 'secondaryCTA',
+  }, 
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Heading shown above the secondary CTA.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Supporting copy for the secondary CTA banner.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'CTA label',
+      type: 'string',
+      options: canvasPurpose('Label shown in the secondary CTA banner button.'),
+    },
+    {
+      name: 'ctaHref',
+      title: 'CTA URL',
+      type: 'string',
+      options: canvasPurpose('Destination URL for the secondary CTA banner.'),
+    },
+    {
+      name: 'color',
+      title: 'Color',
+      type: 'color',
+      options: canvasPurpose('Color of the secondary CTA.'),
+    },
+  ],  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      color: 'color',
+    },
+    prepare({ title, body }) {
+      return {
+        title: title || 'Secondary CTA section',
+        subtitle: previewText(body, 'Secondary CTA section'),
       }
     },
   },
@@ -2586,6 +2820,8 @@ const baseFields = [
       { type: 'quoteSection' },
       { type: 'ctaSection' },
       { type: 'ctaBannerSection' },
+      { type: 'secondaryCTASection' },
+      { type: 'scrollTextSection' },
       { type: 'hailMapSection' },
       { type: 'bandSection' },
       { type: 'logosSection' },
@@ -2669,12 +2905,14 @@ export default [
   snapshotSectionType,
   incentivesSectionType,
   testimonialsSectionType,
+  scrollTextSectionType,
   highlightsSectionType,
   stepsSectionType,
   faqSectionType,
   quoteSectionType,
   ctaSectionType,
   ctaBannerSectionType,
+  secondaryCTASectionType,
   hailMapSectionType,
   bandSectionType,
   logosSectionType,

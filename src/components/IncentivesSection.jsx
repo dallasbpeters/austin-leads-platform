@@ -20,7 +20,7 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
         'Roof claims get expensive when the details are misunderstood. This section is here to explain hail damage, aging roofs, RCV vs ACV policies, claim timing, and when detach and reset becomes part of the job.',
         'The goal is simple: help you understand whether you are looking at normal roof wear, storm damage with an insurance angle, or a roofing project that needs to be planned correctly before solar enters the picture.',
       ]
-  const ctaLabel = section?.ctaLabel || 'Review roofing + insurance basics'
+  const ctaLabel = String(section?.ctaLabel || '').trim()
   const ctaHref = section?.ctaHref || '/resources/roof-insurance-and-claim-realities'
   const imageUrl =
     getImageUrl(section?.imageAsset, section?.image) ||
@@ -49,9 +49,11 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
               <PortableTextContent key={paragraph} as="p" value={paragraph} />
             ))}
           </div>
-          <Button href={ctaHref} pill variant="primary" size="md">
-            {ctaLabel}
-          </Button>
+          {ctaLabel ? (
+            <Button href={ctaHref} pill variant="primary" size="md">
+              {ctaLabel}
+            </Button>
+          ) : null}
         </div>
 
         <div className="h-[400px] rounded-3xl overflow-hidden">

@@ -3,9 +3,9 @@ import PortableTextContent from './PortableTextContent'
 
 const fallbackStatItems = [
   {
-    number: '30%',
-    title: 'Federal Tax Credit',
-    body: "The federal Investment Tax Credit lets you claim 30% of your total solar cost against your federal taxes. On a $22,000 system, that's $6,600 back.",
+    number: '70%',
+    title: 'Panel Cost Drop',
+    body: 'Solar panel costs have dropped over 70% in the last decade. That means the same system that was out of reach five years ago is often affordable today with standard financing.',
   },
   {
     number: '$$$',

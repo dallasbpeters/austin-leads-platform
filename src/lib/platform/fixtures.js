@@ -17,7 +17,7 @@ const tierMap = {
 
 const brandByCategory = {
   solarRoofing: {
-    primary: 'hsl(16 82% 62%)',
+    primary: 'hsl(205 99% 36%)',
     secondary: 'hsl(204 42% 13%)',
     accent: 'hsl(190 58% 61%)',
     surface: 'hsl(24 44% 97%)',
@@ -403,7 +403,7 @@ export const pages = [
           },
           {
             title: 'Payback Period',
-            body: 'After federal credit and a typical local rebate',
+            body: 'After available local rebates',
           },
         ],
       },
@@ -416,9 +416,9 @@ export const pages = [
           'If you are trying to decide whether solar is worth it, start with the numbers that matter most: total project cost, incentives, expected production, and realistic payback.',
         items: [
           {
-            number: '30%',
-            title: 'Federal Tax Credit',
-            body: "The federal Investment Tax Credit lets you claim 30% of your total solar cost against your federal taxes. On a $22,000 system, that's $6,600 back.",
+            number: '70%',
+            title: 'Panel Cost Drop',
+            body: 'Solar panel costs have dropped over 70% in the last decade. That means the same system that was out of reach five years ago is often affordable today with standard financing.',
           },
           {
             number: '$$$',
@@ -613,7 +613,7 @@ export const pages = [
         type: 'hero',
         eyebrow: 'Solar pricing in Austin',
         title: 'How much does solar actually cost in Texas? It depends on your house.',
-        body: 'You have probably seen numbers all over the map. That is because every home is different. This page breaks down installed cost, financing, tax credits, and realistic payback so you can compare apples to apples before talking to anyone.',
+        body: 'You have probably seen numbers all over the map. That is because every home is different. This page breaks down installed cost, financing, and realistic payback so you can compare apples to apples before talking to anyone.',
         heroImage: {
           urls: {
             regular:
@@ -637,7 +637,7 @@ export const pages = [
           },
           {
             title: 'Which credits and exemptions apply to you',
-            body: 'The federal tax credit is the big one, but local utility programs and property-tax exemptions matter too. We explain what is available now and what you need to verify before signing.',
+            body: 'Local utility programs and property-tax exemptions can reduce your net cost. We explain what is available now and what you need to verify before signing.',
           },
           {
             title: 'Whether you should get a quote or keep researching',
@@ -931,7 +931,7 @@ export const pages = [
     slug: 'incentives',
     title: 'Austin Solar Incentives',
     description:
-      'Which solar incentives, tax credits, and exemptions are actually available for Texas homeowners right now.',
+      'Which solar incentives and exemptions are actually available for Texas homeowners right now.',
     pageType: 'locationPage',
     templateLevel: 'hero',
     sections: [
@@ -939,7 +939,7 @@ export const pages = [
         type: 'hero',
         eyebrow: 'Solar incentives in Texas',
         title: 'Know exactly which solar incentives apply to your home before you price a thing.',
-        body: 'The federal tax credit gets the headlines, but local utility programs, property-tax exemptions, and financing deals all affect the real number. This page tells you what is available now and what you need to double-check before relying on it.',
+        body: 'Local utility programs, property-tax exemptions, and financing deals all affect your real cost. This page tells you what is available now and what you need to double-check before relying on it.',
         heroImage: {
           urls: {
             regular:
@@ -948,7 +948,7 @@ export const pages = [
           alt: 'Solar panels representing incentive and project planning',
         },
         metrics: [
-          { label: 'Biggest factor', value: 'Federal tax credit' },
+          { label: 'Biggest factor', value: 'Equipment cost drop' },
           { label: 'Also check', value: 'Local utility programs' },
           { label: 'Use this for', value: 'Project planning' },
         ],
@@ -966,7 +966,7 @@ export const pages = [
           {
             question: 'Which incentives should I check first?',
             answer:
-              'Start with the federal solar tax credit. Then check your local utility for any active rebate, look at the property-tax exemption for solar in Texas, and factor in how financing assumptions change the payback.',
+              'Start with your local utility to check for any active rebate. Then look at the property-tax exemption for solar in Texas, and factor in how financing assumptions change the payback.',
           },
           {
             question: 'Can I count on a rebate still being available when I am ready to install?',
@@ -1694,7 +1694,7 @@ export const initialAnalyticsSnapshots = [
       { path: '/solar-costs', sessions: 1940, conversionRate: 4.2 },
       { path: '/incentives', sessions: 980, conversionRate: 2.3 },
     ],
-    topQueries: ['austin solar installation cost', 'austin solar tax credit', 'best solar company austin'],
+    topQueries: ['austin solar installation cost', 'austin solar incentives', 'best solar company austin'],
   },
   {
     siteSlug: 'roof-pros-of-austin',

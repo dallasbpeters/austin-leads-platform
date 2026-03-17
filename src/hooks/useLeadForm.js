@@ -44,6 +44,11 @@ export function useLeadForm({ context }) {
     setStatus('submitting')
     setMessage('')
 
+    trackLeadEvent('lead_submit_attempt', {
+      ...buildAnalyticsParams(form),
+      submit_status: 'attempt',
+    })
+
     try {
       await submitLead({
         ...context,

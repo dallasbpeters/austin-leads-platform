@@ -20,6 +20,8 @@ const sectionProjection = `
   cardCopy,
   subtitle,
   body,
+  cardGradientStart,
+  cardGradientEnd,
   leadingWords,
   accentWord,
   trailingText,
@@ -34,6 +36,19 @@ const sectionProjection = `
   autoAnimate,
   speed,
   amplitude,
+  text,
+  texts,
+  fontSize,
+  textColor,
+  showIcon,
+  showFlag,
+  icon,
+  velocity,
+  direction,
+  startPosition,
+  damping,
+  stiffness,
+  numCopies,
   roofingTitle,
   secondaryTitle,
   people[]{
@@ -42,6 +57,8 @@ const sectionProjection = `
     name,
     role,
     blurb,
+    cardGradientStart,
+    cardGradientEnd,
     certificationLabel,
     certificationTitle,
     profileImage,
@@ -286,6 +303,8 @@ const sectionProjection = `
     }
   },
   ctaLabel,
+  color,
+  theme,
   ctaHref,
   avatarEyebrow,
   avatarName,
@@ -367,6 +386,8 @@ function sanitizePerson(person) {
     name: person.name,
     role: person.role,
     blurb: person.blurb,
+    cardGradientStart: cleanRuntimeString(person.cardGradientStart),
+    cardGradientEnd: cleanRuntimeString(person.cardGradientEnd),
     certificationLabel: person.certificationLabel,
     certificationTitle: person.certificationTitle,
   }
@@ -470,6 +491,49 @@ function sanitizeSection(section) {
         : section.amplitude
           ? Number(section.amplitude)
           : section.amplitude,
+    text: Array.isArray(section.text) ? section.text.map(cleanRuntimeString).filter(Boolean) : section.text,
+    texts: Array.isArray(section.texts) ? section.texts.map(cleanRuntimeString).filter(Boolean) : section.texts,
+    fontSize:
+      typeof section.fontSize === 'number'
+        ? section.fontSize
+        : section.fontSize
+          ? Number(section.fontSize)
+          : section.fontSize,
+    textColor: resolveSanityColorValue(section.textColor),
+    showIcon: Boolean(section.showIcon),
+    showFlag: Boolean(section.showFlag),
+    icon: cleanRuntimeString(section.icon),
+    velocity:
+      typeof section.velocity === 'number'
+        ? section.velocity
+        : section.velocity
+          ? Number(section.velocity)
+          : section.velocity,
+    direction: cleanRuntimeString(section.direction),
+    startPosition:
+      typeof section.startPosition === 'number'
+        ? section.startPosition
+        : section.startPosition
+          ? Number(section.startPosition)
+          : section.startPosition,
+    damping:
+      typeof section.damping === 'number'
+        ? section.damping
+        : section.damping
+          ? Number(section.damping)
+          : section.damping,
+    stiffness:
+      typeof section.stiffness === 'number'
+        ? section.stiffness
+        : section.stiffness
+          ? Number(section.stiffness)
+          : section.stiffness,
+    numCopies:
+      typeof section.numCopies === 'number'
+        ? section.numCopies
+        : section.numCopies
+          ? Number(section.numCopies)
+          : section.numCopies,
     people: Array.isArray(section.people) ? section.people.map(sanitizePerson) : section.people,
     personLabel: section.personLabel,
     personName: section.personName,
@@ -482,6 +546,8 @@ function sanitizeSection(section) {
     secondaryPersonRole: section.secondaryPersonRole,
     secondaryPersonBlurb: section.secondaryPersonBlurb,
     ctaLabel: section.ctaLabel,
+    color: resolveSanityColorValue(section.color),
+    theme: cleanRuntimeString(section.theme),
     ctaHref: cleanRuntimeString(section.ctaHref),
     avatarEyebrow: section.avatarEyebrow,
     avatarName: section.avatarName,
@@ -625,15 +691,74 @@ function withPageSource(page, source) {
 }
 
 async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug }) {
+  const buildPortableTextSimple = (value) => {
+    const text = cleanRuntimeString(value)
+    if (!text) return []
+
+    const blockKey = `pt-${Math.random().toString(36).slice(2, 10)}`
+    const spanKey = `sp-${Math.random().toString(36).slice(2, 10)}`
+
+    return [
+      {
+        _type: 'block',
+        _key: blockKey,
+        style: 'normal',
+        markDefs: [],
+        children: [
+          {
+            _type: 'span',
+            _key: spanKey,
+            text,
+            marks: [],
+          },
+        ],
+      },
+    ]
+  }
+
   if (!page?.sections?.some((section) => section.type === 'guideGrid')) {
     return page
+  }
+
+  const isGuidesPrefixedHref = (href) => {
+    const cleanHref = cleanRuntimeString(href)
+    if (!cleanHref?.startsWith('/guides/')) {
+      return false
+    }
+
+    const slug = cleanHref.replace(/^\/+/, '')
+    const parts = slug.split('/').filter(Boolean)
+    if (parts.length !== 2 || parts[0] !== 'guides') {
+      return false
+    }
+
+    const leaf = parts[1].trim().toLowerCase()
+    if (!leaf || leaf === 'page' || leaf === 'index' || leaf === 'guides') {
+      return false
+    }
+
+    return true
+  }
+
+  const isDisplayableGuideCardHref = (href) => {
+    const cleanHref = cleanRuntimeString(href)
+    if (!cleanHref?.startsWith('/')) {
+      return false
+    }
+
+    const slug = cleanHref.replace(/^\/+/, '')
+    if (!slug || slug === 'guides' || slug === 'guides/' || slug === 'guides/page' || slug === 'guides/index') {
+      return false
+    }
+
+    return true
   }
 
   const equivalentSiteSlugs = getEquivalentSiteSlugs(siteSlug)
   const localGuidePages = pages.filter(
     (candidate) =>
       equivalentSiteSlugs.includes(candidate.siteSlug) &&
-      candidate.pageType === 'post' &&
+      (candidate.pageType === 'post' || candidate.slug?.startsWith('guides/')) &&
       candidate.slug?.startsWith('guides/'),
   )
   const localGuideMap = new Map(
@@ -646,6 +771,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
           title: guidePage.title,
           heroImage: heroSection?.heroImage ?? null,
           heroAsset: heroSection?.heroAsset ?? null,
+          guideUpdatedAt: guidePage.updatedAt || guidePage._updatedAt || guidePage.createdAt || guidePage._createdAt || null,
         },
       ]
     }),
@@ -657,23 +783,27 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
         .filter((section) => section.type === 'guideGrid')
         .flatMap((section) => section.items || [])
         .map((item) => cleanRuntimeString(item?.href))
-        .filter((href) => href?.startsWith('/guides/'))
+        .filter((href) => isGuidesPrefixedHref(href))
         .map((href) => href.replace(/^\//, '')),
     ),
   )
 
   let sanityGuideMap = new Map()
+  let allSanityGuides = []
 
   if (client && guideSlugs.length) {
     try {
       const sanityGuides = await client.fetch(
         groq`*[
-          _type == "post" &&
+          _type in ["post", "page"] &&
           site->slug.current in $siteSlugs &&
-          slug.current in $slugs
+          slug.current in $slugs &&
+          (coalesce(pageType, "") == "post" || slug.current match "guides/*")
         ]{
           title,
           "slug": slug.current,
+          _updatedAt,
+          _createdAt,
           sections[]{
             type,
             heroImage,
@@ -706,12 +836,68 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
               title: guidePage.title,
               heroImage: heroSection?.heroImage ?? null,
               heroAsset: heroSection?.heroAsset ?? null,
+              guideUpdatedAt: guidePage._updatedAt || guidePage._createdAt || null,
             },
           ]
         }),
       )
     } catch {}
   }
+
+  if (client) {
+    try {
+      allSanityGuides = await client.fetch(
+        groq`*[
+          _type in ["post", "page"] &&
+          site->slug.current in $siteSlugs &&
+          defined(slug.current) &&
+          (coalesce(pageType, "") == "post" || _type == "post")
+        ] | order(_updatedAt desc){
+          title,
+          description,
+          "slug": slug.current,
+          _updatedAt,
+          _createdAt,
+          sections[]{
+            type,
+            heroImage,
+            heroAsset{
+              altText,
+              alt,
+              asset->{
+                url,
+                metadata{
+                  dimensions{
+                    width,
+                    height
+                  }
+                }
+              }
+            }
+          }
+        }`,
+        { siteSlugs: equivalentSiteSlugs },
+        fetchOptions,
+      )
+    } catch {}
+  }
+
+  const allGuideCandidates = [
+    ...Array.from(sanityGuideMap.entries()).map(([href, value]) => ({ href, ...value })),
+    ...Array.from(localGuideMap.entries()).map(([href, value]) => ({ href, ...value })),
+    ...(allSanityGuides || []).map((guidePage) => {
+      const heroSection = guidePage.sections?.find((section) => section.type === 'hero') || null
+      const normalizedSlug = cleanRuntimeString(guidePage.slug)?.replace(/^\/+/, '')
+      return {
+        href: normalizedSlug ? `/${normalizedSlug}` : '',
+        title: guidePage.title,
+        copy: guidePage.description || '',
+        heroImage: heroSection?.heroImage ?? null,
+        heroAsset: heroSection?.heroAsset ?? null,
+        guideUpdatedAt: guidePage._updatedAt || guidePage._createdAt || null,
+      }
+    }),
+  ].filter((candidate) => isDisplayableGuideCardHref(candidate?.href))
 
   return {
     ...page,
@@ -722,21 +908,67 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
 
       return {
         ...section,
-        items: (section.items || []).map((item) => {
-          const href = cleanRuntimeString(item?.href)
-          const guidePage = sanityGuideMap.get(href) || localGuideMap.get(href)
-
-          if (!guidePage) {
-            return item
-          }
-
-          return {
+        items: (() => {
+          const existingItems = (section.items || []).map((item) => ({
             ...item,
-            title: guidePage.title || item.title,
-            image: guidePage.heroImage ?? item.image ?? null,
-            imageAsset: guidePage.heroAsset ?? item.imageAsset ?? null,
-          }
-        }),
+            href: cleanRuntimeString(item?.href),
+          }))
+          const validExistingItems = existingItems.filter((item) => isDisplayableGuideCardHref(item?.href))
+          const existingHrefSet = new Set(validExistingItems.map((item) => item.href).filter(Boolean))
+          const autoAttachedItems = allGuideCandidates
+            .filter((candidate) => candidate?.href && !existingHrefSet.has(candidate.href))
+            .map((candidate) => ({
+              title: candidate.title || '',
+              body: buildPortableTextSimple(candidate.copy),
+              href: candidate.href,
+              image: candidate.heroImage ?? null,
+              imageAsset: candidate.heroAsset ?? null,
+              guideUpdatedAt: candidate.guideUpdatedAt || null,
+            }))
+
+          return [...validExistingItems, ...autoAttachedItems]
+            .map((item, index) => {
+              const href = cleanRuntimeString(item?.href)
+              const guidePage =
+                allGuideCandidates.find((candidate) => candidate.href === href) ||
+                sanityGuideMap.get(href) ||
+                localGuideMap.get(href)
+
+              if (!guidePage) {
+                return { ...item, _originalIndex: index }
+              }
+
+              return {
+                ...item,
+                _originalIndex: index,
+                title: guidePage.title || item.title,
+                image: guidePage.heroImage ?? item.image ?? null,
+                imageAsset: guidePage.heroAsset ?? item.imageAsset ?? null,
+                guideUpdatedAt: guidePage.guideUpdatedAt || item.guideUpdatedAt || null,
+              }
+            })
+            .sort((left, right) => {
+              const leftTime = Date.parse(left?.guideUpdatedAt || '')
+              const rightTime = Date.parse(right?.guideUpdatedAt || '')
+              const hasLeftTime = Number.isFinite(leftTime)
+              const hasRightTime = Number.isFinite(rightTime)
+
+              if (hasLeftTime && hasRightTime && leftTime !== rightTime) {
+                return rightTime - leftTime
+              }
+
+              if (hasRightTime && !hasLeftTime) {
+                return 1
+              }
+
+              if (hasLeftTime && !hasRightTime) {
+                return -1
+              }
+
+              return (left?._originalIndex ?? 0) - (right?._originalIndex ?? 0)
+            })
+            .map(({ _originalIndex, ...item }) => item)
+        })(),
       }
     }),
   }

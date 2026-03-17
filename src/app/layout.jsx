@@ -7,6 +7,7 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import '../styles/globals.css'
 import { SanityLive } from '@/sanity/live'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
+import { PostHogProvider } from '@/app/providers'
 
 export const metadata = {
   title: 'Austin Leads Platform',
@@ -36,7 +37,9 @@ export default async function RootLayout({ children }) {
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
       <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">
-        {children}
+        <PostHogProvider>
+          {children}
+        </PostHogProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}
         {isDraftMode ? <SanityLive /> : null}
         {isDraftMode ? <VisualEditing /> : null}

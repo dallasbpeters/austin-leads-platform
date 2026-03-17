@@ -14,7 +14,6 @@ import {
 } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
 
-import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
@@ -33,6 +32,7 @@ import QuoteSection from '@/components/QuoteSection'
 import ResourcesSection from '@/components/ResourcesSection'
 import SnapshotSection from '@/components/SnapshotSection'
 import SolarSwitch from '@/components/SolarSwitch'
+import ScrollText from '@/components/ScrollText'
 import Testimonials from '@/components/Testimonials'
 import LogoCloud from '@/components/logo-cloud'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
@@ -64,7 +64,7 @@ function getSectionDomId(section, index) {
 function HeroSection({ page, section, sectionId, editAttributes = {} }) {
   const heroImageUrl = getHeroImageUrl(section.heroAsset, section.heroImage)
   const hasHeroImage = hasImageSource(section.heroAsset, section.heroImage)
-  const heroTitle = page?.pageType === 'post' ? page.title : section.title
+  const heroTitle = cleanRuntimeString(section?.title) || cleanRuntimeString(page?.title)
   const heroTextColor = section.heroTextColor || (hasHeroImage ? '#ffffff' : '')
   const { overlayStyle } = getHeroOverlayAppearance(section)
   const heroMutedColor = heroTextColor ? hexToRgba(heroTextColor, 0.82) : undefined
@@ -248,6 +248,49 @@ function StorySection({ section, sectionId, editAttributes = {} }) {
   )
 }
 
+function ScrollTextSection({ section, sectionId, editAttributes = {} }) {
+  const textItems = Array.isArray(section?.text)
+    ? section.text
+    : (Array.isArray(section?.texts) ? section.texts : null)
+  const hasTextItems = Array.isArray(textItems) && textItems.length > 0
+  const shouldShowIcon = Boolean(section?.showIcon || section?.showFlag || section?.icon)
+  const resolvedIcon = section?.showFlag ? 'TexasFlag' : section?.icon
+  const scrollTexts = hasTextItems
+    ? (shouldShowIcon && resolvedIcon
+        ? textItems.map((text) => ({ text, icon: resolvedIcon }))
+        : textItems)
+    : undefined
+  const numCopies = Number.isFinite(section?.numCopies) ? section.numCopies : undefined
+  const velocity = Number.isFinite(section?.velocity) ? section.velocity : undefined
+  const startPosition = Number.isFinite(section?.startPosition) ? section.startPosition : undefined
+  const damping = Number.isFinite(section?.damping) ? section.damping : undefined
+  const stiffness = Number.isFinite(section?.stiffness) ? section.stiffness : undefined
+  const fontSize = Number.isFinite(section?.fontSize) ? section.fontSize : undefined
+
+  return (
+    <section
+    id={sectionId}
+      className="bg-card border-b border-border/60"
+      {...editAttributes}
+    >
+      <ScrollText
+        texts={scrollTexts}
+        numCopies={numCopies}
+        velocity={velocity}
+        direction={section.direction}
+        startPosition={startPosition}
+        damping={damping}
+        stiffness={stiffness}
+        fontSize={fontSize}
+        textColor={section.textColor}
+        showIcon={shouldShowIcon}
+        showFlag={section.showFlag}
+        style={section.style} 
+      />
+    </section>
+  ) }
+
+
 function CardGridSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
@@ -270,7 +313,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
             <PortableTextContent as="div" value={section.subtitle} className="mb-4 leading-8 text-foreground text-xl" />
           ) : null}
         </div>
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
           {section.items?.map((item, index) => {
             const Icon = getServiceIcon(item)
 
@@ -305,7 +348,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
 
 function GuideGridSection({ section, sectionId, editAttributes = {} }) {
   const cards = (section.items || []).map((item, index) => ({
-    number: item.number || String(index + 1).padStart(2, '0'),
+    number: String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
     copy: portableTextToPlainText(item.body || item.answer),
     icon: item.icon,
@@ -848,6 +891,96 @@ function HailMapSection({ section, sectionId, editAttributes = {} }) {
   )
 }
 
+function parseColorToRgb(value) {
+  if (typeof value !== 'string') return null
+  const color = value.trim()
+
+  const shortHexMatch = color.match(/^#([0-9a-f]{3})$/i)
+  if (shortHexMatch) {
+    const [r, g, b] = shortHexMatch[1].split('').map((part) => Number.parseInt(`${part}${part}`, 16))
+    return { r, g, b }
+  }
+
+  const hexMatch = color.match(/^#([0-9a-f]{6})([0-9a-f]{2})?$/i)
+  if (hexMatch) {
+    const hex = hexMatch[1]
+    return {
+      r: Number.parseInt(hex.slice(0, 2), 16),
+      g: Number.parseInt(hex.slice(2, 4), 16),
+      b: Number.parseInt(hex.slice(4, 6), 16),
+    }
+  }
+
+  const rgbMatch = color.match(/^rgba?\(([^)]+)\)$/i)
+  if (rgbMatch) {
+    const parts = rgbMatch[1].split(',').map((part) => Number.parseFloat(part.trim()))
+    if (parts.length >= 3 && parts.slice(0, 3).every(Number.isFinite)) {
+      return { r: parts[0], g: parts[1], b: parts[2] }
+    }
+  }
+
+  return null
+}
+
+function getContrastTextBase(color) {
+  const rgb = parseColorToRgb(color)
+  if (!rgb) return '#111111'
+
+  const toLinear = (channel) => {
+    const normalized = channel / 255
+    return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4
+  }
+
+  const luminance = 0.2126 * toLinear(rgb.r) + 0.7152 * toLinear(rgb.g) + 0.0722 * toLinear(rgb.b)
+  return luminance > 0.35 ? '#111111' : '#ffffff'
+}
+
+function SecondaryCTASection({ section, sectionId, editAttributes = {} }) {
+  const ctaLabel = section?.ctaLabel || 'Request a free roofing inspection'
+  const ctaHref = section?.ctaHref?.startsWith('/') ? cleanRuntimeHref(section.ctaHref) : '/free-roofing-inspection'
+  const resolvedColor = section?.color || 'var(--color-sweetcorn)'
+  const contrastBase = getContrastTextBase(resolvedColor)
+  const blendedTextColor = `color-mix(in oklch, ${resolvedColor} 10%, ${contrastBase})`
+
+  return (
+    <section
+      id={sectionId}
+      className={`bg-card border-b border-border/60`}
+      {...editAttributes}
+
+    >
+      <div className="mx-auto max-w-7xl px-3 md:px-6 py-10 lg:px-10">
+        <Link
+          href={ctaHref}
+          className={`block rounded-2xl border py-8 border-white/12 `}
+          style={{ 
+            backgroundColor: resolvedColor,
+            color: blendedTextColor,
+           }}
+        >
+          <div className="grid items-center justify-end content-end gap-6 md:grid-cols-1">
+            <div className="space-y-3">
+              <h2 className="text-2xl text-inherit font-semibold tracking-tight md:text-3xl text-center">
+                {section?.title || 'Secondary CTA section'}
+              </h2>
+              {section?.body ? (
+                <PortableTextContent as="div" value={section.body} className="max-w-3xl mx-auto leading-7 text-inherit/85 text-center" />
+              ) : (
+                <p className=" max-w-3xl mx-auto leading-7 text-inherit text-center">
+                  Secondary CTA section
+                </p>
+              )}
+            </div>
+            <div className="place-self-center w-fit inline-flex items-center gap-3 rounded-full border border-inherit px-5 py-3 font-semibold text-sm text-inherit">
+              {ctaLabel}
+            </div>
+          </div>
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 function QuoteBannerSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
@@ -875,6 +1008,31 @@ function QuoteBannerSection({ section, sectionId, editAttributes = {} }) {
 }
 
 function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
+  const aboutCardThemeColorMap = {
+    primary: 'var(--color-primary)',
+    sweetcorn: 'var(--color-sweetcorn)',
+    voodoo: 'var(--color-voodoo)',
+    tidal: 'var(--color-tidal)',
+    secondaryAlt: 'var(--color-secondary-alt)',
+    blue400: 'var(--color-blue-400)',
+    secondary: 'var(--color-secondary)',
+    tasman: 'var(--color-tasman)',
+    chaletGreen: 'var(--color-chalet-green)',
+    metterhorn: 'var(--color-metterhorn)',
+    heather: 'var(--color-heather)',
+    wattle: 'var(--color-wattle)',
+    charade: 'var(--color-charade)',
+    ceramic: 'var(--color-ceramic)',
+    tapaGreen: 'var(--color-tapa-green)',
+    seaMist: 'var(--color-sea-mist)',
+    blackCurrent: 'var(--color-black-current)',
+    confetti: 'var(--color-confetti)',
+  }
+  const defaultAboutCardGradients = [
+    { start: 'primary', end: 'tidal' },
+    { start: 'primary', end: 'sweetcorn' },
+    { start: 'secondary', end: 'tertiary' },
+  ]
   const people = section.people?.length
     ? section.people
     : [
@@ -946,12 +1104,10 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
                 ? 'https://www.nabcep.org/wp-content/uploads/2020/01/PVTS-Registered-Seal.jpg'
                 : '')
             const resolvedBadgeImageAlt = badgeImageAlt || person.certificationTitle || 'Certification badge'
-
-            const profileCardBackgrounds = [
-              "linear-gradient(45deg, var(--color-primary), var(--color-tidal)), url('https://grainy-gradients.vercel.app/noise.svg')",
-              "linear-gradient(45deg, var(--color-primary) 25%, var(--color-sweetcorn)), url('https://grainy-gradients.vercel.app/noise.svg')",
-              "linear-gradient(45deg, var(--color-secondary), var(--color-tertiary)), url('https://grainy-gradients.vercel.app/noise.svg')",
-            ]
+            const defaultGradient = defaultAboutCardGradients[index % defaultAboutCardGradients.length]
+            const gradientStart = aboutCardThemeColorMap[person.cardGradientStart] || aboutCardThemeColorMap[defaultGradient.start]
+            const gradientEnd = aboutCardThemeColorMap[person.cardGradientEnd] || aboutCardThemeColorMap[defaultGradient.end]
+            const profileCardBackground = `linear-gradient(45deg, ${gradientStart}, ${gradientEnd}), url('https://grainy-gradients.vercel.app/noise.svg')`
 
             return (
               <Card
@@ -959,7 +1115,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
                 radius="lg"
                 className="grid content-between items-end pt-8 bg-card aspect-3/3 grid-cols-1"
                 style={{
-                  background: profileCardBackgrounds[index % profileCardBackgrounds.length],
+                  background: profileCardBackground,
                   backgroundBlendMode: 'multiply',
                 }}
               >
@@ -1070,9 +1226,13 @@ function CtaSection({ page, section, site, pathname, sectionId, editAttributes }
     (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug))
   const pageSlug = cleanRuntimeString(page?.slug)
   const pagePath = pageSlug ? `/${pageSlug}` : pathname || '/'
+  const ctaTheme = section?.theme === 'dark' ? 'dark' : 'light'
 
   return (
-    <>
+    <section
+      className="bg-transparent"
+      {...editAttributes}
+    >
       <DevTrace
         markup="src/components/platform/PublicSite.jsx:CtaSection"
         content={`shared consultation section fallback for page from ${page?.source || 'fixture'}`}
@@ -1082,11 +1242,12 @@ function CtaSection({ page, section, site, pathname, sectionId, editAttributes }
         section={section}
         sectionId={sectionId}
         variant={isRoofingContext ? 'roofingInspection' : 'default'}
+        theme={ctaTheme}
         pagePath={pagePath}
         pageTitle={page?.title || 'Texas Solar and Roofing Pros'}
-        editAttributes={editAttributes}
+        editAttributes={{}}
       />
-    </>
+    </section>
   )
 }
 
@@ -1113,6 +1274,7 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
     .map((part) => part[0]?.toUpperCase() || '')
     .join('')
   const avatarStyle = avatarColor ? { backgroundColor: avatarColor } : undefined
+  const isDarkTheme = section?.theme !== 'light'
   const leadContext = {
     sourceType: 'cross-lead',
     sourceSection: 'cta-banner',
@@ -1129,7 +1291,8 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
 
   return (
     <section
-      className="py-20 text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]"
+      className={`py-20 ${isDarkTheme ? 'text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : 'bg-card text-foreground border-b border-border/60'}`}
+      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/PublicSite.jsx:CtaBannerSection',
@@ -1141,19 +1304,19 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
         content={`cross-lead banner from ${section?._type || 'page section'}`}
       />
       <div className="grid max-w-7xl gap-12 mx-auto px-3 md:px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="space-y-4" {...editAttributes}>
+        <div className="space-y-4">
           {section.eyebrow ? (
-            <p className="text-sm text-white/58 tracking-[0.22em] uppercase">{section.eyebrow}</p>
+            <p className={`text-sm tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}>{section.eyebrow}</p>
           ) : null}
           <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">{section.title}</h2>
-          <PortableTextContent as="div" value={section.body} className="max-w-2xl leading-8 text-base text-white/78" />
+          <PortableTextContent as="div" value={section.body} className={`max-w-2xl leading-8 text-base ${isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`} />
           {avatarName ? (
             <div className="max-w-xl pt-2">
               <div className="flex items-center gap-4">
-                <Avatar size="xl" className="bg-white/10 ring-1 ring-white/20 size-16" style={avatarStyle}>
+                <Avatar size="xl" className={`size-16 ${isDarkTheme ? 'bg-white/10 ring-1 ring-white/20' : 'bg-primary ring-1 ring-black/5'}`} style={avatarStyle}>
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
                   <AvatarFallback
-                    className="font-semibold text-base text-white bg-white/12"
+                    className={`font-semibold text-base ${isDarkTheme ? 'text-white bg-white/12' : 'text-secondary-foreground bg-secondary'}`}
                     style={avatarStyle}
                   >
                     {avatarInitials || 'TS'}
@@ -1161,30 +1324,30 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
                 </Avatar>
                 <div className="min-w-0">
                   {avatarEyebrow ? (
-                    <div className="mb-1 font-semibold text-white/58 text-[11px] tracking-[0.22em] uppercase">
+                    <div className={`mb-1 font-semibold text-[11px] tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}>
                       {avatarEyebrow}
                     </div>
                   ) : null}
-                  <div className="font-semibold text-lg text-white">{avatarName}</div>
-                  {avatarRole ? <div className="text-sm text-white/72">{avatarRole}</div> : null}
+                  <div className={`font-semibold text-lg ${isDarkTheme ? 'text-white' : 'text-foreground'}`}>{avatarName}</div>
+                  {avatarRole ? <div className={`text-sm ${isDarkTheme ? 'text-white/72' : 'text-muted-foreground'}`}>{avatarRole}</div> : null}
                   {avatarBlurb ? (
-                    <PortableTextContent as="div" value={avatarBlurb} className="mt-3 text-sm leading-6 text-white/80" />
+                    <PortableTextContent as="div" value={avatarBlurb} className={`mt-3 text-sm leading-6 ${isDarkTheme ? 'text-white/80' : 'text-muted-foreground'}`} />
                   ) : null}
                 </div>
               </div>
             </div>
           ) : null}
         </div>
-        <Card className="gap-0 text-white bg-white/6 border-white/12 backdrop-blur">
+        <Card className={`gap-0 ${isDarkTheme ? 'text-white bg-white/6 border-white/12 backdrop-blur' : ''}`}>
           <CardContent>
             <LeadCaptureForm
               context={leadContext}
               compact
               buttonLabel={section.ctaLabel || 'Request a roofing intro'}
               className="grid gap-4"
-              inputClassName="border-b px-3 py-2 text-white placeholder:text-white/48"
-              labelClassName="text-white/70"
-              checkboxClassName="accent-white"
+              inputClassName={isDarkTheme ? 'border-b px-3 py-2 text-white placeholder:text-white/48' : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'}
+              labelClassName={isDarkTheme ? 'text-white/70' : 'text-slate-500'}
+              checkboxClassName={isDarkTheme ? 'accent-white' : 'accent-primary'}
               messageClassName="text-left"
             />
           </CardContent>
@@ -1264,7 +1427,9 @@ const sectionRenderers = {
   incentives: IncentivesSection,
   testimonials: Testimonials,
   resourceGrid: ResourcesSection,
+  scrollText: ScrollTextSection,
   aboutProfile: AboutProfileSection,
+  secondaryCTA: SecondaryCTASection,
   quote: QuoteBannerSection,
   highlights: CardGridSection,
   guideGrid: GuideGridSection,

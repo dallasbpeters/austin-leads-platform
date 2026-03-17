@@ -53,6 +53,30 @@ export function buildDraftHeroImage(input) {
   }
 }
 
+function toPortableTextSimple(value) {
+  const text = String(value || '').trim()
+  if (!text) return []
+  const blockKey = `pt-${Math.random().toString(36).slice(2, 10)}`
+  const spanKey = `sp-${Math.random().toString(36).slice(2, 10)}`
+
+  return [
+    {
+      _type: 'block',
+      _key: blockKey,
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: spanKey,
+          text,
+          marks: [],
+        },
+      ],
+    },
+  ]
+}
+
 function splitDraftSentences(value) {
   return String(value || '')
     .replace(/\s+/g, ' ')
@@ -171,6 +195,36 @@ export function toDraftSchemaType(contentType) {
   return 'page'
 }
 
+export function normalizeDraftSlugForContentType(contentType, value) {
+  const normalized = slugifyDraftValue(value)
+
+  if (!normalized) {
+    return ''
+  }
+
+  if (contentType === 'post') {
+    return normalized.startsWith('guides/') ? normalized : `guides/${normalized}`
+  }
+
+  if (contentType === 'servicePage') {
+    return normalized.startsWith('services/') ? normalized : `services/${normalized}`
+  }
+
+  return normalized
+}
+
+export function inferDraftSchemaType(contentType, normalizedSlug) {
+  if (normalizedSlug?.startsWith('guides/')) {
+    return 'post'
+  }
+
+  if (normalizedSlug?.startsWith('services/') && contentType === 'page') {
+    return 'servicePage'
+  }
+
+  return toDraftSchemaType(contentType)
+}
+
 export function buildFallbackDraftContent(input) {
   const contentLabel =
     input.contentType === 'post'
@@ -266,44 +320,53 @@ export function buildFallbackDraftContent(input) {
   }
 }
 
-export function buildFallbackDraftSections(draft) {
-  const heroImage = buildDraftHeroImage(draft)
-
+export function buildFallbackDraftSections(draft, heroImage = null) {
   return withSectionKeys([
     {
       type: 'hero',
       eyebrow: draft.heroEyebrow,
       title: draft.heroTitle,
-      body: draft.heroBody,
+      body: toPortableTextSimple(draft.heroBody),
       ...(heroImage ? { heroImage } : {}),
     },
     {
       type: 'story',
       eyebrow: 'Overview',
       title: draft.storyTitle,
-      body: draft.storyBody,
+      body: toPortableTextSimple(draft.storyBody),
     },
     {
       type: 'highlights',
       title: 'Key points',
-      items: draft.highlights,
+      items: draft.highlights.map((item) => ({
+        ...item,
+        body: toPortableTextSimple(item.body),
+      })),
     },
     {
       type: 'steps',
       title: 'How to approach it',
-      items: draft.steps,
+      items: draft.steps.map((item) => ({
+        ...item,
+        body: toPortableTextSimple(item.body),
+      })),
     },
     {
       type: 'faq',
       title: 'Questions',
-      items: draft.faq,
+      items: draft.faq.map((item) => ({
+        ...item,
+        answer: toPortableTextSimple(item.answer),
+      })),
     },
   ])
 }
 
 export function buildDraftSkeleton(input) {
-  const schemaType = toDraftSchemaType(input.contentType)
-  const normalizedSlug = slugifyDraftValue(input.slug || input.title) || `draft-${Date.now().toString(36)}`
+  const normalizedSlug =
+    normalizeDraftSlugForContentType(input.contentType, input.slug || input.title) ||
+    `draft-${Date.now().toString(36)}`
+  const schemaType = inferDraftSchemaType(input.contentType, normalizedSlug)
   const normalizedDocumentIdPart =
     sanitizeDraftDocumentIdPart(normalizedSlug) || `draft-${Date.now().toString(36)}`
   const baseDocumentId = `${schemaType}-${normalizedDocumentIdPart}`.slice(0, 120)
@@ -321,7 +384,8 @@ export function buildDraftSkeleton(input) {
       _type: schemaType,
       title: input.title,
       description: input.brief,
-      pageType: input.contentType,
+      // Keep pageType aligned with schema type so guides remain discoverable.
+      pageType: schemaType,
       templateLevel: 'hero',
       ...(heroImage ? { heroImage } : {}),
       slug: {
@@ -332,7 +396,7 @@ export function buildDraftSkeleton(input) {
         _type: 'reference',
         _ref: input.siteId,
       },
-      sections: buildFallbackDraftSections(fallbackDraft),
+      sections: buildFallbackDraftSections(fallbackDraft, heroImage),
     },
   }
 }

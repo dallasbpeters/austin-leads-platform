@@ -29,7 +29,7 @@ function NavList() {
         <Link
           key={href}
           href={href}
-          className={`flex items-start justify-start gap-2 px-2 py-4 font-semi-bold text-foreground text-sm hover:text-primary rounded-full hover:bg-transparent btn ${className}`}
+          className={`flex items-start justify-start gap-2 px-2 py-4 font-wght-650 medium text-foreground text-md hover:text-primary rounded-full hover:bg-transparent btn ${className}`}
         >
           {label}
         </Link>
