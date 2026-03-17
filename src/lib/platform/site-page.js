@@ -46,16 +46,38 @@ function getPageHeroImage(page) {
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
-  const ogTemplateVersion = 'guide-v3'
+  const ogTemplateVersion = 'guide-v4'
   const isGuidePageByPath = String(pathname || '').startsWith('/guides/')
   const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
+  const title = page.seo?.title || page.title || site.name
+  const description = page.seo?.description || page.description || ''
+
+  if (isGuidePage) {
+    const guideData = {
+      site: site.name,
+      title,
+      description,
+      path: pathname && pathname !== '/' ? pathname : '',
+      primary: site.brand?.primary || '',
+      secondary: site.brand?.secondary || '',
+      bg: page?.guideCardColor || '',
+      category: page?.guideCategory || '',
+      layout: 'guide',
+      ogv: ogTemplateVersion,
+      v: page?._updatedAt ? String(new Date(page._updatedAt).getTime() || page._updatedAt) : '',
+    }
+    url.searchParams.set('guide', '1')
+    url.searchParams.set('data', JSON.stringify(guideData))
+    url.searchParams.set('ogv', ogTemplateVersion)
+    return url.toString()
+  }
 
   url.searchParams.set('site', site.name)
-  url.searchParams.set('title', page.seo?.title || page.title || site.name)
+  url.searchParams.set('title', title)
 
-  if (page.seo?.description || page.description) {
-    url.searchParams.set('description', page.seo?.description || page.description)
+  if (description) {
+    url.searchParams.set('description', description)
   }
 
   if (site.brand?.primary) {
@@ -75,20 +97,8 @@ function buildOgImageUrl(origin, site, page, pathname) {
   }
   url.searchParams.set('ogv', ogTemplateVersion)
 
-  if (isGuidePage) {
-    url.searchParams.set('layout', 'guide')
-  }
-
-  if (isGuidePage && page?.guideCardColor) {
-    url.searchParams.set('bg', page.guideCardColor)
-  }
-
-  if (isGuidePage && page?.guideCategory) {
-    url.searchParams.set('category', page.guideCategory)
-  }
-
   const heroImage = getPageHeroImage(page)
-  if (!isGuidePage && heroImage) {
+  if (heroImage) {
     url.searchParams.set('image', heroImage)
   }
 
