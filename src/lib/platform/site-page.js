@@ -88,11 +88,7 @@ function buildOgImageUrl(origin, site, page, pathname) {
 
   if (isGuidePage) {
     url.searchParams.set('g', '1')
-    url.searchParams.set('s', site.name)
     url.searchParams.set('t', title)
-    if (description) {
-      url.searchParams.set('d', description)
-    }
     if (pathname && pathname !== '/') {
       url.searchParams.set('p', pathname)
     }
