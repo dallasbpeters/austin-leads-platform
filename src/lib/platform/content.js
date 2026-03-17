@@ -620,9 +620,49 @@ function sanitizePageRuntimeFields(page) {
     heroTitlePrimary: page.heroTitlePrimary,
     heroTitleAccent: page.heroTitleAccent,
     cardCopy: page.cardCopy,
+    guideCardColor: resolveSanityColorValue(page.guideCardColor),
     heroSlides: Array.isArray(page.heroSlides) ? page.heroSlides.map(sanitizeItem) : page.heroSlides,
     sections: Array.isArray(page.sections) ? page.sections.map(sanitizeSection) : page.sections,
     heroActions: Array.isArray(page.heroActions) ? page.heroActions.map(sanitizeAction) : page.heroActions,
+  }
+}
+
+async function getGuideCardColorForSlug({ client, fetchOptions, siteSlug, guideSlug }) {
+  const normalizedGuideSlug = cleanRuntimeString(guideSlug).replace(/^\/+/, '')
+
+  if (!normalizedGuideSlug || !normalizedGuideSlug.startsWith('guides/')) {
+    return ''
+  }
+
+  try {
+    const siteSlugs = getEquivalentSiteSlugs(siteSlug)
+    const guideHref = `/${normalizedGuideSlug}`
+    const guideHrefNoTrailingSlash = guideHref.replace(/\/+$/, '')
+    const result = await client.fetch(
+      groq`*[
+        _type in ["page", "servicePage", "locationPage", "post"] &&
+        site->slug.current in $siteSlugs &&
+        slug.current == "guides"
+      ][0]{
+        "items": sections[type == "guideGrid"][0].items[]{
+          href,
+          color
+        }
+      }`,
+      { siteSlugs },
+      fetchOptions,
+    )
+
+    const matchedItem = Array.isArray(result?.items)
+      ? result.items.find((item) => {
+          const href = cleanRuntimeString(item?.href).replace(/\/+$/, '')
+          return href === guideHref || href === guideHrefNoTrailingSlash
+        })
+      : null
+
+    return resolveSanityColorValue(matchedItem?.color)
+  } catch {
+    return ''
   }
 }
 
@@ -1520,8 +1560,20 @@ export async function getPageForRequest(site, slugParts = []) {
         page: guideSyncedPage,
         siteSlug: site.slug,
       })
+      const guideCardColor = await getGuideCardColorForSlug({
+        client,
+        fetchOptions,
+        siteSlug: site.slug,
+        guideSlug: serviceSyncedPage?.slug,
+      })
+      const pageWithGuideColor = guideCardColor
+        ? {
+            ...serviceSyncedPage,
+            guideCardColor,
+          }
+        : serviceSyncedPage
 
-      return withPageSource(serviceSyncedPage, 'sanity')
+      return withPageSource(pageWithGuideColor, 'sanity')
     }
   } catch {}
 

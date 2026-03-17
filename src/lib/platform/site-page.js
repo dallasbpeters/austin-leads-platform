@@ -46,6 +46,7 @@ function getPageHeroImage(page) {
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
+  const isGuidePage = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
 
   url.searchParams.set('site', site.name)
   url.searchParams.set('title', page.seo?.title || page.title || site.name)
@@ -66,9 +67,16 @@ function buildOgImageUrl(origin, site, page, pathname) {
     url.searchParams.set('path', pathname)
   }
 
-  const heroImage = getPageHeroImage(page)
+  if (isGuidePage) {
+    url.searchParams.set('layout', 'guide')
+  }
 
-  if (heroImage) {
+  if (isGuidePage && page?.guideCardColor) {
+    url.searchParams.set('bg', page.guideCardColor)
+  }
+
+  const heroImage = getPageHeroImage(page)
+  if (!isGuidePage && heroImage) {
     url.searchParams.set('image', heroImage)
   }
 
@@ -98,14 +106,15 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   }
 
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
+  const isGuidePage = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const fallbackCanonical = getPrimaryUrl(site, pathname)
   const canonical = page.seo?.canonicalUrl || site.seo?.canonicalUrl || fallbackCanonical
   const currentOrigin =
     getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
   const title = page.seo?.title || page.title || site.seo?.title || site.name
   const description = page.seo?.description || page.description || site.seo?.description
-  const ogImage =
-    page.seo?.ogImage || site.seo?.ogImage || buildOgImageUrl(currentOrigin, site, page, pathname)
+  const computedOgImage = buildOgImageUrl(currentOrigin, site, page, pathname)
+  const ogImage = isGuidePage ? computedOgImage : page.seo?.ogImage || site.seo?.ogImage || computedOgImage
   const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
 
   return {

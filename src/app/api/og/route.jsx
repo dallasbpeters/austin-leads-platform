@@ -63,13 +63,16 @@ export async function GET(request) {
   const title = clampText(searchParams.get('title') || site, 120)
   const description = clampText(searchParams.get('description') || '', 180)
   const path = clampText(searchParams.get('path') || '', 80)
+  const layout = clampText(searchParams.get('layout') || '', 20)
   const imageParam = searchParams.get('image') || ''
   const image = imageParam ? new URL(imageParam, requestUrl.origin).toString() : ''
 
   const primary = safeColor(searchParams.get('primary'), '#f97316')
   const secondary = safeColor(searchParams.get('secondary'), '#016bb7')
+  const guideBackground = safeColor(searchParams.get('bg'), secondary)
   const secondarySoft = '#172554'
   const copyColor = '#dbe4ee'
+  const isGuideLayout = layout === 'guide'
 
   return new ImageResponse(
     <div
@@ -85,186 +88,315 @@ export async function GET(request) {
         position: 'relative',
       }}
     >
-      {image ? (
-        <img
-          alt=""
-          src={image}
+      {isGuideLayout ? (
+        <div
           style={{
             position: 'absolute',
             inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-          }}
-        />
-      ) : null}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: image
-            ? 'linear-gradient(45deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.5))'
-            : `linear-gradient(135deg, ${secondarySoft} 0%, ${secondary} 74%)`,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          padding: '48px',
-        }}
-      >
-        <div
-          style={{
             display: 'flex',
-            width: '100%',
-            height: '100%',
-            justifyContent: 'space-between',
-            alignItems: 'stretch',
-            gap: 24,
+            flexDirection: 'column',
+            padding: '44px 48px',
+            background: `linear-gradient(145deg, ${guideBackground} 0%, ${guideBackground} 100%)`,
           }}
         >
           <div
             style={{
               display: 'flex',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 26,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                fontSize: 22,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+                color: 'rgba(255,255,255,0.86)',
+                fontWeight: 600,
+              }}
+            >
+              Guide
+            </div>
+            {path ? (
+              <div
+                style={{
+                  display: 'flex',
+                  border: '1px solid rgba(255,255,255,0.26)',
+                  borderRadius: 9999,
+                  padding: '9px 16px',
+                  fontSize: 18,
+                  color: 'rgba(255,255,255,0.9)',
+                  backgroundColor: 'rgba(255,255,255,0.07)',
+                }}
+              >
+                {path}
+              </div>
+            ) : null}
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              width: '100%',
+              flex: 1,
               flexDirection: 'column',
               justifyContent: 'space-between',
-              width: '68%',
-              minWidth: 0,
-              borderRadius: 34,
-              border: '1px solid rgba(255,255,255,0.14)',
-              backgroundColor: image ? 'rgba(15, 23, 42, 0.36)' : 'rgba(15, 23, 42, 0.14)',
-              padding: '34px 36px 30px 36px',
             }}
           >
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 28,
+                width: '100%',
+                gap: 24,
               }}
             >
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 24,
+                  fontSize: 82,
+                  lineHeight: 0.95,
+                  fontWeight: 800,
+                  letterSpacing: '-0.05em',
+                  color: '#ffffff',
                 }}
               >
+                {title}
+              </div>
+              {description ? (
                 <div
                   style={{
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: 16,
+                    width: '100%',
+                    fontSize: 34,
+                    lineHeight: 1.28,
+                    color: 'rgba(255,255,255,0.92)',
+                    fontWeight: 500,
                   }}
                 >
-                  <BrandLogo color={primary} />
-                  <div
-                    style={{
-                      display: 'flex',
-                      fontSize: 30,
-                      fontWeight: 700,
-                      letterSpacing: '-0.03em',
-                      color: '#ffffff',
-                    }}
-                  >
-                    {site}
-                  </div>
+                  {description}
                 </div>
-                {path ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      border: '1px solid rgba(255,255,255,0.18)',
-                      borderRadius: 9999,
-                      padding: '10px 18px',
-                      fontSize: 20,
-                      color: copyColor,
-                      backgroundColor: 'rgba(255,255,255,0.06)',
-                    }}
-                  >
-                    {path}
-                  </div>
-                ) : null}
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 20,
-                  maxWidth: 700,
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    fontSize: 76,
-                    lineHeight: 0.96,
-                    fontWeight: 800,
-                    letterSpacing: '-0.06em',
-                    color: '#ffffff',
-                  }}
-                >
-                  {title}
-                </div>
-                {description ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      fontSize: 30,
-                      lineHeight: 1.32,
-                      color: copyColor,
-                      maxWidth: 660,
-                    }}
-                  >
-                    {description}
-                  </div>
-                ) : null}
-              </div>
+              ) : null}
             </div>
 
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
+                width: '100%',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
               }}
             >
               <div
                 style={{
                   display: 'flex',
-                  fontSize: 18,
-                  letterSpacing: '0.22em',
-                  textTransform: 'uppercase',
-                  color: '#94a3b8',
+                  fontSize: 24,
+                  fontWeight: 700,
+                  color: 'rgba(255,255,255,0.9)',
+                  letterSpacing: '-0.02em',
                 }}
               >
-                Open Graph Preview
+                {site}
               </div>
               <div
                 style={{
                   display: 'flex',
-                  width: 180,
-                  height: 6,
-                  borderRadius: 9999,
-                  backgroundColor: primary,
+                  alignItems: 'center',
+                  gap: 12,
+                }}
+              >
+                <BrandLogo color="#ffffff" />
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {image ? (
+            <img
+              alt=""
+              src={image}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+              }}
+            />
+          ) : null}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: image
+                ? 'linear-gradient(45deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.5))'
+                : `linear-gradient(135deg, ${secondarySoft} 0%, ${secondary} 74%)`,
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              padding: '48px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                height: '100%',
+                justifyContent: 'space-between',
+                alignItems: 'stretch',
+                gap: 24,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  width: '68%',
+                  minWidth: 0,
+                  borderRadius: 34,
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  backgroundColor: image ? 'rgba(15, 23, 42, 0.36)' : 'rgba(15, 23, 42, 0.14)',
+                  padding: '34px 36px 30px 36px',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 28,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 24,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 16,
+                      }}
+                    >
+                      <BrandLogo color={primary} />
+                      <div
+                        style={{
+                          display: 'flex',
+                          fontSize: 30,
+                          fontWeight: 700,
+                          letterSpacing: '-0.03em',
+                          color: '#ffffff',
+                        }}
+                      >
+                        {site}
+                      </div>
+                    </div>
+                    {path ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          border: '1px solid rgba(255,255,255,0.18)',
+                          borderRadius: 9999,
+                          padding: '10px 18px',
+                          fontSize: 20,
+                          color: copyColor,
+                          backgroundColor: 'rgba(255,255,255,0.06)',
+                        }}
+                      >
+                        {path}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 20,
+                      maxWidth: 700,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        fontSize: 76,
+                        lineHeight: 0.96,
+                        fontWeight: 800,
+                        letterSpacing: '-0.06em',
+                        color: '#ffffff',
+                      }}
+                    >
+                      {title}
+                    </div>
+                    {description ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          fontSize: 30,
+                          lineHeight: 1.32,
+                          color: copyColor,
+                          maxWidth: 660,
+                        }}
+                      >
+                        {description}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 10,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      fontSize: 18,
+                      letterSpacing: '0.22em',
+                      textTransform: 'uppercase',
+                      color: '#94a3b8',
+                    }}
+                  >
+                    Open Graph Preview
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      width: 180,
+                      height: 6,
+                      borderRadius: 9999,
+                      backgroundColor: primary,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  width: '32%',
                 }}
               />
             </div>
           </div>
-
-          <div
-            style={{
-              display: 'flex',
-              width: '32%',
-            }}
-          />
-        </div>
-      </div>
+        </>
+      )}
     </div>,
     {
       ...size,

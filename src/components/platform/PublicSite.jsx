@@ -28,6 +28,7 @@ import Header from '@/components/Header'
 import IncentivesSection from '@/components/IncentivesSection'
 import ConsultationSection from '@/components/ConsultationSection'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
+import GuideShareBar from '@/components/GuideShareBar'
 import PortableTextContent from '@/components/PortableTextContent'
 import QuoteSection from '@/components/QuoteSection'
 import ResourcesSection from '@/components/ResourcesSection'
@@ -1452,6 +1453,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
   const leadCaptureSectionTypes = new Set(['cta', 'ctaBanner'])
   const hasLeadCaptureSection = sections.some((section) => leadCaptureSectionTypes.has(section.type))
   const hasLogosSection = sections.some((section) => section.type === 'logos')
+  const heroSectionIndex = sections.findIndex((section) => section.type === 'hero')
   const pageSlug = cleanRuntimeString(page.slug)
   const firstLeadCaptureSectionIndex = sections.findIndex((section) =>
     leadCaptureSectionTypes.has(section.type),
@@ -1466,6 +1468,10 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
   const showFallbackRoofingLogoCloud = showRoofingLogoCloud && !hasLogosSection
   const suppressDefaultLeadCapture =
     pageSlug === 'privacy-policy' || pageSlug === 'terms' || pageSlug === 'services/detach-and-reset'
+  const isGuidePost = page.pageType === 'post' && pageSlug.startsWith('guides/')
+  const shareUrl =
+    cleanRuntimeString(page?.seo?.canonicalUrl) ||
+    (site?.primaryDomain ? `https://${site.primaryDomain}${pathname || '/'}` : '')
   const pageEditAttrs = getSanityPageEditAttributes(page, 'title')
   const pageSectionsEditAttrs = getSanityPageEditAttributes(page, 'sections')
   const style = {
@@ -1566,9 +1572,16 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
                 sectionId={sectionId}
                 editAttributes={sectionEditAttrs}
               />
+              {isGuidePost && index === heroSectionIndex ? (
+                <GuideShareBar url={shareUrl} title={page.seo?.title || page.title || ''} />
+              ) : null}
             </div>
           )
         })}
+
+        {isGuidePost && heroSectionIndex === -1 ? (
+          <GuideShareBar url={shareUrl} title={page.seo?.title || page.title || ''} />
+        ) : null}
 
         {showFallbackRoofingLogoCloud && firstLeadCaptureSectionIndex === -1 ? (
           <div {...pageSectionsEditAttrs}>
