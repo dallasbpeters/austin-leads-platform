@@ -7,6 +7,33 @@ export const size = {
   height: 630,
 }
 export const contentType = 'image/png'
+let familjenVariableFontPromise
+
+function getFamiljenVariableFont(requestUrl) {
+  if (!familjenVariableFontPromise) {
+    const fontCandidates = [
+      '/fonts/FamiljenGrotesk-Variable.woff',
+      '/fonts/FamiljenGrotesk-Variable.ttf',
+      '/fonts/FamiljenGrotesk-Variable.woff2',
+    ]
+
+    familjenVariableFontPromise = (async () => {
+      for (const candidate of fontCandidates) {
+        try {
+          const response = await fetch(new URL(candidate, requestUrl.origin))
+          if (!response.ok) continue
+          const bytes = await response.arrayBuffer()
+          if (bytes?.byteLength) return bytes
+        } catch {
+          // Try the next candidate.
+        }
+      }
+      return null
+    })()
+  }
+
+  return familjenVariableFontPromise
+}
 
 function BrandLogo({ color = '#ffffff' }) {
   return (
@@ -58,6 +85,7 @@ function safeColor(value, fallback) {
 export async function GET(request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
+  const familjenVariableFont = await getFamiljenVariableFont(requestUrl)
 
   const site = clampText(searchParams.get('site') || 'Texas Solar and Roofing Pros', 80)
   const title = clampText(searchParams.get('title') || site, 120)
@@ -84,7 +112,7 @@ export async function GET(request) {
         overflow: 'hidden',
         backgroundColor: secondary,
         color: 'white',
-        fontFamily: 'Manrope, Arial, sans-serif',
+        fontFamily: 'FamiljenGrotesk-Variable, Arial, sans-serif',
         position: 'relative',
       }}
     >
@@ -102,7 +130,7 @@ export async function GET(request) {
           <div
             style={{
               display: 'flex',
-              width: '100%',
+              width: '1100px',
               alignItems: 'center',
               justifyContent: 'space-between',
               marginBottom: 26,
@@ -400,6 +428,16 @@ export async function GET(request) {
     </div>,
     {
       ...size,
+      fonts: familjenVariableFont
+        ? [
+            {
+              name: 'FamiljenGrotesk-Variable',
+              data: familjenVariableFont,
+              style: 'normal',
+              weight: 400,
+            },
+          ]
+        : undefined,
     },
   )
 }

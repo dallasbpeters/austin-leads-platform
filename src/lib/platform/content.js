@@ -636,14 +636,13 @@ async function getGuideCardColorForSlug({ client, fetchOptions, siteSlug, guideS
 
   try {
     const siteSlugs = getEquivalentSiteSlugs(siteSlug)
-    const guideHref = `/${normalizedGuideSlug}`
-    const guideHrefNoTrailingSlash = guideHref.replace(/\/+$/, '')
-    const result = await client.fetch(
+    const targetPath = `/${normalizedGuideSlug}`.replace(/\/+$/, '')
+    const guideGridSources = await client.fetch(
       groq`*[
         _type in ["page", "servicePage", "locationPage", "post"] &&
         site->slug.current in $siteSlugs &&
-        slug.current == "guides"
-      ][0]{
+        count(sections[type == "guideGrid"]) > 0
+      ]{
         "items": sections[type == "guideGrid"][0].items[]{
           href,
           color
@@ -653,12 +652,22 @@ async function getGuideCardColorForSlug({ client, fetchOptions, siteSlug, guideS
       fetchOptions,
     )
 
-    const matchedItem = Array.isArray(result?.items)
-      ? result.items.find((item) => {
-          const href = cleanRuntimeString(item?.href).replace(/\/+$/, '')
-          return href === guideHref || href === guideHrefNoTrailingSlash
-        })
-      : null
+    const normalizeHrefPath = (href) => {
+      const rawHref = cleanRuntimeString(href)
+      if (!rawHref) return ''
+
+      try {
+        const parsed = new URL(rawHref, 'https://guide-color.local')
+        return cleanRuntimeString(parsed.pathname).replace(/\/+$/, '')
+      } catch {
+        return rawHref.replace(/[?#].*$/, '').replace(/\/+$/, '')
+      }
+    }
+
+    const allItems = Array.isArray(guideGridSources)
+      ? guideGridSources.flatMap((entry) => (Array.isArray(entry?.items) ? entry.items : []))
+      : []
+    const matchedItem = allItems.find((item) => normalizeHrefPath(item?.href) === targetPath)
 
     return resolveSanityColorValue(matchedItem?.color)
   } catch {
