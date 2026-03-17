@@ -81,6 +81,10 @@ function buildOgImageUrl(origin, site, page, pathname) {
     url.searchParams.set('bg', page.guideCardColor)
   }
 
+  if (isGuidePage && page?.guideCategory) {
+    url.searchParams.set('category', page.guideCategory)
+  }
+
   const heroImage = getPageHeroImage(page)
   if (!isGuidePage && heroImage) {
     url.searchParams.set('image', heroImage)

@@ -8,6 +8,52 @@ export const size = {
 }
 export const contentType = 'image/png'
 let familjenVariableFontPromise
+const OG_COLOR_TOKEN_MAP = {
+  primary: 'hsl(205 99% 36%)',
+  secondary: 'hsl(190 61% 15%)',
+  tertiary: 'hsl(34 94% 54%)',
+  primaryAlt: 'hsl(221 86% 67%)',
+  secondaryAlt: 'hsl(206 56% 67%)',
+  tertiaryAlt: 'hsl(50 56% 67%)',
+  sweetcorn: 'oklch(93.57% 0.13 101.75deg)',
+  voodoo: 'oklch(32.87% 0.06 332.81deg)',
+  tidal: 'oklch(95.49% 0.11 118.86deg)',
+  blue400: '#546bf3',
+  tasman: 'oklch(87.92% 0.03 140.12deg)',
+  chaletGreen: 'oklch(45.52% 0.08 127.48deg)',
+  metterhorn: 'oklch(32.6% 0.04 350.45deg)',
+  heather: 'oklch(84.9% 0.03 244.95deg)',
+  wattle: 'oklch(87.43% 0.16 108.14deg)',
+  charade: 'oklch(28.29% 0.03 270.21deg)',
+  ceramic: 'oklch(98.39% 0.01 125.5deg)',
+  tapaGreen: 'oklch(36.1% 0.03 164.74deg)',
+  seaMist: 'oklch(86.57% 0.03 156.49deg)',
+  blackCurrent: 'oklch(32.05% 0.04 322.94deg)',
+  confetti: 'oklch(84.99% 0.14 104.07deg)',
+}
+const OG_CSS_VAR_COLOR_MAP = {
+  '--color-primary': OG_COLOR_TOKEN_MAP.primary,
+  '--color-secondary': OG_COLOR_TOKEN_MAP.secondary,
+  '--color-tertiary': OG_COLOR_TOKEN_MAP.tertiary,
+  '--color-primary-alt': OG_COLOR_TOKEN_MAP.primaryAlt,
+  '--color-secondary-alt': OG_COLOR_TOKEN_MAP.secondaryAlt,
+  '--color-tertiary-alt': OG_COLOR_TOKEN_MAP.tertiaryAlt,
+  '--color-sweetcorn': OG_COLOR_TOKEN_MAP.sweetcorn,
+  '--color-voodoo': OG_COLOR_TOKEN_MAP.voodoo,
+  '--color-tidal': OG_COLOR_TOKEN_MAP.tidal,
+  '--color-blue-400': OG_COLOR_TOKEN_MAP.blue400,
+  '--color-tasman': OG_COLOR_TOKEN_MAP.tasman,
+  '--color-chalet-green': OG_COLOR_TOKEN_MAP.chaletGreen,
+  '--color-metterhorn': OG_COLOR_TOKEN_MAP.metterhorn,
+  '--color-heather': OG_COLOR_TOKEN_MAP.heather,
+  '--color-wattle': OG_COLOR_TOKEN_MAP.wattle,
+  '--color-charade': OG_COLOR_TOKEN_MAP.charade,
+  '--color-ceramic': OG_COLOR_TOKEN_MAP.ceramic,
+  '--color-tapa-green': OG_COLOR_TOKEN_MAP.tapaGreen,
+  '--color-sea-mist': OG_COLOR_TOKEN_MAP.seaMist,
+  '--color-black-current': OG_COLOR_TOKEN_MAP.blackCurrent,
+  '--color-confetti': OG_COLOR_TOKEN_MAP.confetti,
+}
 
 function getFamiljenVariableFont(requestUrl) {
   if (!familjenVariableFontPromise) {
@@ -66,17 +112,24 @@ function safeColor(value, fallback) {
   }
 
   const trimmed = value.trim()
+  const tokenResolved = OG_COLOR_TOKEN_MAP[trimmed] || trimmed
+  const varMatch = tokenResolved.match(/^var\((--[a-z0-9-]+)\)$/i)
+  const withResolvedVar = varMatch ? OG_CSS_VAR_COLOR_MAP[varMatch[1]] || tokenResolved : tokenResolved
 
-  if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(trimmed)) {
-    return trimmed
+  if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(withResolvedVar)) {
+    return withResolvedVar
   }
 
-  if (/^rgba?\([^)]+\)$/.test(trimmed)) {
-    return trimmed
+  if (/^rgba?\([^)]+\)$/.test(withResolvedVar)) {
+    return withResolvedVar
   }
 
-  if (/^hsla?\([^)]+\)$/.test(trimmed)) {
-    return trimmed
+  if (/^hsla?\([^)]+\)$/.test(withResolvedVar)) {
+    return withResolvedVar
+  }
+
+  if (/^oklch\([^)]+\)$/.test(withResolvedVar)) {
+    return withResolvedVar
   }
 
   return fallback
@@ -91,6 +144,7 @@ export async function GET(request) {
   const title = clampText(searchParams.get('title') || site, 120)
   const description = clampText(searchParams.get('description') || '', 180)
   const path = clampText(searchParams.get('path') || '', 80)
+  const category = clampText(searchParams.get('category') || '', 80)
   const layout = clampText(searchParams.get('layout') || '', 20)
   const imageParam = searchParams.get('image') || ''
   const image = imageParam ? new URL(imageParam, requestUrl.origin).toString() : ''
@@ -148,7 +202,7 @@ export async function GET(request) {
             >
               Guide
             </div>
-            {path ? (
+            {category ? (
               <div
                 style={{
                   display: 'flex',
@@ -160,7 +214,7 @@ export async function GET(request) {
                   backgroundColor: 'rgba(255,255,255,0.07)',
                 }}
               >
-                {path}
+                {category}
               </div>
             ) : null}
           </div>

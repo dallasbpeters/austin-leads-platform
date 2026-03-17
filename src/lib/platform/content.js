@@ -627,11 +627,11 @@ function sanitizePageRuntimeFields(page) {
   }
 }
 
-async function getGuideCardColorForSlug({ client, fetchOptions, siteSlug, guideSlug }) {
+async function getGuideCardMetaForSlug({ client, fetchOptions, siteSlug, guideSlug }) {
   const normalizedGuideSlug = cleanRuntimeString(guideSlug).replace(/^\/+/, '')
 
   if (!normalizedGuideSlug || !normalizedGuideSlug.startsWith('guides/')) {
-    return ''
+    return { color: '', category: '' }
   }
 
   try {
@@ -645,7 +645,8 @@ async function getGuideCardColorForSlug({ client, fetchOptions, siteSlug, guideS
       ]{
         "items": sections[type == "guideGrid"][0].items[]{
           href,
-          color
+          color,
+          category
         }
       }`,
       { siteSlugs },
@@ -669,9 +670,12 @@ async function getGuideCardColorForSlug({ client, fetchOptions, siteSlug, guideS
       : []
     const matchedItem = allItems.find((item) => normalizeHrefPath(item?.href) === targetPath)
 
-    return resolveSanityColorValue(matchedItem?.color)
+    return {
+      color: resolveSanityColorValue(matchedItem?.color),
+      category: cleanRuntimeString(matchedItem?.category),
+    }
   } catch {
-    return ''
+    return { color: '', category: '' }
   }
 }
 
@@ -1569,20 +1573,21 @@ export async function getPageForRequest(site, slugParts = []) {
         page: guideSyncedPage,
         siteSlug: site.slug,
       })
-      const guideCardColor = await getGuideCardColorForSlug({
+      const guideCardMeta = await getGuideCardMetaForSlug({
         client,
         fetchOptions,
         siteSlug: site.slug,
         guideSlug: serviceSyncedPage?.slug,
       })
-      const pageWithGuideColor = guideCardColor
+      const pageWithGuideMeta = guideCardMeta?.color || guideCardMeta?.category
         ? {
             ...serviceSyncedPage,
-            guideCardColor,
+            guideCardColor: guideCardMeta.color,
+            guideCategory: guideCardMeta.category,
           }
         : serviceSyncedPage
 
-      return withPageSource(pageWithGuideColor, 'sanity')
+      return withPageSource(pageWithGuideMeta, 'sanity')
     }
   } catch {}
 
