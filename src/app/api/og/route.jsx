@@ -543,3 +543,22 @@ export async function GET(request) {
     },
   })
 }
+
+export async function HEAD(request) {
+  const response = await GET(request)
+  const headers = new Headers(response.headers)
+
+  if (!headers.get('content-length')) {
+    try {
+      const pngBuffer = await response.arrayBuffer()
+      headers.set('content-length', String(pngBuffer.byteLength))
+    } catch {
+      // Leave content-length unset if buffering fails unexpectedly.
+    }
+  }
+
+  return new Response(null, {
+    status: response.status,
+    headers,
+  })
+}

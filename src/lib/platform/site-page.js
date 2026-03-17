@@ -79,7 +79,7 @@ function getPageHeroImage(page) {
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
-  const ogTemplateVersion = 'guide-v5'
+  const ogTemplateVersion = 'guide-v6'
   const isGuidePageByPath = String(pathname || '').startsWith('/guides')
   const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
@@ -87,22 +87,16 @@ function buildOgImageUrl(origin, site, page, pathname) {
   const description = page.seo?.description || page.description || ''
 
   if (isGuidePage) {
-    url.searchParams.set('g', '1')
-    if (pathname && pathname !== '/') {
-      url.searchParams.set('p', pathname)
-    }
-    if (title) url.searchParams.set('t', title)
-    if (page?.guideCardColor) {
-      url.searchParams.set('b', page.guideCardColor)
-    }
-    if (page?.guideCategory) {
-      url.searchParams.set('c', page.guideCategory)
-    }
+    const guideSlug = String(pathname || '')
+      .split('/')
+      .filter(Boolean)
+      .at(-1)
+    const guideImageUrl = new URL(`/api/og/guides/${encodeURIComponent(guideSlug || '')}`, origin)
     if (page?._updatedAt) {
-      url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
+      guideImageUrl.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
     }
-    url.searchParams.set('ogv', ogTemplateVersion)
-    return url.toString()
+    guideImageUrl.searchParams.set('ogv', ogTemplateVersion)
+    return guideImageUrl.toString()
   }
 
   url.searchParams.set('site', site.name)
