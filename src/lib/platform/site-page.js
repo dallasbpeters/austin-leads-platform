@@ -37,6 +37,20 @@ function getOriginFromAbsoluteUrl(url) {
 function resolveCanonicalUrl({ page, site, pathname, fallbackCanonical }) {
   const pageCanonical = page?.seo?.canonicalUrl
   if (pageCanonical) {
+    try {
+      const parsed = new URL(pageCanonical)
+      const canonicalPath = parsed.pathname || '/'
+      const isHomepageCanonical = canonicalPath === '/' || canonicalPath === ''
+
+      // Guard against CMS values accidentally set to homepage on non-home routes.
+      if (pathname !== '/' && isHomepageCanonical) {
+        return fallbackCanonical
+      }
+    } catch {
+      // If the canonical is malformed, fall back safely.
+      return fallbackCanonical
+    }
+
     return pageCanonical
   }
 
@@ -73,21 +87,30 @@ function buildOgImageUrl(origin, site, page, pathname) {
   const description = page.seo?.description || page.description || ''
 
   if (isGuidePage) {
-    const guideData = {
-      site: site.name,
-      title,
-      description,
-      path: pathname && pathname !== '/' ? pathname : '',
-      primary: site.brand?.primary || '',
-      secondary: site.brand?.secondary || '',
-      bg: page?.guideCardColor || '',
-      category: page?.guideCategory || '',
-      layout: 'guide',
-      ogv: ogTemplateVersion,
-      v: page?._updatedAt ? String(new Date(page._updatedAt).getTime() || page._updatedAt) : '',
+    url.searchParams.set('g', '1')
+    url.searchParams.set('s', site.name)
+    url.searchParams.set('t', title)
+    if (description) {
+      url.searchParams.set('d', description)
     }
-    url.searchParams.set('guide', '1')
-    url.searchParams.set('data', JSON.stringify(guideData))
+    if (pathname && pathname !== '/') {
+      url.searchParams.set('p', pathname)
+    }
+    if (site.brand?.primary) {
+      url.searchParams.set('pr', site.brand.primary)
+    }
+    if (site.brand?.secondary) {
+      url.searchParams.set('sc', site.brand.secondary)
+    }
+    if (page?.guideCardColor) {
+      url.searchParams.set('b', page.guideCardColor)
+    }
+    if (page?.guideCategory) {
+      url.searchParams.set('c', page.guideCategory)
+    }
+    if (page?._updatedAt) {
+      url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
+    }
     url.searchParams.set('ogv', ogTemplateVersion)
     return url.toString()
   }

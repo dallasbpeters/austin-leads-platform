@@ -149,36 +149,26 @@ export async function GET(request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
   const familjenVariableFont = await getFamiljenVariableFont(requestUrl)
-  const encodedData = getQueryParam(searchParams, 'data')
-  let guideData = null
-
-  if (encodedData) {
-    try {
-      const parsed = JSON.parse(encodedData)
-      if (parsed && typeof parsed === 'object') {
-        guideData = parsed
-      }
-    } catch {
-      guideData = null
-    }
-  }
-
-  const site = clampText(guideData?.site || getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros', 80)
-  const title = clampText(guideData?.title || getQueryParam(searchParams, 'title') || site, 120)
-  const description = clampText(guideData?.description || getQueryParam(searchParams, 'description') || '', 180)
-  const path = clampText(guideData?.path || getQueryParam(searchParams, 'path') || '', 80)
-  const category = clampText(guideData?.category || getQueryParam(searchParams, 'category') || '', 80)
-  const layout = clampText(guideData?.layout || getQueryParam(searchParams, 'layout') || '', 20)
-  const imageParam = guideData?.image || getQueryParam(searchParams, 'image') || ''
+  const isGuideParam = getQueryParam(searchParams, 'g') === '1' || getQueryParam(searchParams, 'guide') === '1'
+  const site = clampText(
+    getQueryParam(searchParams, 's') || getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros',
+    80,
+  )
+  const title = clampText(getQueryParam(searchParams, 't') || getQueryParam(searchParams, 'title') || site, 120)
+  const description = clampText(getQueryParam(searchParams, 'd') || getQueryParam(searchParams, 'description') || '', 180)
+  const path = clampText(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path') || '', 80)
+  const category = clampText(getQueryParam(searchParams, 'c') || getQueryParam(searchParams, 'category') || '', 80)
+  const layout = clampText(getQueryParam(searchParams, 'l') || getQueryParam(searchParams, 'layout') || '', 20)
+  const imageParam = getQueryParam(searchParams, 'i') || getQueryParam(searchParams, 'image') || ''
   const image = imageParam ? new URL(imageParam, requestUrl.origin).toString() : ''
 
-  const primary = safeColor(guideData?.primary || getQueryParam(searchParams, 'primary'), '#f97316')
-  const secondary = safeColor(guideData?.secondary || getQueryParam(searchParams, 'secondary'), '#016bb7')
-  const guideBackground = safeColor(guideData?.bg || getQueryParam(searchParams, 'bg'), secondary)
+  const primary = safeColor(getQueryParam(searchParams, 'pr') || getQueryParam(searchParams, 'primary'), '#f97316')
+  const secondary = safeColor(getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'), '#016bb7')
+  const guideBackground = safeColor(getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'), secondary)
   const secondarySoft = '#172554'
   const copyColor = '#dbe4ee'
   const isGuideLayout =
-    getQueryParam(searchParams, 'guide') === '1' || guideData?.layout === 'guide' || layout === 'guide' || path.startsWith('/guides/')
+    isGuideParam || layout === 'guide' || path.startsWith('/guides/')
 
   return new ImageResponse(
     <div
