@@ -240,7 +240,7 @@ function StorySection({ section, sectionId, editAttributes = {} }) {
             {section.eyebrow}
           </Badge>
         ) : null}
-        <h2 className="max-w-5xl w-full mt-6 font-display text-3xl text-foreground tracking-tight md:text-6xl">
+        <h2 className="max-w-5xl w-full mt-6 font-display text-3xl text-foreground tracking-tight md:text-4xl">
           {section.title}
         </h2>
         <PortableTextContent as="div" value={section.body} className="max-w-5xl mt-6 leading-8 text-lg text-muted-foreground" />
