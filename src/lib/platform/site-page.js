@@ -34,6 +34,25 @@ function getOriginFromAbsoluteUrl(url) {
   }
 }
 
+function resolveCanonicalUrl({ page, site, pathname, fallbackCanonical }) {
+  const pageCanonical = page?.seo?.canonicalUrl
+  if (pageCanonical) {
+    return pageCanonical
+  }
+
+  const siteCanonical = site?.seo?.canonicalUrl
+  if (!siteCanonical) {
+    return fallbackCanonical
+  }
+
+  // Site-level canonical should only act as homepage canonical.
+  if (pathname === '/') {
+    return siteCanonical
+  }
+
+  return fallbackCanonical
+}
+
 function getPageHeroImage(page) {
   const sectionHero = page?.sections?.find((section) => section.type === 'hero') ?? null
 
@@ -132,7 +151,7 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   const isGuidePageByData = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
   const fallbackCanonical = getPrimaryUrl(site, pathname)
-  const canonical = page.seo?.canonicalUrl || site.seo?.canonicalUrl || fallbackCanonical
+  const canonical = resolveCanonicalUrl({ page, site, pathname, fallbackCanonical })
   const currentOrigin =
     getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
   const title = page.seo?.title || page.title || site.seo?.title || site.name
