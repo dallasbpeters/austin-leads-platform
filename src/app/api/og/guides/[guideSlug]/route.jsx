@@ -10,7 +10,7 @@ function getGuidePath(slug) {
   return `/guides/${String(slug || '').replace(/^\/+/, '')}`
 }
 
-export async function GET(request, context) {
+async function buildGuideOgResponse(request, context, includeBody = true) {
   const params = await context.params
   const guideSlug = String(params?.guideSlug || '').trim()
 
@@ -45,16 +45,25 @@ export async function GET(request, context) {
   })
 
   const pngBuffer = await upstreamResponse.arrayBuffer()
+  const headers = {
+    'content-type': upstreamResponse.headers.get('content-type') || 'image/png',
+    'content-length': String(pngBuffer.byteLength),
+    'cache-control':
+      upstreamResponse.headers.get('cache-control') ||
+      'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+  }
 
-  return new Response(pngBuffer, {
+  return new Response(includeBody ? pngBuffer : null, {
     status: upstreamResponse.status,
-    headers: {
-      'content-type': upstreamResponse.headers.get('content-type') || 'image/png',
-      'content-length': String(pngBuffer.byteLength),
-      'cache-control':
-        upstreamResponse.headers.get('cache-control') ||
-        'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
-    },
+    headers,
   })
+}
+
+export async function GET(request, context) {
+  return buildGuideOgResponse(request, context, true)
+}
+
+export async function HEAD(request, context) {
+  return buildGuideOgResponse(request, context, false)
 }
 
