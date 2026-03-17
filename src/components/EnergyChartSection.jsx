@@ -1,5 +1,17 @@
 'use client'
 
+import {
+  Bar,
+  CartesianGrid,
+  ComposedChart,
+  LabelList,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+
 import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 
@@ -25,6 +37,10 @@ function clampNumber(value, min, max) {
   return Math.max(min, Math.min(max, parsed))
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value))
+}
+
 export default function EnergyChartSection({ section = null, sectionId = 'energy-chart', editAttributes = {} }) {
   const points =
     Array.isArray(section?.chartPoints) && section.chartPoints.length
@@ -38,28 +54,28 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
   const lineUnitLabel = section?.chartLineUnitLabel || 'deg'
   const periodLabel = section?.chartPeriodLabel || 'Jul 2024 - Jul 2025'
 
-  const lineValues = points.map((point) => Number(point?.lineValue) || 0)
-  const minLine = Math.min(...lineValues)
-  const maxLine = Math.max(...lineValues)
-  const lineRange = Math.max(maxLine - minLine, 1)
+  const chartHeight = 400
+  const chartInnerWidth = Math.max(920, points.length * 72)
+  const chartData = points.map((point, index) => ({
+    key: point?._key || `point-${index + 1}`,
+    label: point?.label || `P${index + 1}`,
+    barValue: clampNumber(point?.barValue || 0, 0, yAxisMax),
+    lineValue: Number(point?.lineValue) || 0,
+  }))
+  const yTicks = Array.from(new Set([0, 250, 500, 750, yAxisMax])).sort((a, b) => a - b)
 
-  const chartHeight = 300
-  const bottomPadding = 30
-  const usableHeight = chartHeight - bottomPadding
-  const stepX = 72
-  const leftPadding = 36
-  const svgWidth = leftPadding + stepX * Math.max(points.length - 1, 1) + 28
+  const renderLineLabel = ({ x, y, value, viewBox }) => {
+    const chartTop = Number(viewBox?.y ?? 0)
+    const chartBottom = chartTop + Number(viewBox?.height ?? chartHeight)
+    const labelY = clamp(Number(y) - 12, chartTop + 12, chartBottom - 12)
 
-  const linePath = points
-    .map((point, index) => {
-      const value = Number(point?.lineValue) || 0
-      const x = leftPadding + index * stepX
-      const y = 20 + ((maxLine - value) / lineRange) * (usableHeight - 32)
-      return `${x},${y}`
-    })
-    .join(' ')
-
-  const yTicks = [0, 250, 500, 750, yAxisMax]
+    return (
+      <text x={x} y={labelY} textAnchor="middle" dominantBaseline="middle" fill={lineColor} fontSize="12" fontWeight="600">
+        {value}
+        {lineUnitLabel}
+      </text>
+    )
+  }
 
   return (
     <section
@@ -89,64 +105,56 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           </div>
 
           <div className="overflow-x-auto">
-            <div className="min-w-[880px]">
-              <div className="relative" style={{ height: `${chartHeight}px` }}>
-                {yTicks.map((tick, index) => {
-                  const y = usableHeight - (tick / yAxisMax) * usableHeight
-                  return (
-                    <div key={`tick-${index}`} className="absolute left-0 right-0" style={{ top: `${y}px` }}>
-                      <div className="border-t border-border/55" />
-                      <span className="absolute -left-1 -translate-x-full -translate-y-1/2 text-muted-foreground text-xs">
-                        {tick.toLocaleString()} {index === yTicks.length - 1 ? unitLabel : ''}
-                      </span>
-                    </div>
-                  )
-                })}
-
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 px-2">
-                  {points.map((point, index) => {
-                    const barValue = clampNumber(point?.barValue || 0, 0, yAxisMax)
-                    const barHeight = (barValue / yAxisMax) * usableHeight
-                    return (
-                      <div key={point?._key || `bar-${index}`} className="relative flex-1 min-w-[56px] max-w-[64px]">
-                        <div
-                          className="w-full rounded-t-sm"
-                          style={{
-                            height: `${barHeight}px`,
-                            backgroundColor: barColor,
-                          }}
-                        />
-                        <div className="pt-2 text-center text-muted-foreground text-xs">{point?.label || `P${index + 1}`}</div>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                <svg className="absolute inset-0 pointer-events-none" viewBox={`0 0 ${svgWidth} ${chartHeight}`} preserveAspectRatio="none">
-                  <polyline fill="none" stroke={lineColor} strokeWidth="4" points={linePath} />
-                  {points.map((point, index) => {
-                    const value = Number(point?.lineValue) || 0
-                    const x = leftPadding + index * stepX
-                    const y = 20 + ((maxLine - value) / lineRange) * (usableHeight - 32)
-                    return (
-                      <g key={point?._key || `line-${index}`}>
-                        <circle cx={x} cy={y} r="3.5" fill={lineColor} />
-                        <text
-                          x={x}
-                          y={y - 10}
-                          textAnchor="middle"
-                          fill={lineColor}
-                          fontSize="12"
-                          fontWeight="600"
-                        >
-                          {value}
-                          {lineUnitLabel}
-                        </text>
-                      </g>
-                    )
-                  })}
-                </svg>
-              </div>
+            <div style={{ minWidth: `${chartInnerWidth}px`, height: `${chartHeight}px` }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={chartData} margin={{ top: 22, right: 20, left: 8, bottom: 44 }}>
+                  <CartesianGrid stroke="hsl(var(--border))" strokeOpacity={0.55} vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    dy={10}
+                  />
+                  <YAxis
+                    yAxisId="bars"
+                    domain={[0, yAxisMax]}
+                    ticks={yTicks}
+                    tickFormatter={(value) => (value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString())}
+                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={72}
+                  />
+                  <YAxis
+                    yAxisId="line"
+                    orientation="right"
+                    domain={['dataMin - 5', 'dataMax + 5']}
+                    hide
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+                    formatter={(value, name) => {
+                      if (name === 'barValue') return [`${value} ${unitLabel}`, 'Energy']
+                      if (name === 'lineValue') return [`${value}${lineUnitLabel}`, 'Temp.']
+                      return [value, name]
+                    }}
+                    labelFormatter={(label) => `Month: ${label}`}
+                  />
+                  <Bar yAxisId="bars" dataKey="barValue" fill={barColor} radius={[2, 2, 0, 0]} maxBarSize={56} />
+                  <Line
+                    yAxisId="line"
+                    type="monotone"
+                    dataKey="lineValue"
+                    stroke={lineColor}
+                    strokeWidth={3}
+                    dot={{ r: 4.5, fill: lineColor, strokeWidth: 0 }}
+                    activeDot={{ r: 4.5 }}
+                  >
+                    <LabelList dataKey="lineValue" content={renderLineLabel} />
+                  </Line>
+                </ComposedChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
