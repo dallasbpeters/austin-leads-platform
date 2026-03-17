@@ -688,6 +688,48 @@ const guideCardItemType = {
   },
 }
 
+const energyChartPointType = {
+  name: 'energyChartPoint',
+  title: 'Chart point',
+  type: 'object',
+  fields: [
+    {
+      name: 'label',
+      title: 'Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('X-axis label for this point, such as Jul or Aug.'),
+    },
+    {
+      name: 'barValue',
+      title: 'Bar value',
+      type: 'number',
+      validation: (Rule) => Rule.required().min(0),
+      options: canvasPurpose('Primary bar value for this point (e.g., kWh).'),
+    },
+    {
+      name: 'lineValue',
+      title: 'Line value',
+      type: 'number',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Secondary line value for this point (e.g., temperature).'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'label',
+      barValue: 'barValue',
+      lineValue: 'lineValue',
+    },
+    prepare({ title, barValue, lineValue }) {
+      return {
+        title: title || 'Chart point',
+        subtitle: `${barValue ?? 0} / ${lineValue ?? 0}`,
+      }
+    },
+  },
+}
+
 const sectionContentItemType = {
   name: 'sectionContentItem',
   title: 'Section Item',
@@ -2697,6 +2739,118 @@ const solarSwitchSectionType = {
   },
 }
 
+const energyChartSectionType = {
+  name: 'energyChartSection',
+  title: 'Energy Chart Section',
+  type: 'object',
+  initialValue: {
+    type: 'energyChart',
+    title: 'Home energy usage trend',
+    chartPeriodLabel: 'Jul 2024 - Jul 2025',
+    chartUnitLabel: 'kWh',
+    chartLineUnitLabel: 'deg',
+    chartYAxisMax: 1000,
+    chartBarColor: '#006d77',
+    chartLineColor: '#7e22ce',
+    chartPoints: [
+      { _type: 'energyChartPoint', label: 'Jul', barValue: 450, lineValue: 60 },
+      { _type: 'energyChartPoint', label: 'Aug', barValue: 470, lineValue: 68 },
+      { _type: 'energyChartPoint', label: 'Sep', barValue: 560, lineValue: 65 },
+      { _type: 'energyChartPoint', label: 'Oct', barValue: 720, lineValue: 60 },
+      { _type: 'energyChartPoint', label: 'Nov', barValue: 700, lineValue: 51 },
+      { _type: 'energyChartPoint', label: 'Dec', barValue: 920, lineValue: 43 },
+      { _type: 'energyChartPoint', label: 'Jan', barValue: 900, lineValue: 42 },
+      { _type: 'energyChartPoint', label: 'Feb', barValue: 890, lineValue: 35 },
+      { _type: 'energyChartPoint', label: 'Mar', barValue: 820, lineValue: 38 },
+      { _type: 'energyChartPoint', label: 'Apr', barValue: 720, lineValue: 45 },
+      { _type: 'energyChartPoint', label: 'May', barValue: 560, lineValue: 52 },
+      { _type: 'energyChartPoint', label: 'Jun', barValue: 580, lineValue: 56 },
+      { _type: 'energyChartPoint', label: 'Jul', barValue: 460, lineValue: 62 },
+    ],
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional overline above the chart heading.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main heading for the chart section.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional supporting copy for chart context.'),
+    },
+    {
+      name: 'chartPeriodLabel',
+      title: 'Period label',
+      type: 'string',
+      options: canvasPurpose('Label shown above the chart date window, such as Jul 2024 - Jul 2025.'),
+    },
+    {
+      name: 'chartUnitLabel',
+      title: 'Bar unit label',
+      type: 'string',
+      options: canvasPurpose('Primary axis unit label, e.g. kWh.'),
+    },
+    {
+      name: 'chartLineUnitLabel',
+      title: 'Line unit suffix',
+      type: 'string',
+      options: canvasPurpose('Suffix shown on line values, e.g. deg.'),
+    },
+    {
+      name: 'chartYAxisMax',
+      title: 'Y-axis max',
+      type: 'number',
+      validation: (Rule) => Rule.min(1),
+      options: canvasPurpose('Maximum y-axis value for the bars.'),
+    },
+    {
+      name: 'chartBarColor',
+      title: 'Bar color',
+      type: 'string',
+      options: canvasPurpose('CSS color value used for bars.'),
+    },
+    {
+      name: 'chartLineColor',
+      title: 'Line color',
+      type: 'string',
+      options: canvasPurpose('CSS color value used for the trend line.'),
+    },
+    {
+      name: 'chartPoints',
+      title: 'Chart points',
+      type: 'array',
+      of: [{ type: 'energyChartPoint' }],
+      validation: (Rule) => Rule.min(2),
+      options: canvasPurpose('Ordered points used by both bars and line trend.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      points: 'chartPoints',
+      period: 'chartPeriodLabel',
+    },
+    prepare({ title, points, period }) {
+      const count = arrayCount(points)
+      return {
+        title: title || 'Energy chart section',
+        subtitle: previewText(period, `${count || 0} points`),
+      }
+    },
+  },
+}
+
 const pageSectionType = {
   name: 'pageSection',
   title: 'Legacy Page Section',
@@ -2826,6 +2980,7 @@ const baseFields = [
       { type: 'bandSection' },
       { type: 'logosSection' },
       { type: 'solarSwitchSection' },
+      { type: 'energyChartSection' },
       { type: 'serviceGridSection' },
       { type: 'resourceGridSection' },
       { type: 'guideGridSection' },
@@ -2892,6 +3047,7 @@ export default [
   pageActionType,
   pageItemType,
   guideCardItemType,
+  energyChartPointType,
   sectionContentItemType,
   logoMarqueeItemType,
   heroSlideItemType,
@@ -2917,6 +3073,7 @@ export default [
   bandSectionType,
   logosSectionType,
   solarSwitchSectionType,
+  energyChartSectionType,
   serviceGridSectionType,
   resourceGridSectionType,
   guideGridSectionType,

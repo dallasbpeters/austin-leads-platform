@@ -69,7 +69,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           borderRadius="0"
           images={rotatingHeroImages}
           interval={10000}
-          fadeDuration={300}
+          fadeDuration={700}
           overlayStyle={overlayStyle}
           showOverlay={Boolean(overlayStyle)}
           showDots={false}
@@ -125,7 +125,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             </div>
 
             <h1
-              className="mb-10 leading-none! text-[clamp(4.5rem,12vw,9rem)] text-black tracking-[-0.02em] type-display"
+              className="mb-10 leading-none! text-[clamp(4.5rem,11vw,8rem)] text-black tracking-[-0.02em] type-display"
               style={heroTextColor ? { color: heroTextColor } : undefined}
             >
               {titlePrimary}

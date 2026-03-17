@@ -338,6 +338,24 @@ export function normalizeSectionType(section) {
     })
   }
 
+  if (section.type === 'energyChart') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'energyChartSection',
+      type: 'energyChart',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+      chartPeriodLabel: section.chartPeriodLabel,
+      chartUnitLabel: section.chartUnitLabel,
+      chartLineUnitLabel: section.chartLineUnitLabel,
+      chartYAxisMax: section.chartYAxisMax,
+      chartBarColor: section.chartBarColor,
+      chartLineColor: section.chartLineColor,
+      chartPoints: Array.isArray(section.chartPoints) ? section.chartPoints : undefined,
+    })
+  }
+
   if (section.type === 'aboutProfile') {
     const people =
       Array.isArray(section.people) && section.people.length
@@ -443,6 +461,10 @@ export function withSectionKeys(sections) {
 
     if (Array.isArray(normalizedSection?.people)) {
       keyedSection.people = withObjectArrayKeys(normalizedSection.people, 'person', 'name')
+    }
+
+    if (Array.isArray(normalizedSection?.chartPoints)) {
+      keyedSection.chartPoints = withObjectArrayKeys(normalizedSection.chartPoints, 'chart-point', 'label')
     }
 
     return keyedSection

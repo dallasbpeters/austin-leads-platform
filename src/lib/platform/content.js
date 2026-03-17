@@ -25,6 +25,12 @@ const sectionProjection = `
   leadingWords,
   accentWord,
   trailingText,
+  chartPeriodLabel,
+  chartUnitLabel,
+  chartLineUnitLabel,
+  chartYAxisMax,
+  chartBarColor,
+  chartLineColor,
   colors,
   tint,
   minHeight,
@@ -250,6 +256,12 @@ const sectionProjection = `
       }
     }
   },
+  chartPoints[]{
+    _key,
+    label,
+    barValue,
+    lineValue
+  },
   roofingItems[]{
     _key,
     number,
@@ -438,6 +450,17 @@ function sanitizeSection(section) {
       : section.leadingWords,
     accentWord: section.accentWord,
     trailingText: section.trailingText,
+    chartPeriodLabel: cleanRuntimeString(section.chartPeriodLabel),
+    chartUnitLabel: cleanRuntimeString(section.chartUnitLabel),
+    chartLineUnitLabel: cleanRuntimeString(section.chartLineUnitLabel),
+    chartYAxisMax:
+      typeof section.chartYAxisMax === 'number'
+        ? section.chartYAxisMax
+        : section.chartYAxisMax
+          ? Number(section.chartYAxisMax)
+          : section.chartYAxisMax,
+    chartBarColor: resolveSanityColorValue(section.chartBarColor),
+    chartLineColor: resolveSanityColorValue(section.chartLineColor),
     colors: Array.isArray(section.colors)
       ? section.colors.map(resolveSanityColorValue).filter(Boolean)
       : section.colors,
@@ -558,6 +581,15 @@ function sanitizeSection(section) {
     reviews: Array.isArray(section.reviews) ? section.reviews.map(sanitizeReview) : section.reviews,
     heroSlides: Array.isArray(section.heroSlides) ? section.heroSlides.map(sanitizeItem) : section.heroSlides,
     items: Array.isArray(section.items) ? section.items.map(sanitizeItem) : section.items,
+    chartPoints: Array.isArray(section.chartPoints)
+      ? section.chartPoints.map((point) => ({
+          ...point,
+          _key: cleanRuntimeString(point?._key),
+          label: cleanRuntimeString(point?.label),
+          barValue: typeof point?.barValue === 'number' ? point.barValue : Number(point?.barValue || 0),
+          lineValue: typeof point?.lineValue === 'number' ? point.lineValue : Number(point?.lineValue || 0),
+        }))
+      : section.chartPoints,
     roofingItems: Array.isArray(section.roofingItems)
       ? section.roofingItems.map(sanitizeItem)
       : section.roofingItems,

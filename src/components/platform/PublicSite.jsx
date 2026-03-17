@@ -17,6 +17,7 @@ import * as IconoirIcons from 'iconoir-react'
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
+import EnergyChartSection from '@/components/EnergyChartSection'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import Band from '@/components/Band'
 import CalculatorSection from '@/components/CalculatorSection'
@@ -168,7 +169,7 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
             </div>
           ) : null}
         </div>
-        {hasHeroImage ? (
+        {hasHeroImage && section.metrics?.length ? (
           <div className="grid content-center space-y-4 grid-cols-1">
             <Card
               className={
@@ -1439,6 +1440,7 @@ const sectionRenderers = {
   band: BandSection,
   logos: RoofingLogoCloudSection,
   solarSwitch: SolarSwitchSection,
+  energyChart: EnergyChartSection,
   steps: StepsSection,
   cta: CtaSection,
   ctaBanner: CtaBannerSection,

@@ -23,25 +23,37 @@ const SolarSwitch = ({
   const circleTranslateX = isActive ? textWidth + gap : 0
 
   useEffect(() => {
-    if (!sectionRef.current || typeof IntersectionObserver === 'undefined') {
+    if (!sectionRef.current || typeof window === 'undefined') {
       return
     }
 
-    const activationRatio = 0.9
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsActive(entry.intersectionRatio >= activationRatio)
-      },
-      {
-        threshold: [0, activationRatio, 1],
-        rootMargin: '0px 0px -50% 0px',
-      },
-    )
+    let rafId = 0
+    const activationLineRatio = 0.6
+    const handleScroll = () => {
+      if (rafId) {
+        return
+      }
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0
+        const top = sectionRef.current?.getBoundingClientRect().top
+        if (typeof top !== 'number') {
+          return
+        }
+        const activationLine = window.innerHeight * activationLineRatio
+        setIsActive(top <= activationLine)
+      })
+    }
 
-    observer.observe(sectionRef.current)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleScroll)
 
     return () => {
-      observer.disconnect()
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
+      if (rafId) {
+        window.cancelAnimationFrame(rafId)
+      }
     }
   }, [])
 
