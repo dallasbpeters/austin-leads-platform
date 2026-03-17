@@ -170,7 +170,7 @@ export async function GET(request) {
   const isGuideLayout =
     isGuideParam || layout === 'guide' || path.startsWith('/guides/')
 
-  return new ImageResponse(
+  const imageResponse = new ImageResponse(
     <div
       style={{
         display: 'flex',
@@ -512,4 +512,15 @@ export async function GET(request) {
         : undefined,
     },
   )
+
+  const pngBuffer = await imageResponse.arrayBuffer()
+
+  return new Response(pngBuffer, {
+    status: 200,
+    headers: {
+      'content-type': 'image/png',
+      'content-length': String(pngBuffer.byteLength),
+      'cache-control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+    },
+  })
 }
