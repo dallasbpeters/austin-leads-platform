@@ -46,7 +46,9 @@ function getPageHeroImage(page) {
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
-  const isGuidePage = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
+  const isGuidePageByPath = String(pathname || '').startsWith('/guides/')
+  const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
+  const isGuidePage = isGuidePageByPath || isGuidePageByData
 
   url.searchParams.set('site', site.name)
   url.searchParams.set('title', page.seo?.title || page.title || site.name)
@@ -65,6 +67,10 @@ function buildOgImageUrl(origin, site, page, pathname) {
 
   if (pathname && pathname !== '/') {
     url.searchParams.set('path', pathname)
+  }
+
+  if (page?._updatedAt) {
+    url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
 
   if (isGuidePage) {
@@ -106,7 +112,9 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   }
 
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
-  const isGuidePage = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
+  const isGuidePageByPath = pathname.startsWith('/guides/')
+  const isGuidePageByData = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
+  const isGuidePage = isGuidePageByPath || isGuidePageByData
   const fallbackCanonical = getPrimaryUrl(site, pathname)
   const canonical = page.seo?.canonicalUrl || site.seo?.canonicalUrl || fallbackCanonical
   const currentOrigin =
