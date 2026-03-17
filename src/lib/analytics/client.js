@@ -1,6 +1,5 @@
 'use client'
 
-import { sendGAEvent } from '@next/third-parties/google'
 import posthog from 'posthog-js'
 
 export function trackAnalyticsEvent(eventName, params = {}) {
@@ -12,20 +11,26 @@ export function trackAnalyticsEvent(eventName, params = {}) {
     // Keep UX resilient even if PostHog is unavailable.
   }
 
-  try {
-    sendGAEvent('event', eventName, params)
-  } catch {
-    // Keep UX resilient even if GA is unavailable.
-  }
-
   if (typeof window === 'undefined') return
 
+  const hasGtag = typeof window.gtag === 'function'
+  const hasDataLayer = Array.isArray(window.dataLayer)
+
+  if (hasGtag) {
+    try {
+      window.gtag('event', eventName, params)
+    } catch {
+      // Keep UX resilient even if GA is unavailable.
+    }
+  }
+
   try {
-    window.dataLayer = window.dataLayer || []
-    window.dataLayer.push({
-      event: eventName,
-      ...params,
-    })
+    if (hasDataLayer) {
+      window.dataLayer.push({
+        event: eventName,
+        ...params,
+      })
+    }
   } catch {
     // Keep UX resilient even if GTM dataLayer is unavailable.
   }

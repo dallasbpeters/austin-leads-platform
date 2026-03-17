@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Facebook, X, Linkedin, Mail, Copy, Check } from 'iconoir-react'
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const shareLinks = [
   { id: 'x', label: 'Share on X', Icon: X },
@@ -44,13 +45,49 @@ export default function GuideShareBar({ url = '', title = '' }) {
     [title, url],
   )
 
+  const getPagePath = () => {
+    if (typeof window !== 'undefined' && window.location?.pathname) {
+      return window.location.pathname
+    }
+
+    try {
+      return new URL(url).pathname || '/unknown'
+    } catch {
+      return '/unknown'
+    }
+  }
+
+  const buildShareEventProps = (platform) => ({
+    event_source: 'guide_share_bar',
+    share_platform: platform,
+    page_path: getPagePath(),
+    page_url: url,
+    guide_title: title || 'unknown',
+  })
+
+  const handleShareClick = (platform) => {
+    trackAnalyticsEvent('guide_share_click', buildShareEventProps(platform))
+  }
+
   const handleCopy = async () => {
     if (!url || typeof navigator === 'undefined' || !navigator.clipboard) {
       return
     }
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 1800)
+
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      trackAnalyticsEvent('guide_share_copy_link', {
+        ...buildShareEventProps('copy_link'),
+        copy_status: 'success',
+      })
+      window.setTimeout(() => setCopied(false), 1800)
+    } catch {
+      trackAnalyticsEvent('guide_share_copy_link', {
+        ...buildShareEventProps('copy_link'),
+        copy_status: 'error',
+      })
+    }
   }
 
   if (!url) {
@@ -67,6 +104,7 @@ export default function GuideShareBar({ url = '', title = '' }) {
             href={item.href}
             target={item.id === 'email' ? undefined : '_blank'}
             rel={item.id === 'email' ? undefined : 'noopener noreferrer'}
+            onClick={() => handleShareClick(item.id)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-none bg-background text-foreground transition-colors hover:bg-muted"
             aria-label={item.label}
             title={item.label}
