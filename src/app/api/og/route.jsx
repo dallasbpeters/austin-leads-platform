@@ -135,26 +135,36 @@ function safeColor(value, fallback) {
   return fallback
 }
 
+function getQueryParam(searchParams, name) {
+  const direct = searchParams.get(name)
+  if (direct) return direct
+
+  const ampPrefixed = searchParams.get(`amp;${name}`)
+  if (ampPrefixed) return ampPrefixed
+
+  return ''
+}
+
 export async function GET(request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
   const familjenVariableFont = await getFamiljenVariableFont(requestUrl)
 
-  const site = clampText(searchParams.get('site') || 'Texas Solar and Roofing Pros', 80)
-  const title = clampText(searchParams.get('title') || site, 120)
-  const description = clampText(searchParams.get('description') || '', 180)
-  const path = clampText(searchParams.get('path') || '', 80)
-  const category = clampText(searchParams.get('category') || '', 80)
-  const layout = clampText(searchParams.get('layout') || '', 20)
-  const imageParam = searchParams.get('image') || ''
+  const site = clampText(getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros', 80)
+  const title = clampText(getQueryParam(searchParams, 'title') || site, 120)
+  const description = clampText(getQueryParam(searchParams, 'description') || '', 180)
+  const path = clampText(getQueryParam(searchParams, 'path') || '', 80)
+  const category = clampText(getQueryParam(searchParams, 'category') || '', 80)
+  const layout = clampText(getQueryParam(searchParams, 'layout') || '', 20)
+  const imageParam = getQueryParam(searchParams, 'image') || ''
   const image = imageParam ? new URL(imageParam, requestUrl.origin).toString() : ''
 
-  const primary = safeColor(searchParams.get('primary'), '#f97316')
-  const secondary = safeColor(searchParams.get('secondary'), '#016bb7')
-  const guideBackground = safeColor(searchParams.get('bg'), secondary)
+  const primary = safeColor(getQueryParam(searchParams, 'primary'), '#f97316')
+  const secondary = safeColor(getQueryParam(searchParams, 'secondary'), '#016bb7')
+  const guideBackground = safeColor(getQueryParam(searchParams, 'bg'), secondary)
   const secondarySoft = '#172554'
   const copyColor = '#dbe4ee'
-  const isGuideLayout = layout === 'guide'
+  const isGuideLayout = layout === 'guide' || path.startsWith('/guides/')
 
   return new ImageResponse(
     <div

@@ -46,6 +46,7 @@ function getPageHeroImage(page) {
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
+  const ogTemplateVersion = 'guide-v3'
   const isGuidePageByPath = String(pathname || '').startsWith('/guides/')
   const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
@@ -72,6 +73,7 @@ function buildOgImageUrl(origin, site, page, pathname) {
   if (page?._updatedAt) {
     url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
+  url.searchParams.set('ogv', ogTemplateVersion)
 
   if (isGuidePage) {
     url.searchParams.set('layout', 'guide')
