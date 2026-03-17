@@ -164,7 +164,7 @@ export async function GET(request) {
         width: '100%',
         height: '100%',
         overflow: 'hidden',
-        backgroundColor: secondary,
+        backgroundColor: isGuideLayout ? guideBackground : secondary,
         color: 'white',
         fontFamily: 'FamiljenGrotesk-Variable, Arial, sans-serif',
         position: 'relative',
@@ -177,8 +177,8 @@ export async function GET(request) {
             inset: 0,
             display: 'flex',
             flexDirection: 'column',
-            padding: '44px 48px',
-            background: `linear-gradient(145deg, ${guideBackground} 0%, ${guideBackground} 100%)`,
+            padding: '44px 48px 130px 48px',
+            backgroundColor: guideBackground,
           }}
         >
           <div
@@ -186,7 +186,7 @@ export async function GET(request) {
               display: 'flex',
               width: '1100px',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-start',
               marginBottom: 26,
             }}
           >
@@ -264,34 +264,38 @@ export async function GET(request) {
               ) : null}
             </div>
 
+          </div>
+          <div
+            style={{
+              position: 'absolute',
+              left: 48,
+              right: 48,
+              bottom: 44,
+              display: 'flex',
+              width: 'auto',
+              alignItems: 'flex-end',
+              justifyContent: 'space-between',
+            }}
+          >
             <div
               style={{
                 display: 'flex',
-                width: '100%',
-                alignItems: 'flex-end',
-                justifyContent: 'space-between',
+                fontSize: 24,
+                fontWeight: 700,
+                color: 'rgba(255,255,255,0.9)',
+                letterSpacing: '-0.02em',
               }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  fontSize: 24,
-                  fontWeight: 700,
-                  color: 'rgba(255,255,255,0.9)',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                {site}
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 12,
-                }}
-              >
-                <BrandLogo color="#ffffff" />
-              </div>
+              {site}
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+              }}
+            >
+              <BrandLogo color="#ffffff" />
             </div>
           </div>
         </div>
