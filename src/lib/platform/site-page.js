@@ -79,8 +79,8 @@ function getPageHeroImage(page) {
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
-  const ogTemplateVersion = 'guide-v4'
-  const isGuidePageByPath = String(pathname || '').startsWith('/guides/')
+  const ogTemplateVersion = 'guide-v5'
+  const isGuidePageByPath = String(pathname || '').startsWith('/guides')
   const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
   const title = page.seo?.title || page.title || site.name
@@ -88,16 +88,10 @@ function buildOgImageUrl(origin, site, page, pathname) {
 
   if (isGuidePage) {
     url.searchParams.set('g', '1')
-    url.searchParams.set('t', title)
     if (pathname && pathname !== '/') {
       url.searchParams.set('p', pathname)
     }
-    if (site.brand?.primary) {
-      url.searchParams.set('pr', site.brand.primary)
-    }
-    if (site.brand?.secondary) {
-      url.searchParams.set('sc', site.brand.secondary)
-    }
+    if (title) url.searchParams.set('t', title)
     if (page?.guideCardColor) {
       url.searchParams.set('b', page.guideCardColor)
     }
@@ -166,7 +160,7 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   }
 
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
-  const isGuidePageByPath = pathname.startsWith('/guides/')
+  const isGuidePageByPath = pathname.startsWith('/guides')
   const isGuidePageByData = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
   const fallbackCanonical = getPrimaryUrl(site, pathname)

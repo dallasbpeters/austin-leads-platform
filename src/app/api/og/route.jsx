@@ -145,6 +145,18 @@ function getQueryParam(searchParams, name) {
   return ''
 }
 
+function titleFromGuidePath(pathname) {
+  const path = String(pathname || '')
+  const segment = path.split('/').filter(Boolean).at(-1)
+  if (!segment) return ''
+
+  return segment
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
 export async function GET(request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
@@ -154,7 +166,14 @@ export async function GET(request) {
     getQueryParam(searchParams, 's') || getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros',
     80,
   )
-  const title = clampText(getQueryParam(searchParams, 't') || getQueryParam(searchParams, 'title') || site, 120)
+  const title =
+    clampText(
+      getQueryParam(searchParams, 't') ||
+        getQueryParam(searchParams, 'title') ||
+        titleFromGuidePath(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path')) ||
+        site,
+      120,
+    ) || site
   const description = clampText(getQueryParam(searchParams, 'd') || getQueryParam(searchParams, 'description') || '', 180)
   const path = clampText(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path') || '', 80)
   const category = clampText(getQueryParam(searchParams, 'c') || getQueryParam(searchParams, 'category') || '', 80)
