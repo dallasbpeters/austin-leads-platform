@@ -7,7 +7,7 @@ export const size = {
   height: 630,
 }
 export const contentType = 'image/png'
-let familjenVariableFontPromise
+let fontFamilyPromise
 const OG_COLOR_TOKEN_MAP = {
   primary: 'hsl(205 99% 36%)',
   secondary: 'hsl(190 61% 15%)',
@@ -55,15 +55,15 @@ const OG_CSS_VAR_COLOR_MAP = {
   '--color-confetti': OG_COLOR_TOKEN_MAP.confetti,
 }
 
-function getFamiljenVariableFont(requestUrl) {
-  if (!familjenVariableFontPromise) {
+function getFontFamily(requestUrl) {
+  if (!fontFamilyPromise) {
     const fontCandidates = [
-      '/fonts/FamiljenGrotesk-Variable.woff',
-      '/fonts/FamiljenGrotesk-Variable.ttf',
-      '/fonts/FamiljenGrotesk-Variable.woff2',
+      '/fonts/Switzer-Variable.woff',
+      '/fonts/Switzer-Variable.ttf',
+      '/fonts/Switzer-Variable.woff2',
     ]
 
-    familjenVariableFontPromise = (async () => {
+    fontFamilyPromise = (async () => {
       for (const candidate of fontCandidates) {
         try {
           const response = await fetch(new URL(candidate, requestUrl.origin))
@@ -78,7 +78,7 @@ function getFamiljenVariableFont(requestUrl) {
     })()
   }
 
-  return familjenVariableFontPromise
+  return fontFamilyPromise
 }
 
 function BrandLogo({ color = '#ffffff' }) {
@@ -160,7 +160,7 @@ function titleFromGuidePath(pathname) {
 export async function GET(request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
-  const familjenVariableFont = await getFamiljenVariableFont(requestUrl)
+  const fontFamily = await getFontFamily(requestUrl)
   const isGuideParam = getQueryParam(searchParams, 'g') === '1' || getQueryParam(searchParams, 'guide') === '1'
   const site = clampText(
     getQueryParam(searchParams, 's') || getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros',
@@ -199,7 +199,7 @@ export async function GET(request) {
         overflow: 'hidden',
         backgroundColor: isGuideLayout ? guideBackground : secondary,
         color: 'white',
-        fontFamily: 'FamiljenGrotesk-Variable, Arial, sans-serif',
+        fontFamily: 'Switzer-Variable, Arial, sans-serif',
         position: 'relative',
       }}
     >
@@ -519,11 +519,11 @@ export async function GET(request) {
     </div>,
     {
       ...size,
-      fonts: familjenVariableFont
+      fonts: fontFamily
         ? [
             {
-              name: 'FamiljenGrotesk-Variable',
-              data: familjenVariableFont,
+              name: 'Switzer-Variable',
+              data: fontFamily,
               style: 'normal',
               weight: 400,
             },

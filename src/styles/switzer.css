@@ -1,0 +1,38 @@
+/**
+* @license
+*
+* Font Family: Switzer
+* Designed by: Jérémie Hornus
+* URL: https://www.fontshare.com/fonts/switzer
+* © 2026 Indian Type Foundry
+*
+* Switzer Thin 
+* Switzer ThinItalic 
+* Switzer Extralight 
+* Switzer ExtralightItalic 
+* Switzer Light 
+* Switzer LightItalic 
+* Switzer Regular 
+* Switzer Italic 
+* Switzer Medium 
+* Switzer MediumItalic 
+* Switzer Semibold 
+* Switzer SemiboldItalic 
+* Switzer Bold 
+* Switzer BoldItalic 
+* Switzer Extrabold 
+* Switzer ExtraboldItalic 
+* Switzer Black 
+* Switzer BlackItalic 
+* Switzer Variable (Variable font)
+* Switzer VariableItalic (Variable font)
+*/
+@font-face {
+  font-family: 'Switzer-Variable';
+  src: url('/fonts/Switzer-Variable.woff2') format('woff2'),
+       url('/fonts/Switzer-Variable.woff') format('woff'),
+       url('/fonts/Switzer-Variable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
