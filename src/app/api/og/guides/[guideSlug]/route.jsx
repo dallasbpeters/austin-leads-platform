@@ -36,7 +36,7 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
   if (page?._updatedAt) {
     upstreamUrl.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
-  upstreamUrl.searchParams.set('ogv', 'guide-v6')
+  upstreamUrl.searchParams.set('ogv', 'guide-v7')
 
   const upstreamResponse = await fetch(upstreamUrl.toString(), {
     headers: {
