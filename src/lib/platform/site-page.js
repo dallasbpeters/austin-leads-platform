@@ -166,7 +166,7 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   const computedOgImage = buildOgImageUrl(currentOrigin, site, page, pathname)
   const ogImage = isGuidePage ? computedOgImage : page.seo?.ogImage || site.seo?.ogImage || computedOgImage
   const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
-  const facebookAppId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || ''
+  const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
   return {
     title,

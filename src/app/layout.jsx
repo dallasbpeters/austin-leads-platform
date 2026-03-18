@@ -35,9 +35,11 @@ export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
   const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig()
   const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
+  const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
   return (
     <html lang="en">
+      <head>{facebookAppId ? <meta property="fb:app_id" content={facebookAppId} /> : null}</head>
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
       <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">
