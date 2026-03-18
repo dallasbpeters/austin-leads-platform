@@ -1,75 +1,70 @@
 {
-  "_guide": "Solar Battery Backup: When Storage Is Worth the Money",
-  "_documentId": "page-guide-solar-battery-backup",
-  "_slug": "guides/solar-battery-backup-guide",
-  "_chartConcept": "Battery capacity vs hours of backup for common Austin home loads — shows tradeoff between battery size and runtime",
-  "_insertAfter": "section-3 (secondaryCTA)",
-  "section": {
-    "_type": "energyChartSection",
-    "type": "energyChart",
-    "eyebrow": "Backup runtime",
-    "title": "How long a battery keeps your house running",
-    "body": [
-      {
-        "_type": "block",
-        "style": "normal",
-        "children": [
-          {
-            "_type": "span",
-            "text": "Runtime depends on what you keep powered. A fridge, lights, and Wi-Fi draw about 1.5 kW. Add the AC and you're at 5+ kW. These estimates assume a fully charged battery with no solar recharging during the outage."
-          }
-        ]
-      }
-    ],
-    "chartType": "composed",
-    "chartPrimaryLabel": "Hours of backup",
-    "chartSecondaryLabel": "Cost ($)",
-    "chartUnitLabel": "hrs",
-    "chartLineUnitLabel": "$",
-    "chartPeriodLabel": "Battery size vs backup hours (essentials only ~1.5 kW load)",
-    "chartBarColor": "primary",
-    "chartLineColor": "sweetcorn",
-    "chartYAxisMax": 30,
-    "showGrid": true,
-    "showLegend": true,
-    "showAxisLines": true,
-    "chartPoints": [
-      {
-        "_type": "energyChartPoint",
-        "label": "5 kWh",
-        "barValue": 3,
-        "lineValue": 5500
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "10 kWh",
-        "barValue": 7,
-        "lineValue": 9000
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "13.5 kWh",
-        "barValue": 9,
-        "lineValue": 11500
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "20 kWh",
-        "barValue": 13,
-        "lineValue": 16000
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "27 kWh",
-        "barValue": 18,
-        "lineValue": 21000
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "40 kWh",
-        "barValue": 27,
-        "lineValue": 30000
-      }
-    ]
-  }
+  "_type": "energyChartSection",
+  "type": "energyChart",
+  "eyebrow": "Backup runtime",
+  "title": "How long a battery keeps your house running",
+  "body": [
+    {
+      "_type": "block",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "text": "Runtime depends on what you keep powered. A fridge, lights, and Wi-Fi draw about 1.5 kW. Add the AC and you are at 5+ kW. These estimates assume a fully charged battery with no solar recharging during the outage."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "chartType": "composed",
+  "showGrid": true,
+  "showLegend": true,
+  "showAxisLines": true,
+  "chartAreaFillOpacity": 0.24,
+  "chartPeriodLabel": "Battery size vs backup hours (essentials only ~1.5 kW load)",
+  "chartPrimaryLabel": "Hours of backup",
+  "chartSecondaryLabel": "Cost",
+  "chartUnitLabel": "hrs",
+  "chartLineUnitLabel": "$",
+  "chartYAxisMax": 30,
+  "chartBarColor": "primary",
+  "chartLineColor": "sweetcorn",
+  "chartPoints": [
+    {
+      "_type": "energyChartPoint",
+      "label": "5 kWh",
+      "barValue": 3,
+      "lineValue": 5500
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "10 kWh",
+      "barValue": 7,
+      "lineValue": 9000
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "13.5 kWh",
+      "barValue": 9,
+      "lineValue": 11500
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "20 kWh",
+      "barValue": 13,
+      "lineValue": 16000
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "27 kWh",
+      "barValue": 18,
+      "lineValue": 21000
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "40 kWh",
+      "barValue": 27,
+      "lineValue": 30000
+    }
+  ]
 }

@@ -357,7 +357,7 @@ body.admin-body-locked {
   .btn--secondary {
     border: 1px solid hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.22);
     background-color: hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.4);
-    color: var(--color-white);
+    color: var(--color-secondary);
   }
 
   .btn--secondary:hover {

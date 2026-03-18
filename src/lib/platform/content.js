@@ -38,6 +38,12 @@ const sectionProjection = `
   showLegend,
   showAxisLines,
   chartAreaFillOpacity,
+  chartAreaStacked,
+  chartAreaSeries[]{
+    _key,
+    title,
+    color
+  },
   colors,
   tint,
   minHeight,
@@ -267,7 +273,8 @@ const sectionProjection = `
     _key,
     label,
     barValue,
-    lineValue
+    lineValue,
+    areaValues
   },
   roofingItems[]{
     _key,

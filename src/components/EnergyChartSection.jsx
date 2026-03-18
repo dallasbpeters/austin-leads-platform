@@ -89,6 +89,23 @@ function resolveChartColor(value, fallback) {
   return chartColorTokenMap[trimmed] || trimmed
 }
 
+function resolveAreaPointValue(point, seriesIndex, seriesCount) {
+  const av = point?.areaValues
+  if (Array.isArray(av) && av[seriesIndex] !== undefined && av[seriesIndex] !== null) {
+    const parsed = Number(av[seriesIndex])
+    return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0
+  }
+  if (seriesIndex === 0) {
+    const parsed = Number(point?.barValue)
+    return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0
+  }
+  if (seriesIndex === 1 && seriesCount === 2) {
+    const parsed = Number(point?.lineValue)
+    return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0
+  }
+  return 0
+}
+
 export default function EnergyChartSection({ section = null, sectionId = 'energy-chart', editAttributes = {} }) {
   const hasSanityPoints = Array.isArray(section?.chartPoints)
   const points = hasSanityPoints ? section.chartPoints.filter(Boolean) : defaultPoints
@@ -107,18 +124,54 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
   const lineUnitLabel = section?.chartLineUnitLabel || 'deg'
   const periodLabel = section?.chartPeriodLabel || 'Jul 2024 - Jul 2025'
 
+  const areaSeriesDefs =
+    chartType === 'area' && Array.isArray(section?.chartAreaSeries)
+      ? section.chartAreaSeries.filter((item) => item && typeof item === 'object')
+      : []
+  const multiAreaCount = areaSeriesDefs.length
+  const chartAreaStacked = section?.chartAreaStacked === true
+
   const chartHeight = 400
   const chartInnerWidth = Math.max(920, points.length * 72)
-  const chartData = points.map((point, index) => ({
-    key: point?._key || `point-${index + 1}`,
-    label: point?.label || `P${index + 1}`,
-    barValue: Number.isFinite(Number(point?.barValue)) ? Math.max(Number(point?.barValue), 0) : 0,
-    lineValue: Number(point?.lineValue ?? 0),
-    scatterX: Number.isFinite(Number(point?.barValue)) ? Math.max(Number(point?.barValue), 0) : 0,
-    scatterY: Number(point?.lineValue ?? 0),
-  }))
+  const chartData = points.map((point, index) => {
+    const row = {
+      key: point?._key || `point-${index + 1}`,
+      label: point?.label || `P${index + 1}`,
+      barValue: Number.isFinite(Number(point?.barValue)) ? Math.max(Number(point?.barValue), 0) : 0,
+      lineValue: Number.isFinite(Number(point?.lineValue)) ? Number(point?.lineValue) : 0,
+      scatterX: Number.isFinite(Number(point?.barValue)) ? Math.max(Number(point?.barValue), 0) : 0,
+      scatterY: Number.isFinite(Number(point?.lineValue)) ? Number(point?.lineValue) : 0,
+    }
+    if (chartType === 'area' && multiAreaCount > 0) {
+      for (let i = 0; i < multiAreaCount; i += 1) {
+        row[`area_${i}`] = resolveAreaPointValue(point, i, multiAreaCount)
+      }
+    }
+    return row
+  })
   const maxBarValue = chartData.reduce((max, point) => Math.max(max, Number(point?.barValue || 0)), 0)
-  const yAxisMax = Math.max(configuredYAxisMax, maxBarValue || 0, 1)
+
+  let yAxisMax
+  if (chartType === 'area' && multiAreaCount > 0) {
+    if (chartAreaStacked) {
+      const stackedPeak = chartData.reduce((max, row) => {
+        const sum = areaSeriesDefs.reduce((acc, _, i) => acc + (Number(row[`area_${i}`]) || 0), 0)
+        return Math.max(max, sum)
+      }, 0)
+      yAxisMax = Math.max(configuredYAxisMax, stackedPeak, 1)
+    } else {
+      const peak = chartData.reduce((max, row) => {
+        let rowMax = max
+        for (let i = 0; i < multiAreaCount; i += 1) {
+          rowMax = Math.max(rowMax, Number(row[`area_${i}`]) || 0)
+        }
+        return rowMax
+      }, 0)
+      yAxisMax = Math.max(configuredYAxisMax, peak, 1)
+    }
+  } else {
+    yAxisMax = Math.max(configuredYAxisMax, maxBarValue || 0, 1)
+  }
   const yTicks = buildYAxisTicks(yAxisMax)
   const gridStroke = 'rgba(148, 163, 184, 0.38)'
   const axisTickColor = 'rgba(100, 116, 139, 0.95)'
@@ -185,6 +238,9 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
             dy={10}
           />
           <YAxis
+            domain={[0, yAxisMax]}
+            ticks={yTicks}
+            tickFormatter={(value) => (value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString())}
             tick={{ fill: axisTickColor, fontSize: 12 }}
             axisLine={axisLineProps}
             tickLine={tickLineProps}
@@ -192,17 +248,17 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           />
           <Tooltip
             cursor={{ fill: 'rgba(0,0,0,0.04)' }}
-            formatter={(value) => [`${value}${lineUnitLabel}`, secondaryLabel]}
+            formatter={(value) => [`${value} ${unitLabel}`, primaryLabel]}
             labelFormatter={(label) => `Label: ${label}`}
           />
           {showLegend ? <Legend /> : null}
           <Line
             type="monotone"
-            dataKey="lineValue"
-            name={`${secondaryLabel} (${lineUnitLabel})`}
-            stroke={lineColor}
+            dataKey="barValue"
+            name={`${primaryLabel} (${unitLabel})`}
+            stroke={barColor}
             strokeWidth={3}
-            dot={{ r: 4.5, fill: lineColor, strokeWidth: 0 }}
+            dot={{ r: 4.5, fill: barColor, strokeWidth: 0 }}
             activeDot={{ r: 4.5 }}
           />
         </LineChart>
@@ -210,6 +266,9 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
     }
 
     if (chartType === 'area') {
+      const areaTooltipFormatter = (value, name) => [`${value} ${unitLabel}`, name]
+      const stackId = chartAreaStacked && multiAreaCount > 1 ? 'energy-areas' : undefined
+
       return (
         <AreaChart data={chartData} margin={{ top: 22, right: 20, left: 8, bottom: 44 }}>
           <CartesianGrid stroke={gridStroke} strokeOpacity={1} vertical={showGrid} horizontal={showGrid} />
@@ -221,6 +280,9 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
             dy={10}
           />
           <YAxis
+            domain={[0, yAxisMax]}
+            ticks={yTicks}
+            tickFormatter={(value) => (value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString())}
             tick={{ fill: axisTickColor, fontSize: 12 }}
             axisLine={axisLineProps}
             tickLine={tickLineProps}
@@ -228,19 +290,39 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           />
           <Tooltip
             cursor={{ fill: 'rgba(0,0,0,0.04)' }}
-            formatter={(value) => [`${value}${lineUnitLabel}`, secondaryLabel]}
+            formatter={areaTooltipFormatter}
             labelFormatter={(label) => `Label: ${label}`}
           />
           {showLegend ? <Legend /> : null}
-          <Area
-            type="monotone"
-            dataKey="lineValue"
-            name={`${secondaryLabel} (${lineUnitLabel})`}
-            stroke={lineColor}
-            fill={lineColor}
-            fillOpacity={areaFillOpacity}
-            strokeWidth={3}
-          />
+          {multiAreaCount > 0 ? (
+            areaSeriesDefs.map((seriesDef, index) => {
+              const seriesTitle = String(seriesDef?.title || '').trim() || `Series ${index + 1}`
+              const seriesColor = resolveChartColor(seriesDef?.color, PIE_COLORS[index % PIE_COLORS.length])
+              return (
+                <Area
+                  key={seriesDef?._key || `area-series-${index}`}
+                  type="monotone"
+                  dataKey={`area_${index}`}
+                  name={`${seriesTitle} (${unitLabel})`}
+                  stroke={seriesColor}
+                  fill={seriesColor}
+                  fillOpacity={areaFillOpacity}
+                  strokeWidth={2}
+                  stackId={stackId}
+                />
+              )
+            })
+          ) : (
+            <Area
+              type="monotone"
+              dataKey="barValue"
+              name={`${primaryLabel} (${unitLabel})`}
+              stroke={barColor}
+              fill={barColor}
+              fillOpacity={areaFillOpacity}
+              strokeWidth={3}
+            />
+          )}
         </AreaChart>
       )
     }

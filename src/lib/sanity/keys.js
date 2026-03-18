@@ -359,6 +359,8 @@ export function normalizeSectionType(section) {
       chartYAxisMax: section.chartYAxisMax,
       chartBarColor: section.chartBarColor,
       chartLineColor: section.chartLineColor,
+      chartAreaStacked: section.chartAreaStacked,
+      chartAreaSeries: Array.isArray(section.chartAreaSeries) ? section.chartAreaSeries : undefined,
       chartPoints: Array.isArray(section.chartPoints) ? section.chartPoints : undefined,
     })
   }

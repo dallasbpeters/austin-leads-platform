@@ -720,17 +720,62 @@ const energyChartPointType = {
         'Secondary metric for this point. Used by line/area charts, and as Y for scatter charts (for example: temperature, rate, score).',
       ),
     },
+    {
+      name: 'areaValues',
+      title: 'Area series values',
+      type: 'array',
+      of: [{ type: 'number', validation: (Rule) => Rule.min(0) }],
+      options: canvasPurpose(
+        'One number per area series (same order as “Area chart series” on the section). Series 1 defaults to Primary value; series 2 defaults to Secondary when exactly two series are defined.',
+      ),
+    },
   ],
   preview: {
     select: {
       title: 'label',
       barValue: 'barValue',
       lineValue: 'lineValue',
+      areaValues: 'areaValues',
     },
-    prepare({ title, barValue, lineValue }) {
+    prepare({ title, barValue, lineValue, areaValues }) {
+      const extra = Array.isArray(areaValues) && areaValues.length ? ` • ${areaValues.length} area vals` : ''
       return {
         title: title || 'Chart point',
-        subtitle: `Primary ${barValue ?? 0} • Secondary ${lineValue ?? 0}`,
+        subtitle: `Primary ${barValue ?? 0} • Secondary ${lineValue ?? 0}${extra}`,
+      }
+    },
+  },
+}
+
+const energyChartAreaSeriesItemType = {
+  name: 'energyChartAreaSeriesItem',
+  title: 'Area series',
+  type: 'object',
+  fields: [
+    {
+      name: 'title',
+      title: 'Legend label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Shown in the legend and tooltips for this area.'),
+    },
+    {
+      name: 'color',
+      title: 'Color',
+      type: 'string',
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Fill and stroke color for this area.'),
+      },
+    },
+  ],
+  preview: {
+    select: { title: 'title', color: 'color' },
+    prepare({ title, color }) {
+      return {
+        title: title || 'Series',
+        subtitle: color || 'default palette',
       }
     },
   },
@@ -2851,6 +2896,24 @@ const energyChartSectionType = {
       options: canvasPurpose('Opacity used when chart type is Area. Use a value between 0 and 1.'),
     },
     {
+      name: 'chartAreaSeries',
+      title: 'Area chart series',
+      type: 'array',
+      of: [{ type: 'energyChartAreaSeriesItem' }],
+      options: canvasPurpose(
+        'When chart type is Area, add one row per filled area. Leave empty for a single area using Primary values only. For each data point, set “Area series values” in the same order (or rely on Primary/Secondary defaults when you define exactly two series).',
+      ),
+    },
+    {
+      name: 'chartAreaStacked',
+      title: 'Stack area series',
+      type: 'boolean',
+      initialValue: false,
+      options: canvasPurpose(
+        'When on, areas stack vertically. When off, they overlap (lower opacity helps). Only applies when multiple area series are defined.',
+      ),
+    },
+    {
       name: 'chartPeriodLabel',
       title: 'Period label',
       type: 'string',
@@ -3133,6 +3196,7 @@ export default [
   pageItemType,
   guideCardItemType,
   energyChartPointType,
+  energyChartAreaSeriesItemType,
   sectionContentItemType,
   logoMarqueeItemType,
   heroSlideItemType,

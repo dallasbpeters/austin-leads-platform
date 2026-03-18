@@ -195,11 +195,6 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
       index: shouldIndex,
       follow: shouldIndex,
     },
-    other: facebookAppId
-      ? {
-          'fb:app_id': facebookAppId,
-        }
-      : undefined,
   }
 }
 

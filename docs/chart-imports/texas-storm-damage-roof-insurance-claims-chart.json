@@ -1,111 +1,106 @@
 {
-  "_guide": "Texas Storm Damage: Roof Inspection and Insurance Claims",
-  "_documentId": "page-guide-texas-storm-damage-roof-insurance",
-  "_slug": "guides/texas-storm-damage-roof-insurance-claims",
-  "_chartConcept": "Austin hail events by month — shows when storms are most likely and claim filing windows",
-  "_insertAfter": "section-3 (highlights)",
-  "section": {
-    "_type": "energyChartSection",
-    "type": "energyChart",
-    "eyebrow": "Storm season",
-    "title": "When Austin gets hit hardest by hail",
-    "body": [
-      {
-        "_type": "block",
-        "style": "normal",
-        "children": [
-          {
-            "_type": "span",
-            "text": "Central Texas hail season peaks from March through June. Most insurance policies require claims within one year of the damage event. If you suspect damage from a spring storm, don't wait until winter to get an inspection."
-          }
-        ]
-      }
-    ],
-    "chartType": "composed",
-    "chartPrimaryLabel": "Hail events (avg)",
-    "chartSecondaryLabel": "Avg hail diameter (inches)",
-    "chartUnitLabel": "events",
-    "chartLineUnitLabel": "in",
-    "chartPeriodLabel": "Austin metro annual average (10-year data)",
-    "chartBarColor": "charade",
-    "chartLineColor": "wattle",
-    "chartYAxisMax": 8,
-    "showGrid": true,
-    "showLegend": true,
-    "showAxisLines": true,
-    "chartPoints": [
-      {
-        "_type": "energyChartPoint",
-        "label": "Jan",
-        "barValue": 1,
-        "lineValue": 0.75
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Feb",
-        "barValue": 1,
-        "lineValue": 0.75
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Mar",
-        "barValue": 4,
-        "lineValue": 1
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Apr",
-        "barValue": 6,
-        "lineValue": 1.25
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "May",
-        "barValue": 7,
-        "lineValue": 1.5
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Jun",
-        "barValue": 5,
-        "lineValue": 1.25
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Jul",
-        "barValue": 2,
-        "lineValue": 1
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Aug",
-        "barValue": 1,
-        "lineValue": 0.75
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Sep",
-        "barValue": 2,
-        "lineValue": 1
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Oct",
-        "barValue": 2,
-        "lineValue": 1
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Nov",
-        "barValue": 1,
-        "lineValue": 0.75
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Dec",
-        "barValue": 1,
-        "lineValue": 0.75
-      }
-    ]
-  }
+  "_type": "energyChartSection",
+  "type": "energyChart",
+  "eyebrow": "Storm season",
+  "title": "When Austin gets hit hardest by hail",
+  "body": [
+    {
+      "_type": "block",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "text": "Central Texas hail season peaks from March through June. Most insurance policies require claims within one year of the damage event. If you suspect damage from a spring storm, do not wait until winter to get an inspection."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "chartType": "composed",
+  "showGrid": true,
+  "showLegend": true,
+  "showAxisLines": true,
+  "chartAreaFillOpacity": 0.24,
+  "chartPeriodLabel": "Austin metro annual average (10-year data)",
+  "chartPrimaryLabel": "Hail events (avg)",
+  "chartSecondaryLabel": "Avg hail diameter",
+  "chartUnitLabel": "events",
+  "chartLineUnitLabel": "in",
+  "chartYAxisMax": 8,
+  "chartBarColor": "charade",
+  "chartLineColor": "wattle",
+  "chartPoints": [
+    {
+      "_type": "energyChartPoint",
+      "label": "Jan",
+      "barValue": 1,
+      "lineValue": 0.75
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Feb",
+      "barValue": 1,
+      "lineValue": 0.75
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Mar",
+      "barValue": 4,
+      "lineValue": 1
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Apr",
+      "barValue": 6,
+      "lineValue": 1.25
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "May",
+      "barValue": 7,
+      "lineValue": 1.5
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Jun",
+      "barValue": 5,
+      "lineValue": 1.25
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Jul",
+      "barValue": 2,
+      "lineValue": 1
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Aug",
+      "barValue": 1,
+      "lineValue": 0.75
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Sep",
+      "barValue": 2,
+      "lineValue": 1
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Oct",
+      "barValue": 2,
+      "lineValue": 1
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Nov",
+      "barValue": 1,
+      "lineValue": 0.75
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Dec",
+      "barValue": 1,
+      "lineValue": 0.75
+    }
+  ]
 }

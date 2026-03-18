@@ -1,61 +1,58 @@
 {
-  "_guide": "Planning a Roof and Solar Project Together",
-  "_documentId": "page-guide-roof-and-solar-project-planning",
-  "_slug": "guides/planning-roof-and-solar-together",
-  "_chartConcept": "Cost comparison: separate projects vs combined — showing where you save by doing both at once",
-  "_insertAfter": "section-3 (highlights)",
-  "section": {
-    "_type": "energyChartSection",
-    "type": "energyChart",
-    "eyebrow": "Cost comparison",
-    "title": "What it costs to do them separately vs. together",
-    "body": [
-      {
-        "_type": "block",
-        "style": "normal",
-        "children": [
-          {
-            "_type": "span",
-            "text": "When you coordinate roof and solar as one project, you avoid the detach-and-reset fee, reduce permitting overlap, and cut total labor time. These are typical Austin project costs."
-          }
-        ]
-      }
-    ],
-    "chartType": "bar",
-    "chartPrimaryLabel": "Estimated cost ($)",
-    "chartUnitLabel": "$",
-    "chartPeriodLabel": "Typical 8 kW solar + full roof replacement",
-    "chartBarColor": "primary",
-    "chartLineColor": "sweetcorn",
-    "chartYAxisMax": 50000,
-    "showGrid": true,
-    "showLegend": true,
-    "showAxisLines": true,
-    "chartPoints": [
-      {
-        "_type": "energyChartPoint",
-        "label": "Roof only",
-        "barValue": 12000,
-        "lineValue": 0
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Solar only",
-        "barValue": 22400,
-        "lineValue": 0
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Separate + D&R later",
-        "barValue": 38400,
-        "lineValue": 0
-      },
-      {
-        "_type": "energyChartPoint",
-        "label": "Combined project",
-        "barValue": 33000,
-        "lineValue": 0
-      }
-    ]
-  }
+  "_type": "energyChartSection",
+  "type": "energyChart",
+  "eyebrow": "Cost comparison",
+  "title": "What it costs to do them separately vs. together",
+  "body": [
+    {
+      "_type": "block",
+      "style": "normal",
+      "children": [
+        {
+          "_type": "span",
+          "text": "When you coordinate roof and solar as one project, you avoid the detach-and-reset fee, reduce permitting overlap, and cut total labor time. These are typical Austin project costs."
+        }
+      ],
+      "markDefs": []
+    }
+  ],
+  "chartType": "bar",
+  "showGrid": true,
+  "showLegend": true,
+  "showAxisLines": true,
+  "chartAreaFillOpacity": 0.24,
+  "chartPeriodLabel": "Typical 8 kW solar + full roof replacement",
+  "chartPrimaryLabel": "Estimated cost",
+  "chartSecondaryLabel": "",
+  "chartUnitLabel": "$",
+  "chartLineUnitLabel": "$",
+  "chartYAxisMax": 50000,
+  "chartBarColor": "primary",
+  "chartLineColor": "sweetcorn",
+  "chartPoints": [
+    {
+      "_type": "energyChartPoint",
+      "label": "Roof only",
+      "barValue": 12000,
+      "lineValue": 0
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Solar only",
+      "barValue": 22400,
+      "lineValue": 0
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Separate + D&R later",
+      "barValue": 38400,
+      "lineValue": 0
+    },
+    {
+      "_type": "energyChartPoint",
+      "label": "Combined project",
+      "barValue": 33000,
+      "lineValue": 0
+    }
+  ]
 }
