@@ -1064,7 +1064,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
 
   return (
     <section
-      className="bg-gradient border-b border-border/60"
+      className="bg-gradient"
       {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
@@ -1076,7 +1076,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:AboutProfileSection"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
-      <div className="grid max-w-7xl gap-6 mx-auto px-3 md:px-6 py-20 lg:px-10 grid-cols-1">
+      <div className="grid max-w-7xl gap-6 mx-auto px-3 md:px-6 py-20 lg:px-10 grid-cols-1 md:grid-cols-2">
         <div className="max-w-3xl mb-10">
           {section.eyebrow ? (
             <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
@@ -1088,7 +1088,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
             <PortableTextContent as="div" value={section.body} className="mt-2 leading-8 text-base text-muted-foreground" />
           ) : null}
         </div>
-        <div className="grid content-start gap-6 grid-cols-1 md:grid-cols-2">
+        <div className="grid content-start gap-6 grid-cols-1">
           {people.map((person, index) => {
             const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
             const profileImageAlt = getImageAlt(
