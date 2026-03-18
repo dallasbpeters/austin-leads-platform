@@ -79,7 +79,6 @@ function getPageHeroImage(page) {
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
-  const ogTemplateVersion = 'guide-v8'
   const isGuidePageByPath = String(pathname || '').startsWith('/guides')
   const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
@@ -91,12 +90,7 @@ function buildOgImageUrl(origin, site, page, pathname) {
       .split('/')
       .filter(Boolean)
       .at(-1)
-    const guideImageUrl = new URL(`/api/og/guides/${encodeURIComponent(guideSlug || '')}`, origin)
-    if (page?._updatedAt) {
-      guideImageUrl.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
-    }
-    guideImageUrl.searchParams.set('ogv', ogTemplateVersion)
-    return guideImageUrl.toString()
+    return new URL(`/api/og/guides/${encodeURIComponent(guideSlug || '')}`, origin).toString()
   }
 
   url.searchParams.set('site', site.name)
@@ -121,7 +115,6 @@ function buildOgImageUrl(origin, site, page, pathname) {
   if (page?._updatedAt) {
     url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
-  url.searchParams.set('ogv', ogTemplateVersion)
 
   const heroImage = getPageHeroImage(page)
   if (heroImage) {
@@ -185,6 +178,7 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
       images: [
         {
           url: ogImage,
+          type: 'image/png',
           width: 1200,
           height: 630,
           alt: `${title} | ${site.name}`,
