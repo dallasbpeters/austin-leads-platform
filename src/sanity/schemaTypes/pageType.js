@@ -702,17 +702,21 @@ const energyChartPointType = {
     },
     {
       name: 'barValue',
-      title: 'Bar value',
+      title: 'Primary value',
       type: 'number',
       validation: (Rule) => Rule.required().min(0),
-      options: canvasPurpose('Primary bar value for this point (e.g., kWh).'),
+      options: canvasPurpose(
+        'Primary metric for this point. Used by bar/pie charts, and as X for scatter charts (for example: kWh, revenue, count).',
+      ),
     },
     {
       name: 'lineValue',
-      title: 'Line value',
+      title: 'Secondary value',
       type: 'number',
       validation: (Rule) => Rule.required(),
-      options: canvasPurpose('Secondary line value for this point (e.g., temperature).'),
+      options: canvasPurpose(
+        'Secondary metric for this point. Used by line/area charts, and as Y for scatter charts (for example: temperature, rate, score).',
+      ),
     },
   ],
   preview: {
@@ -724,7 +728,7 @@ const energyChartPointType = {
     prepare({ title, barValue, lineValue }) {
       return {
         title: title || 'Chart point',
-        subtitle: `${barValue ?? 0} / ${lineValue ?? 0}`,
+        subtitle: `Primary ${barValue ?? 0} • Secondary ${lineValue ?? 0}`,
       }
     },
   },
@@ -2741,12 +2745,19 @@ const solarSwitchSectionType = {
 
 const energyChartSectionType = {
   name: 'energyChartSection',
-  title: 'Energy Chart Section',
+  title: 'Chart Section',
   type: 'object',
   initialValue: {
     type: 'energyChart',
     title: 'Home energy usage trend',
+    chartType: 'composed',
+    showGrid: true,
+    showLegend: true,
+    showAxisLines: true,
+    chartAreaFillOpacity: 0.24,
     chartPeriodLabel: 'Jul 2024 - Jul 2025',
+    chartPrimaryLabel: 'Primary',
+    chartSecondaryLabel: 'Secondary',
     chartUnitLabel: 'kWh',
     chartLineUnitLabel: 'deg',
     chartYAxisMax: 1000,
@@ -2790,10 +2801,70 @@ const energyChartSectionType = {
       options: canvasPurpose('Optional supporting copy for chart context.'),
     },
     {
+      name: 'chartType',
+      title: 'Chart type',
+      type: 'string',
+      initialValue: 'composed',
+      options: {
+        list: [
+          { title: 'Composed (bar + line)', value: 'composed' },
+          { title: 'Bar', value: 'bar' },
+          { title: 'Line', value: 'line' },
+          { title: 'Area (filled)', value: 'area' },
+          { title: 'Pie', value: 'pie' },
+          { title: 'Scatter', value: 'scatter' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+        ...canvasPurpose('Select which chart style to render for this section.'),
+      },
+    },
+    {
+      name: 'showGrid',
+      title: 'Show grid',
+      type: 'boolean',
+      initialValue: true,
+      options: canvasPurpose('Show horizontal and vertical chart grid lines.'),
+    },
+    {
+      name: 'showLegend',
+      title: 'Show legend',
+      type: 'boolean',
+      initialValue: true,
+      options: canvasPurpose('Show chart legend for series labels.'),
+    },
+    {
+      name: 'showAxisLines',
+      title: 'Show axis lines',
+      type: 'boolean',
+      initialValue: true,
+      options: canvasPurpose('Show axis and tick line strokes.'),
+    },
+    {
+      name: 'chartAreaFillOpacity',
+      title: 'Area fill opacity',
+      type: 'number',
+      initialValue: 0.24,
+      validation: (Rule) => Rule.min(0).max(1),
+      options: canvasPurpose('Opacity used when chart type is Area. Use a value between 0 and 1.'),
+    },
+    {
       name: 'chartPeriodLabel',
       title: 'Period label',
       type: 'string',
       options: canvasPurpose('Label shown above the chart date window, such as Jul 2024 - Jul 2025.'),
+    },
+    {
+      name: 'chartPrimaryLabel',
+      title: 'Primary series label',
+      type: 'string',
+      options: canvasPurpose('Display label for the primary series used in legend and tooltip.'),
+    },
+    {
+      name: 'chartSecondaryLabel',
+      title: 'Secondary series label',
+      type: 'string',
+      options: canvasPurpose('Display label for the secondary series used in legend and tooltip.'),
     },
     {
       name: 'chartUnitLabel',
@@ -2818,21 +2889,30 @@ const energyChartSectionType = {
       name: 'chartBarColor',
       title: 'Bar color',
       type: 'string',
-      options: canvasPurpose('CSS color value used for bars.'),
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Select the same color tokens used by guide cards.'),
+      },
     },
     {
       name: 'chartLineColor',
       title: 'Line color',
       type: 'string',
-      options: canvasPurpose('CSS color value used for the trend line.'),
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Select the same color tokens used by guide cards.'),
+      },
     },
     {
       name: 'chartPoints',
-      title: 'Chart points',
+      title: 'Data points',
       type: 'array',
       of: [{ type: 'energyChartPoint' }],
-      validation: (Rule) => Rule.min(2),
-      options: canvasPurpose('Ordered points used by both bars and line trend.'),
+      options: canvasPurpose(
+        'Ordered chart data. Label = category, Bar value = primary metric, Line value = secondary metric/x-y coordinate.',
+      ),
     },
   ],
   preview: {

@@ -191,7 +191,7 @@ function GuideCardBody({ card }) {
     <motion.article
       animate="rest"
       className={cn(
-        "flex flex-col h-full min-h-[380px] p-6 border-0 rounded-xl shadow-theme-sm overflow-hidden",
+        "grid grid-columns-1 grid-rows-[auto_auto_auto_1fr_auto] items-start justify-start h-full min-h-[380px] p-6 border-0 rounded-xl shadow-theme-sm overflow-hidden",
         card.toneClassName,
         card.className,
       )}
@@ -212,17 +212,17 @@ function GuideCardBody({ card }) {
       }}
       whileHover="hover"
     >
-      <div className="flex items-center justify-between text-current/88">
+      <div className="grid grid-cols-2 items-start text-current/88">
         {CardIcon ? <CardIcon className="size-8" /> : <ArrowIcon />}
-        {card.number ? <span className="font-semibold text-[2rem]">{card.number}</span> : null}
+        {card.number ? <span className="font-semibold text-[2rem] w-full text-right">{card.number}</span> : null}
       </div>
       {card.eyebrow ? (
         <p className="mt-4 font-semibold text-current/72 text-sm tracking-[0.18em] uppercase">
           {card.eyebrow}
         </p>
       ) : null}
-      <h3 className="mt-4 leading-10 text-[2rem] tracking-tight">{card.title}</h3>
-      <p className="mt-2 font-semibold leading-6 text-[0.95rem] text-current/88">{card.copy}</p>
+      <h3 className="leading-10 text-[2rem] tracking-tight">{card.title}</h3>
+      <p className="mt-2 font-wght-450 leading-6 text-[0.95rem] text-current/88">{card.copy}</p>
       {card.category ? (
         <div className="flex flex-wrap gap-2 mt-4">
           <span className="px-2 py-1 font-semibold text-[0.7rem] tracking-[0.12em] border border-current/30 rounded-full uppercase">

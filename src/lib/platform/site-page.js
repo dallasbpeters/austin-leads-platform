@@ -166,6 +166,7 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   const computedOgImage = buildOgImageUrl(currentOrigin, site, page, pathname)
   const ogImage = isGuidePage ? computedOgImage : page.seo?.ogImage || site.seo?.ogImage || computedOgImage
   const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
+  const facebookAppId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || ''
 
   return {
     title,
@@ -178,6 +179,7 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
       description,
       url: canonical,
       siteName: site.name,
+      appId: facebookAppId || undefined,
       locale: 'en_US',
       type: page.pageType === 'post' ? 'article' : 'website',
       images: [
@@ -199,6 +201,11 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
       index: shouldIndex,
       follow: shouldIndex,
     },
+    other: facebookAppId
+      ? {
+          'fb:app_id': facebookAppId,
+        }
+      : undefined,
   }
 }
 

@@ -14,6 +14,7 @@ export const metadata = {
   description: 'Multi-tenant Next.js platform for Austin and Texas local service domains.',
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
+    facebook: process.env.FACEBOOK_SITE_VERIFICATION,
   },
   icons: {
     icon: [
@@ -46,6 +47,7 @@ export default async function RootLayout({ children }) {
         <Analytics />
         <SpeedInsights />
       </body>
+      
     </html>
   )
 }

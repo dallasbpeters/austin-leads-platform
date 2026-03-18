@@ -26,11 +26,18 @@ const sectionProjection = `
   accentWord,
   trailingText,
   chartPeriodLabel,
+  chartPrimaryLabel,
+  chartSecondaryLabel,
   chartUnitLabel,
   chartLineUnitLabel,
   chartYAxisMax,
   chartBarColor,
   chartLineColor,
+  chartType,
+  showGrid,
+  showLegend,
+  showAxisLines,
+  chartAreaFillOpacity,
   colors,
   tint,
   minHeight,
@@ -451,6 +458,8 @@ function sanitizeSection(section) {
     accentWord: section.accentWord,
     trailingText: section.trailingText,
     chartPeriodLabel: cleanRuntimeString(section.chartPeriodLabel),
+    chartPrimaryLabel: cleanRuntimeString(section.chartPrimaryLabel),
+    chartSecondaryLabel: cleanRuntimeString(section.chartSecondaryLabel),
     chartUnitLabel: cleanRuntimeString(section.chartUnitLabel),
     chartLineUnitLabel: cleanRuntimeString(section.chartLineUnitLabel),
     chartYAxisMax:
@@ -461,6 +470,16 @@ function sanitizeSection(section) {
           : section.chartYAxisMax,
     chartBarColor: resolveSanityColorValue(section.chartBarColor),
     chartLineColor: resolveSanityColorValue(section.chartLineColor),
+    chartType: cleanRuntimeString(section.chartType),
+    showGrid: section.showGrid !== false,
+    showLegend: section.showLegend !== false,
+    showAxisLines: section.showAxisLines !== false,
+    chartAreaFillOpacity:
+      typeof section.chartAreaFillOpacity === 'number'
+        ? section.chartAreaFillOpacity
+        : section.chartAreaFillOpacity
+          ? Number(section.chartAreaFillOpacity)
+          : section.chartAreaFillOpacity,
     colors: Array.isArray(section.colors)
       ? section.colors.map(resolveSanityColorValue).filter(Boolean)
       : section.colors,
