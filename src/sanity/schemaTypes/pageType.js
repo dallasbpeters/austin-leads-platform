@@ -1,3 +1,5 @@
+import ChartPointsJsonInput from '../components/ChartPointsJsonInput'
+
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
 const isSectionType = (parent, ...types) => types.includes(parent?.type)
@@ -2910,6 +2912,9 @@ const energyChartSectionType = {
       title: 'Data points',
       type: 'array',
       of: [{ type: 'energyChartPoint' }],
+      components: {
+        input: ChartPointsJsonInput,
+      },
       options: canvasPurpose(
         'Ordered chart data. Label = category, Bar value = primary metric, Line value = secondary metric/x-y coordinate.',
       ),

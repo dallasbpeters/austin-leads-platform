@@ -1,0 +1,67 @@
+{
+  "_guide": "Solar Panel Detach and Reset for Roof Replacement",
+  "_documentId": "page-guide-solar-panel-detach-and-reset",
+  "_slug": "guides/solar-panel-detach-and-reset",
+  "_chartConcept": "D&R cost range by system size — shows how panel count drives the detach/reset price",
+  "_insertAfter": "section-3 (highlights)",
+  "section": {
+    "_type": "energyChartSection",
+    "type": "energyChart",
+    "eyebrow": "Cost range",
+    "title": "What a detach and reset typically costs by system size",
+    "body": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [
+          {
+            "_type": "span",
+            "text": "D&R pricing scales with panel count and system complexity. These are typical ranges for Austin-area projects. Costs include removal, secure storage, reinstallation, and re-inspection."
+          }
+        ]
+      }
+    ],
+    "chartType": "bar",
+    "chartPrimaryLabel": "Estimated cost ($)",
+    "chartUnitLabel": "$",
+    "chartPeriodLabel": "Typical Austin D&R pricing (2026)",
+    "chartBarColor": "voodoo",
+    "chartLineColor": "primary",
+    "chartYAxisMax": 6000,
+    "showGrid": true,
+    "showLegend": true,
+    "showAxisLines": true,
+    "chartPoints": [
+      {
+        "_type": "energyChartPoint",
+        "label": "3 kW (10 panels)",
+        "barValue": 1800,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "5 kW (16 panels)",
+        "barValue": 2500,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "8 kW (22 panels)",
+        "barValue": 3500,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "10 kW (28 panels)",
+        "barValue": 4200,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "12 kW+ (34+ panels)",
+        "barValue": 5200,
+        "lineValue": 0
+      }
+    ]
+  }
+}

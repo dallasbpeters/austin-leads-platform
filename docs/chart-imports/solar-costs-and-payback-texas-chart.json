@@ -1,0 +1,106 @@
+{
+  "_guide": "What Solar Costs and What Drives Payback",
+  "_documentId": "page-guide-solar-costs-and-payback-texas",
+  "_slug": "guides/solar-costs-and-payback-texas",
+  "_chartConcept": "Cumulative cost vs cumulative savings over 20 years — shows break-even crossover",
+  "_insertAfter": "section-4 (steps)",
+  "section": {
+    "_type": "energyChartSection",
+    "type": "energyChart",
+    "eyebrow": "Payback timeline",
+    "title": "When solar pays for itself in Austin",
+    "body": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [
+          {
+            "_type": "span",
+            "text": "Cumulative savings from the Austin Energy rebate and monthly Value of Solar credits for a typical 8 kW system purchased with cash. The line crosses the system cost around year 19."
+          }
+        ]
+      }
+    ],
+    "chartType": "area",
+    "chartPrimaryLabel": "Cumulative savings ($)",
+    "chartSecondaryLabel": "System cost ($)",
+    "chartUnitLabel": "$",
+    "chartLineUnitLabel": "$",
+    "chartPeriodLabel": "8 kW system — cash purchase",
+    "chartBarColor": "chaletGreen",
+    "chartLineColor": "ceramic",
+    "chartAreaFillOpacity": 0.2,
+    "chartYAxisMax": 25000,
+    "showGrid": true,
+    "showLegend": true,
+    "showAxisLines": true,
+    "chartPoints": [
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 1",
+        "barValue": 3570,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 2",
+        "barValue": 4640,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 3",
+        "barValue": 5710,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 5",
+        "barValue": 7850,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 7",
+        "barValue": 9990,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 10",
+        "barValue": 13200,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 12",
+        "barValue": 15340,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 15",
+        "barValue": 18550,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 17",
+        "barValue": 20690,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 19",
+        "barValue": 22830,
+        "lineValue": 22400
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Yr 20",
+        "barValue": 23900,
+        "lineValue": 22400
+      }
+    ]
+  }
+}

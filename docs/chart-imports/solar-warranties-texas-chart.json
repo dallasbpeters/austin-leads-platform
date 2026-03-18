@@ -1,0 +1,75 @@
+{
+  "_guide": "Solar warranties in Texas: what is covered and what is not",
+  "_documentId": "page-guide-solar-warranties-texas",
+  "_slug": "guides/solar-warranties-texas",
+  "_chartConcept": "Warranty duration comparison across tiers — panels, inverters, workmanship side by side",
+  "_insertAfter": "section-3 (highlights)",
+  "section": {
+    "_type": "energyChartSection",
+    "type": "energyChart",
+    "eyebrow": "Coverage comparison",
+    "title": "How warranty terms compare across equipment tiers",
+    "body": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [
+          {
+            "_type": "span",
+            "text": "Not all 25-year warranties are equal. Panel, inverter, and workmanship coverage vary widely between budget and premium equipment. Longer terms mean less only if the company backing them is still around."
+          }
+        ]
+      }
+    ],
+    "chartType": "bar",
+    "chartPrimaryLabel": "Warranty (years)",
+    "chartSecondaryLabel": "Production guarantee (%)",
+    "chartUnitLabel": "yrs",
+    "chartLineUnitLabel": "%",
+    "chartPeriodLabel": "Budget vs mid-tier vs premium equipment",
+    "chartBarColor": "tidal",
+    "chartLineColor": "sweetcorn",
+    "chartYAxisMax": 30,
+    "showGrid": true,
+    "showLegend": true,
+    "showAxisLines": true,
+    "chartPoints": [
+      {
+        "_type": "energyChartPoint",
+        "label": "Budget panel",
+        "barValue": 12,
+        "lineValue": 80
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Mid-tier panel",
+        "barValue": 25,
+        "lineValue": 86
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Premium panel",
+        "barValue": 25,
+        "lineValue": 92
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "String inverter",
+        "barValue": 12,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Microinverter",
+        "barValue": 25,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Workmanship (typical)",
+        "barValue": 10,
+        "lineValue": 0
+      }
+    ]
+  }
+}

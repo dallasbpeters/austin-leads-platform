@@ -1,0 +1,61 @@
+{
+  "_guide": "Solar Incentives in Texas",
+  "_documentId": "page-guide-texas-solar-incentives",
+  "_slug": "guides/texas-solar-incentives-and-tax-credits",
+  "_chartConcept": "Incentive value breakdown — what's still available vs what expired, for a typical 8 kW system",
+  "_insertAfter": "section-3 (highlights)",
+  "section": {
+    "_type": "energyChartSection",
+    "type": "energyChart",
+    "eyebrow": "What's left",
+    "title": "Available incentives for a typical 8 kW system in Austin",
+    "body": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [
+          {
+            "_type": "span",
+            "text": "The federal tax credit expired at the end of 2025. What remains is the Austin Energy rebate and the ongoing Value of Solar bill credits. The property tax exemption varies by county."
+          }
+        ]
+      }
+    ],
+    "chartType": "bar",
+    "chartPrimaryLabel": "Value ($)",
+    "chartUnitLabel": "$",
+    "chartPeriodLabel": "Current as of 2026",
+    "chartBarColor": "chaletGreen",
+    "chartLineColor": "primary",
+    "chartYAxisMax": 3000,
+    "showGrid": true,
+    "showLegend": true,
+    "showAxisLines": true,
+    "chartPoints": [
+      {
+        "_type": "energyChartPoint",
+        "label": "Austin Energy rebate",
+        "barValue": 2500,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Year 1 bill credits",
+        "barValue": 1070,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Year 2 bill credits",
+        "barValue": 1070,
+        "lineValue": 0
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Year 3 bill credits",
+        "barValue": 1070,
+        "lineValue": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "_guide": "When Does a Texas Roof Actually Need Replacing",
+  "_documentId": "page-guide-when-to-replace-roof-texas",
+  "_slug": "guides/when-to-replace-your-roof-texas",
+  "_chartConcept": "Roof lifespan by material in Texas climate — composition shingle vs metal vs tile vs flat",
+  "_insertAfter": "section-3 (highlights)",
+  "section": {
+    "_type": "energyChartSection",
+    "type": "energyChart",
+    "eyebrow": "Material lifespan",
+    "title": "How long each roofing material actually lasts in Texas",
+    "body": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [
+          {
+            "_type": "span",
+            "text": "Manufacturer warranties assume ideal conditions. Texas heat, UV exposure, and hail shorten real-world lifespan. These are what we typically see in the Austin area — not what the box says."
+          }
+        ]
+      }
+    ],
+    "chartType": "bar",
+    "chartPrimaryLabel": "Expected lifespan (years)",
+    "chartSecondaryLabel": "Warranty (years)",
+    "chartUnitLabel": "yrs",
+    "chartLineUnitLabel": "yrs",
+    "chartPeriodLabel": "Real-world Texas lifespan vs manufacturer warranty",
+    "chartBarColor": "metterhorn",
+    "chartLineColor": "wattle",
+    "chartYAxisMax": 60,
+    "showGrid": true,
+    "showLegend": true,
+    "showAxisLines": true,
+    "chartPoints": [
+      {
+        "_type": "energyChartPoint",
+        "label": "3-tab shingle",
+        "barValue": 15,
+        "lineValue": 25
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Architectural shingle",
+        "barValue": 20,
+        "lineValue": 30
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Impact-rated (Class 4)",
+        "barValue": 25,
+        "lineValue": 30
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Standing seam metal",
+        "barValue": 40,
+        "lineValue": 50
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "Concrete tile",
+        "barValue": 35,
+        "lineValue": 50
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "TPO/flat roof",
+        "barValue": 15,
+        "lineValue": 20
+      }
+    ]
+  }
+}

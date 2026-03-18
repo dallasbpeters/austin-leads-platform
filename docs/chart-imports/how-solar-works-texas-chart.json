@@ -1,0 +1,130 @@
+{
+  "_guide": "How Solar Actually Works on a Texas Home",
+  "_documentId": "page-guide-how-solar-works-texas",
+  "_slug": "guides/how-solar-works-texas",
+  "_chartConcept": "Where your electricity comes from across 24 hours — solar production vs grid draw on a typical Austin summer day",
+  "_insertAfter": "section-3 (highlights)",
+  "section": {
+    "_type": "energyChartSection",
+    "type": "energyChart",
+    "eyebrow": "Daily pattern",
+    "title": "Where your power comes from on a typical summer day",
+    "body": [
+      {
+        "_type": "block",
+        "style": "normal",
+        "children": [
+          {
+            "_type": "span",
+            "text": "Solar panels produce the most power midday, but your AC runs heaviest in the afternoon and evening. The gap between production and usage determines how much you still pull from the grid."
+          }
+        ]
+      }
+    ],
+    "chartType": "area",
+    "chartPrimaryLabel": "Solar production (kWh)",
+    "chartSecondaryLabel": "Grid draw (kWh)",
+    "chartUnitLabel": "kWh",
+    "chartLineUnitLabel": "kWh",
+    "chartPeriodLabel": "Typical Austin summer day (8 kW system)",
+    "chartBarColor": "sweetcorn",
+    "chartLineColor": "primary",
+    "chartAreaFillOpacity": 0.35,
+    "chartYAxisMax": 5,
+    "showGrid": true,
+    "showLegend": true,
+    "showAxisLines": true,
+    "chartPoints": [
+      {
+        "_type": "energyChartPoint",
+        "label": "6am",
+        "barValue": 0.2,
+        "lineValue": 0.8
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "7am",
+        "barValue": 0.8,
+        "lineValue": 0.9
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "8am",
+        "barValue": 1.6,
+        "lineValue": 1
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "9am",
+        "barValue": 2.4,
+        "lineValue": 1.1
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "10am",
+        "barValue": 3.2,
+        "lineValue": 1.3
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "11am",
+        "barValue": 3.8,
+        "lineValue": 1.5
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "12pm",
+        "barValue": 4.2,
+        "lineValue": 1.8
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "1pm",
+        "barValue": 4,
+        "lineValue": 2.2
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "2pm",
+        "barValue": 3.6,
+        "lineValue": 2.8
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "3pm",
+        "barValue": 3,
+        "lineValue": 3.4
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "4pm",
+        "barValue": 2.2,
+        "lineValue": 3.8
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "5pm",
+        "barValue": 1.2,
+        "lineValue": 4
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "6pm",
+        "barValue": 0.4,
+        "lineValue": 3.6
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "7pm",
+        "barValue": 0.1,
+        "lineValue": 2.8
+      },
+      {
+        "_type": "energyChartPoint",
+        "label": "8pm",
+        "barValue": 0,
+        "lineValue": 2.2
+      }
+    ]
+  }
+}

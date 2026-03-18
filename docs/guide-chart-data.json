@@ -1,0 +1,499 @@
+[
+  {
+    "_guide": "How Solar Actually Works on a Texas Home",
+    "_slug": "guides/how-solar-works-texas",
+    "_documentId": "page-guide-how-solar-works-texas",
+    "_chartConcept": "Where your electricity comes from across 24 hours — solar production vs grid draw on a typical Austin summer day",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Daily pattern",
+      "title": "Where your power comes from on a typical summer day",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Solar panels produce the most power midday, but your AC runs heaviest in the afternoon and evening. The gap between production and usage determines how much you still pull from the grid."
+            }
+          ]
+        }
+      ],
+      "chartType": "area",
+      "chartPrimaryLabel": "Solar production (kWh)",
+      "chartSecondaryLabel": "Grid draw (kWh)",
+      "chartUnitLabel": "kWh",
+      "chartLineUnitLabel": "kWh",
+      "chartPeriodLabel": "Typical Austin summer day (8 kW system)",
+      "chartBarColor": "sweetcorn",
+      "chartLineColor": "primary",
+      "chartAreaFillOpacity": 0.35,
+      "chartYAxisMax": 5,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "6am", "barValue": 0.2, "lineValue": 0.8 },
+        { "_type": "energyChartPoint", "label": "7am", "barValue": 0.8, "lineValue": 0.9 },
+        { "_type": "energyChartPoint", "label": "8am", "barValue": 1.6, "lineValue": 1.0 },
+        { "_type": "energyChartPoint", "label": "9am", "barValue": 2.4, "lineValue": 1.1 },
+        { "_type": "energyChartPoint", "label": "10am", "barValue": 3.2, "lineValue": 1.3 },
+        { "_type": "energyChartPoint", "label": "11am", "barValue": 3.8, "lineValue": 1.5 },
+        { "_type": "energyChartPoint", "label": "12pm", "barValue": 4.2, "lineValue": 1.8 },
+        { "_type": "energyChartPoint", "label": "1pm", "barValue": 4.0, "lineValue": 2.2 },
+        { "_type": "energyChartPoint", "label": "2pm", "barValue": 3.6, "lineValue": 2.8 },
+        { "_type": "energyChartPoint", "label": "3pm", "barValue": 3.0, "lineValue": 3.4 },
+        { "_type": "energyChartPoint", "label": "4pm", "barValue": 2.2, "lineValue": 3.8 },
+        { "_type": "energyChartPoint", "label": "5pm", "barValue": 1.2, "lineValue": 4.0 },
+        { "_type": "energyChartPoint", "label": "6pm", "barValue": 0.4, "lineValue": 3.6 },
+        { "_type": "energyChartPoint", "label": "7pm", "barValue": 0.1, "lineValue": 2.8 },
+        { "_type": "energyChartPoint", "label": "8pm", "barValue": 0.0, "lineValue": 2.2 }
+      ]
+    }
+  },
+  {
+    "_guide": "Planning a Roof and Solar Project Together",
+    "_slug": "guides/planning-roof-and-solar-together",
+    "_documentId": "page-guide-roof-and-solar-project-planning",
+    "_chartConcept": "Cost comparison: separate projects vs combined — showing where you save by doing both at once",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Cost comparison",
+      "title": "What it costs to do them separately vs. together",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "When you coordinate roof and solar as one project, you avoid the detach-and-reset fee, reduce permitting overlap, and cut total labor time. These are typical Austin project costs."
+            }
+          ]
+        }
+      ],
+      "chartType": "bar",
+      "chartPrimaryLabel": "Estimated cost ($)",
+      "chartUnitLabel": "$",
+      "chartPeriodLabel": "Typical 8 kW solar + full roof replacement",
+      "chartBarColor": "primary",
+      "chartLineColor": "sweetcorn",
+      "chartYAxisMax": 50000,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "Roof only", "barValue": 12000, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Solar only", "barValue": 22400, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Separate + D&R later", "barValue": 38400, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Combined project", "barValue": 33000, "lineValue": 0 }
+      ]
+    }
+  },
+  {
+    "_guide": "Solar Battery Backup: When Storage Is Worth the Money",
+    "_slug": "guides/solar-battery-backup-guide",
+    "_documentId": "page-guide-solar-battery-backup",
+    "_chartConcept": "Battery capacity vs hours of backup for common Austin home loads — shows tradeoff between battery size and runtime",
+    "_insertAfter": "section-3 (secondaryCTA)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Backup runtime",
+      "title": "How long a battery keeps your house running",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Runtime depends on what you keep powered. A fridge, lights, and Wi-Fi draw about 1.5 kW. Add the AC and you're at 5+ kW. These estimates assume a fully charged battery with no solar recharging during the outage."
+            }
+          ]
+        }
+      ],
+      "chartType": "composed",
+      "chartPrimaryLabel": "Hours of backup",
+      "chartSecondaryLabel": "Cost ($)",
+      "chartUnitLabel": "hrs",
+      "chartLineUnitLabel": "$",
+      "chartPeriodLabel": "Battery size vs backup hours (essentials only ~1.5 kW load)",
+      "chartBarColor": "primary",
+      "chartLineColor": "sweetcorn",
+      "chartYAxisMax": 30,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "5 kWh", "barValue": 3, "lineValue": 5500 },
+        { "_type": "energyChartPoint", "label": "10 kWh", "barValue": 7, "lineValue": 9000 },
+        { "_type": "energyChartPoint", "label": "13.5 kWh", "barValue": 9, "lineValue": 11500 },
+        { "_type": "energyChartPoint", "label": "20 kWh", "barValue": 13, "lineValue": 16000 },
+        { "_type": "energyChartPoint", "label": "27 kWh", "barValue": 18, "lineValue": 21000 },
+        { "_type": "energyChartPoint", "label": "40 kWh", "barValue": 27, "lineValue": 30000 }
+      ]
+    }
+  },
+  {
+    "_guide": "Solar Incentives in Texas",
+    "_slug": "guides/texas-solar-incentives-and-tax-credits",
+    "_documentId": "page-guide-texas-solar-incentives",
+    "_chartConcept": "Incentive value breakdown — what's still available vs what expired, for a typical 8 kW system",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "What's left",
+      "title": "Available incentives for a typical 8 kW system in Austin",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "The federal tax credit expired at the end of 2025. What remains is the Austin Energy rebate and the ongoing Value of Solar bill credits. The property tax exemption varies by county."
+            }
+          ]
+        }
+      ],
+      "chartType": "bar",
+      "chartPrimaryLabel": "Value ($)",
+      "chartUnitLabel": "$",
+      "chartPeriodLabel": "Current as of 2026",
+      "chartBarColor": "chaletGreen",
+      "chartLineColor": "primary",
+      "chartYAxisMax": 3000,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "Austin Energy rebate", "barValue": 2500, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Year 1 bill credits", "barValue": 1070, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Year 2 bill credits", "barValue": 1070, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Year 3 bill credits", "barValue": 1070, "lineValue": 0 }
+      ]
+    }
+  },
+  {
+    "_guide": "Solar incentives that still apply in Texas (DUPLICATE — consider redirecting)",
+    "_slug": "guides/solar-rebates-and-incentives-texas",
+    "_documentId": "page-guide-solar-rebates-incentives-texas",
+    "_chartConcept": "Same as above — flagged as duplicate guide",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "What's left",
+      "title": "Available incentives for a typical 8 kW system in Austin",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "The federal tax credit expired at the end of 2025. What remains is the Austin Energy rebate and the ongoing Value of Solar bill credits."
+            }
+          ]
+        }
+      ],
+      "chartType": "bar",
+      "chartPrimaryLabel": "Value ($)",
+      "chartUnitLabel": "$",
+      "chartPeriodLabel": "Current as of 2026",
+      "chartBarColor": "chaletGreen",
+      "chartLineColor": "primary",
+      "chartYAxisMax": 3000,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "Austin Energy rebate", "barValue": 2500, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Year 1 bill credits", "barValue": 1070, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Year 2 bill credits", "barValue": 1070, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Year 3 bill credits", "barValue": 1070, "lineValue": 0 }
+      ]
+    }
+  },
+  {
+    "_guide": "Solar Panel Detach and Reset for Roof Replacement",
+    "_slug": "guides/solar-panel-detach-and-reset",
+    "_documentId": "page-guide-solar-panel-detach-and-reset",
+    "_chartConcept": "D&R cost range by system size — shows how panel count drives the detach/reset price",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Cost range",
+      "title": "What a detach and reset typically costs by system size",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "D&R pricing scales with panel count and system complexity. These are typical ranges for Austin-area projects. Costs include removal, secure storage, reinstallation, and re-inspection."
+            }
+          ]
+        }
+      ],
+      "chartType": "bar",
+      "chartPrimaryLabel": "Estimated cost ($)",
+      "chartUnitLabel": "$",
+      "chartPeriodLabel": "Typical Austin D&R pricing (2026)",
+      "chartBarColor": "voodoo",
+      "chartLineColor": "primary",
+      "chartYAxisMax": 6000,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "3 kW (10 panels)", "barValue": 1800, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "5 kW (16 panels)", "barValue": 2500, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "8 kW (22 panels)", "barValue": 3500, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "10 kW (28 panels)", "barValue": 4200, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "12 kW+ (34+ panels)", "barValue": 5200, "lineValue": 0 }
+      ]
+    }
+  },
+  {
+    "_guide": "Solar warranties in Texas: what is covered and what is not",
+    "_slug": "guides/solar-warranties-texas",
+    "_documentId": "page-guide-solar-warranties-texas",
+    "_chartConcept": "Warranty duration comparison across tiers — panels, inverters, workmanship side by side",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Coverage comparison",
+      "title": "How warranty terms compare across equipment tiers",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Not all 25-year warranties are equal. Panel, inverter, and workmanship coverage vary widely between budget and premium equipment. Longer terms mean less only if the company backing them is still around."
+            }
+          ]
+        }
+      ],
+      "chartType": "bar",
+      "chartPrimaryLabel": "Warranty (years)",
+      "chartSecondaryLabel": "Production guarantee (%)",
+      "chartUnitLabel": "yrs",
+      "chartLineUnitLabel": "%",
+      "chartPeriodLabel": "Budget vs mid-tier vs premium equipment",
+      "chartBarColor": "tidal",
+      "chartLineColor": "sweetcorn",
+      "chartYAxisMax": 30,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "Budget panel", "barValue": 12, "lineValue": 80 },
+        { "_type": "energyChartPoint", "label": "Mid-tier panel", "barValue": 25, "lineValue": 86 },
+        { "_type": "energyChartPoint", "label": "Premium panel", "barValue": 25, "lineValue": 92 },
+        { "_type": "energyChartPoint", "label": "String inverter", "barValue": 12, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Microinverter", "barValue": 25, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Workmanship (typical)", "barValue": 10, "lineValue": 0 }
+      ]
+    }
+  },
+  {
+    "_guide": "Texas Storm Damage: Roof Inspection and Insurance Claims",
+    "_slug": "guides/texas-storm-damage-roof-insurance-claims",
+    "_documentId": "page-guide-texas-storm-damage-roof-insurance",
+    "_chartConcept": "Austin hail events by month — shows when storms are most likely and claim filing windows",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Storm season",
+      "title": "When Austin gets hit hardest by hail",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Central Texas hail season peaks from March through June. Most insurance policies require claims within one year of the damage event. If you suspect damage from a spring storm, don't wait until winter to get an inspection."
+            }
+          ]
+        }
+      ],
+      "chartType": "composed",
+      "chartPrimaryLabel": "Hail events (avg)",
+      "chartSecondaryLabel": "Avg hail diameter (inches)",
+      "chartUnitLabel": "events",
+      "chartLineUnitLabel": "in",
+      "chartPeriodLabel": "Austin metro annual average (10-year data)",
+      "chartBarColor": "charade",
+      "chartLineColor": "wattle",
+      "chartYAxisMax": 8,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "Jan", "barValue": 1, "lineValue": 0.75 },
+        { "_type": "energyChartPoint", "label": "Feb", "barValue": 1, "lineValue": 0.75 },
+        { "_type": "energyChartPoint", "label": "Mar", "barValue": 4, "lineValue": 1.0 },
+        { "_type": "energyChartPoint", "label": "Apr", "barValue": 6, "lineValue": 1.25 },
+        { "_type": "energyChartPoint", "label": "May", "barValue": 7, "lineValue": 1.5 },
+        { "_type": "energyChartPoint", "label": "Jun", "barValue": 5, "lineValue": 1.25 },
+        { "_type": "energyChartPoint", "label": "Jul", "barValue": 2, "lineValue": 1.0 },
+        { "_type": "energyChartPoint", "label": "Aug", "barValue": 1, "lineValue": 0.75 },
+        { "_type": "energyChartPoint", "label": "Sep", "barValue": 2, "lineValue": 1.0 },
+        { "_type": "energyChartPoint", "label": "Oct", "barValue": 2, "lineValue": 1.0 },
+        { "_type": "energyChartPoint", "label": "Nov", "barValue": 1, "lineValue": 0.75 },
+        { "_type": "energyChartPoint", "label": "Dec", "barValue": 1, "lineValue": 0.75 }
+      ]
+    }
+  },
+  {
+    "_guide": "What Solar Costs and What Drives Payback",
+    "_slug": "guides/solar-costs-and-payback-texas",
+    "_documentId": "page-guide-solar-costs-and-payback-texas",
+    "_chartConcept": "Cumulative cost vs cumulative savings over 20 years — shows break-even crossover",
+    "_insertAfter": "section-4 (steps)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Payback timeline",
+      "title": "When solar pays for itself in Austin",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Cumulative savings from the Austin Energy rebate and monthly Value of Solar credits for a typical 8 kW system purchased with cash. The line crosses the system cost around year 19."
+            }
+          ]
+        }
+      ],
+      "chartType": "area",
+      "chartPrimaryLabel": "Cumulative savings ($)",
+      "chartSecondaryLabel": "System cost ($)",
+      "chartUnitLabel": "$",
+      "chartLineUnitLabel": "$",
+      "chartPeriodLabel": "8 kW system — cash purchase",
+      "chartBarColor": "chaletGreen",
+      "chartLineColor": "ceramic",
+      "chartAreaFillOpacity": 0.2,
+      "chartYAxisMax": 25000,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "Yr 1", "barValue": 3570, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 2", "barValue": 4640, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 3", "barValue": 5710, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 5", "barValue": 7850, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 7", "barValue": 9990, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 10", "barValue": 13200, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 12", "barValue": 15340, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 15", "barValue": 18550, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 17", "barValue": 20690, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 19", "barValue": 22830, "lineValue": 22400 },
+        { "_type": "energyChartPoint", "label": "Yr 20", "barValue": 23900, "lineValue": 22400 }
+      ]
+    }
+  },
+  {
+    "_guide": "Cash vs. Financing for Solar and Roofing Projects",
+    "_slug": "guides/cash-vs-financing-solar-and-roofing",
+    "_documentId": "page-guide-cash-vs-financing-solar-roofing",
+    "_chartConcept": "Total cost over 25 years: cash vs financed with dealer fees — shows the true cost gap",
+    "_insertAfter": "section-2 (story)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Total cost comparison",
+      "title": "What you actually pay: cash vs. financed over 25 years",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Same $24,000 system, two paths. Cash purchase nets out lower after the Austin Energy rebate. Financed with a 25% dealer fee and 5% interest over 25 years, the total paid is more than double."
+            }
+          ]
+        }
+      ],
+      "chartType": "bar",
+      "chartPrimaryLabel": "Total paid ($)",
+      "chartUnitLabel": "$",
+      "chartPeriodLabel": "Same 8 kW system — two payment paths",
+      "chartBarColor": "primary",
+      "chartLineColor": "sweetcorn",
+      "chartYAxisMax": 55000,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "System price", "barValue": 24000, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Cash (after rebate)", "barValue": 21500, "lineValue": 0 },
+        { "_type": "energyChartPoint", "label": "Financed (total paid)", "barValue": 52500, "lineValue": 0 }
+      ]
+    }
+  },
+  {
+    "_guide": "When Does a Texas Roof Actually Need Replacing",
+    "_slug": "guides/when-to-replace-your-roof-texas",
+    "_documentId": "page-guide-when-to-replace-roof-texas",
+    "_chartConcept": "Roof lifespan by material in Texas climate — composition shingle vs metal vs tile vs flat",
+    "_insertAfter": "section-3 (highlights)",
+    "section": {
+      "_type": "energyChartSection",
+      "type": "energyChart",
+      "eyebrow": "Material lifespan",
+      "title": "How long each roofing material actually lasts in Texas",
+      "body": [
+        {
+          "_type": "block",
+          "style": "normal",
+          "children": [
+            {
+              "_type": "span",
+              "text": "Manufacturer warranties assume ideal conditions. Texas heat, UV exposure, and hail shorten real-world lifespan. These are what we typically see in the Austin area — not what the box says."
+            }
+          ]
+        }
+      ],
+      "chartType": "bar",
+      "chartPrimaryLabel": "Expected lifespan (years)",
+      "chartSecondaryLabel": "Warranty (years)",
+      "chartUnitLabel": "yrs",
+      "chartLineUnitLabel": "yrs",
+      "chartPeriodLabel": "Real-world Texas lifespan vs manufacturer warranty",
+      "chartBarColor": "metterhorn",
+      "chartLineColor": "wattle",
+      "chartYAxisMax": 60,
+      "showGrid": true,
+      "showLegend": true,
+      "showAxisLines": true,
+      "chartPoints": [
+        { "_type": "energyChartPoint", "label": "3-tab shingle", "barValue": 15, "lineValue": 25 },
+        { "_type": "energyChartPoint", "label": "Architectural shingle", "barValue": 20, "lineValue": 30 },
+        { "_type": "energyChartPoint", "label": "Impact-rated (Class 4)", "barValue": 25, "lineValue": 30 },
+        { "_type": "energyChartPoint", "label": "Standing seam metal", "barValue": 40, "lineValue": 50 },
+        { "_type": "energyChartPoint", "label": "Concrete tile", "barValue": 35, "lineValue": 50 },
+        { "_type": "energyChartPoint", "label": "TPO/flat roof", "barValue": 15, "lineValue": 20 }
+      ]
+    }
+  }
+]

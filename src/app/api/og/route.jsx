@@ -54,6 +54,7 @@ const OG_CSS_VAR_COLOR_MAP = {
   '--color-black-current': OG_COLOR_TOKEN_MAP.blackCurrent,
   '--color-confetti': OG_COLOR_TOKEN_MAP.confetti,
 }
+const OG_DARK_GUIDE_TOKENS = new Set(['charade', 'blackCurrent', 'voodoo', 'metterhorn', 'tapaGreen'])
 
 function getFontFamily(requestUrl) {
   if (!fontFamilyPromise) {
@@ -135,6 +136,19 @@ function safeColor(value, fallback) {
   return fallback
 }
 
+function resolveGuideBackground(rawValue, fallbackColor) {
+  if (!rawValue || typeof rawValue !== 'string') {
+    return fallbackColor
+  }
+
+  if (OG_DARK_GUIDE_TOKENS.has(rawValue.trim())) {
+    // Keep card token options broad in CMS, but avoid near-black OG cards.
+    return fallbackColor
+  }
+
+  return safeColor(rawValue, fallbackColor)
+}
+
 function getQueryParam(searchParams, name) {
   const direct = searchParams.get(name)
   if (direct) return direct
@@ -183,7 +197,10 @@ export async function GET(request) {
 
   const primary = safeColor(getQueryParam(searchParams, 'pr') || getQueryParam(searchParams, 'primary'), '#f97316')
   const secondary = safeColor(getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'), '#016bb7')
-  const guideBackground = safeColor(getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'), secondary)
+  const guideBackground = resolveGuideBackground(
+    getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'),
+    secondary,
+  )
   const secondarySoft = '#172554'
   const copyColor = '#dbe4ee'
   const isGuideLayout =
