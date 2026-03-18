@@ -1,6 +1,6 @@
 import { getPageForRequest, resolveSiteByHost } from '@/lib/platform/content'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 function getRequestHost(request) {
   return request.headers.get('x-forwarded-host') || request.headers.get('host') || ''
@@ -36,7 +36,7 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
   if (page?._updatedAt) {
     upstreamUrl.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
-  upstreamUrl.searchParams.set('ogv', 'guide-v7')
+  upstreamUrl.searchParams.set('ogv', 'guide-v8')
 
   const upstreamResponse = await fetch(upstreamUrl.toString(), {
     headers: {
@@ -51,6 +51,8 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
     'cache-control':
       upstreamResponse.headers.get('cache-control') ||
       'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+    'x-content-type-options': 'nosniff',
+    'content-disposition': 'inline; filename="og-guide.png"',
   }
 
   return new Response(includeBody ? pngBuffer : null, {
@@ -64,6 +66,8 @@ export async function GET(request, context) {
 }
 
 export async function HEAD(request, context) {
-  return buildGuideOgResponse(request, context, false)
+  // Return the same computed response so platforms can infer consistent headers.
+  // Next.js strips the body for HEAD automatically.
+  return buildGuideOgResponse(request, context, true)
 }
 
