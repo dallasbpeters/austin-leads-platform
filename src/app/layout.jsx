@@ -14,7 +14,10 @@ export const metadata = {
   description: 'Multi-tenant Next.js platform for Austin and Texas local service domains.',
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
-    facebook: process.env.FACEBOOK_SITE_VERIFICATION,
+    other: {
+      'facebook-domain-verification':
+        process.env.FACEBOOK_SITE_VERIFICATION || process.env.FACEBOOK_DOMAIN_VERIFICATION,
+    },
   },
   icons: {
     icon: [
