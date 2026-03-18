@@ -90,7 +90,7 @@ function buildOgImageUrl(origin, site, page, pathname) {
       .split('/')
       .filter(Boolean)
       .at(-1)
-    return new URL(`/api/og/guides/${encodeURIComponent(guideSlug || '')}`, origin).toString()
+    return new URL(`/api/og-image/guides/${encodeURIComponent(guideSlug || '')}`, origin).toString()
   }
 
   url.searchParams.set('site', site.name)
