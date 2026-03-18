@@ -35,6 +35,8 @@ async function fetchPng(url, userAgent) {
     headers: {
       'user-agent': userAgent || 'guide-og-proxy',
     },
+    cache: 'no-store',
+    signal: AbortSignal.timeout(4000),
   })
 
   if (!response.ok) {
