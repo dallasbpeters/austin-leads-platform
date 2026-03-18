@@ -13,6 +13,7 @@ import {
   studioPreviewOrigin,
   studioUrl,
 } from './src/sanity/env'
+import { guideImageSyncPlugin } from './src/sanity/plugins/guideImageSyncPlugin'
 import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
 import { pageSpeedTool } from './src/sanity/tools/pageSpeedTool'
 import { schemaTypes } from './src/sanity/schemaTypes'
@@ -30,6 +31,7 @@ export default defineConfig({
   dataset,
   basePath: studioUrl,
   plugins: [
+    guideImageSyncPlugin(),
     colorInput(),
     geminiAIImages({
       apiEndpoint: `${studioPreviewOrigin}/api/gemini/generate-image`,

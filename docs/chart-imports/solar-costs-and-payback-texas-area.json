@@ -29,6 +29,10 @@
   "chartYAxisMax": 25000,
   "chartBarColor": "chaletGreen",
   "chartLineColor": "ceramic",
+  "chartAreaSeries": [
+    { "title": "Cumulative savings", "color": "chaletGreen" },
+    { "title": "System cost", "color": "ceramic" }
+  ],
   "chartPoints": [
     {
       "_type": "energyChartPoint",

@@ -10,6 +10,7 @@ import {
   trimDraftLines,
 } from '@/sanity/agent/draftHelpers'
 import { buildSanityAgentPublishingInstruction } from '@/sanity/agent/publishingInstructions'
+import { syncGuideHeroToGuideGridItems } from '@/sanity/lib/syncGuideListingImages'
 
 const SANITY_AGENT_SCHEMA_ID = process.env.SANITY_AGENT_SCHEMA_ID || ''
 
@@ -30,77 +31,12 @@ function toPortableTextSimple(value) {
   ]
 }
 
-function buildGuideItemKey(slug) {
-  return `item-${String(slug || '')
-    .replace(/^guides\//, '')
-    .replace(/[^a-z0-9-]+/gi, '-')
-    .replace(/-{2,}/g, '-')
-    .replace(/^-|-$/g, '')
-    .toLowerCase()}`
-    .slice(0, 64)
-}
-
 async function syncGuideCardIntoGuidesSection({ siteId, guideDoc }) {
-  const guideSlug = String(guideDoc?.slug || '').trim()
-  if (!guideSlug.startsWith('guides/')) {
-    return
-  }
-
-  const href = `/${guideSlug}`
-  const heroSection = Array.isArray(guideDoc?.sections)
-    ? guideDoc.sections.find((section) => section?.type === 'hero')
-    : null
-  const heroImage = heroSection?.heroImage || null
-  const heroAsset = heroSection?.heroAsset || null
-
-  const guidesPages = await sanityWriteClient
-    .withConfig({ perspective: 'raw' })
-    .fetch(groq`*[_type == "page" && site._ref == $siteId && slug.current == "guides"]{_id,sections}`, { siteId })
-
-  for (const pageDoc of guidesPages || []) {
-    const sections = Array.isArray(pageDoc?.sections) ? pageDoc.sections : []
-    const guideGridSectionIndex = sections.findIndex((section) => section?.type === 'guideGrid')
-    if (guideGridSectionIndex < 0) {
-      continue
-    }
-
-    const guideGridSection = sections[guideGridSectionIndex]
-    const currentItems = Array.isArray(guideGridSection?.items) ? guideGridSection.items : []
-    const existingIndex = currentItems.findIndex((item) => String(item?.href || '').trim() === href)
-    const existingItem = existingIndex >= 0 ? currentItems[existingIndex] : null
-
-    const nextItem = {
-      _type: 'pageItem',
-      _key: existingItem?._key || buildGuideItemKey(guideSlug),
-      number: existingItem?.number || String(currentItems.length + 1).padStart(2, '0'),
-      title: guideDoc?.title || existingItem?.title || 'Guide',
-      body:
-        Array.isArray(existingItem?.body) && existingItem.body.length
-          ? existingItem.body
-          : toPortableTextSimple(guideDoc?.description || ''),
-      href,
-      icon: existingItem?.icon || '',
-      color: existingItem?.color || '',
-      category: existingItem?.category || '',
-      ctaLabel: existingItem?.ctaLabel || '',
-      ...(heroImage || existingItem?.image ? { image: heroImage || existingItem?.image } : {}),
-      ...(heroAsset || existingItem?.imageAsset ? { imageAsset: heroAsset || existingItem?.imageAsset } : {}),
-      ...(existingItem?.imageUrl ? { imageUrl: existingItem.imageUrl } : {}),
-    }
-
-    const nextItems =
-      existingIndex >= 0
-        ? currentItems.map((item, index) => (index === existingIndex ? nextItem : item))
-        : [nextItem, ...currentItems]
-
-    const nextSections = [...sections]
-    nextSections[guideGridSectionIndex] = {
-      ...guideGridSection,
-      items: nextItems,
-    }
-
-    await sanityWriteClient.patch(pageDoc._id).set({ sections: nextSections }).commit()
-  }
+  await syncGuideHeroToGuideGridItems(sanityWriteClient, {
+    ...guideDoc,
+    slug: typeof guideDoc?.slug === 'string' ? guideDoc.slug : guideDoc?.slug?.current,
+    site: { _ref: siteId },
+  })
 }
 
 async function normalizeDraftSections(documentId) {

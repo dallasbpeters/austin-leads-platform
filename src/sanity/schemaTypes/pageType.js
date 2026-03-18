@@ -726,7 +726,7 @@ const energyChartPointType = {
       type: 'array',
       of: [{ type: 'number', validation: (Rule) => Rule.min(0) }],
       options: canvasPurpose(
-        'One number per area series (same order as “Area chart series” on the section). Series 1 defaults to Primary value; series 2 defaults to Secondary when exactly two series are defined.',
+        'Optional. With exactly two area series, the chart uses Primary + Secondary values only—edit those fields as the source of truth. Use this list for three or more series (same order as Area chart series).',
       ),
     },
   ],
@@ -1100,7 +1100,9 @@ const guideGridSectionType = {
       type: 'array',
       validation: (Rule) => Rule.min(1),
       of: [{ type: 'pageItem' }],
-      options: canvasPurpose('Guide cards shown in the grid.'),
+      options: canvasPurpose(
+        'Each card image should match that guide’s hero. The site uses the guide hero as the source of truth; use document actions “Sync hero → guides listing” on a guide post, or on the Guides page “Refresh cards from guide heroes” / “Push card images → guide heroes”.',
+      ),
     },
   ],
   preview: {

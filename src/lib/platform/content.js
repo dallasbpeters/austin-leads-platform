@@ -882,7 +882,12 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
           title: guidePage.title,
           heroImage: heroSection?.heroImage ?? null,
           heroAsset: heroSection?.heroAsset ?? null,
-          guideUpdatedAt: guidePage.updatedAt || guidePage._updatedAt || guidePage.createdAt || guidePage._createdAt || null,
+          guidePublishedAt:
+            guidePage.createdAt ||
+            guidePage._createdAt ||
+            guidePage.updatedAt ||
+            guidePage._updatedAt ||
+            null,
         },
       ]
     }),
@@ -913,7 +918,6 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
         ]{
           title,
           "slug": slug.current,
-          _updatedAt,
           _createdAt,
           sections[]{
             type,
@@ -947,7 +951,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
               title: guidePage.title,
               heroImage: heroSection?.heroImage ?? null,
               heroAsset: heroSection?.heroAsset ?? null,
-              guideUpdatedAt: guidePage._updatedAt || guidePage._createdAt || null,
+              guidePublishedAt: guidePage._createdAt || null,
             },
           ]
         }),
@@ -963,11 +967,10 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
           site->slug.current in $siteSlugs &&
           defined(slug.current) &&
           (coalesce(pageType, "") == "post" || _type == "post")
-        ] | order(_updatedAt desc){
+        ] | order(_createdAt desc){
           title,
           description,
           "slug": slug.current,
-          _updatedAt,
           _createdAt,
           sections[]{
             type,
@@ -1005,7 +1008,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
         copy: guidePage.description || '',
         heroImage: heroSection?.heroImage ?? null,
         heroAsset: heroSection?.heroAsset ?? null,
-        guideUpdatedAt: guidePage._updatedAt || guidePage._createdAt || null,
+        guidePublishedAt: guidePage._createdAt || null,
       }
     }),
   ].filter((candidate) => isDisplayableGuideCardHref(candidate?.href))
@@ -1034,7 +1037,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
               href: candidate.href,
               image: candidate.heroImage ?? null,
               imageAsset: candidate.heroAsset ?? null,
-              guideUpdatedAt: candidate.guideUpdatedAt || null,
+              guidePublishedAt: candidate.guidePublishedAt || null,
             }))
 
           return [...validExistingItems, ...autoAttachedItems]
@@ -1053,14 +1056,20 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
                 ...item,
                 _originalIndex: index,
                 title: guidePage.title || item.title,
-                image: guidePage.heroImage ?? item.image ?? null,
-                imageAsset: guidePage.heroAsset ?? item.imageAsset ?? null,
-                guideUpdatedAt: guidePage.guideUpdatedAt || item.guideUpdatedAt || null,
+                image: guidePage.heroImage ?? null,
+                imageAsset: guidePage.heroAsset ?? null,
+                guidePublishedAt:
+                  guidePage.guidePublishedAt ||
+                  item.guidePublishedAt ||
+                  item.guideUpdatedAt ||
+                  null,
               }
             })
             .sort((left, right) => {
-              const leftTime = Date.parse(left?.guideUpdatedAt || '')
-              const rightTime = Date.parse(right?.guideUpdatedAt || '')
+              const leftRaw = left?.guidePublishedAt || left?.guideUpdatedAt || ''
+              const rightRaw = right?.guidePublishedAt || right?.guideUpdatedAt || ''
+              const leftTime = Date.parse(leftRaw)
+              const rightTime = Date.parse(rightRaw)
               const hasLeftTime = Number.isFinite(leftTime)
               const hasRightTime = Number.isFinite(rightTime)
 
@@ -1078,7 +1087,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
 
               return (left?._originalIndex ?? 0) - (right?._originalIndex ?? 0)
             })
-            .map(({ _originalIndex, ...item }) => item)
+            .map(({ _originalIndex, guidePublishedAt: _sortPub, guideUpdatedAt: _sortUpd, ...item }) => item)
         })(),
       }
     }),

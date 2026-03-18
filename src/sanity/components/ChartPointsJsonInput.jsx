@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { PatchEvent, set, useFormCallbacks } from 'sanity'
+import { useCallback, useMemo, useState } from 'react'
+import { PatchEvent, set, useClient, useFormCallbacks, useGetFormValue } from 'sanity'
 
 const ACCEPTED_FILE_TYPES = '.json,application/json'
 
@@ -119,11 +119,13 @@ function extractChartConfig(parsed) {
     ? parsed.sections.find((section) => section && typeof section === 'object')
     : null
 
-  const source = parsed.section && typeof parsed.section === 'object'
-    ? parsed.section
-    : sectionFromSections || parsed
+  const source =
+    parsed.section && typeof parsed.section === 'object'
+      ? parsed.section
+      : sectionFromSections || parsed
 
   const configKeys = [
+    'type',
     'eyebrow',
     'title',
     'body',
@@ -168,9 +170,36 @@ function parseChartPointsJson(input) {
     throw new Error('No valid points found in JSON.')
   }
 
+  let config = extractChartConfig(parsed)
+  const maxAreaValuesLen = points.reduce(
+    (max, point) => Math.max(max, Array.isArray(point?.areaValues) ? point.areaValues.length : 0),
+    0,
+  )
+  const hasAreaSeries =
+    Array.isArray(config.chartAreaSeries) && config.chartAreaSeries.length > 0
+  const isAreaChartImport =
+    config.chartType === 'area' ||
+    parsed.chartType === 'area' ||
+    parsed._type === 'energyChartSection'
+  if (maxAreaValuesLen >= 2 && !hasAreaSeries && isAreaChartImport) {
+    config = {
+      ...config,
+      chartAreaSeries: Array.from({ length: maxAreaValuesLen }, (_, i) => ({
+        title:
+          i === 0
+            ? config.chartPrimaryLabel || 'Primary'
+            : i === 1
+              ? config.chartSecondaryLabel || 'Secondary'
+              : `Series ${i + 1}`,
+        ...(i === 0 && config.chartBarColor ? { color: config.chartBarColor } : {}),
+        ...(i === 1 && config.chartLineColor ? { color: config.chartLineColor } : {}),
+      })),
+    }
+  }
+
   return {
     points,
-    config: extractChartConfig(parsed),
+    config,
   }
 }
 
@@ -189,36 +218,188 @@ function patchValueForChartConfig(key, fieldValue) {
   }))
 }
 
+/** Section list item _key when input path is … → sections → {_key} → chartPoints */
+function resolveChartSectionKey(path) {
+  if (!Array.isArray(path)) {
+    return null
+  }
+  for (let i = path.length - 1; i >= 2; i -= 1) {
+    if (
+      path[i] === 'chartPoints' &&
+      path[i - 2] === 'sections' &&
+      path[i - 1] &&
+      typeof path[i - 1] === 'object' &&
+      path[i - 1]._key
+    ) {
+      return String(path[i - 1]._key)
+    }
+  }
+  return null
+}
+
+/**
+ * Next sections array with this chart block updated (same approach as aiDraftingTool).
+ * Uses live form sections when present so other in-progress edits are preserved.
+ */
+const buildNextSectionsForChartImport = async ({
+  getFormValue,
+  client,
+  docId,
+  sectionKey,
+  points,
+  siblingNoBody,
+  config,
+  includeBody,
+}) => {
+  const root = getFormValue([]) || {}
+  const fromForm = Array.isArray(root.sections) ? root.sections : null
+  let sections = fromForm
+  if (!sections?.length && docId) {
+    const doc = await client.getDocument(docId)
+    sections = Array.isArray(doc?.sections) ? doc.sections : null
+  }
+  if (!Array.isArray(sections) || !sections.length) {
+    throw new Error('Could not read sections for this document.')
+  }
+  const idx = sections.findIndex((s) => s && s._key === sectionKey)
+  if (idx < 0) {
+    throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
+  }
+  const prev = sections[idx]
+  const nextSection = { ...prev, chartPoints: points }
+  for (const [key, fieldValue] of siblingNoBody) {
+    nextSection[key] = patchValueForChartConfig(key, fieldValue)
+  }
+  if (includeBody && config?.body !== undefined) {
+    nextSection.body = config.body
+  }
+  return sections.map((s, i) => (i === idx ? nextSection : s))
+}
+
 export default function ChartPointsJsonInput(props) {
   const { value, renderDefault, path = [] } = props
   const { onChange: patchDocument } = useFormCallbacks()
+  const getFormValue = useGetFormValue()
+  const client = useClient({ apiVersion: '2024-08-01' })
   const [jsonText, setJsonText] = useState('')
   const [status, setStatus] = useState('')
   const [error, setError] = useState('')
+  const [importing, setImporting] = useState(false)
 
   const currentCount = useMemo(() => (Array.isArray(value) ? value.length : 0), [value])
   const parentPath = useMemo(() => path.slice(0, -1), [path])
 
-  const applyParsedJson = ({ points, config }, sourceLabel = 'JSON') => {
-    const patches = [set(points, path)]
-    Object.entries(config || {}).forEach(([key, fieldValue]) => {
-      patches.push(set(patchValueForChartConfig(key, fieldValue), [...parentPath, key]))
-    })
-    patchDocument(PatchEvent.from(patches))
-    const configCount = Object.keys(config || {}).length
-    setStatus(
-      configCount > 0
-        ? `Imported ${points.length} points and updated ${configCount} chart settings from ${sourceLabel}.`
-        : `Imported ${points.length} chart points from ${sourceLabel}.`,
-    )
-  }
+  const applyParsedJson = useCallback(
+    async ({ points, config }, sourceLabel = 'JSON') => {
+      const configCount = Object.keys(config || {}).length
+      setImporting(true)
+      setError('')
+
+      const siblingEntries = Object.entries(config || {}).filter(([key]) => key !== 'chartPoints')
+      const siblingNoBody = siblingEntries.filter(([key]) => key !== 'body')
+
+      try {
+        const patches = [set(points, path)]
+        for (const [key, fieldValue] of siblingNoBody) {
+          patches.push(set(patchValueForChartConfig(key, fieldValue), [...parentPath, key]))
+        }
+
+        patchDocument(PatchEvent.from(patches))
+
+        if (config?.body !== undefined) {
+          window.setTimeout(() => {
+            try {
+              patchDocument(PatchEvent.from([set(config.body, [...parentPath, 'body'])]))
+            } catch {
+              setStatus((s) => `${s} Body not updated — fix portable text in Studio.`)
+            }
+          }, 80)
+        }
+
+        const docId = getFormValue([])?._id
+        const sectionKey = resolveChartSectionKey(path)
+        let apiSaved = false
+        let bodySkippedNote = ''
+
+        if (docId && sectionKey && typeof client?.patch === 'function') {
+          try {
+            let nextSections = await buildNextSectionsForChartImport({
+              getFormValue,
+              client,
+              docId,
+              sectionKey,
+              points,
+              siblingNoBody,
+              config,
+              includeBody: Boolean(config?.body !== undefined),
+            })
+            try {
+              await client.patch(docId).set({ sections: nextSections }).commit()
+              apiSaved = true
+            } catch {
+              if (config?.body !== undefined) {
+                nextSections = await buildNextSectionsForChartImport({
+                  getFormValue,
+                  client,
+                  docId,
+                  sectionKey,
+                  points,
+                  siblingNoBody,
+                  config,
+                  includeBody: false,
+                })
+                await client.patch(docId).set({ sections: nextSections }).commit()
+                apiSaved = true
+                bodySkippedNote = ' Body skipped — JSON body must be valid portable text blocks.'
+              } else {
+                throw new Error('Commit rejected (check field values).')
+              }
+            }
+          } catch (apiErr) {
+            const msg = apiErr?.message || String(apiErr)
+            setError(
+              `Sanity save failed: ${msg} Open the page from Structure (desk) if you are only in Preview, then try again.`,
+            )
+            setStatus('')
+          }
+        } else if (!docId) {
+          setError(
+            'Cannot save import: no document id in this view. Open the page from the Structure list, then import again.',
+          )
+          setStatus(
+            'Chart fields may have updated locally only — use Structure → open document → import.',
+          )
+        } else if (!sectionKey) {
+          setError('Cannot save import: chart must be inside page sections[].')
+          setStatus('')
+        }
+
+        if (apiSaved) {
+          setStatus(
+            (configCount > 0
+              ? `Imported ${points.length} points + ${configCount} section fields (${sourceLabel}).`
+              : `Imported ${points.length} points (${sourceLabel}).`) +
+              ' Saved to Sanity.' +
+              bodySkippedNote,
+          )
+        }
+      } catch (err) {
+        const message = err?.message || 'Import failed.'
+        setError(message)
+        setStatus('')
+      } finally {
+        setImporting(false)
+      }
+    },
+    [client, getFormValue, parentPath, patchDocument, path],
+  )
 
   const handleApplyJson = () => {
     setError('')
     setStatus('')
     try {
       const parsed = parseChartPointsJson(jsonText)
-      applyParsedJson(parsed)
+      void applyParsedJson(parsed)
     } catch (parseError) {
       setError(parseError?.message || 'Invalid JSON input.')
     }
@@ -235,7 +416,7 @@ export default function ChartPointsJsonInput(props) {
       const text = await file.text()
       setJsonText(text)
       const parsed = parseChartPointsJson(text)
-      applyParsedJson(parsed, file.name)
+      await applyParsedJson(parsed, file.name)
     } catch (parseError) {
       setError(parseError?.message || 'Could not parse JSON file.')
     } finally {
@@ -245,29 +426,47 @@ export default function ChartPointsJsonInput(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: '0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '0.75rem' }}>
+      <div
+        style={{
+          marginBottom: '0.75rem',
+          border: '1px solid #e5e7eb',
+          borderRadius: '0.5rem',
+          padding: '0.75rem',
+        }}
+      >
         <p style={{ margin: 0, fontWeight: 600 }}>Import chart points from JSON</p>
         <p style={{ margin: '0.35rem 0 0.65rem 0', fontSize: '0.85rem', opacity: 0.8 }}>
-          Accepts objects like {`{ "label": "Jan", "barValue": 450, "lineValue": 60, "areaValues": [400, 50] }`} or arrays
-          {` ["Jan", 450, 60, [400, 50]]`} (optional 4th element = area values per series). Full section JSON can include
-          {` "chartAreaSeries": [{ "title": "Solar", "color": "primary" }], "chartAreaStacked": true`}.
+          Writes points + section fields via Sanity API (full sections array), same as other Studio
+          tools. Open the page from <strong>Structure</strong> so the document id is available.
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            alignItems: 'center',
+            marginBottom: '0.5rem',
+          }}
+        >
           <input type="file" accept={ACCEPTED_FILE_TYPES} onChange={handleJsonFileChange} />
-          <button type="button" onClick={handleApplyJson}>
-            Apply JSON
+          <button type="button" onClick={handleApplyJson} disabled={importing}>
+            {importing ? 'Applying…' : 'Apply JSON'}
           </button>
           <span style={{ fontSize: '0.8rem', opacity: 0.75 }}>Current points: {currentCount}</span>
         </div>
         <textarea
           value={jsonText}
           onChange={(event) => setJsonText(event.target.value)}
-          placeholder='Paste JSON array or object with chartPoints'
+          placeholder="Paste JSON array or object with chartPoints"
           rows={6}
           style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.8rem' }}
         />
-        {status ? <p style={{ margin: '0.5rem 0 0 0', color: '#166534', fontSize: '0.85rem' }}>{status}</p> : null}
-        {error ? <p style={{ margin: '0.5rem 0 0 0', color: '#b91c1c', fontSize: '0.85rem' }}>{error}</p> : null}
+        {status ? (
+          <p style={{ margin: '0.5rem 0 0 0', color: '#166534', fontSize: '0.85rem' }}>{status}</p>
+        ) : null}
+        {error ? (
+          <p style={{ margin: '0.5rem 0 0 0', color: '#b91c1c', fontSize: '0.85rem' }}>{error}</p>
+        ) : null}
       </div>
       {renderDefault(props)}
     </div>

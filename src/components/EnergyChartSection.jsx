@@ -89,19 +89,34 @@ function resolveChartColor(value, fallback) {
   return chartColorTokenMap[trimmed] || trimmed
 }
 
+/**
+ * Single source of truth for 2 area series: Primary (barValue) + Secondary (lineValue).
+ * Preferring areaValues there caused wrong charts after editors updated bar/line but not the duplicate array.
+ * For 3+ series, areaValues[i] is used when set; missing slots fall back to bar/line for 0–1.
+ */
 function resolveAreaPointValue(point, seriesIndex, seriesCount) {
+  if (seriesCount === 2) {
+    if (seriesIndex === 0) {
+      const n = Number(point?.barValue)
+      return Number.isFinite(n) ? Math.max(n, 0) : 0
+    }
+    if (seriesIndex === 1) {
+      const n = Number(point?.lineValue)
+      return Number.isFinite(n) ? Math.max(n, 0) : 0
+    }
+  }
   const av = point?.areaValues
   if (Array.isArray(av) && av[seriesIndex] !== undefined && av[seriesIndex] !== null) {
-    const parsed = Number(av[seriesIndex])
-    return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0
+    const n = Number(av[seriesIndex])
+    if (Number.isFinite(n)) return Math.max(n, 0)
   }
   if (seriesIndex === 0) {
-    const parsed = Number(point?.barValue)
-    return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0
+    const n = Number(point?.barValue)
+    return Number.isFinite(n) ? Math.max(n, 0) : 0
   }
-  if (seriesIndex === 1 && seriesCount === 2) {
-    const parsed = Number(point?.lineValue)
-    return Number.isFinite(parsed) ? Math.max(parsed, 0) : 0
+  if (seriesIndex === 1) {
+    const n = Number(point?.lineValue)
+    return Number.isFinite(n) ? Math.max(n, 0) : 0
   }
   return 0
 }
@@ -124,10 +139,25 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
   const lineUnitLabel = section?.chartLineUnitLabel || 'deg'
   const periodLabel = section?.chartPeriodLabel || 'Jul 2024 - Jul 2025'
 
-  const areaSeriesDefs =
+  const cmsAreaSeries =
     chartType === 'area' && Array.isArray(section?.chartAreaSeries)
       ? section.chartAreaSeries.filter((item) => item && typeof item === 'object')
       : []
+  const maxAreaValuesLen = points.reduce(
+    (max, point) => Math.max(max, Array.isArray(point?.areaValues) ? point.areaValues.length : 0),
+    0,
+  )
+  /** CMS list wins; otherwise infer N series from per-point areaValues (JSON import often omits chartAreaSeries). */
+  const areaSeriesDefs =
+    cmsAreaSeries.length > 0
+      ? cmsAreaSeries
+      : chartType === 'area' && maxAreaValuesLen >= 1
+        ? Array.from({ length: maxAreaValuesLen }, (_, i) => ({
+            _key: `inferred-area-${i}`,
+            title: i === 0 ? primaryLabel : i === 1 ? secondaryLabel : `Series ${i + 1}`,
+            color: i === 0 ? section?.chartBarColor : i === 1 ? section?.chartLineColor : undefined,
+          }))
+        : []
   const multiAreaCount = areaSeriesDefs.length
   const chartAreaStacked = section?.chartAreaStacked === true
 
