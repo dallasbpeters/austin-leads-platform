@@ -41,7 +41,7 @@ const SECTION_VARIANTS = {
 export default function ConsultationSection({
   site = null,
   section = null,
-  sectionId = 'estimate',
+  sectionId = 'consultation',
   variant = 'default',
   theme = 'light',
   pagePath = '/',
@@ -88,6 +88,7 @@ export default function ConsultationSection({
 
   return (
     <section
+      id={sectionId}
       className={`relative overflow-hidden py-10 ${isDarkTheme ? 'text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
       {...editAttributes}
       {...getDevSectionAttributes({
@@ -141,7 +142,7 @@ export default function ConsultationSection({
           ) : null}
         </div>
 
-        <Card className={`relative p-8 z-10 ${isDarkTheme ? 'text-white bg-white/6 border-white/12 backdrop-blur' : ''}`} id="consultation" radius="lg">
+        <Card className={`relative p-8 z-10 ${isDarkTheme ? 'text-white bg-white/6 border-white/12 backdrop-blur' : ''}`} radius="lg">
           <LeadCaptureForm
             context={leadContext}
             buttonLabel={buttonLabel}

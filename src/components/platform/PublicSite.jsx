@@ -51,6 +51,8 @@ import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken }
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { roofingServices } from '@/lib/platform/service-catalog'
 
+const CONSULTATION_ANCHOR_ID = 'consultation'
+
 function slugifySectionToken(value) {
   return toRuntimeToken(value)
 }
@@ -1242,7 +1244,7 @@ function CtaSection({ page, section, site, pathname, sectionId, editAttributes }
       <ConsultationSection
         site={site}
         section={section}
-        sectionId={sectionId}
+        sectionId={CONSULTATION_ANCHOR_ID}
         variant={isRoofingContext ? 'roofingInspection' : 'default'}
         theme={ctaTheme}
         pagePath={pagePath}
@@ -1293,10 +1295,11 @@ function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
 
   return (
     <section
+      id={CONSULTATION_ANCHOR_ID}
       className={`py-20 ${isDarkTheme ? 'text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : 'bg-card text-foreground border-b border-border/60'}`}
       {...editAttributes}
       {...getDevSectionAttributes({
-        id: sectionId,
+        id: CONSULTATION_ANCHOR_ID,
         markup: 'src/components/platform/PublicSite.jsx:CtaBannerSection',
         content: `cross-lead banner from ${section?._type || 'page section'}`,
       })}

@@ -2,6 +2,7 @@ import { getPageForRequest, resolveSiteByHost } from '@/lib/platform/content'
 
 export const runtime = 'nodejs'
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+const FALLBACK_IMAGE_PATH = '/images/hail-damage.png'
 const FALLBACK_TRANSPARENT_PNG_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg=='
 
@@ -65,8 +66,23 @@ function buildPngHeaders(contentLength, cacheControl) {
   }
 }
 
-function buildHardFallbackPngResponse(includeBody) {
-  const fallbackBytes = Buffer.from(FALLBACK_TRANSPARENT_PNG_BASE64, 'base64')
+async function getFallbackPng(requestUrl) {
+  try {
+    const response = await fetch(new URL(FALLBACK_IMAGE_PATH, requestUrl.origin), {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    })
+    if (!response.ok) return null
+    const body = await response.arrayBuffer()
+    if (!isPng(body)) return null
+    return body
+  } catch {
+    return null
+  }
+}
+
+async function buildHardFallbackPngResponse(includeBody, requestUrl) {
+  const fallbackBytes = (await getFallbackPng(requestUrl)) || Buffer.from(FALLBACK_TRANSPARENT_PNG_BASE64, 'base64')
 
   return new Response(includeBody ? fallbackBytes : null, {
     status: 200,
@@ -75,15 +91,15 @@ function buildHardFallbackPngResponse(includeBody) {
 }
 
 async function buildGuideOgResponse(request, context, includeBody = true) {
+  const requestUrl = new URL(request.url)
   try {
     const params = await context.params
     const guideSlug = String(params?.guideSlug || '').trim()
 
     if (!guideSlug) {
-      return buildHardFallbackPngResponse(includeBody)
+      return buildHardFallbackPngResponse(includeBody, requestUrl)
     }
 
-    const requestUrl = new URL(request.url)
     const userAgent = request.headers.get('user-agent') || 'guide-og-proxy'
     const guidePath = getGuidePath(guideSlug)
     const upstreamUrl = new URL('/api/og', requestUrl.origin)
@@ -117,7 +133,7 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
     }
 
     if (!imageResult) {
-      return buildHardFallbackPngResponse(includeBody)
+      return buildHardFallbackPngResponse(includeBody, requestUrl)
     }
 
     return new Response(includeBody ? imageResult.body : null, {
@@ -125,7 +141,7 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
       headers: buildPngHeaders(imageResult.body.byteLength, imageResult.cacheControl),
     })
   } catch {
-    return buildHardFallbackPngResponse(includeBody)
+    return buildHardFallbackPngResponse(includeBody, requestUrl)
   }
 }
 

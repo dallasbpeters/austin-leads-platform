@@ -6,6 +6,9 @@ import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
+const DEFAULT_POSTHOG_KEY = 'phc_adMRNqeoByZifxH3nDyCgZfjnMFIUIDnjKbytwTRNIk'
+const DEFAULT_POSTHOG_HOST = 'https://t.texassolarandroofingpros.com'
+
 const TRACKABLE_BUTTON_SELECTOR = [
   'button',
   '[role="button"]',
@@ -74,8 +77,8 @@ function getSafeHrefPath(element) {
 
 export function PostHogProvider({ children }) {
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
-    const host = process.env.NEXT_PUBLIC_POSTHOG_HOST
+    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY || DEFAULT_POSTHOG_KEY
+    const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || DEFAULT_POSTHOG_HOST
 
     if (!key || !host) {
       return
