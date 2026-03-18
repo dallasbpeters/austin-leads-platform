@@ -18,21 +18,33 @@ const LINKS = [
   { href: '/hail-damage', label: 'Hail & Storm Damage' },
   { href: '/guides', label: 'Guides' },
   { href: '/about', label: 'About Us' },
-  { href: '#consultation', label: 'Contact', className: 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9' },
+  { href: '#consultation', label: 'Contact', className: 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9 hover:bg-primary/80' },
 ]
 
 
-function NavList() {
+function NavList({ onNavigate }) {
   return (
     <>
       {LINKS.map(({ label, href, className }) => (
-        <Link
-          key={href}
-          href={href}
-          className={`flex items-start justify-start gap-2 px-2 py-4 font-wght-450 medium text-foreground text-md hover:text-primary rounded-full hover:bg-transparent btn ${className}`}
-        >
-          {label}
-        </Link>
+        href.startsWith('#') ? (
+          <a
+            key={href}
+            href={href}
+            onClick={onNavigate}
+            className={`flex items-start justify-start gap-2 px-2 py-4 font-wght-450 medium text-foreground text-md hover:text-white rounded-full hover:brightness-125 btn ${className}`}
+          >
+            {label}
+          </a>
+        ) : (
+          <Link
+            key={href}
+            href={href}
+            onClick={onNavigate}
+            className={`flex items-start justify-start gap-2 px-2 py-4 font-wght-450 medium text-foreground text-md hover:text-primary rounded-full hover:bg-transparent btn ${className}`}
+          >
+            {label}
+          </Link>
+        )
       ))}
     </>
   )
@@ -98,7 +110,7 @@ export default function Header() {
               openNav ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
             }`}
           >
-            <NavList />
+            <NavList onNavigate={() => setOpenNav(false)} />
           </div>
         </div>
       </div>

@@ -1233,10 +1233,7 @@ function CtaSection({ page, section, site, pathname, sectionId, editAttributes }
   const ctaTheme = section?.theme === 'dark' ? 'dark' : 'light'
 
   return (
-    <section
-      className="bg-transparent"
-      {...editAttributes}
-    >
+    <>
       <DevTrace
         markup="src/components/platform/PublicSite.jsx:CtaSection"
         content={`shared consultation section fallback for page from ${page?.source || 'fixture'}`}
@@ -1249,9 +1246,9 @@ function CtaSection({ page, section, site, pathname, sectionId, editAttributes }
         theme={ctaTheme}
         pagePath={pagePath}
         pageTitle={page?.title || 'Texas Solar and Roofing Pros'}
-        editAttributes={{}}
+        editAttributes={editAttributes}
       />
-    </section>
+    </>
   )
 }
 
