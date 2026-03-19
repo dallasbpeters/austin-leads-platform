@@ -31,7 +31,7 @@ function NavList({ onNavigate }) {
             key={href}
             href={href}
             onClick={onNavigate}
-            className={`flex items-start justify-start gap-2 px-2 py-4 font-wght-450 medium text-foreground text-md hover:text-white rounded-full hover:brightness-125 btn ${className}`}
+            className={`flex items-start justify-start gap-2 px-6 py-5.5 font-wght-450 medium text-foreground text-md hover:text-white rounded-full hover:brightness-125 btn ${className}`}
           >
             {label}
           </a>
@@ -70,7 +70,7 @@ export default function Header() {
         content: 'local JSX nav and service catalog links',
       })}
     >
-      <div className="w-full mx-auto px-4 md:px-6 py-2 bg-card rounded-none md:rounded-full shadow-sm">
+      <div className="w-full mx-auto px-6 py-2 bg-card rounded-none md:rounded-full shadow-sm">
         <div className="flex items-center justify-between">
           <Link href="/" title="Texas Solar & Roofing Pros" className="grid items-center gap-2 grid-flow-col">
             <Logo />
