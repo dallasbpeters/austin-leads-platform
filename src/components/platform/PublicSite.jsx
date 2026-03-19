@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import {
   AirConditioner,
   AreaSearch,
@@ -17,26 +18,27 @@ import * as IconoirIcons from 'iconoir-react'
 import Image from 'next/image'
 
 import Footer from '@/components/Footer'
-import EnergyChartSection from '@/components/EnergyChartSection'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import Band from '@/components/Band'
-import CalculatorSection from '@/components/CalculatorSection'
-import CostsSection from '@/components/CostsSection'
 import GuideCardGrid from '@/components/GuideCard'
 import GuidesSection from '@/components/GuidesSection'
 import Header from '@/components/Header'
-import IncentivesSection from '@/components/IncentivesSection'
 import ConsultationSection from '@/components/ConsultationSection'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
 import GuideShareBar from '@/components/GuideShareBar'
 import PortableTextContent from '@/components/PortableTextContent'
 import QuoteSection from '@/components/QuoteSection'
-import ResourcesSection from '@/components/ResourcesSection'
-import SnapshotSection from '@/components/SnapshotSection'
 import SolarSwitch from '@/components/SolarSwitch'
 import ScrollText from '@/components/ScrollText'
-import Testimonials from '@/components/Testimonials'
 import LogoCloud from '@/components/logo-cloud'
+
+const EnergyChartSection = dynamic(() => import('@/components/EnergyChartSection'), { ssr: true })
+const CalculatorSection = dynamic(() => import('@/components/CalculatorSection'), { ssr: true })
+const CostsSection = dynamic(() => import('@/components/CostsSection'), { ssr: true })
+const IncentivesSection = dynamic(() => import('@/components/IncentivesSection'), { ssr: true })
+const ResourcesSection = dynamic(() => import('@/components/ResourcesSection'), { ssr: true })
+const SnapshotSection = dynamic(() => import('@/components/SnapshotSection'), { ssr: true })
+const Testimonials = dynamic(() => import('@/components/Testimonials'), { ssr: true })
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -100,9 +102,9 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
         <>
           <div className="absolute inset-0 z-2">
             <Image
-              width={3000}
-              height={3000}
-              quality={68}
+              width={1920}
+              height={1080}
+              quality={75}
               sizes="100vw"
               priority
               fetchPriority="high"

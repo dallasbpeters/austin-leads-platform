@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as IconoirIcons from 'iconoir-react'
+import Image from 'next/image'
 import {
   AirConditioner,
   AreaSearch,
@@ -231,24 +232,27 @@ function GuideCardBody({ card }) {
         </div>
       ) : null}
       {card.image ? (
-        <div className="mt-6 rounded-lg overflow-hidden">
-          <motion.img
-            alt={card.imageAlt || card.title}
-            className="h-56 w-full object-cover"
-            src={card.image}
+        <div className="mt-6 rounded-lg overflow-hidden relative h-56 w-full">
+          <motion.div
+            className="absolute inset-0"
             variants={{
-              rest: {
-                scale: 1,
-              },
-              hover: {
-                scale: 1.08,
-              },
+              rest: { scale: 1 },
+              hover: { scale: 1.08 },
             }}
             transition={{
               duration: 0.45,
               ease: [0.22, 1, 0.36, 1],
             }}
-          />
+          >
+            <Image
+              src={card.image}
+              alt={card.imageAlt || card.title}
+              fill
+              sizes="(max-width: 900px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              loading="lazy"
+              className="object-cover"
+            />
+          </motion.div>
         </div>
       ) : null}
       <div className="flex items-center gap-2 mt-auto pt-6 font-semibold text-current/88 text-sm">

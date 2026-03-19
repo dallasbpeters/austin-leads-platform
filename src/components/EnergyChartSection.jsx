@@ -505,9 +505,16 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
               No chart points configured.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <div style={{ minWidth: `${chartInnerWidth}px`, height: `${chartHeight}px` }}>
-                <ResponsiveContainer width="100%" height="100%">
+            <div className="min-w-0 w-full" style={{ minHeight: `${chartHeight}px` }}>
+              <div
+                className="w-full min-h-0"
+                style={{
+                  width: '100%',
+                  height: `${chartHeight}px`,
+                  minHeight: `${chartHeight}px`,
+                }}
+              >
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   {renderChart()}
                 </ResponsiveContainer>
               </div>

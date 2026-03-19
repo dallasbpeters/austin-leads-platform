@@ -28,9 +28,6 @@ export default function ImageFader({
   overlayBlur = 0,
   showOverlay = true,
   useGradient = true,
-  showDots = true,
-  dotColor = '#fff',
-  dotActiveColor = '#111',
   objectPosition = 'center',
   className,
   imageClassName,
@@ -198,37 +195,6 @@ export default function ImageFader({
         />
       )}
 
-      {isInteractive && showDots && count > 1 && (
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            bottom: 20,
-            transform: 'translateX(-50%)',
-            zIndex: 3,
-            display: 'flex',
-            gap: 10,
-          }}
-        >
-          {images.map((_, i) => (
-            <button
-              key={i}
-              aria-label={`Go to slide ${i + 1}`}
-              onClick={() => jumpTo(i)}
-              style={{
-                width: 13,
-                height: 13,
-                borderRadius: '50%',
-                background: i === index ? dotActiveColor : dotColor,
-                border: 'none',
-                outline: i === index ? '2px solid #111' : 'none',
-                boxShadow: i === index ? '0 1px 4px rgba(0,0,0,0.22)' : 'none',
-                cursor: 'pointer',
-              }}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 }

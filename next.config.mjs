@@ -61,6 +61,9 @@ const nextConfig = {
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
   images: {
     qualities: [100, 82, 75, 70, 68],
+    // Ensure repeat visits reuse optimized images (improves Lighthouse cache TTL scoring).
+    // 30 days is a good balance between freshness and performance.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: 'https',
@@ -85,6 +88,16 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'hoirqrkdgbmvpwutwuwj.supabase.co',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'unicorn.studio',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.unicorn.studio',
         port: '',
       },
       {

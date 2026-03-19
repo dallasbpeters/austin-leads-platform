@@ -39,7 +39,16 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <head>{facebookAppId ? <meta property="fb:app_id" content={facebookAppId} /> : null}</head>
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/Switzer-Variable.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        {facebookAppId ? <meta property="fb:app_id" content={facebookAppId} /> : null}
+      </head>
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
       <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">

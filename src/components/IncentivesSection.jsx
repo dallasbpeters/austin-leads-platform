@@ -2,6 +2,7 @@ import Button from './Button'
 import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+import Image from 'next/image'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 function splitParagraphs(value) {
@@ -56,11 +57,14 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
           ) : null}
         </div>
 
-        <div className="h-[400px] rounded-3xl overflow-hidden">
-          <img
+        <div className="h-[400px] rounded-3xl overflow-hidden relative">
+          <Image
             src={imageUrl}
             alt={imageAlt}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 900px) 100vw, 50vw"
+            loading="lazy"
+            className="object-cover"
           />
         </div>
       </div>
