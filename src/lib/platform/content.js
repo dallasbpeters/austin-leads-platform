@@ -728,9 +728,11 @@ async function getGuideCardMetaForSlug({ client, fetchOptions, siteSlug, guideSl
 
       try {
         const parsed = new URL(rawHref, 'https://guide-color.local')
-        return cleanRuntimeString(parsed.pathname).replace(/\/+$/, '')
+        const normalizedPath = cleanRuntimeString(parsed.pathname).replace(/\/+$/, '')
+        return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
       } catch {
-        return rawHref.replace(/[?#].*$/, '').replace(/\/+$/, '')
+        const normalizedPath = rawHref.replace(/[?#].*$/, '').replace(/\/+$/, '')
+        return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
       }
     }
 

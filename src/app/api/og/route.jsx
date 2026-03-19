@@ -54,7 +54,6 @@ const OG_CSS_VAR_COLOR_MAP = {
   '--color-black-current': OG_COLOR_TOKEN_MAP.blackCurrent,
   '--color-confetti': OG_COLOR_TOKEN_MAP.confetti,
 }
-const OG_DARK_GUIDE_TOKENS = new Set(['charade', 'blackCurrent', 'voodoo', 'metterhorn', 'tapaGreen'])
 
 function getFontFamily(requestUrl) {
   if (!fontFamilyPromise) {
@@ -138,11 +137,6 @@ function safeColor(value, fallback) {
 
 function resolveGuideBackground(rawValue, fallbackColor) {
   if (!rawValue || typeof rawValue !== 'string') {
-    return fallbackColor
-  }
-
-  if (OG_DARK_GUIDE_TOKENS.has(rawValue.trim())) {
-    // Keep card token options broad in CMS, but avoid near-black OG cards.
     return fallbackColor
   }
 
