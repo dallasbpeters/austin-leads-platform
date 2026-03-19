@@ -695,16 +695,58 @@ function sanitizePageRuntimeFields(page) {
   }
 }
 
-async function getGuideCardMetaForSlug({ client, fetchOptions, siteSlug, guideSlug }) {
-  const normalizedGuideSlug = cleanRuntimeString(guideSlug).replace(/^\/+/, '')
+function normalizeGuideGridHrefPath(href) {
+  const rawHref = cleanRuntimeString(href)
+  if (!rawHref) return ''
 
-  if (!normalizedGuideSlug || !normalizedGuideSlug.startsWith('guides/')) {
+  try {
+    const parsed = new URL(rawHref, 'https://guide-color.local')
+    const normalizedPath = cleanRuntimeString(parsed.pathname).replace(/\/+$/, '')
+    return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
+  } catch {
+    const normalizedPath = rawHref.replace(/[?#].*$/, '').replace(/\/+$/, '')
+    return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
+  }
+}
+
+function guideGridItemMatchesTargetPath(itemHref, targetPath) {
+  const itemPath = normalizeGuideGridHrefPath(itemHref)
+  const wants = String(targetPath || '').replace(/\/+$/, '')
+  if (!itemPath || !wants) return false
+  if (itemPath === wants) return true
+
+  const wantsParts = wants.split('/').filter(Boolean)
+  const itemParts = itemPath.split('/').filter(Boolean)
+  const wantsLeaf = wantsParts.at(-1) || ''
+  const itemLeaf = itemParts.at(-1) || ''
+
+  if (
+    wantsParts[0] === 'guides' &&
+    itemParts[0] === 'guides' &&
+    wantsLeaf &&
+    itemLeaf &&
+    wantsLeaf.toLowerCase() === itemLeaf.toLowerCase()
+  ) {
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Pick guide card color/category from any Guide Grid section on any page for this site.
+ * @param {string} targetPath pathname like `/guides/solar-warranties-texas`
+ */
+async function getGuideCardMetaForTargetPath({ client, fetchOptions, siteSlug, targetPath }) {
+  const normalizedTarget = String(targetPath || '').replace(/\/+$/, '')
+  const parts = normalizedTarget.split('/').filter(Boolean)
+
+  if (!normalizedTarget || parts[0] !== 'guides' || !parts[1]) {
     return { color: '', category: '', updatedAt: '' }
   }
 
   try {
     const siteSlugs = getEquivalentSiteSlugs(siteSlug)
-    const targetPath = `/${normalizedGuideSlug}`.replace(/\/+$/, '')
     const guideGridSources = await client.fetch(
       groq`*[
         _type in ["page", "servicePage", "locationPage", "post"] &&
@@ -712,38 +754,26 @@ async function getGuideCardMetaForSlug({ client, fetchOptions, siteSlug, guideSl
         count(sections[_type == "guideGridSection" || type == "guideGrid"]) > 0
       ]{
         _updatedAt,
-        "items": sections[_type == "guideGridSection" || type == "guideGrid"][0].items[]{
-          href,
-          color,
-          category
+        "guideGridSections": sections[_type == "guideGridSection" || type == "guideGrid"]{
+          "cardItems": items[]{href, color, category}
         }
       }`,
       { siteSlugs },
       fetchOptions,
     )
 
-    const normalizeHrefPath = (href) => {
-      const rawHref = cleanRuntimeString(href)
-      if (!rawHref) return ''
-
-      try {
-        const parsed = new URL(rawHref, 'https://guide-color.local')
-        const normalizedPath = cleanRuntimeString(parsed.pathname).replace(/\/+$/, '')
-        return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
-      } catch {
-        const normalizedPath = rawHref.replace(/[?#].*$/, '').replace(/\/+$/, '')
-        return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
-      }
-    }
-
     const allItems = Array.isArray(guideGridSources)
-      ? guideGridSources.flatMap((entry) =>
-          Array.isArray(entry?.items)
-            ? entry.items.map((item) => ({ ...item, __sourceUpdatedAt: cleanRuntimeString(entry?._updatedAt) }))
-            : [],
+      ? guideGridSources.flatMap((doc) =>
+          (Array.isArray(doc?.guideGridSections) ? doc.guideGridSections : []).flatMap((section) =>
+            (Array.isArray(section?.cardItems) ? section.cardItems : []).map((item) => ({
+              ...item,
+              __sourceUpdatedAt: cleanRuntimeString(doc?._updatedAt),
+            })),
+          ),
         )
       : []
-    const matchedItem = allItems.find((item) => normalizeHrefPath(item?.href) === targetPath)
+
+    const matchedItem = allItems.find((item) => guideGridItemMatchesTargetPath(item?.href, normalizedTarget))
 
     return {
       color: resolveSanityColorValue(matchedItem?.color),
@@ -1679,12 +1709,31 @@ export async function getPageForRequest(site, slugParts = []) {
         page: guideSyncedPage,
         siteSlug: site.slug,
       })
-      const guideCardMeta = await getGuideCardMetaForSlug({
-        client,
-        fetchOptions,
-        siteSlug: site.slug,
-        guideSlug: serviceSyncedPage?.slug,
-      })
+      let guideTargetPath = ''
+      if (
+        Array.isArray(slugParts) &&
+        slugParts.length >= 2 &&
+        cleanRuntimeString(slugParts[0]) === 'guides'
+      ) {
+        guideTargetPath = `/${slugParts
+          .map((s) => cleanRuntimeString(s))
+          .filter(Boolean)
+          .join('/')}`.replace(/\/+$/, '')
+      } else if (typeof serviceSyncedPage?.slug === 'string') {
+        const slugOnly = cleanRuntimeString(serviceSyncedPage.slug).replace(/^\/+/, '')
+        if (slugOnly.startsWith('guides/')) {
+          guideTargetPath = `/${slugOnly}`.replace(/\/+$/, '')
+        }
+      }
+
+      const guideCardMeta = guideTargetPath
+        ? await getGuideCardMetaForTargetPath({
+            client,
+            fetchOptions,
+            siteSlug: site.slug,
+            targetPath: guideTargetPath,
+          })
+        : { color: '', category: '', updatedAt: '' }
       const pageWithGuideMeta = guideCardMeta?.color || guideCardMeta?.category
         ? {
             ...serviceSyncedPage,
