@@ -310,7 +310,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:CardGridSection"
         content={`highlight cards from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
+      <div className="mx-auto px-3 md:px-6 py-20 lg:px-10">
         <div className="grid max-w-3xl gap-2 mb-8">
           <h2 className="text-3xl text-foreground md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
@@ -1076,18 +1076,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:AboutProfileSection"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
-      <div className="grid max-w-7xl gap-6 mx-auto px-3 md:px-6 py-20 lg:px-10 grid-cols-1 md:grid-cols-2">
-        <div className="max-w-3xl mb-10">
-          {section.eyebrow ? (
-            <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
-              {section.eyebrow}
-            </Badge>
-          ) : null}
-          <h2 className="mt-5 text-3xl text-foreground leading-1 tracking-tight md:text-4xl">{section.title}</h2>
-          {section.body ? (
-            <PortableTextContent as="div" value={section.body} className="mt-2 leading-8 text-base text-muted-foreground" />
-          ) : null}
-        </div>
+      <div className="grid max-w-7xl gap-6 mx-auto px-3 md:px-6 py-20 lg:px-10 grid-cols-1 md:grid-cols-[.85fr_1.15fr]">
         <div className="grid content-start gap-6 grid-cols-1">
           {people.map((person, index) => {
             const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
@@ -1146,9 +1135,7 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
                   </div>
                 </CardHeader>
                 <CardContent className="grid relative content-end h-30 gap-4 grid-cols-1 z-10">
-                  {person.blurb ? (
-                    <PortableTextContent as="div" value={person.blurb} className="leading-6 text-base text-white" />
-                  ) : null}
+                  
                   {person.certificationTitle ? (
                     <div className="grid gap-3 border-border/80">
                       <div className="flex items-center gap-3">
@@ -1179,6 +1166,17 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
               </Card>
             )
           })}
+        </div>
+        <div className="max-w-3xl mb-10">
+          {section.eyebrow ? (
+            <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
+              {section.eyebrow}
+            </Badge>
+          ) : null}
+          <h2 className="mt-5 text-3xl text-foreground leading-1 tracking-tight md:text-4xl">{section.title}</h2>
+          {section.body ? (
+            <PortableTextContent as="div" value={section.body} className="mt-2 leading-8 text-base text-muted-foreground" />
+          ) : null}
         </div>
       </div>
     </section>

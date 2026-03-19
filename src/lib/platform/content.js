@@ -82,9 +82,12 @@ const sectionProjection = `
     certificationTitle,
     profileImage,
     profileImageAsset{
+      crop,
+      hotspot,
       altText,
       alt,
       asset->{
+        _id,
         url,
         metadata{
           dimensions{
@@ -96,9 +99,12 @@ const sectionProjection = `
     },
     badgeImage,
     badgeImageAsset{
+      crop,
+      hotspot,
       altText,
       alt,
       asset->{
+        _id,
         url,
         metadata{
           dimensions{
@@ -111,9 +117,12 @@ const sectionProjection = `
   },
   profileImage,
   profileImageAsset{
+    crop,
+    hotspot,
     altText,
     alt,
     asset->{
+      _id,
       url,
       metadata{
         dimensions{
@@ -131,9 +140,12 @@ const sectionProjection = `
   certificationTitle,
   badgeImage,
   badgeImageAsset{
+    crop,
+    hotspot,
     altText,
     alt,
     asset->{
+      _id,
       url,
       metadata{
         dimensions{
@@ -145,9 +157,12 @@ const sectionProjection = `
   },
   secondaryProfileImage,
   secondaryProfileImageAsset{
+    crop,
+    hotspot,
     altText,
     alt,
     asset->{
+      _id,
       url,
       metadata{
         dimensions{
@@ -172,9 +187,12 @@ const sectionProjection = `
   heroOverlayOpacity,
   heroImage,
   heroAsset{
+    crop,
+    hotspot,
     altText,
     alt,
     asset->{
+      _id,
       url,
       metadata{
         dimensions{
@@ -189,9 +207,12 @@ const sectionProjection = `
     title,
     image,
     imageAsset{
+      crop,
+      hotspot,
       altText,
       alt,
       asset->{
+        _id,
         url,
         metadata{
           dimensions{
@@ -204,9 +225,12 @@ const sectionProjection = `
   },
   image,
   imageAsset{
+    crop,
+    hotspot,
     altText,
     alt,
     asset->{
+      _id,
       url,
       metadata{
         dimensions{
@@ -230,8 +254,11 @@ const sectionProjection = `
     reviewerLocation,
     "stars": coalesce(stars, rating, 5),
     reviewerPhoto{
+      crop,
+      hotspot,
       alt,
       asset->{
+        _id,
         url,
         metadata{
           dimensions{
@@ -256,9 +283,12 @@ const sectionProjection = `
     color,
     image,
     imageAsset{
+      crop,
+      hotspot,
       altText,
       alt,
       asset->{
+        _id,
         url,
         metadata{
           dimensions{
@@ -289,9 +319,12 @@ const sectionProjection = `
     color,
     image,
     imageAsset{
+      crop,
+      hotspot,
       altText,
       alt,
       asset->{
+        _id,
         url,
         metadata{
           dimensions{
@@ -315,9 +348,12 @@ const sectionProjection = `
     color,
     image,
     imageAsset{
+      crop,
+      hotspot,
       altText,
       alt,
       asset->{
+        _id,
         url,
         metadata{
           dimensions{
@@ -339,9 +375,12 @@ const sectionProjection = `
   avatarColor,
   avatarImage,
   avatarImageAsset{
+    crop,
+    hotspot,
     altText,
     alt,
     asset->{
+      _id,
       url,
       metadata{
         dimensions{
@@ -357,9 +396,12 @@ const sectionProjection = `
   personBlurb,
   profileImage,
   profileImageAsset{
+    crop,
+    hotspot,
     altText,
     alt,
     asset->{
+      _id,
       url,
       metadata{
         dimensions{
@@ -923,9 +965,12 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
             type,
             heroImage,
             heroAsset{
+              crop,
+              hotspot,
               altText,
               alt,
               asset->{
+                _id,
                 url,
                 metadata{
                   dimensions{
@@ -976,9 +1021,12 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
             type,
             heroImage,
             heroAsset{
+              crop,
+              hotspot,
               altText,
               alt,
               asset->{
+                _id,
                 url,
                 metadata{
                   dimensions{
@@ -1159,9 +1207,12 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
             type,
             heroImage,
             heroAsset{
+              crop,
+              hotspot,
               altText,
               alt,
               asset->{
+                _id,
                 url,
                 metadata{
                   dimensions{
@@ -1479,9 +1530,12 @@ export async function getPageForRequest(site, slugParts = []) {
           title,
           image,
           imageAsset{
+            crop,
+            hotspot,
             altText,
             alt,
             asset->{
+              _id,
               url,
               metadata{
                 dimensions{
@@ -1493,9 +1547,12 @@ export async function getPageForRequest(site, slugParts = []) {
           }
         },
         heroAsset{
+          crop,
+          hotspot,
           altText,
           alt,
           asset->{
+            _id,
             url,
             metadata{
               dimensions{
@@ -1548,9 +1605,12 @@ export async function getPageForRequest(site, slugParts = []) {
           title,
           image,
           imageAsset{
+            crop,
+            hotspot,
             altText,
             alt,
             asset->{
+              _id,
               url,
               metadata{
                 dimensions{
@@ -1562,9 +1622,12 @@ export async function getPageForRequest(site, slugParts = []) {
           }
         },
         heroAsset{
+          crop,
+          hotspot,
           altText,
           alt,
           asset->{
+            _id,
             url,
             metadata{
               dimensions{
@@ -1732,9 +1795,12 @@ export async function getHeroPages({ stega = false } = {}) {
         heroOverlayOpacity,
         heroImage,
         heroAsset{
+          crop,
+          hotspot,
           altText,
           alt,
           asset->{
+            _id,
             url,
             metadata{
               dimensions{
@@ -1899,8 +1965,11 @@ export async function getHomepageReviewsForSite(siteSlug) {
         reviewerLocation,
         "stars": coalesce(stars, rating, 5),
         reviewerPhoto{
+          crop,
+          hotspot,
           alt,
           asset->{
+            _id,
             url,
             metadata{
               dimensions{

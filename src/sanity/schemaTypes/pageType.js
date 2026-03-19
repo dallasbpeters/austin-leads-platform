@@ -348,7 +348,15 @@ const uploadedImageType = {
   title: 'Uploaded Image',
   type: 'image',
   options: {
-    hotspot: true,
+    hotspot: {
+      previews: [
+        { title: 'Wide 16:9', aspectRatio: 16 / 9 },
+        { title: 'Landscape 3:2', aspectRatio: 3 / 2 },
+        { title: 'Square 1:1', aspectRatio: 1 },
+        { title: 'Portrait 3:4', aspectRatio: 3 / 4 },
+        { title: 'Story 9:16', aspectRatio: 9 / 16 },
+      ],
+    },
   },
   fields: [
     {

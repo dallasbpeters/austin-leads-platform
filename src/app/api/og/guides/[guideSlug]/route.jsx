@@ -2,6 +2,8 @@ import { getPageForRequest, resolveSiteByHost } from '@/lib/platform/content'
 
 export const runtime = 'nodejs'
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+/** Reject tiny bodies (error pages or truncated responses) so we don't serve corrupt OG images */
+const MIN_PNG_BYTES = 500
 const FALLBACK_IMAGE_PATH = '/images/hail-damage.png'
 const FALLBACK_TRANSPARENT_PNG_BASE64 =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg=='
@@ -31,6 +33,12 @@ function isPng(arrayBuffer) {
   return PNG_SIGNATURE.every((value, index) => bytes[index] === value)
 }
 
+function isImagePngContentType(header) {
+  if (!header || typeof header !== 'string') return false
+  const value = header.split(';')[0].trim().toLowerCase()
+  return value === 'image/png'
+}
+
 async function fetchPng(url, userAgent) {
   const response = await fetch(url, {
     headers: {
@@ -44,8 +52,12 @@ async function fetchPng(url, userAgent) {
     return null
   }
 
+  if (!isImagePngContentType(response.headers.get('content-type'))) {
+    return null
+  }
+
   const body = await response.arrayBuffer()
-  if (!isPng(body)) {
+  if (!isPng(body) || body.byteLength < MIN_PNG_BYTES) {
     return null
   }
 
@@ -73,8 +85,9 @@ async function getFallbackPng(requestUrl) {
       signal: AbortSignal.timeout(3000),
     })
     if (!response.ok) return null
+    if (!isImagePngContentType(response.headers.get('content-type'))) return null
     const body = await response.arrayBuffer()
-    if (!isPng(body)) return null
+    if (!isPng(body) || body.byteLength < MIN_PNG_BYTES) return null
     return body
   } catch {
     return null
@@ -82,7 +95,9 @@ async function getFallbackPng(requestUrl) {
 }
 
 async function buildHardFallbackPngResponse(includeBody, requestUrl) {
-  const fallbackBytes = (await getFallbackPng(requestUrl)) || Buffer.from(FALLBACK_TRANSPARENT_PNG_BASE64, 'base64')
+  const fallbackBuffer =
+    (await getFallbackPng(requestUrl)) || Buffer.from(FALLBACK_TRANSPARENT_PNG_BASE64, 'base64')
+  const fallbackBytes = new Uint8Array(fallbackBuffer)
 
   return new Response(includeBody ? fallbackBytes : null, {
     status: 200,
@@ -136,9 +151,10 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
       return buildHardFallbackPngResponse(includeBody, requestUrl)
     }
 
-    return new Response(includeBody ? imageResult.body : null, {
+    const bodyBytes = new Uint8Array(imageResult.body)
+    return new Response(includeBody ? bodyBytes : null, {
       status: 200,
-      headers: buildPngHeaders(imageResult.body.byteLength, imageResult.cacheControl),
+      headers: buildPngHeaders(bodyBytes.byteLength, imageResult.cacheControl),
     })
   } catch {
     return buildHardFallbackPngResponse(includeBody, requestUrl)

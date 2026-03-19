@@ -179,7 +179,13 @@ export default [
         title: 'Reviewer photo',
         type: 'image',
         options: {
-          hotspot: true,
+          hotspot: {
+            previews: [
+              { title: 'Square', aspectRatio: 1 },
+              { title: 'Portrait', aspectRatio: 3 / 4 },
+              { title: 'Wide', aspectRatio: 16 / 9 },
+            ],
+          },
         },
         fields: [
           {

@@ -21,6 +21,21 @@ function generateKey(index) {
   return `chart-point-${Date.now()}-${index}`
 }
 
+/** Sanity requires _key on every list item. Ensure all items have a non-empty unique _key. */
+function ensureListKeys(items, prefix = 'item') {
+  if (!Array.isArray(items)) {
+    return items
+  }
+  return items.map((item, index) => {
+    if (!item || typeof item !== 'object') {
+      return item
+    }
+    const existing = item._key != null && String(item._key).trim()
+    const key = existing ? String(item._key) : `${prefix}-${index}-${Date.now().toString(36)}`
+    return { ...item, _key: key }
+  })
+}
+
 function normalizeAreaValuesArray(raw) {
   if (!Array.isArray(raw)) {
     return null
@@ -218,31 +233,125 @@ function patchValueForChartConfig(key, fieldValue) {
   }))
 }
 
-/** Section list item _key when input path is … → sections → {_key} → chartPoints */
-function resolveChartSectionKey(path) {
-  if (!Array.isArray(path)) {
+function escapeKeyForJsonMatch(key) {
+  return String(key || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+}
+
+/**
+ * Section _key for this chart. Studio often uses ['sections', 2, 'chartPoints'] (numeric index),
+ * which never matched the old {_key}-only check — API save was skipped and points never persisted.
+ */
+function resolveChartSectionKey(path, getFormValue) {
+  if (!Array.isArray(path) || path.length < 2) {
     return null
   }
+
+  const parent = typeof getFormValue === 'function' ? getFormValue(path.slice(0, -1)) : null
+  if (parent?._key) {
+    return String(parent._key)
+  }
+
   for (let i = path.length - 1; i >= 2; i -= 1) {
-    if (
-      path[i] === 'chartPoints' &&
-      path[i - 2] === 'sections' &&
-      path[i - 1] &&
-      typeof path[i - 1] === 'object' &&
-      path[i - 1]._key
-    ) {
-      return String(path[i - 1]._key)
+    if (path[i] !== 'chartPoints' || path[i - 2] !== 'sections') {
+      continue
+    }
+    const seg = path[i - 1]
+    if (seg && typeof seg === 'object' && seg._key) {
+      return String(seg._key)
+    }
+    if (typeof seg === 'number' && typeof getFormValue === 'function') {
+      const sections = getFormValue(['sections'])
+      const item = Array.isArray(sections) ? sections[seg] : null
+      if (item?._key) {
+        return String(item._key)
+      }
     }
   }
   return null
 }
 
+function ensurePortableTextKeys(value) {
+  if (!Array.isArray(value)) {
+    return value
+  }
+  return value.map((block, bi) => {
+    if (!block || typeof block !== 'object' || block._type !== 'block') {
+      return block
+    }
+    const blockKey = block._key || `pt-${bi}-${Date.now().toString(36)}`
+    const children = Array.isArray(block.children)
+      ? block.children.map((span, si) => {
+          if (!span || typeof span !== 'object') {
+            return span
+          }
+          return {
+            ...span,
+            _key: span._key || `sp-${bi}-${si}-${Math.random().toString(36).slice(2, 9)}`,
+          }
+        })
+      : block.children
+    return {
+      ...block,
+      _key: blockKey,
+      markDefs: Array.isArray(block.markDefs) ? block.markDefs : [],
+      children,
+    }
+  })
+}
+
+async function persistChartImportToSanity({
+  client,
+  docId,
+  sectionKey,
+  points,
+  siblingNoBody,
+  config,
+}) {
+  const keyedPoints = ensureListKeys(points, 'chart-point')
+  const base = `sections[_key=="${escapeKeyForJsonMatch(sectionKey)}"]`
+  const payload = {
+    [`${base}.chartPoints`]: keyedPoints,
+  }
+  for (const [key, fieldValue] of siblingNoBody) {
+    payload[`${base}.${key}`] = patchValueForChartConfig(key, fieldValue)
+  }
+
+  try {
+    await client.patch(docId).set(payload).commit()
+  } catch {
+    const nextSections = await buildNextSectionsForChartImport({
+      client,
+      docId,
+      sectionKey,
+      points: keyedPoints,
+      siblingNoBody,
+      config: {},
+      includeBody: false,
+    })
+    await client.patch(docId).set({ sections: nextSections }).commit()
+  }
+
+  let bodySkipped = false
+  if (config?.body !== undefined) {
+    try {
+      await client
+        .patch(docId)
+        .set({ [`${base}.body`]: ensurePortableTextKeys(config.body) })
+        .commit()
+    } catch {
+      bodySkipped = true
+    }
+  }
+  return { bodySkipped }
+}
+
 /**
- * Next sections array with this chart block updated (same approach as aiDraftingTool).
- * Uses live form sections when present so other in-progress edits are preserved.
+ * Next sections array with this chart block updated.
+ * Always reads from Content Lake via getDocument — form state is often still stale
+ * immediately after patchDocument(), so using getFormValue([]).sections would re-save
+ * old chartPoints and make JSON import / edits appear to do nothing.
  */
 const buildNextSectionsForChartImport = async ({
-  getFormValue,
   client,
   docId,
   sectionKey,
@@ -251,14 +360,9 @@ const buildNextSectionsForChartImport = async ({
   config,
   includeBody,
 }) => {
-  const root = getFormValue([]) || {}
-  const fromForm = Array.isArray(root.sections) ? root.sections : null
-  let sections = fromForm
-  if (!sections?.length && docId) {
-    const doc = await client.getDocument(docId)
-    sections = Array.isArray(doc?.sections) ? doc.sections : null
-  }
-  if (!Array.isArray(sections) || !sections.length) {
+  const doc = await client.getDocument(docId)
+  const sections = Array.isArray(doc?.sections) ? [...doc.sections] : null
+  if (!sections?.length) {
     throw new Error('Could not read sections for this document.')
   }
   const idx = sections.findIndex((s) => s && s._key === sectionKey)
@@ -266,13 +370,16 @@ const buildNextSectionsForChartImport = async ({
     throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
   }
   const prev = sections[idx]
-  const nextSection = { ...prev, chartPoints: points }
+  const nextSection = { ...prev, chartPoints: ensureListKeys(points, 'chart-point') }
   for (const [key, fieldValue] of siblingNoBody) {
     nextSection[key] = patchValueForChartConfig(key, fieldValue)
   }
   if (includeBody && config?.body !== undefined) {
     nextSection.body = config.body
   }
+  // Sanity requires _key on every list item; ensure chart arrays are keyed before commit
+  nextSection.chartPoints = ensureListKeys(nextSection.chartPoints, 'chart-point')
+  nextSection.chartAreaSeries = ensureListKeys(nextSection.chartAreaSeries, 'area-series')
   return sections.map((s, i) => (i === idx ? nextSection : s))
 }
 
@@ -309,7 +416,9 @@ export default function ChartPointsJsonInput(props) {
         if (config?.body !== undefined) {
           window.setTimeout(() => {
             try {
-              patchDocument(PatchEvent.from([set(config.body, [...parentPath, 'body'])]))
+              patchDocument(
+                PatchEvent.from([set(ensurePortableTextKeys(config.body), [...parentPath, 'body'])]),
+              )
             } catch {
               setStatus((s) => `${s} Body not updated — fix portable text in Studio.`)
             }
@@ -317,43 +426,23 @@ export default function ChartPointsJsonInput(props) {
         }
 
         const docId = getFormValue([])?._id
-        const sectionKey = resolveChartSectionKey(path)
+        const sectionKey = resolveChartSectionKey(path, getFormValue)
         let apiSaved = false
         let bodySkippedNote = ''
 
         if (docId && sectionKey && typeof client?.patch === 'function') {
           try {
-            let nextSections = await buildNextSectionsForChartImport({
-              getFormValue,
+            const { bodySkipped } = await persistChartImportToSanity({
               client,
               docId,
               sectionKey,
               points,
               siblingNoBody,
               config,
-              includeBody: Boolean(config?.body !== undefined),
             })
-            try {
-              await client.patch(docId).set({ sections: nextSections }).commit()
-              apiSaved = true
-            } catch {
-              if (config?.body !== undefined) {
-                nextSections = await buildNextSectionsForChartImport({
-                  getFormValue,
-                  client,
-                  docId,
-                  sectionKey,
-                  points,
-                  siblingNoBody,
-                  config,
-                  includeBody: false,
-                })
-                await client.patch(docId).set({ sections: nextSections }).commit()
-                apiSaved = true
-                bodySkippedNote = ' Body skipped — JSON body must be valid portable text blocks.'
-              } else {
-                throw new Error('Commit rejected (check field values).')
-              }
+            apiSaved = true
+            if (bodySkipped) {
+              bodySkippedNote = ' Body not saved — edit body in Studio or fix portable text.'
             }
           } catch (apiErr) {
             const msg = apiErr?.message || String(apiErr)

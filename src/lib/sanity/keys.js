@@ -30,21 +30,45 @@ function normalizeSectionItemType(section, item) {
     return item
   }
 
-  if (section?.type === 'resourceGrid') {
+  const st = section?.type
+  const schemaT = section?._type
+
+  if (st === 'resourceGrid' || schemaT === 'resourceGridSection') {
     return {
       ...item,
       _type: 'resourceCard',
     }
   }
 
-  if (section?.type === 'faq') {
+  if (st === 'guides' || schemaT === 'guidesSection') {
+    return {
+      ...item,
+      _type: 'guideCardItem',
+    }
+  }
+
+  if (st === 'logos' || schemaT === 'logosSection') {
+    return {
+      ...item,
+      _type: 'logoMarqueeItem',
+    }
+  }
+
+  if (st === 'faq' || schemaT === 'faqSection') {
     return {
       ...item,
       _type: 'pageFaqItem',
     }
   }
 
-  if (section?.type === 'highlights' || section?.type === 'steps' || section?.type === 'calculator') {
+  if (
+    st === 'highlights' ||
+    st === 'steps' ||
+    st === 'calculator' ||
+    schemaT === 'highlightsSection' ||
+    schemaT === 'stepsSection' ||
+    schemaT === 'calculatorSection'
+  ) {
     return {
       ...item,
       _type: 'sectionContentItem',
@@ -163,7 +187,7 @@ export function normalizeSectionType(section) {
     })
   }
 
-  if (section.type === 'guides') {
+  if (section.type === 'guides' || section._type === 'guidesSection') {
     return omitUndefined({
       _key: section._key,
       _type: 'guidesSection',
@@ -171,6 +195,7 @@ export function normalizeSectionType(section) {
       title: section.title,
       body: section.body,
       ctaLabel: section.ctaLabel,
+      items: normalizedItems,
     })
   }
 
@@ -200,13 +225,14 @@ export function normalizeSectionType(section) {
     })
   }
 
-  if (section.type === 'testimonials') {
+  if (section.type === 'testimonials' || section._type === 'testimonialsSection') {
     return omitUndefined({
       _key: section._key,
       _type: 'testimonialsSection',
       type: 'testimonials',
       title: section.title,
       body: section.body,
+      reviews: Array.isArray(section.reviews) ? section.reviews : undefined,
     })
   }
 
@@ -241,7 +267,7 @@ export function normalizeSectionType(section) {
     })
   }
 
-  if (section.type === 'cta') {
+  if (section.type === 'cta' || section._type === 'ctaSection') {
     return omitUndefined({
       _key: section._key,
       _type: 'ctaSection',
@@ -249,11 +275,13 @@ export function normalizeSectionType(section) {
       title: section.title,
       body: section.body,
       ctaLabel: section.ctaLabel,
+      theme: section.theme,
       avatarEyebrow: section.avatarEyebrow || section.personLabel,
       avatarName: section.avatarName || section.personName,
       avatarRole: section.avatarRole || section.personRole,
       avatarBlurb: section.avatarBlurb || section.personBlurb,
       avatarImage: section.avatarImage || section.profileImage,
+      avatarColor: section.avatarColor,
       avatarImageAsset: section.avatarImageAsset || section.profileImageAsset,
     })
   }
@@ -269,7 +297,7 @@ export function normalizeSectionType(section) {
     })
   }
 
-  if (section.type === 'ctaBanner') {
+  if (section.type === 'ctaBanner' || section._type === 'ctaBannerSection') {
     return omitUndefined({
       _key: section._key,
       _type: 'ctaBannerSection',
@@ -278,12 +306,46 @@ export function normalizeSectionType(section) {
       title: section.title,
       body: section.body,
       ctaLabel: section.ctaLabel,
+      theme: section.theme,
       avatarEyebrow: section.avatarEyebrow || section.personLabel,
       avatarName: section.avatarName || section.personName,
       avatarRole: section.avatarRole || section.personRole,
       avatarBlurb: section.avatarBlurb || section.personBlurb,
       avatarImage: section.avatarImage || section.profileImage,
       avatarImageAsset: section.avatarImageAsset || section.profileImageAsset,
+    })
+  }
+
+  if (section.type === 'secondaryCTA' || section._type === 'secondaryCTASection') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'secondaryCTASection',
+      type: 'secondaryCTA',
+      title: section.title,
+      body: section.body,
+      ctaLabel: section.ctaLabel,
+      ctaHref: section.ctaHref,
+      color: section.color,
+    })
+  }
+
+  if (section.type === 'scrollText' || section._type === 'scrollTextSection') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'scrollTextSection',
+      type: 'scrollText',
+      text: Array.isArray(section.text) ? section.text : undefined,
+      fontSize: section.fontSize,
+      textColor: section.textColor,
+      showIcon: section.showIcon,
+      showFlag: section.showFlag,
+      icon: section.icon,
+      velocity: section.velocity,
+      direction: section.direction,
+      startPosition: section.startPosition,
+      damping: section.damping,
+      stiffness: section.stiffness,
+      numCopies: section.numCopies,
     })
   }
 
@@ -316,14 +378,15 @@ export function normalizeSectionType(section) {
     })
   }
 
-  if (section.type === 'logos') {
+  if (section.type === 'logos' || section._type === 'logosSection') {
     return omitUndefined({
       _key: section._key,
       _type: 'logosSection',
       type: 'logos',
+      internalLabel: section.internalLabel,
       title: section.title,
       body: section.body,
-      items: Array.isArray(section.items) ? section.items : undefined,
+      items: normalizedItems,
     })
   }
 
@@ -338,7 +401,17 @@ export function normalizeSectionType(section) {
     })
   }
 
-  if (section.type === 'energyChart') {
+  if (section.type === 'energyChart' || section._type === 'energyChartSection') {
+    const chartAreaSeries = Array.isArray(section.chartAreaSeries)
+      ? section.chartAreaSeries.map((row, index) =>
+          omitUndefined({
+            ...row,
+            _type: 'energyChartAreaSeriesItem',
+            _key: row._key || createKey('area-series', index, row?.title),
+          }),
+        )
+      : undefined
+
     return omitUndefined({
       _key: section._key,
       _type: 'energyChartSection',
@@ -360,8 +433,15 @@ export function normalizeSectionType(section) {
       chartBarColor: section.chartBarColor,
       chartLineColor: section.chartLineColor,
       chartAreaStacked: section.chartAreaStacked,
-      chartAreaSeries: Array.isArray(section.chartAreaSeries) ? section.chartAreaSeries : undefined,
-      chartPoints: Array.isArray(section.chartPoints) ? section.chartPoints : undefined,
+      chartAreaSeries,
+      chartPoints: Array.isArray(section.chartPoints)
+        ? section.chartPoints.map((point, index) => ({
+            ...point,
+            _key: point?._key && String(point._key).trim()
+              ? point._key
+              : createKey('chart-point', index, point?.label),
+          }))
+        : undefined,
     })
   }
 
@@ -474,6 +554,18 @@ export function withSectionKeys(sections) {
 
     if (Array.isArray(normalizedSection?.chartPoints)) {
       keyedSection.chartPoints = withObjectArrayKeys(normalizedSection.chartPoints, 'chart-point', 'label')
+    }
+
+    if (Array.isArray(normalizedSection?.chartAreaSeries)) {
+      keyedSection.chartAreaSeries = withObjectArrayKeys(
+        normalizedSection.chartAreaSeries,
+        'area-series',
+        'title',
+      )
+    }
+
+    if (Array.isArray(normalizedSection?.reviews)) {
+      keyedSection.reviews = withObjectArrayKeys(normalizedSection.reviews, 'review-ref', '_ref')
     }
 
     return keyedSection

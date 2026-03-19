@@ -201,7 +201,7 @@ export async function GET(request) {
     getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'),
     secondary,
   )
-  const secondarySoft = '#172554'
+  const secondarySoft = '#FFFFFF'
   const copyColor = '#dbe4ee'
   const isGuideLayout =
     isGuideParam || layout === 'guide' || path.startsWith('/guides/')
@@ -397,11 +397,8 @@ export async function GET(request) {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  width: '68%',
+                  width: '100%',
                   minWidth: 0,
-                  borderRadius: 34,
-                  border: '1px solid rgba(255,255,255,0.14)',
-                  backgroundColor: image ? 'rgba(15, 23, 42, 0.36)' : 'rgba(15, 23, 42, 0.14)',
                   padding: '34px 36px 30px 36px',
                 }}
               >
@@ -434,6 +431,7 @@ export async function GET(request) {
                           fontSize: 30,
                           fontWeight: 700,
                           letterSpacing: '-0.03em',
+                          whiteSpace: 'nowrap',
                           color: '#ffffff',
                         }}
                       >
