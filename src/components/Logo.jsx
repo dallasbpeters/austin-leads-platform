@@ -1,7 +1,9 @@
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 
 const Logo = ({ className, ...props }) => (
-  <svg
+  <motion.svg
+  whileHover={{ scale: 1.1 }}
     className={cn(
       "h-7 w-7 text-primary [clipRule:evenodd] [fillRule:evenodd] [strokeLinejoin:round] [strokeMiterlimit:2] fill-current",
       className,
@@ -29,6 +31,6 @@ const Logo = ({ className, ...props }) => (
         </g>
       </g>
     </g>
-  </svg>
+  </motion.svg>
 )
 export default Logo

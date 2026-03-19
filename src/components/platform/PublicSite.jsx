@@ -1143,11 +1143,11 @@ function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
                       <div className="flex items-center gap-3">
                         {resolvedBadgeImageUrl ? (
                           <Image
-                            width={320}
-                            height={320}
+                            width={100}
+                            height={100}
                             src={resolvedBadgeImageUrl}
                             alt={resolvedBadgeImageAlt}
-                            className="bg-white rounded-full object-contain size-20"
+                            className="bg-white rounded-full object-contain size-18"
                           />
                         ) : null}
                         <div className="grid gap-1">
