@@ -492,34 +492,6 @@ export async function GET(request) {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 10,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      fontSize: 18,
-                      letterSpacing: '0.22em',
-                      textTransform: 'uppercase',
-                      color: '#94a3b8',
-                    }}
-                  >
-                    Open Graph Preview
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      width: 180,
-                      height: 6,
-                      borderRadius: 9999,
-                      backgroundColor: primary,
-                    }}
-                  />
-                </div>
               </div>
 
               <div
