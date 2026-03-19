@@ -130,8 +130,9 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
       upstreamUrl.searchParams.set('t', page?.seo?.title || page?.title || site?.name || 'Guide')
       if (page?.guideCardColor) upstreamUrl.searchParams.set('b', page.guideCardColor)
       if (page?.guideCategory) upstreamUrl.searchParams.set('c', page.guideCategory)
-      if (page?._updatedAt) {
-        upstreamUrl.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
+      const versionStamp = page?.guideCardMetaUpdatedAt || page?._updatedAt
+      if (versionStamp) {
+        upstreamUrl.searchParams.set('v', String(new Date(versionStamp).getTime() || versionStamp))
       }
     }
 

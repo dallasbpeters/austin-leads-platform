@@ -699,7 +699,7 @@ async function getGuideCardMetaForSlug({ client, fetchOptions, siteSlug, guideSl
   const normalizedGuideSlug = cleanRuntimeString(guideSlug).replace(/^\/+/, '')
 
   if (!normalizedGuideSlug || !normalizedGuideSlug.startsWith('guides/')) {
-    return { color: '', category: '' }
+    return { color: '', category: '', updatedAt: '' }
   }
 
   try {
@@ -709,9 +709,10 @@ async function getGuideCardMetaForSlug({ client, fetchOptions, siteSlug, guideSl
       groq`*[
         _type in ["page", "servicePage", "locationPage", "post"] &&
         site->slug.current in $siteSlugs &&
-        count(sections[type == "guideGrid"]) > 0
+        count(sections[_type == "guideGridSection" || type == "guideGrid"]) > 0
       ]{
-        "items": sections[type == "guideGrid"][0].items[]{
+        _updatedAt,
+        "items": sections[_type == "guideGridSection" || type == "guideGrid"][0].items[]{
           href,
           color,
           category
@@ -734,16 +735,21 @@ async function getGuideCardMetaForSlug({ client, fetchOptions, siteSlug, guideSl
     }
 
     const allItems = Array.isArray(guideGridSources)
-      ? guideGridSources.flatMap((entry) => (Array.isArray(entry?.items) ? entry.items : []))
+      ? guideGridSources.flatMap((entry) =>
+          Array.isArray(entry?.items)
+            ? entry.items.map((item) => ({ ...item, __sourceUpdatedAt: cleanRuntimeString(entry?._updatedAt) }))
+            : [],
+        )
       : []
     const matchedItem = allItems.find((item) => normalizeHrefPath(item?.href) === targetPath)
 
     return {
       color: resolveSanityColorValue(matchedItem?.color),
       category: cleanRuntimeString(matchedItem?.category),
+      updatedAt: cleanRuntimeString(matchedItem?.__sourceUpdatedAt),
     }
   } catch {
-    return { color: '', category: '' }
+    return { color: '', category: '', updatedAt: '' }
   }
 }
 
@@ -1682,6 +1688,7 @@ export async function getPageForRequest(site, slugParts = []) {
             ...serviceSyncedPage,
             guideCardColor: guideCardMeta.color,
             guideCategory: guideCardMeta.category,
+            guideCardMetaUpdatedAt: guideCardMeta.updatedAt,
           }
         : serviceSyncedPage
 
