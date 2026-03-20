@@ -55,6 +55,189 @@ const OG_CSS_VAR_COLOR_MAP = {
   '--color-confetti': OG_COLOR_TOKEN_MAP.confetti,
 }
 
+const OG_CSS_VAR_TO_TOKEN = {
+  '--color-primary': 'primary',
+  '--color-secondary': 'secondary',
+  '--color-tertiary': 'tertiary',
+  '--color-primary-alt': 'primaryAlt',
+  '--color-secondary-alt': 'secondaryAlt',
+  '--color-tertiary-alt': 'tertiaryAlt',
+  '--color-sweetcorn': 'sweetcorn',
+  '--color-voodoo': 'voodoo',
+  '--color-tidal': 'tidal',
+  '--color-blue-400': 'blue400',
+  '--color-tasman': 'tasman',
+  '--color-chalet-green': 'chaletGreen',
+  '--color-metterhorn': 'metterhorn',
+  '--color-heather': 'heather',
+  '--color-wattle': 'wattle',
+  '--color-charade': 'charade',
+  '--color-ceramic': 'ceramic',
+  '--color-tapa-green': 'tapaGreen',
+  '--color-sea-mist': 'seaMist',
+  '--color-black-current': 'blackCurrent',
+  '--color-confetti': 'confetti',
+}
+
+function rgbTripleToHex(r, g, b) {
+  const clampByte = (n) =>
+    Math.round(Math.max(0, Math.min(255, Number.isFinite(n) ? n : 0)))
+  const toHex = (n) => clampByte(n).toString(16).padStart(2, '0')
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+function linearSrgbChannelToByte(c) {
+  const v = Number(c)
+  if (!Number.isFinite(v)) return 0
+  const s = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055
+  return Math.round(Math.max(0, Math.min(1, s)) * 255)
+}
+
+/** OKLab → linear sRGB (Björn Ottosson), extended precision coefficients. */
+function oklabToLinearSrgb(L, a, b) {
+  const l_ = L + 0.3963377774 * a + 0.2158037573 * b
+  const m_ = L - 0.1055613458 * a - 0.0638541728 * b
+  const s_ = L - 0.0894841775 * a - 1.291485548 * b
+  const l = l_ * l_ * l_
+  const m = m_ * m_
+  const s = s_ * s_
+  return [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.341319396 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+  ]
+}
+
+function oklchTupleToHex(L, C, hDeg) {
+  const hr = (hDeg * Math.PI) / 180
+  const a = C * Math.cos(hr)
+  const b = C * Math.sin(hr)
+  const [lr, lg, lb] = oklabToLinearSrgb(L, a, b)
+  return rgbTripleToHex(
+    linearSrgbChannelToByte(lr),
+    linearSrgbChannelToByte(lg),
+    linearSrgbChannelToByte(lb),
+  )
+}
+
+function parseOklchCss(css) {
+  const m = String(css || '')
+    .trim()
+    .match(/^oklch\(\s*([\d.]+%?|none)\s+([\d.]+|none)\s+([\d.]+(?:deg|rad|turn)?|none)\s*(?:\/\s*[^)]+)?\)/i)
+  if (!m) return null
+  if (m[1] === 'none' || m[2] === 'none' || m[3] === 'none') return null
+
+  let L = Number.parseFloat(m[1])
+  if (m[1].includes('%')) L /= 100
+
+  const C = Number.parseFloat(m[2])
+
+  const hPart = m[3]
+  const hm = hPart.match(/^([\d.]+)(deg|rad|turn)?$/i)
+  if (!hm) return null
+  let H = Number.parseFloat(hm[1])
+  const unit = (hm[2] || 'deg').toLowerCase()
+  if (unit === 'rad') H = (H * 180) / Math.PI
+  else if (unit === 'turn') H *= 360
+
+  return { L, C, H }
+}
+
+function oklchCssToHex(css) {
+  const t = parseOklchCss(css)
+  if (!t) return null
+  return oklchTupleToHex(t.L, t.C, t.H)
+}
+
+function parseHslCss(css) {
+  const m = String(css || '')
+    .trim()
+    .match(/^hsla?\(\s*([\d.]+)(deg)?\s+([\d.]+)%\s+([\d.]+)%/i)
+  if (!m) return null
+  return {
+    h: Number.parseFloat(m[1]),
+    s: Number.parseFloat(m[3]),
+    l: Number.parseFloat(m[4]),
+  }
+}
+
+function hslTupleToHex(h, s, l) {
+  let hh = ((h % 360) + 360) % 360
+  const ss = Math.max(0, Math.min(100, s)) / 100
+  const ll = Math.max(0, Math.min(100, l)) / 100
+  const c = (1 - Math.abs(2 * ll - 1)) * ss
+  const x = c * (1 - Math.abs(((hh / 60) % 2) - 1))
+  const m = ll - c / 2
+  let rp = 0
+  let gp = 0
+  let bp = 0
+  if (hh < 60) {
+    rp = c
+    gp = x
+  } else if (hh < 120) {
+    rp = x
+    gp = c
+  } else if (hh < 180) {
+    gp = c
+    bp = x
+  } else if (hh < 240) {
+    gp = x
+    bp = c
+  } else if (hh < 300) {
+    rp = x
+    bp = c
+  } else {
+    rp = c
+    bp = x
+  }
+  return rgbTripleToHex(Math.round((rp + m) * 255), Math.round((gp + m) * 255), Math.round((bp + m) * 255))
+}
+
+function hslCssToHex(css) {
+  const t = parseHslCss(css)
+  if (!t) return null
+  return hslTupleToHex(t.h, t.s, t.l)
+}
+
+/** Normalize CMS / token CSS to hex for Satori (oklch is not painted reliably). */
+function hexFromCssColor(css, fallbackHex = null) {
+  if (!css || typeof css !== 'string') {
+    return fallbackHex
+  }
+
+  const c = css.trim()
+  if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(c)) {
+    if (c.length === 4) {
+      const [, r, g, b] = c
+      return `#${r}${r}${g}${g}${b}${b}`.toLowerCase()
+    }
+    return c.toLowerCase()
+  }
+
+  if (/^oklch\(/i.test(c)) {
+    return oklchCssToHex(c) || fallbackHex
+  }
+
+  if (/^hsla?\(/i.test(c)) {
+    return hslCssToHex(c) || fallbackHex
+  }
+
+  const rgbComma = c.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i)
+  if (rgbComma) {
+    return rgbTripleToHex(Number(rgbComma[1]), Number(rgbComma[2]), Number(rgbComma[3]))
+  }
+
+  const rgbSpace = c.match(/^rgba?\(\s*(\d+)\s+(\d+)\s+(\d+)/i)
+  if (rgbSpace) {
+    return rgbTripleToHex(Number(rgbSpace[1]), Number(rgbSpace[2]), Number(rgbSpace[3]))
+  }
+
+  return fallbackHex
+}
+
+const DEFAULT_GUIDE_OG_BACKGROUND_HEX =
+  hexFromCssColor(OG_COLOR_TOKEN_MAP.primary, '#016bb7') || '#016bb7'
+
 function getFontFamily(requestUrl) {
   if (!fontFamilyPromise) {
     const fontCandidates = [
@@ -135,12 +318,96 @@ function safeColor(value, fallback) {
   return fallback
 }
 
-function resolveGuideBackground(rawValue, fallbackColor) {
+function solidHexForOgGuideBackground(rawValue, fallbackHex = DEFAULT_GUIDE_OG_BACKGROUND_HEX) {
   if (!rawValue || typeof rawValue !== 'string') {
-    return fallbackColor
+    return fallbackHex
   }
 
-  return safeColor(rawValue, fallbackColor)
+  const trimmed = rawValue.trim()
+  const namedTokenCss = OG_COLOR_TOKEN_MAP[trimmed]
+  if (namedTokenCss) {
+    return hexFromCssColor(namedTokenCss, fallbackHex) || fallbackHex
+  }
+
+  const varMatch = trimmed.match(/^var\((--[a-z0-9-]+)\)$/i)
+  if (varMatch) {
+    const tokenKey = OG_CSS_VAR_TO_TOKEN[varMatch[1]]
+    const cssFromVar = tokenKey ? OG_COLOR_TOKEN_MAP[tokenKey] : ''
+    if (cssFromVar) {
+      return hexFromCssColor(cssFromVar, fallbackHex) || fallbackHex
+    }
+  }
+
+  const resolved = safeColor(trimmed, '')
+  if (!resolved) {
+    return fallbackHex
+  }
+
+  const asHex = hexFromCssColor(resolved, fallbackHex)
+  return asHex || fallbackHex
+}
+
+function relLuminanceFromSrgbChannel(value) {
+  const v = value / 255
+  return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+}
+
+function relLuminanceFromRgb(r, g, b) {
+  const rs = relLuminanceFromSrgbChannel(r)
+  const gs = relLuminanceFromSrgbChannel(g)
+  const bs = relLuminanceFromSrgbChannel(b)
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs
+}
+
+function parseHexToRgb(hex) {
+  let h = String(hex || '')
+    .replace('#', '')
+    .trim()
+  if (h.length === 3) {
+    h = h
+      .split('')
+      .map((ch) => ch + ch)
+      .join('')
+  }
+  if (h.length !== 6) {
+    return null
+  }
+  const n = Number.parseInt(h, 16)
+  if (Number.isNaN(n)) {
+    return null
+  }
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
+}
+
+/** True when body text should be dark (WCAG-style luminance on sRGB). */
+function isLightBackgroundOgColor(color) {
+  if (!color || typeof color !== 'string') {
+    return false
+  }
+
+  const c = color.trim()
+  const rgbFromHex = parseHexToRgb(c)
+  if (rgbFromHex) {
+    return relLuminanceFromRgb(rgbFromHex.r, rgbFromHex.g, rgbFromHex.b) > 0.55
+  }
+
+  const hslMatch = c.match(/^hsla?\(\s*[\d.]+(?:deg)?\s+[\d.]+%\s+([\d.]+)%/i)
+  if (hslMatch) {
+    const l = Number.parseFloat(hslMatch[1], 10) / 100
+    return l > 0.58
+  }
+
+  const rgbComma = c.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i)
+  if (rgbComma) {
+    return relLuminanceFromRgb(Number(rgbComma[1]), Number(rgbComma[2]), Number(rgbComma[3])) > 0.55
+  }
+
+  const rgbSpace = c.match(/^rgba?\(\s*(\d+)\s+(\d+)\s+(\d+)/i)
+  if (rgbSpace) {
+    return relLuminanceFromRgb(Number(rgbSpace[1]), Number(rgbSpace[2]), Number(rgbSpace[3])) > 0.55
+  }
+
+  return false
 }
 
 function getQueryParam(searchParams, name) {
@@ -191,10 +458,18 @@ export async function GET(request) {
 
   const primary = safeColor(getQueryParam(searchParams, 'pr') || getQueryParam(searchParams, 'primary'), '#f97316')
   const secondary = safeColor(getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'), '#016bb7')
-  const guideBackground = resolveGuideBackground(
+  const guideBackground = solidHexForOgGuideBackground(
     getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'),
-    secondary,
+    DEFAULT_GUIDE_OG_BACKGROUND_HEX,
   )
+  const guideUseLightInk = isLightBackgroundOgColor(guideBackground)
+  const guideInk = guideUseLightInk ? '#020617' : '#ffffff'
+  const guideLabelMuted = guideUseLightInk ? '#0f172a' : 'rgba(255,255,255,0.9)'
+  const guideBodyMuted = guideUseLightInk ? '#0f172a' : 'rgba(255,255,255,0.94)'
+  const guideFooterMuted = guideUseLightInk ? '#020617' : 'rgba(255,255,255,0.94)'
+  const guideCategoryBorder = guideUseLightInk ? 'rgba(15,23,42,0.38)' : 'rgba(255,255,255,0.32)'
+  const guideCategoryBg = guideUseLightInk ? 'rgba(15,23,42,0.1)' : 'rgba(255,255,255,0.12)'
+  const guideCategoryText = guideUseLightInk ? '#020617' : '#ffffff'
   const secondarySoft = '#FFFFFF'
   const copyColor = '#dbe4ee'
   const isGuideLayout =
@@ -209,7 +484,7 @@ export async function GET(request) {
         height: '100%',
         overflow: 'hidden',
         backgroundColor: isGuideLayout ? guideBackground : secondary,
-        color: 'white',
+        color: isGuideLayout ? guideInk : 'white',
         fontFamily: 'Switzer-Variable, Arial, sans-serif',
         position: 'relative',
       }}
@@ -240,7 +515,7 @@ export async function GET(request) {
                 fontSize: 22,
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.86)',
+                color: guideLabelMuted,
                 fontWeight: 600,
               }}
             >
@@ -250,12 +525,12 @@ export async function GET(request) {
               <div
                 style={{
                   display: 'flex',
-                  border: '1px solid rgba(255,255,255,0.26)',
+                  border: `1px solid ${guideCategoryBorder}`,
                   borderRadius: 9999,
                   padding: '9px 16px',
                   fontSize: 18,
-                  color: 'rgba(255,255,255,0.9)',
-                  backgroundColor: 'rgba(255,255,255,0.07)',
+                  color: guideCategoryText,
+                  backgroundColor: guideCategoryBg,
                 }}
               >
                 {category}
@@ -287,7 +562,7 @@ export async function GET(request) {
                   lineHeight: 0.95,
                   fontWeight: 800,
                   letterSpacing: '-0.05em',
-                  color: '#ffffff',
+                  color: guideInk,
                 }}
               >
                 {title}
@@ -299,7 +574,7 @@ export async function GET(request) {
                     width: '100%',
                     fontSize: 34,
                     lineHeight: 1.28,
-                    color: 'rgba(255,255,255,0.92)',
+                    color: guideBodyMuted,
                     fontWeight: 500,
                   }}
                 >
@@ -326,7 +601,7 @@ export async function GET(request) {
                 display: 'flex',
                 fontSize: 24,
                 fontWeight: 700,
-                color: 'rgba(255,255,255,0.9)',
+                color: guideFooterMuted,
                 letterSpacing: '-0.02em',
                 whiteSpace: 'nowrap',
               }}
@@ -340,7 +615,7 @@ export async function GET(request) {
                 gap: 12,
               }}
             >
-              <BrandLogo color="#ffffff" />
+              <BrandLogo color={guideInk} />
             </div>
           </div>
         </div>

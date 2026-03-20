@@ -89,7 +89,7 @@ export default function ConsultationSection({
   return (
     <section
       id={sectionId}
-      className={`relative overflow-hidden py-10 ${isDarkTheme ? 'text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
+      className={`scroll-mt-38 relative overflow-hidden py-10 ${isDarkTheme ? 'text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
       {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,

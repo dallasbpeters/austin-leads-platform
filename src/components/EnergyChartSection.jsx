@@ -162,7 +162,6 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
   const chartAreaStacked = section?.chartAreaStacked === true
 
   const chartHeight = 400
-  const chartInnerWidth = Math.max(920, points.length * 72)
   const chartData = points.map((point, index) => {
     const row = {
       key: point?._key || `point-${index + 1}`,
@@ -497,7 +496,6 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
         <div className="rounded-2xl border border-border/70 bg-card p-4 md:p-6">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4">
             <p className="font-semibold text-sm md:text-base">{periodLabel}</p>
-            <p className="text-muted-foreground text-xs md:text-sm">View: Year</p>
           </div>
 
           {chartData.length === 0 ? (
@@ -507,14 +505,14 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           ) : (
             <div className="min-w-0 w-full" style={{ minHeight: `${chartHeight}px` }}>
               <div
-                className="w-full min-h-0"
+                className="w-full min-h-40"
                 style={{
                   width: '100%',
                   height: `${chartHeight}px`,
                   minHeight: `${chartHeight}px`,
                 }}
               >
-                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+                <ResponsiveContainer width="100%" aspect={1.2} maxHeight={450}>
                   {renderChart()}
                 </ResponsiveContainer>
               </div>

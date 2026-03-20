@@ -70,7 +70,7 @@ export default function Header() {
         content: 'local JSX nav and service catalog links',
       })}
     >
-      <div className="w-full mx-auto px-6 py-2 bg-card rounded-none md:rounded-full shadow-sm">
+      <div className="w-full mx-auto px-5 py-2 bg-stone-100/90 backdrop-blur-sm rounded-none md:rounded-full shadow-sm">
         <div className="flex items-center justify-between">
           <Link href="/" title="Texas Solar & Roofing Pros" className="grid items-center gap-2 grid-flow-col">
             <Logo />
@@ -87,7 +87,7 @@ export default function Header() {
             size="sm"
             type="button"
             onClick={() => setOpenNav(!openNav)}
-            className="lg:hidden ml-auto"
+            className="lg:hidden ml-auto !hover:bg-transparent px-6 py-5.5"
             aria-expanded={openNav}
             aria-controls={mobileMenuId}
             aria-label={openNav ? 'Close navigation menu' : 'Open navigation menu'}

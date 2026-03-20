@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { createClient } from 'next-sanity'
 
 import { pages } from '../src/lib/platform/fixtures.js'
+import { normalizeRichTextFields } from '../src/lib/sanity/richTextFields.js'
 import { withSectionKeys } from '../src/lib/sanity/keys.js'
 
 try {
@@ -92,7 +93,7 @@ async function main() {
         description: fixturePage.description,
         pageType: fixturePage.pageType,
         templateLevel: fixturePage.templateLevel,
-        sections: withSectionKeys(fixturePage.sections),
+        sections: withSectionKeys(normalizeRichTextFields(fixturePage.sections)),
       })
       .commit()
 

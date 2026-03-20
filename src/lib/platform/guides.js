@@ -214,7 +214,7 @@ export const solarGuides = [
     relatedServices: ['solar-and-battery-installations', 'energy-audits'],
     title: 'What Solar Costs and What Drives Payback',
     cardCopy:
-      'Installed price, tax-credit math, financing cost, export value, and the variables that actually determine whether a system pays for itself.',
+      'Installed price, incentive math, financing cost, export value, and the variables that actually determine whether a system pays for itself.',
     description:
       'A detailed guide to solar project cost in Texas — installed price per watt, financing structure, export assumptions, and the questions to ask before trusting any payback estimate.',
     image: createStaticHeroImage({
@@ -345,7 +345,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'Why do payback estimates vary so much between companies?',
             answer:
-              'Because they depend on different assumptions about system price, production, electric-rate inflation, export credits, tax-credit treatment, and household usage patterns over time. One installer might assume 4 percent annual rate escalation and full retail export credit, while another assumes 2 percent and actual utility export rates. Same system, very different payback stories. The math is only as good as the inputs.',
+              'Because they depend on different assumptions about system price, production, electric-rate inflation, export credits, incentive treatment, and household usage patterns over time. One installer might assume 4 percent annual rate escalation and full retail export credit, while another assumes 2 percent and actual utility export rates. Same system, very different payback stories. The math is only as good as the inputs.',
           },
           {
             _type: 'pageItem',
@@ -396,7 +396,7 @@ export const solarGuides = [
         type: 'hero',
         eyebrow: 'Guide 03',
         title: 'Which solar incentives still affect your project',
-        body: 'The federal residential solar tax credit expired at the end of 2025. That changes the math but does not eliminate incentives entirely. Texas property-tax protection and local utility programs still matter. Know what applies, verify the details, and do not let outdated claims drive your decision.',
+        body: 'Texas property-tax protection and local utility programs still matter. Know what applies, verify the details, and do not let outdated incentive claims drive your decision.',
         heroImage: createStaticHeroImage({
           alt: 'Warm daylight over a solar-ready Austin neighborhood',
           color: '#7a9cb8',
@@ -420,7 +420,7 @@ export const solarGuides = [
         type: 'story',
         eyebrow: 'How to think about incentives',
         title: 'Incentives should improve a project that already makes sense — not rescue one that does not.',
-        body: "If the economics only work when every incentive assumption is maximized and every program stays active, the project is fragile. A strong solar investment should pencil out on the equipment and energy savings alone.\n\nWith the federal tax credit no longer available, the math is simpler now. Your project cost is your project cost — no waiting on tax filings, no re-amortization assumptions, no confusion about what is a credit versus a rebate. The Texas property-tax exemption still matters, especially in counties where appraisal increases have been aggressive. And local utility programs can still improve the numbers.\n\nThe mistake happens when quotes reference outdated incentives or present local programs as guaranteed when they are actually budget-limited or subject to annual changes. The homeowner's job is to understand which incentives are current, which are conditional, and what the project looks like without them.",
+        body: "If the economics only work when every incentive assumption is maximized and every program stays active, the project is fragile. A strong solar investment should pencil out on the equipment and energy savings alone.\n\nThe math is simpler when you focus on installed cost, utility structure, and the incentives you can verify today. The Texas property-tax exemption still matters, especially in counties where appraisal increases have been aggressive. Local utility programs can still improve the numbers, but only when the rules and timing are current.\n\nThe mistake happens when quotes reference outdated incentives or present local programs as guaranteed when they are actually budget-limited or subject to annual changes. The homeowner's job is to understand which incentives are current, which are conditional, and what the project looks like without them.",
       },
       {
         _type: 'pageSection',
@@ -442,14 +442,14 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             icon: 'WarningCircle',
-            title: 'The federal solar tax credit has expired',
-            body: 'The 30 percent federal residential clean energy credit expired at the end of 2025. If you see a quote or website still referencing it, that is outdated information. Any installer still promoting a 30 percent federal credit is either behind or being misleading. Your project economics should be evaluated without it.',
+            title: 'Outdated incentive claims still show up in quotes',
+            body: 'Some proposals still rely on old savings assumptions or generic incentive language. If a quote references savings you cannot trace to a current utility program or Texas property-tax treatment, treat the math as unverified until the installer shows the source.',
           },
           {
             _type: 'pageItem',
             icon: 'InfoCircle',
-            title: 'No state income tax means no state solar credit',
-            body: 'Texas does not have a state income tax, which means there is no state-level solar tax credit. Some solar marketing implies a "state incentive" by referencing the property-tax exemption or local utility programs. Those are real, but they are not a state tax credit. If a proposal mentions a state incentive, ask exactly what it is and verify independently.',
+            title: 'Texas has no statewide solar rebate program',
+            body: 'Texas does not offer a blanket statewide solar rebate through the tax code. Some solar marketing implies a broad "state incentive" by referencing the property-tax exemption or local utility programs. Those are real, but they are not the same thing. If a proposal mentions a statewide incentive, ask exactly what it is and verify independently.',
           },
         ],
       },
@@ -470,8 +470,8 @@ export const solarGuides = [
           },
           {
             _type: 'pageItem',
-            title: 'Watch for quotes still referencing the federal tax credit',
-            body: 'The 30 percent federal credit expired at the end of 2025. If a proposal still includes it in the savings math, the numbers are wrong. Ask for an updated quote that reflects current incentives only.',
+            title: 'Watch for quotes using outdated incentive math',
+            body: 'If a proposal includes savings assumptions that do not tie back to a current utility program or verified local exemption, the numbers are wrong. Ask for an updated quote that reflects current incentives only.',
           },
           {
             _type: 'pageItem',
@@ -487,9 +487,9 @@ export const solarGuides = [
         items: [
           {
             _type: 'pageItem',
-            question: 'Is the federal solar tax credit still available?',
+            question: 'How do I know if an incentive claim is current?',
             answer:
-              'No. The 30 percent federal residential clean energy credit expired at the end of 2025. If an installer or website still references it, that information is outdated. Your project should be evaluated on current costs, current utility rates, and the incentives that are still active — primarily the Texas property-tax exemption and any local utility programs.',
+              'Ask the installer to name the exact program, show the current source, and explain who qualifies. Your project should be evaluated on current costs, current utility rates, and the incentives that are still active — primarily the Texas property-tax exemption and any local utility programs.',
           },
           {
             _type: 'pageItem',
@@ -1425,7 +1425,7 @@ export const solarGuides = [
             _type: 'pageItem',
             icon: 'Calendar',
             title: 'Re-amortization assumptions in the loan structure',
-            body: 'Some solar loans are structured with a re-amortization event — they assume you will make a large lump-sum payment within 12 to 18 months to reduce the balance. If that payment does not happen, the monthly payment stays higher than what was advertised. This was common when the federal tax credit was available, but the structure still exists in some loan products. Ask whether the quoted payment assumes a lump-sum paydown.',
+            body: 'Some solar loans are structured with a re-amortization event — they assume you will make a large lump-sum payment within 12 to 18 months to reduce the balance. If that payment does not happen, the monthly payment stays higher than what was advertised. Some loan products still carry that structure. Ask whether the quoted payment assumes a lump-sum paydown.',
           },
           {
             _type: 'pageItem',
@@ -1477,7 +1477,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'Why can two loans with similar monthly payments feel so different?',
             answer:
-              'Because term length, dealer fees, interest rate, and tax-credit assumptions can all differ while producing a similar monthly number. A 15-year loan at 4 percent with no dealer fee and a 25-year loan at 6 percent with a 25 percent dealer fee might both show $180 per month — but the total paid over the life of each loan is dramatically different. Always compare total cost, not monthly payment.',
+              'Because term length, dealer fees, interest rate, and early-paydown assumptions can all differ while producing a similar monthly number. A 15-year loan at 4 percent with no dealer fee and a 25-year loan at 6 percent with a 25 percent dealer fee might both show $180 per month — but the total paid over the life of each loan is dramatically different. Always compare total cost, not monthly payment.',
           },
           {
             _type: 'pageItem',

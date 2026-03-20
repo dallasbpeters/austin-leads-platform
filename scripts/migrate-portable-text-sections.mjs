@@ -1,5 +1,6 @@
 import { createClient } from 'next-sanity'
 
+import { normalizeRichTextFields } from '../src/lib/sanity/richTextFields.js'
 import { withSectionKeys } from '../src/lib/sanity/keys.js'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
@@ -22,76 +23,6 @@ const client = createClient({
   useCdn: false,
 })
 const rawClient = client.withConfig({ perspective: 'raw' })
-
-const RICH_TEXT_KEYS = new Set([
-  'body',
-  'subtitle',
-  'answer',
-  'cardCopy',
-  'avatarBlurb',
-  'blurb',
-  'subtitleLabel',
-  'subtitleValue',
-])
-const OBJECT_FIELD_KEYS = new Set([
-  'imageAsset',
-  'heroAsset',
-  'avatarImageAsset',
-  'profileImageAsset',
-  'badgeImageAsset',
-  'secondaryProfileImageAsset',
-])
-
-function textToPortableText(value) {
-  if (typeof value !== 'string') return value
-  const trimmed = value.trim()
-  if (!trimmed) return []
-
-  return [
-    {
-      _type: 'block',
-      style: 'normal',
-      markDefs: [],
-      children: [
-        {
-          _type: 'span',
-          text: value,
-          marks: [],
-        },
-      ],
-    },
-  ]
-}
-
-function normalizeRichTextFields(value) {
-  if (Array.isArray(value)) {
-    return value.map(normalizeRichTextFields)
-  }
-
-  if (!value || typeof value !== 'object') {
-    return value
-  }
-
-  const next = { ...value }
-
-  for (const key of Object.keys(next)) {
-    const fieldValue = next[key]
-
-    if (OBJECT_FIELD_KEYS.has(key) && fieldValue === null) {
-      delete next[key]
-      continue
-    }
-
-    if (RICH_TEXT_KEYS.has(key)) {
-      next[key] = textToPortableText(fieldValue)
-      continue
-    }
-
-    next[key] = normalizeRichTextFields(fieldValue)
-  }
-
-  return next
-}
 
 async function main() {
   const docs = await rawClient.fetch(

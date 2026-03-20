@@ -125,7 +125,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             </div>
 
             <h1
-              className="mb-10 leading-none! text-[clamp(4.5rem,11vw,8rem)] text-black tracking-[-0.02em] type-display"
+              className="mb-10 leading-none! text-[clamp(3.5rem,8vw,8rem)] text-black tracking-[-0.02em] type-display"
               style={heroTextColor ? { color: heroTextColor } : undefined}
             >
               {titlePrimary}

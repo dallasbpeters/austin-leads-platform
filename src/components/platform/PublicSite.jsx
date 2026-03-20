@@ -312,7 +312,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
         markup="src/components/platform/PublicSite.jsx:CardGridSection"
         content={`highlight cards from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto px-3 md:px-6 py-20 lg:px-10">
+      <div className="mx-auto max-w-7xl px-3 md:px-6 py-20 lg:px-10">
         <div className="grid max-w-3xl gap-2 mb-8">
           <h2 className="text-3xl text-foreground md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
@@ -331,7 +331,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
                 <CardHeader className="gap-4">
                   {Icon ? (
                     <div className="flex items-center justify-center text-primary bg-primary/8 rounded-full size-12">
-                      <Icon className="size-5" />
+                      <Icon className="size-7" />
                     </div>
                   ) : null}
                   <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
@@ -353,6 +353,7 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
 }
 
 function GuideGridSection({ section, sectionId, editAttributes = {} }) {
+  const gridHeaderId = `${sectionId}-header`
   const cards = (section.items || []).map((item, index) => ({
     number: String(index + 1).padStart(2, '0'),
     title: item.title || item.question,
@@ -381,7 +382,7 @@ function GuideGridSection({ section, sectionId, editAttributes = {} }) {
         content={`guide grid from ${section?._type || 'page section'}`}
       />
       <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
-        <div className="max-w-3xl mb-8">
+        <div id={gridHeaderId} className="max-w-3xl mb-8 scroll-mt-28 md:scroll-mt-32">
           <h2 className="mb-4 text-3xl text-foreground md:text-4xl">{section.title}</h2>
           {section.body ? (
             <PortableTextContent as="div" value={section.body} className="leading-8 text-lg text-muted-foreground" />
@@ -392,6 +393,7 @@ function GuideGridSection({ section, sectionId, editAttributes = {} }) {
           columnsClassName="sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
           enableFiltering
           pageSize={6}
+          scrollTargetId={gridHeaderId}
         />
       </div>
     </section>
@@ -783,7 +785,7 @@ function StepsSection({ section, sectionId, editAttributes = {} }) {
         <div className="max-w-3xl mb-10">
           <h2 className="text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
           {section.items?.map((item, index) => (
             <Card
               key={buildRuntimeKey('step-item', item.title, index)}
@@ -951,7 +953,7 @@ function SecondaryCTASection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
       id={sectionId}
-      className={`bg-card border-b border-border/60`}
+      className={`bg-card border-b border-border/60 scroll-mt-38`}
       {...editAttributes}
 
     >

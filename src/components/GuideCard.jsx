@@ -269,6 +269,7 @@ export default function GuideCardGrid({
   columnsClassName = 'md:grid-cols-3',
   enableFiltering = false,
   pageSize = 6,
+  scrollTargetId = '',
 }) {
   const ref = useRef(null)
   const isInView = useInView(ref, {
@@ -311,6 +312,26 @@ export default function GuideCardGrid({
       setCurrentPage(totalPages)
     }
   }, [currentPage, totalPages])
+
+  function scrollToPaginationTarget() {
+    if (typeof window === 'undefined') return
+
+    const target = scrollTargetId ? document.getElementById(scrollTargetId) : ref.current
+    if (!target) return
+
+    window.requestAnimationFrame(() => {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    })
+  }
+
+  function handlePageChange(nextPage) {
+    if (nextPage === currentPage) return
+    setCurrentPage(nextPage)
+    scrollToPaginationTarget()
+  }
 
   return (
     <div>
@@ -372,7 +393,7 @@ export default function GuideCardGrid({
           <button
             type="button"
             className="px-3 py-2 text-foreground text-sm bg-background border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
           >
             Previous
@@ -383,7 +404,7 @@ export default function GuideCardGrid({
           <button
             type="button"
             className="px-3 py-2 text-foreground text-sm bg-background border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
           >
             Next
