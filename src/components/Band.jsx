@@ -21,26 +21,6 @@ const defaultBandColors = [
   'var(--color-secondary-300)',
 ]
 
-const defaultScrollSpring = {
-  stiffness: 100,
-  damping: 26,
-  mass: 1.05,
-  restDelta: 0.001,
-}
-
-const instantScrollSpring = {
-  stiffness: 5200,
-  damping: 100,
-  mass: 0.04,
-  restDelta: 0.00001,
-}
-
-const defaultPointerSpring = {
-  stiffness: 30,
-  damping: 14,
-  mass: 0.78,
-}
-
 export default function Band({
   colors = defaultBandColors,
   tint = 'var(--color-secondary-950)',
@@ -53,12 +33,6 @@ export default function Band({
   autoAnimate = false,
   speed = 1,
   amplitude = 10,
-  /** Smooth scroll-linked motion with inertia (AngelList-style lag on stop/start). */
-  scrollMomentum = true,
-  scrollSpring = null,
-  pointerSpring = null,
-  /** Easing for gradient stop shifts (mouse / auto); longer = more “weight”. */
-  gradientShiftDurationSec = 1.38,
   className = '',
   style,
 }) {
@@ -83,11 +57,6 @@ export default function Band({
     offset: ['start end', 'end start'],
   })
 
-  const scrollSpringConfig = scrollMomentum
-    ? { ...defaultScrollSpring, ...(scrollSpring && typeof scrollSpring === 'object' ? scrollSpring : {}) }
-    : instantScrollSpring
-  const smoothScrollProgress = useSpring(scrollYProgress, scrollSpringConfig)
-
   const bands = [
     { opacity: 0.88 },
     { opacity: 0.72 },
@@ -98,15 +67,13 @@ export default function Band({
   ]
 
   const height = useTransform(
-    smoothScrollProgress,
+    scrollYProgress,
     [scrollStart, scrollEnd],
     reverse ? [minHeight, maxHeight] : [maxHeight, minHeight],
+    { ease: (t) => t * t * (3 - 2 * t) },
   )
 
-  const offsetSpring = useSpring(0, {
-    ...defaultPointerSpring,
-    ...(pointerSpring && typeof pointerSpring === 'object' ? pointerSpring : {}),
-  })
+  const offsetSpring = useSpring(0, { stiffness: 30, damping: 15 })
   useMotionValueEvent(offsetSpring, 'change', setMouseOffset)
 
   function onMouseMove(event) {
@@ -176,11 +143,7 @@ export default function Band({
     return accumulator
   }, {})
 
-  const gradEase = 'cubic-bezier(0.33, 1, 0.68, 1)'
-  const gradDuration = Math.max(0.15, Number(gradientShiftDurationSec) || 1.15)
-  const transitionValue = stopPositions
-    .map((_, index) => `--stop${index} ${gradDuration}s ${gradEase}`)
-    .join(', ')
+  const transitionValue = stopPositions.map((_, index) => `--stop${index} 1s ease-out`).join(', ')
 
   const gradientBg = `linear-gradient(90deg, ${palette.map((color, index) => `${color} var(--stop${index})`).join(', ')})`
 

@@ -247,7 +247,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           <Tooltip
             cursor={{ fill: 'rgba(0,0,0,0.04)' }}
             formatter={(value) => [`${value} ${unitLabel}`, primaryLabel]}
-            labelFormatter={(label) => `Label: ${label}`}
+            labelFormatter={(label) => `${label}`}
           />
           {showLegend ? <Legend /> : null}
           <Bar dataKey="barValue" name={`${primaryLabel} (${unitLabel})`} fill={barColor} radius={[2, 2, 0, 0]} maxBarSize={56} />
@@ -278,7 +278,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           <Tooltip
             cursor={{ fill: 'rgba(0,0,0,0.04)' }}
             formatter={(value) => [`${value} ${unitLabel}`, primaryLabel]}
-            labelFormatter={(label) => `Label: ${label}`}
+            labelFormatter={(label) => `${label}`}
           />
           {showLegend ? <Legend /> : null}
           <Line
@@ -320,7 +320,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           <Tooltip
             cursor={{ fill: 'rgba(0,0,0,0.04)' }}
             formatter={areaTooltipFormatter}
-            labelFormatter={(label) => `Label: ${label}`}
+            labelFormatter={(label) => `${label}`}
           />
           {showLegend ? <Legend /> : null}
           {multiAreaCount > 0 ? (
