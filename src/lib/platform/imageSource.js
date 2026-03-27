@@ -65,6 +65,7 @@ export function getImageUrl(imageField, fallbackImage = null, options) {
     return fromAsset
   }
   return (
+    fallbackImage?.urls?.full ||
     fallbackImage?.urls?.regular ||
     fallbackImage?.urls?.small ||
     fallbackImage?.urls?.thumb ||

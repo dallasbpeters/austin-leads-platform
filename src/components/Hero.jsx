@@ -5,11 +5,10 @@ import ImageFader from './ImageFader'
 import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
-import { getHeroImageUrl, getImageAlt, hasImageSource } from '@/lib/platform/imageSource'
+import { getHeroImageUrl, getImageAlt } from '@/lib/platform/imageSource'
 
 export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }) {
   const heroImageUrl = getHeroImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
-  const hasHeroImage = hasImageSource(heroSection?.heroAsset, heroSection?.heroImage)
   const heroSlides = Array.isArray(heroSection?.heroSlides)
     ? heroSection.heroSlides
         .map((item) => ({
@@ -19,15 +18,14 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
         .filter((image) => image.src)
     : []
   const hasHeroSlides = heroSlides.length > 0
+  const explicitHeroMediaMode = heroSection?.heroMediaMode
   const heroMediaMode =
-    heroSection?.heroMediaMode ?? (hasHeroSlides ? 'slides' : 'single')
+    explicitHeroMediaMode === 'slides' || explicitHeroMediaMode === 'single'
+      ? explicitHeroMediaMode
+      : hasHeroSlides
+        ? 'slides'
+        : 'single'
   const usesSlidesOnly = heroMediaMode === 'slides'
-  const hasHeroBackdropMedia = usesSlidesOnly ? hasHeroSlides : hasHeroImage
-  const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
-  const { overlayStyle } = getHeroOverlayAppearance(heroSection)
-  const softTextColor = heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined
-  const cardBackground = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.08)' : undefined
-  const cardBorder = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.16)' : undefined
   const rotatingHeroImages = (
     usesSlidesOnly && hasHeroSlides
       ? heroSlides
@@ -38,6 +36,12 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           },
         ]
   ).filter((image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index)
+  const hasHeroBackdropMedia = rotatingHeroImages.length > 0
+  const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
+  const { overlayStyle } = getHeroOverlayAppearance(heroSection)
+  const softTextColor = heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined
+  const cardBackground = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.08)' : undefined
+  const cardBorder = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.16)' : undefined
   const primaryHeroImage = rotatingHeroImages[0] || null
   const hasRotatingHeroImages = rotatingHeroImages.length > 1
 
@@ -175,14 +179,11 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             <Card
               className="p-6 backdrop-blur-md"
               radius="lg"
-              style={
-                hasHeroBackdropMedia
-                  ? {
+              style={{
+
                       backgroundColor: cardBackground,
                       borderColor: cardBorder,
-                    }
-                  : undefined
-              }
+              }}
             >
               <PortableTextContent
                 as="div"
