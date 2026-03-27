@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 
 import { requireAdminRequest } from '@/lib/auth/guards'
 import { clampHeroOverlayOpacity, normalizeHeroOverlayDirection } from '@/lib/platform/heroAppearance'
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 import { sanityWriteClient } from '@/sanity/client'
 
 export const runtime = 'nodejs'
@@ -35,7 +36,8 @@ export async function PATCH(request, { params }) {
         _id,
         sections[]{
           _key,
-          type
+          type,
+          _type
         }
       }`,
       { pageId },
@@ -45,7 +47,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Page not found.' }, { status: 404 })
     }
 
-    const heroSectionIndex = page.sections?.findIndex((section) => section.type === 'hero') ?? -1
+    const heroSectionIndex = page.sections?.findIndex(isHeroSectionBlock) ?? -1
 
     if (heroSectionIndex < 0) {
       return NextResponse.json({ error: 'Page does not have a hero section.' }, { status: 400 })

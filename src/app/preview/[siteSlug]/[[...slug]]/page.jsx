@@ -5,12 +5,14 @@ import PublicSite from '@/components/platform/PublicSite'
 import {
   createJsonLd,
   getHeroHomepageForSite,
+  getHomepageForSite,
   getHomepageReviewsForSite,
   getNavigationForSite,
   getPageForRequest,
   isPrimarySiteSlug,
   resolveSiteBySlug,
 } from '@/lib/platform/content'
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 
 export default async function PreviewSitePage({ params }) {
   const { siteSlug, slug = [] } = await params
@@ -21,11 +23,24 @@ export default async function PreviewSitePage({ params }) {
   }
 
   if (isPrimarySiteSlug(site.slug) && slug.length === 0) {
+    const homepage = await getHomepageForSite(site.slug)
     const heroHomepage = await getHeroHomepageForSite(site.slug)
-    const heroSection = heroHomepage?.heroSection ?? null
+    const heroSection = homepage
+      ? (homepage.heroSection ??
+          homepage.sections?.find(isHeroSectionBlock) ??
+          null)
+      : (heroHomepage?.heroSection ?? null)
     const reviews = await getHomepageReviewsForSite(site.slug)
 
-    return <App heroSection={heroSection} reviews={reviews} site={site} />
+    return (
+      <App
+        homepage={homepage}
+        heroSection={heroSection}
+        reviews={reviews}
+        site={site}
+        homepageSource={homepage?.source || heroHomepage?.source || 'fixture'}
+      />
+    )
   }
 
   const page = await getPageForRequest(site, slug)

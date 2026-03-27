@@ -7,6 +7,7 @@ import { defaultLaunchChecklist } from './launchChecklist'
 import { hasImageSource } from './imageSource'
 import { withSectionKeys } from '@/lib/sanity/keys'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 
 const sectionProjection = `
   _type,
@@ -823,7 +824,7 @@ function buildHomepageHeroSection(page) {
     return null
   }
 
-  const sectionHero = page.sections?.find((section) => section.type === 'hero') ?? null
+  const sectionHero = page.sections?.find(isHeroSectionBlock) ?? null
 
   if (sectionHero) {
     return sectionHero
@@ -956,7 +957,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
   )
   const localGuideMap = new Map(
     localGuidePages.map((guidePage) => {
-      const heroSection = guidePage.sections?.find((section) => section.type === 'hero') || null
+      const heroSection = guidePage.sections?.find(isHeroSectionBlock) || null
 
       return [
         `/${guidePage.slug}`,
@@ -1028,7 +1029,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
 
       sanityGuideMap = new Map(
         (sanityGuides || []).map((guidePage) => {
-          const heroSection = guidePage.sections?.find((section) => section.type === 'hero') || null
+          const heroSection = guidePage.sections?.find(isHeroSectionBlock) || null
 
           return [
             `/${guidePage.slug}`,
@@ -1088,7 +1089,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
     ...Array.from(sanityGuideMap.entries()).map(([href, value]) => ({ href, ...value })),
     ...Array.from(localGuideMap.entries()).map(([href, value]) => ({ href, ...value })),
     ...(allSanityGuides || []).map((guidePage) => {
-      const heroSection = guidePage.sections?.find((section) => section.type === 'hero') || null
+      const heroSection = guidePage.sections?.find(isHeroSectionBlock) || null
       const normalizedSlug = cleanRuntimeString(guidePage.slug)?.replace(/^\/+/, '')
       return {
         href: normalizedSlug ? `/${normalizedSlug}` : '',
@@ -1210,7 +1211,7 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
 
   const localServiceMap = new Map(
     localServicePages.map((servicePage) => {
-      const heroSection = servicePage.sections?.find((section) => section.type === 'hero') || null
+      const heroSection = servicePage.sections?.find(isHeroSectionBlock) || null
 
       return [
         servicePage.slug,
@@ -1270,7 +1271,7 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
 
       sanityServiceMap = new Map(
         (sanityServicePages || []).map((servicePage) => {
-          const heroSection = servicePage.sections?.find((section) => section.type === 'hero') || null
+          const heroSection = servicePage.sections?.find(isHeroSectionBlock) || null
 
           return [
             servicePage.slug,
@@ -1528,6 +1529,7 @@ export async function getPageForRequest(site, slugParts = []) {
     const siteSlugs = getEquivalentSiteSlugs(site.slug)
     const requestedSlug = getPageKey(slugParts)
     const isHomepageRequest = requestedSlug === ''
+    const homepageFetchOptions = isHomepageRequest ? { cache: 'no-store' } : fetchOptions
     const rawPage = await client.fetch(
       isHomepageRequest
         ? groq`*[
@@ -1690,7 +1692,7 @@ export async function getPageForRequest(site, slugParts = []) {
         }
       }`,
       { siteSlugs, slug: requestedSlug || '/' },
-      fetchOptions,
+      homepageFetchOptions,
     )
 
     if (rawPage) {

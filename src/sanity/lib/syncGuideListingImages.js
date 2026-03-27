@@ -1,5 +1,7 @@
 import groq from 'groq'
 
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+
 function buildGuideItemKey(slug) {
   return `item-${String(slug || '')
     .replace(/^guides\//, '')
@@ -29,7 +31,7 @@ function toPortableTextSimple(value) {
 }
 
 function getHeroMediaFromSections(sections) {
-  const hero = Array.isArray(sections) ? sections.find((s) => s?.type === 'hero') : null
+  const hero = Array.isArray(sections) ? sections.find(isHeroSectionBlock) : null
   return {
     heroImage: hero?.heroImage || null,
     heroAsset: hero?.heroAsset || null,
@@ -157,7 +159,7 @@ export async function syncGuideGridCardImagesToHeroes(client, { siteRef, guidesP
 
     for (const post of posts || []) {
       const postSections = Array.isArray(post.sections) ? [...post.sections] : []
-      const heroIndex = postSections.findIndex((s) => s?.type === 'hero')
+      const heroIndex = postSections.findIndex(isHeroSectionBlock)
       if (heroIndex < 0) {
         continue
       }

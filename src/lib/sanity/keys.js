@@ -1,3 +1,5 @@
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+
 function toKeyPart(value) {
   return String(value || '')
     .toLowerCase()
@@ -94,10 +96,11 @@ export function normalizeSectionType(section) {
     ? section.items.map((item) => normalizeSectionItemType(section, item))
     : undefined
 
-  if (section.type === 'hero') {
+  if (isHeroSectionBlock(section)) {
     return {
       ...section,
       _type: 'heroSection',
+      type: section.type || 'hero',
     }
   }
 

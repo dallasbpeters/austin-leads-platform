@@ -47,6 +47,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getGuideMetaByHref } from '@/lib/platform/guides'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 import { getHeroImageUrl, getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString, toRuntimeToken } from '@/lib/sanity/stega'
@@ -1455,7 +1456,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
   const leadCaptureSectionTypes = new Set(['cta', 'ctaBanner'])
   const hasLeadCaptureSection = sections.some((section) => leadCaptureSectionTypes.has(section.type))
   const hasLogosSection = sections.some((section) => section.type === 'logos')
-  const heroSectionIndex = sections.findIndex((section) => section.type === 'hero')
+  const heroSectionIndex = sections.findIndex(isHeroSectionBlock)
   const pageSlug = cleanRuntimeString(page.slug)
   const firstLeadCaptureSectionIndex = sections.findIndex((section) =>
     leadCaptureSectionTypes.has(section.type),

@@ -15,6 +15,7 @@ import {
   isPrimarySiteSlug,
   resolveSiteByHost,
 } from '@/lib/platform/content'
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 
 function getCurrentOrigin(host, forwardedProto) {
   if (!host) {
@@ -68,7 +69,7 @@ function resolveCanonicalUrl({ page, site, pathname, fallbackCanonical }) {
 }
 
 function getPageHeroImage(page) {
-  const sectionHero = page?.sections?.find((section) => section.type === 'hero') ?? null
+  const sectionHero = page?.sections?.find(isHeroSectionBlock) ?? null
 
   return (
     getHeroImageUrl(page?.heroAsset, page?.heroImage) ||
@@ -206,11 +207,11 @@ export async function renderCurrentSitePage(slugParts = []) {
   if (isPrimarySiteSlug(site.slug) && slugParts.length === 0) {
     const homepage = await getHomepageForSite(site.slug)
     const heroHomepage = await getHeroHomepageForSite(site.slug)
-    const heroSection =
-      homepage?.heroSection ??
-      heroHomepage?.heroSection ??
-      homepage?.sections?.find((section) => section.type === 'hero') ??
-      null
+    const heroSection = homepage
+      ? (homepage.heroSection ??
+          homepage.sections?.find(isHeroSectionBlock) ??
+          null)
+      : (heroHomepage?.heroSection ?? null)
     const resourcesSection =
       homepage?.sections?.find((section) => section._type === 'resourceGridSection') ??
       homepage?.sections?.find((section) => section.type === 'resourceGrid') ??
