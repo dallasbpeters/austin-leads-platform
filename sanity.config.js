@@ -1,3 +1,4 @@
+import { agentContextPlugin } from '@sanity/agent-context/studio'
 import { defineConfig } from 'sanity'
 import { colorInput } from '@sanity/color-input'
 import { structureTool } from 'sanity/structure'
@@ -31,6 +32,7 @@ export default defineConfig({
   dataset,
   basePath: studioUrl,
   plugins: [
+    agentContextPlugin(),
     guideImageSyncPlugin(),
     colorInput(),
     geminiAIImages({

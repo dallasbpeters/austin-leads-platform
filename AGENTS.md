@@ -98,6 +98,7 @@ Do not treat this as a generic marketing site repo.
 - Sanity is the intended CMS.
 - Fixture data exists as a development fallback, not the long-term content source of truth.
 - The only Studio we use is the Sanity-hosted deployment.
+- **Sanity document assistant** (optional): [`src/app/api/chat/route.js`](./src/app/api/chat/route.js) is **`POST /api/chat`** for **authenticated** users only—it connects Agent Context MCP to an LLM so editors can reason over **Sanity documents and schema** (GROQ tools, etc.). It is **not** a public floating chat. Studio registers `sanity.agentContext` via `@sanity/agent-context` in [`sanity.config.js`](./sanity.config.js). Env: [`.env.example`](./.env.example) (`SANITY_API_READ_TOKEN`, `SANITY_CONTEXT_MCP_URL`, `GROQ_API_KEY` and/or `ANTHROPIC_API_KEY`). Tune Instructions / `groqFilter` in Studio or use the `dial-your-context` skill.
 - Local and Vercel `/studio` routes should redirect to that canonical Studio URL.
 
 ### Analytics behavior
