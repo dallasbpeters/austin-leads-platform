@@ -105,7 +105,7 @@ function HeroSection({ page, section, sectionId, editAttributes = {} }) {
             <Image
               width={1920}
               height={1080}
-              quality={75}
+              quality={90}
               sizes="100vw"
               priority
               fetchPriority="high"
