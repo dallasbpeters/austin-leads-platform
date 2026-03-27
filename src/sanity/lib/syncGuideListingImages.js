@@ -1,6 +1,6 @@
 import groq from 'groq'
 
-import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+import { isHeroSectionBlock } from '../../lib/platform/section-helpers'
 
 function buildGuideItemKey(slug) {
   return `item-${String(slug || '')

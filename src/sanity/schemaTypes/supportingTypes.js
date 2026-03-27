@@ -1,4 +1,7 @@
+import aiContextType from './aiContextType'
+
 export default [
+  aiContextType,
   {
     name: 'launchChecklist',
     title: 'Launch Checklist',

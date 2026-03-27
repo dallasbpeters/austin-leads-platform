@@ -1,4 +1,4 @@
-import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+import { isHeroSectionBlock } from '../platform/section-helpers'
 
 function toKeyPart(value) {
   return String(value || '')
