@@ -18,20 +18,26 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
         }))
         .filter((image) => image.src)
     : []
-  const usesSlidesOnly = heroSection?.heroMediaMode === 'slides'
   const hasHeroSlides = heroSlides.length > 0
-  const hasHeroBackdropMedia = hasHeroImage || hasHeroSlides
+  const heroMediaMode =
+    heroSection?.heroMediaMode ?? (hasHeroSlides ? 'slides' : 'single')
+  const usesSlidesOnly = heroMediaMode === 'slides'
+  const hasHeroBackdropMedia = usesSlidesOnly ? hasHeroSlides : hasHeroImage
   const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
   const softTextColor = heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined
   const cardBackground = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.08)' : undefined
   const cardBorder = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.16)' : undefined
-  const rotatingHeroImages = (usesSlidesOnly && hasHeroSlides ? heroSlides : hasHeroSlides ? heroSlides : [
-    {
-      src: heroImageUrl,
-      alt: getImageAlt(heroSection?.heroAsset, heroSection?.heroImage, ''),
-    },
-  ]).filter((image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index)
+  const rotatingHeroImages = (
+    usesSlidesOnly && hasHeroSlides
+      ? heroSlides
+      : [
+          {
+            src: heroImageUrl,
+            alt: getImageAlt(heroSection?.heroAsset, heroSection?.heroImage, ''),
+          },
+        ]
+  ).filter((image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index)
   const primaryHeroImage = rotatingHeroImages[0] || null
   const hasRotatingHeroImages = rotatingHeroImages.length > 1
 
@@ -170,7 +176,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
               className="p-6 backdrop-blur-md"
               radius="lg"
               style={
-                hasHeroImage
+                hasHeroBackdropMedia
                   ? {
                       backgroundColor: cardBackground,
                       borderColor: cardBorder,
