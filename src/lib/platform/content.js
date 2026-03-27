@@ -679,6 +679,7 @@ function sanitizePageRuntimeFields(page) {
     slug: cleanRuntimeString(page.slug),
     pageType: cleanRuntimeString(page.pageType),
     templateLevel: cleanRuntimeString(page.templateLevel),
+    heroMediaMode: cleanRuntimeString(page.heroMediaMode),
     heroGradient: cleanRuntimeString(page.heroGradient),
     heroTextColor: resolveSanityColorValue(page.heroTextColor),
     heroOverlayColor: resolveSanityColorValue(page.heroOverlayColor),
@@ -847,6 +848,7 @@ function buildHomepageHeroSection(page) {
   return {
     _type: 'heroSection',
     type: 'hero',
+    heroMediaMode: cleanRuntimeString(page.heroMediaMode),
     eyebrow: page.heroEyebrow || null,
     title: page.heroTitle || page.title || null,
     titlePrimary: page.heroTitlePrimary || null,
@@ -1562,6 +1564,7 @@ export async function getPageForRequest(site, slugParts = []) {
         heroOverlayStartOpacity,
         heroOverlayEndOpacity,
         heroOverlayOpacity,
+        heroMediaMode,
         heroImage,
         heroSlides[]{
           _key,
@@ -1637,6 +1640,7 @@ export async function getPageForRequest(site, slugParts = []) {
         heroOverlayStartOpacity,
         heroOverlayEndOpacity,
         heroOverlayOpacity,
+        heroMediaMode,
         heroImage,
         heroSlides[]{
           _key,
@@ -1851,6 +1855,7 @@ export async function getHeroPages({ stega = false } = {}) {
         heroOverlayStartOpacity,
         heroOverlayEndOpacity,
         heroOverlayOpacity,
+        heroMediaMode,
         heroImage,
         heroAsset{
           crop,
