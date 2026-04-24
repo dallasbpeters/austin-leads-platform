@@ -89,7 +89,7 @@ export default function Footer() {
             <Link href="/privacy-policy" className="text-gray-300 hover:text-gray-300">
               Privacy
             </Link>
-            <Link href="/" className="items-center gap-1 text-gray-300 hover:text-gray-300 inline-flex">
+            <Link href="#site-top" className="items-center gap-1 text-gray-300 hover:text-gray-300 inline-flex">
               Back to top
               <DotArrowUp className="h-3 w-3" />
             </Link>

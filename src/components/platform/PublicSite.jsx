@@ -320,31 +320,35 @@ function CardGridSection({ section, sectionId, editAttributes = {} }) {
             <PortableTextContent as="div" value={section.subtitle} className="mb-4 leading-8 text-foreground text-xl" />
           ) : null}
         </div>
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
+        <div className="grid grid-cols-1 gap-4 md:gap-6">
           {section.items?.map((item, index) => {
-            const Icon = getServiceIcon(item)
+            const number = String(index + 1).padStart(2, '0')
+            const reverse = index % 2 === 1
 
             return (
-              <Card
+              <article
                 key={buildRuntimeKey('card-grid-item', item.title, item.question, index)}
-                className="grid py-8 grid-cols-1 place-content-start"
+                className="relative overflow-hidden rounded-2xl border border-border/70 bg-card/95 p-6 shadow-theme-sm md:p-8"
               >
-                <CardHeader className="gap-4">
-                  {Icon ? (
-                    <div className="flex items-center justify-center text-primary bg-primary/8 rounded-full size-12">
-                      <Icon className="size-7" />
-                    </div>
-                  ) : null}
-                  <CardTitle className="text-foreground text-xl">{item.title || item.question}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <PortableTextContent
-                    as="div"
-                    value={item.body || item.answer}
-                    className="leading-6 text-md text-muted-foreground"
-                  />
-                </CardContent>
-              </Card>
+                <div
+                  className={`grid gap-6 md:items-start ${
+                    reverse ? 'md:grid-cols-[minmax(0,1fr)_auto]' : 'md:grid-cols-[auto_minmax(0,1fr)]'
+                  }`}
+                >
+                  <div className={reverse ? 'md:order-2 md:text-right' : 'md:order-1'}>
+                    <p className="text-[0.65rem] tracking-[0.22em] uppercase text-muted-foreground">Highlight</p>
+                    <p className="type-display mt-1 text-4xl leading-none text-primary md:text-5xl">{number}</p>
+                  </div>
+                  <div className={reverse ? 'md:order-1' : 'md:order-2'}>
+                    <h3 className="text-xl tracking-tight text-foreground md:text-2xl">{item.title || item.question}</h3>
+                    <PortableTextContent
+                      as="div"
+                      value={item.body || item.answer}
+                      className="mt-3 max-w-[70ch] text-md leading-7 text-muted-foreground"
+                    />
+                  </div>
+                </div>
+              </article>
             )
           })}
         </div>

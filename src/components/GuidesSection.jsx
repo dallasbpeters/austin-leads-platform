@@ -17,7 +17,7 @@ function escapePathSegment(value) {
 export default function GuidesSection({ section = null, page = null, sectionId = 'go-deeper', editAttributes = {} }) {
   const title = section?.title || 'Go Deeper'
   const body = portableTextToPlainText(section?.body)
-  const ctaLabel = section?.ctaLabel || 'Browse all guides'
+  const ctaLabel = section?.ctaLabel || 'See all guides'
   const icon = section?.icon || 'arrow-right'
   const sectionCards =
     Array.isArray(section?.items) && section.items.length

@@ -18,20 +18,23 @@ const LINKS = [
   { href: '/hail-damage', label: 'Hail & Storm Damage' },
   { href: '/guides', label: 'Guides' },
   { href: '/about', label: 'About Us' },
-  { href: '#consultation', label: 'Contact', className: 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9 hover:bg-primary/80' },
+  {
+    href: '#consultation',
+    label: 'Contact',
+    className: 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9 hover:bg-primary/80',
+  },
 ]
-
 
 function NavList({ onNavigate }) {
   return (
     <>
-      {LINKS.map(({ label, href, className }) => (
+      {LINKS.map(({ label, href, className }) =>
         href.startsWith('#') ? (
           <a
             key={href}
             href={href}
             onClick={onNavigate}
-            className={`flex items-start justify-start gap-2 px-6 py-5.5 font-wght-450 medium text-foreground text-md hover:text-white rounded-full hover:brightness-125 btn ${className}`}
+            className={`font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 hover:text-white hover:brightness-125 ${className}`}
           >
             {label}
           </a>
@@ -40,18 +43,19 @@ function NavList({ onNavigate }) {
             key={href}
             href={href}
             onClick={onNavigate}
-            className={`flex items-start justify-start gap-2 px-2 py-4 font-wght-450 medium text-foreground text-md hover:text-primary rounded-full hover:bg-transparent btn ${className}`}
+            className={`font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent ${className}`}
           >
             {label}
           </Link>
-        )
-      ))}
+        ),
+      )}
     </>
   )
 }
 
 export default function Header() {
   const [openNav, setOpenNav] = React.useState(false)
+  const [consultationInView, setConsultationInView] = React.useState(false)
   const mobileMenuId = 'site-mobile-nav'
 
   React.useEffect(() => {
@@ -61,59 +65,99 @@ export default function Header() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-  return (
-    <nav
-      className="fixed max-w-7xl w-full mx-auto px-0 md:px-4 text-foreground left-[50%] sm:top-0 md:top-2 translate-x-[-50%] z-50"
-      {...getDevSectionAttributes({
-        id: 'site-header',
-        markup: 'src/components/Header.jsx',
-        content: 'local JSX nav and service catalog links',
-      })}
-    >
-      <div className="w-full mx-auto px-5 py-2 bg-stone-100/90 backdrop-blur-sm rounded-none md:rounded-full shadow-sm">
-        <div className="flex items-center justify-between">
-          <Link href="/" title="Texas Solar & Roofing Pros" className="grid items-center gap-2 grid-flow-col">
-            <Logo />
-            <div className="font-bold leading-none text-inherit sm:text-xs md:text-lg  type-accent">
-              Texas Solar & Roofing Pros
-            </div>
-          </Link>
-          <Separator orientation="vertical" className="hidden lg:block h-5 mx-1" />
-          <div className="hidden lg:flex lg:items-center">
-            <NavList />
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            type="button"
-            onClick={() => setOpenNav(!openNav)}
-            className="lg:hidden ml-auto !hover:bg-transparent px-6 py-5.5"
-            aria-expanded={openNav}
-            aria-controls={mobileMenuId}
-            aria-label={openNav ? 'Close navigation menu' : 'Open navigation menu'}
-          >
-            {openNav ? <Xmark className="size-6" /> : <Menu className="size-6" />}
-          </Button>
-        </div>
-      </div>
 
-      <div
-        id={mobileMenuId}
-        aria-hidden={!openNav}
-        className={`lg:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
-          openNav ? 'max-h-128 opacity-100' : 'max-h-0 opacity-0'
-        }`}
+  React.useEffect(() => {
+    const section = document.getElementById('consultation')
+
+    if (!section || typeof IntersectionObserver === 'undefined') {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setConsultationInView(entries.some((entry) => entry.isIntersecting))
+      },
+      {
+        threshold: 0.1,
+      },
+    )
+
+    observer.observe(section)
+
+    return () => observer.disconnect()
+  }, [])
+
+  const shouldShowMobileContactCta = !openNav && !consultationInView
+  return (
+    <>
+      <nav
+        id="site-top"
+        className="text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-7xl translate-x-[-50%] px-0 sm:top-0 md:top-2 md:px-4"
+        {...getDevSectionAttributes({
+          id: 'site-header',
+          markup: 'src/components/Header.jsx',
+          content: 'local JSX nav and service catalog links',
+        })}
       >
-        <div className="w-full mx-auto px-4 py-2 bg-card border-b border-border md:border md:border-border rounded-none md:rounded-md shadow-sm">
-          <div
-            className={`mt-2 space-y-1 transition-all duration-200 ${
-              openNav ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
-            }`}
-          >
-            <NavList onNavigate={() => setOpenNav(false)} />
+        <div className="mx-auto w-full rounded-none bg-stone-100/90 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full">
+          <div className="flex items-center justify-between">
+            <Link
+              href="/"
+              title="Texas Solar & Roofing Pros"
+              className="grid grid-flow-col items-center gap-2"
+            >
+              <Logo />
+              <div className="sm:text-md type-accent leading-none font-bold text-inherit md:text-lg">
+                Texas Solar & Roofing Pros
+              </div>
+            </Link>
+            <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
+            <div className="hidden lg:flex lg:items-center">
+              <NavList />
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              onClick={() => setOpenNav(!openNav)}
+              className="!hover:bg-transparent ml-auto px-6 py-5.5 lg:hidden"
+              aria-expanded={openNav}
+              aria-controls={mobileMenuId}
+              aria-label={openNav ? 'Close navigation menu' : 'Open navigation menu'}
+            >
+              {openNav ? <Xmark className="size-6" /> : <Menu className="size-6" />}
+            </Button>
           </div>
         </div>
-      </div>
-    </nav>
+
+        <div
+          id={mobileMenuId}
+          aria-hidden={!openNav}
+          className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-out lg:hidden ${
+            openNav ? 'max-h-128 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="bg-card border-border md:border-border mx-auto w-full rounded-none border-b px-4 py-2 shadow-sm md:rounded-md md:border">
+            <div
+              className={`mt-2 space-y-1 transition-all duration-200 ${
+                openNav ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0'
+              }`}
+            >
+              <NavList onNavigate={() => setOpenNav(false)} />
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {shouldShowMobileContactCta ? (
+        <a
+          href="#consultation"
+          className="btn btn--primary btn--pill btn--md shadow-theme-brand fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[60] -translate-x-1/2 px-5 lg:hidden"
+          aria-label="Contact our team"
+        >
+          Contact
+        </a>
+      ) : null}
+    </>
   )
 }

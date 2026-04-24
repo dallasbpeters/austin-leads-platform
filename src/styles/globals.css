@@ -355,13 +355,30 @@ body.admin-body-locked {
   }
 
   .btn--secondary {
-    border: 1px solid hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.22);
-    background-color: hsl(var(--color-secondary-h) var(--color-secondary-s) 70% / 0.4);
-    color: var(--color-secondary);
+    --btn-secondary-bg: color-mix(in oklch, var(--color-ceramic) 82%, var(--color-secondary-300) 18%);
+    --btn-secondary-border: color-mix(in oklch, var(--color-secondary-300) 56%, var(--color-ceramic) 44%);
+    border: 1px solid var(--btn-secondary-border);
+    background-color: var(--btn-secondary-bg);
+    color: var(--color-secondary-950);
+  }
+
+  @supports (color: color-contrast(white vs black)) {
+    .btn--secondary {
+      color: color-contrast(var(--btn-secondary-bg) vs var(--color-secondary-950), var(--color-text-strong), var(--color-white));
+    }
   }
 
   .btn--secondary:hover {
-    background-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.16);
+    --btn-secondary-bg: color-mix(in oklch, var(--color-ceramic) 72%, var(--color-secondary-300) 28%);
+    --btn-secondary-border: color-mix(in oklch, var(--color-secondary-300) 70%, var(--color-ceramic) 30%);
+    background-color: var(--btn-secondary-bg);
+    border-color: var(--btn-secondary-border);
+  }
+
+  @supports (color: color-contrast(white vs black)) {
+    .btn--secondary:hover {
+      color: color-contrast(var(--btn-secondary-bg) vs var(--color-secondary-950), var(--color-text-strong), var(--color-white));
+    }
   }
   .btn--tertiary {
     background-color: var(--color-tertiary-alt);

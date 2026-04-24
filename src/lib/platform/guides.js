@@ -246,8 +246,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'story',
         eyebrow: 'Reading quotes honestly',
-        title: 'The cleanest comparison is cost, production, and total paid over time.',
-        body: 'Most homeowners get pushed to compare proposals on the wrong variable. One quote leads with a low monthly payment, another looks cheaper because the production assumptions are weaker, and a third uses thinner equipment to hit a lower price point.\n\nThe useful comparison strips all of that down to a few numbers: installed price, expected annual production in kWh, how exported power is valued, financing terms and total paid over the life of the loan, and break-even timing under assumptions you can actually verify. In the Austin market, installed cost for a typical residential system currently ranges from roughly $2.50 to $3.50 per watt depending on equipment, installer, and project complexity. An 8 kW system at $3.00 per watt is $24,000.\n\nBut that number only means something when paired with the production estimate, the utility rate, and the export-credit structure. A system that produces 12,000 kWh per year in a utility territory where exports are credited at full retail rate has a very different payback profile than the same system in a territory that credits exports at avoided cost — which can be 40 to 60 percent less. These details are not fine print. They are the difference between an 8-year payback and a 13-year payback.',
+        title: 'Compare the full project numbers, not just the monthly pitch.',
+        body: 'Most homeowners are shown whichever number makes the quote look easiest to say yes to. One installer emphasizes a low monthly payment, another leans on oversized production assumptions, and another wins on price by thinning scope.\n\nA cleaner comparison is simple: installed price, expected annual production (kWh), export-credit assumptions, loan terms, and total paid over time. In the Austin market, a typical residential system often lands around $2.50 to $3.50 per watt depending on equipment and project complexity. At $3.00 per watt, an 8 kW system is about $24,000 before incentives.\n\nThat still is not enough by itself. The same system can have very different payback depending on utility export credits and actual production. A quote only becomes trustworthy when those assumptions are explicit and testable.',
       },
       {
         _type: 'pageSection',
@@ -1377,8 +1377,8 @@ export const solarGuides = [
         _type: 'pageSection',
         type: 'hero',
         eyebrow: 'Guide 09',
-        title: 'The real comparison is total cost, not monthly payment',
-        body: 'Whether you are financing solar, a roof replacement, or both — the right comparison is total paid over the life of the project, monthly obligation, break-even timing, and flexibility if your plans change. The advertised monthly payment is only one piece of the picture, and it is often the most misleading one.',
+        title: 'Start with total cost, then check monthly payment.',
+        body: 'If you are financing solar, roofing, or both, begin with total paid over the life of the project. Then evaluate monthly obligation, break-even timing, and how flexible the terms are if your plans change. Monthly payment still matters, but it should not be the first or only decision metric.',
         heroImage: createStaticHeroImage({
           alt: 'Warm residential desk scene with financing paperwork and coffee',
           color: '#b86c4f',

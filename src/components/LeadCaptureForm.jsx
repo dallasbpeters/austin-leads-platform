@@ -23,6 +23,9 @@ export default function LeadCaptureForm({
 }) {
   const { disabled, form, message, setForm, status, handleSubmit } = useLeadForm({ context })
   const fieldPrefix = toRuntimeToken(context?.sourceSection || 'lead') || 'lead'
+  const fullNameFieldId = `${fieldPrefix}-full-name`
+  const emailFieldId = `${fieldPrefix}-email`
+  const phoneFieldId = `${fieldPrefix}-phone`
   const privacyFieldId = `${fieldPrefix}-privacy`
   const serviceInterestFieldId = `${fieldPrefix}-service-interest`
   const formRef = useRef(null)
@@ -77,13 +80,21 @@ export default function LeadCaptureForm({
     const value = event.target.value
     setForm((current) => ({ ...current, [field]: value }))
   }
+  const updateCheckedField = (field) => (event) => {
+    const checked = event.target.checked
+    setForm((current) => ({ ...current, [field]: checked }))
+  }
 
   return (
     <form ref={formRef} className={cn('flex flex-col gap-6', className)} onSubmit={handleSubmit}>
       <div>
-        <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Full Name</label>
+        <label htmlFor={fullNameFieldId} className={cn('mb-2 block text-sm font-semibold', labelClassName)}>
+          Full Name
+        </label>
         <input
+          id={fullNameFieldId}
           type="text"
+          autoComplete="name"
           placeholder="e.g. Jane Doe"
           className={cn(
             'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
@@ -98,9 +109,13 @@ export default function LeadCaptureForm({
 
       <div className={cn('grid gap-6 md:grid-cols-2', compact && 'grid-cols-1')}>
         <div>
-          <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Email Address</label>
+          <label htmlFor={emailFieldId} className={cn('mb-2 block text-sm font-semibold', labelClassName)}>
+            Email Address
+          </label>
           <input
+            id={emailFieldId}
             type="email"
+            autoComplete="email"
             placeholder="jane@example.com"
             className={cn(
               'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
@@ -113,9 +128,13 @@ export default function LeadCaptureForm({
           />
         </div>
         <div>
-          <label className={cn('mb-2 block text-sm font-semibold', labelClassName)}>Phone Number</label>
+          <label htmlFor={phoneFieldId} className={cn('mb-2 block text-sm font-semibold', labelClassName)}>
+            Phone Number
+          </label>
           <input
+            id={phoneFieldId}
             type="tel"
+            autoComplete="tel"
             placeholder="(512) 000-0000"
             className={cn(
               'w-full border-0 border-b bg-transparent px-0 py-2 text-sm outline-none',
@@ -156,8 +175,10 @@ export default function LeadCaptureForm({
           type="checkbox"
           id={privacyFieldId}
           className={cn('mt-1 h-4 w-4', checkboxClassName)}
-          defaultChecked
+          checked={Boolean(form.privacyAccepted)}
+          onChange={updateCheckedField('privacyAccepted')}
           disabled={disabled}
+          required
         />
         <label
           htmlFor={privacyFieldId}

@@ -443,7 +443,7 @@ export const pages = [
         type: 'guides',
         title: 'Go Deeper',
         body: '',
-        ctaLabel: 'Browse all guides',
+        ctaLabel: 'See all guides',
       },
       {
         type: 'snapshot',
@@ -1563,7 +1563,7 @@ The site may reference or rely on third-party tools, links, analytics, maps, and
       },
       {
         type: 'guideGrid',
-        title: 'Browse the guides',
+        title: 'Solar and roofing guides',
         items: getSolarGuideGridItems(),
       },
       {

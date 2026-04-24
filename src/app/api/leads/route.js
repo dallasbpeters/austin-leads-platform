@@ -35,6 +35,7 @@ export async function POST(request) {
   const siteName = normalizeString(payload.siteName)
   const sourceDomain = normalizeString(payload.sourceDomain)
   const pagePath = normalizeString(payload.pagePath || '/')
+  const privacyAccepted = payload.privacyAccepted === true
 
   if (!fullName) {
     return badRequest('Full name is required.')
@@ -46,6 +47,10 @@ export async function POST(request) {
 
   if (!siteSlug || !siteName || !sourceDomain) {
     return badRequest('Lead source context is incomplete.', 422)
+  }
+
+  if (!privacyAccepted) {
+    return badRequest('You must agree to be contacted to submit this form.')
   }
 
   await ensureLeadSubmissionsTable()

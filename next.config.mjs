@@ -1,4 +1,8 @@
 import withVercelToolbar from '@vercel/toolbar/plugins/next'
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const PROJECT_ROOT = dirname(fileURLToPath(import.meta.url))
 
 const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'xuhfhjna'
 const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
@@ -58,6 +62,10 @@ async function getSanityRedirects() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingRoot: PROJECT_ROOT,
+  turbopack: {
+    root: PROJECT_ROOT,
+  },
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
   images: {
     qualities: [100, 90, 82, 75, 70, 68],

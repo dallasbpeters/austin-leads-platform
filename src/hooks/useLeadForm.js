@@ -13,6 +13,7 @@ function defaultState(defaultServiceInterest) {
     phone: '',
     notes: '',
     serviceInterest: normalizeLeadServiceInterest(defaultServiceInterest),
+    privacyAccepted: true,
   }
 }
 
