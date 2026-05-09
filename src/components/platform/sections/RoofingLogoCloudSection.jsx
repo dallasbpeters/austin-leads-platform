@@ -1,0 +1,39 @@
+import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
+import LogoCloud from '@/components/logo-cloud'
+import PortableTextContent from '@/components/PortableTextContent'
+
+export function RoofingLogoCloudSection({ section = {}, sectionId, editAttributes = {} }) {
+  return (
+    <section
+      className="bg-card border-b border-border/60"
+      {...editAttributes}
+      {...getDevSectionAttributes({
+        id: sectionId,
+        markup: 'src/components/platform/sections/RoofingLogoCloudSection.jsx',
+        content: `logos marquee section from ${section?._type || 'local fallback section'}`,
+      })}
+    >
+      <DevTrace
+        markup="src/components/platform/sections/RoofingLogoCloudSection.jsx"
+        content={`logos marquee section from ${section?._type || 'local fallback section'}`}
+      />
+      <div className="max-w-7xl mx-auto px-3 md:px-6 lg:px-10">
+        {section?.title || section?.body ? (
+          <div className="pt-16 text-left" {...editAttributes}>
+            {section?.title ? (
+              <h2 className="text-xl tracking-tight md:text-2xl">{section.title}</h2>
+            ) : null}
+            {section?.body ? (
+              <PortableTextContent
+                as="div"
+                value={section.body}
+                className="max-w-3xl mx-auto mt-4 leading-8 text-base text-muted-foreground"
+              />
+            ) : null}
+          </div>
+        ) : null}
+        <LogoCloud items={section?.items} />
+      </div>
+    </section>
+  )
+}

@@ -12,6 +12,8 @@ function resolveRedirectPath(requestUrl) {
   const allowedOrigins = buildAllowedOrigins(requestUrl)
   const params = new URL(requestUrl).searchParams
   const candidates = [
+    // Sanity Presentation v3 uses this param name (from @sanity/preview-url-secret/constants)
+    params.get('sanity-preview-pathname'),
     params.get('redirect'),
     params.get('redirectTo'),
     params.get('url'),

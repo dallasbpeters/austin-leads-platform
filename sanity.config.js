@@ -18,6 +18,7 @@ import {
   studioPreviewOrigin,
   studioUrl,
 } from './src/sanity/env'
+import { SiteSwitcherNavigator } from './src/sanity/components/SiteSwitcherNavigator'
 import { guideImageSyncPlugin } from './src/sanity/plugins/guideImageSyncPlugin'
 import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
 import { pageSpeedTool } from './src/sanity/tools/pageSpeedTool'
@@ -28,6 +29,7 @@ const previewModeRoutes = {
   enable: '/api/draft-mode/enable',
   disable: '/api/draft-mode/disable',
 }
+
 
 const studioAppId = (process.env.SANITY_STUDIO_APP_ID || '').trim()
 
@@ -60,6 +62,15 @@ export default defineConfig({
         mainDocuments: presentationDocuments,
         locations: presentationLocations,
       },
+      components: {
+        unstable_navigator: {
+          component: SiteSwitcherNavigator,
+          minWidth: 200,
+          maxWidth: 280,
+        },
+      },
+      // All tenant previews are served through studioPreviewOrigin via ?__site=<slug>,
+      // so only the primary origin and localhost need to be listed here.
       allowOrigins: [
         ...frontendOriginAllowlist,
         localFrontendUrl,

@@ -14,8 +14,39 @@ import {
   getPrimaryUrl,
   isPrimarySiteSlug,
   resolveSiteByHost,
+  resolveSiteBySlug,
 } from '@/lib/platform/content'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+
+/**
+ * Sanity Presentation passes ?__site=<slug> so the multi-tenant renderer can
+ * serve any tenant through the configured preview origin (localhost in dev,
+ * primary domain in prod).
+ *
+ * Security: the override is only honoured when:
+ *   a) Next.js draft mode is active, OR
+ *   b) The request host is localhost/127.0.0.1 (local dev only)
+ *
+ * This prevents public production traffic from spoofing the site parameter
+ * while still allowing local Presentation previews before draft mode is
+ * explicitly enabled.
+ */
+async function resolveCurrentSite(searchParams) {
+  const requestHeaders = await headers()
+  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host') ?? ''
+  const isLocalHost = host.includes('localhost') || host.startsWith('127.0.0.1')
+
+  const { isEnabled: isDraftMode } = await import('next/headers').then((m) => m.draftMode())
+  const allowOverride = isDraftMode || isLocalHost
+
+  const siteOverride = allowOverride ? (searchParams?.__site ?? null) : null
+  if (siteOverride) {
+    const overrideSite = await resolveSiteBySlug(siteOverride)
+    if (overrideSite) return overrideSite
+  }
+
+  return resolveSiteByHost(host)
+}
 
 function getCurrentOrigin(host, forwardedProto) {
   if (!host) {
@@ -125,11 +156,12 @@ function buildOgImageUrl(origin, site, page, pathname) {
   return url.toString()
 }
 
-export async function buildMetadataForCurrentSite(slugParts = []) {
+export async function buildMetadataForCurrentSite(slugParts = [], searchParams = {}) {
   const requestHeaders = await headers()
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
   const forwardedProto = requestHeaders.get('x-forwarded-proto')
-  const site = await resolveSiteByHost(host)
+  const site = await resolveCurrentSite(searchParams)
+  if (!site) return { title: 'Not found', robots: { index: false, follow: false } }
   const page = await getPageForRequest(site, slugParts)
   const normalizedHost = (host || '').toLowerCase()
   const isIndexableHost =
@@ -199,10 +231,12 @@ export async function buildMetadataForCurrentSite(slugParts = []) {
   }
 }
 
-export async function renderCurrentSitePage(slugParts = []) {
+export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
   const requestHeaders = await headers()
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
-  const site = await resolveSiteByHost(host)
+  const site = await resolveCurrentSite(searchParams)
+
+  if (!site) notFound()
 
   if (isPrimarySiteSlug(site.slug) && slugParts.length === 0) {
     const homepage = await getHomepageForSite(site.slug)

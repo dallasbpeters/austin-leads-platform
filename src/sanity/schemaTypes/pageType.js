@@ -38,6 +38,7 @@ const arrayCount = (value) => (Array.isArray(value) ? value.length : 0)
 const ctaThemeOptions = [
   { title: 'Light', value: 'light' },
   { title: 'Dark', value: 'dark' },
+  { title: 'Christmas Lights', value: 'christmasLights' },
 ]
 
 const portableTextSimpleType = {
@@ -342,6 +343,8 @@ const heroImageType = {
     },
   },
 }
+
+
 
 const uploadedImageType = {
   name: 'uploadedImage',
@@ -2120,6 +2123,59 @@ const stepsSectionType = {
   },
 }
 
+const gallerySectionType = {
+  name: 'gallerySection',
+  title: 'Gallery Section',
+  type: 'object',
+  initialValue: {
+    type: 'gallery',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading shown above the gallery grid.'),
+    },
+    {
+      name: 'images',
+      title: 'Images',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'alt',
+              title: 'Alt text',
+              type: 'string',
+              options: canvasPurpose('Describes the image for accessibility and SEO.'),
+            },
+          ],
+        },
+      ],
+      validation: (Rule) => Rule.required().min(1),
+      options: canvasPurpose('Images to display in the gallery.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      images: 'images',
+    },
+    prepare({ title, images }) {
+      const itemCount = arrayCount(images)
+      return {
+        title: title || 'Gallery section',
+        subtitle: `${itemCount || 0} images`,
+      }
+    },
+  },
+}
+
 const faqSectionType = {
   name: 'faqSection',
   title: 'FAQ Section',
@@ -2286,6 +2342,36 @@ const ctaSectionType = {
       title: 'Uploaded avatar image',
       type: 'uploadedImage',
       options: canvasExclude,
+    },
+    {
+      name: 'serviceOptions',
+      title: 'Service options',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'value',
+              title: 'Value',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+              options: canvasExclude,
+            },
+            {
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+              options: canvasPurpose('Display label for this service option in the form dropdown.'),
+            },
+          ],
+          preview: {
+            select: { title: 'label', subtitle: 'value' },
+          },
+        },
+      ],
+      options: canvasPurpose('Override the default service dropdown options shown in the lead capture form. Leave empty to use the site defaults.'),
     },
   ],
   preview: {
@@ -3129,6 +3215,7 @@ const baseFields = [
       { type: 'highlightsSection' },
       { type: 'stepsSection' },
       { type: 'faqSection' },
+      { type: 'gallerySection' },
       { type: 'quoteSection' },
       { type: 'ctaSection' },
       { type: 'ctaBannerSection' },
@@ -3201,6 +3288,7 @@ export default [
   heroImageType,
   uploadedImageType,
   bandColorStopType,
+  gallerySectionType,
   pageMetricType,
   pageActionType,
   pageItemType,

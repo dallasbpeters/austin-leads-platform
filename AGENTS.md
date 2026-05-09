@@ -144,3 +144,21 @@ When relevant, use the local project skills in:
 - [`.codex/skills/alp-platform`](./.codex/skills/alp-platform/SKILL.md)
 - [`.codex/skills/alp-solar-homepage`](./.codex/skills/alp-solar-homepage/SKILL.md)
 - [`.codex/skills/alp-theme-system`](./.codex/skills/alp-theme-system/SKILL.md)
+
+## Learned User Preferences
+
+- Always update both fixture data AND Sanity documents when changing content — reseeds overwrite Sanity data if fixtures are stale.
+- Use `<Fragment key={...}>` (imported from `'react'`) instead of `<>` for keyed JSX list items; bare fragments cannot receive `key` props.
+- Content updates made only in Sanity will be lost on the next reseed if the fixture is not also updated.
+
+## Learned Workspace Facts
+
+- Sanity Studio dev server runs on `localhost:3334`; its auth is browser `localStorage`, separate from CLI auth at `~/.config/sanity/config.json`. When Studio appears read-only, sign out and back in from the Studio UI — do not check API tokens.
+- `POST /api/sites` creates both a Sanity site doc (`_id: site-{slug}`) and a homepage doc (`type: 'page'`); every array item in a Sanity document requires a unique `_key` field.
+- Domains admin API flows: `GET/PATCH /api/domains/[domain]`, `POST /api/sites`, `POST /api/domains` handle the three domain creation paths.
+- Domain records showing `verificationStatus: active` with empty `dnsInstructions` means the domain is already verified in Vercel — this is expected, not a bug.
+- PostHog ad-blocker bypass: configure Next.js rewrites (`/ingest/static/:path*` → CDN, `/ingest/:path*` → ingestion endpoint) plus `api_host: '/ingest'` and `ui_host: 'https://us.posthog.com'` in `posthog.init`.
+- `deskTool` (from `sanity/desk`) is deprecated; use `structureTool` (from `sanity/structure`) instead.
+- Page-level hero fields in the Sanity `page` schema are unused; section documents control all actual page content.
+- Portable Text / rich text is used for body and paragraph fields; render `<PortableText>` output with `<div>` block wrappers (not `<p>`) to avoid invalid HTML nesting in Next.js.
+- The project fonts are Supreme (body/UI variable), Bespoke Serif (display variable), and Switzer — served from `public/fonts/` as local variable font files.

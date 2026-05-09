@@ -4,66 +4,94 @@ import { useEffect, useState } from 'react'
 
 import {
   buildDefaultDomainForm,
+  buildDefaultSiteForm,
   createDomainRecord,
+  createSiteRecord,
   deleteDomainRecordRequest,
   fetchDomains,
   updateDomainRecordRequest,
   verifyDomainRecord,
 } from '@/services/admin/domains'
 
-export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
+export function useDomainsManager({ initialDomains, vercelEnabled }) {
   const [domains, setDomains] = useState(initialDomains)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
-  const [form, setForm] = useState(buildDefaultDomainForm(sites))
+
+  // redirect-only add form
+  const [redirectForm, setRedirectForm] = useState(buildDefaultDomainForm())
+
+  // landing page creation form
+  const [siteForm, setSiteForm] = useState(buildDefaultSiteForm())
+
+  // inline per-row edit state
   const [editingDomain, setEditingDomain] = useState(null)
   const [editForm, setEditForm] = useState({
     siteSlug: '',
-    redirectTarget: '',
     tier: 'landing',
+    redirectTarget: '',
+    createSite: false,
+    siteName: '',
+    siteCategory: 'general',
   })
+
+  // which row has DNS instructions expanded
+  const [expandedDns, setExpandedDns] = useState(null)
+
+  // last successfully created site (for success banner)
+  const [lastCreatedSite, setLastCreatedSite] = useState(null)
 
   useEffect(() => {
     setDomains(initialDomains)
   }, [initialDomains])
 
   useEffect(() => {
-    if (!vercelEnabled) {
-      return
-    }
-
+    if (!vercelEnabled) return
     refreshDomains()
   }, [vercelEnabled])
 
   async function refreshDomains() {
     setError('')
     setLoading(true)
-
     try {
       const data = await fetchDomains()
       setDomains(data.domains)
-      if (data.syncError) {
-        setError(data.syncError)
-      }
-    } catch (nextError) {
-      setError(nextError.message || 'Unable to refresh domains.')
+      if (data.syncError) setError(data.syncError)
+    } catch (err) {
+      setError(err.message || 'Unable to refresh domains.')
     } finally {
       setLoading(false)
     }
   }
 
-  async function addDomain(event) {
+  async function addRedirectDomain(event) {
     event.preventDefault()
     setError('')
     setLoading(true)
-
     try {
-      await createDomainRecord(form)
-      setForm(buildDefaultDomainForm(sites))
+      await createDomainRecord(redirectForm)
+      setRedirectForm(buildDefaultDomainForm())
       await refreshDomains()
-    } catch (nextError) {
-      setError(nextError.message || 'Unable to add domain.')
+    } catch (err) {
+      setError(err.message || 'Unable to add redirect domain.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function addLandingPage(event) {
+    event.preventDefault()
+    setError('')
+    setLastCreatedSite(null)
+    setLoading(true)
+    try {
+      const result = await createSiteRecord(siteForm)
+      setLastCreatedSite(result)
+      setSiteForm(buildDefaultSiteForm())
+      await refreshDomains()
+    } catch (err) {
+      setError(err.message || 'Unable to create landing page.')
     } finally {
       setLoading(false)
     }
@@ -72,12 +100,11 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   async function verifyDomain(domain) {
     setError('')
     setLoading(true)
-
     try {
       await verifyDomainRecord(domain)
       await refreshDomains()
-    } catch (nextError) {
-      setError(nextError.message || 'Unable to verify domain.')
+    } catch (err) {
+      setError(err.message || 'Unable to verify domain.')
     } finally {
       setLoading(false)
     }
@@ -86,31 +113,50 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   function startEditing(domainRecord) {
     setEditingDomain(domainRecord.domain)
     setEditForm({
-      siteSlug: domainRecord.siteSlug || sites[0]?.slug || '',
+      siteSlug: domainRecord.siteSlug || '',
+      tier: domainRecord.tier || 'landing',
       redirectTarget: domainRecord.redirectTarget || '',
-      tier: domainRecord.tier || (domainRecord.redirectTarget ? 'redirect' : 'landing'),
+      createSite: false,
+      siteName: '',
+      siteCategory: 'general',
     })
+    setExpandedDns(null)
   }
 
   function cancelEditing() {
     setEditingDomain(null)
     setEditForm({
       siteSlug: '',
-      redirectTarget: '',
       tier: 'landing',
+      redirectTarget: '',
+      createSite: false,
+      siteName: '',
+      siteCategory: 'general',
     })
   }
 
   async function saveDomain(domain) {
     setError('')
     setLoading(true)
-
     try {
-      await updateDomainRecordRequest(domain, editForm)
+      if (editForm.createSite && editForm.siteSlug && editForm.siteName) {
+        await createSiteRecord({
+          domain,
+          name: editForm.siteName,
+          slug: editForm.siteSlug,
+          category: editForm.siteCategory,
+        })
+      } else {
+        await updateDomainRecordRequest(domain, {
+          siteSlug: editForm.siteSlug,
+          tier: editForm.tier,
+          redirectTarget: editForm.redirectTarget,
+        })
+      }
       await refreshDomains()
       cancelEditing()
-    } catch (nextError) {
-      setError(nextError.message || 'Unable to save domain.')
+    } catch (err) {
+      setError(err.message || 'Unable to save domain.')
     } finally {
       setLoading(false)
     }
@@ -119,18 +165,20 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
   async function removeDomain(domain) {
     setError('')
     setLoading(true)
-
     try {
       await deleteDomainRecordRequest(domain)
       await refreshDomains()
-      if (editingDomain === domain) {
-        cancelEditing()
-      }
-    } catch (nextError) {
-      setError(nextError.message || 'Unable to delete domain.')
+      if (editingDomain === domain) cancelEditing()
+    } catch (err) {
+      setError(err.message || 'Unable to delete domain.')
     } finally {
       setLoading(false)
     }
+  }
+
+  function toggleDns(domain) {
+    setExpandedDns((current) => (current === domain ? null : domain))
+    if (editingDomain === domain) cancelEditing()
   }
 
   return {
@@ -138,18 +186,25 @@ export function useDomainsManager({ initialDomains, sites, vercelEnabled }) {
     editForm,
     editingDomain,
     error,
-    form,
+    expandedDns,
+    lastCreatedSite,
     loading,
     query,
-    addDomain,
+    redirectForm,
+    siteForm,
+    addLandingPage,
+    addRedirectDomain,
     cancelEditing,
     refreshDomains,
     removeDomain,
     saveDomain,
-    setQuery,
     setEditForm,
-    setForm,
+    setLastCreatedSite,
+    setQuery,
+    setRedirectForm,
+    setSiteForm,
     startEditing,
+    toggleDns,
     verifyDomain,
   }
 }

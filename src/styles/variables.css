@@ -1,0 +1,27 @@
+/**
+ * Global utility palette — shared across every theme.
+ *
+ * Theme-specific tokens (--background, --primary, --foreground, ...) live
+ * in their own *-theme.css files. This file holds named colors and base
+ * neutrals that any theme may reference.
+ */
+:root {
+  --color-tidal: oklch(95.49% 0.11 118.86deg);
+  --color-voodoo: oklch(32.87% 0.06 332.81deg);
+  --color-chalet-green: oklch(45.52% 0.08 127.48deg);
+  --color-tasman: oklch(87.92% 0.03 140.12deg);
+  --color-metterhorn: oklch(32.6% 0.04 350.45deg);
+  --color-heather: oklch(84.9% 0.03 244.95deg);
+  --color-charade: oklch(28.29% 0.03 270.21deg);
+  --color-wattle: oklch(87.43% 0.16 108.14deg);
+  --color-ceramic: oklch(98.39% 0.01 125.5deg);
+  --color-tapa-green: oklch(36.1% 0.03 164.74deg);
+  --color-sea-mist: oklch(86.57% 0.03 156.49deg);
+  --color-sweetcorn: oklch(93.57% 0.13 101.75deg);
+  --color-black-current: oklch(32.05% 0.04 322.94deg);
+  --color-confetti: oklch(84.99% 0.14 104.07deg);
+  --color-blue-400: #546bf3;
+
+  --color-white: #ffffff;
+  --color-black: #111111;
+}

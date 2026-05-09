@@ -99,7 +99,7 @@ export default function Header() {
           content: 'local JSX nav and service catalog links',
         })}
       >
-        <div className="mx-auto w-full rounded-none bg-stone-100/90 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full">
+        <div className="mx-auto w-full rounded-none bg-stone-100 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full">
           <div className="flex items-center justify-between">
             <Link
               href="/"
@@ -152,7 +152,7 @@ export default function Header() {
       {shouldShowMobileContactCta ? (
         <a
           href="#consultation"
-          className="btn btn--primary btn--pill btn--md shadow-theme-brand fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[60] -translate-x-1/2 px-5 lg:hidden"
+          className="btn btn--primary btn--pill btn--md shadow-theme-brand fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-60 -translate-x-1/2 px-5 lg:hidden"
           aria-label="Contact our team"
         >
           Contact

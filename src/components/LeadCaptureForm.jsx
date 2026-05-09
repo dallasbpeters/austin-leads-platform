@@ -14,6 +14,7 @@ export default function LeadCaptureForm({
   context,
   buttonLabel = 'Request a Consultation',
   checkboxLabel = 'I agree to be contacted about my inquiry. We do not sell your information.',
+  serviceOptions = LEAD_SERVICE_OPTIONS,
   compact = false,
   className,
   inputClassName,
@@ -162,7 +163,7 @@ export default function LeadCaptureForm({
           disabled={disabled}
           required
         >
-          {LEAD_SERVICE_OPTIONS.map((option) => (
+          {serviceOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>

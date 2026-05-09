@@ -1,0 +1,103 @@
+/**
+ * Admin theme — neutral grayscale chrome for the platform admin.
+ *
+ * Class-scoped so it composes with the rest of the platform; the shared
+ * @theme inline mapping in theme.css forwards these slot vars to Tailwind
+ * utilities.
+ */
+.admin-theme {
+  --background: hsl(0 0% 98%);
+  --foreground: hsl(0 0% 11%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(0 0% 11%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(0 0% 11%);
+  --primary: hsl(0 0% 11%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(0 0% 96%);
+  --secondary-foreground: hsl(0 0% 11%);
+  --muted: hsl(0 0% 96%);
+  --muted-foreground: hsl(0 0% 45%);
+  --accent: hsl(0 0% 96%);
+  --accent-foreground: hsl(0 0% 11%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(0 0% 92%);
+  --input: hsl(0 0% 89%);
+  --ring: hsl(0 0% 11%);
+  --sidebar: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(0 0% 11%);
+  --sidebar-primary: hsl(0 0% 11%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(0 0% 96%);
+  --sidebar-accent-foreground: hsl(0 0% 11%);
+  --sidebar-border: hsl(0 0% 89%);
+  --sidebar-ring: hsl(0 0% 11%);
+
+  --font-sans: var(--font-google-sans-flex), sans-serif;
+  --font-serif: ui-serif, serif;
+  --font-mono: ui-monospace, monospace;
+  --font-display: var(--font-google-sans-flex), sans-serif;
+
+  --radius: 0.5rem;
+
+  --shadow-xs: 0;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08);
+  --shadow-glass: 0 18px 40px rgba(0, 0, 0, 0.16);
+  --shadow-glass-soft: 0 18px 40px rgba(0, 0, 0, 0.05);
+  --shadow-brand: 0 10px 24px rgba(0, 0, 0, 0.08);
+  --shadow-brand-hover: 0 0 30px rgba(0, 0, 0, 0.12);
+
+  /* Legacy palette bridge — keeps the hand-rolled .btn, .card, .bg-, and */
+  /* .text- utilities in globals.css rendering under this admin theme. */
+  --color-primary: var(--primary);
+  --color-primary-100: color-mix(in oklab, var(--primary) 8%, var(--background));
+  --color-primary-200: color-mix(in oklab, var(--primary) 14%, var(--background));
+  --color-primary-300: color-mix(in oklab, var(--primary) 24%, var(--background));
+  --color-primary-400: color-mix(in oklab, var(--primary) 40%, var(--background));
+  --color-primary-500: var(--primary);
+  --color-primary-600: color-mix(in oklab, var(--primary) 88%, white);
+  --color-primary-700: color-mix(in oklab, var(--primary) 78%, white);
+  --color-primary-800: color-mix(in oklab, var(--primary) 64%, white);
+  --color-primary-900: color-mix(in oklab, var(--primary) 50%, white);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-100: var(--muted);
+  --color-secondary-300: color-mix(in oklab, var(--secondary) 36%, var(--background));
+  --color-secondary-700: color-mix(in oklab, var(--secondary) 76%, var(--foreground));
+  --color-secondary-800: color-mix(in oklab, var(--secondary) 64%, var(--foreground));
+  --color-secondary-950: var(--foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-tertiary: var(--accent);
+  --color-tertiary-100: var(--muted);
+  --color-tertiary-300: color-mix(in oklab, var(--accent) 36%, var(--background));
+  --color-tertiary-700: color-mix(in oklab, var(--accent) 76%, var(--foreground));
+  --color-tertiary-alt: var(--accent);
+
+  --color-warm-bg: var(--background);
+  --color-surface: var(--muted);
+  --color-surface-elevated: var(--card);
+  --color-grid: var(--border);
+  --color-grid-line: var(--border);
+  --color-border: var(--border);
+  --color-border-strong: color-mix(in oklab, var(--border) 70%, var(--foreground));
+  --color-text-strong: var(--foreground);
+  --color-text: var(--muted-foreground);
+  --color-text-muted: var(--muted-foreground);
+
+  --color-slate-400: var(--muted-foreground);
+  --color-slate-500: var(--muted-foreground);
+  --color-slate-600: var(--muted-foreground);
+  --color-slate-700: var(--foreground);
+  --color-slate-900: var(--foreground);
+  --color-slate-950: var(--foreground);
+  --color-gray-800: var(--foreground);
+  --color-gray-900: var(--foreground);
+  --color-neutral-400: var(--muted-foreground);
+  --color-neutral-500: var(--muted-foreground);
+  --color-neutral-800: var(--foreground);
+  --color-neutral-900: var(--foreground);
+}

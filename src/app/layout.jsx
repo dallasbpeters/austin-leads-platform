@@ -4,10 +4,27 @@ import { Analytics } from '@vercel/analytics/react'
 import { VercelToolbar } from '@vercel/toolbar/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
+import { Google_Sans_Flex, Cutive, JetBrains_Mono } from "next/font/google";
 import '../styles/globals.css'
 import { SanityLive } from '@/sanity/live'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { PostHogProvider } from '@/app/providers'
+
+const fontSans = Google_Sans_Flex({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const fontSerif = Cutive({
+  subsets: ["latin"],
+  weight: '400',
+  variable: "--font-serif",
+});
+
+const fontMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const metadata = {
   title: 'Austin Leads Platform',
@@ -51,7 +68,7 @@ export default async function RootLayout({ children }) {
       </head>
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
-      <body className="text-foreground bg-background has-[admin-theme]:overflow-hidden">
+      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}>
         <PostHogProvider>
           {children}
         </PostHogProvider>

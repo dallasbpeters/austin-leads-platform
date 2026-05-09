@@ -13,6 +13,7 @@ import Band from './components/Band'
 import Testimonails from './components/Testimonials'
 import QuoteSection from './components/QuoteSection'
 import DevTrace from './components/dev/DevTrace'
+import { Agentation } from "agentation";
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
@@ -209,6 +210,7 @@ export default function App({
       </main>
       <DevTrace markup="src/components/Footer.jsx" content="local JSX footer + service catalog links" />
       <Footer />
+      {process.env.NODE_ENV === "development" && <Agentation />}
       {jsonLd ? (
         <script
           type="application/ld+json"

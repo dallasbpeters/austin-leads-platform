@@ -1,10 +1,19 @@
 import { requestJson } from '@/services/admin/hero-pages'
 
-export function buildDefaultDomainForm(sites) {
+export function buildDefaultDomainForm() {
   return {
     domain: '',
-    siteSlug: sites[0]?.slug || '',
+    siteSlug: '',
     redirectTarget: '',
+  }
+}
+
+export function buildDefaultSiteForm() {
+  return {
+    domain: '',
+    name: '',
+    slug: '',
+    category: 'general',
   }
 }
 
@@ -35,5 +44,12 @@ export async function updateDomainRecordRequest(domain, form) {
 export async function deleteDomainRecordRequest(domain) {
   return requestJson(`/api/domains/${encodeURIComponent(domain)}`, {
     method: 'DELETE',
+  })
+}
+
+export async function createSiteRecord(form) {
+  return requestJson('/api/sites', {
+    method: 'POST',
+    body: JSON.stringify(form),
   })
 }

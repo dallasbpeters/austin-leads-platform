@@ -7,7 +7,10 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const DEFAULT_POSTHOG_KEY = 'phc_adMRNqeoByZifxH3nDyCgZfjnMFIUIDnjKbytwTRNIk'
-const DEFAULT_POSTHOG_HOST = 'https://t.texassolarandroofingpros.com'
+// Route through the app's own domain so content blockers can't identify the scripts.
+// next.config.mjs rewrites /ingest/* → us.i.posthog.com/* and
+// /ingest/static/* → us-assets.i.posthog.com/static/*
+const DEFAULT_POSTHOG_HOST = '/ingest'
 
 const TRACKABLE_BUTTON_SELECTOR = [
   'button',
@@ -86,6 +89,7 @@ export function PostHogProvider({ children }) {
 
     posthog.init(key, {
       api_host: host,
+      ui_host: 'https://us.posthog.com',
       defaults: '2026-01-30',
       loaded: (instance) => {
         if (typeof window !== 'undefined') {

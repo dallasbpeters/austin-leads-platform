@@ -36,6 +36,26 @@ const SECTION_VARIANTS = {
       entryPoint: 'roofing-page',
     },
   },
+  christmasLights: {
+    heading: (
+      <>
+        Secure your
+        install date
+      </>
+    ),
+    copy: 'Spots fill up fast. A small deposit reserves your install window — we handle the hanging, any mid-season bulb issues, and full takedown after the holidays.',
+    buttonLabel: 'Reserve My Install Date',
+    sourceSection: 'christmas-lights-deposit',
+    serviceInterest: 'christmas-lights',
+    serviceOptions: [
+      { value: 'residential', label: 'Residential installation' },
+      { value: 'commercial', label: 'Commercial property' },
+      { value: 'takedown-only', label: 'Takedown / removal only' },
+    ],
+    metadata: {
+      entryPoint: 'christmas-lights-page',
+    },
+  },
 }
 
 export default function ConsultationSection({
@@ -46,10 +66,13 @@ export default function ConsultationSection({
   theme = 'light',
   pagePath = '/',
   pageTitle = 'Texas Solar and Roofing Pros',
+  serviceOptions = null,
   editAttributes,
 }) {
-  const isDarkTheme = theme === 'dark'
+  const isChristmasTheme = theme === 'christmasLights'
+  const isDarkTheme = theme === 'dark' || isChristmasTheme
   const content = SECTION_VARIANTS[variant] || SECTION_VARIANTS.default
+  const resolvedServiceOptions = serviceOptions ?? section?.serviceOptions ?? content.serviceOptions ?? undefined
   const headline = section?.title || content.heading
   const copy = section?.body || content.copy
   const buttonLabel = section?.ctaLabel || content.buttonLabel
@@ -89,7 +112,7 @@ export default function ConsultationSection({
   return (
     <section
       id={sectionId}
-      className={`scroll-mt-38 relative overflow-hidden py-10 ${isDarkTheme ? 'text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
+      className={`scroll-mt-38 relative overflow-hidden py-10 ${isDarkTheme ? 'text-white' : ''} ${theme === 'dark' ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
       {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
@@ -97,12 +120,19 @@ export default function ConsultationSection({
         content: 'local JSX section + live lead form',
       })}
       style={{
-        ...(isDarkTheme
-          ? {}
-          : {
-              backgroundImage:
-                'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
-            }),
+        ...(theme === 'light' && {
+          backgroundImage:
+            'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
+        }),
+        ...(isChristmasTheme && {
+          backgroundImage: [
+            'radial-gradient(ellipse at 15% 65%, rgba(185, 28, 28, 0.22) 0%, transparent 48%)',
+            'radial-gradient(ellipse at 82% 20%, rgba(202, 138, 4, 0.18) 0%, transparent 42%)',
+            'radial-gradient(ellipse at 58% 88%, rgba(21, 128, 61, 0.16) 0%, transparent 40%)',
+            'radial-gradient(ellipse at 72% 52%, rgba(185, 28, 28, 0.12) 0%, transparent 35%)',
+            `linear-gradient(135deg, hsl(var(--color-secondary-h) 45% 7%), hsl(var(--color-secondary-h) 38% 10%))`,
+          ].join(', '),
+        }),
       }}
     >
       <div className="grid relative items-center max-w-7xl gap-16 mx-auto px-4 lg:px-16 sm:px-3 md:px-6 z-20 grid-cols-1 py-12 md:grid-cols-[1.1fr_1fr]">
@@ -146,6 +176,7 @@ export default function ConsultationSection({
           <LeadCaptureForm
             context={leadContext}
             buttonLabel={buttonLabel}
+            serviceOptions={resolvedServiceOptions}
             inputClassName={isDarkTheme ? 'border-b px-3 py-2 text-white placeholder:text-white/48' : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'}
             labelClassName={isDarkTheme ? 'text-white/70' : 'text-slate-500'}
             checkboxClassName={isDarkTheme ? 'accent-white' : 'accent-primary'}

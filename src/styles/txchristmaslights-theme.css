@@ -1,0 +1,141 @@
+/**
+ * TX Christmas Lights theme.
+ *
+ * Class-scoped so it composes with the rest of the platform; the shared
+ * @theme inline mapping in theme.css forwards these slot vars to Tailwind
+ * utilities.
+ */
+.txchristmaslights-theme {
+  --background: oklch(0.9940 0.0041 91.4453);
+  --foreground: oklch(0.2839 0.0358 151.9060);
+  --card: oklch(1.0000 0 0);
+  --card-foreground: oklch(0.2839 0.0358 151.9060);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.2839 0.0358 151.9060);
+  --primary: oklch(0.5305 0.1962 28.2609);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.4559 0.1405 264.0068);
+  --secondary-foreground: oklch(1.0000 0 0);
+  --muted: oklch(0.9703 0.0041 157.1781);
+  --muted-foreground: oklch(0.5288 0.0348 161.2647);
+  --accent: oklch(0.8137 0.0865 269.9080);
+  --accent-foreground: oklch(0.2839 0.0358 151.9060);
+  --destructive: oklch(0.4622 0.1689 28.0725);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(0.9303 0.0100 155.0876);
+  --input: oklch(0.9303 0.0100 155.0876);
+  --ring: oklch(0.5305 0.1962 28.2609);
+  --chart-1: oklch(0.5305 0.1962 28.2609);
+  --chart-2: oklch(0.3830 0.0520 164.6409);
+  --chart-3: oklch(0.9176 0.1865 102.1441);
+  --chart-4: oklch(0.5290 0.2279 262.7247);
+  --chart-5: oklch(0.6672 0.1796 30.7989);
+  --sidebar: oklch(0.9940 0.0041 91.4453);
+  --sidebar-foreground: oklch(0.2839 0.0358 151.9060);
+  --sidebar-primary: oklch(0.5305 0.1962 28.2609);
+  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-accent: oklch(0.8137 0.0865 269.9080);
+  --sidebar-accent-foreground: oklch(0.2839 0.0358 151.9060);
+  --sidebar-border: oklch(0.9303 0.0100 155.0876);
+  --sidebar-ring: oklch(0.5305 0.1962 28.2609);
+
+  --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: Cutive, ui-serif, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --font-display: Cutive, ui-sans-serif, sans-serif, system-ui;
+
+  --radius: 0.75rem;
+
+  --shadow-xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
+  --shadow-glass: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-glass-soft: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
+  --shadow-brand: 0 10px 24px color-mix(in oklch, var(--primary) 22%, transparent);
+  --shadow-brand-hover: 0 0 30px color-mix(in oklch, var(--primary) 28%, transparent);
+
+  /* Legacy palette bridge — keeps the hand-rolled .btn, .card, .bg-, and */
+  /* .text- utilities in globals.css rendering under this theme. */
+  --color-primary: var(--primary);
+  --color-primary-100: color-mix(in oklch, var(--primary) 14%, var(--background));
+  --color-primary-200: color-mix(in oklch, var(--primary) 22%, var(--background));
+  --color-primary-300: color-mix(in oklch, var(--primary) 36%, var(--background));
+  --color-primary-400: color-mix(in oklch, var(--primary) 52%, var(--background));
+  --color-primary-500: var(--primary);
+  --color-primary-600: color-mix(in oklch, var(--primary) 88%, black);
+  --color-primary-700: color-mix(in oklch, var(--primary) 76%, black);
+  --color-primary-800: color-mix(in oklch, var(--primary) 64%, black);
+  --color-primary-900: color-mix(in oklch, var(--primary) 50%, black);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-100: color-mix(in oklch, var(--secondary) 14%, var(--background));
+  --color-secondary-300: color-mix(in oklch, var(--secondary) 36%, var(--background));
+  --color-secondary-700: color-mix(in oklch, var(--secondary) 76%, black);
+  --color-secondary-800: color-mix(in oklch, var(--secondary) 64%, black);
+  --color-secondary-950: color-mix(in oklch, var(--secondary) 40%, black);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-tertiary: var(--accent);
+  --color-tertiary-100: color-mix(in oklch, var(--accent) 18%, var(--background));
+  --color-tertiary-300: color-mix(in oklch, var(--accent) 36%, var(--background));
+  --color-tertiary-700: color-mix(in oklch, var(--accent) 76%, black);
+  --color-tertiary-alt: var(--accent);
+
+  --color-warm-bg: var(--background);
+  --color-surface: var(--muted);
+  --color-surface-elevated: var(--card);
+  --color-grid: var(--border);
+  --color-grid-line: var(--border);
+  --color-border: var(--border);
+  --color-border-strong: color-mix(in oklch, var(--border) 70%, var(--foreground));
+  --color-text-strong: var(--foreground);
+  --color-text: var(--muted-foreground);
+  --color-text-muted: var(--muted-foreground);
+
+  --color-slate-400: var(--muted-foreground);
+  --color-slate-500: var(--muted-foreground);
+  --color-slate-600: var(--muted-foreground);
+  --color-slate-700: var(--foreground);
+  --color-slate-900: var(--foreground);
+  --color-slate-950: var(--foreground);
+  --color-gray-800: var(--foreground);
+  --color-gray-900: var(--foreground);
+  --color-neutral-400: var(--muted-foreground);
+  --color-neutral-500: var(--muted-foreground);
+  --color-neutral-800: var(--foreground);
+  --color-neutral-900: var(--foreground);
+  --color-cyan-800: var(--secondary);
+  --color-cyan-900: var(--secondary);
+  --color-cyan-950: var(--secondary);
+}
+
+.txchristmaslights-theme.dark {
+  --background: oklch(0.2334 0.0318 151.2489);
+  --foreground: oklch(0.9303 0.0100 155.0876);
+  --card: oklch(0.2344 0.0295 152.0197);
+  --card-foreground: oklch(0.9303 0.0100 155.0876);
+  --popover: oklch(0.2344 0.0295 152.0197);
+  --popover-foreground: oklch(0.9303 0.0100 155.0876);
+  --primary: oklch(0.6792 0.2098 30.7858);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.7620 0.1704 157.1841);
+  --secondary-foreground: oklch(0.2334 0.0318 151.2489);
+  --muted: oklch(0.2839 0.0358 151.9060);
+  --muted-foreground: oklch(0.7514 0.0227 158.4119);
+  --accent: oklch(0.9176 0.1865 102.1441);
+  --accent-foreground: oklch(0.2334 0.0318 151.2489);
+  --destructive: oklch(0.6998 0.1918 30.3380);
+  --destructive-foreground: oklch(1.0000 0 0);
+  --border: oklch(0.2839 0.0358 151.9060);
+  --input: oklch(0.2839 0.0358 151.9060);
+  --ring: oklch(0.6792 0.2098 30.7858);
+  --sidebar: oklch(0.2334 0.0318 151.2489);
+  --sidebar-foreground: oklch(0.9303 0.0100 155.0876);
+  --sidebar-primary: oklch(0.6792 0.2098 30.7858);
+  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-accent: oklch(0.2344 0.0295 152.0197);
+  --sidebar-accent-foreground: oklch(0.7620 0.1704 157.1841);
+  --sidebar-border: oklch(0.2839 0.0358 151.9060);
+  --sidebar-ring: oklch(0.9176 0.1865 102.1441);
+}

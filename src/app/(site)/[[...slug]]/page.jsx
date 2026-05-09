@@ -1,11 +1,13 @@
 import { buildMetadataForCurrentSite, renderCurrentSitePage } from '@/lib/platform/site-page'
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata({ params, searchParams }) {
   const { slug = [] } = await params
-  return buildMetadataForCurrentSite(slug)
+  const sp = await searchParams
+  return buildMetadataForCurrentSite(slug, sp)
 }
 
-export default async function PublicCatchAllPage({ params }) {
+export default async function PublicCatchAllPage({ params, searchParams }) {
   const { slug = [] } = await params
-  return renderCurrentSitePage(slug)
+  const sp = await searchParams
+  return renderCurrentSitePage(slug, sp)
 }

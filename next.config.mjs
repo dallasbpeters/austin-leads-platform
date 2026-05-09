@@ -128,6 +128,21 @@ const nextConfig = {
   experimental: {
     viewTransition: true,
   },
+  async rewrites() {
+    return [
+      // Proxy PostHog static assets (recorder, surveys, etc.) through the app domain
+      // so content blockers can't identify and block the analytics scripts.
+      {
+        source: '/ingest/static/:path*',
+        destination: 'https://us-assets.i.posthog.com/static/:path*',
+      },
+      // Proxy PostHog event ingestion through the app domain.
+      {
+        source: '/ingest/:path*',
+        destination: 'https://us.i.posthog.com/:path*',
+      },
+    ]
+  },
   async redirects() {
     try {
       return await getSanityRedirects()
