@@ -9,10 +9,10 @@ import {
   getHomepageForSite,
   getHomepageReviewsForSite,
   getHeroHomepageForSite,
-  getNavigationForSite,
   getPageForRequest,
   getPrimaryUrl,
   isPrimarySiteSlug,
+  resolveNavigationForSite,
   resolveSiteByHost,
   resolveSiteBySlug,
 } from '@/lib/platform/content'
@@ -242,9 +242,7 @@ export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
     const homepage = await getHomepageForSite(site.slug)
     const heroHomepage = await getHeroHomepageForSite(site.slug)
     const heroSection = homepage
-      ? (homepage.heroSection ??
-          homepage.sections?.find(isHeroSectionBlock) ??
-          null)
+      ? (homepage.heroSection ?? homepage.sections?.find(isHeroSectionBlock) ?? null)
       : (heroHomepage?.heroSection ?? null)
     const resourcesSection =
       homepage?.sections?.find((section) => section._type === 'resourceGridSection') ??
@@ -284,7 +282,7 @@ export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
       site={site}
       page={page}
       pathname={pathname}
-      navigation={getNavigationForSite(site.slug)}
+      navigation={resolveNavigationForSite(site)}
       jsonLd={createJsonLd(site, page, pathname)}
       reviews={reviews}
     />

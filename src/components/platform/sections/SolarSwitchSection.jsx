@@ -4,8 +4,7 @@ import SolarSwitch from '@/components/SolarSwitch'
 export function SolarSwitchSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
-      className="bg-background border-b border-border/60"
-      {...editAttributes}
+      className="bg-background border-border/60 border-b"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/SolarSwitchSection.jsx',

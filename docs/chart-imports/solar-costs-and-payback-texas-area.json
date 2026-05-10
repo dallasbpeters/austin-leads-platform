@@ -39,110 +39,77 @@
       "label": "Yr 1",
       "barValue": 3570,
       "lineValue": 22400,
-      "areaValues": [
-        3570,
-        22400
-      ]
+      "areaValues": [3570, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 2",
       "barValue": 4640,
       "lineValue": 22400,
-      "areaValues": [
-        4640,
-        22400
-      ]
+      "areaValues": [4640, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 3",
       "barValue": 5710,
       "lineValue": 22400,
-      "areaValues": [
-        5710,
-        22400
-      ]
+      "areaValues": [5710, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 5",
       "barValue": 7850,
       "lineValue": 22400,
-      "areaValues": [
-        7850,
-        22400
-      ]
+      "areaValues": [7850, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 7",
       "barValue": 9990,
       "lineValue": 22400,
-      "areaValues": [
-        9990,
-        22400
-      ]
+      "areaValues": [9990, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 10",
       "barValue": 13200,
       "lineValue": 22400,
-      "areaValues": [
-        13200,
-        22400
-      ]
+      "areaValues": [13200, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 12",
       "barValue": 15340,
       "lineValue": 22400,
-      "areaValues": [
-        15340,
-        22400
-      ]
+      "areaValues": [15340, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 15",
       "barValue": 18550,
       "lineValue": 22400,
-      "areaValues": [
-        18550,
-        22400
-      ]
+      "areaValues": [18550, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 17",
       "barValue": 20690,
       "lineValue": 22400,
-      "areaValues": [
-        20690,
-        22400
-      ]
+      "areaValues": [20690, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 19",
       "barValue": 22830,
       "lineValue": 22400,
-      "areaValues": [
-        22830,
-        22400
-      ]
+      "areaValues": [22830, 22400]
     },
     {
       "_type": "energyChartPoint",
       "label": "Yr 20",
       "barValue": 23900,
       "lineValue": 22400,
-      "areaValues": [
-        23900,
-        22400
-      ]
+      "areaValues": [23900, 22400]
     }
   ]
 }

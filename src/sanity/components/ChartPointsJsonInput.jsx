@@ -71,8 +71,7 @@ function normalizePoint(value, index) {
     const labelCandidate = value.label ?? value.name ?? value.month ?? value.category ?? value.x ?? value.key
     const barCandidate = value.barValue ?? value.primary ?? value.value ?? value.bar ?? value.y
     const lineCandidate = value.lineValue ?? value.secondary ?? value.line ?? value.target ?? value.y2
-    const areaValues =
-      normalizeAreaValuesArray(value.areaValues) ?? normalizeAreaValuesArray(value.areas)
+    const areaValues = normalizeAreaValuesArray(value.areaValues) ?? normalizeAreaValuesArray(value.areas)
 
     const point = {
       _type: 'energyChartPoint',
@@ -135,9 +134,7 @@ function extractChartConfig(parsed) {
     : null
 
   const source =
-    parsed.section && typeof parsed.section === 'object'
-      ? parsed.section
-      : sectionFromSections || parsed
+    parsed.section && typeof parsed.section === 'object' ? parsed.section : sectionFromSections || parsed
 
   const configKeys = [
     'type',
@@ -177,9 +174,7 @@ function parseChartPointsJson(input) {
     throw new Error('JSON must be an array, or an object containing chartPoints/points/data.')
   }
 
-  const points = collection
-    .map((entry, index) => normalizePoint(entry, index))
-    .filter(Boolean)
+  const points = collection.map((entry, index) => normalizePoint(entry, index)).filter(Boolean)
 
   if (!points.length) {
     throw new Error('No valid points found in JSON.')
@@ -190,12 +185,9 @@ function parseChartPointsJson(input) {
     (max, point) => Math.max(max, Array.isArray(point?.areaValues) ? point.areaValues.length : 0),
     0,
   )
-  const hasAreaSeries =
-    Array.isArray(config.chartAreaSeries) && config.chartAreaSeries.length > 0
+  const hasAreaSeries = Array.isArray(config.chartAreaSeries) && config.chartAreaSeries.length > 0
   const isAreaChartImport =
-    config.chartType === 'area' ||
-    parsed.chartType === 'area' ||
-    parsed._type === 'energyChartSection'
+    config.chartType === 'area' || parsed.chartType === 'area' || parsed._type === 'energyChartSection'
   if (maxAreaValuesLen >= 2 && !hasAreaSeries && isAreaChartImport) {
     config = {
       ...config,
@@ -225,16 +217,15 @@ function patchValueForChartConfig(key, fieldValue) {
   return fieldValue.map((row, index) => ({
     _type: 'energyChartAreaSeriesItem',
     _key: typeof row?._key === 'string' && row._key ? row._key : generateKey(index),
-    title:
-      row?.title != null && String(row.title).trim()
-        ? String(row.title).trim()
-        : `Series ${index + 1}`,
+    title: row?.title != null && String(row.title).trim() ? String(row.title).trim() : `Series ${index + 1}`,
     ...(row?.color != null && String(row.color).trim() !== '' ? { color: row.color } : {}),
   }))
 }
 
 function escapeKeyForJsonMatch(key) {
-  return String(key || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+  return String(key || '')
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
 }
 
 /**
@@ -299,14 +290,7 @@ function ensurePortableTextKeys(value) {
   })
 }
 
-async function persistChartImportToSanity({
-  client,
-  docId,
-  sectionKey,
-  points,
-  siblingNoBody,
-  config,
-}) {
+async function persistChartImportToSanity({ client, docId, sectionKey, points, siblingNoBody, config }) {
   const keyedPoints = ensureListKeys(points, 'chart-point')
   const base = `sections[_key=="${escapeKeyForJsonMatch(sectionKey)}"]`
   const payload = {
@@ -455,9 +439,7 @@ export default function ChartPointsJsonInput(props) {
           setError(
             'Cannot save import: no document id in this view. Open the page from the Structure list, then import again.',
           )
-          setStatus(
-            'Chart fields may have updated locally only — use Structure → open document → import.',
-          )
+          setStatus('Chart fields may have updated locally only — use Structure → open document → import.')
         } else if (!sectionKey) {
           setError('Cannot save import: chart must be inside page sections[].')
           setStatus('')
@@ -525,8 +507,8 @@ export default function ChartPointsJsonInput(props) {
       >
         <p style={{ margin: 0, fontWeight: 600 }}>Import chart points from JSON</p>
         <p style={{ margin: '0.35rem 0 0.65rem 0', fontSize: '0.85rem', opacity: 0.8 }}>
-          Writes points + section fields via Sanity API (full sections array), same as other Studio
-          tools. Open the page from <strong>Structure</strong> so the document id is available.
+          Writes points + section fields via Sanity API (full sections array), same as other Studio tools.
+          Open the page from <strong>Structure</strong> so the document id is available.
         </p>
         <div
           style={{

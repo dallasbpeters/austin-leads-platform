@@ -9,6 +9,54 @@ import { withSectionKeys } from '@/lib/sanity/keys'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 
+const heroVideoProjection = `
+  heroVideo{
+    provider,
+    externalId,
+    url,
+    urls{
+      mp4,
+      webm,
+      hls,
+      poster
+    },
+    posterImage{
+      crop,
+      hotspot,
+      altText,
+      alt,
+      asset->{
+        _id,
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    },
+    alt,
+    description,
+    duration,
+    width,
+    height,
+    autoplay,
+    loop,
+    muted,
+    controls,
+    playsInline
+  },
+  heroVideoAsset{
+    asset->{
+      _id,
+      url,
+      mimeType,
+      originalFilename,
+      size
+    }
+  },`
+
 const sectionProjection = `
   _type,
   _key,
@@ -224,6 +272,80 @@ const sectionProjection = `
       }
     }
   },
+  // pricingSection: array of pricingNoteItem (title, body, variant).
+  notes[]{
+    _key,
+    title,
+    body,
+    variant
+  },
+  // gallerySection: array of galleryImage (image with altText + neighborhood/year/package metadata).
+  images[]{
+    _key,
+    crop,
+    hotspot,
+    altText,
+    alt,
+    neighborhood,
+    year,
+    package,
+    asset->{
+      _id,
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  heroVideo{
+    provider,
+    externalId,
+    url,
+    urls{
+      mp4,
+      webm,
+      hls,
+      poster
+    },
+    posterImage{
+      crop,
+      hotspot,
+      altText,
+      alt,
+      asset->{
+        _id,
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    },
+    alt,
+    description,
+    duration,
+    width,
+    height,
+    autoplay,
+    loop,
+    muted,
+    controls,
+    playsInline
+  },
+  heroVideoAsset{
+    asset->{
+      _id,
+      url,
+      mimeType,
+      originalFilename,
+      size
+    }
+  },
   image,
   imageAsset{
     crop,
@@ -282,6 +404,7 @@ const sectionProjection = `
     href,
     icon,
     color,
+    cardColor,
     image,
     imageAsset{
       crop,
@@ -318,6 +441,7 @@ const sectionProjection = `
     href,
     icon,
     color,
+    cardColor,
     image,
     imageAsset{
       crop,
@@ -347,6 +471,7 @@ const sectionProjection = `
     href,
     icon,
     color,
+    cardColor,
     image,
     imageAsset{
       crop,
@@ -411,6 +536,16 @@ const sectionProjection = `
         }
       }
     }
+  },
+  // serviceAreaMapSection fields
+  description,
+  accentColor,
+  backgroundColor,
+  areas[]{
+    _key,
+    _type,
+    countyKey,
+    displayName
   }
 `
 
@@ -476,7 +611,7 @@ function resolveSanityColorValue(value) {
   }
 
   if (typeof value?.hex === 'string' && value.hex.trim()) {
-    return value.hex
+    return cleanRuntimeString(value.hex)
   }
 
   const rgb = value?.rgb
@@ -584,7 +719,9 @@ function sanitizeSection(section) {
           ? Number(section.amplitude)
           : section.amplitude,
     text: Array.isArray(section.text) ? section.text.map(cleanRuntimeString).filter(Boolean) : section.text,
-    texts: Array.isArray(section.texts) ? section.texts.map(cleanRuntimeString).filter(Boolean) : section.texts,
+    texts: Array.isArray(section.texts)
+      ? section.texts.map(cleanRuntimeString).filter(Boolean)
+      : section.texts,
     fontSize:
       typeof section.fontSize === 'number'
         ? section.fontSize
@@ -639,6 +776,8 @@ function sanitizeSection(section) {
     secondaryPersonBlurb: section.secondaryPersonBlurb,
     ctaLabel: section.ctaLabel,
     color: resolveSanityColorValue(section.color),
+    accentColor: resolveSanityColorValue(section.accentColor),
+    backgroundColor: resolveSanityColorValue(section.backgroundColor),
     theme: cleanRuntimeString(section.theme),
     ctaHref: cleanRuntimeString(section.ctaHref),
     avatarEyebrow: section.avatarEyebrow,
@@ -665,6 +804,15 @@ function sanitizeSection(section) {
     secondaryItems: Array.isArray(section.secondaryItems)
       ? section.secondaryItems.map(sanitizeItem)
       : section.secondaryItems,
+    description: typeof section.description === 'string' ? cleanRuntimeString(section.description) : section.description,
+    areas: Array.isArray(section.areas)
+      ? section.areas.map((area) => ({
+          ...area,
+          _key: cleanRuntimeString(area?._key),
+          countyKey: cleanRuntimeString(area?.countyKey),
+          displayName: cleanRuntimeString(area?.displayName),
+        }))
+      : section.areas,
   }
 }
 
@@ -867,6 +1015,8 @@ function buildHomepageHeroSection(page) {
     heroOverlayOpacity: page.heroOverlayOpacity ?? null,
     heroAsset: page.heroAsset ?? null,
     heroImage: page.heroImage ?? null,
+    heroVideo: page.heroVideo ?? null,
+    heroVideoAsset: page.heroVideoAsset ?? null,
     heroSlides: Array.isArray(page.heroSlides) ? page.heroSlides : [],
     metrics: Array.isArray(page.heroMetrics) ? page.heroMetrics : [],
     actions: Array.isArray(page.heroActions) ? page.heroActions : [],
@@ -941,7 +1091,13 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
     }
 
     const slug = cleanHref.replace(/^\/+/, '')
-    if (!slug || slug === 'guides' || slug === 'guides/' || slug === 'guides/page' || slug === 'guides/index') {
+    if (
+      !slug ||
+      slug === 'guides' ||
+      slug === 'guides/' ||
+      slug === 'guides/page' ||
+      slug === 'guides/index'
+    ) {
       return false
     }
 
@@ -1148,10 +1304,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
                 image: guidePage.heroImage ?? null,
                 imageAsset: guidePage.heroAsset ?? null,
                 guidePublishedAt:
-                  guidePage.guidePublishedAt ||
-                  item.guidePublishedAt ||
-                  item.guideUpdatedAt ||
-                  null,
+                  guidePage.guidePublishedAt || item.guidePublishedAt || item.guideUpdatedAt || null,
               }
             })
             .sort((left, right) => {
@@ -1190,9 +1343,7 @@ function slugFromHref(href) {
     return ''
   }
 
-  return value
-    .replace(/^https?:\/\/[^/]+/i, '')
-    .replace(/^\/+/, '')
+  return value.replace(/^https?:\/\/[^/]+/i, '').replace(/^\/+/, '')
 }
 
 async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlug }) {
@@ -1227,7 +1378,11 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
     new Set(
       page.sections
         .filter((section) => section.type === 'serviceGrid')
-        .flatMap((section) => [...(section.items || []), ...(section.roofingItems || []), ...(section.secondaryItems || [])])
+        .flatMap((section) => [
+          ...(section.items || []),
+          ...(section.roofingItems || []),
+          ...(section.secondaryItems || []),
+        ])
         .map((item) => slugFromHref(item?.href))
         .filter(Boolean),
     ),
@@ -1387,6 +1542,7 @@ export async function resolveSiteBySlug(siteSlug) {
         leadForm,
         seo,
         brand,
+        navigation,
         organization
       }`,
       { siteSlug },
@@ -1455,6 +1611,28 @@ export function getNavigationForSite(siteSlug) {
     }))
 }
 
+/**
+ * Resolve the navigation list for a site, preferring an editor-curated list
+ * on the Sanity `site` document and falling back to the auto-derived list of
+ * top-level pages when nothing is set.
+ */
+export function resolveNavigationForSite(site) {
+  const sanityNav = Array.isArray(site?.navigation) ? site.navigation : []
+  const curated = sanityNav
+    .map((item) => ({
+      label: typeof item?.label === 'string' ? item.label : '',
+      href: typeof item?.href === 'string' ? item.href : '',
+      isExternal: Boolean(item?.isExternal),
+    }))
+    .filter((item) => item.label && item.href)
+
+  if (curated.length > 0) {
+    return curated
+  }
+
+  return getNavigationForSite(site?.slug || '')
+}
+
 function getEquivalentSiteIds(site) {
   const equivalentSlugs = getEquivalentSiteSlugs(site.slug)
 
@@ -1497,6 +1675,7 @@ export async function resolveSiteByHost(host) {
         leadForm,
         seo,
         brand,
+        navigation,
         organization
       }`,
       { host: normalizedHost },
@@ -1605,6 +1784,7 @@ export async function getPageForRequest(site, slugParts = []) {
             }
           }
         },
+        ${heroVideoProjection}
         heroMetrics,
         heroActions[]{
           label,
@@ -1681,6 +1861,7 @@ export async function getPageForRequest(site, slugParts = []) {
             }
           }
         },
+        ${heroVideoProjection}
         heroMetrics,
         heroActions[]{
           label,
@@ -1740,14 +1921,15 @@ export async function getPageForRequest(site, slugParts = []) {
             targetPath: guideTargetPath,
           })
         : { color: '', category: '', updatedAt: '' }
-      const pageWithGuideMeta = guideCardMeta?.color || guideCardMeta?.category
-        ? {
-            ...serviceSyncedPage,
-            guideCardColor: guideCardMeta.color,
-            guideCategory: guideCardMeta.category,
-            guideCardMetaUpdatedAt: guideCardMeta.updatedAt,
-          }
-        : serviceSyncedPage
+      const pageWithGuideMeta =
+        guideCardMeta?.color || guideCardMeta?.category
+          ? {
+              ...serviceSyncedPage,
+              guideCardColor: guideCardMeta.color,
+              guideCategory: guideCardMeta.category,
+              guideCardMetaUpdatedAt: guideCardMeta.updatedAt,
+            }
+          : serviceSyncedPage
 
       return withPageSource(pageWithGuideMeta, 'sanity')
     }
@@ -1875,6 +2057,7 @@ export async function getHeroPages({ stega = false } = {}) {
             }
           }
         },
+        ${heroVideoProjection}
         heroMetrics,
         heroActions[]{
           label,

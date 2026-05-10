@@ -96,8 +96,8 @@ export default function GuideShareBar({ url = '', title = '' }) {
 
   return (
     <section className="relative z-30 w-full">
-      <div className="bg-gradient grid grid-flow-col place-content-end place-items-center gap-2 border-y border-border bg-card px-4 py-3 sm:px-6 lg:px-8">
-        <p className="mr-2 font-semibold text-sm text-foreground">Share this guide:</p>
+      <div className="bg-gradient border-border bg-card grid grid-flow-col place-content-end place-items-center gap-2 border-y px-4 py-3 sm:px-6 lg:px-8">
+        <p className="text-foreground mr-2 text-sm font-semibold">Share this guide:</p>
         {items.map((item) => (
           <a
             key={item.id}
@@ -105,7 +105,7 @@ export default function GuideShareBar({ url = '', title = '' }) {
             target={item.id === 'email' ? undefined : '_blank'}
             rel={item.id === 'email' ? undefined : 'noopener noreferrer'}
             onClick={() => handleShareClick(item.id)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-none bg-background text-foreground transition-colors hover:bg-muted"
+            className="bg-background text-foreground hover:bg-muted inline-flex h-9 w-9 items-center justify-center rounded-none transition-colors"
             aria-label={item.label}
             title={item.label}
           >
@@ -115,7 +115,7 @@ export default function GuideShareBar({ url = '', title = '' }) {
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-none bg-background text-foreground transition-colors hover:bg-muted"
+          className="bg-background text-foreground hover:bg-muted inline-flex h-9 w-9 items-center justify-center rounded-none transition-colors"
           aria-label="Copy guide link"
           title={copied ? 'Copied' : 'Copy link'}
         >

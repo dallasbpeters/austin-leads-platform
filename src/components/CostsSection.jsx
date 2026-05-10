@@ -36,58 +36,84 @@ export default function CostsSection({ section = null, sectionId = 'costs', edit
     section?.secondaryItems?.[0]?.body ||
     'The strongest quotes clearly separate contract cost, incentives, and expected production so you can compare options without guessing where the savings are supposed to come from.'
 
+  const rawColor = section?.color
+  const accentHex =
+    (typeof rawColor === 'string' ? rawColor : rawColor?.hex) || ''
+  const sectionStyle = accentHex
+    ? {
+        background: `linear-gradient(188deg, color-mix(in oklch, ${accentHex} 6%, white) 3.24%, color-mix(in oklch, ${accentHex} 28%, white) 110.59%)`,
+      }
+    : undefined
+  const labelStyle = accentHex ? { color: accentHex } : undefined
+  const dividerStyle = accentHex
+    ? { borderColor: `color-mix(in oklch, ${accentHex} 28%, transparent)` }
+    : undefined
+
   return (
     <section
-      className="grid py-24 bg-gradient border-stone-100 border-t place-content-center"
-      {...editAttributes}
+      className="grid place-content-center border-t border-stone-100 py-24"
+      style={sectionStyle}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/CostsSection.jsx',
         content: 'local JSX copy',
       })}
-      >
-      <div className="max-w-7xl w-full mx-auto px-4">
-        <p className="mb-8 font-semibold text-cyan-900 text-sm tracking-[0.2em] type-accent uppercase">
+    >
+      <div className="mx-auto w-full max-w-6xl px-4">
+        <p
+          className="type-accent mb-8 text-sm font-semibold tracking-[0.2em] text-cyan-900 uppercase"
+          style={labelStyle}
+        >
           {eyebrow}
         </p>
         <h2 className="mb-6 text-[clamp(2.25rem,5vw,3.5rem)] text-slate-900">{title}</h2>
-        <PortableTextContent as="div" value={body} className="font-semibold leading-7 text-[1.125rem] text-neutral-500" />
+        <PortableTextContent
+          as="div"
+          value={body}
+          className="text-[1.125rem] leading-7 font-semibold text-neutral-500"
+        />
         <PortableTextContent
           as="div"
           value={subtitle}
-          className="mt-3 font-semibold leading-7 text-[1.125rem] text-neutral-500"
+          className="mt-3 text-[1.125rem] leading-7 font-semibold text-neutral-500"
         />
 
-        <div className="grid gap-12 my-16 lg:grid-cols-3">
+        <div className="my-16 grid gap-12 lg:grid-cols-3">
           {stats.map((item) => (
             <div key={item._key || item.title}>
-              <p className="mb-3 font-bold text-6xl text-neutral-900">{item.number || item.title}</p>
-              <p className="mb-3 font-semibold text-cyan-800 text-sm tracking-[0.2em] uppercase">
-                {item.title || item.eyebrow}
+              <p className="mb-3 text-6xl font-bold text-neutral-900">{item.number}</p>
+              <p
+                className="mb-3 text-sm font-semibold tracking-[0.2em] text-cyan-800 uppercase"
+                style={labelStyle}
+              >
+                {item.title}
               </p>
               <PortableTextContent
                 as="div"
                 value={item.body}
-                className="font-semibold leading-7 text-[0.9375rem] text-neutral-500"
+                className="text-[0.9375rem] leading-7 font-semibold text-neutral-500"
               />
             </div>
           ))}
         </div>
 
-        <div className="mb-12 border-blue-300 border-t"></div>
+        <div className="mb-12 border-t border-blue-300" style={dividerStyle}></div>
 
-        <div className="flex max-[900px]:flex-col items-baseline gap-8">
-          <p className="font-semibold text-blue-900 text-sm tracking-[0.2em] shrink-0 uppercase">
+        <div className="flex items-baseline gap-8 max-[900px]:flex-col">
+          <p
+            className="shrink-0 text-sm font-semibold tracking-[0.2em] text-blue-900 uppercase"
+            style={labelStyle}
+          >
             {paybackEyebrow}
           </p>
           <div>
-            <p className="font-semibold leading-[1.35] text-[clamp(1.5rem,4vw,1.875rem)] text-neutral-900">
+            <p className="text-[clamp(1.5rem,4vw,1.875rem)] leading-[1.35] font-semibold text-neutral-900">
               {paybackTitle}
             </p>
             <PortableTextContent
               as="div"
               value={paybackBody}
-              className="mt-3 font-semibold leading-7 text-base text-neutral-500"
+              className="mt-3 text-base leading-7 font-semibold text-neutral-500"
             />
           </div>
         </div>

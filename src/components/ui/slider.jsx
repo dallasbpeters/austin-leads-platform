@@ -19,7 +19,7 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
       min={min}
       max={max}
       className={cn(
-        "flex relative data-[orientation=vertical]:flex-col items-center w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[disabled]:opacity-50 select-none touch-none",
+        'relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
         className,
       )}
       {...props}
@@ -27,13 +27,13 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
       <SliderPrimitive.Track
         data-slot="slider-track"
         className={cn(
-          "relative data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5 bg-muted rounded-full grow overflow-hidden",
+          'bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5',
         )}
       >
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(
-            "absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full bg-primary",
+            'bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full',
           )}
         />
       </SliderPrimitive.Track>
@@ -41,7 +41,7 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={index}
-          className="block bg-primary border border-primary rounded-full shadow-theme-sm transition-[color,box-shadow] disabled:opacity-50 ring-primary/50 shrink-0 size-4 disabled:pointer-events-none focus-visible:outline-hidden focus-visible:ring-4 hover:ring-4"
+          className="bg-primary border-primary shadow-theme-sm ring-primary/50 block size-4 shrink-0 rounded-full border transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
         />
       ))}
     </SliderPrimitive.Root>

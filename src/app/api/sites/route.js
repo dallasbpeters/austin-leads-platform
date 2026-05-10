@@ -101,7 +101,13 @@ export async function POST(request) {
         ],
         heroMediaMode: 'single',
         actions: [
-          { _key: key(), _type: 'pageAction', label: 'Get a Free Estimate', href: '#lead-form', variant: 'default' },
+          {
+            _key: key(),
+            _type: 'pageAction',
+            label: 'Get a Free Estimate',
+            href: '#lead-form',
+            variant: 'default',
+          },
           { _key: key(), _type: 'pageAction', label: 'Learn More', href: '#services', variant: 'outline' },
         ],
       },
@@ -143,8 +149,5 @@ export async function POST(request) {
     ? await upsertDomainRecordDb(domainRecord)
     : upsertDomainRecord(domainRecord)
 
-  return NextResponse.json(
-    { site, page, domain: persisted, vercel: vercelResult },
-    { status: 201 },
-  )
+  return NextResponse.json({ site, page, domain: persisted, vercel: vercelResult }, { status: 201 })
 }

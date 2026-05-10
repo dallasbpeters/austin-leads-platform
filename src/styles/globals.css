@@ -8,7 +8,6 @@
 @import './txchristmaslights-theme.css';
 @import './admin-theme.css';
 
-
 @keyframes collapsible-down {
   from {
     height: 0;
@@ -129,15 +128,15 @@ body.admin-body-locked {
 
   .google-sans {
     --font-weight: 300;
-    font-family: "Google Sans Flex", sans-serif;
+    font-family: 'Google Sans Flex', sans-serif;
     font-optical-sizing: auto;
     font-weight: var(--font-weight);
     font-style: normal;
     font-variation-settings:
-      "slnt" 0,
-      "wdth" 100,
-      "GRAD" 0,
-      "ROND" 0;
+      'slnt' 0,
+      'wdth' 100,
+      'GRAD' 0,
+      'ROND' 0;
   }
   .google-sans.google-sans-normal {
     --font-weight: 400;
@@ -184,7 +183,11 @@ body.admin-body-locked {
 
   @supports (color: color-contrast(white vs black)) {
     .btn--secondary {
-      color: color-contrast(var(--btn-secondary-bg) vs var(--color-secondary-950), var(--color-text-strong), var(--color-white));
+      color: color-contrast(
+        var(--btn-secondary-bg) vs var(--color-secondary-950),
+        var(--color-text-strong),
+        var(--color-white)
+      );
     }
   }
 
@@ -197,7 +200,11 @@ body.admin-body-locked {
 
   @supports (color: color-contrast(white vs black)) {
     .btn--secondary:hover {
-      color: color-contrast(var(--btn-secondary-bg) vs var(--color-secondary-950), var(--color-text-strong), var(--color-white));
+      color: color-contrast(
+        var(--btn-secondary-bg) vs var(--color-secondary-950),
+        var(--color-text-strong),
+        var(--color-white)
+      );
     }
   }
   .btn--tertiary {
@@ -360,7 +367,6 @@ body.admin-body-locked {
     color: var(--color-cyan-800);
   }
 
- 
   .font-wght-450 {
     font-variation-settings: 'wght' 450;
   }

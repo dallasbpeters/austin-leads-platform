@@ -3,26 +3,26 @@ version: alpha
 name: Austin Leads Platform
 description: Multi-tenant Texas lead-generation platform with a high-contrast flagship solar homepage and a neutral operational admin shell.
 colors:
-  primary: "#016BB7"
-  primary-strong: "#016BB7"
-  primary-soft: "#5AAFEF"
-  secondary: "#0F363E"
-  secondary-strong: "#31393F"
-  secondary-soft: "#4D6A6F"
-  tertiary: "#F8981B"
-  tertiary-deep: "#C66F08"
-  neutral: "#EEF3F7"
-  neutral-warm: "#EFF5F6"
-  surface: "#FFFFFF"
-  surface-muted: "#DAE2E7"
-  text: "#31393F"
-  text-soft: "#4D6A6F"
-  text-inverse: "#FFFFFF"
-  admin-background: "#FAFAFA"
-  admin-surface: "#FFFFFF"
-  admin-text: "#1C1C1C"
-  admin-muted: "#F5F5F5"
-  admin-border: "#EBEBEB"
+  primary: '#016BB7'
+  primary-strong: '#016BB7'
+  primary-soft: '#5AAFEF'
+  secondary: '#0F363E'
+  secondary-strong: '#31393F'
+  secondary-soft: '#4D6A6F'
+  tertiary: '#F8981B'
+  tertiary-deep: '#C66F08'
+  neutral: '#EEF3F7'
+  neutral-warm: '#EFF5F6'
+  surface: '#FFFFFF'
+  surface-muted: '#DAE2E7'
+  text: '#31393F'
+  text-soft: '#4D6A6F'
+  text-inverse: '#FFFFFF'
+  admin-background: '#FAFAFA'
+  admin-surface: '#FFFFFF'
+  admin-text: '#1C1C1C'
+  admin-muted: '#F5F5F5'
+  admin-border: '#EBEBEB'
 typography:
   h1:
     fontFamily: BespokeSerif-Variable
@@ -81,41 +81,41 @@ spacing:
   hero-gutter: 64px
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.text-inverse}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.text-inverse}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.pill}'
     padding: 16px
     height: 56px
   button-secondary:
-    backgroundColor: "{colors.neutral-warm}"
-    textColor: "{colors.secondary}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.neutral-warm}'
+    textColor: '{colors.secondary}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.pill}'
     padding: 16px
     height: 56px
   button-admin:
-    backgroundColor: "{colors.admin-text}"
-    textColor: "{colors.text-inverse}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.admin-text}'
+    textColor: '{colors.text-inverse}'
+    typography: '{typography.button-md}'
+    rounded: '{rounded.sm}'
     padding: 16px
     height: 40px
   card-surface:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.text}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.text}'
+    rounded: '{rounded.md}'
     padding: 24px
   card-hero-glass:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.text-inverse}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.text-inverse}'
+    rounded: '{rounded.lg}'
     padding: 24px
   badge-eyebrow:
-    backgroundColor: "{colors.primary-soft}"
-    textColor: "{colors.secondary}"
-    typography: "{typography.label-caps}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary-soft}'
+    textColor: '{colors.secondary}'
+    typography: '{typography.label-caps}'
+    rounded: '{rounded.pill}'
     padding: 8px
 ---
 

@@ -54,17 +54,17 @@ ANTHROPIC_API_KEY=your-anthropic-key
 Create `src/routes/api/chat/+server.ts`:
 
 ```ts
-import {streamText, convertToModelMessages, stepCountIs, type UIMessage} from 'ai'
-import {createAnthropic} from '@ai-sdk/anthropic'
-import {createMCPClient} from '@ai-sdk/mcp'
-import type {RequestHandler} from './$types'
+import { streamText, convertToModelMessages, stepCountIs, type UIMessage } from 'ai'
+import { createAnthropic } from '@ai-sdk/anthropic'
+import { createMCPClient } from '@ai-sdk/mcp'
+import type { RequestHandler } from './$types'
 import {
   SANITY_API_READ_TOKEN,
   ANTHROPIC_API_KEY,
   SANITY_PROJECT_ID,
   SANITY_DATASET,
 } from '$env/static/private'
-import {PUBLIC_SANITY_API_VERSION} from '$env/static/public'
+import { PUBLIC_SANITY_API_VERSION } from '$env/static/public'
 
 // MCP URL — connects to your agent context document
 const SANITY_API_VERSION = PUBLIC_SANITY_API_VERSION || 'vX'
@@ -82,8 +82,8 @@ When answering questions:
 
 Your goal is to help users find and understand the content available to you.`
 
-export const POST: RequestHandler = async ({request}) => {
-  const {messages}: {messages: UIMessage[]} = await request.json()
+export const POST: RequestHandler = async ({ request }) => {
+  const { messages }: { messages: UIMessage[] } = await request.json()
 
   // Create MCP client using AI SDK wrapper
   const mcpClient = await createMCPClient({
@@ -102,7 +102,7 @@ export const POST: RequestHandler = async ({request}) => {
 
     // Stream the response
     const result = streamText({
-      model: createAnthropic({apiKey: ANTHROPIC_API_KEY})('claude-sonnet-4-20250514'),
+      model: createAnthropic({ apiKey: ANTHROPIC_API_KEY })('claude-sonnet-4-20250514'),
       messages: await convertToModelMessages(messages),
       system: SYSTEM_PROMPT,
       tools: mcpTools,

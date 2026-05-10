@@ -777,7 +777,7 @@ export const solarGuides = [
           {
             _type: 'pageItem',
             title: 'File the insurance claim promptly if damage is confirmed',
-            body: "Open the claim with your carrier as soon as damage is confirmed. Share your storm date and documentation package, and request the claim number and adjuster contact details. Under Texas prompt-payment rules, carriers generally must acknowledge claims within 15 days, decide within 15 business days after receiving required items, and pay within 5 business days after approval.",
+            body: 'Open the claim with your carrier as soon as damage is confirmed. Share your storm date and documentation package, and request the claim number and adjuster contact details. Under Texas prompt-payment rules, carriers generally must acknowledge claims within 15 days, decide within 15 business days after receiving required items, and pay within 5 business days after approval.',
           },
           {
             _type: 'pageItem',

@@ -62,9 +62,9 @@ function StatusCard({ title, value, tone = 'neutral', detail }) {
 
   return (
     <div className={`rounded-xl border p-4 ${toneClass}`}>
-      <div className="font-medium text-sm">{title}</div>
-      <div className="mt-2 font-semibold text-2xl tracking-tight">{value}</div>
-      {detail ? <div className="mt-2 leading-6 text-sm opacity-80">{detail}</div> : null}
+      <div className="text-sm font-medium">{title}</div>
+      <div className="mt-2 text-2xl font-semibold tracking-tight">{value}</div>
+      {detail ? <div className="mt-2 text-sm leading-6 opacity-80">{detail}</div> : null}
     </div>
   )
 }
@@ -141,11 +141,11 @@ export default function LeadSettingsClient({ initialSettings }) {
   const providerTone = settings.providerReady ? 'success' : settings.apiKeyConfigured ? 'warning' : 'warning'
 
   return (
-    <div className="p-6 space-y-6 lg:p-10">
+    <div className="space-y-6 p-6 lg:p-10">
       <div>
         <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Lead operations</p>
-        <h1 className="mt-2 text-3xl text-foreground tracking-tight">Lead settings</h1>
-        <p className="max-w-3xl mt-3 leading-7 text-base text-muted-foreground">
+        <h1 className="text-foreground mt-2 text-3xl tracking-tight">Lead settings</h1>
+        <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
           Control where new lead notifications go, what sender appears in the inbox, and whether Resend
           notifications are active. You can also point notifications at a Resend template. The API key stays
           server-side in env vars.
@@ -191,7 +191,7 @@ export default function LeadSettingsClient({ initialSettings }) {
         />
       </div>
 
-      <Card className="bg-card/80 border border-border overflow-hidden">
+      <Card className="bg-card/80 border-border overflow-hidden border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
@@ -200,16 +200,16 @@ export default function LeadSettingsClient({ initialSettings }) {
         </CardHeader>
         <CardContent>
           <form className="grid gap-5" onSubmit={handleSubmit}>
-            <label className="flex items-start gap-3 p-4 bg-muted/20 border border-border rounded-xl">
+            <label className="bg-muted/20 border-border flex items-start gap-3 rounded-xl border p-4">
               <input
                 type="checkbox"
-                className="h-4 w-4 mt-1 accent-current"
+                className="mt-1 h-4 w-4 accent-current"
                 checked={form.emailNotificationsEnabled}
                 onChange={(event) => updateField('emailNotificationsEnabled', event.target.checked)}
               />
               <div>
-                <div className="font-medium text-foreground">Enable lead notification emails</div>
-                <div className="mt-1 leading-6 text-muted-foreground text-sm">
+                <div className="text-foreground font-medium">Enable lead notification emails</div>
+                <div className="text-muted-foreground mt-1 text-sm leading-6">
                   When enabled, every successful lead submission will send a Resend email notification after
                   the record is saved to the database.
                 </div>
@@ -218,7 +218,7 @@ export default function LeadSettingsClient({ initialSettings }) {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
-                <label className="font-medium text-foreground text-sm">Notification recipient</label>
+                <label className="text-foreground text-sm font-medium">Notification recipient</label>
                 <Input
                   type="email"
                   value={form.notificationToEmail}
@@ -227,7 +227,7 @@ export default function LeadSettingsClient({ initialSettings }) {
                 />
               </div>
               <div className="grid gap-2">
-                <label className="font-medium text-foreground text-sm">Subject prefix</label>
+                <label className="text-foreground text-sm font-medium">Subject prefix</label>
                 <Input
                   value={form.subjectPrefix}
                   onChange={(event) => updateField('subjectPrefix', event.target.value)}
@@ -238,7 +238,7 @@ export default function LeadSettingsClient({ initialSettings }) {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
-                <label className="font-medium text-foreground text-sm">Sender name</label>
+                <label className="text-foreground text-sm font-medium">Sender name</label>
                 <Input
                   value={form.fromName}
                   onChange={(event) => updateField('fromName', event.target.value)}
@@ -246,7 +246,7 @@ export default function LeadSettingsClient({ initialSettings }) {
                 />
               </div>
               <div className="grid gap-2">
-                <label className="font-medium text-foreground text-sm">Sender email</label>
+                <label className="text-foreground text-sm font-medium">Sender email</label>
                 <Input
                   type="email"
                   value={form.fromEmail}
@@ -257,38 +257,38 @@ export default function LeadSettingsClient({ initialSettings }) {
             </div>
 
             <div className="grid gap-2">
-              <label className="font-medium text-foreground text-sm">Resend template ID</label>
+              <label className="text-foreground text-sm font-medium">Resend template ID</label>
               <Input
                 value={form.resendTemplateId}
                 onChange={(event) => updateField('resendTemplateId', event.target.value)}
                 placeholder="tpl_123456789"
               />
-              <div className="leading-6 text-muted-foreground text-sm">
+              <div className="text-muted-foreground text-sm leading-6">
                 Optional. If set, lead notifications will send through this Resend template using the lead
                 data as template variables.
               </div>
             </div>
 
             {!settings.canSave ? (
-              <div className="p-4 leading-6 text-muted-foreground text-sm bg-muted/30 border border-border rounded-xl">
+              <div className="text-muted-foreground bg-muted/30 border-border rounded-xl border p-4 text-sm leading-6">
                 Saving is unavailable because `DATABASE_URL` or `NEON_DATABASE_URL` is not configured for this
                 runtime.
               </div>
             ) : null}
 
-            <div className="p-4 leading-6 text-sm bg-muted/30 border border-border rounded-xl">
-              <div className="flex items-center gap-2 font-medium text-foreground">
+            <div className="bg-muted/30 border-border rounded-xl border p-4 text-sm leading-6">
+              <div className="text-foreground flex items-center gap-2 font-medium">
                 <ShieldCheck className="h-4 w-4" />
                 What stays in env vars
               </div>
-              <div className="mt-2 text-muted-foreground">
+              <div className="text-muted-foreground mt-2">
                 The Resend API key remains server-side in env vars. This screen only controls the sender,
                 recipient, subject prefix, template ID, and whether the notification flow is enabled.
               </div>
             </div>
 
             {error ? (
-              <div className="p-4 text-rose-900 text-sm bg-rose-50 border border-rose-200 rounded-xl">
+              <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">
                 <div className="flex items-center gap-2 font-medium">
                   <TriangleAlert className="h-4 w-4" />
                   {error}
@@ -297,14 +297,14 @@ export default function LeadSettingsClient({ initialSettings }) {
             ) : null}
 
             {message ? (
-              <div className="p-4 text-emerald-900 text-sm bg-emerald-50 border border-emerald-200 rounded-xl">
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
                 {message}
               </div>
             ) : null}
 
             <div className="flex justify-end">
               <Button type="submit" disabled={saveDisabled}>
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="mr-2 h-4 w-4" />
                 {isSaving ? 'Saving…' : isSyncing ? 'Syncing…' : 'Save lead settings'}
               </Button>
             </div>

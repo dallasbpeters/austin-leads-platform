@@ -4,8 +4,6 @@ import { defineConfig } from 'sanity'
 import { colorInput } from '@sanity/color-input'
 import { structureTool } from 'sanity/structure'
 import { presentationTool } from 'sanity/presentation'
-import { geminiAIImages } from 'sanity-plugin-gemini-ai-images'
-
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
 import { studioStructure } from './src/sanity/studioStructure'
 
@@ -30,7 +28,6 @@ const previewModeRoutes = {
   disable: '/api/draft-mode/disable',
 }
 
-
 const studioAppId = (process.env.SANITY_STUDIO_APP_ID || '').trim()
 
 export default defineConfig({
@@ -45,10 +42,6 @@ export default defineConfig({
     assist({ fieldActions: austinAssistFieldActions }),
     guideImageSyncPlugin(),
     colorInput(),
-    geminiAIImages({
-      apiEndpoint: `${studioPreviewOrigin}/api/gemini/generate-image`,
-      enableStandaloneTool: true,
-    }),
     structureTool({ structure: studioStructure }),
     presentationTool({
       previewUrl: {

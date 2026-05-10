@@ -4,27 +4,30 @@ import { Analytics } from '@vercel/analytics/react'
 import { VercelToolbar } from '@vercel/toolbar/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
-import { Google_Sans_Flex, Cutive, JetBrains_Mono } from "next/font/google";
+import { Google_Sans_Flex, Gloock, JetBrains_Mono } from "next/font/google";
+import { Agentation } from "agentation";
 import '../styles/globals.css'
 import { SanityLive } from '@/sanity/live'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { PostHogProvider } from '@/app/providers'
+import { resolveCurrentSite } from '@/lib/platform/content'
 
 const fontSans = Google_Sans_Flex({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
+
+const fontSerif = Gloock({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-serif",
+  weight: '400',
 });
 
-const fontSerif = Cutive({
-  subsets: ["latin"],
-  weight: '400',
-  variable: "--font-serif",
-});
 
 const fontMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
 
 export const metadata = {
   title: 'Austin Leads Platform',
@@ -51,11 +54,12 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
   const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig()
+  const currentSite = await resolveCurrentSite().catch(() => null)
   const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <head>
         <link
           rel="preload"
@@ -68,17 +72,17 @@ export default async function RootLayout({ children }) {
       </head>
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
-      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}>
-        <PostHogProvider>
-          {children}
-        </PostHogProvider>
+      <body
+        className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
+      >
+        <PostHogProvider siteSlug={currentSite?.slug}>{children}</PostHogProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}
         {isDraftMode ? <SanityLive /> : null}
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />
         <SpeedInsights />
+        {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
-      
     </html>
   )
 }

@@ -36,7 +36,7 @@ app.post('/api/chat', async (req, res) => {
     transport: {
       type: 'http',
       url: process.env.SANITY_CONTEXT_MCP_URL,
-      headers: {Authorization: `Bearer ${process.env.SANITY_API_READ_TOKEN}`},
+      headers: { Authorization: `Bearer ${process.env.SANITY_API_READ_TOKEN}` },
     },
   })
   const tools = await mcpClient.tools()
@@ -47,12 +47,12 @@ app.post('/api/chat', async (req, res) => {
 **Remix**
 
 ```ts
-export async function action({request}: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const mcpClient = await createMCPClient({
     transport: {
       type: 'http',
       url: process.env.SANITY_CONTEXT_MCP_URL,
-      headers: {Authorization: `Bearer ${process.env.SANITY_API_READ_TOKEN}`},
+      headers: { Authorization: `Bearer ${process.env.SANITY_API_READ_TOKEN}` },
     },
   })
   const tools = await mcpClient.tools()

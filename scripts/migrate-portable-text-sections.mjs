@@ -48,10 +48,7 @@ async function main() {
       continue
     }
 
-    await client
-      .patch(doc._id)
-      .set({ sections: normalizedSections })
-      .commit({ autoGenerateArrayKeys: false })
+    await client.patch(doc._id).set({ sections: normalizedSections }).commit({ autoGenerateArrayKeys: false })
 
     updatedCount += 1
     console.log(`Updated ${doc._id} (${doc._type}): ${doc.title || 'Untitled'}`)

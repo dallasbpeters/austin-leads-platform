@@ -3,9 +3,9 @@ import { motion } from 'framer-motion'
 
 const Logo = ({ className, ...props }) => (
   <motion.svg
-  whileHover={{ scale: 1.1 }}
+    whileHover={{ scale: 1.1 }}
     className={cn(
-      "h-7 w-7 text-primary [clipRule:evenodd] [fillRule:evenodd] [strokeLinejoin:round] [strokeMiterlimit:2] fill-current",
+      'text-primary h-7 w-7 fill-current [clipRule:evenodd] [fillRule:evenodd] [strokeLinejoin:round] [strokeMiterlimit:2]',
       className,
     )}
     viewBox="0 0 483 491"

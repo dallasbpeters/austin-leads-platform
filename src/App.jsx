@@ -13,7 +13,7 @@ import Band from './components/Band'
 import Testimonails from './components/Testimonials'
 import QuoteSection from './components/QuoteSection'
 import DevTrace from './components/dev/DevTrace'
-import { Agentation } from "agentation";
+import { Agentation } from 'agentation'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
@@ -28,7 +28,9 @@ export default function App({
 }) {
   const homepageSections = homepage?.sections || []
   const findSection = (type, sanityType = '') =>
-    homepageSections.find((section) => section.type === type || (sanityType && section._type === sanityType)) || null
+    homepageSections.find(
+      (section) => section.type === type || (sanityType && section._type === sanityType),
+    ) || null
   const homepageEditAttrs = getSanityPageEditAttributes(homepage, 'sections')
   const storySection = findSection('story', 'storySection')
   const calculatorSection = findSection('calculator', 'calculatorSection')
@@ -39,7 +41,9 @@ export default function App({
   const testimonialsSection = findSection('testimonials', 'testimonialsSection')
   const quoteSection = findSection('quote', 'quoteSection')
   const ctaSection = findSection('cta', 'ctaSection')
-  const bandSections = homepageSections.filter((section) => section.type === 'band' || section._type === 'bandSection')
+  const bandSections = homepageSections.filter(
+    (section) => section.type === 'band' || section._type === 'bandSection',
+  )
   const firstBandSection = bandSections[0] || null
   const secondBandSection = bandSections[1] || null
   const extraBandSections = bandSections.slice(2)
@@ -69,7 +73,9 @@ export default function App({
     return (
       <div {...editAttributes}>
         <Band
-          colors={Array.isArray(section?.colors) && section.colors.length ? section.colors : fallbackProps?.colors}
+          colors={
+            Array.isArray(section?.colors) && section.colors.length ? section.colors : fallbackProps?.colors
+          }
           tint={section?.tint || fallbackProps?.tint}
           minHeight={typeof section?.minHeight === 'number' ? section.minHeight : fallbackProps?.minHeight}
           maxHeight={typeof section?.maxHeight === 'number' ? section.maxHeight : fallbackProps?.maxHeight}
@@ -80,7 +86,9 @@ export default function App({
           scrollEnd={typeof section?.scrollEnd === 'number' ? section.scrollEnd : fallbackProps?.scrollEnd}
           reverse={typeof section?.reverse === 'boolean' ? section.reverse : Boolean(fallbackProps?.reverse)}
           autoAnimate={
-            typeof section?.autoAnimate === 'boolean' ? section.autoAnimate : Boolean(fallbackProps?.autoAnimate)
+            typeof section?.autoAnimate === 'boolean'
+              ? section.autoAnimate
+              : Boolean(fallbackProps?.autoAnimate)
           }
           speed={typeof section?.speed === 'number' ? section.speed : fallbackProps?.speed}
           amplitude={typeof section?.amplitude === 'number' ? section.amplitude : fallbackProps?.amplitude}
@@ -126,7 +134,11 @@ export default function App({
         </div>
         <DevTrace
           markup="src/components/CalculatorSection.jsx"
-          content={calculatorSection ? `homepage calculator copy from ${homepageSource}` : 'local JSX copy and local calculator logic'}
+          content={
+            calculatorSection
+              ? `homepage calculator copy from ${homepageSource}`
+              : 'local JSX copy and local calculator logic'
+          }
         />
         <div {...calculatorEditAttrs}>
           <CalculatorSection section={calculatorSection} />
@@ -156,7 +168,12 @@ export default function App({
         <div {...snapshotEditAttrs}>
           <SnapshotSection section={snapshotSection} />
         </div>
-        {renderBand(secondBandSection, 'homepage-band-2', {}, secondBandSection ? secondBandEditAttrs : homepageEditAttrs)}
+        {renderBand(
+          secondBandSection,
+          'homepage-band-2',
+          {},
+          secondBandSection ? secondBandEditAttrs : homepageEditAttrs,
+        )}
         <DevTrace
           markup="src/components/IncentivesSection.jsx"
           content={incentivesSection ? `homepage incentives copy from ${homepageSource}` : 'local JSX copy'}
@@ -177,7 +194,10 @@ export default function App({
         </div>
         {quoteSection ? (
           <>
-            <DevTrace markup="src/components/QuoteSection.jsx" content={`homepage quote from ${homepageSource}`} />
+            <DevTrace
+              markup="src/components/QuoteSection.jsx"
+              content={`homepage quote from ${homepageSource}`}
+            />
             <div {...quoteEditAttrs}>
               <QuoteSection
                 quoteText={portableTextToPlainText(quoteSection?.body) || ''}
@@ -210,7 +230,7 @@ export default function App({
       </main>
       <DevTrace markup="src/components/Footer.jsx" content="local JSX footer + service catalog links" />
       <Footer />
-      {process.env.NODE_ENV === "development" && <Agentation />}
+      {process.env.NODE_ENV === 'development' && <Agentation />}
       {jsonLd ? (
         <script
           type="application/ld+json"

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Google_Sans_Flex, Cutive, JetBrains_Mono } from "next/font/google";
+import { Google_Sans_Flex, Cutive, JetBrains_Mono } from 'next/font/google'
 import { Bell, Building2, Search } from 'lucide-react'
 
 import AdminBodyScrollLock from '@/components/admin/AdminBodyScrollLock'
@@ -9,20 +9,20 @@ import SignOutButton from '@/components/admin/SignOutButton'
 import { safeAuth } from '@/lib/auth/session'
 
 const fontSans = Google_Sans_Flex({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
 
 const fontSerif = Cutive({
-  subsets: ["latin"],
+  subsets: ['latin'],
   weight: '400',
-  variable: "--font-serif",
-});
+  variable: '--font-serif',
+})
 
 const fontMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+  subsets: ['latin'],
+  variable: '--font-mono',
+})
 
 export const metadata = {
   title: 'Austin Leads Admin',
@@ -40,49 +40,45 @@ export default async function AdminLayout({ children }) {
 
   return (
     <div
-      className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} admin-theme h-svh overflow-hidden bg-background text-foreground antialiased`}
+      className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} admin-theme bg-background text-foreground h-svh overflow-hidden antialiased`}
     >
       <AdminBodyScrollLock />
 
       <div className="grid h-full min-h-0 lg:grid-cols-[256px_1fr]">
-        <aside className="hidden lg:flex h-svh bg-sidebar border-border border-r">
-          <div className="flex flex-col h-full w-full">
-            <div className="p-4 border-b border-border">
+        <aside className="bg-sidebar border-border hidden h-svh border-r lg:flex">
+          <div className="flex h-full w-full flex-col">
+            <div className="border-border border-b p-4">
               <button
                 type="button"
-                className="flex items-center justify-between w-full px-3 py-2 border border-transparent rounded-lg hover:bg-muted/40 hover:border-border transition-colors group"
+                className="hover:bg-muted/40 hover:border-border group flex w-full items-center justify-between rounded-lg border border-transparent px-3 py-2 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center h-7 w-7 font-semibold text-primary-foreground text-sm tracking-tight bg-primary rounded shadow-theme-sm">
+                  <div className="text-primary-foreground bg-primary shadow-theme-sm flex h-7 w-7 items-center justify-center rounded text-sm font-semibold tracking-tight">
                     AL
                   </div>
                   <div className="flex flex-col items-start">
-                    <span className="font-medium leading-none text-foreground text-sm">
-                      Austin Leads
-                    </span>
-                    <span className="mt-1 leading-none text-muted-foreground text-sm">
-                      Production
-                    </span>
+                    <span className="text-foreground text-sm leading-none font-medium">Austin Leads</span>
+                    <span className="text-muted-foreground mt-1 text-sm leading-none">Production</span>
                   </div>
                 </div>
-                <Building2 className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Building2 className="text-muted-foreground group-hover:text-foreground h-4 w-4 transition-colors" />
               </button>
             </div>
 
-            <div className="px-3 py-4 flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto px-3 py-4">
               <AdminNav />
             </div>
 
-            <div className="p-4 border-border border-t">
-              <div className="flex items-center gap-3 mb-4 px-2 py-1.5 rounded-lg hover:bg-muted/40 transition-colors">
-                <div className="flex items-center justify-center h-8 w-8 font-medium text-foreground text-sm bg-muted border border-border rounded-full">
+            <div className="border-border border-t p-4">
+              <div className="hover:bg-muted/40 mb-4 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors">
+                <div className="text-foreground bg-muted border-border flex h-8 w-8 items-center justify-center rounded-full border text-sm font-medium">
                   {user?.name?.[0] || 'A'}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-medium text-foreground text-sm truncate">
+                  <div className="text-foreground truncate text-sm font-medium">
                     {user?.name || 'Platform Admin'}
                   </div>
-                  <div className="text-muted-foreground text-sm truncate">{user?.email}</div>
+                  <div className="text-muted-foreground truncate text-sm">{user?.email}</div>
                 </div>
               </div>
               <SignOutButton />
@@ -90,35 +86,35 @@ export default async function AdminLayout({ children }) {
           </div>
         </aside>
 
-        <div className="flex flex-col min-h-0 min-w-0 bg-muted/40">
-          <header className="hidden md:flex items-center justify-between h-14 px-8 bg-background border-b border-border">
-            <div className="flex items-center font-medium text-muted-foreground text-sm">
+        <div className="bg-muted/40 flex min-h-0 min-w-0 flex-col">
+          <header className="bg-background border-border hidden h-14 items-center justify-between border-b px-8 md:flex">
+            <div className="text-muted-foreground flex items-center text-sm font-medium">
               <span>Austin Leads</span>
               <span className="mx-2 text-neutral-300">/</span>
               <span className="text-foreground">Overview</span>
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="hidden relative lg:block">
-                <Search className="absolute h-4 w-4 text-muted-foreground -translate-y-1/2 left-2.5 top-1/2" />
+              <div className="relative hidden lg:block">
+                <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-64 pl-8 px-4 py-1.5 text-foreground text-sm placeholder:text-muted-foreground bg-muted border border-border rounded-md transition-shadow outline-none focus:ring-2 focus:ring-foreground"
+                  className="text-foreground placeholder:text-muted-foreground bg-muted border-border focus:ring-foreground w-64 rounded-md border px-4 py-1.5 pl-8 text-sm transition-shadow outline-none focus:ring-2"
                 />
               </div>
 
               <button
                 type="button"
-                className="relative text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground relative transition-colors"
               >
                 <Bell className="h-5 w-5" />
-                <span className="absolute h-2 w-2 bg-rose-500 rounded-full right-0 ring-2 ring-background top-0" />
+                <span className="ring-background absolute top-0 right-0 h-2 w-2 rounded-full bg-rose-500 ring-2" />
               </button>
 
               <Link
                 href="/publish"
-                className="px-4 py-1.5 font-medium text-primary-foreground text-sm bg-primary rounded-md hover:bg-primary/90 transition-colors"
+                className="text-primary-foreground bg-primary hover:bg-primary/90 rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
               >
                 Create Post
               </Link>

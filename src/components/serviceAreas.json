@@ -1,0 +1,146 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "id": "travis", "name": "Travis", "city": "Austin" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-98.05, 30.0],
+            [-97.33, 30.0],
+            [-97.33, 30.63],
+            [-98.05, 30.63],
+            [-98.05, 30.0]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "williamson",
+        "name": "Williamson",
+        "city": "Round Rock"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-98.18, 30.52],
+            [-97.33, 30.52],
+            [-97.33, 31.01],
+            [-98.18, 31.01],
+            [-98.18, 30.52]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "hays", "name": "Hays", "city": "San Marcos" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-98.18, 29.78],
+            [-97.62, 29.78],
+            [-97.62, 30.24],
+            [-98.18, 30.24],
+            [-98.18, 29.78]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "bastrop", "name": "Bastrop", "city": "Bastrop" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-97.62, 29.78],
+            [-97.03, 29.78],
+            [-97.03, 30.24],
+            [-97.62, 30.24],
+            [-97.62, 29.78]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "caldwell",
+        "name": "Caldwell",
+        "city": "Lockhart"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-97.8, 29.5],
+            [-97.35, 29.5],
+            [-97.35, 29.84],
+            [-97.8, 29.84],
+            [-97.8, 29.5]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "comal", "name": "Comal", "city": "New Braunfels" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-98.44, 29.78],
+            [-97.94, 29.78],
+            [-97.94, 30.2],
+            [-98.44, 30.2],
+            [-98.44, 29.78]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "guadalupe",
+        "name": "Guadalupe",
+        "city": "Seguin"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-98.09, 29.5],
+            [-97.55, 29.5],
+            [-97.55, 29.84],
+            [-98.09, 29.84],
+            [-98.09, 29.5]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "kendall", "name": "Kendall", "city": "Boerne" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-99.12, 29.78],
+            [-98.61, 29.78],
+            [-98.61, 30.19],
+            [-99.12, 30.19],
+            [-99.12, 29.78]
+          ]
+        ]
+      }
+    }
+    
+  ]
+}

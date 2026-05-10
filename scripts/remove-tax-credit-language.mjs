@@ -32,29 +32,23 @@ const BANNED_TERMS = [
 
 const STRING_REPLACEMENTS = [
   ['Tax-credit assumptions in the loan structure', 'Re-amortization assumptions in the loan structure'],
-  ['Ask what happens if the tax credit is not applied to the loan', 'Ask what happens without the projected early paydown'],
-  ['Watch for quotes still referencing the federal tax credit', 'Watch for quotes using outdated incentive math'],
+  [
+    'Ask what happens if the tax credit is not applied to the loan',
+    'Ask what happens without the projected early paydown',
+  ],
+  [
+    'Watch for quotes still referencing the federal tax credit',
+    'Watch for quotes using outdated incentive math',
+  ],
   ['The federal solar tax credit has expired', 'Outdated incentive claims still show up in quotes'],
   ['Is the federal solar tax credit still available?', 'How do I know if an incentive claim is current?'],
   ['Federal tax credit', 'Current incentives'],
-  [
-    'The federal residential solar tax credit expired at the end of 2025. ',
-    '',
-  ],
-  [
-    'The 30 percent federal residential clean energy credit expired at the end of 2025. ',
-    '',
-  ],
+  ['The federal residential solar tax credit expired at the end of 2025. ', ''],
+  ['The 30 percent federal residential clean energy credit expired at the end of 2025. ', ''],
   ['The 30 percent federal credit expired at the end of 2025. ', ''],
   ['With the federal tax credit no longer available, ', ''],
-  [
-    'The federal tax credit gets the headlines, but ',
-    '',
-  ],
-  [
-    'less the 30 percent federal tax credit bringing the effective cost to $16,800',
-    '',
-  ],
+  ['The federal tax credit gets the headlines, but ', ''],
+  ['less the 30 percent federal tax credit bringing the effective cost to $16,800', ''],
   [
     'Some solar loans were originally structured around a lump-sum payment from the federal tax credit within 12 to 18 months. That credit expired at the end of 2025, but some lenders and loan products still carry re-amortization terms.',
     'Some solar loans were originally structured around a large early paydown within 12 to 18 months, and some lenders and loan products still carry re-amortization terms.',
@@ -72,13 +66,10 @@ const STRING_REPLACEMENTS = [
     'Panels cost far less than they did a decade ago, and Texas’s deregulated market means you actually benefit from what you produce.',
   ],
   [
-    'Panels cost 70% less than a decade ago, the federal tax credit covers 30%, and Texas\'s deregulated market means you actually benefit from what you produce.',
-    'Panels cost far less than they did a decade ago, and Texas\'s deregulated market means you actually benefit from what you produce.',
+    "Panels cost 70% less than a decade ago, the federal tax credit covers 30%, and Texas's deregulated market means you actually benefit from what you produce.",
+    "Panels cost far less than they did a decade ago, and Texas's deregulated market means you actually benefit from what you produce.",
   ],
-  [
-    'The 30% federal tax credit covers nearly a third of the installed cost.',
-    '',
-  ],
+  ['The 30% federal tax credit covers nearly a third of the installed cost.', ''],
   [
     'A typical residential system runs $15,000–$30,000 before the 30% tax credit. After the credit, most systems cost $10,500–$21,000.',
     'A typical residential system runs $15,000–$30,000 depending on size, equipment, and roof complexity.',
@@ -171,7 +162,9 @@ function isRemovableContentObject(value) {
 function isEffectivelyEmptyObject(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false
 
-  const meaningfulKeys = Object.entries(value).filter(([key]) => !['_key', '_type', 'icon', 'href', 'image', 'imageAsset'].includes(key))
+  const meaningfulKeys = Object.entries(value).filter(
+    ([key]) => !['_key', '_type', 'icon', 'href', 'image', 'imageAsset'].includes(key),
+  )
   if (!meaningfulKeys.length) return false
 
   return meaningfulKeys.every(([, fieldValue]) => {

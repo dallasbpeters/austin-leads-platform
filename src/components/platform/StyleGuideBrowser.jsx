@@ -11,17 +11,17 @@ function SwatchTile({ token, value, compact = false }) {
   return (
     <div
       className={cn(
-        "bg-card border border-border rounded-[1.5rem] overflow-hidden",
+        'bg-card border-border overflow-hidden rounded-[1.5rem] border',
         compact ? 'shadow-theme-xs' : 'shadow-theme-sm',
       )}
     >
       <div className="relative aspect-[1.08] overflow-hidden">
         <div className="absolute inset-0" style={{ backgroundColor: `var(${token})` }} />
-        <div className="absolute h-16 bg-gradient-to-t bottom-0 from-black/18 inset-x-0 pointer-events-none to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/18 to-transparent" />
       </div>
-      <div className="p-3 space-y-1">
-        <div className="font-semibold text-foreground text-sm truncate">{token}</div>
-        <div className="text-muted-foreground text-xs break-all line-clamp-2">{value}</div>
+      <div className="space-y-1 p-3">
+        <div className="text-foreground truncate text-sm font-semibold">{token}</div>
+        <div className="text-muted-foreground line-clamp-2 text-xs break-all">{value}</div>
       </div>
     </div>
   )
@@ -33,8 +33,8 @@ function SectionRailButton({ active, children, onClick }) {
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center justify-between w-full px-4 py-3 text-left border border-border rounded-full hover:bg-foreground/4 hover:border-foreground/25 transition-colors",
-        active && "text-background bg-foreground border-foreground",
+        'border-border hover:bg-foreground/4 hover:border-foreground/25 flex w-full items-center justify-between rounded-full border px-4 py-3 text-left transition-colors',
+        active && 'text-background bg-foreground border-foreground',
       )}
     >
       <span className="font-medium">{children}</span>
@@ -83,16 +83,16 @@ export default function StyleGuideBrowser({ publicGroups, semanticVariables, adm
   const resultCount = visibleSections.reduce((count, section) => count + section.tokens.length, 0)
 
   return (
-    <div className="grid lg:items-start gap-8 lg:grid-cols-[18rem_minmax(0,1fr)]">
+    <div className="grid gap-8 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start">
       <aside className="lg:sticky lg:top-8">
-        <Card className="bg-card/92 border border-border rounded-[2rem] shadow-none backdrop-blur">
-          <CardContent className="p-5 space-y-6">
+        <Card className="bg-card/92 border-border rounded-[2rem] border shadow-none backdrop-blur">
+          <CardContent className="space-y-6 p-5">
             <div className="space-y-2">
-              <div className="font-semibold text-muted-foreground text-sm tracking-[0.24em] uppercase">
+              <div className="text-muted-foreground text-sm font-semibold tracking-[0.24em] uppercase">
                 Browse
               </div>
-              <div className="font-bold text-2xl text-foreground tracking-tight">Theme tokens</div>
-              <p className="leading-6 text-muted-foreground text-sm">
+              <div className="text-foreground text-2xl font-bold tracking-tight">Theme tokens</div>
+              <p className="text-muted-foreground text-sm leading-6">
                 Search by variable name or declared value, then jump between sections.
               </p>
             </div>
@@ -101,7 +101,7 @@ export default function StyleGuideBrowser({ publicGroups, semanticVariables, adm
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search variables"
-              className="h-12 px-4 bg-background rounded-full"
+              className="bg-background h-12 rounded-full px-4"
             />
 
             <div className="grid gap-2">
@@ -119,9 +119,9 @@ export default function StyleGuideBrowser({ publicGroups, semanticVariables, adm
               ))}
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border border-border rounded-[1.4rem]">
+            <div className="border-border flex items-center justify-between rounded-[1.4rem] border px-4 py-3">
               <div>
-                <div className="font-semibold text-foreground text-lg">{resultCount}</div>
+                <div className="text-foreground text-lg font-semibold">{resultCount}</div>
                 <div className="text-muted-foreground text-sm">Visible swatches</div>
               </div>
               {(query || activeSection !== 'all') && (
@@ -147,23 +147,23 @@ export default function StyleGuideBrowser({ publicGroups, semanticVariables, adm
             key={section.id}
             id={section.id}
             className={cn(
-              "p-5 sm:p-6 border rounded-[2rem]",
+              'rounded-[2rem] border p-5 sm:p-6',
               section.theme === 'admin'
-                ? "text-sidebar-foreground bg-sidebar border-sidebar-border admin-theme"
+                ? 'text-sidebar-foreground bg-sidebar border-sidebar-border admin-theme'
                 : 'bg-card/82 border-border backdrop-blur',
             )}
           >
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div className="space-y-1">
-                <div className="font-bold text-2xl text-foreground tracking-tight">{section.title}</div>
-                <p className="max-w-2xl leading-6 text-muted-foreground text-sm">{section.description}</p>
+                <div className="text-foreground text-2xl font-bold tracking-tight">{section.title}</div>
+                <p className="text-muted-foreground max-w-2xl text-sm leading-6">{section.description}</p>
               </div>
-              <div className="px-3 py-1 text-muted-foreground text-sm border border-current/10 rounded-full">
+              <div className="text-muted-foreground rounded-full border border-current/10 px-3 py-1 text-sm">
                 {section.tokens.length} swatches
               </div>
             </div>
 
-            <div className="grid gap-3 grid-cols-2 2xl:grid-cols-5 md:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {section.tokens.map(({ token, value }) => (
                 <SwatchTile key={token} token={token} value={value} compact />
               ))}
@@ -172,10 +172,10 @@ export default function StyleGuideBrowser({ publicGroups, semanticVariables, adm
         ))}
 
         {resultCount === 0 && (
-          <Card className="border-dashed rounded-[2rem] shadow-none">
+          <Card className="rounded-[2rem] border-dashed shadow-none">
             <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-              <div className="font-semibold text-foreground text-xl">No matching swatches</div>
-              <p className="max-w-md leading-6 text-muted-foreground text-sm">
+              <div className="text-foreground text-xl font-semibold">No matching swatches</div>
+              <p className="text-muted-foreground max-w-md text-sm leading-6">
                 Try a broader search term or reset the section filter.
               </p>
             </CardContent>

@@ -14,7 +14,7 @@
   --popover-foreground: oklch(0.2839 0.0358 151.9060);
   --primary: oklch(0.5305 0.1962 28.2609);
   --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.4559 0.1405 264.0068);
+  --secondary: oklch(0.4520 0.1302 147.1136);
   --secondary-foreground: oklch(1.0000 0 0);
   --muted: oklch(0.9703 0.0041 157.1781);
   --muted-foreground: oklch(0.5288 0.0348 161.2647);
@@ -38,19 +38,34 @@
   --sidebar-accent-foreground: oklch(0.2839 0.0358 151.9060);
   --sidebar-border: oklch(0.9303 0.0100 155.0876);
   --sidebar-ring: oklch(0.5305 0.1962 28.2609);
+  --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: Newsreader, ui-serif, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0.75rem;
+  --shadow-x: 0px;
+  --shadow-y: 4px;
+  --shadow-blur: 10px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.1;
+  --shadow-color: 0 0% 0%;
+  --shadow-2xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
+  --shadow-xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-2xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.25);
+  --tracking-normal: 0.01em;
+  --spacing: 0.25rem;
 
   --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Cutive, ui-serif, serif;
+  --font-serif: Gloock, ui-serif, serif;
   --font-mono: JetBrains Mono, monospace;
-  --font-display: Cutive, ui-sans-serif, sans-serif, system-ui;
+  --font-display: Gloock, ui-sans-serif, sans-serif, system-ui;
 
   --radius: 0.75rem;
 
-  --shadow-xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow-md: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.10);
-  --shadow-lg: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
-  --shadow-glass: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
   --shadow-glass-soft: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
   --shadow-brand: 0 10px 24px color-mix(in oklch, var(--primary) 22%, transparent);
   --shadow-brand-hover: 0 0 30px color-mix(in oklch, var(--primary) 28%, transparent);
@@ -130,6 +145,11 @@
   --border: oklch(0.2839 0.0358 151.9060);
   --input: oklch(0.2839 0.0358 151.9060);
   --ring: oklch(0.6792 0.2098 30.7858);
+  --chart-1: oklch(0.6792 0.2098 30.7858);
+  --chart-2: oklch(0.7620 0.1704 157.1841);
+  --chart-3: oklch(0.9176 0.1865 102.1441);
+  --chart-4: oklch(0.6144 0.1564 253.1181);
+  --chart-5: oklch(0.7436 0.1543 68.7094);
   --sidebar: oklch(0.2334 0.0318 151.2489);
   --sidebar-foreground: oklch(0.9303 0.0100 155.0876);
   --sidebar-primary: oklch(0.6792 0.2098 30.7858);
@@ -138,4 +158,22 @@
   --sidebar-accent-foreground: oklch(0.7620 0.1704 157.1841);
   --sidebar-border: oklch(0.2839 0.0358 151.9060);
   --sidebar-ring: oklch(0.9176 0.1865 102.1441);
+  --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: Newsreader, ui-serif, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0.75rem;
+  --shadow-x: 0px;
+  --shadow-y: 0px;
+  --shadow-blur: 15px;
+  --shadow-spread: 2px;
+  --shadow-opacity: 0.2;
+  --shadow-color: 255 255% 255%;
+  --shadow-2xs: 0px 0px 15px 2px hsl(255 255% 255% / 0.10);
+  --shadow-xs: 0px 0px 15px 2px hsl(255 255% 255% / 0.10);
+  --shadow-sm: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 1px 2px 1px hsl(255 255% 255% / 0.20);
+  --shadow: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 1px 2px 1px hsl(255 255% 255% / 0.20);
+  --shadow-md: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 2px 4px 1px hsl(255 255% 255% / 0.20);
+  --shadow-lg: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 4px 6px 1px hsl(255 255% 255% / 0.20);
+  --shadow-xl: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 8px 10px 1px hsl(255 255% 255% / 0.20);
+  --shadow-2xl: 0px 0px 15px 2px hsl(255 255% 255% / 0.50);
 }

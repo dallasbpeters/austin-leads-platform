@@ -5,7 +5,6 @@ export function BandSection({ section, sectionId, editAttributes = {} }) {
   return (
     <section
       className="bg-transparent"
-      {...editAttributes}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/BandSection.jsx',

@@ -7,11 +7,7 @@ import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 import { roofingServices } from '@/lib/platform/service-catalog'
-import {
-  getSectionDomId,
-  getSiteBrandStyleVars,
-  getThemeClassForSite,
-} from './PublicSiteUtils'
+import { getSectionDomId, getSiteBrandStyleVars, getThemeClassForSite } from './PublicSiteUtils'
 import { GenericFooter, GenericHeader } from './shell'
 import { sectionRenderers, RoofingLogoCloudSection, CtaSection } from './sections'
 
@@ -48,7 +44,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
 
   return (
     <div
-      className={`${themeClass} min-h-screen text-foreground bg-background`}
+      className={`${themeClass} text-foreground bg-background min-h-screen`}
       {...getDevSectionAttributes({
         id: 'public-site-root',
         markup: 'src/components/platform/PublicSite.jsx',
@@ -64,11 +60,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
         note={`route ${pathname || '/'} using ${useSolarShell ? 'solar shell' : 'generic shell'}`}
       />
 
-      {useSolarShell ? (
-        <Header />
-      ) : (
-        <GenericHeader site={site} navigation={navigation} />
-      )}
+      {useSolarShell ? <Header /> : <GenericHeader site={site} navigation={navigation} />}
 
       <main
         {...getDevSectionAttributes({
@@ -126,10 +118,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
 
       {useSolarShell ? <Footer /> : <GenericFooter site={site} />}
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </div>
   )
 }

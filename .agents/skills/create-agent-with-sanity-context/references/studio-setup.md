@@ -44,9 +44,9 @@ See [ecommerce/studio/sanity.config.ts](ecommerce/studio/sanity.config.ts) for a
 **Minimal setup:**
 
 ```ts
-import {defineConfig} from 'sanity'
-import {structureTool} from 'sanity/structure'
-import {agentContextPlugin} from '@sanity/agent-context/studio'
+import { defineConfig } from 'sanity'
+import { structureTool } from 'sanity/structure'
+import { agentContextPlugin } from '@sanity/agent-context/studio'
 
 export default defineConfig({
   // ... your config

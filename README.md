@@ -1,4 +1,3 @@
-
 # Austin Leads Platform
 
 Austin Leads Platform is a multi-tenant Next.js application for Texas local-service lead generation. It combines:

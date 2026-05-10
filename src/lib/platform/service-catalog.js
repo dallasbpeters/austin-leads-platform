@@ -358,59 +358,73 @@ export const mainServices = [
       faq: [
         {
           question: 'How do solar panels actually generate electricity?',
-          answer: 'Solar cells convert sunlight into DC electricity. An inverter converts that to AC, which is what your home uses. Whatever you produce offsets what you pull from the grid, and your meter tracks the difference.',
+          answer:
+            'Solar cells convert sunlight into DC electricity. An inverter converts that to AC, which is what your home uses. Whatever you produce offsets what you pull from the grid, and your meter tracks the difference.',
         },
         {
           question: 'How long do solar panels last?',
-          answer: 'Most panels are warrantied for 25 years and continue producing past that. Production drops slowly over time -- expect about 85-90% of original output at year 25. Inverters typically need replacing once in that span.',
+          answer:
+            'Most panels are warrantied for 25 years and continue producing past that. Production drops slowly over time -- expect about 85-90% of original output at year 25. Inverters typically need replacing once in that span.',
         },
         {
           question: 'Do panels still produce on cloudy days?',
-          answer: 'Yes. Output drops on overcast days but panels still generate. Your system is sized based on annual production, which accounts for weather patterns across the year.',
+          answer:
+            'Yes. Output drops on overcast days but panels still generate. Your system is sized based on annual production, which accounts for weather patterns across the year.',
         },
         {
           question: 'How much does a solar system cost in Texas?',
-          answer: 'A typical residential system in Texas runs $15,000-30,000 depending on size, equipment, and roof complexity. Battery adds $8,000-15,000 depending on capacity. Your proposal breaks down every line item so you see exactly where the money goes.',
+          answer:
+            'A typical residential system in Texas runs $15,000-30,000 depending on size, equipment, and roof complexity. Battery adds $8,000-15,000 depending on capacity. Your proposal breaks down every line item so you see exactly where the money goes.',
         },
         {
           question: 'Can I finance solar with no money down?',
-          answer: 'Yes. Most solar loans start at $0 down. But watch the dealer fee -- some lenders bake 15-30% into the loan balance. We show you the total cost of each financing option so you can compare.',
+          answer:
+            'Yes. Most solar loans start at $0 down. But watch the dealer fee -- some lenders bake 15-30% into the loan balance. We show you the total cost of each financing option so you can compare.',
         },
         {
           question: 'Does a solar loan put a lien on my home?',
-          answer: 'No. Solar lenders file a UCC-1 fixture filing on the panels, not a lien on your property. If you sell, the loan transfers or gets paid off at closing.',
+          answer:
+            'No. Solar lenders file a UCC-1 fixture filing on the panels, not a lien on your property. If you sell, the loan transfers or gets paid off at closing.',
         },
         {
           question: 'What does the install process look like?',
-          answer: 'Consultation, site survey, system design, permitting, installation (1-2 days), city inspection, then utility permission to operate. Start to finish is typically 6-10 weeks, with most of that waiting on permits and utility paperwork.',
+          answer:
+            'Consultation, site survey, system design, permitting, installation (1-2 days), city inspection, then utility permission to operate. Start to finish is typically 6-10 weeks, with most of that waiting on permits and utility paperwork.',
         },
         {
           question: 'How long from signing to system on?',
-          answer: 'Usually 6-10 weeks. The install itself takes 1-2 days. The rest is permits, engineering, and waiting for your utility to approve interconnection. We handle all of it.',
+          answer:
+            'Usually 6-10 weeks. The install itself takes 1-2 days. The rest is permits, engineering, and waiting for your utility to approve interconnection. We handle all of it.',
         },
         {
           question: 'I have an HOA -- can I still go solar?',
-          answer: 'Texas law protects your right to install solar. HOAs can set reasonable rules about placement but cannot prohibit it. We handle the paperwork and architectural review submissions.',
+          answer:
+            'Texas law protects your right to install solar. HOAs can set reasonable rules about placement but cannot prohibit it. We handle the paperwork and architectural review submissions.',
         },
         {
           question: 'What does a battery actually do during an outage?',
-          answer: 'When the grid goes down, your battery automatically disconnects from the grid and powers critical circuits -- typically refrigerator, lights, Wi-Fi, and a few outlets. How long it lasts depends on battery size and what you run.',
+          answer:
+            'When the grid goes down, your battery automatically disconnects from the grid and powers critical circuits -- typically refrigerator, lights, Wi-Fi, and a few outlets. How long it lasts depends on battery size and what you run.',
         },
         {
           question: 'Do I need a battery for solar to work?',
-          answer: 'No. Most residential systems are grid-tied and work without a battery. You export excess power during the day and pull from the grid at night. A battery adds backup power and can improve economics depending on your rate plan.',
+          answer:
+            'No. Most residential systems are grid-tied and work without a battery. You export excess power during the day and pull from the grid at night. A battery adds backup power and can improve economics depending on your rate plan.',
         },
         {
           question: 'What are critter guards and do I need them?',
-          answer: 'Critter guards are mesh screens that seal the gap between your panels and roof. Rats, squirrels, and birds nest under panels and chew wiring. If you have tree cover or wildlife in the area, they pay for themselves fast.',
+          answer:
+            'Critter guards are mesh screens that seal the gap between your panels and roof. Rats, squirrels, and birds nest under panels and chew wiring. If you have tree cover or wildlife in the area, they pay for themselves fast.',
         },
         {
           question: 'How often should panels be inspected?',
-          answer: 'Once or twice a year. Most issues show up in your monitoring app as production drops. A visual check for debris, cracked glass, or critter damage takes care of the rest.',
+          answer:
+            'Once or twice a year. Most issues show up in your monitoring app as production drops. A visual check for debris, cracked glass, or critter damage takes care of the rest.',
         },
         {
           question: 'What can actually damage solar panels?',
-          answer: 'Hail (large enough to crack the glass), fallen branches, rodents chewing wiring, and in rare cases, installer error. Panels are tougher than they look -- rated for 1-inch hail at 50+ mph -- but Texas storms can exceed that.',
+          answer:
+            'Hail (large enough to crack the glass), fallen branches, rodents chewing wiring, and in rare cases, installer error. Panels are tougher than they look -- rated for 1-inch hail at 50+ mph -- but Texas storms can exceed that.',
         },
         {
           question: 'Do I need a new roof before going solar?',
@@ -418,11 +432,13 @@ export const mainServices = [
         },
         {
           question: 'Do I get incentives if I lease instead of buy?',
-          answer: 'No. Available incentives go to the system owner. If you lease, the leasing company keeps them. Ownership is almost always better financially if you can finance or pay cash.',
+          answer:
+            'No. Available incentives go to the system owner. If you lease, the leasing company keeps them. Ownership is almost always better financially if you can finance or pay cash.',
         },
         {
           question: 'What are solar buyback programs?',
-          answer: 'Many Texas utilities buy excess electricity your system sends to the grid. Rates and terms vary by provider -- some pay retail, some pay wholesale, some give bill credits. We help you understand what your specific utility offers before you sign.',
+          answer:
+            'Many Texas utilities buy excess electricity your system sends to the grid. Rates and terms vary by provider -- some pay retail, some pay wholesale, some give bill credits. We help you understand what your specific utility offers before you sign.',
         },
       ],
     },

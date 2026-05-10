@@ -64,7 +64,8 @@ async function fetchPng(url, userAgent) {
   return {
     body,
     cacheControl:
-      response.headers.get('cache-control') || 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+      response.headers.get('cache-control') ||
+      'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
   }
 }
 
@@ -101,7 +102,10 @@ async function buildHardFallbackPngResponse(includeBody, requestUrl) {
 
   return new Response(includeBody ? fallbackBytes : null, {
     status: 200,
-    headers: buildPngHeaders(fallbackBytes.byteLength, 'public, max-age=0, s-maxage=3600, stale-while-revalidate=3600'),
+    headers: buildPngHeaders(
+      fallbackBytes.byteLength,
+      'public, max-age=0, s-maxage=3600, stale-while-revalidate=3600',
+    ),
   })
 }
 
@@ -169,4 +173,3 @@ export async function GET(request, context) {
 export async function HEAD(request, context) {
   return buildGuideOgResponse(request, context, false)
 }
-

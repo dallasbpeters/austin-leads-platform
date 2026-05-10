@@ -8,8 +8,7 @@ function buildGuideItemKey(slug) {
     .replace(/[^a-z0-9-]+/gi, '-')
     .replace(/-{2,}/g, '-')
     .replace(/^-|-$/g, '')
-    .toLowerCase()}`
-    .slice(0, 64)
+    .toLowerCase()}`.slice(0, 64)
 }
 
 function toPortableTextSimple(value) {
@@ -63,10 +62,9 @@ export async function syncGuideHeroToGuideGridItems(client, guideDoc) {
 
   const guidesPages = await client
     .withConfig({ perspective: 'raw' })
-    .fetch(
-      groq`*[_type == "page" && site._ref == $siteId && slug.current == "guides"]{_id,sections}`,
-      { siteId: siteRef },
-    )
+    .fetch(groq`*[_type == "page" && site._ref == $siteId && slug.current == "guides"]{_id,sections}`, {
+      siteId: siteRef,
+    })
 
   for (const pageDoc of guidesPages || []) {
     const sections = Array.isArray(pageDoc?.sections) ? pageDoc.sections : []
@@ -152,10 +150,10 @@ export async function syncGuideGridCardImagesToHeroes(client, { siteRef, guidesP
 
     const posts = await client
       .withConfig({ perspective: 'raw' })
-      .fetch(
-        groq`*[_type == "post" && site._ref == $siteId && slug.current == $slug]{_id,sections}`,
-        { siteId: siteRef, slug: slugPath },
-      )
+      .fetch(groq`*[_type == "post" && site._ref == $siteId && slug.current == $slug]{_id,sections}`, {
+        siteId: siteRef,
+        slug: slugPath,
+      })
 
     for (const post of posts || []) {
       const postSections = Array.isArray(post.sections) ? [...post.sections] : []
@@ -187,17 +185,15 @@ export async function refreshAllGuideGridImagesFromPosts(client, siteRef) {
     return { ok: false }
   }
 
-  const posts = await client
-    .withConfig({ perspective: 'raw' })
-    .fetch(
-      groq`*[_type == "post" && site._ref == $siteId && slug.current match "guides/*"]{
+  const posts = await client.withConfig({ perspective: 'raw' }).fetch(
+    groq`*[_type == "post" && site._ref == $siteId && slug.current match "guides/*"]{
         title,
         description,
         "slug": slug.current,
         sections
       }`,
-      { siteId: siteRef },
-    )
+    { siteId: siteRef },
+  )
 
   for (const guideDoc of posts || []) {
     await syncGuideHeroToGuideGridItems(client, {

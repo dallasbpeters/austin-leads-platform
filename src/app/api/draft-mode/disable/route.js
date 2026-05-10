@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server'
 import { frontendOriginAllowlist, localFrontendUrl } from '@/sanity/env'
 
 function resolveRedirectPath(requestUrl) {
-  const allowedOrigins = new Set([new URL(requestUrl).origin, localFrontendUrl, ...frontendOriginAllowlist].filter(Boolean))
+  const allowedOrigins = new Set(
+    [new URL(requestUrl).origin, localFrontendUrl, ...frontendOriginAllowlist].filter(Boolean),
+  )
   const candidate = new URL(requestUrl).searchParams.get('redirect')
 
   if (!candidate) {

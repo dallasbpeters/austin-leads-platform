@@ -53,7 +53,9 @@ function AuditRow({ label, audit }) {
       <div style={{ fontSize: '0.92rem', fontWeight: 600 }}>
         {label}: <span style={{ color: scoreColor(audit?.score) }}>{audit?.score ?? '—'}</span>
       </div>
-      {audit?.displayValue ? <div style={{ fontSize: '0.88rem', color: '#4b5563' }}>{audit.displayValue}</div> : null}
+      {audit?.displayValue ? (
+        <div style={{ fontSize: '0.88rem', color: '#4b5563' }}>{audit.displayValue}</div>
+      ) : null}
     </div>
   )
 }
@@ -95,7 +97,9 @@ export function PageSpeedTool() {
   }
 
   return (
-    <div style={{ padding: '1.5rem', display: 'grid', gap: '1rem', maxWidth: '1024px', marginInline: 'auto' }}>
+    <div
+      style={{ padding: '1.5rem', display: 'grid', gap: '1rem', maxWidth: '1024px', marginInline: 'auto' }}
+    >
       <div style={{ display: 'grid', gap: '0.5rem' }}>
         <div
           style={{
@@ -139,7 +143,12 @@ export function PageSpeedTool() {
           <select
             value={strategy}
             onChange={(event) => setStrategy(event.target.value)}
-            style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db', width: '220px' }}
+            style={{
+              padding: '0.75rem 0.8rem',
+              borderRadius: '0.6rem',
+              border: '1px solid #d1d5db',
+              width: '220px',
+            }}
           >
             <option value="mobile">Mobile</option>
             <option value="desktop">Desktop</option>
@@ -181,14 +190,27 @@ export function PageSpeedTool() {
 
       {result ? (
         <div style={{ display: 'grid', gap: '1rem' }}>
-          <div style={{ display: 'grid', gap: '0.6rem', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
+          <div
+            style={{
+              display: 'grid',
+              gap: '0.6rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            }}
+          >
             <ScoreCard label="Performance" score={result.categories?.performance} />
             <ScoreCard label="Accessibility" score={result.categories?.accessibility} />
             <ScoreCard label="Best Practices" score={result.categories?.bestPractices} />
             <ScoreCard label="SEO" score={result.categories?.seo} />
           </div>
 
-          <div style={{ border: '1px solid #e5e7eb', borderRadius: '0.9rem', padding: '1rem', background: 'white' }}>
+          <div
+            style={{
+              border: '1px solid #e5e7eb',
+              borderRadius: '0.9rem',
+              padding: '1rem',
+              background: 'white',
+            }}
+          >
             <div style={{ fontWeight: 700, marginBottom: '0.7rem' }}>Core Web Vitals Snapshot</div>
             <AuditRow label="Largest Contentful Paint" audit={result.coreWebVitals?.lcp} />
             <AuditRow label="Cumulative Layout Shift" audit={result.coreWebVitals?.cls} />

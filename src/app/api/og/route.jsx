@@ -80,8 +80,7 @@ const OG_CSS_VAR_TO_TOKEN = {
 }
 
 function rgbTripleToHex(r, g, b) {
-  const clampByte = (n) =>
-    Math.round(Math.max(0, Math.min(255, Number.isFinite(n) ? n : 0)))
+  const clampByte = (n) => Math.round(Math.max(0, Math.min(255, Number.isFinite(n) ? n : 0)))
   const toHex = (n) => clampByte(n).toString(16).padStart(2, '0')
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
@@ -113,11 +112,7 @@ function oklchTupleToHex(L, C, hDeg) {
   const a = C * Math.cos(hr)
   const b = C * Math.sin(hr)
   const [lr, lg, lb] = oklabToLinearSrgb(L, a, b)
-  return rgbTripleToHex(
-    linearSrgbChannelToByte(lr),
-    linearSrgbChannelToByte(lg),
-    linearSrgbChannelToByte(lb),
-  )
+  return rgbTripleToHex(linearSrgbChannelToByte(lr), linearSrgbChannelToByte(lg), linearSrgbChannelToByte(lb))
 }
 
 function parseOklchCss(css) {
@@ -235,8 +230,7 @@ function hexFromCssColor(css, fallbackHex = null) {
   return fallbackHex
 }
 
-const DEFAULT_GUIDE_OG_BACKGROUND_HEX =
-  hexFromCssColor(OG_COLOR_TOKEN_MAP.primary, '#016bb7') || '#016bb7'
+const DEFAULT_GUIDE_OG_BACKGROUND_HEX = hexFromCssColor(OG_COLOR_TOKEN_MAP.primary, '#016bb7') || '#016bb7'
 
 function getFontFamily(requestUrl) {
   if (!fontFamilyPromise) {
@@ -436,7 +430,8 @@ export async function GET(request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
   const fontFamily = await getFontFamily(requestUrl)
-  const isGuideParam = getQueryParam(searchParams, 'g') === '1' || getQueryParam(searchParams, 'guide') === '1'
+  const isGuideParam =
+    getQueryParam(searchParams, 'g') === '1' || getQueryParam(searchParams, 'guide') === '1'
   const site = clampText(
     getQueryParam(searchParams, 's') || getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros',
     80,
@@ -449,15 +444,30 @@ export async function GET(request) {
         site,
       120,
     ) || site
-  const description = clampText(getQueryParam(searchParams, 'd') || getQueryParam(searchParams, 'description') || '', 180)
+  const description = clampText(
+    getQueryParam(searchParams, 'd') || getQueryParam(searchParams, 'description') || '',
+    180,
+  )
   const path = clampText(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path') || '', 80)
-  const category = clampText(getQueryParam(searchParams, 'c') || getQueryParam(searchParams, 'category') || '', 80)
-  const layout = clampText(getQueryParam(searchParams, 'l') || getQueryParam(searchParams, 'layout') || '', 20)
+  const category = clampText(
+    getQueryParam(searchParams, 'c') || getQueryParam(searchParams, 'category') || '',
+    80,
+  )
+  const layout = clampText(
+    getQueryParam(searchParams, 'l') || getQueryParam(searchParams, 'layout') || '',
+    20,
+  )
   const imageParam = getQueryParam(searchParams, 'i') || getQueryParam(searchParams, 'image') || ''
   const image = imageParam ? new URL(imageParam, requestUrl.origin).toString() : ''
 
-  const primary = safeColor(getQueryParam(searchParams, 'pr') || getQueryParam(searchParams, 'primary'), '#f97316')
-  const secondary = safeColor(getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'), '#016bb7')
+  const primary = safeColor(
+    getQueryParam(searchParams, 'pr') || getQueryParam(searchParams, 'primary'),
+    '#f97316',
+  )
+  const secondary = safeColor(
+    getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'),
+    '#016bb7',
+  )
   const guideBackground = solidHexForOgGuideBackground(
     getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'),
     DEFAULT_GUIDE_OG_BACKGROUND_HEX,
@@ -472,8 +482,7 @@ export async function GET(request) {
   const guideCategoryText = guideUseLightInk ? '#020617' : '#ffffff'
   const secondarySoft = '#FFFFFF'
   const copyColor = '#dbe4ee'
-  const isGuideLayout =
-    isGuideParam || layout === 'guide' || path.startsWith('/guides/')
+  const isGuideLayout = isGuideParam || layout === 'guide' || path.startsWith('/guides/')
 
   const imageResponse = new ImageResponse(
     <div
@@ -582,7 +591,6 @@ export async function GET(request) {
                 </div>
               ) : null}
             </div>
-
           </div>
           <div
             style={{
@@ -760,7 +768,6 @@ export async function GET(request) {
                     ) : null}
                   </div>
                 </div>
-
               </div>
 
               <div

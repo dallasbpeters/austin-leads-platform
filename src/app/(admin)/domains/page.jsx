@@ -15,10 +15,5 @@ export default async function DomainsPage() {
     }
   }
 
-  return (
-    <DomainsClient
-      initialDomains={initialDomains}
-      vercelEnabled={isVercelConfigured()}
-    />
-  )
+  return <DomainsClient initialDomains={initialDomains} vercelEnabled={isVercelConfigured()} />
 }

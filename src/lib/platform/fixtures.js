@@ -384,8 +384,7 @@ export const pages = [
         eyebrow: 'Free estimate · No commitment · Takes 2 minutes',
         title: 'See what solar could save',
         body: "Enter your average monthly electric bill and we'll estimate system size, possible savings, and a likely payback range. Solar stands on its own here, even when roofing decisions affect the bigger project.",
-        subtitle:
-          'Based on typical Texas residential production assumptions and current utility-rate ranges',
+        subtitle: 'Based on typical Texas residential production assumptions and current utility-rate ranges',
         ctaLabel: 'Talk through your solar options',
         ctaHref: '#estimate',
         items: [

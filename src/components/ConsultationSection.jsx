@@ -8,11 +8,7 @@ import { getDevSectionAttributes } from './dev/DevTrace'
 
 const SECTION_VARIANTS = {
   default: {
-    heading: (
-      <>
-        Talk with our team
-      </>
-    ),
+    heading: <>Talk with our team</>,
     copy: 'Tell us what is happening with your home, and we will help you choose the right next step.',
     buttonLabel: 'Reach out to our team',
     sourceSection: 'homepage-consultation',
@@ -22,12 +18,7 @@ const SECTION_VARIANTS = {
     },
   },
   roofingInspection: {
-    heading: (
-      <>
-        Request a
-        roof inspection
-      </>
-    ),
+    heading: <>Request a roof inspection</>,
     copy: 'We will help you sort out repair, replacement, or storm-related next steps.',
     buttonLabel: 'Request Free Inspection',
     sourceSection: 'roofing-consultation',
@@ -37,20 +28,15 @@ const SECTION_VARIANTS = {
     },
   },
   christmasLights: {
-    heading: (
-      <>
-        Secure your
-        install date
-      </>
-    ),
+    heading: <>Secure your install date</>,
     copy: 'Spots fill up fast. A small deposit reserves your install window — we handle the hanging, any mid-season bulb issues, and full takedown after the holidays.',
     buttonLabel: 'Reserve My Install Date',
     sourceSection: 'christmas-lights-deposit',
     serviceInterest: 'christmas-lights',
     serviceOptions: [
-      { value: 'residential', label: 'Residential installation' },
-      { value: 'commercial', label: 'Commercial property' },
-      { value: 'takedown-only', label: 'Takedown / removal only' },
+      { value: 'roofline', label: 'Roofline' },
+      { value: 'full-front', label: 'Full front' },
+      { value: 'full-property', label: 'Full property' },
     ],
     metadata: {
       entryPoint: 'christmas-lights-page',
@@ -67,12 +53,12 @@ export default function ConsultationSection({
   pagePath = '/',
   pageTitle = 'Texas Solar and Roofing Pros',
   serviceOptions = null,
-  editAttributes,
 }) {
   const isChristmasTheme = theme === 'christmasLights'
   const isDarkTheme = theme === 'dark' || isChristmasTheme
   const content = SECTION_VARIANTS[variant] || SECTION_VARIANTS.default
-  const resolvedServiceOptions = serviceOptions ?? section?.serviceOptions ?? content.serviceOptions ?? undefined
+  const resolvedServiceOptions =
+    serviceOptions ?? section?.serviceOptions ?? content.serviceOptions ?? undefined
   const headline = section?.title || content.heading
   const copy = section?.body || content.copy
   const buttonLabel = section?.ctaLabel || content.buttonLabel
@@ -112,8 +98,7 @@ export default function ConsultationSection({
   return (
     <section
       id={sectionId}
-      className={`scroll-mt-38 relative overflow-hidden py-10 ${isDarkTheme ? 'text-white' : ''} ${theme === 'dark' ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
-      {...editAttributes}
+      className={`relative scroll-mt-38 overflow-hidden py-10 ${isDarkTheme ? 'text-white' : ''} ${theme === 'dark' ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/ConsultationSection.jsx',
@@ -126,26 +111,38 @@ export default function ConsultationSection({
         }),
         ...(isChristmasTheme && {
           backgroundImage: [
-            'radial-gradient(ellipse at 15% 65%, rgba(185, 28, 28, 0.22) 0%, transparent 48%)',
-            'radial-gradient(ellipse at 82% 20%, rgba(202, 138, 4, 0.18) 0%, transparent 42%)',
-            'radial-gradient(ellipse at 58% 88%, rgba(21, 128, 61, 0.16) 0%, transparent 40%)',
-            'radial-gradient(ellipse at 72% 52%, rgba(185, 28, 28, 0.12) 0%, transparent 35%)',
+            'radial-gradient(at 80.5% 40.8%, #14420e 0px, transparent 100%)', 
+            'radial-gradient(at 50.8% 17.7%, #16390d 0px, transparent 100%)', 
+            'radial-gradient(at 36.3% 72.7%, #0a570f 0px, transparent 50%)',
+            'radial-gradient(at 10% 33%, #213819 0px, transparent 100%)',
             `linear-gradient(135deg, hsl(var(--color-secondary-h) 45% 7%), hsl(var(--color-secondary-h) 38% 10%))`,
           ].join(', '),
         }),
       }}
     >
-      <div className="grid relative items-center max-w-7xl gap-16 mx-auto px-4 lg:px-16 sm:px-3 md:px-6 z-20 grid-cols-1 py-12 md:grid-cols-[1.1fr_1fr]">
-        <div {...editAttributes}>
-          <h2 className={`mb-4 leading-[1em]! text-[clamp(2.875rem,6vw,3.75rem)] type-display ${isDarkTheme ? 'text-white' : 'text-secondary'}`}>{headline}</h2>
-          <PortableTextContent as="div" value={copy} className={`font-semibold text-base type-accent ${isDarkTheme ? 'text-white/78' : 'text-slate-500'}`} />
+      <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 py-12 sm:px-3 md:grid-cols-[1.1fr_1fr] md:px-6 lg:px-16">
+        <div>
+          <h2
+            className={`type-display mb-4 text-[clamp(2.875rem,6vw,3.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'text-secondary'}`}
+          >
+            {headline}
+          </h2>
+          <PortableTextContent
+            as="div"
+            value={copy}
+            className={`type-accent text-base font-semibold ${isDarkTheme ? 'text-white/78' : 'text-slate-500'}`}
+          />
           {avatarName ? (
-            <div className="max-w-xl mt-8">
+            <div className="mt-8 max-w-xl">
               <div className="flex items-center gap-4">
-                <Avatar size="xl" className={`size-16 ${isDarkTheme ? 'bg-white/10 ring-white/20 ring-1' : 'bg-primary ring-1 ring-black/5'}`} style={avatarStyle}>
+                <Avatar
+                  size="xl"
+                  className={`size-16 ${isDarkTheme ? 'bg-white/10 ring-1 ring-white/20' : 'bg-primary ring-1 ring-black/5'}`}
+                  style={avatarStyle}
+                >
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
                   <AvatarFallback
-                    className={`font-semibold text-base ${isDarkTheme ? 'text-white bg-white/12' : 'text-secondary-foreground bg-secondary'}`}
+                    className={`text-base font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`}
                     style={avatarStyle}
                   >
                     {avatarInitials || 'TS'}
@@ -153,12 +150,20 @@ export default function ConsultationSection({
                 </Avatar>
                 <div className="min-w-0">
                   {avatarEyebrow ? (
-                    <div className={`mb-1 font-semibold text-[11px] tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-secondary/70'}`}>
+                    <div
+                      className={`mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-secondary/70'}`}
+                    >
                       {avatarEyebrow}
                     </div>
                   ) : null}
-                  <div className={`font-semibold text-lg ${isDarkTheme ? 'text-white' : 'text-foreground'}`}>{avatarName}</div>
-                  {avatarRole ? <div className={`text-sm ${isDarkTheme ? 'text-white/72' : 'text-muted-foreground'}`}>{avatarRole}</div> : null}
+                  <div className={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-foreground'}`}>
+                    {avatarName}
+                  </div>
+                  {avatarRole ? (
+                    <div className={`text-sm ${isDarkTheme ? 'text-white/72' : 'text-muted-foreground'}`}>
+                      {avatarRole}
+                    </div>
+                  ) : null}
                   {avatarBlurb ? (
                     <PortableTextContent
                       as="div"
@@ -172,12 +177,19 @@ export default function ConsultationSection({
           ) : null}
         </div>
 
-        <Card className={`relative p-8 z-10 ${isDarkTheme ? 'text-white bg-white/6 border-white/12 backdrop-blur' : ''}`} radius="lg">
+        <Card
+          className={`relative z-10 p-8 ${isDarkTheme ? 'border-white/12 bg-white/6 text-white backdrop-blur' : ''}`}
+          radius="lg"
+        >
           <LeadCaptureForm
             context={leadContext}
             buttonLabel={buttonLabel}
             serviceOptions={resolvedServiceOptions}
-            inputClassName={isDarkTheme ? 'border-b px-3 py-2 text-white placeholder:text-white/48' : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'}
+            inputClassName={
+              isDarkTheme
+                ? 'border-b px-3 py-2 text-white placeholder:text-white/48'
+                : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'
+            }
             labelClassName={isDarkTheme ? 'text-white/70' : 'text-slate-500'}
             checkboxClassName={isDarkTheme ? 'accent-white' : 'accent-primary'}
           />

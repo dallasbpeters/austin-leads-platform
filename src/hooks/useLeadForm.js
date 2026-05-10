@@ -30,8 +30,7 @@ export function useLeadForm({ context }) {
       lead_type: context?.sourceType || 'consultation',
       source_section: context?.sourceSection || 'unknown',
       site_slug: context?.siteSlug || 'unknown',
-      page_path:
-        context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
+      page_path: context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
       service_interest: nextForm?.serviceInterest || 'unknown',
     }
   }

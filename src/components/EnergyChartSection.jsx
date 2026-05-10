@@ -121,7 +121,11 @@ function resolveAreaPointValue(point, seriesIndex, seriesCount) {
   return 0
 }
 
-export default function EnergyChartSection({ section = null, sectionId = 'energy-chart', editAttributes = {} }) {
+export default function EnergyChartSection({
+  section = null,
+  sectionId = 'energy-chart',
+  editAttributes = {},
+}) {
   const hasSanityPoints = Array.isArray(section?.chartPoints)
   const points = hasSanityPoints ? section.chartPoints.filter(Boolean) : defaultPoints
 
@@ -212,7 +216,15 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
     const labelY = clamp(Number(y) - 12, chartTop + 12, chartBottom - 12)
 
     return (
-      <text x={x} y={labelY} textAnchor="middle" dominantBaseline="middle" fill={lineColor} fontSize="12" fontWeight="600">
+      <text
+        x={x}
+        y={labelY}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill={lineColor}
+        fontSize="12"
+        fontWeight="600"
+      >
         {value}
         {lineUnitLabel}
       </text>
@@ -238,7 +250,9 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           <YAxis
             domain={[0, yAxisMax]}
             ticks={yTicks}
-            tickFormatter={(value) => (value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString())}
+            tickFormatter={(value) =>
+              value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString()
+            }
             tick={{ fill: axisTickColor, fontSize: 12 }}
             axisLine={axisLineProps}
             tickLine={tickLineProps}
@@ -250,7 +264,13 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
             labelFormatter={(label) => `${label}`}
           />
           {showLegend ? <Legend /> : null}
-          <Bar dataKey="barValue" name={`${primaryLabel} (${unitLabel})`} fill={barColor} radius={[2, 2, 0, 0]} maxBarSize={56} />
+          <Bar
+            dataKey="barValue"
+            name={`${primaryLabel} (${unitLabel})`}
+            fill={barColor}
+            radius={[2, 2, 0, 0]}
+            maxBarSize={56}
+          />
         </BarChart>
       )
     }
@@ -269,7 +289,9 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           <YAxis
             domain={[0, yAxisMax]}
             ticks={yTicks}
-            tickFormatter={(value) => (value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString())}
+            tickFormatter={(value) =>
+              value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString()
+            }
             tick={{ fill: axisTickColor, fontSize: 12 }}
             axisLine={axisLineProps}
             tickLine={tickLineProps}
@@ -311,7 +333,9 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           <YAxis
             domain={[0, yAxisMax]}
             ticks={yTicks}
-            tickFormatter={(value) => (value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString())}
+            tickFormatter={(value) =>
+              value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString()
+            }
             tick={{ fill: axisTickColor, fontSize: 12 }}
             axisLine={axisLineProps}
             tickLine={tickLineProps}
@@ -421,7 +445,9 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           yAxisId="bars"
           domain={[0, yAxisMax]}
           ticks={yTicks}
-          tickFormatter={(value) => (value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString())}
+          tickFormatter={(value) =>
+            value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString()
+          }
           tick={{ fill: axisTickColor, fontSize: 12 }}
           axisLine={axisLineProps}
           tickLine={tickLineProps}
@@ -440,7 +466,8 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
           cursor={{ fill: 'rgba(0,0,0,0.04)' }}
           formatter={(value, name) => {
             if (name === 'barValue') return [`${value} ${unitLabel}`, `${primaryLabel} (${unitLabel})`]
-            if (name === 'lineValue') return [`${value}${lineUnitLabel}`, `${secondaryLabel} (${lineUnitLabel})`]
+            if (name === 'lineValue')
+              return [`${value}${lineUnitLabel}`, `${secondaryLabel} (${lineUnitLabel})`]
             return [value, name]
           }}
           labelFormatter={(label) => `Month: ${label}`}
@@ -474,38 +501,39 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
 
   return (
     <section
-      className="bg-background border-b border-border/60"
-      {...editAttributes}
+      className="bg-background border-border/60 border-b"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/EnergyChartSection.jsx',
         content: 'editable energy chart section',
       })}
     >
-      <div className="max-w-7xl mx-auto px-3 md:px-6 py-16 lg:px-10">
-        <div className="space-y-3 max-w-3xl mb-8">
+      <div className="mx-auto max-w-7xl px-3 py-16 md:px-6 lg:px-10">
+        <div className="mb-8 max-w-3xl space-y-3">
           {section?.eyebrow ? (
             <p className="text-muted-foreground text-sm tracking-[0.2em] uppercase">{section.eyebrow}</p>
           ) : null}
-          <h2 className="text-3xl tracking-tight md:text-4xl">{section?.title || 'Home energy usage trend'}</h2>
+          <h2 className="text-3xl tracking-tight md:text-4xl">
+            {section?.title || 'Home energy usage trend'}
+          </h2>
           {section?.body ? (
             <PortableTextContent as="div" value={section.body} className="text-muted-foreground leading-7" />
           ) : null}
         </div>
 
-        <div className="rounded-2xl border border-border/70 bg-card p-4 md:p-6">
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4">
-            <p className="font-semibold text-sm md:text-base">{periodLabel}</p>
+        <div className="border-border/70 bg-card rounded-2xl border p-4 md:p-6">
+          <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <p className="text-sm font-semibold md:text-base">{periodLabel}</p>
           </div>
 
           {chartData.length === 0 ? (
-            <div className="flex h-[240px] items-center justify-center rounded-xl border border-dashed border-border/70 bg-background text-muted-foreground text-sm">
+            <div className="border-border/70 bg-background text-muted-foreground flex h-[240px] items-center justify-center rounded-xl border border-dashed text-sm">
               No chart points configured.
             </div>
           ) : (
-            <div className="min-w-0 w-full" style={{ minHeight: `${chartHeight}px` }}>
+            <div className="w-full min-w-0" style={{ minHeight: `${chartHeight}px` }}>
               <div
-                className="w-full min-h-40"
+                className="min-h-40 w-full"
                 style={{
                   width: '100%',
                   height: `${chartHeight}px`,
@@ -523,4 +551,3 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
     </section>
   )
 }
-

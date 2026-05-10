@@ -50,7 +50,8 @@ export default function LeadCaptureForm({
         lead_type: context?.sourceType || 'consultation',
         source_section: context?.sourceSection || 'unknown',
         site_slug: context?.siteSlug || 'unknown',
-        page_path: context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
+        page_path:
+          context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
         service_interest: form.serviceInterest || 'unknown',
       })
     }
@@ -149,7 +150,10 @@ export default function LeadCaptureForm({
       </div>
 
       <div>
-        <label htmlFor={serviceInterestFieldId} className={cn('mb-2 block text-sm font-semibold', labelClassName)}>
+        <label
+          htmlFor={serviceInterestFieldId}
+          className={cn('mb-2 block text-sm font-semibold', labelClassName)}
+        >
           Service interested in
         </label>
         <select
@@ -181,10 +185,7 @@ export default function LeadCaptureForm({
           disabled={disabled}
           required
         />
-        <label
-          htmlFor={privacyFieldId}
-          className={cn('text-sm font-semibold', labelClassName)}
-        >
+        <label htmlFor={privacyFieldId} className={cn('text-sm font-semibold', labelClassName)}>
           {checkboxLabel}
         </label>
       </div>
@@ -192,10 +193,10 @@ export default function LeadCaptureForm({
       {message ? (
         <div
           className={cn(
-            "px-4 py-3 text-sm border rounded-sm",
+            'rounded-sm border px-4 py-3 text-sm',
             status === 'success'
-              ? "text-emerald-50 bg-emerald-500 border-emerald-200"
-              : "text-rose-900 bg-rose-50 border-rose-200",
+              ? 'border-emerald-200 bg-emerald-500 text-emerald-50'
+              : 'border-rose-200 bg-rose-50 text-rose-900',
             messageClassName,
           )}
         >
@@ -204,7 +205,7 @@ export default function LeadCaptureForm({
       ) : null}
 
       <Button pill type="submit" size="lg" fullWidth disabled={disabled}>
-        {disabled ? <LoaderCircle className="h-4 w-4 mr-2 animate-spin" /> : null}
+        {disabled ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
         {buttonLabel}
       </Button>
     </form>

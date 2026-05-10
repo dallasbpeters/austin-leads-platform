@@ -171,16 +171,16 @@ export default async function StyleGuidePage() {
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,var(--background),var(--card))]">
-      <div className="flex flex-col max-w-[1440px] w-full gap-8 mx-auto px-4 py-6 lg:px-8 lg:py-8 sm:px-3 md:px-6">
-        <div className="px-3 md:px-6 py-8 sm:px-8 bg-card/76 border border-border rounded-[2.25rem] shadow-none backdrop-blur">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-4 py-6 sm:px-3 md:px-6 lg:px-8 lg:py-8">
+        <div className="bg-card/76 border-border rounded-[2.25rem] border px-3 py-8 shadow-none backdrop-blur sm:px-8 md:px-6">
           <div className="max-w-4xl space-y-4">
-            <div className="font-semibold text-muted-foreground text-sm tracking-[0.24em] uppercase">
+            <div className="text-muted-foreground text-sm font-semibold tracking-[0.24em] uppercase">
               Internal Reference
             </div>
-            <h1 className="font-bold text-4xl text-foreground tracking-tight sm:text-5xl">
+            <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
               Theme style guide
             </h1>
-            <p className="max-w-3xl leading-7 text-base text-muted-foreground">
+            <p className="text-muted-foreground max-w-3xl text-base leading-7">
               Generated directly from <code>src/styles/globals.css</code>, so the swatches stay in sync with
               the actual theme file. This page is intentionally blocked from crawlers.
             </p>

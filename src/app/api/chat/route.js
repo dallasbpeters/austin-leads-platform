@@ -94,12 +94,14 @@ export async function POST(request) {
   }
 
   const mcpUrl = getAgentContextMcpUrl()
-  const readToken =
-    process.env.SANITY_API_READ_TOKEN?.trim() || process.env.SANITY_API_VIEWER_TOKEN?.trim()
+  const readToken = process.env.SANITY_API_READ_TOKEN?.trim() || process.env.SANITY_API_VIEWER_TOKEN?.trim()
 
   if (!mcpUrl) {
     return Response.json(
-      { error: 'Sanity project/dataset missing. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET, or SANITY_CONTEXT_MCP_URL.' },
+      {
+        error:
+          'Sanity project/dataset missing. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET, or SANITY_CONTEXT_MCP_URL.',
+      },
       { status: 500 },
     )
   }
@@ -114,7 +116,10 @@ export async function POST(request) {
   const model = resolveLanguageModel()
   if (!model) {
     return Response.json(
-      { error: 'No LLM configured. Set GROQ_API_KEY and/or ANTHROPIC_API_KEY (optional CHAT_LLM_PROVIDER=groq|anthropic).' },
+      {
+        error:
+          'No LLM configured. Set GROQ_API_KEY and/or ANTHROPIC_API_KEY (optional CHAT_LLM_PROVIDER=groq|anthropic).',
+      },
       { status: 500 },
     )
   }
@@ -147,14 +152,10 @@ export async function POST(request) {
 
     const mcpTools = await mcpClient.tools()
     const extra =
-      typeof systemPromptExtra === 'string'
-        ? systemPromptExtra
-        : process.env.AGENT_SYSTEM_PROMPT_EXTRA || ''
+      typeof systemPromptExtra === 'string' ? systemPromptExtra : process.env.AGENT_SYSTEM_PROMPT_EXTRA || ''
 
-    const focus =
-      documentFocus && typeof documentFocus === 'object' ? documentFocus : {}
-    const legacy =
-      documentContext && typeof documentContext === 'object' ? documentContext : {}
+    const focus = documentFocus && typeof documentFocus === 'object' ? documentFocus : {}
+    const legacy = documentContext && typeof documentContext === 'object' ? documentContext : {}
 
     const system = buildSystemPrompt({
       extra,

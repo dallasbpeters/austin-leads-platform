@@ -43,9 +43,9 @@ export default function SignInForm({ callbackUrl = '/dashboard' }) {
   }
 
   return (
-    <Card className="max-w-md w-full border-border/80 shadow-theme-glass-soft">
+    <Card className="border-border/80 shadow-theme-glass-soft w-full max-w-md">
       <CardHeader className="space-y-4">
-        <div className="flex items-center justify-center h-12 w-12 text-primary-foreground bg-primary rounded-lg">
+        <div className="text-primary-foreground bg-primary flex h-12 w-12 items-center justify-center rounded-lg">
           <LockKeyhole className="h-5 w-5" />
         </div>
         <div>

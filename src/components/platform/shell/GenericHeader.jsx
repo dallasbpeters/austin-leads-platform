@@ -22,6 +22,8 @@ function NavList({ items, onNavigate }) {
         const href = cleanRuntimeHref(item.href)
         const label = cleanRuntimeString(item.label)
         const isAnchor = href.startsWith('#')
+        const isAbsolute = /^https?:\/\//i.test(href)
+        const isExternal = Boolean(item.isExternal) || isAbsolute
         const isContact = item.kind === 'contact'
         const className = isContact
           ? `font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 hover:text-white hover:brightness-125 ${CONTACT_LINK_CLASSES}`
@@ -29,9 +31,15 @@ function NavList({ items, onNavigate }) {
 
         const key = buildRuntimeKey('generic-nav-item', href, label, index)
 
-        if (isAnchor) {
+        if (isAnchor || isExternal) {
           return (
-            <a key={key} href={href} onClick={onNavigate} className={className}>
+            <a
+              key={key}
+              href={href}
+              onClick={onNavigate}
+              className={className}
+              {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
               {label}
             </a>
           )
@@ -107,19 +115,9 @@ export default function GenericHeader({ site, navigation = [] }) {
       >
         <div className="mx-auto w-full rounded-none bg-stone-100 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full">
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              title={site?.name || ''}
-              className="grid grid-flow-col items-center gap-2"
-            >
+            <Link href="/" title={site?.name || ''} className="grid grid-flow-col items-center gap-2">
               {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={logoAlt}
-                  width={40}
-                  height={40}
-                  className="h-7 w-7 object-contain"
-                />
+                <img src={logoUrl} alt={logoAlt} width={40} height={40} className="h-7 w-7 object-contain" />
               ) : (
                 <span aria-hidden className="text-primary type-display text-xl leading-none font-bold">
                   {(siteName || 'S').charAt(0)}
@@ -166,16 +164,6 @@ export default function GenericHeader({ site, navigation = [] }) {
           </div>
         </div>
       </nav>
-
-      {shouldShowMobileContactCta ? (
-        <a
-          href={`#${CONSULTATION_ANCHOR_ID}`}
-          className="btn btn--primary btn--pill btn--md shadow-theme-brand fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-60 -translate-x-1/2 px-5 lg:hidden"
-          aria-label="Contact our team"
-        >
-          Contact
-        </a>
-      ) : null}
     </>
   )
 }

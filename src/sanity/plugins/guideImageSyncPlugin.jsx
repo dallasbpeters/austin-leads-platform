@@ -94,6 +94,11 @@ function RefreshListingFromGuideHeroes(props) {
 export const guideImageSyncPlugin = definePlugin({
   name: 'guide-image-sync',
   document: {
-    actions: (prev) => [...prev, SyncHeroToListing, PushListingImagesToGuideHeroes, RefreshListingFromGuideHeroes],
+    actions: (prev) => [
+      ...prev,
+      SyncHeroToListing,
+      PushListingImagesToGuideHeroes,
+      RefreshListingFromGuideHeroes,
+    ],
   },
 })

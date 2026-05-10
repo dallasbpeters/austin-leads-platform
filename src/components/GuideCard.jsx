@@ -192,7 +192,7 @@ function GuideCardBody({ card }) {
     <motion.article
       animate="rest"
       className={cn(
-        "grid grid-columns-1 grid-rows-[auto_auto_auto_1fr_auto] items-start justify-start h-full min-h-[380px] p-6 border-0 rounded-xl shadow-theme-sm overflow-hidden",
+        'grid-columns-1 shadow-theme-sm grid h-full min-h-[380px] grid-rows-[auto_auto_auto_1fr_auto] items-start justify-start overflow-hidden rounded-xl border-0 p-6',
         card.toneClassName,
         card.className,
       )}
@@ -215,24 +215,26 @@ function GuideCardBody({ card }) {
     >
       <div className="grid grid-cols-2 items-start text-current/88">
         {CardIcon ? <CardIcon className="size-8" /> : <ArrowIcon />}
-        {card.number ? <span className="font-semibold text-[2rem] w-full text-right">{card.number}</span> : null}
+        {card.number ? (
+          <span className="w-full text-right text-[2rem] font-semibold">{card.number}</span>
+        ) : null}
       </div>
       {card.eyebrow ? (
-        <p className="mt-4 font-semibold text-current/72 text-sm tracking-[0.18em] uppercase">
+        <p className="mt-4 text-sm font-semibold tracking-[0.18em] text-current/72 uppercase">
           {card.eyebrow}
         </p>
       ) : null}
-      <h3 className="leading-10 text-[2rem] tracking-tight">{card.title}</h3>
-      <p className="mt-2 font-wght-450 leading-6 text-[0.95rem] text-current/88">{card.copy}</p>
+      <h3 className="text-[2rem] leading-10 tracking-tight">{card.title}</h3>
+      <p className="font-wght-450 mt-2 text-[0.95rem] leading-6 text-current/88">{card.copy}</p>
       {card.category ? (
-        <div className="flex flex-wrap gap-2 mt-4">
-          <span className="px-2 py-1 font-semibold text-[0.7rem] tracking-[0.12em] border border-current/30 rounded-full uppercase">
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="rounded-full border border-current/30 px-2 py-1 text-[0.7rem] font-semibold tracking-[0.12em] uppercase">
             {card.category}
           </span>
         </div>
       ) : null}
       {card.image ? (
-        <div className="mt-6 rounded-lg overflow-hidden relative h-56 w-full">
+        <div className="relative mt-6 h-56 w-full overflow-hidden rounded-lg">
           <motion.div
             className="absolute inset-0"
             variants={{
@@ -255,7 +257,7 @@ function GuideCardBody({ card }) {
           </motion.div>
         </div>
       ) : null}
-      <div className="flex items-center gap-2 mt-auto pt-6 font-semibold text-current/88 text-sm">
+      <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-current/88">
         <SunIcon />
         <span>{card.ctaLabel || 'Learn more'}</span>
       </div>
@@ -336,7 +338,7 @@ export default function GuideCardGrid({
   return (
     <div>
       {enableFiltering ? (
-        <div className="flex flex-wrap relative items-center gap-2.5 mb-6 sm:gap-3 z-20">
+        <div className="relative z-20 mb-6 flex flex-wrap items-center gap-2.5 sm:gap-3">
           {availableCategories.map((category) => {
             const isActive = selectedCategory === category
 
@@ -347,22 +349,22 @@ export default function GuideCardGrid({
                 variant={isActive ? 'secondary' : 'outline'}
                 className={
                   isActive
-                    ? "px-4 py-1.5 text-sm text-white bg-secondary hover:bg-secondary/95"
-                    : 'px-4 py-1.5 text-sm bg-background! hover:bg-background!'
+                    ? 'bg-secondary hover:bg-secondary/95 px-4 py-1.5 text-sm text-white'
+                    : 'bg-background! hover:bg-background! px-4 py-1.5 text-sm'
                 }
               >
                 <button
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => setSelectedCategory(category)}
-                  className="min-h-9 rounded-full cursor-pointer"
+                  className="min-h-9 cursor-pointer rounded-full"
                 >
                   {category}
                 </button>
               </Badge>
             )
           })}
-          <div className="ml-auto pt-1 sm:pt-0 font-bold text-muted-foreground text-sm basis-full sm:basis-auto">
+          <div className="text-muted-foreground ml-auto basis-full pt-1 text-sm font-bold sm:basis-auto sm:pt-0">
             {filteredCards.length} {filteredCards.length === 1 ? 'guide' : 'guides'}
           </div>
         </div>
@@ -389,10 +391,10 @@ export default function GuideCardGrid({
       </AnimatePresence>
 
       {enableFiltering && totalPages > 1 ? (
-        <div className="flex items-center justify-between gap-3 mt-6">
+        <div className="mt-6 flex items-center justify-between gap-3">
           <button
             type="button"
-            className="px-3 py-2 text-foreground text-sm bg-background border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-foreground bg-background border-border rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
           >
@@ -403,7 +405,7 @@ export default function GuideCardGrid({
           </span>
           <button
             type="button"
-            className="px-3 py-2 text-foreground text-sm bg-background border border-border rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-foreground bg-background border-border rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
           >

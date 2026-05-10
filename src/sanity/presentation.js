@@ -52,10 +52,7 @@ function resolveFromAnyPath(context) {
   const rawPath = context.params?.path
   let slug = ''
   if (typeof rawPath === 'string' && rawPath.length) {
-    slug = rawPath
-      .split('/')
-      .filter(Boolean)
-      .join('/')
+    slug = rawPath.split('/').filter(Boolean).join('/')
   } else if (Array.isArray(rawPath)) {
     slug = rawPath.filter(Boolean).join('/')
   }
@@ -123,7 +120,9 @@ export const presentationLocations = {
       const path = hrefForDoc(doc)
       if (!path) return null
       return {
-        locations: [{ title: doc.title || 'Untitled page', href: tenantHref(slugFromSiteRef(doc.siteRef), path) }],
+        locations: [
+          { title: doc.title || 'Untitled page', href: tenantHref(slugFromSiteRef(doc.siteRef), path) },
+        ],
       }
     },
   }),
@@ -147,7 +146,12 @@ export const presentationLocations = {
       const path = hrefForDoc(doc)
       if (!path) return null
       return {
-        locations: [{ title: doc.title || 'Untitled location page', href: tenantHref(slugFromSiteRef(doc.siteRef), path) }],
+        locations: [
+          {
+            title: doc.title || 'Untitled location page',
+            href: tenantHref(slugFromSiteRef(doc.siteRef), path),
+          },
+        ],
       }
     },
   }),

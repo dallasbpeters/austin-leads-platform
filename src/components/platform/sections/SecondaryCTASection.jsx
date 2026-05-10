@@ -48,41 +48,37 @@ function getContrastTextBase(color) {
 
 export function SecondaryCTASection({ section, sectionId, editAttributes = {} }) {
   const ctaLabel = section?.ctaLabel || 'Request a free roofing inspection'
-  const ctaHref = section?.ctaHref?.startsWith('/') ? cleanRuntimeHref(section.ctaHref) : '/free-roofing-inspection'
+  const ctaHref = section?.ctaHref?.startsWith('/')
+    ? cleanRuntimeHref(section.ctaHref)
+    : '/free-roofing-inspection'
   const resolvedColor = section?.color || 'var(--color-sweetcorn)'
   const contrastBase = getContrastTextBase(resolvedColor)
   const blendedTextColor = `color-mix(in oklch, ${resolvedColor} 10%, ${contrastBase})`
 
   return (
-    <section
-      id={sectionId}
-      className="bg-card border-b border-border/60 scroll-mt-38"
-      {...editAttributes}
-    >
-      <div className="mx-auto max-w-7xl px-3 md:px-6 py-10 lg:px-10">
+    <section id={sectionId} className="bg-card border-border/60 scroll-mt-38 border-b">
+      <div className="mx-auto max-w-7xl px-3 py-10 md:px-6 lg:px-10">
         <Link
           href={ctaHref}
-          className="block rounded-2xl border py-8 border-white/12"
+          className="block rounded-2xl border border-white/12 py-8"
           style={{ backgroundColor: resolvedColor, color: blendedTextColor }}
         >
-          <div className="grid items-center justify-end content-end gap-6 md:grid-cols-1">
+          <div className="grid content-end items-center justify-end gap-6 md:grid-cols-1">
             <div className="space-y-3">
-              <h2 className="text-2xl text-inherit font-semibold tracking-tight md:text-3xl text-center">
+              <h2 className="text-center text-2xl font-semibold tracking-tight text-inherit md:text-3xl">
                 {section?.title || 'Secondary CTA section'}
               </h2>
               {section?.body ? (
                 <PortableTextContent
                   as="div"
                   value={section.body}
-                  className="max-w-3xl mx-auto leading-7 text-inherit/85 text-center"
+                  className="mx-auto max-w-3xl text-center leading-7 text-inherit/85"
                 />
               ) : (
-                <p className="max-w-3xl mx-auto leading-7 text-inherit text-center">
-                  Secondary CTA section
-                </p>
+                <p className="mx-auto max-w-3xl text-center leading-7 text-inherit">Secondary CTA section</p>
               )}
             </div>
-            <div className="place-self-center w-fit inline-flex items-center gap-3 rounded-full border border-inherit px-5 py-3 font-semibold text-sm text-inherit">
+            <div className="inline-flex w-fit items-center gap-3 place-self-center rounded-full border border-inherit px-5 py-3 text-sm font-semibold text-inherit">
               {ctaLabel}
             </div>
           </div>

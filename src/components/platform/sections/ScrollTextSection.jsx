@@ -22,7 +22,7 @@ export function ScrollTextSection({ section, sectionId, editAttributes = {} }) {
   const fontSize = Number.isFinite(section?.fontSize) ? section.fontSize : undefined
 
   return (
-    <section id={sectionId} className="bg-card border-b border-border/60" {...editAttributes}>
+    <section id={sectionId} className="bg-card border-border/60 border-b">
       <ScrollText
         texts={scrollTexts}
         numCopies={numCopies}

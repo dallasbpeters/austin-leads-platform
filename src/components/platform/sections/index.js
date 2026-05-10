@@ -11,6 +11,8 @@ import { GallerySection } from './GallerySection'
 import { GuideGridSection } from './GuideGridSection'
 import { HailMapSection } from './HailMapSection'
 import { HeroSection } from './HeroSection'
+import { ServiceAreaMapSection } from './ServiceAreaMapSection'
+import { PricingSection } from './PricingSection'
 import { QuoteBannerSection } from './QuoteBannerSection'
 import { RoofingLogoCloudSection } from './RoofingLogoCloudSection'
 import { ScrollTextSection } from './ScrollTextSection'
@@ -47,7 +49,9 @@ export const sectionRenderers = {
   serviceGrid: ServiceGridSection,
   faq: FaqSection,
   gallery: GallerySection,
+  pricing: PricingSection,
   hailMap: HailMapSection,
+  serviceAreaMap: ServiceAreaMapSection,
   band: BandSection,
   logos: RoofingLogoCloudSection,
   solarSwitch: SolarSwitchSection,

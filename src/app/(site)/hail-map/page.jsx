@@ -35,11 +35,11 @@ export default async function HailMapPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="bg-background min-h-screen">
       <Header />
 
-      <section className="pt-40 border-b border-border/60 bg-[linear-gradient(180deg,rgba(17,30,41,0.98),rgba(17,30,41,0.94))]">
-        <div className="max-w-7xl mx-auto px-3 md:px-6 py-7 lg:px-10">
+      <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(17,30,41,0.98),rgba(17,30,41,0.94))] pt-40">
+        <div className="mx-auto max-w-7xl px-3 py-7 md:px-6 lg:px-10">
           <Link
             href="/hail-damage"
             className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-white/62 uppercase transition-colors hover:text-white"
@@ -48,30 +48,30 @@ export default async function HailMapPage() {
           </Link>
           <h1 className="text-3xl tracking-tight text-white md:text-4xl">Hail map + roof review</h1>
           <p className="mt-2 max-w-3xl text-base leading-7 text-white/76">
-            Check storm evidence first, then share your details to get guidance on roof condition, claims, and next
-            steps.
+            Check storm evidence first, then share your details to get guidance on roof condition, claims, and
+            next steps.
           </p>
         </div>
       </section>
 
-      <section className=" bg-gradient">
-        <div className="max-w-7xl mx-auto px-3 md:px-6 py-10 lg:px-10">
+      <section className="bg-gradient">
+        <div className="mx-auto max-w-7xl px-3 py-10 md:px-6 lg:px-10">
           <HailWeatherLookup section={hailSection} />
         </div>
       </section>
 
-      <section className="py-20 text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]">
-        <div className="grid max-w-7xl gap-12 mx-auto px-3 md:px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white">
+        <div className="mx-auto grid max-w-7xl place-items-center gap-12 px-3 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
           <div className="space-y-4">
-            <p className="text-sm text-white/58 tracking-[0.22em] uppercase">Roofing consultation</p>
+            <p className="text-sm tracking-[0.22em] text-white/58 uppercase">Roofing consultation</p>
             <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">Request a hail damage review</h2>
-            <p className="max-w-2xl leading-8 text-base text-white/78">
-              If storm evidence and roof symptoms line up, we can help you plan inspection timing, claim questions,
-              and next steps.
+            <p className="max-w-2xl text-base leading-8 text-white/78">
+              If storm evidence and roof symptoms line up, we can help you plan inspection timing, claim
+              questions, and next steps.
             </p>
           </div>
 
-          <Card className="gap-0 text-white bg-white/6 border-white/12 backdrop-blur">
+          <Card className="gap-0 border-white/12 bg-white/6 text-white backdrop-blur">
             <CardContent>
               <LeadCaptureForm
                 context={leadContext}

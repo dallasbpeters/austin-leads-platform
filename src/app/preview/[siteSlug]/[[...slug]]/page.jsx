@@ -7,9 +7,9 @@ import {
   getHeroHomepageForSite,
   getHomepageForSite,
   getHomepageReviewsForSite,
-  getNavigationForSite,
   getPageForRequest,
   isPrimarySiteSlug,
+  resolveNavigationForSite,
   resolveSiteBySlug,
 } from '@/lib/platform/content'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
@@ -26,9 +26,7 @@ export default async function PreviewSitePage({ params }) {
     const homepage = await getHomepageForSite(site.slug)
     const heroHomepage = await getHeroHomepageForSite(site.slug)
     const heroSection = homepage
-      ? (homepage.heroSection ??
-          homepage.sections?.find(isHeroSectionBlock) ??
-          null)
+      ? (homepage.heroSection ?? homepage.sections?.find(isHeroSectionBlock) ?? null)
       : (heroHomepage?.heroSection ?? null)
     const reviews = await getHomepageReviewsForSite(site.slug)
 
@@ -60,7 +58,7 @@ export default async function PreviewSitePage({ params }) {
       site={site}
       page={page}
       pathname={pathname}
-      navigation={getNavigationForSite(site.slug)}
+      navigation={resolveNavigationForSite(site)}
       jsonLd={createJsonLd(site, page, pathname)}
       reviews={reviews}
     />

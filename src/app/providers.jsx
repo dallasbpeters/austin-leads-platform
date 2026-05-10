@@ -12,6 +12,28 @@ const DEFAULT_POSTHOG_KEY = 'phc_adMRNqeoByZifxH3nDyCgZfjnMFIUIDnjKbytwTRNIk'
 // /ingest/static/* → us-assets.i.posthog.com/static/*
 const DEFAULT_POSTHOG_HOST = '/ingest'
 
+/**
+ * Parse NEXT_PUBLIC_POSTHOG_KEYS once. Expected format:
+ * {"txchristmaslights":"phc_xxx","texas-solar-and-roofing-pros":"phc_yyy"}
+ */
+function parsePostHogKeyMap() {
+  const raw = process.env.NEXT_PUBLIC_POSTHOG_KEYS
+  if (!raw) return {}
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+const POSTHOG_KEY_MAP = parsePostHogKeyMap()
+
+function resolvePostHogKey(siteSlug) {
+  if (siteSlug && POSTHOG_KEY_MAP[siteSlug]) return POSTHOG_KEY_MAP[siteSlug]
+  return process.env.NEXT_PUBLIC_POSTHOG_KEY || DEFAULT_POSTHOG_KEY
+}
+
 const TRACKABLE_BUTTON_SELECTOR = [
   'button',
   '[role="button"]',
@@ -78,9 +100,9 @@ function getSafeHrefPath(element) {
   }
 }
 
-export function PostHogProvider({ children }) {
+export function PostHogProvider({ children, siteSlug }) {
   useEffect(() => {
-    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY || DEFAULT_POSTHOG_KEY
+    const key = resolvePostHogKey(siteSlug)
     const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || DEFAULT_POSTHOG_HOST
 
     if (!key || !host) {
@@ -144,9 +166,5 @@ export function PostHogProvider({ children }) {
     }
   }, [])
 
-  return (
-    <PHProvider client={posthog}>
-      {children}
-    </PHProvider>
-  )
+  return <PHProvider client={posthog}>{children}</PHProvider>
 }

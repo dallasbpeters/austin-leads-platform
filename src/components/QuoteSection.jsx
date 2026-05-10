@@ -6,7 +6,7 @@ import { getDevSectionAttributes } from './dev/DevTrace'
 import { cva } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
-const quoteVariants = cva("relative p-6 sm:p-10 rounded-3xl overflow-hidden ring-1 ring-white/10", {
+const quoteVariants = cva('relative p-6 sm:p-10 rounded-3xl overflow-hidden ring-1 ring-white/10', {
   variants: {
     variant: {
       default: 'bg-neutral-900 text-primary-foreground',
@@ -110,7 +110,7 @@ export default function QuoteSection({
   return (
     <section
       ref={sectionRef}
-      className="relative max-w-7xl mx-auto px-4 py-20 lg:px-8 sm:px-3 md:px-6 quoteRevealSection z-10"
+      className="quoteRevealSection relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-3 md:px-6 lg:px-8"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/QuoteSection.jsx',
@@ -119,7 +119,7 @@ export default function QuoteSection({
     >
       <div data-variant={variant} className={cn(quoteVariants({ variant, size, className }))}>
         <div className="flex justify-center">
-          <span className="items-center gap-2 px-3 py-1.5 text-[11px] text-neutral-200 bg-white/5 border border-white/10 rounded-full inline-flex">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-neutral-200">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -138,12 +138,12 @@ export default function QuoteSection({
           </span>
         </div>
 
-        <div className="relative mt-8 sm:mt-10 quoteReveal">
-          <p className="max-w-5xl mx-auto leading-snug text-center text-xl tracking-tight lg:text-4xl md:text-3xl sm:text-2xl">
+        <div className="quoteReveal relative mt-8 sm:mt-10">
+          <p className="mx-auto max-w-5xl text-center text-xl leading-snug tracking-tight sm:text-2xl md:text-3xl lg:text-4xl">
             {words.map((word, index) => (
               <span
                 key={`${word}-${index}`}
-                className="duration-300 transition-colors quote-word"
+                className="quote-word transition-colors duration-300"
                 style={{ color: index < revealedCount ? wordColors.active : wordColors.inactive }}
               >
                 {word}
@@ -153,8 +153,8 @@ export default function QuoteSection({
           </p>
         </div>
 
-        <div className="flex items-center justify-center mt-8 sm:mt-10">
-          <span className="font-medium text-neutral-300 text-sm sm:text-base">{attribution}</span>
+        <div className="mt-8 flex items-center justify-center sm:mt-10">
+          <span className="text-sm font-medium text-neutral-300 sm:text-base">{attribution}</span>
         </div>
       </div>
     </section>

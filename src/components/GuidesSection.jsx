@@ -14,7 +14,12 @@ function escapePathSegment(value) {
   return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
 }
 
-export default function GuidesSection({ section = null, page = null, sectionId = 'go-deeper', editAttributes = {} }) {
+export default function GuidesSection({
+  section = null,
+  page = null,
+  sectionId = 'go-deeper',
+  editAttributes = {},
+}) {
   const title = section?.title || 'Go Deeper'
   const body = portableTextToPlainText(section?.body)
   const ctaLabel = section?.ctaLabel || 'See all guides'
@@ -45,8 +50,7 @@ export default function GuidesSection({ section = null, page = null, sectionId =
 
   return (
     <section
-      className="py-24 bg-warm"
-      {...editAttributes}
+      className="bg-warm py-24"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/GuidesSection.jsx',
@@ -58,18 +62,21 @@ export default function GuidesSection({ section = null, page = null, sectionId =
         backgroundSize: '24px 24px',
       }}
     >
-      <div className="max-w-7xl w-full mx-auto px-4">
+      <div className="mx-auto w-full max-w-7xl px-4">
         <div className="mb-8">
-          <h2 className="m-0 text-[clamp(1.875rem,4vw,2.25rem)] text-secondary type-accent">{title}</h2>
-          {body ? <PortableTextContent as="div" value={body} className="max-w-3xl mt-3 leading-7 text-base text-slate-600" /> : null}
+          <h2 className="text-secondary type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
+          {body ? (
+            <PortableTextContent
+              as="div"
+              value={body}
+              className="mt-3 max-w-3xl text-base leading-7 text-slate-600"
+            />
+          ) : null}
         </div>
-        <GuideCardGrid
-          cards={cards}
-          icon={icon}
-        />
-        <div className="flex justify-end mt-8">
+        <GuideCardGrid cards={cards} icon={icon} />
+        <div className="mt-8 flex justify-end">
           <Link
-            className="font-semibold px-4 py-2 rounded-full text-sm tracking-[0.18em] btn bg-primary text-primary-foreground type-accent uppercase"
+            className="btn bg-primary text-primary-foreground type-accent rounded-full px-4 py-2 text-sm font-semibold tracking-[0.18em] uppercase"
             href="/guides"
           >
             {ctaLabel}

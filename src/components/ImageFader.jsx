@@ -71,18 +71,18 @@ export default function ImageFader({
 
   const variants = {
     initial: {
-        opacity: 0,
-        filter: 'blur(10px)',
+      opacity: 0,
+      filter: 'blur(10px)',
     },
     animate: {
-        opacity: 1,
-        filter: 'blur(0px)',
+      opacity: 1,
+      filter: 'blur(0px)',
     },
     exit: {
-        opacity: 0.5,
-        filter: 'blur(10px)',
+      opacity: 0.5,
+      filter: 'blur(10px)',
     },
-}
+  }
 
   const staticImage = (
     <Image
@@ -126,13 +126,13 @@ export default function ImageFader({
           <motion.div
             key={index}
             variants={variants}
-                        initial='initial'
-                        animate='animate'
-                        exit='exit'
-                        transition={{
-                          type: "tween",
-                          duration: fadeSec,
-                      }}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{
+              type: 'tween',
+              duration: fadeSec,
+            }}
             className={cn(imageClassName)}
             draggable={false}
             style={{
@@ -194,7 +194,6 @@ export default function ImageFader({
           }}
         />
       )}
-
     </div>
   )
 }

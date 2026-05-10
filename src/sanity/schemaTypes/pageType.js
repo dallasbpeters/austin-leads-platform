@@ -8,7 +8,8 @@ const hideUnlessSectionTypes =
   ({ parent }) =>
     !isSectionType(parent, ...types)
 const resolveHeroMediaMode = (parent) =>
-  parent?.heroMediaMode || (Array.isArray(parent?.heroSlides) && parent.heroSlides.length ? 'slides' : 'single')
+  parent?.heroMediaMode ||
+  (Array.isArray(parent?.heroSlides) && parent.heroSlides.length ? 'slides' : 'single')
 const hideUnlessHeroMediaMode =
   (...modes) =>
   ({ parent }) =>
@@ -344,22 +345,12 @@ const heroImageType = {
   },
 }
 
-
-
 const uploadedImageType = {
   name: 'uploadedImage',
   title: 'Uploaded Image',
   type: 'image',
   options: {
-    hotspot: {
-      previews: [
-        { title: 'Wide 16:9', aspectRatio: 16 / 9 },
-        { title: 'Landscape 3:2', aspectRatio: 3 / 2 },
-        { title: 'Square 1:1', aspectRatio: 1 },
-        { title: 'Portrait 3:4', aspectRatio: 3 / 4 },
-        { title: 'Story 9:16', aspectRatio: 9 / 16 },
-      ],
-    },
+    hotspot: true,
   },
   fields: [
     {
@@ -372,6 +363,174 @@ const uploadedImageType = {
       title: 'Legacy alt text',
       type: 'string',
       hidden: true,
+    },
+  ],
+}
+
+const heroVideoUrlsType = {
+  name: 'heroVideoUrls',
+  title: 'Hero Video URLs',
+  type: 'object',
+  options: canvasExclude,
+  fields: [
+    { name: 'mp4', title: 'MP4 URL', type: 'url', options: canvasExclude },
+    { name: 'webm', title: 'WebM URL', type: 'url', options: canvasExclude },
+    { name: 'hls', title: 'HLS playlist URL', type: 'url', options: canvasExclude },
+    { name: 'poster', title: 'Poster image URL', type: 'url', options: canvasExclude },
+  ],
+}
+
+const heroVideoType = {
+  name: 'heroVideo',
+  title: 'Hero Video',
+  type: 'object',
+  fields: [
+    {
+      name: 'provider',
+      title: 'Provider',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Direct URL / encoded files', value: 'external' },
+          { title: 'Sanity upload', value: 'upload' },
+          { title: 'YouTube', value: 'youtube' },
+          { title: 'Vimeo', value: 'vimeo' },
+          { title: 'Mux', value: 'mux' },
+          { title: 'Cloudinary', value: 'cloudinary' },
+        ],
+        layout: 'dropdown',
+        ...canvasPurpose('Where this video is hosted. Pick "Sanity upload" to use the file uploaded below.'),
+      },
+      initialValue: 'external',
+    },
+    {
+      name: 'externalId',
+      title: 'External video ID',
+      type: 'string',
+      options: canvasPurpose(
+        'Provider-specific identifier (YouTube/Vimeo ID, Mux playback ID, Cloudinary public ID).',
+      ),
+    },
+    {
+      name: 'url',
+      title: 'Video URL',
+      type: 'url',
+      options: canvasPurpose('Direct video URL (used when no encoded files or provider ID is available).'),
+    },
+    {
+      name: 'urls',
+      title: 'Encoded URLs',
+      type: 'heroVideoUrls',
+      options: canvasExclude,
+    },
+    {
+      name: 'posterImage',
+      title: 'Poster image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Still frame shown before playback and as a fallback for non-video clients.'),
+    },
+    {
+      name: 'alt',
+      title: 'Alt text',
+      type: 'string',
+      options: canvasPurpose('Short description for accessibility and SEO.'),
+    },
+    {
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      options: canvasExclude,
+    },
+    { name: 'duration', title: 'Duration (seconds)', type: 'number', options: canvasExclude },
+    { name: 'width', title: 'Width', type: 'number', options: canvasExclude },
+    { name: 'height', title: 'Height', type: 'number', options: canvasExclude },
+    {
+      name: 'autoplay',
+      title: 'Autoplay',
+      type: 'boolean',
+      initialValue: true,
+      options: canvasExclude,
+    },
+    {
+      name: 'loop',
+      title: 'Loop',
+      type: 'boolean',
+      initialValue: true,
+      options: canvasExclude,
+    },
+    {
+      name: 'muted',
+      title: 'Muted',
+      type: 'boolean',
+      initialValue: true,
+      options: canvasPurpose('Required for autoplay in most browsers. Leave on unless the video has narration.'),
+    },
+    {
+      name: 'controls',
+      title: 'Show playback controls',
+      type: 'boolean',
+      initialValue: false,
+      options: canvasExclude,
+    },
+    {
+      name: 'playsInline',
+      title: 'Plays inline on mobile',
+      type: 'boolean',
+      initialValue: true,
+      options: canvasExclude,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'alt',
+      provider: 'provider',
+      externalId: 'externalId',
+      url: 'url',
+      mp4: 'urls.mp4',
+      poster: 'posterImage',
+    },
+    prepare({ title, provider, externalId, url, mp4, poster }) {
+      const subtitle =
+        provider === 'upload'
+          ? 'Sanity upload'
+          : externalId
+            ? `${provider || 'external'} · ${externalId}`
+            : url || mp4 || 'No source set'
+
+      return {
+        title: title || 'Hero video',
+        subtitle: previewText(subtitle, 'Video metadata'),
+        media: poster,
+      }
+    },
+  },
+}
+
+const uploadedVideoType = {
+  name: 'uploadedVideo',
+  title: 'Uploaded Video',
+  type: 'file',
+  options: {
+    accept: 'video/mp4,video/webm,video/quicktime,video/*',
+  },
+  fields: [
+    {
+      name: 'altText',
+      title: 'Alt text',
+      type: 'string',
+      options: canvasPurpose('Short description for accessibility and SEO.'),
+    },
+    {
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+      options: canvasExclude,
+    },
+    {
+      name: 'posterImage',
+      title: 'Poster image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Optional still frame shown before playback.'),
     },
   ],
 }
@@ -586,6 +745,18 @@ const pageItemType = {
         'Optional direct image path or URL for cards that should render a specific image without using Unsplash metadata or an uploaded asset.',
       ),
     },
+    {
+      name: 'video',
+      title: 'Video',
+      type: 'heroVideo',
+      options: canvasExclude,
+    },
+    {
+      name: 'videoAsset',
+      title: 'Uploaded video',
+      type: 'uploadedVideo',
+      options: canvasExclude,
+    },
   ],
   preview: {
     select: {
@@ -599,6 +770,90 @@ const pageItemType = {
       return {
         title: title || question || 'Content item',
         subtitle: previewText(subtitle || answer || eyebrow, 'Supporting content'),
+      }
+    },
+  },
+}
+
+const serviceGridItemType = {
+  name: 'serviceGridItem',
+  title: 'Service Card',
+  type: 'object',
+  fields: [
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Service name shown as the card heading.'),
+    },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional short label shown above the title in a smaller accent style.'),
+    },
+    {
+      name: 'number',
+      title: 'Number badge',
+      type: 'string',
+      options: canvasPurpose('Optional large number shown instead of an icon (e.g. 01, 02, 03).'),
+    },
+    {
+      name: 'body',
+      title: 'Description',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Short supporting copy shown below the title on the card.'),
+    },
+    {
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: {
+        list: publicSiteIconOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Icon shown in the card badge. Leave blank to use the number badge instead.'),
+      },
+    },
+    {
+      name: 'href',
+      title: 'Link',
+      type: 'string',
+      options: canvasPurpose('Optional URL — makes the entire card a clickable link.'),
+    },
+    {
+      name: 'imageAsset',
+      title: 'Image',
+      type: 'uploadedImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'imageUrl',
+      title: 'Image URL',
+      type: 'string',
+      options: canvasPurpose(
+        'Fallback image URL when no uploaded image is set. Leave blank to use the auto-matched service image.',
+      ),
+    },
+    {
+      name: 'cardColor',
+      title: 'Card overlay color',
+      type: 'color',
+      options: canvasPurpose(
+        'Color of the gradient overlay on this card. Defaults to the site dark color when left empty.',
+      ),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      subtitle: 'body',
+    },
+    prepare({ title, eyebrow, subtitle }) {
+      return {
+        title: title || 'Service card',
+        subtitle: previewText(eyebrow || subtitle, 'Service card'),
       }
     },
   },
@@ -797,6 +1052,14 @@ const sectionContentItemType = {
   title: 'Section Item',
   type: 'object',
   fields: [
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose(
+        'Optional short overline or category label shown above the title (e.g. "Highlight", "Step", "Result").',
+      ),
+    },
     {
       name: 'title',
       title: 'Title',
@@ -1177,7 +1440,7 @@ const serviceGridSectionType = {
       title: 'Primary services',
       type: 'array',
       validation: (Rule) => Rule.min(1),
-      of: [{ type: 'pageItem' }],
+      of: [{ type: 'serviceGridItem' }],
       options: canvasPurpose('Primary service cards shown first in the grid.'),
     },
     {
@@ -1190,7 +1453,7 @@ const serviceGridSectionType = {
       name: 'roofingItems',
       title: 'Roofing services',
       type: 'array',
-      of: [{ type: 'pageItem' }],
+      of: [{ type: 'serviceGridItem' }],
       options: canvasPurpose('Optional additional roofing service cards.'),
     },
     {
@@ -1203,7 +1466,7 @@ const serviceGridSectionType = {
       name: 'secondaryItems',
       title: 'Secondary services',
       type: 'array',
-      of: [{ type: 'pageItem' }],
+      of: [{ type: 'serviceGridItem' }],
       options: canvasPurpose('Optional supporting service cards shown after the primary group.'),
     },
   ],
@@ -1494,9 +1757,10 @@ const heroSpecificFields = [
       list: [
         { title: 'Single image', value: 'single' },
         { title: 'Slides only', value: 'slides' },
+        { title: 'Video only', value: 'video' },
       ],
       layout: 'radio',
-      ...canvasPurpose('Choose whether this hero uses one image or a slides-only background set.'),
+      ...canvasPurpose('Choose whether this hero uses one image, a slides-only background set, or a video.'),
     },
   },
   {
@@ -1541,6 +1805,20 @@ const heroSpecificFields = [
     type: 'heroImage',
     options: canvasExclude,
     hidden: hideUnlessHeroMediaMode('single'),
+  },
+  {
+    name: 'heroVideo',
+    title: 'Hero video',
+    type: 'heroVideo',
+    options: canvasPurpose('Optional video shown in the hero section.'),
+    hidden: hideUnlessHeroMediaMode('video'),
+  },
+  {
+    name: 'heroVideoAsset',
+    title: 'Uploaded hero video',
+    type: 'uploadedVideo',
+    options: canvasExclude,
+    hidden: hideUnlessHeroMediaMode('video'),
   },
   {
     name: 'heroAsset',
@@ -1745,6 +2023,73 @@ const calculatorSectionType = {
   },
 }
 
+const costStatItemType = {
+  name: 'costStatItem',
+  title: 'Cost stat',
+  type: 'object',
+  fields: [
+    {
+      name: 'number',
+      title: 'Stat',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Big stat shown above the label, e.g. "70%", "$0", "$$$".'),
+    },
+    {
+      name: 'title',
+      title: 'Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Short label shown beneath the stat.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Supporting copy that explains the stat.'),
+    },
+  ],
+  preview: {
+    select: { title: 'title', subtitle: 'number' },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Cost stat',
+        subtitle: subtitle || '',
+      }
+    },
+  },
+}
+
+const paybackSummaryItemType = {
+  name: 'paybackSummaryItem',
+  title: 'Payback summary',
+  type: 'object',
+  fields: [
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('One-line payback summary headline.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional supporting copy under the payback headline.'),
+    },
+  ],
+  preview: {
+    select: { title: 'title', subtitle: 'body' },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Payback summary',
+        subtitle: previewText(subtitle, ''),
+      }
+    },
+  },
+}
+
 const costsSectionType = {
   name: 'costsSection',
   title: 'Costs Section',
@@ -1780,11 +2125,21 @@ const costsSectionType = {
       options: canvasPurpose('Optional supporting line under the main costs intro.'),
     },
     {
+      name: 'color',
+      title: 'Accent color',
+      type: 'color',
+      description: 'Drives the section background gradient (light tint), label colors, and the divider line.',
+      options: canvasPurpose(
+        'Single accent color used to derive the gradient, label colors, and divider for the costs section.',
+      ),
+    },
+    {
       name: 'items',
       title: 'Cost stats',
       type: 'array',
-      of: [{ type: 'pageItem' }],
-      options: canvasPurpose('Cost statistic cards with number, title, and supporting copy.'),
+      of: [{ type: 'costStatItem' }],
+      validation: (Rule) => Rule.max(6),
+      options: canvasPurpose('Cost statistic cards with number, label, and supporting copy.'),
     },
     {
       name: 'secondaryTitle',
@@ -1796,9 +2151,9 @@ const costsSectionType = {
       name: 'secondaryItems',
       title: 'Payback details',
       type: 'array',
-      of: [{ type: 'pageItem' }],
+      of: [{ type: 'paybackSummaryItem' }],
       validation: (Rule) => Rule.max(1),
-      options: canvasPurpose('Optional single payback summary item with title and body.'),
+      options: canvasPurpose('Single payback summary with headline and supporting copy.'),
     },
   ],
   preview: {
@@ -2123,6 +2478,63 @@ const stepsSectionType = {
   },
 }
 
+const galleryImageType = {
+  name: 'galleryImage',
+  title: 'Gallery Image',
+  type: 'image',
+  options: {
+    hotspot: true,
+  },
+  fields: [
+    {
+      name: 'altText',
+      title: 'Alt text',
+      type: 'string',
+      options: canvasPurpose('Describes the image for accessibility and SEO.'),
+    },
+    {
+      name: 'neighborhood',
+      title: 'Neighborhood',
+      type: 'string',
+      options: canvasPurpose(
+        'Where this project was completed (e.g. "South Austin", "Westlake"). Shown as a caption.',
+      ),
+    },
+    {
+      name: 'year',
+      title: 'Year',
+      type: 'number',
+      validation: (Rule) => Rule.integer().min(1900).max(2100),
+      options: canvasPurpose('The year this photo was taken or the project was completed.'),
+    },
+    {
+      name: 'package',
+      title: 'Package',
+      type: 'string',
+      options: canvasPurpose(
+        'Service package or tier featured in this photo (e.g. "Premium", "Holiday Spectacular").',
+      ),
+    },
+  ],
+  preview: {
+    select: {
+      altText: 'altText',
+      neighborhood: 'neighborhood',
+      year: 'year',
+      package: 'package',
+      asset: 'asset',
+    },
+    prepare({ altText, neighborhood, year, package: pkg, asset }) {
+      const meta = [neighborhood, year, pkg].filter(Boolean).join(' · ')
+      return {
+        title: altText || meta || 'Gallery image',
+        subtitle: altText && meta ? meta : undefined,
+        media: asset,
+      }
+    },
+  },
+}
+
 const gallerySectionType = {
   name: 'gallerySection',
   title: 'Gallery Section',
@@ -2133,6 +2545,14 @@ const gallerySectionType = {
   fields: [
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose(
+        'Optional short overline or category label shown above the title (e.g. "Our work").',
+      ),
+    },
+    {
       name: 'title',
       title: 'Title',
       type: 'string',
@@ -2140,37 +2560,148 @@ const gallerySectionType = {
       options: canvasPurpose('Section heading shown above the gallery grid.'),
     },
     {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional supporting line shown above the gallery grid.'),
+    },
+    {
       name: 'images',
       title: 'Images',
       type: 'array',
-      of: [
-        {
-          type: 'image',
-          options: { hotspot: true },
-          fields: [
-            {
-              name: 'alt',
-              title: 'Alt text',
-              type: 'string',
-              options: canvasPurpose('Describes the image for accessibility and SEO.'),
-            },
-          ],
-        },
-      ],
+      of: [{ type: 'galleryImage' }],
       validation: (Rule) => Rule.required().min(1),
-      options: canvasPurpose('Images to display in the gallery.'),
+      options: canvasPurpose(
+        'Photos to display in the masonry gallery. Each photo can be tagged with neighborhood, year, and package.',
+      ),
     },
   ],
   preview: {
     select: {
       title: 'title',
+      eyebrow: 'eyebrow',
       images: 'images',
     },
-    prepare({ title, images }) {
+    prepare({ title, eyebrow, images }) {
       const itemCount = arrayCount(images)
       return {
         title: title || 'Gallery section',
-        subtitle: `${itemCount || 0} images`,
+        subtitle: [eyebrow, `${itemCount || 0} images`].filter(Boolean).join(' · '),
+      }
+    },
+  },
+}
+
+const pricingNoteVariantOptions = [
+  { title: 'Standard', value: 'standard' },
+  { title: 'Callout', value: 'callout' },
+]
+
+const pricingNoteItemType = {
+  name: 'pricingNoteItem',
+  title: 'Pricing Note',
+  type: 'object',
+  initialValue: { variant: 'standard' },
+  fields: [
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Heading for the note (e.g. "Payment methods", "Why we require a deposit").'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Supporting copy for the note. Keep it short and concrete.'),
+    },
+    {
+      name: 'variant',
+      title: 'Emphasis',
+      type: 'string',
+      options: {
+        list: pricingNoteVariantOptions,
+        layout: 'radio',
+        ...canvasPurpose(
+          'Pick "Callout" when the note describes an important policy that customers should not miss (e.g. deposit terms). Otherwise use "Standard".',
+        ),
+      },
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      variant: 'variant',
+    },
+    prepare({ title, body, variant }) {
+      const label = variant === 'callout' ? 'Callout' : 'Standard'
+      return {
+        title: title || 'Pricing note',
+        subtitle: `${label} · ${previewText(body, 'Supporting copy')}`,
+      }
+    },
+  },
+}
+
+const pricingSectionType = {
+  name: 'pricingSection',
+  title: 'Pricing Section',
+  type: 'object',
+  initialValue: {
+    type: 'pricing',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose(
+        'Optional short overline above the title (e.g. "How pricing works").',
+      ),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading explaining the pricing approach.'),
+    },
+    {
+      name: 'body',
+      title: 'Lead copy',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose(
+        'Main paragraphs describing how pricing works (what is included, deposit terms, balance due, etc.).',
+      ),
+    },
+    {
+      name: 'notes',
+      title: 'Notes',
+      type: 'array',
+      of: [{ type: 'pricingNoteItem' }],
+      options: canvasPurpose(
+        'Supporting notes shown below the lead copy. Use the "Callout" variant for policies that deserve extra attention.',
+      ),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      notes: 'notes',
+    },
+    prepare({ title, eyebrow, notes }) {
+      const noteCount = arrayCount(notes)
+      return {
+        title: title || 'Pricing section',
+        subtitle: [eyebrow, noteCount ? `${noteCount} note${noteCount === 1 ? '' : 's'}` : null]
+          .filter(Boolean)
+          .join(' · '),
       }
     },
   },
@@ -2371,7 +2902,9 @@ const ctaSectionType = {
           },
         },
       ],
-      options: canvasPurpose('Override the default service dropdown options shown in the lead capture form. Leave empty to use the site defaults.'),
+      options: canvasPurpose(
+        'Override the default service dropdown options shown in the lead capture form. Leave empty to use the site defaults.',
+      ),
     },
   ],
   preview: {
@@ -2387,7 +2920,6 @@ const ctaSectionType = {
     },
   },
 }
-
 
 const scrollTextSectionType = {
   name: 'scrollTextSection',
@@ -2586,13 +3118,12 @@ const ctaBannerSectionType = {
 }
 
 const secondaryCTASectionType = {
-
   name: 'secondaryCTASection',
   title: 'Secondary CTA Section',
   type: 'object',
   initialValue: {
     type: 'secondaryCTA',
-  }, 
+  },
   fields: [
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
@@ -2626,7 +3157,8 @@ const secondaryCTASectionType = {
       type: 'color',
       options: canvasPurpose('Color of the secondary CTA.'),
     },
-  ],  preview: {
+  ],
+  preview: {
     select: {
       title: 'title',
       body: 'body',
@@ -2674,6 +3206,130 @@ const hailMapSectionType = {
       return {
         title: title || 'Hail map section',
         subtitle: previewText(body, 'Storm evidence lookup'),
+      }
+    },
+  },
+}
+
+const serviceAreaItemType = {
+  name: 'serviceAreaItem',
+  title: 'Service Area',
+  type: 'object',
+  fields: [
+    {
+      name: 'countyKey',
+      title: 'County',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: {
+        list: [
+          { title: 'Travis County (Austin)', value: 'travis' },
+          { title: 'Williamson County (Round Rock)', value: 'williamson' },
+          { title: 'Hays County (San Marcos)', value: 'hays' },
+          { title: 'Comal County (New Braunfels)', value: 'comal' },
+          { title: 'Bexar County (San Antonio)', value: 'bexar' },
+          { title: 'Guadalupe County (Seguin)', value: 'guadalupe' },
+          { title: 'Caldwell County (Lockhart)', value: 'caldwell' },
+          { title: 'Bastrop County', value: 'bastrop' },
+          { title: 'Blanco County', value: 'blanco' },
+          { title: 'Kendall County (Boerne)', value: 'kendall' },
+          { title: 'Kerr County (Kerrville)', value: 'kerr' },
+          { title: 'Gillespie County (Fredericksburg)', value: 'gillespie' },
+          { title: 'Bell County (Killeen)', value: 'bell' },
+          { title: 'McLennan County (Waco)', value: 'mclennan' },
+          { title: 'Tarrant County (Fort Worth)', value: 'tarrant' },
+          { title: 'Potter County (Amarillo)', value: 'potter' },
+          { title: 'Randall County (Canyon)', value: 'randall' },
+          { title: 'Lubbock County', value: 'lubbock' },
+        ],
+        ...canvasPurpose('Pick the county to add to the service area map.'),
+      },
+    },
+    {
+      name: 'displayName',
+      title: 'Display name',
+      type: 'string',
+      description: 'Shown in the map tooltip (e.g. "Travis County — Austin").',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Friendly tooltip label for this county.'),
+    },
+  ],
+  preview: {
+    select: { title: 'displayName' },
+    prepare({ title }) {
+      return {
+        title: title || 'Unnamed area',
+        subtitle: 'Service area',
+      }
+    },
+  },
+}
+
+const serviceAreaMapSectionType = {
+  name: 'serviceAreaMapSection',
+  title: 'Service Area Map Section',
+  type: 'object',
+  initialValue: {
+    type: 'serviceAreaMap',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional short overline above the title (e.g. "Service Area").'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Section heading shown over the choropleth map.'),
+    },
+    {
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 3,
+      options: canvasPurpose('Optional intro sentence shown beneath the heading.'),
+    },
+    {
+      name: 'accentColor',
+      title: 'Accent color',
+      type: 'color',
+      description:
+        'Drives the choropleth ramp (light → dark mix of this color), eyebrow text, and active stroke. Falls back to the site primary when empty.',
+    },
+    {
+      name: 'backgroundColor',
+      title: 'Background color',
+      type: 'color',
+      description:
+        'Section background and non-service-county fill. Falls back to the site secondary (dark) when empty.',
+    },
+    {
+      name: 'areas',
+      title: 'Service areas',
+      type: 'array',
+      of: [{ type: 'serviceAreaItem' }],
+      options: canvasPurpose(
+        'One entry per county we serve. countyKey must match the "key" of a feature in texasCounties.json.',
+      ),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      areas: 'areas',
+    },
+    prepare({ title, eyebrow, areas }) {
+      const areaCount = arrayCount(areas)
+      return {
+        title: title || 'Service area map',
+        subtitle: [eyebrow, `${areaCount} ${areaCount === 1 ? 'county' : 'counties'}`]
+          .filter(Boolean)
+          .join(' · '),
       }
     },
   },
@@ -3216,12 +3872,14 @@ const baseFields = [
       { type: 'stepsSection' },
       { type: 'faqSection' },
       { type: 'gallerySection' },
+      { type: 'pricingSection' },
       { type: 'quoteSection' },
       { type: 'ctaSection' },
       { type: 'ctaBannerSection' },
       { type: 'secondaryCTASection' },
       { type: 'scrollTextSection' },
       { type: 'hailMapSection' },
+      { type: 'serviceAreaMapSection' },
       { type: 'bandSection' },
       { type: 'logosSection' },
       { type: 'solarSwitchSection' },
@@ -3287,11 +3945,18 @@ export default [
   heroImageUrlsType,
   heroImageType,
   uploadedImageType,
+  heroVideoUrlsType,
+  heroVideoType,
+  uploadedVideoType,
   bandColorStopType,
+  galleryImageType,
   gallerySectionType,
+  pricingNoteItemType,
+  pricingSectionType,
   pageMetricType,
   pageActionType,
   pageItemType,
+  serviceGridItemType,
   guideCardItemType,
   energyChartPointType,
   energyChartAreaSeriesItemType,
@@ -3303,6 +3968,8 @@ export default [
   heroSectionType,
   storySectionType,
   calculatorSectionType,
+  costStatItemType,
+  paybackSummaryItemType,
   costsSectionType,
   guidesSectionType,
   snapshotSectionType,
@@ -3317,6 +3984,8 @@ export default [
   ctaBannerSectionType,
   secondaryCTASectionType,
   hailMapSectionType,
+  serviceAreaItemType,
+  serviceAreaMapSectionType,
   bandSectionType,
   logosSectionType,
   solarSwitchSectionType,

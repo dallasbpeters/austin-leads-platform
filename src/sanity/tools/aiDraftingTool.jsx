@@ -388,8 +388,8 @@ export function AiDraftingTool() {
           </div>
         ))}
         <div style={{ color: '#4b5563', fontSize: '0.9rem', lineHeight: 1.6 }}>
-          The full Gemini image suite is embedded below. Use "Use This Image" to push an image into the
-          Hero image URL field before creating the draft.
+          The full Gemini image suite is embedded below. Use "Use This Image" to push an image into the Hero
+          image URL field before creating the draft.
         </div>
       </div>
 

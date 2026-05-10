@@ -24,6 +24,43 @@ export default {
     { name: 'aliases', title: 'Aliases', type: 'array', of: [{ type: 'string' }] },
     { name: 'redirectTarget', title: 'Redirect target', type: 'string' },
     {
+      name: 'navigation',
+      title: 'Navigation',
+      type: 'array',
+      description: 'Header navigation items in display order. Leave empty to auto-list top-level pages.',
+      of: [
+        {
+          type: 'object',
+          name: 'navItem',
+          title: 'Nav item',
+          fields: [
+            {
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'href',
+              title: 'Link',
+              type: 'string',
+              description: 'Internal path (e.g. /services), anchor (e.g. #consultation), or full URL.',
+              validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'isExternal',
+              title: 'Open in new tab',
+              type: 'boolean',
+              initialValue: false,
+            },
+          ],
+          preview: {
+            select: { title: 'label', subtitle: 'href' },
+          },
+        },
+      ],
+    },
+    {
       name: 'brand',
       title: 'Brand',
       type: 'object',

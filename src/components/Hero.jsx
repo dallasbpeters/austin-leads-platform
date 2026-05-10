@@ -5,10 +5,32 @@ import ImageFader from './ImageFader'
 import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
-import { getHeroImageUrl, getImageAlt } from '@/lib/platform/imageSource'
+import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
+import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
+import { Portal } from 'radix-ui'
+
+const FALLBACK_HERO_ACTIONS = [
+  { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'primary' },
+  { label: 'See how the math works', href: '#calculator', variant: 'secondary' },
+]
+
+// Sanity's `pageAction.variant` uses shadcn-style names (default/secondary/outline).
+// Translate them to the solar Button API (primary/secondary). Anything we don't
+// recognise falls through to the index-based default below.
+const HERO_ACTION_VARIANT_MAP = {
+  default: 'primary',
+  primary: 'primary',
+  secondary: 'secondary',
+  outline: 'secondary',
+  tertiary: 'secondary',
+}
+
+const resolveHeroActionVariant = (rawVariant, index) =>
+  HERO_ACTION_VARIANT_MAP[rawVariant] || (index === 0 ? 'primary' : 'secondary')
 
 export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }) {
   const heroImageUrl = getHeroImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
+  const heroVideoSource = getHeroVideoSource(heroSection?.heroVideo, heroSection?.heroVideoAsset)
   const heroSlides = Array.isArray(heroSection?.heroSlides)
     ? heroSection.heroSlides
         .map((item) => ({
@@ -19,51 +41,88 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
     : []
   const hasHeroSlides = heroSlides.length > 0
   const explicitHeroMediaMode = heroSection?.heroMediaMode
-  const heroMediaMode =
-    explicitHeroMediaMode === 'slides' || explicitHeroMediaMode === 'single'
-      ? explicitHeroMediaMode
-      : hasHeroSlides
-        ? 'slides'
-        : 'single'
+  // Priority: a resolvable video source always wins. An explicit 'slides' choice
+  // wins over auto-detected slides. Otherwise fall through to single image.
+  const heroMediaMode = heroVideoSource
+    ? 'video'
+    : explicitHeroMediaMode === 'slides' || (hasHeroSlides && explicitHeroMediaMode !== 'single')
+      ? 'slides'
+      : 'single'
+  const usesVideo = heroMediaMode === 'video'
   const usesSlidesOnly = heroMediaMode === 'slides'
   const rotatingHeroImages = (
-    usesSlidesOnly && hasHeroSlides
-      ? heroSlides
-      : [
-          {
-            src: heroImageUrl,
-            alt: getImageAlt(heroSection?.heroAsset, heroSection?.heroImage, ''),
-          },
-        ]
-  ).filter((image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index)
-  const hasHeroBackdropMedia = rotatingHeroImages.length > 0
+    usesVideo
+      ? []
+      : usesSlidesOnly && hasHeroSlides
+        ? heroSlides
+        : [
+            {
+              src: heroImageUrl,
+              alt: getImageAlt(heroSection?.heroAsset, heroSection?.heroImage, ''),
+            },
+          ]
+  ).filter(
+    (image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index,
+  )
+  const hasHeroBackdropMedia = usesVideo || rotatingHeroImages.length > 0
   const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
   const softTextColor = heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined
-  const cardBackground = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.08)' : undefined
+  const cardBackground = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.15)' : undefined
   const cardBorder = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.16)' : undefined
   const primaryHeroImage = rotatingHeroImages[0] || null
   const hasRotatingHeroImages = rotatingHeroImages.length > 1
 
   const eyebrow = heroSection?.eyebrow || 'Austin averages 228 sunny days a year'
-  const titlePrimary = heroSection?.titlePrimary || 'Solar &'
-  const titleAccent = heroSection?.titleAccent || 'Roofing, simplified.'
-  const primaryAction = heroSection?.actions?.[0] || null
-  const primaryActionLabel = primaryAction?.label || 'Talk to a Solar Pro'
-  const primaryActionHref = primaryAction?.href || '#consultation'
-  const inlineMetric = Array.isArray(heroSection?.metrics)
-    ? heroSection.metrics.find((metric) => metric?.label && metric?.value) || null
-    : null
-  const inlineMetricLabel = inlineMetric?.label || 'Typical Austin Payback'
-  const inlineMetricValue = inlineMetric?.value || '7–9 years'
-  const cardCopy =
-    heroSection?.cardCopy ||
-    heroSection?.body ||
-    'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
+
+  // Decide layout off the *editor-provided* values (cleaned of stega payload),
+  // not off display strings — otherwise hardcoded fallbacks would always look
+  // truthy and the split-headline branch would never render.
+  const titleRaw = heroSection?.title
+  const titlePrimaryRaw = heroSection?.titlePrimary
+  const titleAccentRaw = heroSection?.titleAccent
+  const hasSingleTitle = (cleanRuntimeString(titleRaw) || '').trim().length > 0
+  const hasSplitTitle =
+    (cleanRuntimeString(titlePrimaryRaw) || '').trim().length > 0 ||
+    (cleanRuntimeString(titleAccentRaw) || '').trim().length > 0
+  // Single-title wins when present. Split renders whenever single is empty —
+  // including the empty/empty case, which falls back to the demo split below.
+  const useSingleHeadline = hasSingleTitle
+  // Display values: keep stega-encoded strings (so Visual Editing overlays
+  // still attach) and only fall back to demo copy when nothing was authored.
+  const title = hasSingleTitle ? titleRaw : 'Solar & Roofing, Simplified.'
+  const titlePrimary = hasSplitTitle ? titlePrimaryRaw : 'Solar &'
+  const titleAccent = hasSplitTitle ? titleAccentRaw : 'Roofing, simplified.'
+  const body = heroSection?.body || 'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
+  const heroMetrics = (Array.isArray(heroSection?.metrics) ? heroSection.metrics : []).filter(
+    (metric) => metric?.label && metric?.value,
+  )
+  const hasHeroMetrics = heroMetrics.length > 0
+  const inlineMetricLabel = heroMetrics[0]?.label || 'Typical Austin Payback'
+  const inlineMetricValue = heroMetrics[0]?.value || '7–9 years'
+  const metricTileBackground = hasHeroBackdropMedia
+    ? 'rgba(255, 255, 255, 0.20)'
+    : 'var(--color-card, var(--color-surface-elevated))'
+  const metricTileBorder = hasHeroBackdropMedia ? 'rgba(255, 255, 255, 0.18)' : 'var(--color-border)'
+  const metricLabelColor = softTextColor || 'var(--color-slate-500)'
+  const metricValueColor = heroTextColor || 'var(--color-text-strong)'
+  const configuredHeroActions = (Array.isArray(heroSection?.actions) ? heroSection.actions : [])
+    .map((action) => ({
+      ...action,
+      href: cleanRuntimeHref(action?.href),
+    }))
+    .filter((action) => action.href && action.label)
+  const heroActions = configuredHeroActions.length ? configuredHeroActions : FALLBACK_HERO_ACTIONS
+  // `body` already renders as the hero lede in the left column (sourced from
+  // `heroSection?.body`). `cardCopy` is a separate field for the right-side
+  // glass card so editors can show a distinct callout there. Falling back to
+  // `body` here would duplicate the same paragraph in two places.
+  const cardCopy = heroSection?.cardCopy || ''
+  const hasHeroAside = hasHeroMetrics || Boolean(cardCopy)
 
   return (
     <section
-      className="relative min-h-[80vh] text-body overflow-x-hidden type-accent"
+      className="text-body type-accent relative min-h-[80vh] overflow-x-hidden"
       style={{
         backgroundImage: 'radial-gradient(var(--color-grid) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
@@ -74,7 +133,28 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
         content: 'homepage hero copy + hero media from homepage record',
       })}
     >
-      {hasRotatingHeroImages ? (
+      {usesVideo ? (
+        <>
+          <video
+            key={heroVideoSource.src}
+            className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+            poster={heroVideoSource.poster || undefined}
+            autoPlay={heroVideoSource.autoplay}
+            loop={heroVideoSource.loop}
+            muted={heroVideoSource.muted}
+            controls={heroVideoSource.controls}
+            playsInline={heroVideoSource.playsInline}
+            preload="metadata"
+            aria-label={heroVideoSource.alt || undefined}
+          >
+            <source
+              src={heroVideoSource.src}
+              type={heroVideoSource.type || undefined}
+            />
+          </video>
+          <div className="absolute inset-0 z-10" style={overlayStyle} />
+        </>
+      ) : hasRotatingHeroImages ? (
         <ImageFader
           borderRadius="0"
           images={rotatingHeroImages}
@@ -84,7 +164,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           showOverlay={Boolean(overlayStyle)}
           showDots={false}
           objectPosition="center"
-          className="absolute min-h-[80vh] inset-0 z-0"
+          className="absolute inset-0 z-0 min-h-[80vh]"
           imageClassName="object-top"
           backgroundColor="#000000"
           initialPriority
@@ -99,7 +179,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             fetchPriority="high"
             quality={68}
             sizes="100vw"
-            className="absolute h-full w-full inset-0 object-center object-cover z-0"
+            className="absolute inset-0 z-0 h-full w-full object-cover object-center"
           />
           <div className="absolute inset-0 z-10" style={overlayStyle} />
         </>
@@ -112,92 +192,142 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           fetchPriority="high"
           quality={68}
           sizes="100vw"
-          className="absolute opacity-10 inset-0 object-cover object-top"
+          className="absolute inset-0 object-cover object-top opacity-10"
         />
       )}
-      <div className="flex relative items-center min-h-[80vh] w-[min(80rem,calc(100%-3rem))] mx-auto px-4 py-30 z-20">
-        <div className="grid items-end w-full gap-12 pb-12 lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]">
-          <div className="solar-fade-up">
-            <div className="items-center gap-4 mb-8 inline-flex">
-              <div className="flex relative h-3 w-3">
+      <div className="relative z-20 mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-4 py-30">
+        <div
+          className={`grid w-full items-end gap-12 pb-12 ${
+            hasHeroAside ? 'lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]' : 'lg:grid-cols-1'
+          }`}
+        >
+          <div className="solar-fade-up max-w-2xl">
+            <div className="mb-8 inline-flex items-center gap-4">
+              <div className="relative flex h-3 w-3">
                 <span
-                  className="absolute rounded-full opacity-75 animate-ping inset-0"
+                  className="absolute inset-0 animate-ping rounded-full opacity-75"
                   style={{ backgroundColor: 'var(--color-primary-300)' }}
                 ></span>
-                <span className="relative h-3 w-3 bg-primary rounded-full"></span>
+                <span className="bg-primary relative h-3 w-3 rounded-full"></span>
               </div>
               <span
-                className="font-bold text-[12px] tracking-[0.4em] uppercase"
+                className="text-[12px] font-bold tracking-[0.4em] uppercase"
                 style={{ color: heroTextColor || 'var(--color-primary)' }}
               >
                 {eyebrow}
               </span>
             </div>
-
-            <h1
-              className="mb-10 leading-none! text-[clamp(3.5rem,8vw,8rem)] text-black tracking-[-0.02em] type-display"
-              style={heroTextColor ? { color: heroTextColor } : undefined}
-            >
-              {titlePrimary}
-              <br />
-              <span
-                className="text-transparent [-webkit-text-stroke-width:1px]"
-                style={{
-                  WebkitTextStrokeColor: heroTextColor || 'black',
-                }}
+            {useSingleHeadline ? (
+              <h1
+                className="type-display mb-3 text-[clamp(2.5rem,8vw,4rem)] leading-tight tracking-[-0.02em] text-black"
+                style={heroTextColor ? { color: heroTextColor } : undefined}
               >
-                {titleAccent}
-              </span>
-            </h1>
+                {title}
+              </h1>
+            ) : (
+              <h1
+                className="type-display mb-10 text-[clamp(3.5rem,8vw,8rem)] leading-none! tracking-[-0.02em] text-black"
+                style={heroTextColor ? { color: heroTextColor } : undefined}
+              >
+                {titlePrimary}
+                <br />
+                <span
+                  className="text-transparent [-webkit-text-stroke-width:1px]"
+                  style={{ WebkitTextStrokeColor: heroTextColor || 'black' }}
+                >
+                  {titleAccent}
+                </span>
+              </h1>
+            )}
 
-            <div className="flex flex-wrap max-md:flex-col items-center max-md:items-start gap-10">
-              <Button href={primaryActionHref} size="lg" pill>
-                {primaryActionLabel}
-              </Button>
+            {body ? (
+              <PortableTextContent
+                as="div"
+                value={body}
+                className="text-lg mb-10 max-w-2xl leading-7"
+                style={{ color: softTextColor || 'var(--color-muted-foreground)' }}
+              />
+            ) : null}
 
-              <div className="flex items-center gap-10">
-                <div className="hidden md:block h-12 w-px bg-white/60"></div>
-                <div>
-                  <span
-                    className="block mb-1 font-bold text-[12px] tracking-[0.2em] uppercase"
-                    style={{ color: softTextColor || 'var(--color-slate-500)' }}
+            <div className="flex flex-wrap items-center gap-6 max-md:flex-col max-md:items-start">
+              <div className="flex flex-wrap gap-3">
+                {heroActions.map((action, index) => (
+                  <Button
+                    key={buildRuntimeKey('hero-action', action.href, action.label, index)}
+                    href={action.href}
+                    variant={resolveHeroActionVariant(action.variant, index)}
+                    size="lg"
+                    pill
                   >
-                    {inlineMetricLabel}
-                  </span>
-                  <span
-                    className="block font-medium text-md"
-                    style={{ color: heroTextColor || 'var(--color-slate-800)' }}
-                  >
-                    {inlineMetricValue}
-                  </span>
-                </div>
+                    {action.label}
+                  </Button>
+                ))}
               </div>
+
+          
             </div>
           </div>
 
+          {hasHeroAside ? (
           <div className="solar-fade-up solar-fade-up-delay">
             <Card
               className="p-6 backdrop-blur-md"
               radius="lg"
               style={{
-
-                      backgroundColor: cardBackground,
-                      borderColor: cardBorder,
+                backgroundColor: cardBackground,
+                borderColor: cardBorder,
               }}
             >
-              <PortableTextContent
-                as="div"
-                value={cardCopy}
-                className="m-0 font-wght-650 leading-7 text-lg"
-                style={{ color: heroTextColor || 'var(--color-text-strong)' }}
-              />
-              <div className="flex gap-2 mt-6">
-                <div className="h-1 w-8 bg-primary rounded-full"></div>
-                <div className="h-1 w-2 bg-primary rounded-full"></div>
-                <div className="h-1 w-2 bg-primary rounded-full"></div>
-              </div>
+              {hasHeroMetrics ? (
+                <div className="grid gap-3">
+                  <div
+                    className="text-[11px] font-bold tracking-[0.22em] uppercase"
+                    style={{ color: metricLabelColor }}
+                  >
+                    Snapshot
+                  </div>
+                  {heroMetrics.map((metric, index) => (
+                    <div
+                      key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
+                      className="rounded-xl border px-4 py-3"
+                      style={{
+                        backgroundColor: metricTileBackground,
+                        borderColor: metricTileBorder,
+                      }}
+                    >
+                      <div
+                        className="text-[11px] font-semibold tracking-[0.18em] uppercase"
+                        style={{ color: metricLabelColor }}
+                      >
+                        {metric.label}
+                      </div>
+                      <div
+                        className="text-lg font-semibold tracking-tight"
+                        style={{ color: metricValueColor }}
+                      >
+                        {metric.value}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <PortableTextContent
+                    as="div"
+                    value={cardCopy}
+                    className="font-wght-650 m-0 text-lg leading-7"
+                    style={{ color: heroTextColor || 'var(--color-text-strong)' }}
+                  />
+                  <div className="mt-6 flex gap-2">
+                    <div className="bg-primary h-1 w-8 rounded-full"></div>
+                    <div className="bg-primary h-1 w-2 rounded-full"></div>
+                    <div className="bg-primary h-1 w-2 rounded-full"></div>
+                  </div>
+                </>
+              )}
             </Card>
           </div>
+          ) : null}
         </div>
       </div>
     </section>

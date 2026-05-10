@@ -46,8 +46,7 @@ export function CtaBannerSection({ page, section, site, sectionId, editAttribute
   return (
     <section
       id={CONSULTATION_ANCHOR_ID}
-      className={`py-20 ${isDarkTheme ? 'text-white bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : 'bg-card text-foreground border-b border-border/60'}`}
-      {...editAttributes}
+      className={`py-20 ${isDarkTheme ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] text-white' : 'bg-card text-foreground border-border/60 border-b'}`}
       {...getDevSectionAttributes({
         id: CONSULTATION_ANCHOR_ID,
         markup: 'src/components/platform/sections/CtaBannerSection.jsx',
@@ -58,10 +57,12 @@ export function CtaBannerSection({ page, section, site, sectionId, editAttribute
         markup="src/components/platform/sections/CtaBannerSection.jsx"
         content={`cross-lead banner from ${section?._type || 'page section'}`}
       />
-      <div className="grid max-w-7xl gap-12 mx-auto px-3 md:px-6 lg:px-10 place-items-center lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="mx-auto grid max-w-7xl place-items-center gap-12 px-3 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
         <div className="space-y-4">
           {section.eyebrow ? (
-            <p className={`text-sm tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}>
+            <p
+              className={`text-sm tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}
+            >
               {section.eyebrow}
             </p>
           ) : null}
@@ -69,7 +70,7 @@ export function CtaBannerSection({ page, section, site, sectionId, editAttribute
           <PortableTextContent
             as="div"
             value={section.body}
-            className={`max-w-2xl leading-8 text-base ${isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`}
+            className={`max-w-2xl text-base leading-8 ${isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`}
           />
           {avatarName ? (
             <div className="max-w-xl pt-2">
@@ -81,7 +82,7 @@ export function CtaBannerSection({ page, section, site, sectionId, editAttribute
                 >
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
                   <AvatarFallback
-                    className={`font-semibold text-base ${isDarkTheme ? 'text-white bg-white/12' : 'text-secondary-foreground bg-secondary'}`}
+                    className={`text-base font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`}
                     style={avatarStyle}
                   >
                     {avatarInitials || 'TS'}
@@ -89,11 +90,13 @@ export function CtaBannerSection({ page, section, site, sectionId, editAttribute
                 </Avatar>
                 <div className="min-w-0">
                   {avatarEyebrow ? (
-                    <div className={`mb-1 font-semibold text-[11px] tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}>
+                    <div
+                      className={`mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}
+                    >
                       {avatarEyebrow}
                     </div>
                   ) : null}
-                  <div className={`font-semibold text-lg ${isDarkTheme ? 'text-white' : 'text-foreground'}`}>
+                  <div className={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-foreground'}`}>
                     {avatarName}
                   </div>
                   {avatarRole ? (
@@ -113,14 +116,18 @@ export function CtaBannerSection({ page, section, site, sectionId, editAttribute
             </div>
           ) : null}
         </div>
-        <Card className={`gap-0 ${isDarkTheme ? 'text-white bg-white/6 border-white/12 backdrop-blur' : ''}`}>
+        <Card className={`gap-0 ${isDarkTheme ? 'border-white/12 bg-white/6 text-white backdrop-blur' : ''}`}>
           <CardContent>
             <LeadCaptureForm
               context={leadContext}
               compact
               buttonLabel={section.ctaLabel || 'Request a roofing intro'}
               className="grid gap-4"
-              inputClassName={isDarkTheme ? 'border-b px-3 py-2 text-white placeholder:text-white/48' : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'}
+              inputClassName={
+                isDarkTheme
+                  ? 'border-b px-3 py-2 text-white placeholder:text-white/48'
+                  : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'
+              }
               labelClassName={isDarkTheme ? 'text-white/70' : 'text-slate-500'}
               checkboxClassName={isDarkTheme ? 'accent-white' : 'accent-primary'}
               messageClassName="text-left"

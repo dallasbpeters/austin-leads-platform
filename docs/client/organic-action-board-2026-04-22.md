@@ -94,4 +94,3 @@ Use this board in your Notion project: `Leads Site`
 6. Day 11-12: Local partner outreach batch #2 (5 partners).
 7. Day 13: Performance review and quick-win optimizations.
 8. Day 14: Client check-in and next sprint selection.
-

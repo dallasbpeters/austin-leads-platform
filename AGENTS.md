@@ -150,15 +150,22 @@ When relevant, use the local project skills in:
 - Always update both fixture data AND Sanity documents when changing content — reseeds overwrite Sanity data if fixtures are stale.
 - Use `<Fragment key={...}>` (imported from `'react'`) instead of `<>` for keyed JSX list items; bare fragments cannot receive `key` props.
 - Content updates made only in Sanity will be lost on the next reseed if the fixture is not also updated.
+- Use one CSS-variable pattern across all per-domain theme files (e.g. `--font-sans`, `--color-primary`); do not introduce context-scoped names like `--font-admin`. Themes switch the values, not the variable names.
+- Keep Sanity section schemas tightly in sync with their rendering component — trim schema fields the component does not read (e.g. [`src/components/CostsSection.jsx`](./src/components/CostsSection.jsx) vs its `pageType` section block).
+- Theme variables must outrank Tailwind/shadcn `@layer components`; if a `--color-*` or `--font-*` looks undefined at runtime, check `@layer` ordering in [`src/styles/globals.css`](./src/styles/globals.css) before adding overrides.
+- Components in [`src/components/platform/sections/`](./src/components/platform/sections/) must be thin forwarders to the canonical homepage component (e.g. `HeroSection.jsx` → `<Hero heroSection={section} />`). Never duplicate or fork section logic into the platform sections directory — fix the canonical component and let the section forward props.
 
 ## Learned Workspace Facts
 
 - Sanity Studio dev server runs on `localhost:3334`; its auth is browser `localStorage`, separate from CLI auth at `~/.config/sanity/config.json`. When Studio appears read-only, sign out and back in from the Studio UI — do not check API tokens.
 - `POST /api/sites` creates both a Sanity site doc (`_id: site-{slug}`) and a homepage doc (`type: 'page'`); every array item in a Sanity document requires a unique `_key` field.
 - Domains admin API flows: `GET/PATCH /api/domains/[domain]`, `POST /api/sites`, `POST /api/domains` handle the three domain creation paths.
-- Domain records showing `verificationStatus: active` with empty `dnsInstructions` means the domain is already verified in Vercel — this is expected, not a bug.
-- PostHog ad-blocker bypass: configure Next.js rewrites (`/ingest/static/:path*` → CDN, `/ingest/:path*` → ingestion endpoint) plus `api_host: '/ingest'` and `ui_host: 'https://us.posthog.com'` in `posthog.init`.
+- Sanity Visual Editing (`VisualEditing` from `next-sanity`) overlay attributes (`editAttributes`) must only be spread on the single top-level wrapper div in `PublicSite.jsx` — never re-spread on section component root elements or any inner div. Duplicate spreads create nested overlays that intercept pointer events and silently break form inputs, selects, and other interactive elements.
 - `deskTool` (from `sanity/desk`) is deprecated; use `structureTool` (from `sanity/structure`) instead.
 - Page-level hero fields in the Sanity `page` schema are unused; section documents control all actual page content.
 - Portable Text / rich text is used for body and paragraph fields; render `<PortableText>` output with `<div>` block wrappers (not `<p>`) to avoid invalid HTML nesting in Next.js.
-- The project fonts are Supreme (body/UI variable), Bespoke Serif (display variable), and Switzer — served from `public/fonts/` as local variable font files.
+- Per-domain theme CSS files live in [`src/styles/`](./src/styles/) and follow the `<domain-slug>-theme.css` pattern (e.g. `txchristmas-theme.css`, `texassolarandroofing-theme.css`). All theme files share the same CSS-variable shape so themes are switched, not redefined.
+- Admin layout lives at [`src/app/(admin)/layout.jsx`](<./src/app/(admin)/layout.jsx>) and acts as a typical Next.js root layout; do not reintroduce a wrapper `AdminShell` component.
+- Custom Sanity Presentation navigators live in [`src/sanity/components/`](./src/sanity/components/); multi-site preview URLs must be site-aware (preview host derives from the active site, not a hardcoded primary).
+- Mapbox GL JS paint properties do not support modern CSS color spaces (lab(), oklch()) — always convert theme colors to sRGB hex/rgb() before passing to map layer paint configs. The correct env var for the Mapbox public token is `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`.
+- `stegaClean` must be imported from `next-sanity` (not `@sanity/client/stega`); Sanity select/dropdown field values and hex color strings are stega-encoded at runtime and must be cleaned before use as map keys, object lookups, or any non-rendered context.

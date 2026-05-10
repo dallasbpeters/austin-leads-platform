@@ -40,28 +40,74 @@ const serviceIconMap = {
 }
 
 const serviceImageMap = {
-  audit: { url: '/assets/services/photos/energy-audits.jpg', alt: 'Thermostat control being adjusted during a home energy audit' },
-  insulation: { url: '/assets/services/photos/insulation-air-sealing.jpg', alt: 'Residential attic space with reflective insulation installed' },
-  ducts: { url: '/assets/services/photos/duct-sealing.jpg', alt: 'Architectural vent detail representing HVAC airflow and duct performance' },
-  windows: { url: '/assets/services/photos/window-replacement-flyer.jpg', alt: 'Crew installing new residential windows on a house exterior' },
-  heatpump: { url: '/assets/services/photos/heat-pump-upgrades.jpg', alt: 'Residential outdoor heat pump unit mounted beside a home' },
-  solarbattery: { url: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop', alt: 'Solar array installation under a bright sky' },
-  detachreset: { url: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop', alt: 'Solar array on a residential roof ready for coordinated detach and reset work' },
-  shingles: { url: 'https://images.unsplash.com/photo-1762726012995-81c2f26e6a4b?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'Close-up of weathered roof shingles and eaves' },
-  metalroofing: { url: 'https://images.unsplash.com/photo-1718948173667-fbd912b6d1fa?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'House with a standing seam metal roof' },
-  stormdamage: { url: 'https://images.unsplash.com/photo-1767385945380-37deed400d81?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'Storm-damaged structure with torn metal roofing' },
-  commercialroofing: { url: 'https://images.unsplash.com/photo-1737256359080-9354dbcc21ef?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'Large commercial building roof under clear sky' },
-  hailinspection: { url: 'https://images.unsplash.com/photo-1656646549671-000665d8d8bc?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'Aerial view of a residential roof for inspection' },
-  rodent: { url: 'https://images.unsplash.com/photo-1694248581706-a645f65a2f27?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'Close-up of rooftop solar panels protected from pest intrusion' },
-  electrical: { url: 'https://images.unsplash.com/photo-1759692071712-adc78a8516c8?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'Electrical panel and power equipment' },
-  evcharger: { url: 'https://images.unsplash.com/photo-1724963914478-77af9eba1c50?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000', alt: 'Electric vehicle plugged into a home charger' },
+  audit: {
+    url: '/assets/services/photos/energy-audits.jpg',
+    alt: 'Thermostat control being adjusted during a home energy audit',
+  },
+  insulation: {
+    url: '/assets/services/photos/insulation-air-sealing.jpg',
+    alt: 'Residential attic space with reflective insulation installed',
+  },
+  ducts: {
+    url: '/assets/services/photos/duct-sealing.jpg',
+    alt: 'Architectural vent detail representing HVAC airflow and duct performance',
+  },
+  windows: {
+    url: '/assets/services/photos/window-replacement-flyer.jpg',
+    alt: 'Crew installing new residential windows on a house exterior',
+  },
+  heatpump: {
+    url: '/assets/services/photos/heat-pump-upgrades.jpg',
+    alt: 'Residential outdoor heat pump unit mounted beside a home',
+  },
+  solarbattery: {
+    url: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+    alt: 'Solar array installation under a bright sky',
+  },
+  detachreset: {
+    url: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+    alt: 'Solar array on a residential roof ready for coordinated detach and reset work',
+  },
+  shingles: {
+    url: 'https://images.unsplash.com/photo-1762726012995-81c2f26e6a4b?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Close-up of weathered roof shingles and eaves',
+  },
+  metalroofing: {
+    url: 'https://images.unsplash.com/photo-1718948173667-fbd912b6d1fa?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'House with a standing seam metal roof',
+  },
+  stormdamage: {
+    url: 'https://images.unsplash.com/photo-1767385945380-37deed400d81?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Storm-damaged structure with torn metal roofing',
+  },
+  commercialroofing: {
+    url: 'https://images.unsplash.com/photo-1737256359080-9354dbcc21ef?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Large commercial building roof under clear sky',
+  },
+  hailinspection: {
+    url: 'https://images.unsplash.com/photo-1656646549671-000665d8d8bc?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Aerial view of a residential roof for inspection',
+  },
+  rodent: {
+    url: 'https://images.unsplash.com/photo-1694248581706-a645f65a2f27?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Close-up of rooftop solar panels protected from pest intrusion',
+  },
+  electrical: {
+    url: 'https://images.unsplash.com/photo-1759692071712-adc78a8516c8?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Electrical panel and power equipment',
+  },
+  evcharger: {
+    url: 'https://images.unsplash.com/photo-1724963914478-77af9eba1c50?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    alt: 'Electric vehicle plugged into a home charger',
+  },
 }
 
 function getServiceIcon(item) {
   if (item.icon && serviceIconMap[item.icon]) return serviceIconMap[item.icon]
   if (item.icon && IconoirIcons[item.icon]) return IconoirIcons[item.icon]
 
-  const title = `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''} ${portableTextToPlainText(item.body || item.answer) || ''}`.toLowerCase()
+  const title =
+    `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''} ${portableTextToPlainText(item.body || item.answer) || ''}`.toLowerCase()
 
   if (title.includes('audit')) return AreaSearch
   if (title.includes('hail')) return Thunderstorm
@@ -85,17 +131,27 @@ function getServiceIcon(item) {
 
 function getServiceImage(item) {
   if (item.imageAsset?.asset?._ref || item.imageAsset?.asset?.url) {
-    return { url: getImageUrl(item.imageAsset, item.image), alt: getImageAlt(item.imageAsset, item.image, item.title || item.question) }
+    return {
+      url: getImageUrl(item.imageAsset, item.image),
+      alt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
+    }
   }
   if (item.imageUrl) {
-    return { url: cleanRuntimeString(item.imageUrl), alt: cleanRuntimeString(item.imageAlt || item.alt || item.title || item.question) }
+    return {
+      url: cleanRuntimeString(item.imageUrl),
+      alt: cleanRuntimeString(item.imageAlt || item.alt || item.title || item.question),
+    }
   }
   if (item.image) {
-    return { url: getImageUrl(null, item.image), alt: getImageAlt(null, item.image, item.title || item.question) }
+    return {
+      url: getImageUrl(null, item.image),
+      alt: getImageAlt(null, item.image, item.title || item.question),
+    }
   }
   if (item.icon && serviceImageMap[item.icon]) return serviceImageMap[item.icon]
 
-  const title = `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
+  const title =
+    `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`.toLowerCase()
   if (title.includes('audit')) return serviceImageMap.audit
   if (title.includes('insulation') || title.includes('air sealing')) return serviceImageMap.insulation
   if (title.includes('duct')) return serviceImageMap.ducts
@@ -110,19 +166,57 @@ function getServiceImage(item) {
   if (title.includes('hail') || title.includes('wind damage')) return serviceImageMap.hailinspection
   if (title.includes('rodent')) return serviceImageMap.rodent
   if (title.includes('electrical')) return serviceImageMap.electrical
-  if (title.includes('charger') || title.includes('car charger') || title.includes('ev')) return serviceImageMap.evcharger
-  return { url: getImageUrl(item.imageAsset, item.image), alt: getImageAlt(item.imageAsset, item.image, item.title || item.question) }
+  if (title.includes('charger') || title.includes('car charger') || title.includes('ev'))
+    return serviceImageMap.evcharger
+  return {
+    url: getImageUrl(item.imageAsset, item.image),
+    alt: getImageAlt(item.imageAsset, item.image, item.title || item.question),
+  }
+}
+
+function resolveCardColorHex(item) {
+  const raw = item.cardColor?.hex || item.color?.hex || null
+  if (!raw || typeof raw !== 'string') return null
+  const hex = cleanRuntimeString(raw).trim()
+  return hex.startsWith('#') ? hex : null
+}
+
+function buildCardOverlay(hex, variant = 'large') {
+  if (!hex) {
+    const fallback = '11,59,66'
+    if (variant === 'large')
+      return `linear-gradient(to top, rgba(${fallback},0.75) 20%, rgba(${fallback},0.08), transparent)`
+    if (variant === 'medium')
+      return `linear-gradient(to top, rgba(${fallback},0.70) 15%, rgba(${fallback},0.20), transparent)`
+    return `linear-gradient(to top, rgba(${fallback},0.65) 5%, rgba(${fallback},0.20), transparent)`
+  }
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const c = `${r},${g},${b}`
+  if (variant === 'large')
+    return `linear-gradient(to top, rgba(${c},0.75) 20%, rgba(${c},0.08), transparent)`
+  if (variant === 'medium')
+    return `linear-gradient(to top, rgba(${c},0.70) 15%, rgba(${c},0.20), transparent)`
+  return `linear-gradient(to top, rgba(${c},0.65) 5%, rgba(${c},0.20), transparent)`
 }
 
 function enrichItems(rawItems) {
   return (rawItems || []).map((item) => {
     const serviceImage = getServiceImage(item)
-    return { ...item, copy: portableTextToPlainText(item.body || item.answer), imageUrl: serviceImage.url, imageAlt: serviceImage.alt }
+    return {
+      ...item,
+      number: item.number ? parseInt(item.number) : null,
+      copy: item.body || item.answer || null,
+      imageUrl: serviceImage.url,
+      imageAlt: serviceImage.alt,
+      cardColorHex: resolveCardColorHex(item),
+    }
   })
 }
 
-function ServiceMedia({ item, overlayClassName }) {
-  if (!item.imageUrl) return <div className={`absolute inset-0 ${overlayClassName}`} />
+function ServiceMedia({ item, overlayStyle }) {
+  if (!item.imageUrl) return <div className="absolute inset-0" style={overlayStyle} />
   return (
     <>
       <Image
@@ -130,9 +224,9 @@ function ServiceMedia({ item, overlayClassName }) {
         height={2000}
         src={item.imageUrl}
         alt={item.imageAlt}
-        className="absolute h-full w-full duration-500 transition-transform inset-0 object-cover hover:scale-105"
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
       />
-      <div className={`absolute inset-0 ${overlayClassName}`} />
+      <div className="absolute inset-0" style={overlayStyle} />
     </>
   )
 }
@@ -153,8 +247,7 @@ export function ServiceGridSection({ section, sectionId, editAttributes = {} }) 
 
   return (
     <section
-      className="bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))] border-b border-border/60"
-      {...editAttributes}
+      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))]"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/ServiceGridSection.jsx',
@@ -165,19 +258,27 @@ export function ServiceGridSection({ section, sectionId, editAttributes = {} }) 
         markup="src/components/platform/sections/ServiceGridSection.jsx"
         content={`service grid from ${section?._type || 'page section'}`}
       />
-      <div className="max-w-7xl mx-auto px-3 md:px-6 py-20 lg:px-10">
-        <div className="max-w-3xl mb-10">
+      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
+        <div className="mb-10 max-w-3xl">
           {section.eyebrow ? (
             <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="mt-5 text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
+          <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
-            <PortableTextContent as="div" value={section.subtitle} className="mt-4 leading-8 text-foreground/80 text-lg" />
+            <PortableTextContent
+              as="div"
+              value={section.subtitle}
+              className="text-foreground/80 mt-4 text-lg leading-8"
+            />
           ) : null}
           {section.body ? (
-            <PortableTextContent as="div" value={section.body} className="mt-4 leading-8 text-base text-muted-foreground" />
+            <PortableTextContent
+              as="div"
+              value={section.body}
+              className="text-muted-foreground mt-4 text-base leading-8"
+            />
           ) : null}
         </div>
 
@@ -186,67 +287,117 @@ export function ServiceGridSection({ section, sectionId, editAttributes = {} }) 
             const Icon = getServiceIcon(item)
             const card = (
               <Card className="relative aspect-3/4" variant="media" radius="lg">
-                <ServiceMedia item={item} overlayClassName="bg-[linear-gradient(to_top,var(--color-charade)_30%,rgba(11,59,66,0.1),transparent)]" />
-                <div className="absolute p-8 text-white bottom-0 inset-x-0">
-                  <div className="items-center justify-center h-16 w-16 mb-4 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
-                    <Icon className="h-8 w-8" strokeWidth={2} />
+                <ServiceMedia
+                  item={item}
+                  overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'large') }}
+                />
+                <div className="absolute inset-x-0 bottom-0 p-8 text-white">
+                  {item.icon ? (
+                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                      <Icon className="h-8 w-8" strokeWidth={2} />
+                    </div>
+                  ) : <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <div className="type-accent text-[2.5rem] font-mono leading-[1.1] font-bold">{item.number}</div>
                   </div>
-                  <div className="font-bold leading-[1.1] text-[1.875rem] type-accent">{item.title}</div>
-                  <div className="mt-1 font-semibold text-md text-white/70">{item.copy}</div>
+                  }
+
+                  <div className="type-accent capitalize text-sm font-mono leading-[1.1] font-bold">{item.eyebrow}</div>
+                  <div className="type-accent mb-3 text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
+                  <PortableTextContent
+              as="div"
+              value={item.copy}
+              className="text-md mt-1 font-semibold text-white"
+            />
                 </div>
               </Card>
             )
-            return <ServiceCardLink key={buildRuntimeKey('service-item', item.title, item.href)} item={item} keyPrefix="service-item">{card}</ServiceCardLink>
+            return (
+              <ServiceCardLink
+                key={buildRuntimeKey('service-item', item.title, item.href)}
+                item={item}
+                keyPrefix="service-item"
+              >
+                {card}
+              </ServiceCardLink>
+            )
           })}
         </div>
 
         {roofingItems.length ? (
-          <div className="mt-8 pt-8 border-border/60 border-t">
+          <div className="border-border/60 mt-8 border-t pt-8">
             {section.roofingTitle ? (
-              <h3 className="mb-4 text-foreground text-lg">{section.roofingTitle}</h3>
+              <h3 className="text-foreground mb-4 text-lg">{section.roofingTitle}</h3>
             ) : null}
-            <div className="grid gap-4 lg:grid-cols-3 max-[900px]:grid-cols-1 md:grid-cols-2">
+            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {roofingItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
                   <Card className="relative aspect-4/5 overflow-hidden" variant="media" radius="lg">
-                    <ServiceMedia item={item} overlayClassName="bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]" />
-                    <div className="absolute p-5 text-white bottom-0 inset-x-0">
-                      <div className="items-center justify-center h-10 w-10 mb-3 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
+                    <ServiceMedia
+                      item={item}
+                      overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'medium') }}
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
                       </div>
-                      <div className="font-bold leading-[1.05] text-[1.375rem] type-accent">{item.title}</div>
-                      <p className="mt-2 leading-6 text-md text-white/82">{item.copy}</p>
+                      <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
+                      <PortableTextContent
+                        value={item.copy}
+                        className="text-md mt-2 leading-6 text-white/82"
+                      />
                     </div>
                   </Card>
                 )
-                return <ServiceCardLink key={buildRuntimeKey('roofing-item', item.title, item.href)} item={item} keyPrefix="roofing-item">{card}</ServiceCardLink>
+                return (
+                  <ServiceCardLink
+                    key={buildRuntimeKey('roofing-item', item.title, item.href)}
+                    item={item}
+                    keyPrefix="roofing-item"
+                  >
+                    {card}
+                  </ServiceCardLink>
+                )
               })}
             </div>
           </div>
         ) : null}
 
         {secondaryItems.length ? (
-          <div className="mt-8 pt-8 border-border/60 border-t">
+          <div className="border-border/60 mt-8 border-t pt-8">
             {section.secondaryTitle ? (
-              <h3 className="mb-4 text-foreground text-lg">{section.secondaryTitle}</h3>
+              <h3 className="text-foreground mb-4 text-lg">{section.secondaryTitle}</h3>
             ) : null}
-            <div className="grid gap-4 lg:grid-cols-3 max-[900px]:grid-cols-1 md:grid-cols-2">
+            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {secondaryItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
                   <Card className="relative aspect-square overflow-hidden" variant="media" radius="lg">
-                    <ServiceMedia item={item} overlayClassName="bg-[linear-gradient(to_top,rgba(11,59,66,1)_20%,rgba(11,59,66,0.4),transparent)]" />
-                    <div className="absolute p-5 text-white bottom-0 inset-x-0">
-                      <div className="items-center justify-center h-10 w-10 mb-3 bg-white/20 rounded-full backdrop-blur-sm inline-flex">
+                    <ServiceMedia
+                      item={item}
+                      overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'small') }}
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                         <Icon className="h-5 w-5" strokeWidth={2.2} />
                       </div>
-                      <div className="font-bold leading-[1.05] text-[1.375rem] type-accent">{item.title}</div>
-                      <p className="mt-2 leading-6 text-md text-white/82">{item.copy}</p>
+                      <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
+                      <PortableTextContent
+                        value={item.copy}
+                        className="text-md mt-2 leading-6 text-white/82"
+                      />  
                     </div>
                   </Card>
                 )
-                return <ServiceCardLink key={buildRuntimeKey('secondary-item', item.title, item.href)} item={item} keyPrefix="secondary-item">{card}</ServiceCardLink>
+                return (
+                  <ServiceCardLink
+                    key={buildRuntimeKey('secondary-item', item.title, item.href)}
+                    item={item}
+                    keyPrefix="secondary-item"
+                  >
+                    {card}
+                  </ServiceCardLink>
+                )
               })}
             </div>
           </div>

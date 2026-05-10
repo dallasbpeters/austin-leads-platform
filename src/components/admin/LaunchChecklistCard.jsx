@@ -34,9 +34,9 @@ export default function LaunchChecklistCard({ checklist }) {
       <CardHeader>
         <CardTitle className="text-base">{currentChecklist.title}</CardTitle>
         {currentChecklist.summary ? (
-          <p className="leading-6 text-muted-foreground text-sm">{currentChecklist.summary}</p>
+          <p className="text-muted-foreground text-sm leading-6">{currentChecklist.summary}</p>
         ) : null}
-        <div className="flex flex-wrap items-center gap-3 text-muted-foreground text-sm">
+        <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
           <span>
             {completion.completed} of {completion.total} complete
           </span>
@@ -47,12 +47,12 @@ export default function LaunchChecklistCard({ checklist }) {
         {currentChecklist.sections?.map((section) => (
           <div
             key={section._key || section.title}
-            className="p-5 bg-muted/20 border border-border rounded-xl"
+            className="bg-muted/20 border-border rounded-xl border p-5"
           >
             <div className="mb-4">
               <h3 className="text-foreground text-sm tracking-tight">{section.title}</h3>
               {section.description ? (
-                <p className="mt-1 leading-6 text-muted-foreground text-sm">{section.description}</p>
+                <p className="text-muted-foreground mt-1 text-sm leading-6">{section.description}</p>
               ) : null}
             </div>
 
@@ -65,15 +65,15 @@ export default function LaunchChecklistCard({ checklist }) {
                 return (
                   <div
                     key={task._key || task.title}
-                    className="p-4 bg-background border border-border rounded-lg"
+                    className="bg-background border-border rounded-lg border p-4"
                   >
-                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div className="flex min-w-0 gap-3">
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon-sm"
-                          className="mt-0.5 rounded-full shrink-0"
+                          className="mt-0.5 shrink-0 rounded-full"
                           disabled={isPending}
                           onClick={() =>
                             setTaskStatus({
@@ -98,9 +98,9 @@ export default function LaunchChecklistCard({ checklist }) {
                             {task.title}
                           </div>
                           {task.notes ? (
-                            <p className="mt-1 leading-6 text-muted-foreground text-sm">{task.notes}</p>
+                            <p className="text-muted-foreground mt-1 text-sm leading-6">{task.notes}</p>
                           ) : null}
-                          <div className="flex flex-wrap items-center gap-2 mt-3 text-muted-foreground text-sm">
+                          <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-2 text-sm">
                             {task.owner ? <span>Owner: {task.owner}</span> : null}
                             {task.priority ? <span>Priority: {task.priority}</span> : null}
                           </div>

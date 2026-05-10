@@ -1,4 +1,3 @@
-
 'use client'
 
 import * as React from 'react'
@@ -27,13 +26,13 @@ function AccordionTrigger({ className, children, ...props }) {
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "cursor-pointer flex items-center justify-between gap-4 p-4 font-medium text-left text-sm focus-visible:border-ring transition-all disabled:opacity-50 flex-1 outline-none [&[data-state=open]>svg]:rotate-180 disabled:pointer-events-none focus-visible:ring-[3px] focus-visible:ring-ring/50 hover:bg-stone-100",
+          'focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 cursor-pointer items-center justify-between gap-4 p-4 text-left text-sm font-medium transition-all outline-none hover:bg-stone-100 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
           className,
         )}
         {...props}
       >
         {children}
-        <ChevronDownIcon className="text-muted-foreground duration-200 transition-transform pointer-events-none shrink-0 size-6 translate-y-0.5" />
+        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-6 shrink-0 translate-y-0.5 transition-transform duration-200" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )
@@ -43,10 +42,10 @@ function AccordionContent({ className, children, ...props }) {
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className="px-4 text-sm overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden px-4 text-sm"
       {...props}
     >
-      <div className={cn("pb-4 pt-0", className)}>{children}</div>
+      <div className={cn('pt-0 pb-4', className)}>{children}</div>
     </AccordionPrimitive.Content>
   )
 }

@@ -135,34 +135,38 @@ async function main() {
 
   const mergedSections = mergeHomepageSections(fixturePage.sections, existingDoc.sections)
 
-  await client.patch(existingDoc._id).set({
-    title: fixturePage.title,
-    description: fixturePage.description,
-    pageType: fixturePage.pageType,
-    templateLevel: fixturePage.templateLevel,
-    sections: withSectionKeys(normalizeRichTextFields(mergedSections)),
-  }).unset([
-    'heroEyebrow',
-    'heroTitle',
-    'heroTitlePrimary',
-    'heroTitleAccent',
-    'heroBody',
-    'cardCopy',
-    'heroGradient',
-    'heroTextColor',
-    'heroOverlayColor',
-    'heroOverlayStartColor',
-    'heroOverlayEndColor',
-    'heroOverlayDirection',
-    'heroOverlayStartOpacity',
-    'heroOverlayEndOpacity',
-    'heroOverlayOpacity',
-    'heroImage',
-    'heroAsset',
-    'heroSlides',
-    'heroMetrics',
-    'heroActions',
-  ]).commit()
+  await client
+    .patch(existingDoc._id)
+    .set({
+      title: fixturePage.title,
+      description: fixturePage.description,
+      pageType: fixturePage.pageType,
+      templateLevel: fixturePage.templateLevel,
+      sections: withSectionKeys(normalizeRichTextFields(mergedSections)),
+    })
+    .unset([
+      'heroEyebrow',
+      'heroTitle',
+      'heroTitlePrimary',
+      'heroTitleAccent',
+      'heroBody',
+      'cardCopy',
+      'heroGradient',
+      'heroTextColor',
+      'heroOverlayColor',
+      'heroOverlayStartColor',
+      'heroOverlayEndColor',
+      'heroOverlayDirection',
+      'heroOverlayStartOpacity',
+      'heroOverlayEndOpacity',
+      'heroOverlayOpacity',
+      'heroImage',
+      'heroAsset',
+      'heroSlides',
+      'heroMetrics',
+      'heroActions',
+    ])
+    .commit()
 
   console.log(`Updated homepage -> ${existingDoc._id}`)
   console.log(`Sections synced: ${mergedSections.length}`)

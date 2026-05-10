@@ -1,3 +1,4 @@
+import { stegaClean } from 'next-sanity'
 import { isHeroSectionBlock } from '../platform/section-helpers'
 
 function toKeyPart(value) {
@@ -184,8 +185,8 @@ export function normalizeSectionType(section) {
       body: section.body,
       items: normalizedItems,
       secondaryTitle: section.secondaryTitle,
-      secondaryItems: withObjectArrayKeys(section.secondaryItems || [], 'secondary-item', 'title').map((item) =>
-        normalizeSectionItemType(section, item),
+      secondaryItems: withObjectArrayKeys(section.secondaryItems || [], 'secondary-item', 'title').map(
+        (item) => normalizeSectionItemType(section, item),
       ),
     })
   }
@@ -362,6 +363,32 @@ export function normalizeSectionType(section) {
     })
   }
 
+  if (section.type === 'serviceAreaMap' || section._type === 'serviceAreaMapSection') {
+    const areas = Array.isArray(section.areas)
+      ? section.areas.map((area, index) => {
+          const countyKey = stegaClean(area?.countyKey) || area?.countyKey
+          return omitUndefined({
+            ...area,
+            countyKey,
+            _type: 'serviceAreaItem',
+            _key: area?._key || createKey('service-area', index, countyKey || area?.displayName),
+          })
+        })
+      : undefined
+
+    return omitUndefined({
+      _key: section._key,
+      _type: 'serviceAreaMapSection',
+      type: 'serviceAreaMap',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      description: section.description,
+      accentColor: section.accentColor,
+      backgroundColor: section.backgroundColor,
+      areas,
+    })
+  }
+
   if (section.type === 'band') {
     return omitUndefined({
       _key: section._key,
@@ -440,9 +467,10 @@ export function normalizeSectionType(section) {
       chartPoints: Array.isArray(section.chartPoints)
         ? section.chartPoints.map((point, index) => ({
             ...point,
-            _key: point?._key && String(point._key).trim()
-              ? point._key
-              : createKey('chart-point', index, point?.label),
+            _key:
+              point?._key && String(point._key).trim()
+                ? point._key
+                : createKey('chart-point', index, point?.label),
           }))
         : undefined,
     })

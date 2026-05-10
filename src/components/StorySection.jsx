@@ -8,9 +8,11 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
   const ref = useRef(null)
   const [activeWordCount, setActiveWordCount] = useState(0)
   const title = section?.title || ''
-  const body = portableTextToPlainText(section?.body) ||
+  const body =
+    portableTextToPlainText(section?.body) ||
     'Most homeowners do not start with a clean, simple solar question. They start with storm damage, an aging roof, an insurance claim, or a project they do not want to get wrong. This site is built to help you understand the roofing side, the solar side, and where those decisions affect each other.'
-  const emphasis = portableTextToPlainText(section?.subtitle) ||
+  const emphasis =
+    portableTextToPlainText(section?.subtitle) ||
     section?.subheading ||
     'Start with the issue in front of you. Get clear on the next step.'
   const bodyWords = useMemo(() => body.match(/\S+|\s+/g) || [], [body])
@@ -74,7 +76,7 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
 
   return (
     <section
-      className="bg-white overflow-hidden"
+      className="overflow-hidden bg-white"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/StorySection.jsx',
@@ -82,10 +84,10 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
         note: 'karaoke text reveal section',
       })}
     >
-      <div className="w-[min(72rem,calc(100%-3rem))] mx-auto py-32 text-center">
+      <div className="mx-auto w-[min(72rem,calc(100%-3rem))] py-32 text-center">
         <h2
           ref={ref}
-          className="m-0 font-500 text-[clamp(1.5rem,4vw,2.25rem)] text-neutral-800 tracking-[-0.02em] type-accent"
+          className="font-500 type-accent m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em] text-neutral-800"
         >
           {title ? `${title} ` : null}
           {bodyParts.map((part) =>
@@ -99,9 +101,8 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
             ) : (
               <span key={part.key}>{part.text}</span>
             ),
-          )}
-          {' '}
-          <span className="text-neutral-400 italic type-display font-500">
+          )}{' '}
+          <span className="type-display font-500 text-neutral-400 italic">
             {emphasisWords.map((part, index) => (
               <span key={`emphasis-${index}-${part}`}>{part}</span>
             ))}

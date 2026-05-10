@@ -148,16 +148,6 @@ export default function Header() {
           </div>
         </div>
       </nav>
-
-      {shouldShowMobileContactCta ? (
-        <a
-          href="#consultation"
-          className="btn btn--primary btn--pill btn--md shadow-theme-brand fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-60 -translate-x-1/2 px-5 lg:hidden"
-          aria-label="Contact our team"
-        >
-          Contact
-        </a>
-      ) : null}
     </>
   )
 }

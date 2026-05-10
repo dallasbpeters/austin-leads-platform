@@ -53,12 +53,23 @@ export function SiteSwitcherNavigator() {
 
   return (
     <div style={{ height: '100%', overflowY: 'auto', padding: '12px' }}>
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--card-muted-fg-color)', padding: '4px 8px 8px' }}>
+      <div
+        style={{
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          color: 'var(--card-muted-fg-color)',
+          padding: '4px 8px 8px',
+        }}
+      >
         Sites
       </div>
 
       {loading ? (
-        <div style={{ padding: '16px', textAlign: 'center', color: 'var(--card-muted-fg-color)', fontSize: 13 }}>
+        <div
+          style={{ padding: '16px', textAlign: 'center', color: 'var(--card-muted-fg-color)', fontSize: 13 }}
+        >
           Loading…
         </div>
       ) : sites.length === 0 ? (
@@ -79,7 +90,9 @@ export function SiteSwitcherNavigator() {
                 marginBottom: 2,
                 textAlign: 'left',
                 background: isActive ? 'var(--card-focus-ring-color, rgba(37,99,235,0.12))' : 'transparent',
-                border: isActive ? '1px solid var(--card-focus-ring-color, rgba(37,99,235,0.3))' : '1px solid transparent',
+                border: isActive
+                  ? '1px solid var(--card-focus-ring-color, rgba(37,99,235,0.3))'
+                  : '1px solid transparent',
                 borderRadius: 6,
                 cursor: 'pointer',
                 color: 'inherit',

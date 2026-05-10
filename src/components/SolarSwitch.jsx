@@ -106,7 +106,7 @@ const SolarSwitch = ({
         >
           <span
             ref={textRef}
-            className="leading- solar-text pointer-events-none absolute top-1/2 left-4 z-20 inline-block whitespace-nowrap font-semibold tracking-[-0.02em] text-white transition-transform duration-500"
+            className="leading- solar-text pointer-events-none absolute top-1/2 left-4 z-20 inline-block font-semibold tracking-[-0.02em] whitespace-nowrap text-white transition-transform duration-500"
             style={{
               transform: `translate(${textTranslateX}px, -50%)`,
             }}

@@ -1,6 +1,14 @@
 'use client'
 
-import { motion, useAnimationFrame, useMotionValue, useScroll, useSpring, useTransform, useVelocity } from 'framer-motion'
+import {
+  motion,
+  useAnimationFrame,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  useVelocity,
+} from 'framer-motion'
 import * as IconoirIcons from 'iconoir-react'
 import { useLayoutEffect, useRef, useState } from 'react'
 import TexasFlag from '@/components/TexasFlag'
@@ -13,7 +21,6 @@ function useElementWidth(ref) {
       if (!ref.current) return
       setWidth(ref.current.offsetWidth)
     }
-    
 
     updateWidth()
     window.addEventListener('resize', updateWidth)
@@ -49,20 +56,11 @@ function renderOptionalIcon(iconName, textColor, fontSize) {
   const IconComponent = IconoirIcons[normalized]
   if (!IconComponent) return null
 
-  return (
-    <IconComponent
-      color={textColor}
-      width={iconSize}
-      height={iconSize}
-      style={{ marginRight: 10 }}
-    />
-  )
+  return <IconComponent color={textColor} width={iconSize} height={iconSize} style={{ marginRight: 10 }} />
 }
 
 function renderTexasFlag(textColor, fontSize) {
-  return (
-    <TexasFlag color={textColor} width={fontSize} height={fontSize} />
-  )
+  return <TexasFlag color={textColor} width={fontSize} height={fontSize} />
 }
 
 function VelocityText({
@@ -86,7 +84,9 @@ function VelocityText({
   const { scrollY } = useScroll()
   const scrollVelocity = useVelocity(scrollY)
   const smoothVelocity = useSpring(scrollVelocity, { damping, stiffness })
-  const velocityFactor = useTransform(smoothVelocity, velocityMapping.input, velocityMapping.output, { clamp: false })
+  const velocityFactor = useTransform(smoothVelocity, velocityMapping.input, velocityMapping.output, {
+    clamp: false,
+  })
   const x = useTransform(baseX, (value) => {
     if (copyWidth === 0) return `${startPosition}px`
     const wrapped = wrap(-copyWidth, 0, value)
@@ -113,9 +113,7 @@ function VelocityText({
   })
 
   const resolvedTextColor =
-    typeof textColor === 'string'
-      ? textColor
-      : (textColor?.hex || textColor?.color?.hex || 'currentColor')
+    typeof textColor === 'string' ? textColor : textColor?.hex || textColor?.color?.hex || 'currentColor'
 
   const spans = []
   for (let index = 0; index < numCopies; index += 1) {
@@ -127,7 +125,7 @@ function VelocityText({
           flexShrink: 0,
           fontSize: fontSize || '24px',
           color: resolvedTextColor,
-          fontWeight: "bold",
+          fontWeight: 'bold',
           letterSpacing: '-0.05em',
           whiteSpace: 'pre',
           ...style,
@@ -194,7 +192,7 @@ export default function ScrollVelocity(props) {
     >
       {texts.map((item, index) => {
         const textContent = typeof item === 'string' ? item : item?.text
-        const itemIcon = showFlag ? 'TexasFlag' : (typeof item === 'string' ? undefined : item?.icon)
+        const itemIcon = showFlag ? 'TexasFlag' : typeof item === 'string' ? undefined : item?.icon
         const rowMultiplier = index % 2 !== 0 ? -1 : 1
         const finalVelocity = velocity * directionMultiplier * rowMultiplier
 

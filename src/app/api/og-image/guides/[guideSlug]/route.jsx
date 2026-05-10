@@ -1,7 +1,4 @@
-import {
-  GET as guideGuideImage,
-  HEAD as headGuideImage,
-} from '@/app/api/og/guides/[guideSlug]/route'
+import { GET as guideGuideImage, HEAD as headGuideImage } from '@/app/api/og/guides/[guideSlug]/route'
 
 export const runtime = 'nodejs'
 export const contentType = 'image/png'

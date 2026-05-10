@@ -15,6 +15,7 @@ Primary conversion goal: Contact form submission
 Title: `Hail Damage Roof Inspection Checklist for Central Texas Homeowners`
 
 Primary intent:
+
 1. Homeowner suspects storm damage and needs immediate next steps.
 
 Meta description:
@@ -24,6 +25,7 @@ Suggested slug:
 `/guides/hail-damage-roof-inspection-checklist-central-texas`
 
 Outline:
+
 1. What hail damage looks like (shingles, flashing, vents, gutters, interior signs)
 2. Safety-first self-check process
 3. Photo documentation checklist for insurance
@@ -43,6 +45,7 @@ CTA copy:
 Title: `Should You Replace Your Roof Before Going Solar in Texas?`
 
 Primary intent:
+
 1. Homeowner considering solar, unsure how roof age and condition affect decision.
 
 Meta description:
@@ -52,6 +55,7 @@ Suggested slug:
 `/guides/replace-roof-before-solar-texas`
 
 Outline:
+
 1. Why roof condition is a solar decision, not just a roofing decision
 2. Roof age thresholds and risk ranges
 3. Detach-and-reset costs and disruption
@@ -71,6 +75,7 @@ CTA copy:
 Title: `Storm Damage in Texas: What To Do In The First 72 Hours`
 
 Primary intent:
+
 1. Homeowner in immediate post-storm mode needing a clear response plan.
 
 Meta description:
@@ -80,6 +85,7 @@ Suggested slug:
 `/guides/texas-storm-damage-first-72-hours`
 
 Outline:
+
 1. First 24 hours: safety, leak control, immediate documentation
 2. 24-48 hours: inspection scheduling and temporary repairs
 3. 48-72 hours: claim preparation, contractor scope alignment
@@ -121,4 +127,3 @@ Snippet C (inspection):
    - 1 primary CTA label tuned to user intent
    - linked related services
 3. Keep body copy practical and specific, not generic educational filler.
-

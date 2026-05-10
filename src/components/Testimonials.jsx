@@ -62,8 +62,7 @@ function Ratings({ stars = 5 }) {
         const fillRatio = Math.max(0, Math.min(1, safeStars - index))
         const fillPercent = `${fillRatio * 100}%`
         const gradientId = `${idPrefix}-star-${index}`
-        const fill =
-          fillRatio <= 0 ? 'none' : fillRatio >= 1 ? 'currentColor' : `url(#${gradientId})`
+        const fill = fillRatio <= 0 ? 'none' : fillRatio >= 1 ? 'currentColor' : `url(#${gradientId})`
 
         return (
           <svg
@@ -111,20 +110,14 @@ function ReviewerAvatar({ review }) {
   }
 
   return (
-    <div className="flex items-center justify-center size-12 font-semibold text-white text-sm tracking-[0.12em] bg-(--color-metterhorn) rounded-full uppercase">
+    <div className="flex size-12 items-center justify-center rounded-full bg-(--color-metterhorn) text-sm font-semibold tracking-[0.12em] text-white uppercase">
       {initials || 'TS'}
     </div>
   )
 }
 
 const GoogleLogo = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 1556 1587"
-    width="1.5em"
-    height="1.5em"
-    {...props}
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1556 1587" width="1.5em" height="1.5em" {...props}>
     <g id="Layer">
       <path
         id="Layer"
@@ -148,7 +141,7 @@ const GoogleLogo = (props) => (
       />
     </g>
   </svg>
-);
+)
 
 export default function Testimonials({
   reviews = [],
@@ -175,44 +168,47 @@ export default function Testimonials({
 
   return (
     <section
-      className="py-24 bg-secondary-100 radial-grid-bg"
-      {...editAttributes}
+      className="bg-secondary-100 radial-grid-bg py-24"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/Testimonials.jsx',
         content: reviews.length ? 'homepage reviews from Sanity' : 'local fallback testimonial content',
       })}
-      >
-      <div className="max-w-7xl mb-20 ml-auto mr-auto lg:px-8 sm:px-3 md:px-6 text-center">
-        <h2 className="mb-6 font-medium text-4xl text-foreground tracking-tight sm:text-6xl animate-delay-200 dynamic-zoom-in">
+    >
+      <div className="mr-auto mb-20 ml-auto max-w-7xl text-center sm:px-3 md:px-6 lg:px-8">
+        <h2 className="text-foreground animate-delay-200 dynamic-zoom-in mb-6 text-4xl font-medium tracking-tight sm:text-6xl">
           {title}
-          <span className="block font-medium leading-relaxed text-transparent tracking-tight bg-clip-text bg-primary">
+          <span className="bg-primary block bg-clip-text leading-relaxed font-medium tracking-tight text-transparent">
             {subtitle}
           </span>
         </h2>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8 animate-delay-400 dynamic-slide-in">
+      <div className="animate-delay-400 dynamic-slide-in relative mx-auto max-w-7xl px-4 md:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {desktopColumns.map((columnReviews, columnIndex) => (
             <div key={`column-${columnIndex}`} className="space-y-6">
               {columnReviews.map((review) => (
                 <Card
                   key={review.id || `${review.author}-${columnIndex}`}
-                  className="relative p-8 backdrop-blur-sm card--dark-glass"
+                  className="card--dark-glass relative p-8 backdrop-blur-sm"
                 >
                   <div className="flex items-center gap-1">
                     <Ratings stars={review.stars} />
-                    <span className="ml-2 grow text-gray-400 text-sm">{Number(review.stars || 5).toFixed(1)}</span>
+                    <span className="ml-2 grow text-sm text-gray-400">
+                      {Number(review.stars || 5).toFixed(1)}
+                    </span>
                     <GoogleLogo />
                   </div>
-                  <p className="border-b border-border pb-3 mb-1 leading-relaxed text-foreground">"{review.body}"</p>
+                  <p className="border-border text-foreground mb-1 border-b pb-3 leading-relaxed">
+                    "{review.body}"
+                  </p>
                   <div className="flex items-center gap-4">
                     <ReviewerAvatar review={review} />
                     <div>
-                      <div className="font-semibold text-foreground text-lg">{review.author}</div>
+                      <div className="text-foreground text-lg font-semibold">{review.author}</div>
                       {review.reviewerLocation ? (
-                        <div className="text-gray-400 text-sm">{review.reviewerLocation}</div>
+                        <div className="text-sm text-gray-400">{review.reviewerLocation}</div>
                       ) : null}
                     </div>
                   </div>

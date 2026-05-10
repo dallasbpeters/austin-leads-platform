@@ -85,18 +85,22 @@ export default function HailWeatherLookup({ section }) {
       : 'Last 30 days'
 
   return (
-    <div className="grid max-w-7xl gap-8 mx-auto lg:grid-cols-1">
+    <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-1">
       <div className="space-y-5">
         <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
           Hail in your area
         </Badge>
         <div className="space-y-4">
-          <h2 className="text-3xl text-foreground tracking-tight md:text-4xl">{section.title}</h2>
-          <PortableTextContent as="div" value={section.body} className="max-w-2xl leading-8 text-base text-muted-foreground" />
+          <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <PortableTextContent
+            as="div"
+            value={section.body}
+            className="text-muted-foreground max-w-2xl text-base leading-8"
+          />
         </div>
 
         <form
-          className="grid gap-3 grid-cols-1 md:grid-cols-[300px_400px_200px]"
+          className="grid grid-cols-1 gap-3 md:grid-cols-[300px_400px_200px]"
           onSubmit={(event) => {
             event.preventDefault()
             searchByQuery()
@@ -117,7 +121,7 @@ export default function HailWeatherLookup({ section }) {
             id="hail-weather-lookup-query"
             name="hail-weather-lookup-query"
             htmlFor="hail-weather-lookup-query"
-            className="h-11 w-full bg-white border-border/70"
+            className="border-border/70 h-11 w-full bg-white"
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Enter ZIP code, city, or neighborhood"
             value={query}
@@ -134,7 +138,7 @@ export default function HailWeatherLookup({ section }) {
         </form>
 
         {hasUserSearched && error ? (
-          <Card className="text-red-900 bg-red-500/5 border-red-500/20">
+          <Card className="border-red-500/20 bg-red-500/5 text-red-900">
             <CardContent className="p-4 text-sm">{error}</CardContent>
           </Card>
         ) : null}
@@ -150,15 +154,15 @@ export default function HailWeatherLookup({ section }) {
                   {risk.level} risk
                 </div>
                 {data?.location?.name ? (
-                  <div className="items-center gap-2 text-muted-foreground text-sm inline-flex">
+                  <div className="text-muted-foreground inline-flex items-center gap-2 text-sm">
                     <MapPin className="size-4" />
                     {data.location.name}
                   </div>
                 ) : null}
               </div>
               <div>
-                <div className="font-semibold text-foreground text-lg">{risk.headline}</div>
-                <div className="mt-1 leading-7 text-muted-foreground text-sm">{risk.detail}</div>
+                <div className="text-foreground text-lg font-semibold">{risk.headline}</div>
+                <div className="text-muted-foreground mt-1 text-sm leading-7">{risk.detail}</div>
               </div>
             </CardContent>
           </Card>
@@ -167,14 +171,14 @@ export default function HailWeatherLookup({ section }) {
         <div className="grid gap-3 md:grid-cols-3">
           <Card className="bg-card border-border/80">
             <CardContent className="p-4">
-              <div className="items-center gap-2 font-semibold text-muted-foreground text-xs tracking-[0.16em] inline-flex uppercase">
+              <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
                 <CloudRainWind className="size-8" />
                 Conditions
               </div>
-              <div className="mt-3 font-semibold text-foreground text-lg">
+              <div className="text-foreground mt-3 text-lg font-semibold">
                 {current?.weatherLabel || 'Loading'}
               </div>
-              <div className="mt-1 text-muted-foreground text-sm">
+              <div className="text-muted-foreground mt-1 text-sm">
                 {formatNumber(current?.temperature, '°')} right now
               </div>
             </CardContent>
@@ -182,53 +186,53 @@ export default function HailWeatherLookup({ section }) {
 
           <Card className="bg-card border-border/80">
             <CardContent className="p-4">
-              <div className="items-center gap-2 font-semibold text-muted-foreground text-xs tracking-[0.16em] inline-flex uppercase">
+              <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
                 <Wind className="size-8" />
                 Gusts
               </div>
-              <div className="mt-3 font-semibold text-foreground text-lg">
+              <div className="text-foreground mt-3 text-lg font-semibold">
                 {formatNumber(daily?.windGustMax, ' mph')}
               </div>
-              <div className="mt-1 text-muted-foreground text-sm">Forecast max today</div>
+              <div className="text-muted-foreground mt-1 text-sm">Forecast max today</div>
             </CardContent>
           </Card>
 
           <Card className="bg-card border-border/80">
             <CardContent className="p-4">
-              <div className="items-center gap-2 font-semibold text-muted-foreground text-xs tracking-[0.16em] inline-flex uppercase">
+              <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
                 <TriangleAlert className="size-8" />
                 Alerts
               </div>
-              <div className="mt-3 font-semibold text-foreground text-lg">{alerts.length}</div>
-              <div className="mt-1 text-muted-foreground text-sm">Active NWS alerts nearby</div>
+              <div className="text-foreground mt-3 text-lg font-semibold">{alerts.length}</div>
+              <div className="text-muted-foreground mt-1 text-sm">Active NWS alerts nearby</div>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      <Card className="p-0 border-none overflow-hidden">
+      <Card className="overflow-hidden border-none p-0">
         <CardContent className="p-0">
           <div className="grid min-h-250 lg:grid-rows-[1fr_auto]">
             {data?.location ? (
               <HailLayerMap center={data.location} hailLayer={hailLayer} />
             ) : (
-              <div className="flex items-center justify-center min-h-88 text-sm text-white/70 bg-[linear-gradient(180deg,#102230,#1b3344)]">
+              <div className="flex min-h-88 items-center justify-center bg-[linear-gradient(180deg,#102230,#1b3344)] text-sm text-white/70">
                 Check weather to see a map of hail in your area
               </div>
             )}
 
-            <div className="grid md:items-start gap-4 p-5 text-white bg-slate-950/92 border-border/60 border-t md:grid-cols-[1fr_auto]">
+            <div className="border-border/60 grid gap-4 border-t bg-slate-950/92 p-5 text-white md:grid-cols-[1fr_auto] md:items-start">
               <div className="space-y-4">
                 <div className="grid gap-2 md:grid-cols-3">
-                  <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                  <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                     <div className="font-semibold text-white">Search window</div>
                     <div className="mt-1">{windowLabel}</div>
                   </div>
-                  <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                  <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                     <div className="font-semibold text-white">Property marker</div>
                     <div className="mt-1">{data?.location?.name || 'Selected location'}</div>
                   </div>
-                  <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                  <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                     <div className="font-semibold text-white">Validated storms</div>
                     <div className="mt-1">
                       {stormEvents.length
@@ -239,10 +243,10 @@ export default function HailWeatherLookup({ section }) {
                 </div>
 
                 <div>
-                  <div className="font-semibold text-sm">
+                  <div className="text-sm font-semibold">
                     {alerts[0]?.event || daily?.weatherLabel || 'Weather outlook'}
                   </div>
-                  <div className="mt-1 leading-6 text-sm text-white/72">
+                  <div className="mt-1 text-sm leading-6 text-white/72">
                     {alerts[0]?.headline ||
                       `For ${data?.location?.name || 'this area'}, forecast conditions for ${formatDate(daily?.date)} show ${formatNumber(
                         daily?.precipitationProbabilityMax,
@@ -253,17 +257,17 @@ export default function HailWeatherLookup({ section }) {
 
                 {hailLayer ? (
                   <div className="grid gap-2 md:grid-cols-3">
-                    <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                    <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                       <div className="font-semibold text-white">Radar hail signatures</div>
                       <div className="mt-1">{hailLayer.hailSignatures.length} points in the last 30 days</div>
                     </div>
-                    <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                    <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                       <div className="font-semibold text-white">Storm reports</div>
                       <div className="mt-1">
                         {hailLayer.stormReports.length} hail-related reports in the last 30 days
                       </div>
                     </div>
-                    <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                    <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                       <div className="font-semibold text-white">Legend</div>
                       <div className="mt-1">
                         Orange = radar hail signature, cyan = storm report, orange dot = property
@@ -273,28 +277,28 @@ export default function HailWeatherLookup({ section }) {
                 ) : null}
 
                 <div className="space-y-3">
-                  <div className="font-semibold text-sm text-white">Storm evidence in the last 30 days</div>
+                  <div className="text-sm font-semibold text-white">Storm evidence in the last 30 days</div>
                   {stormEvents.length ? (
                     <div className="grid gap-3">
                       {stormEvents.map((storm) => (
                         <div
                           key={storm.id}
-                          className="px-4 py-4 bg-white/6 border border-white/12 rounded-xl"
+                          className="rounded-xl border border-white/12 bg-white/6 px-4 py-4"
                         >
                           <div className="flex flex-wrap items-center gap-2">
-                            <div className="font-semibold text-sm text-white">
+                            <div className="text-sm font-semibold text-white">
                               {formatStormDate(storm.date)}
                             </div>
-                            <div className="px-2 py-1 font-semibold text-[11px] text-white/72 tracking-[0.14em] border border-white/12 rounded-full uppercase">
+                            <div className="rounded-full border border-white/12 px-2 py-1 text-[11px] font-semibold tracking-[0.14em] text-white/72 uppercase">
                               {storm.validationLevel === 'strong' ? 'dual source' : 'single source'}
                             </div>
-                            <div className="text-white/60 text-xs">
+                            <div className="text-xs text-white/60">
                               Nearest point: {formatDistance(storm.nearestDistanceMiles)}
                             </div>
                           </div>
                           <div className="mt-2 text-sm text-white">{storm.summary}</div>
                           <div className="mt-1 text-sm text-white/72">{storm.sourceSummary}</div>
-                          <div className="flex flex-wrap gap-3 mt-2 text-white/62 text-xs">
+                          <div className="mt-2 flex flex-wrap gap-3 text-xs text-white/62">
                             <span>{storm.hailSignatureCount} radar signatures</span>
                             <span>{storm.stormReportCount} hail reports</span>
                             {storm.maxHailSize ? <span>Max hail size: {storm.maxHailSize} in</span> : null}
@@ -303,7 +307,7 @@ export default function HailWeatherLookup({ section }) {
                       ))}
                     </div>
                   ) : (
-                    <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                    <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                       No hail-signature or hail-report evidence was found for this search window.
                     </div>
                   )}
@@ -312,14 +316,14 @@ export default function HailWeatherLookup({ section }) {
                 {alerts.length ? (
                   <div className="grid gap-2">
                     {alerts.map((alert) => (
-                      <div key={alert.id} className="px-4 py-3 bg-white/6 border border-white/12 rounded-xl">
-                        <div className="font-semibold text-sm">{alert.event}</div>
+                      <div key={alert.id} className="rounded-xl border border-white/12 bg-white/6 px-4 py-3">
+                        <div className="text-sm font-semibold">{alert.event}</div>
                         <div className="mt-1 text-sm text-white/72">{alert.area}</div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="px-4 py-3 text-sm text-white/72 bg-white/6 border border-white/12 rounded-xl">
+                  <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
                     No active NWS alerts are posted for this point right now. Treat that as one data point,
                     then confirm conditions with a roof inspection if you saw recent impact.
                   </div>
