@@ -157,6 +157,8 @@ When relevant, use the local project skills in:
 - Always clean up unused imports immediately after making code changes — do not leave dead import statements behind.
 - Use `!= null` (not truthiness) to guard numeric field renders — a truthiness check treats `0` as falsy and silently suppresses valid zero-value output (e.g. a `$0` price never displays).
 - When a shared `Button` (or `asChild`/`Slot`-style primitive) renders a DOM element, omit custom props (`pill`, `fullWidth`, etc.) from the underlying tag so React does not forward unknown boolean attributes (`Received true for non-boolean attribute …`).
+- Do not stack extra Tailwind `rounded-*` utilities on `Button` variants that rely on `shape="pill"` / `.btn--pill`—utilities outrank `@layer components`, so conflicting radii can block pill styling on both `<button>` and anchor renders.
+- When subagent or parallel-task output is already visible in the chat UI, skip re-summarizing it; give a brief third-person completion note unless multi-task synthesis is explicitly requested.
 
 ## Learned Workspace Facts
 
@@ -167,7 +169,7 @@ When relevant, use the local project skills in:
 - `deskTool` (from `sanity/desk`) is deprecated; use `structureTool` (from `sanity/structure`) instead.
 - Global element resets in `globals.css` (e.g. `img`, `h1–h6`, `a`) bleed into `@sanity/ui` components rendered in the Presentation overlay; scope those resets away with `[data-ui] * { revert; }` to prevent corrupting hotspot dialogs and other Studio UI.
 - Portable Text / rich text is used for body and paragraph fields; never render a Portable Text block array directly as a React child — use `<PortableText>` with `<div>` block wrappers in public views, or a `portableTextToPlain(blocks)` helper for plain-text admin previews.
-- `src/middleware.js` was renamed to `src/proxy.js` in Next.js 16; the exported function must also be named `proxy` (not `middleware`). The `config.matcher` export is unchanged.
+- `src/middleware.js` was renamed to `src/proxy.js` in Next.js 16; the exported function must also be named `proxy` (not `middleware`). The `config.matcher` export is unchanged. On `route.js`/`route.jsx` **API** handlers, do not export opengraph-image-only keys (`contentType`, `alt`, `size`); those belong to the `opengraph-image` file convention—set `Content-Type` on the `Response` and keep OG dimensions in ordinary constants.
 - Per-domain theme CSS files live in [`src/styles/`](./src/styles/) and follow the `<domain-slug>-theme.css` pattern (e.g. `txchristmas-theme.css`, `texassolarandroofing-theme.css`). All theme files share the same CSS-variable shape so themes are switched, not redefined.
 - Admin layout lives at [`src/app/(admin)/layout.jsx`](<./src/app/(admin)/layout.jsx>) and acts as a typical Next.js root layout; do not reintroduce a wrapper `AdminShell` component.
 - Custom Sanity Presentation navigators live in [`src/sanity/components/`](./src/sanity/components/); multi-site preview URLs must be site-aware (preview host derives from the active site, not a hardcoded primary).

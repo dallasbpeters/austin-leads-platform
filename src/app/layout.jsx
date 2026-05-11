@@ -12,7 +12,6 @@ import { SanityLive } from '@/sanity/live'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { PostHogProvider } from '@/app/providers'
 import { resolveCurrentSite } from '@/lib/platform/content'
-import { getThemeClassForSite } from '@/components/platform/PublicSiteUtils'
 
 const googleSansFlex = localFont({
   src: [
@@ -63,13 +62,18 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
   const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig()
+  /*
+   * Tenant theme classes (`.texas-solar-and-roofing-pros-theme`, `.txchristmaslights-theme`)
+   * are applied by the (site) route group's layout — never on <html>. The admin route group
+   * applies `.admin-theme` on its own wrapper. This keeps tenant tokens out of the operator
+   * shell entirely (no inheritance into Radix portals, body, etc.).
+   */
   const currentSite = await resolveCurrentSite().catch(() => null)
-  const siteThemeClass = getThemeClassForSite(currentSite)
   const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
   return (
-    <html lang="en" className={siteThemeClass}>
+    <html lang="en">
       <head>
         <link
           rel="preload"

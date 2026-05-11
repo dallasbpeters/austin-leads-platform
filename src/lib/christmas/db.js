@@ -26,7 +26,9 @@ export async function ensureChristmasTables() {
 
   // Guard: add columns that may be missing if table was created before this schema version
   await sql`ALTER TABLE christmas_slots ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`
-  await sql`ALTER TABLE christmas_slots ADD COLUMN IF NOT EXISTS season_year INT NOT NULL DEFAULT 2025`
+  await sql`ALTER TABLE christmas_slots ADD COLUMN IF NOT EXISTS season_year INT NOT NULL DEFAULT 2026`
+  // Migrate any rows that were saved with the old default of 2025
+  await sql`UPDATE christmas_slots SET season_year = 2026 WHERE season_year = 2025`
 
   await sql`
     CREATE TABLE IF NOT EXISTS christmas_jobs (
@@ -68,7 +70,7 @@ export async function deleteSlot(installDate) {
   await sql`DELETE FROM christmas_slots WHERE install_date = ${installDate}::DATE`
 }
 
-export async function upsertSlot({ installDate, capacity, isActive = true, notes = null, seasonYear = 2025 }) {
+export async function upsertSlot({ installDate, capacity, isActive = true, notes = null, seasonYear = 2026 }) {
   const sql = getSql()
   const id = installDate // use date as natural key
 
@@ -94,7 +96,7 @@ function normalizeDateRow(row) {
   }
 }
 
-export async function listSlots(seasonYear = 2025) {
+export async function listSlots(seasonYear = 2026) {
   const sql = getSql()
   const rows = await sql`
     SELECT

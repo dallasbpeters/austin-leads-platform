@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 
 import App from '@/App'
 import PublicSite from '@/components/platform/PublicSite'
+import { getThemeClassForSite } from '@/components/platform/PublicSiteUtils'
 import {
   createJsonLd,
   getHeroHomepageForSite,
@@ -22,6 +23,8 @@ export default async function PreviewSitePage({ params }) {
     notFound()
   }
 
+  const themeClass = getThemeClassForSite(site)
+
   if (isPrimarySiteSlug(site.slug) && slug.length === 0) {
     const homepage = await getHomepageForSite(site.slug)
     const heroHomepage = await getHeroHomepageForSite(site.slug)
@@ -31,13 +34,15 @@ export default async function PreviewSitePage({ params }) {
     const reviews = await getHomepageReviewsForSite(site.slug)
 
     return (
-      <App
-        homepage={homepage}
-        heroSection={heroSection}
-        reviews={reviews}
-        site={site}
-        homepageSource={homepage?.source || heroHomepage?.source || 'fixture'}
-      />
+      <div className={`${themeClass} bg-background text-foreground min-h-screen`}>
+        <App
+          homepage={homepage}
+          heroSection={heroSection}
+          reviews={reviews}
+          site={site}
+          homepageSource={homepage?.source || heroHomepage?.source || 'fixture'}
+        />
+      </div>
     )
   }
 
@@ -54,13 +59,15 @@ export default async function PreviewSitePage({ params }) {
   const reviews = hasTestimonialsSection ? await getHomepageReviewsForSite(site.slug) : []
 
   return (
-    <PublicSite
-      site={site}
-      page={page}
-      pathname={pathname}
-      navigation={resolveNavigationForSite(site)}
-      jsonLd={createJsonLd(site, page, pathname)}
-      reviews={reviews}
-    />
+    <div className={`${themeClass} bg-background text-foreground min-h-screen`}>
+      <PublicSite
+        site={site}
+        page={page}
+        pathname={pathname}
+        navigation={resolveNavigationForSite(site)}
+        jsonLd={createJsonLd(site, page, pathname)}
+        reviews={reviews}
+      />
+    </div>
   )
 }

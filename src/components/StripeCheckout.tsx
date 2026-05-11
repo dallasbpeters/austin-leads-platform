@@ -9,6 +9,13 @@ import {
 import { loadStripe } from '@stripe/stripe-js'
 import { startCheckoutSession, type BookingMetadata } from '@/app/actions/stripe'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { ArrowLeft, ArrowRight, NavArrowLeft, NavArrowRight } from 'iconoir-react'
 
 const WINDOW_SIZE = 9
@@ -55,33 +62,88 @@ function SlidingDateGrid({
     }
   }
 
+  // Ordered list of unique year-month keys present in slots
+  const months: string[] = []
+  for (const s of slots) {
+    const ym = s.value.slice(0, 7)
+    if (!months.includes(ym)) months.push(ym)
+  }
+
+  const currentYm = visible[0]?.value.slice(0, 7) ?? months[0] ?? ''
+
+  const jumpToMonth = (ym: string) => {
+    const idx = slots.findIndex((s) => s.value.startsWith(ym))
+    if (idx < 0) return
+    setStart(Math.max(0, Math.min(Math.max(0, slots.length - WINDOW_SIZE), idx)))
+  }
+
+  const jumpToToday = () => {
+    const today = new Date().toISOString().slice(0, 10)
+    const idx = slots.findIndex((s) => s.value >= today)
+    const target = idx >= 0 ? idx : slots.length - 1
+    setStart(Math.max(0, Math.min(Math.max(0, slots.length - WINDOW_SIZE), target - Math.floor(WINDOW_SIZE / 2))))
+  }
+
+  const monthLabel = currentYm
+    ? new Date(currentYm + '-01T00:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+    : ''
+
   if (loading) return <p className="text-sm text-muted-foreground py-4">Loading available dates…</p>
   if (!slots.length) return <p className="text-sm text-muted-foreground py-4">No dates available yet. Check back soon.</p>
 
   return (
     <div className="space-y-3">
       {/* Nav row */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <Button
           variant="ghost"
           shape="circle"
           size="icon-lg"
           onClick={() => setStart((s) => Math.max(0, s - WINDOW_SIZE))}
           disabled={!canPrev}
+          aria-label="Previous dates"
         >
           <NavArrowLeft className="h-5 w-5" />
         </Button>
-        <span className="text-xs text-black uppercase tracking-[0.18em]">
-          {(() => {
-            const first = new Date(visible[0]?.value + 'T00:00:00Z')
-            const last = new Date(visible[visible.length - 1]?.value + 'T00:00:00Z')
-            const fm = first.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })
-            const lm = last.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })
-            return fm === lm ? fm : `${fm} – ${lm}`
-          })()}
-        </span>
+
+        {/* Month dropdown + Today */}
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-1 text-xs uppercase tracking-[0.18em] font-medium text-foreground hover:text-foreground/70 transition-colors whitespace-nowrap"
+              >
+                {monthLabel}
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" className="opacity-50" aria-hidden="true">
+                  <path d="M0 0l5 6 5-6z" />
+                </svg>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="min-w-[160px]">
+              <DropdownMenuRadioGroup value={currentYm} onValueChange={jumpToMonth}>
+                {months.map((ym) => (
+                  <DropdownMenuRadioItem key={ym} value={ym}>
+                    {new Date(ym + '-01T00:00:00Z').toLocaleDateString('en-US', {
+                      month: 'long', year: 'numeric', timeZone: 'UTC',
+                    })}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <button
+            type="button"
+            onClick={jumpToToday}
+            className="text-[10px] uppercase tracking-wider text-foreground/60 hover:text-foreground border border-foreground/20 hover:border-foreground/40 rounded px-2 py-0.5 transition-colors whitespace-nowrap"
+          >
+            Today
+          </button>
+        </div>
+
         <Button
-        variant="ghost"
+          variant="ghost"
           type="button"
           shape="circle"
           onClick={() => setStart((s) => Math.min(slots.length - WINDOW_SIZE, s + WINDOW_SIZE))}
@@ -451,7 +513,7 @@ export function SchedulingForm() {
           >
             {/* Step 1: package cards */}
             {step === 1 && (
-              <div className="px-12 py-16 lg:px-30 lg:py-24">
+              <div className="px-12 py-16 lg:px-30 lg:py-24 grid place-content-center h-full">
                 <div className="max-w-lg mx-auto space-y-3">
                   {PACKAGES.map((pkg) => {
                     const isSelected = formData.packageSlug === pkg.slug
@@ -465,7 +527,7 @@ export function SchedulingForm() {
                             {isSelected && <span className="size-2 rounded-full bg-background" />}
                           </div>
                           <div>
-                            <p className={`font-serif text-2xl leading-none mb-1 ${isSelected ? 'text-foreground' : 'text-foreground'}`}>{pkg.name}</p>
+                            <p className={`text-xl leading-none mb-1 ${isSelected ? 'text-foreground' : 'text-foreground'}`}>{pkg.name}</p>
                             <p className={`text-sm ${isSelected ? 'text-foreground/60' : 'text-foreground/60'}`}>{pkg.description}</p>
                             {packagePrices[pkg.slug] && (
                               <p className={`text-lg mt-1.5 ${isSelected ? 'text-foreground' : 'text-foreground/70'}`}>
@@ -489,7 +551,7 @@ export function SchedulingForm() {
 
             {/* Step 2: contact form on white */}
             {step === 2 && (
-              <div className="text-foreground px-12 py-16 lg:px-30 lg:py-24 flex flex-col justify-center h-full" style={{ backgroundColor: 'oklch(0.9940 0.0041 91.4453)' }}>
+              <div className="text-foreground px-12 py-16 lg:px-30 lg:py-24 grid place-content-center h-full" style={{ backgroundColor: 'oklch(0.9940 0.0041 91.4453)' }}>
                 <form onSubmit={handleSubmit} className="max-w-lg mx-auto w-full space-y-8">
                   <div className="relative">
                     <label htmlFor="name" className={`absolute left-0 transition-all duration-200 pointer-events-none ${focusedField === 'name' || formData.name ? '-top-6 text-xs uppercase tracking-[0.15em] text-muted-foreground' : 'top-4 text-foreground/60'}`}>Full Name</label>
@@ -515,7 +577,7 @@ export function SchedulingForm() {
 
             {/* Step 3: date grid on red */}
             {step === 3 && (
-              <div className="px-12 py-16 lg:px-30 lg:py-24 flex flex-col justify-center">
+              <div className="grid place-content-center px-12 py-16 lg:px-30 lg:py-24 justify-center">
                 <fieldset>
                   <legend className="text-xs uppercase tracking-[0.2em] text-background/60 mb-6">Select your install window</legend>
                   <SlidingDateGrid slots={slots} selected={formData.installDate} onSelect={handleDateSelect} loading={slotsLoading} />

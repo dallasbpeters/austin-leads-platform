@@ -1,6 +1,7 @@
 import { ensureChristmasTables, getJobsOverview, listJobs } from '@/lib/christmas/db'
 import ChristmasJobsClient from '@/components/admin/ChristmasJobsClient'
 
+export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Christmas Lights — Jobs' }
 
 const STATUS_COLORS = {

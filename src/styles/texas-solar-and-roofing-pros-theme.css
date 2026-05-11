@@ -4,9 +4,9 @@
  * Scoped to `.texas-solar-and-roofing-pros-theme` only so other tenants (e.g.
  * `.txchristmaslights-theme` on `<html>`) never inherit `:root` solar tokens.
  *
- * Root layout applies `${slug}-theme` from `getThemeClassForSite`; Austin /
- * texas hosts keep this class on `<html>`. Shared neutrals (`--color-white`, …)
- * stay in `variables.css`.
+ * Public hosts apply `${slug}-theme` on `<html>` via `src/app/layout.jsx`.
+ * Operator routes (admin, sign-in, studio) omit that class so `.admin-theme`
+ * is not overridden. Shared neutrals (`--color-white`, …) stay in `variables.css`.
  */
 .texas-solar-and-roofing-pros-theme {
   --color-primary-h: 205;

@@ -1,11 +1,10 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { addDays } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 // ── Date helpers ──────────────────────────────────────────────────────────────
@@ -33,7 +32,31 @@ function fmtDisplay(str) {
   })
 }
 
-// ── Calendar card with quick-select — used inside Popover ─────────────────────
+// ── Multi-select calendar — inline, used in the Add form ─────────────────────
+
+function MultiCalendarPicker({ selected = [], onSelect }) {
+  const [month, setMonth] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+  )
+
+  return (
+    <Card className="w-fit shadow-none border border-border">
+      <CardContent className="p-0">
+        <Calendar
+          mode="multiple"
+          selected={selected}
+          onSelect={(dates) => onSelect?.(dates ?? [])}
+          month={month}
+          onMonthChange={setMonth}
+          fixedWeeks
+          className="p-3 [--cell-size:--spacing(9.5)]"
+        />
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── Single-date calendar picker — used in the Edit form ──────────────────────
 
 function CalendarPicker({ selected, onSelect }) {
   const [month, setMonth] = useState(
@@ -43,12 +66,6 @@ function CalendarPicker({ selected, onSelect }) {
   const handleSelect = (date) => {
     if (date) setMonth(new Date(date.getFullYear(), date.getMonth(), 1))
     onSelect?.(date)
-  }
-
-  const handlePreset = (daysFromNow) => {
-    const d = addDays(new Date(), daysFromNow)
-    setMonth(new Date(d.getFullYear(), d.getMonth(), 1))
-    onSelect?.(d)
   }
 
   return (
@@ -64,30 +81,11 @@ function CalendarPicker({ selected, onSelect }) {
           className="p-3 [--cell-size:--spacing(9.5)]"
         />
       </CardContent>
-      <CardFooter className="flex flex-wrap gap-2 p-3">
-        {[
-          { label: 'Today',     value: 0 },
-          { label: 'Tomorrow',  value: 1 },
-          { label: 'In 3 days', value: 3 },
-          { label: 'In a week', value: 7 },
-          { label: 'In 2 weeks',value: 14 },
-        ].map((preset) => (
-          <Button
-            key={preset.value}
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={() => handlePreset(preset.value)}
-          >
-            {preset.label}
-          </Button>
-        ))}
-      </CardFooter>
     </Card>
   )
 }
 
-// ── Popover trigger button ────────────────────────────────────────────────────
+// ── Popover trigger button — used in the Edit form ───────────────────────────
 
 function DatePickerButton({ value, placeholder = 'Select date' }) {
   return (
@@ -104,6 +102,16 @@ function DatePickerButton({ value, placeholder = 'Select date' }) {
 
 // ── API ───────────────────────────────────────────────────────────────────────
 
+async function deleteSlotApi(installDate) {
+  const res = await fetch('/api/christmas/slots', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ installDate }),
+  })
+  if (!res.ok) throw new Error('Failed to delete')
+  return res.json()
+}
+
 async function saveSlot(installDate, capacity, isActive, notes, originalDate = null) {
   const res = await fetch('/api/christmas/slots', {
     method: 'POST',
@@ -116,24 +124,15 @@ async function saveSlot(installDate, capacity, isActive, notes, originalDate = n
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function ChristmasSlotsClient({ slots: initialSlots, defaultDates }) {
-  const [slots, setSlots] = useState(() => {
-    const slotMap = Object.fromEntries(
-      initialSlots.map((s) => [s.install_date?.split('T')[0] ?? s.install_date, s])
-    )
-    return defaultDates.map((date) => slotMap[date] ?? {
-      install_date: date,
-      capacity: 6,
-      booked_count: 0,
-      is_active: true,
-      notes: null,
-    })
-  })
+export default function ChristmasSlotsClient({ slots: initialSlots }) {
+  const [slots, setSlots] = useState(() =>
+    [...initialSlots].sort((a, b) => new Date(a.install_date?.split('T')[0] ?? 0).getTime() - new Date(b.install_date?.split('T')[0] ?? 0).getTime())
+  )
 
   const [editing, setEditing] = useState(null)
   const [editValues, setEditValues] = useState({})
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [newDate, setNewDate] = useState({ installDate: undefined, capacity: 6, isActive: true, notes: '' })
+  const [addOpen, setAddOpen] = useState(false)
+  const [newDate, setNewDate] = useState({ installDates: [], capacity: 6, isActive: true, notes: '' })
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState(null)
 
@@ -141,10 +140,22 @@ export default function ChristmasSlotsClient({ slots: initialSlots, defaultDates
     const dateKey = slot.install_date?.split('T')[0] ?? slot.install_date
     setEditing(slot.install_date)
     setEditValues({ installDate: parseDate(dateKey), capacity: slot.capacity, isActive: slot.is_active, notes: slot.notes ?? '' })
-    setShowAddForm(false)
+    setAddOpen(false)
   }
 
   const cancelEdit = () => { setEditing(null); setEditValues({}) }
+
+  const handleDelete = (installDate) => {
+    if (!confirm(`Delete slot for ${fmtDisplay(installDate)}? This cannot be undone.`)) return
+    startTransition(async () => {
+      try {
+        await deleteSlotApi(installDate)
+        setSlots((prev) => prev.filter((s) => (s.install_date?.split('T')[0] ?? s.install_date) !== installDate))
+      } catch {
+        setError('Delete failed. Try again.')
+      }
+    })
+  }
 
   const handleSave = (originalInstallDate) => {
     const originalKey = originalInstallDate?.split('T')[0] ?? originalInstallDate
@@ -161,7 +172,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots, defaultDates
               .filter((s) => (s.install_date?.split('T')[0] ?? s.install_date) !== originalKey)
               .map((s) => (s.install_date?.split('T')[0] ?? s.install_date) === newKey ? { ...s, ...saved } : s)
               .concat(prev.some((s) => (s.install_date?.split('T')[0] ?? s.install_date) === newKey) ? [] : [{ ...saved, booked_count: 0 }])
-              .sort((a, b) => a.install_date.localeCompare(b.install_date))
+              .sort((a, b) => new Date(a.install_date?.split('T')[0] ?? 0).getTime() - new Date(b.install_date?.split('T')[0] ?? 0).getTime())
           }
           return prev.map((s) => (s.install_date?.split('T')[0] ?? s.install_date) === newKey ? { ...s, ...saved } : s)
         })
@@ -173,21 +184,31 @@ export default function ChristmasSlotsClient({ slots: initialSlots, defaultDates
   }
 
   const handleAdd = () => {
-    const dateStr = toDateStr(newDate.installDate)
-    if (!dateStr) { setError('Please select a date.'); return }
+    if (!newDate.installDates.length) { setError('Please select at least one date.'); return }
     setError(null)
     startTransition(async () => {
       try {
-        const result = await saveSlot(dateStr, Number(newDate.capacity), newDate.isActive, newDate.notes || null)
-        const saved = result.slot ?? result
-        const key = saved.install_date?.split('T')[0] ?? saved.install_date
+        const results = await Promise.all(
+          newDate.installDates.map((d) =>
+            saveSlot(toDateStr(d), Number(newDate.capacity), newDate.isActive, newDate.notes || null)
+          )
+        )
         setSlots((prev) => {
-          const exists = prev.some((s) => (s.install_date?.split('T')[0] ?? s.install_date) === key)
-          if (exists) return prev.map((s) => ((s.install_date?.split('T')[0] ?? s.install_date) === key ? { ...s, ...saved } : s))
-          return [...prev, { ...saved, booked_count: 0 }].sort((a, b) => a.install_date.localeCompare(b.install_date))
+          let next = [...prev]
+          for (const result of results) {
+            const saved = result.slot ?? result
+            const key = saved.install_date?.split('T')[0] ?? saved.install_date
+            const exists = next.some((s) => (s.install_date?.split('T')[0] ?? s.install_date) === key)
+            if (exists) {
+              next = next.map((s) => ((s.install_date?.split('T')[0] ?? s.install_date) === key ? { ...s, ...saved } : s))
+            } else {
+              next.push({ ...saved, booked_count: 0 })
+            }
+          }
+          return next.sort((a, b) => new Date(a.install_date?.split('T')[0] ?? 0).getTime() - new Date(b.install_date?.split('T')[0] ?? 0).getTime())
         })
-        setNewDate({ installDate: undefined, capacity: 6, isActive: true, notes: '' })
-        setShowAddForm(false)
+        setNewDate({ installDates: [], capacity: 6, isActive: true, notes: '' })
+        setAddOpen(false)
       } catch {
         setError('Save failed. Try again.')
       }
@@ -207,95 +228,122 @@ export default function ChristmasSlotsClient({ slots: initialSlots, defaultDates
           </div>
           <div className="flex items-center gap-3">
             <a href="/christmas" className="text-muted-foreground hover:text-foreground text-sm transition-colors">← Jobs</a>
-            <Button
-              onClick={() => { setShowAddForm(true); setEditing(null) }}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-              aria-expanded={showAddForm}
-            >
-              + Add date
-            </Button>
+            <Popover open={addOpen} onOpenChange={(o) => { setAddOpen(o); if (!o) setNewDate({ installDates: [], capacity: 6, isActive: true, notes: '' }) }}>
+              <PopoverTrigger asChild>
+                <Button
+                  onClick={() => setEditing(null)}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+                >
+                  + Add date
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[340px] p-4 space-y-4">
+                <p className="text-foreground font-semibold text-sm">Add install dates</p>
+                <p className="text-muted-foreground text-xs -mt-2">Click dates to select, click again to deselect.</p>
+
+                <MultiCalendarPicker
+                  selected={newDate.installDates}
+                  onSelect={(dates) => setNewDate((v) => ({ ...v, installDates: dates }))}
+                />
+
+                {newDate.installDates.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {[...newDate.installDates]
+                      .sort((a, b) => a - b)
+                      .map((d) => {
+                        const str = toDateStr(d)
+                        return (
+                          <span
+                            key={str}
+                            className="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                          >
+                            {fmtDisplay(str)}
+                            <button
+                              type="button"
+                              aria-label={`Remove ${fmtDisplay(str)}`}
+                              onClick={() =>
+                                setNewDate((v) => ({
+                                  ...v,
+                                  installDates: v.installDates.filter((x) => toDateStr(x) !== str),
+                                }))
+                              }
+                              className="ml-0.5 hover:text-red-600 transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        )
+                      })}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label htmlFor="new-capacity" className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Capacity</label>
+                    <input
+                      id="new-capacity"
+                      name="new-capacity"
+                      type="number"
+                      min="0"
+                      max="50"
+                      value={newDate.capacity}
+                      onChange={(e) => setNewDate((v) => ({ ...v, capacity: e.target.value }))}
+                      className={inputCls}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="new-notes" className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Notes</label>
+                    <input
+                      id="new-notes"
+                      name="new-notes"
+                      type="text"
+                      placeholder="Optional…"
+                      value={newDate.notes}
+                      onChange={(e) => setNewDate((v) => ({ ...v, notes: e.target.value }))}
+                      className={inputCls}
+                    />
+                  </div>
+                </div>
+
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="new-is-active"
+                    checked={newDate.isActive}
+                    onChange={(e) => setNewDate((v) => ({ ...v, isActive: e.target.checked }))}
+                    className="accent-primary"
+                  />
+                  Active (visible to customers)
+                </label>
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={handleAdd}
+                    disabled={isPending || newDate.installDates.length === 0}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors disabled:opacity-50"
+                  >
+                    {isPending
+                      ? 'Saving…'
+                      : newDate.installDates.length > 0
+                      ? `Add ${newDate.installDates.length} slot${newDate.installDates.length !== 1 ? 's' : ''}`
+                      : 'Add slots'}
+                  </button>
+                  <button
+                    onClick={() => setAddOpen(false)}
+                    className="text-muted-foreground hover:text-foreground rounded-lg px-4 py-1.5 text-sm transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
         {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
       </div>
 
       <div className="flex-1 overflow-auto p-6">
-        <div className="grid gap-3 max-w-2xl">
-
-          {/* Add new date form */}
-          {showAddForm && (
-            <section aria-label="Add new install date" className="border-primary border-2 rounded-xl bg-background p-5 space-y-4">
-              <h2 className="text-foreground font-semibold text-sm">New install date</h2>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Date</label>
-                  <Popover>
-                    <DatePickerButton value={newDate.installDate} placeholder="Pick a date" />
-                    <PopoverContent align="start" className="w-auto p-0">
-                      <CalendarPicker
-                        selected={newDate.installDate}
-                        onSelect={(date) => setNewDate((v) => ({ ...v, installDate: date }))}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div>
-                  <label htmlFor="new-capacity" className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Capacity</label>
-                  <input
-                    id="new-capacity"
-                    name="new-capacity"
-                    type="number"
-                    min="0"
-                    max="50"
-                    value={newDate.capacity}
-                    onChange={(e) => setNewDate((v) => ({ ...v, capacity: e.target.value }))}
-                    className={inputCls}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="new-notes" className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Notes (optional)</label>
-                <input
-                  id="new-notes"
-                  name="new-notes"
-                  type="text"
-                  placeholder="e.g. Priority week, limited crew…"
-                  value={newDate.notes}
-                  onChange={(e) => setNewDate((v) => ({ ...v, notes: e.target.value }))}
-                  className={inputCls}
-                />
-              </div>
-
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="new-is-active"
-                  checked={newDate.isActive}
-                  onChange={(e) => setNewDate((v) => ({ ...v, isActive: e.target.checked }))}
-                  className="accent-primary"
-                />
-                Active (visible to customers)
-              </label>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={handleAdd}
-                  disabled={isPending}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors disabled:opacity-50"
-                >
-                  {isPending ? 'Saving…' : 'Add slot'}
-                </button>
-                <button
-                  onClick={() => { setShowAddForm(false); setError(null) }}
-                  className="text-muted-foreground hover:text-foreground rounded-lg px-4 py-1.5 text-sm transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </section>
-          )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 
           {/* Slot rows */}
           {slots.map((slot) => {
@@ -310,7 +358,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots, defaultDates
             return (
               <div
                 key={dateKey}
-                className={`border-border rounded-xl border bg-background p-4 transition-shadow hover:shadow-sm ${!slot.is_active ? 'opacity-50' : ''}`}
+                className={`border-border rounded-xl border bg-background p-4 transition-shadow hover:shadow-sm ${!slot.is_active ? 'opacity-50' : ''} ${isEditing ? 'col-span-full' : ''}`}
                 aria-label={`Install slot: ${fmtDisplay(dateKey)}`}
               >
                 {isEditing ? (
@@ -367,16 +415,25 @@ export default function ChristmasSlotsClient({ slots: initialSlots, defaultDates
                       />
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleSave(slot.install_date)}
+                          disabled={isPending}
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors disabled:opacity-50"
+                        >
+                          {isPending ? 'Saving…' : 'Save'}
+                        </button>
+                        <button onClick={cancelEdit} className="text-muted-foreground hover:text-foreground rounded-lg px-4 py-1.5 text-sm transition-colors">
+                          Cancel
+                        </button>
+                      </div>
                       <button
-                        onClick={() => handleSave(slot.install_date)}
+                        onClick={() => handleDelete(dateKey)}
                         disabled={isPending}
-                        className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors disabled:opacity-50"
+                        className="text-muted-foreground hover:text-red-600 text-xs transition-colors disabled:opacity-40"
                       >
-                        {isPending ? 'Saving…' : 'Save'}
-                      </button>
-                      <button onClick={cancelEdit} className="text-muted-foreground hover:text-foreground rounded-lg px-4 py-1.5 text-sm transition-colors">
-                        Cancel
+                        Delete slot
                       </button>
                     </div>
                   </div>

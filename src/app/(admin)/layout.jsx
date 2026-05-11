@@ -1,13 +1,8 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Google_Sans_Flex, Cutive, JetBrains_Mono } from 'next/font/google'
+import { Outfit, JetBrains_Mono } from 'next/font/google'
 import { Bell, Building2, Search } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+
 import {
   Sidebar,
   SidebarContent,
@@ -26,8 +21,8 @@ import AdminNav from '@/components/admin/AdminNav'
 import SignOutButton from '@/components/admin/SignOutButton'
 import { safeAuth } from '@/lib/auth/session'
 
-const fontSans = Google_Sans_Flex({ subsets: ['latin'], variable: '--font-sans' })
-const fontSerif = Cutive({ subsets: ['latin'], weight: '400', variable: '--font-serif' })
+const fontSans = Outfit({ subsets: ['latin'], variable: '--font-sans' })
+const fontSerif = Outfit({ subsets: ['latin'], weight: '400', variable: '--font-serif' })
 const fontMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
 
 export const metadata = {
@@ -52,19 +47,12 @@ export default async function AdminLayout({ children }) {
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+
                     <SidebarMenuButton className="w-full">
                       <Building2 className="shrink-0" />
                       <span>Austin Leads</span>
                     </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right" align="start" className="w-48">
-                    <DropdownMenuItem>
-                      <span>Austin Leads Platform</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarHeader>

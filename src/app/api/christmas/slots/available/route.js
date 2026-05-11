@@ -2,7 +2,7 @@ import { listSlots } from '@/lib/christmas/db'
 
 export async function GET() {
   try {
-    const slots = await listSlots(2025)
+    const slots = await listSlots(2026)
 
     const seen = new Set()
     const available = slots
@@ -30,6 +30,7 @@ export async function GET() {
         seen.add(s.value)
         return true
       })
+      .filter((s) => !s.isFull)
       .sort((a, b) => a.value.localeCompare(b.value))
 
     return Response.json(available)

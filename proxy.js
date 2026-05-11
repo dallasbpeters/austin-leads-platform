@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-import { auth } from './src/auth'
 import { getAllSites } from './src/lib/platform/content'
 
-const protectedPaths = ['/dashboard', '/analytics', '/crm', '/publish', '/domains', '/hero-pages']
+const protectedPaths = [
+  '/dashboard',
+  '/analytics',
+  '/crm',
+  '/publish',
+  '/domains',
+  '/hero-pages',
+  '/settings',
+  '/christmas',
+]
 const protectedApiPrefixes = [
   '/api/domains',
   '/api/publish-jobs',
@@ -27,10 +36,22 @@ function getRedirectSite(host) {
   )
 }
 
-const proxy = auth((request) => {
+/*
+ * Plain Next middleware (no `auth()` wrapper from next-auth). The wrapper rebuilds
+ * the Response and would drop any request-header mutations we make here. Auth check
+ * is done directly via `getToken` from `next-auth/jwt`.
+ */
+export default async function middleware(request) {
   const { nextUrl } = request
   const pathname = nextUrl.pathname
-  const isLoggedIn = Boolean(request.auth?.user)
+
+  const secret = process.env.AUTH_SECRET
+  let token = null
+  if (secret) {
+    token = await getToken({ req: request, secret }).catch(() => null)
+  }
+  const isLoggedIn = Boolean(token)
+
   const redirectSite = getRedirectSite(request.headers.get('x-forwarded-host') || request.headers.get('host'))
 
   if (redirectSite?.redirectTarget) {
@@ -69,9 +90,7 @@ const proxy = auth((request) => {
   signInUrl.searchParams.set('callbackUrl', callbackUrl)
 
   return NextResponse.redirect(signInUrl)
-})
-
-export default proxy
+}
 
 export const config = {
   matcher: ['/((?!_next|favicon.ico).*)'],

@@ -1,5 +1,17 @@
 import { deleteSlot, upsertSlot } from '@/lib/christmas/db'
 
+export async function DELETE(req) {
+  try {
+    const { installDate } = await req.json()
+    if (!installDate) return Response.json({ error: 'installDate required' }, { status: 400 })
+    await deleteSlot(installDate)
+    return Response.json({ deleted: installDate })
+  } catch (err) {
+    console.error('[api/christmas/slots DELETE]', err)
+    return Response.json({ error: 'Failed to delete slot' }, { status: 500 })
+  }
+}
+
 export async function POST(req) {
   try {
     const { installDate, originalDate, capacity, isActive, notes } = await req.json()
