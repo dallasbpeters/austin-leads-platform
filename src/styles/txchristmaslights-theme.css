@@ -7,8 +7,8 @@
  */
 .txchristmaslights-theme {
   /* hsl fallback first — oklch wins where supported (avoids gray fallbacks on strict parsers / SSR quirks). */
-  --background: hsl(48 26% 96%);
-  --background: oklch(0.98 0.0013 106.4238);
+  --background: hsl(60 4.7619% 95.8824%);
+  --background: oklch(0.9699 0.0013 106.4238);
   --foreground: oklch(0.2839 0.0358 151.9060);
   --card: oklch(1.0000 0 0);
   --card-foreground: oklch(0.2839 0.0358 151.9060);
