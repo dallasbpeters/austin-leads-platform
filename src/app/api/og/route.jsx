@@ -1,12 +1,11 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Texas Solar and Roofing Pros'
-export const size = {
+
+const OG_IMAGE_SIZE = {
   width: 1200,
   height: 630,
 }
-export const contentType = 'image/png'
 let fontFamilyPromise
 const OG_COLOR_TOKEN_MAP = {
   primary: 'hsl(205 99% 36%)',
@@ -782,7 +781,7 @@ export async function GET(request) {
       )}
     </div>,
     {
-      ...size,
+      ...OG_IMAGE_SIZE,
       fonts: fontFamily
         ? [
             {

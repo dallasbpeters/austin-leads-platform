@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Austin Solar Pros landing page built with Next.js",
   "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "dev": "node scripts/dev-all.mjs",
     "dev:next": "NEXT_PUBLIC_LOCAL_SANITY_STUDIO_URL=http://localhost:3334 SANITY_STUDIO_PREVIEW_ORIGIN=http://localhost:3000 next dev",
     "studio:dev": "NEXT_PUBLIC_LOCAL_SANITY_STUDIO_URL=http://localhost:3334 SANITY_STUDIO_PREVIEW_ORIGIN=http://localhost:3000 sanity dev --port 3334",
@@ -90,6 +93,7 @@
     "@eslint/css": "^1.2.0",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.2.1",
+    "@vitest/coverage-v8": "^4.1.5",
     "eslint": "^10.3.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.6.0",
@@ -100,7 +104,8 @@
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.1",
     "typescript-eslint": "^8.59.2",
-    "vercel": "50.37.0"
+    "vercel": "50.37.0",
+    "vitest": "^4.1.5"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -407,6 +407,81 @@ Recommended launch sequence:
 4. Start distributing the content through local channels, reviews, partnerships, and paid/organic campaigns
 5. Measure conversion and tighten pages based on actual lead behavior
 
+## Texas Christmas Lights Site (`txchristmaslights`)
+
+A second tenant built on the same platform. The site lives at `https://tx-christmaslights.com` and is previewed locally at `http://localhost:3000/?__site=txchristmaslights`.
+
+### Architecture
+
+- **Site slug:** `txchristmaslights`
+- **Sanity document:** `Page` type, slug `texas-christmas-lights-home`
+- **CTA section:** `CtaSection` detects `site.slug === 'txchristmaslights'` and renders `SchedulingForm` instead of the standard lead capture form
+- **Theme:** `christmasLights` — dark near-black background with radial green bokeh, hardcoded via `ConsultationSection`
+
+### Booking flow
+
+The booking form is a 3-step flow (`StripeCheckout.tsx`):
+
+1. **Package selection** — three options pulled from Stripe prices via `/api/christmas/config`
+2. **Contact info** — name, email, property address
+3. **Date selection** — sliding 9-tile calendar grid, live slot availability from `/api/christmas/slots/available`
+4. **Stripe embedded checkout** — $150 deposit via `price_1TVbAOF2OBzUX92SrsR0ZEC8`
+5. **Success state** — confirms booking date
+
+### Stripe products
+
+| Product | ID | Starting price |
+|---|---|---|
+| Installation Deposit | `prod_UUaKPfJUHnzQsj` | $150 |
+| Roofline Installation | `prod_UUa1pQN1BUW4En` | $300 |
+| Full Front Installation | `prod_UUa1gj7myNcj07` | $500 |
+| Full Property Installation | `prod_UUa1c1RUUF8u7e` | $1,000 |
+
+Prices are fetched live from Stripe via `/api/christmas/config` (1-hour cache). Update the price in Stripe; the site reflects it within an hour.
+
+### Webhook
+
+`POST /api/stripe/webhook` handles `checkout.session.completed`. On a successful deposit:
+
+1. Verifies the Stripe signature using `STRIPE_WEBHOOK_SECRET`
+2. Checks `metadata.payment_type === 'deposit'` and `metadata.site_slug === 'txchristmaslights'`
+3. Creates a job record in `christmas_jobs` (Neon)
+4. Idempotent — re-delivery of the same session is a no-op
+
+### Admin pages
+
+- `/admin/christmas` — jobs dashboard (deposits, balances, install dates, statuses)
+- `/admin/christmas/slots` — manage install date windows and per-slot capacity
+
+### Database tables (Neon)
+
+- `christmas_slots` — available install windows with capacity and booked counts
+- `christmas_jobs` — one record per booking, linked to Stripe session and payment status
+
+Tables are auto-created by `ensureChristmasTables()` called on admin page load.
+
+### Environment variables required
+
+```
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+DATABASE_URL=postgres://...  # Neon
+```
+
+### Testing
+
+See [`docs/stripe-testing-checklist.md`](./docs/stripe-testing-checklist.md) for the full end-to-end testing checklist.
+
+Automated tests live in `src/__tests__/`:
+
+```bash
+pnpm add -D vitest @vitest/coverage-v8  # one-time install
+pnpm test
+```
+
+---
+
 ## Current Recommended Next Steps
 
 1. Make Sanity the final source of truth for the remaining fixture-backed pages.
