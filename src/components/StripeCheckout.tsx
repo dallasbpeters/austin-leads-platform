@@ -417,7 +417,7 @@ export function SchedulingForm() {
                   <span className="text-sm uppercase tracking-[0.15em] text-background/50">Deposit</span>
                   <span className="font-serif text-5xl lg:text-6xl">{fmtCents(depositAmountCents, depositCurrency)}</span>
                 </div>
-            {lt.sub && <p className="text-lg text-background/70 max-w-md mb-8">{lt.sub}</p>}
+            {lt.sub && <div className="text-lg text-background/70 max-w-md mb-8">{lt.sub}</div>}
             {step === 2 && (
               <>
                 <Button variant="ghost" pill={false} fullWidth={false} onClick={() => goTo(1)} className="text-white hover:bg-primary hover:text-white/90 justify-start px-0">
