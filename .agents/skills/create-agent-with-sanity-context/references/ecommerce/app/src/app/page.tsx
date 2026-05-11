@@ -12,7 +12,7 @@ export default async function HomePage() {
     <main>
       {/* Hero */}
       <section className="border-b border-neutral-200 bg-neutral-50 px-4 py-16 text-center md:py-24">
-        <h1 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="mx-auto max-w-2xl text-3xl font-semibold tracking-normalll md:text-4xl">
           Quality essentials for everyday life
         </h1>
 

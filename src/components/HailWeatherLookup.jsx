@@ -1,16 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import { CloudRainWind, LocateFixed, MapPin, ShieldAlert, TriangleAlert, Wind } from 'lucide-react'
 
 import { useHailWeatherLookup } from '@/hooks/useHailWeatherLookup'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import PortableTextContent from '@/components/PortableTextContent'
-import { cleanRuntimeHref } from '@/lib/sanity/stega'
 
 const HailLayerMap = dynamic(() => import('@/components/HailLayerMap'), {
   ssr: false,
@@ -78,7 +76,6 @@ export default function HailWeatherLookup({ section }) {
   const hailLayer = data?.hailLayer
   const stormEvents = data?.stormEvents || []
 
-  const hasStormPoints = Boolean(hailLayer?.hailSignatures?.length || hailLayer?.stormReports?.length)
   const windowLabel =
     hailLayer?.startDate && hailLayer?.endDate
       ? `${formatDate(hailLayer.startDate)} - ${formatDate(hailLayer.endDate)}`
@@ -91,7 +88,7 @@ export default function HailWeatherLookup({ section }) {
           Hail in your area
         </Badge>
         <div className="space-y-4">
-          <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <h2 className="text-foreground text-3xl tracking-normal md:text-4xl">{section.title}</h2>
           <PortableTextContent
             as="div"
             value={section.body}

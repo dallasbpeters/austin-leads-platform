@@ -11,7 +11,7 @@ import { NextResponse } from 'next/server'
  *   /_site/tx-christmaslights/services/windows
  *   → /services/windows?__site=tx-christmaslights
  */
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl
 
   const SITE_PREFIX = '/_site/'

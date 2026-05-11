@@ -1,5 +1,4 @@
 import Card from './Card'
-import { HomeSimple } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
 import { Wallet, StatUp, Leaf, Clock } from 'iconoir-react'
 import { getDevSectionAttributes } from './dev/DevTrace'
@@ -49,7 +48,6 @@ function inferSnapshotIcon(item) {
 export default function SnapshotSection({
   section = null,
   sectionId = 'texas-snapshot',
-  editAttributes = {},
 }) {
   const eyebrow = section?.eyebrow || 'Texas Snapshot'
   const title = section?.title || 'The numbers people usually ask for.'

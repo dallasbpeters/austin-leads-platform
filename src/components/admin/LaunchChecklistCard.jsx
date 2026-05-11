@@ -50,7 +50,7 @@ export default function LaunchChecklistCard({ checklist }) {
             className="bg-muted/20 border-border rounded-xl border p-5"
           >
             <div className="mb-4">
-              <h3 className="text-foreground text-sm tracking-tight">{section.title}</h3>
+              <h3 className="text-foreground text-sm tracking-normal">{section.title}</h3>
               {section.description ? (
                 <p className="text-muted-foreground mt-1 text-sm leading-6">{section.description}</p>
               ) : null}

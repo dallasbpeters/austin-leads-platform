@@ -57,23 +57,6 @@ function buildSuggestedSlug(contentType, title) {
   return normalizeDraftSlugForContentType(contentType, slugifyDraftValue(title))
 }
 
-function toPortableTextSimple(value) {
-  const text = String(value || '').trim()
-  if (!text) return []
-  const blockKey = `pt-${Math.random().toString(36).slice(2, 10)}`
-  const spanKey = `sp-${Math.random().toString(36).slice(2, 10)}`
-
-  return [
-    {
-      _type: 'block',
-      _key: blockKey,
-      style: 'normal',
-      markDefs: [],
-      children: [{ _type: 'span', _key: spanKey, text, marks: [] }],
-    },
-  ]
-}
-
 export function AiDraftingTool() {
   const client = useClient({ apiVersion: 'vX' })
   const [sites, setSites] = React.useState([])

@@ -405,6 +405,7 @@ const sectionProjection = `
     icon,
     color,
     cardColor,
+    price,
     image,
     imageAsset{
       crop,
@@ -442,6 +443,7 @@ const sectionProjection = `
     icon,
     color,
     cardColor,
+    price,
     image,
     imageAsset{
       crop,
@@ -472,6 +474,7 @@ const sectionProjection = `
     icon,
     color,
     cardColor,
+    price,
     image,
     imageAsset{
       crop,
@@ -1198,7 +1201,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
           ]
         }),
       )
-    } catch {}
+    } catch {} // eslint-disable-line no-empty
   }
 
   if (client) {
@@ -1238,7 +1241,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
         { siteSlugs: equivalentSiteSlugs },
         fetchOptions,
       )
-    } catch {}
+    } catch {} // eslint-disable-line no-empty
   }
 
   const allGuideCandidates = [
@@ -1437,7 +1440,7 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
           ]
         }),
       )
-    } catch {}
+    } catch {} // eslint-disable-line no-empty
   }
 
   const syncItemWithHeroMedia = (item) => {
@@ -1519,7 +1522,10 @@ export function getSiteBySlug(siteSlug) {
 export async function resolveSiteBySlug(siteSlug) {
   const localSite = getSiteBySlug(siteSlug)
 
-  const { client, fetchOptions } = await getSanityReadContext({ stega: false })
+  // Site documents are always published (never drafted), so always use the
+  // published perspective regardless of draft mode. Using the draft client here
+  // requires an auth token and would 404 if the token is absent.
+  const client = getSanityServerClient({ preview: false, stega: false })
 
   if (!client) {
     return localSite
@@ -1546,7 +1552,7 @@ export async function resolveSiteBySlug(siteSlug) {
         organization
       }`,
       { siteSlug },
-      fetchOptions,
+      { next: { revalidate: 60 } },
     )
 
     return site ?? localSite ?? null
@@ -1933,7 +1939,7 @@ export async function getPageForRequest(site, slugParts = []) {
 
       return withPageSource(pageWithGuideMeta, 'sanity')
     }
-  } catch {}
+  } catch {} // eslint-disable-line no-empty
 
   return localPage
 }
@@ -1994,7 +2000,7 @@ export async function getSitemapEntriesForSite(site) {
 
       return Array.from(deduped.values())
     }
-  } catch {}
+  } catch {} // eslint-disable-line no-empty
 
   return localEntries
 }
@@ -2274,7 +2280,7 @@ export async function getHeroSitesForAdmin() {
         source: 'sanity',
       }))
     }
-  } catch {}
+  } catch {} // eslint-disable-line no-empty
 
   return localHeroSites
 }

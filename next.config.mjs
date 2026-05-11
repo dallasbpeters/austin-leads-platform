@@ -62,6 +62,7 @@ async function getSanityRedirects() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  optimizeFonts: false,
   outputFileTracingRoot: PROJECT_ROOT,
   turbopack: {
     root: PROJECT_ROOT,
@@ -130,6 +131,18 @@ const nextConfig = {
   },
   async rewrites() {
     return [
+      // Rewrite /_site/:site and /_site/:site/:path* to /?__site=:site so the
+      // multi-tenant renderer can resolve the correct site. Sanity Presentation
+      // encodes the active site slug in the URL path so its document resolver
+      // can read it as a route param before query strings are stripped.
+      {
+        source: '/_site/:site',
+        destination: '/?__site=:site',
+      },
+      {
+        source: '/_site/:site/:path*',
+        destination: '/:path*?__site=:site',
+      },
       // Proxy PostHog static assets (recorder, surveys, etc.) through the app domain
       // so content blockers can't identify and block the analytics scripts.
       {

@@ -14,23 +14,6 @@ import { syncGuideHeroToGuideGridItems } from '@/sanity/lib/syncGuideListingImag
 
 const SANITY_AGENT_SCHEMA_ID = process.env.SANITY_AGENT_SCHEMA_ID || ''
 
-function toPortableTextSimple(value) {
-  const text = String(value || '').trim()
-  if (!text) return []
-  const blockKey = `pt-${Math.random().toString(36).slice(2, 10)}`
-  const spanKey = `sp-${Math.random().toString(36).slice(2, 10)}`
-
-  return [
-    {
-      _type: 'block',
-      _key: blockKey,
-      style: 'normal',
-      markDefs: [],
-      children: [{ _type: 'span', _key: spanKey, text, marks: [] }],
-    },
-  ]
-}
-
 async function syncGuideCardIntoGuidesSection({ siteId, guideDoc }) {
   await syncGuideHeroToGuideGridItems(sanityWriteClient, {
     ...guideDoc,

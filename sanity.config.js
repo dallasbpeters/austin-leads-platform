@@ -6,6 +6,8 @@ import { structureTool } from 'sanity/structure'
 import { presentationTool } from 'sanity/presentation'
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
 import { studioStructure } from './src/sanity/studioStructure'
+import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
+
 
 import {
   dataset,
@@ -37,12 +39,16 @@ export default defineConfig({
   dataset,
   basePath: studioUrl,
   ...(studioAppId ? { appId: studioAppId } : {}),
+  // Content Releases is Enterprise-only and defaults on in recent Studio; UI can try to
+  // encode `{ tool, structure }` routes and crash with "Unable to find matching route for state".
+  releases: { enabled: false },
   plugins: [
     agentContextPlugin(),
     assist({ fieldActions: austinAssistFieldActions }),
     guideImageSyncPlugin(),
     colorInput(),
     structureTool({ structure: studioStructure }),
+    unsplashImageAsset(),
     presentationTool({
       previewUrl: {
         initial: studioPreviewOrigin,

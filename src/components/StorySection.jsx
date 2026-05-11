@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -85,6 +86,11 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
       })}
     >
       <div className="mx-auto w-[min(72rem,calc(100%-3rem))] py-32 text-center">
+        {section.eyebrow ? (
+          <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">
+            {section.eyebrow}
+          </p>
+        ) : null}
         <h2
           ref={ref}
           className="font-500 type-accent m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em] text-neutral-800"

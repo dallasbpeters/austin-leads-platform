@@ -91,8 +91,9 @@ export const metadata = {
 }
 
 function extractBlock(css, selector) {
+  // Allow comma-separated selectors like `:root,\n.some-class {`
   const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const match = css.match(new RegExp(`${escapedSelector}\\s*\\{([\\s\\S]*?)\\n\\}`, 'm'))
+  const match = css.match(new RegExp(`${escapedSelector}[^{]*\\{([\\s\\S]*?)\\n\\}`, 'm'))
   return match?.[1] ?? ''
 }
 
@@ -107,12 +108,12 @@ function parseVariables(block) {
 }
 
 function isSwatchFriendly({ token, value }) {
-  if (/(font|shadow|radius|gap)/.test(token)) return false
+  if (/(font|shadow|radius|gap|spacing|tracking)/.test(token)) return false
   if (/-(h|s|l)$/.test(token)) return false
   return (
     semanticTokenNames.has(token) ||
     token.startsWith('--color-') ||
-    /(hsl|rgb|rgba|#|var\(--color-|var\(--(?:background|foreground|card|popover|primary|secondary|muted|accent|destructive|border|input|ring|sidebar))/i.test(
+    /(oklch|hsl|rgb|rgba|#|var\(--color-|var\(--(?:background|foreground|card|popover|primary|secondary|muted|accent|destructive|border|input|ring|sidebar))/i.test(
       value,
     )
   )
@@ -146,12 +147,30 @@ function groupPublicTokens(variables) {
   return groups
 }
 
-async function loadStyleGuideData() {
-  const cssPath = path.join(process.cwd(), 'src/styles/globals.css')
-  const css = await readFile(cssPath, 'utf8')
+async function readStyleFile(relativePath) {
+  try {
+    return await readFile(path.join(process.cwd(), relativePath), 'utf8')
+  } catch {
+    return ''
+  }
+}
 
-  const rootVariables = parseVariables(extractBlock(css, ':root')).filter(isSwatchFriendly)
-  const adminVariables = parseVariables(extractBlock(css, '.admin-theme')).filter(isSwatchFriendly)
+async function loadStyleGuideData() {
+  const [globalsCss, solarCss, christmasCss, adminCss] = await Promise.all([
+    readStyleFile('src/styles/globals.css'),
+    readStyleFile('src/styles/texas-solar-and-roofing-pros-theme.css'),
+    readStyleFile('src/styles/txchristmaslights-theme.css'),
+    readStyleFile('src/styles/admin-theme.css'),
+  ])
+
+  const rootVariables = parseVariables(
+    extractBlock(solarCss, ':root') || extractBlock(globalsCss, ':root'),
+  ).filter(isSwatchFriendly)
+
+  const adminVariables = parseVariables(extractBlock(adminCss, '.admin-theme')).filter(isSwatchFriendly)
+  const txchristmaslightsVariables = parseVariables(
+    extractBlock(christmasCss, '.txchristmaslights-theme'),
+  ).filter(isSwatchFriendly)
 
   const publicVariables = rootVariables.filter(({ token }) => token.startsWith('--color-'))
   const semanticVariables = rootVariables.filter(({ token }) => semanticTokenNames.has(token))
@@ -163,11 +182,12 @@ async function loadStyleGuideData() {
     })),
     semanticVariables,
     adminVariables,
+    txchristmaslightsVariables,
   }
 }
 
 export default async function StyleGuidePage() {
-  const { publicGroups, semanticVariables, adminVariables } = await loadStyleGuideData()
+  const { publicGroups, semanticVariables, adminVariables, txchristmaslightsVariables } = await loadStyleGuideData()
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,var(--background),var(--card))]">
@@ -177,12 +197,12 @@ export default async function StyleGuidePage() {
             <div className="text-muted-foreground text-sm font-semibold tracking-[0.24em] uppercase">
               Internal Reference
             </div>
-            <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
+            <h1 className="text-foreground text-4xl font-bold tracking-normal sm:text-5xl">
               Theme style guide
             </h1>
             <p className="text-muted-foreground max-w-3xl text-base leading-7">
-              Generated directly from <code>src/styles/globals.css</code>, so the swatches stay in sync with
-              the actual theme file. This page is intentionally blocked from crawlers.
+              Generated directly from <code>src/styles/*-theme.css</code>, so the swatches stay in sync with
+              the actual theme files. This page is intentionally blocked from crawlers.
             </p>
           </div>
         </div>
@@ -191,6 +211,7 @@ export default async function StyleGuidePage() {
           publicGroups={publicGroups}
           semanticVariables={semanticVariables}
           adminVariables={adminVariables}
+          txchristmaslightsVariables={txchristmaslightsVariables}
         />
       </div>
     </main>

@@ -18,7 +18,6 @@ export default function GuidesSection({
   section = null,
   page = null,
   sectionId = 'go-deeper',
-  editAttributes = {},
 }) {
   const title = section?.title || 'Go Deeper'
   const body = portableTextToPlainText(section?.body)

@@ -18,11 +18,11 @@ export default function GenericFooter({ site }) {
           {logoUrl ? (
             <div className="flex items-center gap-2">
             <img src={logoUrl} alt={logoAlt} width={200} height={200} className="h-12 w-auto object-contain filter brightness-120" />
-            <h2 className="text-secondary-foreground text-2xl tracking-tight">{site.name}</h2>
+            <h2 className="text-secondary-foreground text-2xl tracking-normal">{site.name}</h2>
             </div>
           ) : (
             <span aria-hidden className="text-secondary-foreground/70 text-sm tracking-[0.2em] uppercase">
-              {(siteName || 'S').charAt(0)}
+              {(site?.name || 'S').charAt(0)}
             </span>
           )}
           

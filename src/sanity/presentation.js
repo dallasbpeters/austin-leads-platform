@@ -16,7 +16,7 @@ const INTERNAL_PATH_PREFIXES = ['api', '_next', 'studio', '_site']
  * parameter — so that Sanity's document resolver can read it as a route param.
  * (DocumentResolverContext.path strips query strings before the resolver runs.)
  *
- * The Next.js middleware at src/middleware.js rewrites these paths back to the
+ * The Next.js proxy at src/proxy.js rewrites these paths back to the
  * standard /?__site=<slug> format that the frontend renderer expects.
  *
  *   /_site/tx-christmaslights/services/windows

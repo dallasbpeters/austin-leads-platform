@@ -7,7 +7,7 @@ import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
 
-export function CtaBannerSection({ page, section, site, sectionId, editAttributes }) {
+export function CtaBannerSection({ page, section, site }) {
   const slug = cleanRuntimeString(page?.slug)
   const avatarEyebrow = section?.avatarEyebrow || section?.personLabel || ''
   const avatarName = section?.avatarName || section?.personName || ''
@@ -66,7 +66,7 @@ export function CtaBannerSection({ page, section, site, sectionId, editAttribute
               {section.eyebrow}
             </p>
           ) : null}
-          <h2 className="max-w-3xl text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <h2 className="max-w-3xl text-3xl tracking-normal md:text-4xl">{section.title}</h2>
           <PortableTextContent
             as="div"
             value={section.body}

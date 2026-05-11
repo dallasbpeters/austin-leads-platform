@@ -13,7 +13,7 @@ import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/san
 import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
 
 const CONTACT_LINK_CLASSES =
-  'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9 hover:bg-primary/80'
+  'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9'
 
 function NavList({ items, onNavigate }) {
   return (
@@ -26,7 +26,7 @@ function NavList({ items, onNavigate }) {
         const isExternal = Boolean(item.isExternal) || isAbsolute
         const isContact = item.kind === 'contact'
         const className = isContact
-          ? `font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 hover:text-white hover:brightness-125 ${CONTACT_LINK_CLASSES}`
+          ? `font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 ${CONTACT_LINK_CLASSES}`
           : 'font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent'
 
         const key = buildRuntimeKey('generic-nav-item', href, label, index)
@@ -40,14 +40,14 @@ function NavList({ items, onNavigate }) {
               className={className}
               {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             >
-              {label}
+              <span data-slot="button-inner">{label}</span>
             </a>
           )
         }
 
         return (
           <Link key={key} href={href} onClick={onNavigate} className={className}>
-            {label}
+            <span data-slot="button-inner">{label}</span>
           </Link>
         )
       })}
@@ -57,7 +57,7 @@ function NavList({ items, onNavigate }) {
 
 export default function GenericHeader({ site, navigation = [] }) {
   const [openNav, setOpenNav] = React.useState(false)
-  const [consultationInView, setConsultationInView] = React.useState(false)
+  const [, setConsultationInView] = React.useState(false)
   const mobileMenuId = 'site-mobile-nav'
 
   const logoUrl = buildSanityImageUrl(site?.brand?.logo, { width: 200 })
@@ -100,7 +100,6 @@ export default function GenericHeader({ site, navigation = [] }) {
     return () => observer.disconnect()
   }, [])
 
-  const shouldShowMobileContactCta = !openNav && !consultationInView
 
   return (
     <>

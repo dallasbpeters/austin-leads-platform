@@ -9,7 +9,7 @@
 @import './admin-theme.css';
 
 @keyframes collapsible-down {
-  from {
+  from {  
     height: 0;
     opacity: 0;
   }
@@ -65,8 +65,8 @@ body {
   position: relative;
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--color-warm-bg);
-  color: var(--color-slate-600);
+  background: var(--background);
+  color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -92,6 +92,32 @@ h6 {
 
 #app {
   min-height: 100vh;
+}
+
+/* ─── Sanity Studio overlay compatibility ──────────────────────────────────
+   The @sanity/visual-editing overlay renders @sanity/ui components ([data-ui])
+   directly inside our page DOM during Presentation / draft mode. Revert our
+   aggressive base resets so Sanity's styled-components receive browser
+   defaults instead of our custom values.
+─────────────────────────────────────────────────────────────────────────── */
+[data-ui] img {
+  display: revert;
+  max-width: revert;
+  height: revert;
+}
+
+[data-ui] h1,
+[data-ui] h2,
+[data-ui] h3,
+[data-ui] h4,
+[data-ui] h5,
+[data-ui] h6 {
+  line-height: revert;
+  font-weight: revert;
+}
+
+[data-ui] a {
+  text-decoration: revert;
 }
 
 html.admin-html-locked,
@@ -147,6 +173,9 @@ body.admin-body-locked {
   .google-sans.google-sans-bold {
     --font-weight: 700;
   }
+  input[type='checkbox'] {
+    accent-color: var(--color-primary) !important;
+  }
 
   .btn:disabled {
     opacity: 0.5;
@@ -162,10 +191,30 @@ body.admin-body-locked {
     background-color: var(--color-primary);
     box-shadow: 2px 2px 0px 0px color-mix(in oklch, var(--color-primary) 54%, white 3%);
     color: var(--color-white);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
   }
 
-  input[type='checkbox'] {
-    accent-color: var(--color-primary) !important;
+  /* Inner must be a real box (not display:contents) so z-index stacks above ::after. */
+  .btn--primary > [data-slot='button-inner'] {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn--primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    clip-path: circle(0% at 0% 100%);
+    background-color: color-mix(in oklch, var(--color-primary) 54%, black 10%);
+    transition: clip-path 0.25s ease-in-out;
+  }
+
+  .btn--primary:hover::after {
+    clip-path: circle(150% at 0% 100%);
   }
 
   .btn--primary:hover {
@@ -549,13 +598,6 @@ body.admin-body-locked {
     box-shadow: var(--shadow-brand-hover);
   }
 
-  .bg-button-secondary {
-    background-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.1);
-  }
-
-  .hover-bg-button-secondary:hover {
-    background-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.16);
-  }
 
   .border-color-button-secondary {
     border-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.22);
@@ -666,4 +708,37 @@ body.admin-body-locked {
   .animate-marquee-vertical {
     animation: marquee-vertical var(--duration, 40s) linear infinite;
   }
+}
+
+:root {
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dark {
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240, 1%, 82%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }

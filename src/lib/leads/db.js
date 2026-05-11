@@ -1,5 +1,5 @@
 import { neon } from '@neondatabase/serverless'
-import { LEAD_PIPELINE_STAGES, LEAD_PRIORITIES, LEAD_STATUSES } from './constants'
+import { LEAD_PIPELINE_STAGES } from './constants'
 
 function getDatabaseUrl() {
   return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''

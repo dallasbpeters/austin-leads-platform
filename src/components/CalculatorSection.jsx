@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Button from './Button'
+import { Button } from '@/components/ui/button'
 import Card from './Card'
 import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
@@ -84,7 +84,6 @@ const fallbackCards = [
 export default function CalculatorSection({
   section = null,
   sectionId = 'solar-calculator',
-  editAttributes = {},
 }) {
   const [bill, setBill] = useState(DEFAULT_BILL)
   const results = useMemo(() => calculate(bill), [bill])
@@ -224,7 +223,7 @@ export default function CalculatorSection({
             />
 
             <div className="col-span-full mt-2 flex flex-wrap items-center gap-4">
-              <Button href={ctaHref} size="md" pill className="w-full max-w-72">
+              <Button href={ctaHref} size="md" shape="pill" className="w-full max-w-72">
                 {ctaLabel}
               </Button>
               <span className="text-sm text-slate-700">{ctaNote}</span>

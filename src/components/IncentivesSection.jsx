@@ -1,4 +1,4 @@
-import Button from './Button'
+import { Button } from '@/components/ui/button'
 import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
@@ -12,7 +12,7 @@ function splitParagraphs(value) {
     .filter(Boolean)
 }
 
-export default function IncentivesSection({ section = null, sectionId = 'incentives', editAttributes = {} }) {
+export default function IncentivesSection({ section = null, sectionId = 'incentives' }) {
   const title = section?.title || 'Roof insurance and claim realities'
   const paragraphs = splitParagraphs(section?.body)
   const resolvedParagraphs = paragraphs.length
@@ -50,7 +50,7 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
             ))}
           </div>
           {ctaLabel ? (
-            <Button href={ctaHref} pill variant="primary" size="md">
+            <Button href={ctaHref} shape="pill" variant="default" size="md">
               {ctaLabel}
             </Button>
           ) : null}

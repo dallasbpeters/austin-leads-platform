@@ -33,7 +33,7 @@ const defaultAboutCardGradients = [
   { start: 'secondary', end: 'tertiary' },
 ]
 
-export function AboutProfileSection({ section, sectionId, editAttributes = {} }) {
+export function AboutProfileSection({ section, sectionId }) {
   const people = section.people?.length
     ? section.people
     : [
@@ -121,7 +121,7 @@ export function AboutProfileSection({ section, sectionId, editAttributes = {} })
                       <div className="text-xs tracking-[0.2em] text-white uppercase">
                         {person.label || 'Profile'}
                       </div>
-                      <CardTitle className="text-3xl leading-4 tracking-tight text-white">
+                      <CardTitle className="text-3xl leading-4 tracking-normal text-white">
                         {person.name}
                       </CardTitle>
                       {person.role ? (
@@ -168,7 +168,7 @@ export function AboutProfileSection({ section, sectionId, editAttributes = {} })
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="text-foreground mt-5 text-3xl leading-1 tracking-tight md:text-4xl">
+          <h2 className="text-foreground mt-5 text-3xl leading-1 tracking-normal md:text-4xl">
             {section.title}
           </h2>
           {section.body ? (

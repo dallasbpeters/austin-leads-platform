@@ -4,7 +4,7 @@ import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
 
-export function StepsSection({ section, sectionId, editAttributes = {} }) {
+export function StepsSection({ section, sectionId }) {
   return (
     <section
       className="bg-secondary-100 border-border/60 radial-grid-bg border-b"
@@ -20,7 +20,7 @@ export function StepsSection({ section, sectionId, editAttributes = {} }) {
       />
       <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
         <div className="mb-10 max-w-3xl">
-          <h2 className="text-foreground text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <h2 className="text-foreground text-3xl tracking-normal md:text-4xl">{section.title}</h2>
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
           {section.items?.map((item, index) => (

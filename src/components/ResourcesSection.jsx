@@ -1,4 +1,4 @@
-import { HomeShield, HomeSimple, SunLight, Thunderstorm } from 'iconoir-react'
+import { HomeShield, SunLight, Thunderstorm } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
 import Image from 'next/image'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
@@ -75,7 +75,7 @@ function normalizeItems(section) {
   }))
 }
 
-export default function ResourcesSection({ section = null, sectionId = 'resources', editAttributes = {} }) {
+export default function ResourcesSection({ section = null, sectionId = 'resources' }) {
   const items = normalizeItems(section)
   const title = section?.title || 'Start with what you need help with'
   const body =

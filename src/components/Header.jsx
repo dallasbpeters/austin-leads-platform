@@ -7,9 +7,9 @@ import { getDevSectionAttributes } from './dev/DevTrace'
 import * as React from 'react'
 import { Menu, Xmark } from 'iconoir-react'
 
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 
-import { Separator } from './ui/separator'
+import { Separator } from '@/components/ui/separator'
 
 const LINKS = [
   { href: '/solar', label: 'Solar' },
@@ -55,7 +55,7 @@ function NavList({ onNavigate }) {
 
 export default function Header() {
   const [openNav, setOpenNav] = React.useState(false)
-  const [consultationInView, setConsultationInView] = React.useState(false)
+  const [, setConsultationInView] = React.useState(false)
   const mobileMenuId = 'site-mobile-nav'
 
   React.useEffect(() => {
@@ -87,7 +87,6 @@ export default function Header() {
     return () => observer.disconnect()
   }, [])
 
-  const shouldShowMobileContactCta = !openNav && !consultationInView
   return (
     <>
       <nav

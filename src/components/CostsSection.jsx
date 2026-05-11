@@ -19,7 +19,7 @@ const fallbackStatItems = [
   },
 ]
 
-export default function CostsSection({ section = null, sectionId = 'costs', editAttributes = {} }) {
+export default function CostsSection({ section = null, sectionId = 'costs' }) {
   const eyebrow = section?.eyebrow || 'Solar Costs'
   const title = section?.title || 'What Does Solar Actually Cost?'
   const body =

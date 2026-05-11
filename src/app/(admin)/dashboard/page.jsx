@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FileText, Globe2, Server, SquarePen } from 'lucide-react'
+import { FileText, Server, SquarePen } from 'lucide-react'
 
 import LaunchChecklistCard from '@/components/admin/LaunchChecklistCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
       <div className="max-w-8xl mx-auto">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-foreground text-2xl tracking-tight">Dashboard</h1>
+            <h1 className="text-foreground text-2xl tracking-normal">Dashboard</h1>
             <p className="text-muted-foreground mt-1 text-sm">
               Manage content, workflows, and infrastructure for Austin Leads.
             </p>
@@ -81,7 +81,7 @@ export default async function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-baseline gap-2">
-                    <h2 className="text-foreground text-3xl tracking-tight">{counts[metric.key]}</h2>
+                    <h2 className="text-foreground text-3xl tracking-normal">{counts[metric.key]}</h2>
                     <span className="text-muted-foreground text-sm font-medium">
                       {metric.key === 'domains'
                         ? `${liveSites.filter((site) => site.tier === 'hero').length} Hero Domains`
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
                           <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
                             Users
                           </div>
-                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-normal">
                             {gaSnapshot.totalUsers.toLocaleString('en-US')}
                           </div>
                         </div>
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                           <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
                             Sessions
                           </div>
-                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-normal">
                             {gaSnapshot.sessions.toLocaleString('en-US')}
                           </div>
                         </div>
@@ -168,7 +168,7 @@ export default async function DashboardPage() {
                           <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
                             Page views
                           </div>
-                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-normal">
                             {gaSnapshot.pageViews.toLocaleString('en-US')}
                           </div>
                         </div>
@@ -176,7 +176,7 @@ export default async function DashboardPage() {
                           <div className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">
                             Conversions
                           </div>
-                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-tight">
+                          <div className="text-foreground mt-1 text-2xl font-semibold tracking-normal">
                             {gaSnapshot.conversions.toLocaleString('en-US')}
                           </div>
                         </div>
@@ -197,13 +197,13 @@ export default async function DashboardPage() {
                   <>
                     <div className="bg-muted/30 border-border rounded-xl border p-4">
                       <div className="text-foreground text-sm font-medium">Connected providers</div>
-                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-normal">
                         {analytics.connectedProviders}
                       </div>
                     </div>
                     <div className="bg-muted/30 border-border rounded-xl border p-4">
                       <div className="text-foreground text-sm font-medium">Active goals</div>
-                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                      <div className="text-foreground mt-2 text-2xl font-semibold tracking-normal">
                         {analytics.configuredGoals}
                       </div>
                     </div>
@@ -224,19 +224,19 @@ export default async function DashboardPage() {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-muted/30 border-border rounded-xl border p-4">
                     <div className="text-foreground text-sm font-medium">Total</div>
-                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-normal">
                       {leadOverview.total}
                     </div>
                   </div>
                   <div className="bg-muted/30 border-border rounded-xl border p-4">
                     <div className="text-foreground text-sm font-medium">Last 30 days</div>
-                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-normal">
                       {leadOverview.last_30_days}
                     </div>
                   </div>
                   <div className="bg-muted/30 border-border rounded-xl border p-4">
                     <div className="text-foreground text-sm font-medium">Open</div>
-                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-tight">
+                    <div className="text-foreground mt-2 text-2xl font-semibold tracking-normal">
                       {leadOverview.open}
                     </div>
                   </div>

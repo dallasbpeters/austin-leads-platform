@@ -1,6 +1,6 @@
 import ScrollText from '@/components/ScrollText'
 
-export function ScrollTextSection({ section, sectionId, editAttributes = {} }) {
+export function ScrollTextSection({ section, sectionId }) {
   const textItems = Array.isArray(section?.text)
     ? section.text
     : Array.isArray(section?.texts)

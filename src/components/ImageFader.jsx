@@ -60,11 +60,6 @@ export default function ImageFader({
     return () => timer.current && clearTimeout(timer.current)
   }, [count, index, interval, isInteractive])
 
-  const jumpTo = (i) => {
-    if (timer.current) clearTimeout(timer.current)
-    setIndex(i)
-  }
-
   if (!count) return null
 
   const cur = images[index]

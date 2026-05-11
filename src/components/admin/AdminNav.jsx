@@ -9,80 +9,73 @@ import {
   LayoutDashboard,
   PenSquare,
   Settings2,
+  Sparkles,
   TrendingUp,
   UsersRound,
 } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar'
 
-const items = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/analytics', label: 'Analytics', icon: TrendingUp },
-  { href: '/crm', label: 'CRM', icon: UsersRound },
-  { href: '/hero-pages', label: 'Hero Pages', icon: ImagePlus },
-  { href: '/publish', label: 'Publish', icon: PenSquare },
-  { href: '/domains', label: 'Domains', icon: Globe2 },
-  { href: '/settings', label: 'Settings', icon: Settings2 },
-  { href: '/studio', label: 'Studio', icon: Bot },
-  { href: '/', label: 'Live Site', icon: Globe2 },
+const overviewItems = [
+  { href: '/dashboard',  label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/analytics',  label: 'Analytics',  icon: TrendingUp },
 ]
 
-export default function AdminNav() {
+const workspaceItems = [
+  { href: '/crm',        label: 'CRM',        icon: UsersRound },
+  { href: '/hero-pages', label: 'Hero Pages',  icon: ImagePlus },
+  { href: '/publish',    label: 'Publish',     icon: PenSquare },
+  { href: '/domains',    label: 'Domains',     icon: Globe2 },
+  { href: '/settings',   label: 'Settings',    icon: Settings2 },
+  { href: '/studio',     label: 'Studio',      icon: Bot },
+  { href: '/',           label: 'Live Site',   icon: Globe2 },
+]
+
+const christmasItems = [
+  { href: '/christmas',        label: 'Jobs',  icon: UsersRound },
+  { href: '/christmas/slots',  label: 'Slots', icon: Sparkles },
+]
+
+function NavGroup({ label, items }) {
   const pathname = usePathname()
 
   return (
-    <nav className="grid gap-4">
-      <div>
-        <div className="text-muted-foreground mb-1 px-3 text-xs font-medium tracking-[0.18em] uppercase">
-          Overview
-        </div>
-        {items.slice(0, 2).map((item) => {
-          const Icon = item.icon
-          const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
+    <SidebarGroup>
+      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map(({ href, label: itemLabel, icon: Icon }) => {
+            const active = pathname === href || (href !== '/' && pathname.startsWith(`${href}/`))
+            return (
+              <SidebarMenuItem key={href}>
+                <SidebarMenuButton asChild isActive={active} tooltip={itemLabel}>
+                  <Link href={href}>
+                    <Icon />
+                    <span>{itemLabel}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+}
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                active
-                  ? 'text-foreground bg-muted'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted',
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          )
-        })}
-      </div>
-
-      <div>
-        <div className="text-muted-foreground mb-1 px-3 text-xs font-medium tracking-[0.18em] uppercase">
-          Workspace
-        </div>
-        {items.slice(2).map((item) => {
-          const Icon = item.icon
-          const active = pathname === item.href || pathname.startsWith(`${item.href}/`)
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                active
-                  ? 'text-primary-foreground bg-primary'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted',
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          )
-        })}
-      </div>
-    </nav>
+export default function AdminNav() {
+  return (
+    <>
+      <NavGroup label="Overview"         items={overviewItems} />
+      <NavGroup label="Workspace"        items={workspaceItems} />
+      <NavGroup label="Christmas Lights" items={christmasItems} />
+    </>
   )
 }

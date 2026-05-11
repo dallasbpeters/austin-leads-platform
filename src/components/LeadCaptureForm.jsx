@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { LoaderCircle } from 'lucide-react'
 
-import Button from '@/components/Button'
+import { Button } from '@/components/ui/button'
 import { useLeadForm } from '@/hooks/useLeadForm'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import { LEAD_SERVICE_OPTIONS } from '@/lib/leads/service-options'
@@ -204,7 +204,7 @@ export default function LeadCaptureForm({
         </div>
       ) : null}
 
-      <Button pill type="submit" size="lg" fullWidth disabled={disabled}>
+      <Button shape="pill" type="submit" size="lg" className="w-full" disabled={disabled}>
         {disabled ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : null}
         {buttonLabel}
       </Button>

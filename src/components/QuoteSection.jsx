@@ -139,7 +139,7 @@ export default function QuoteSection({
         </div>
 
         <div className="quoteReveal relative mt-8 sm:mt-10">
-          <p className="mx-auto max-w-5xl text-center text-xl leading-snug tracking-tight sm:text-2xl md:text-3xl lg:text-4xl">
+          <p className="mx-auto max-w-5xl text-center text-xl leading-snug tracking-normal sm:text-2xl md:text-3xl lg:text-4xl">
             {words.map((word, index) => (
               <span
                 key={`${word}-${index}`}

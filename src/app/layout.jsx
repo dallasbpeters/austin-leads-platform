@@ -4,18 +4,27 @@ import { Analytics } from '@vercel/analytics/react'
 import { VercelToolbar } from '@vercel/toolbar/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
-import { Google_Sans_Flex, Gloock, JetBrains_Mono } from "next/font/google";
+import { Gloock, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Agentation } from "agentation";
 import '../styles/globals.css'
 import { SanityLive } from '@/sanity/live'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { PostHogProvider } from '@/app/providers'
 import { resolveCurrentSite } from '@/lib/platform/content'
+import { getThemeClassForSite } from '@/components/platform/PublicSiteUtils'
 
-const fontSans = Google_Sans_Flex({
-  subsets: ['latin'],
+const googleSansFlex = localFont({
+  src: [
+    {
+      path: '../../public/fonts/GoogleSansFlex.ttf',
+      style: 'normal',
+    },
+  ],
   variable: '--font-sans',
-})
+  display: 'swap',
+  adjustFontFallback: false,
+});
 
 const fontSerif = Gloock({
   subsets: ["latin"],
@@ -55,11 +64,12 @@ export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
   const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig()
   const currentSite = await resolveCurrentSite().catch(() => null)
+  const siteThemeClass = getThemeClassForSite(currentSite)
   const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" className={siteThemeClass}>
       <head>
         <link
           rel="preload"
@@ -73,7 +83,7 @@ export default async function RootLayout({ children }) {
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
       <body
-        className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
+        className={`${googleSansFlex.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >
         <PostHogProvider siteSlug={currentSite?.slug}>{children}</PostHogProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}

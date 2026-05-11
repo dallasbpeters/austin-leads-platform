@@ -12,7 +12,6 @@ import {
   Car,
   Flash,
   HomeShield,
-  HomeSimple,
   Thunderstorm,
   WindowTabs,
   Wrench,
@@ -224,7 +223,7 @@ function GuideCardBody({ card }) {
           {card.eyebrow}
         </p>
       ) : null}
-      <h3 className="text-[2rem] leading-10 tracking-tight">{card.title}</h3>
+      <h3 className="text-[2rem] leading-10 tracking-normal">{card.title}</h3>
       <p className="font-wght-450 mt-2 text-[0.95rem] leading-6 text-current/88">{card.copy}</p>
       {card.category ? (
         <div className="mt-4 flex flex-wrap gap-2">

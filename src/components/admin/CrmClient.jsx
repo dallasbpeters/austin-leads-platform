@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CalendarClock, Mail, Phone, RefreshCw, Search, ShieldCheck, UserRound } from 'lucide-react'
+import { CalendarClock, Mail, Phone, RefreshCw, Search, ShieldCheck, UserRound, CircleDot } from 'lucide-react'
 
 import { useCrmManager } from '@/hooks/useCrmManager'
 import { LEAD_PIPELINE_STAGES, LEAD_PRIORITIES, LEAD_STATUSES } from '@/lib/leads/constants'
@@ -112,7 +112,7 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Lead management</p>
-          <h1 className="text-foreground mt-2 tracking-tight">CRM</h1>
+          <h1 className="text-foreground mt-2 tracking-normal">CRM</h1>
           <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-7">
             Review leads, filter quickly, and open the selected contact in a detail drawer.
           </p>
@@ -445,7 +445,7 @@ function MetricCard({ label, value, detail }) {
     <Card className="bg-card/80 border-border">
       <CardContent className="space-y-2 p-5">
         <div className="text-muted-foreground text-sm">{label}</div>
-        <div className="text-foreground font-semibold tracking-tight">{value}</div>
+        <div className="text-foreground font-semibold tracking-normal">{value}</div>
         <div className="text-muted-foreground text-sm">{detail}</div>
       </CardContent>
     </Card>

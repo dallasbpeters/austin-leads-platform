@@ -9,7 +9,7 @@ const resolveItemIcon = (iconName) => {
   return typeof Component === 'function' || typeof Component === 'object' ? Component : null
 }
 
-export function CardGridSection({ section, sectionId, editAttributes = {} }) {
+export function CardGridSection({ section, sectionId }) {
   return (
     <section
       className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,246,242,0.96))]"
@@ -75,7 +75,7 @@ export function CardGridSection({ section, sectionId, editAttributes = {} }) {
                         <Icon className="size-6" strokeWidth={2} />
                       </div>
                     ) : null}
-                    <h3 className="text-foreground text-xl tracking-tight md:text-2xl">
+                    <h3 className="text-foreground text-xl tracking-normal md:text-2xl">
                       {item.title || item.question}
                     </h3>
                     <PortableTextContent

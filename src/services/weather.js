@@ -15,9 +15,7 @@ export async function fetchLocationWeather(params) {
 
   try {
     payload = raw ? JSON.parse(raw) : null
-  } catch {
-    payload = null
-  }
+  } catch {} // eslint-disable-line no-empty
 
   if (!response.ok) {
     throw new Error(payload?.error || `Unable to load weather data (${response.status}).`)

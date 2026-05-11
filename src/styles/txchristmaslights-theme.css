@@ -6,7 +6,7 @@
  * utilities.
  */
 .txchristmaslights-theme {
-  --background: oklch(0.9940 0.0041 91.4453);
+  --background: oklch(0.9 0.0013 106.4238);
   --foreground: oklch(0.2839 0.0358 151.9060);
   --card: oklch(1.0000 0 0);
   --card-foreground: oklch(0.2839 0.0358 151.9060);
@@ -18,11 +18,12 @@
   --secondary-foreground: oklch(1.0000 0 0);
   --muted: oklch(0.9703 0.0041 157.1781);
   --muted-foreground: oklch(0.5288 0.0348 161.2647);
-  --accent: oklch(0.8137 0.0865 269.9080);
+  --accent: oklch(0.5408 0.2542 264.4979);
+  --text-accent: oklch(0.5408 0.2542 264.4979);
   --accent-foreground: oklch(0.2839 0.0358 151.9060);
   --destructive: oklch(0.4622 0.1689 28.0725);
   --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.9303 0.0100 155.0876);
+  --border: oklch(0.8853 0 0);
   --input: oklch(0.9303 0.0100 155.0876);
   --ring: oklch(0.5305 0.1962 28.2609);
   --chart-1: oklch(0.5305 0.1962 28.2609);
@@ -38,10 +39,7 @@
   --sidebar-accent-foreground: oklch(0.2839 0.0358 151.9060);
   --sidebar-border: oklch(0.9303 0.0100 155.0876);
   --sidebar-ring: oklch(0.5305 0.1962 28.2609);
-  --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Newsreader, ui-serif, serif;
-  --font-mono: JetBrains Mono, monospace;
-  --radius: 0.75rem;
+  --radius: 0.25rem;
   --shadow-x: 0px;
   --shadow-y: 4px;
   --shadow-blur: 10px;
@@ -56,19 +54,17 @@
   --shadow-lg: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
   --shadow-xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
   --shadow-2xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.25);
+  --shadow-glass-soft: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
+  --shadow-brand: 0 10px 24px color-mix(in oklch, var(--primary) 22%, transparent);
+  --shadow-brand-hover: 1px 1px 0 0 color-mix(in oklch, var(--primary) 28%, transparent);
   --tracking-normal: 0.01em;
   --spacing: 0.25rem;
-
   --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
+  --font-accent: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
   --font-serif: Gloock, ui-serif, serif;
   --font-mono: JetBrains Mono, monospace;
   --font-display: Gloock, ui-sans-serif, sans-serif, system-ui;
 
-  --radius: 0.75rem;
-
-  --shadow-glass-soft: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
-  --shadow-brand: 0 10px 24px color-mix(in oklch, var(--primary) 22%, transparent);
-  --shadow-brand-hover: 0 0 30px color-mix(in oklch, var(--primary) 28%, transparent);
 
   /* Legacy palette bridge — keeps the hand-rolled .btn, .card, .bg-, and */
   /* .text- utilities in globals.css rendering under this theme. */
@@ -82,7 +78,6 @@
   --color-primary-700: color-mix(in oklch, var(--primary) 76%, black);
   --color-primary-800: color-mix(in oklch, var(--primary) 64%, black);
   --color-primary-900: color-mix(in oklch, var(--primary) 50%, black);
-
   --color-secondary: var(--secondary);
   --color-secondary-100: color-mix(in oklch, var(--secondary) 14%, var(--background));
   --color-secondary-300: color-mix(in oklch, var(--secondary) 36%, var(--background));
@@ -90,15 +85,14 @@
   --color-secondary-800: color-mix(in oklch, var(--secondary) 64%, black);
   --color-secondary-950: color-mix(in oklch, var(--secondary) 40%, black);
   --color-secondary-foreground: var(--secondary-foreground);
-
   --color-tertiary: var(--accent);
   --color-tertiary-100: color-mix(in oklch, var(--accent) 18%, var(--background));
   --color-tertiary-300: color-mix(in oklch, var(--accent) 36%, var(--background));
   --color-tertiary-700: color-mix(in oklch, var(--accent) 76%, black);
   --color-tertiary-alt: var(--accent);
-
   --color-warm-bg: var(--background);
   --color-surface: var(--muted);
+  --color-accent: var(--accent);
   --color-surface-elevated: var(--card);
   --color-grid: var(--border);
   --color-grid-line: var(--border);
@@ -107,7 +101,6 @@
   --color-text-strong: var(--foreground);
   --color-text: var(--muted-foreground);
   --color-text-muted: var(--muted-foreground);
-
   --color-slate-400: var(--muted-foreground);
   --color-slate-500: var(--muted-foreground);
   --color-slate-600: var(--muted-foreground);
@@ -125,7 +118,8 @@
   --color-cyan-950: var(--secondary);
 }
 
-.txchristmaslights-theme.dark {
+[data-theme=dark] .txchristmaslights-theme,
+.txchristmaslights-theme[data-theme=dark] {
   --background: oklch(0.2334 0.0318 151.2489);
   --foreground: oklch(0.9303 0.0100 155.0876);
   --card: oklch(0.2344 0.0295 152.0197);
@@ -138,8 +132,9 @@
   --secondary-foreground: oklch(0.2334 0.0318 151.2489);
   --muted: oklch(0.2839 0.0358 151.9060);
   --muted-foreground: oklch(0.7514 0.0227 158.4119);
-  --accent: oklch(0.9176 0.1865 102.1441);
-  --accent-foreground: oklch(0.2334 0.0318 151.2489);
+  /* Subtle lift — do not reuse chart yellow here or accent hovers read “random yellow” */
+  --accent: oklch(0.33 0.042 152);
+  --accent-foreground: oklch(0.9303 0.0100 155.0876);
   --destructive: oklch(0.6998 0.1918 30.3380);
   --destructive-foreground: oklch(1.0000 0 0);
   --border: oklch(0.2839 0.0358 151.9060);
@@ -159,8 +154,10 @@
   --sidebar-border: oklch(0.2839 0.0358 151.9060);
   --sidebar-ring: oklch(0.9176 0.1865 102.1441);
   --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Newsreader, ui-serif, serif;
+  --font-accent: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: Gloock, ui-serif, serif;
   --font-mono: JetBrains Mono, monospace;
+  --font-display: Gloock, ui-sans-serif, sans-serif, system-ui;
   --radius: 0.75rem;
   --shadow-x: 0px;
   --shadow-y: 0px;

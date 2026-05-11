@@ -110,12 +110,12 @@ export default function ConsultationSection({
             'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
         }),
         ...(isChristmasTheme && {
+          backgroundColor: '#090e09',
           backgroundImage: [
-            'radial-gradient(at 80.5% 40.8%, #14420e 0px, transparent 100%)', 
-            'radial-gradient(at 50.8% 17.7%, #16390d 0px, transparent 100%)', 
+            'radial-gradient(at 80.5% 40.8%, #14420e 0px, transparent 100%)',
+            'radial-gradient(at 50.8% 17.7%, #16390d 0px, transparent 100%)',
             'radial-gradient(at 36.3% 72.7%, #0a570f 0px, transparent 50%)',
             'radial-gradient(at 10% 33%, #213819 0px, transparent 100%)',
-            `linear-gradient(135deg, hsl(var(--color-secondary-h) 45% 7%), hsl(var(--color-secondary-h) 38% 10%))`,
           ].join(', '),
         }),
       }}

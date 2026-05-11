@@ -46,7 +46,7 @@ function getContrastTextBase(color) {
   return luminance > 0.35 ? '#111111' : '#ffffff'
 }
 
-export function SecondaryCTASection({ section, sectionId, editAttributes = {} }) {
+export function SecondaryCTASection({ section, sectionId }) {
   const ctaLabel = section?.ctaLabel || 'Request a free roofing inspection'
   const ctaHref = section?.ctaHref?.startsWith('/')
     ? cleanRuntimeHref(section.ctaHref)
@@ -65,7 +65,7 @@ export function SecondaryCTASection({ section, sectionId, editAttributes = {} })
         >
           <div className="grid content-end items-center justify-end gap-6 md:grid-cols-1">
             <div className="space-y-3">
-              <h2 className="text-center text-2xl font-semibold tracking-tight text-inherit md:text-3xl">
+              <h2 className="text-center text-2xl font-semibold tracking-normal text-inherit md:text-3xl">
                 {section?.title || 'Secondary CTA section'}
               </h2>
               {section?.body ? (

@@ -101,7 +101,7 @@ export default function Footer() {
       </div>
       <AutoSizedText
         tabIndex={-1}
-        className="aria-hidden pointer-events-none absolute bottom-10 left-0 table text-center leading-2 font-extrabold tracking-tight whitespace-nowrap text-white/6"
+        className="aria-hidden pointer-events-none absolute bottom-10 left-0 table text-center leading-2 font-extrabold tracking-normal whitespace-nowrap text-white/6"
       >
         Texas Solar & Roofing
       </AutoSizedText>

@@ -42,7 +42,7 @@ const FIPS_TO_META = new Map<string, CountyMeta>()
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const COUNTIES_URL = '/api/counties/texas'
-const MAP_STYLE = 'mapbox://styles/dallasbpeters/cmoz6uk0e007l01s3glst6jpy'
+const MAP_STYLE = 'mapbox://styles/dallasbpeters/cmp0acmnj001201rw4xsrco80'
 
 // Mapbox only accepts sRGB colors in paint properties — no lab/oklch/CSS vars.
 const FALLBACK_ACCENT = '#2d6a4f'
@@ -158,6 +158,24 @@ export const MapBox = ({
 
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 12 })
 
+    // Studio styles often enable terrain with source id `mapbox-dem` but omit the
+    // raster-dem definition — Mapbox then warns and terrain cutoff fails. Add the
+    // canonical DEM before the first paint, or drop terrain for a flat choropleth map.
+    map.once('style.load', () => {
+      try {
+        if (!map.getSource('mapbox-dem')) {
+          map.addSource('mapbox-dem', {
+            type: 'raster-dem',
+            url: 'mapbox://mapbox.mapbox-terrain-dem-v2',
+            tileSize: 512,
+            maxzoom: 14,
+          })
+        }
+      } catch {
+        map.setTerrain(null)
+      }
+    })
+
     map.on('load', async () => {
       try {
         const res = await fetch(COUNTIES_URL)
@@ -237,7 +255,6 @@ export const MapBox = ({
       map.remove()
       mapRef.current = null
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // ── Live updates when areas change (Sanity preview) ──────────────────────────
@@ -261,7 +278,7 @@ export const MapBox = ({
   const sectionStyle: CSSProperties = { position: 'relative' }
 
   return (
-    <section id="service-area" className="relative overflow-hidden" style={sectionStyle}>
+    <section id="service-area" className="relative overflow-hidden scroll-m-16" style={sectionStyle}>
       <div className="relative">
         <header className="absolute top-5 left-5 z-10 max-w-xl rounded-lg border border-border bg-white/70 p-6 backdrop-blur-sm">
           {eyebrow && (

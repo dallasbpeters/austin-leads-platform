@@ -166,7 +166,7 @@ export default function ContextualNotFound() {
     <div className="grid w-full gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
       <section className="max-w-2xl">
         <p className="text-muted-foreground text-xs tracking-[0.28em] uppercase">404</p>
-        <h1 className="text-foreground type-display mt-5 text-5xl leading-none tracking-tight sm:text-6xl">
+        <h1 className="text-foreground type-display mt-5 text-5xl leading-none tracking-normal sm:text-6xl">
           This page went missing somewhere between the roofline and the panel layout.
         </h1>
         <p className="text-foreground/72 mt-6 max-w-xl text-lg leading-8">{config.copy}</p>
@@ -180,10 +180,10 @@ export default function ContextualNotFound() {
         </div>
       </section>
 
-      <section className="bg-card/70 border-border/70 shadow-theme-glass-soft relative overflow-hidden rounded-[2rem] border p-6 sm:p-8">
+      <section className="bg-card/70 border-border/70 shadow-theme-glass-soft relative overflow-hidden rounded-4xl border p-6 sm:p-8">
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(234,88,12,0.45)] to-transparent"
+          className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[rgba(234,88,12,0.45)] to-transparent"
         />
 
         <div className="grid gap-4">

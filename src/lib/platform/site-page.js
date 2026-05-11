@@ -232,8 +232,6 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
 }
 
 export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
-  const requestHeaders = await headers()
-  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
   const site = await resolveCurrentSite(searchParams)
 
   if (!site) notFound()

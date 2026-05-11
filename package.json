@@ -20,12 +20,13 @@
     "generate:favicons": "node scripts/generate-favicons.mjs",
     "generate:service-images": "node scripts/generate-service-images.mjs",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "audit:css-classes": "node scripts/css-class-usage-audit.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@11.0.9",
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.64",
     "@ai-sdk/groq": "^3.0.31",
@@ -42,6 +43,8 @@
     "@sanity/prettier-config": "^3.0.0",
     "@sanity/ui": "^3.2.0",
     "@sentry/react": "^10.43.0",
+    "@stripe/react-stripe-js": "^3.7.0",
+    "@stripe/stripe-js": "^5.7.0",
     "@types/react": "^19.2.14",
     "@vercel/analytics": "^1.6.1",
     "@vercel/og": "^0.11.1",
@@ -52,6 +55,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "d3": "^7.9.0",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.35.2",
     "groq": "^5.13.0",
     "iconoir-react": "^7.11.0",
@@ -65,14 +69,17 @@
     "radix-ui": "^1.4.3",
     "react": "^19.2.4",
     "react-best-gradient-color-picker": "^3.0.14",
+    "react-day-picker": "^10.0.0",
     "react-dom": "^19.2.4",
     "react-leaflet": "^5.0.0",
     "recharts": "^3.8.0",
     "resend": "^6.9.3",
     "sanity": "^5.13.0",
+    "sanity-plugin-asset-source-unsplash": "^7.0.5",
     "sanity-plugin-gemini-ai-images": "^1.3.0",
     "sanity-plugin-gemini-ai-images-nextjs": "^1.1.0",
     "shaders": "^2.5.92",
+    "stripe": "^22.1.1",
     "styled-components": "^6.1.15",
     "tailwind-merge": "^3.5.0",
     "topojson-client": "^3.1.0",
@@ -80,13 +87,27 @@
     "unicornstudio-react": "^2.1.1"
   },
   "devDependencies": {
+    "@eslint/css": "^1.2.0",
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.2.1",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.6.0",
     "png-to-ico": "^3.0.1",
     "prettier": "^3.8.1",
     "prettier-plugin-packagejson": "^3.0.2",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.1",
+    "typescript-eslint": "^8.59.2",
     "vercel": "50.37.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "core-js",
+      "esbuild",
+      "protobufjs",
+      "sharp"
+    ]
   }
 }

@@ -1,10 +1,11 @@
 import ConsultationSection from '@/components/ConsultationSection'
+import { SchedulingForm } from '@/components/StripeCheckout'
 import DevTrace from '@/components/dev/DevTrace'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { roofingServices } from '@/lib/platform/service-catalog'
 import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
 
-export function CtaSection({ page, section, site, pathname, sectionId, editAttributes }) {
+export function CtaSection({ page, section, site, pathname, editAttributes }) {
   const pathnameSegments = (pathname || '').split('/').filter(Boolean)
   const topLevelPath = cleanRuntimeString(pathnameSegments[0])
   const serviceSlug = pathnameSegments[0] === 'services' ? cleanRuntimeString(pathnameSegments[1]) : ''
@@ -16,12 +17,21 @@ export function CtaSection({ page, section, site, pathname, sectionId, editAttri
   const isChristmasLightsContext = site?.slug === 'txchristmaslights'
   const pageSlug = cleanRuntimeString(page?.slug)
   const pagePath = pageSlug ? `/${pageSlug}` : pathname || '/'
-  const ctaTheme = isChristmasLightsContext ? 'christmasLights' : section?.theme === 'dark' ? 'dark' : 'light'
-  const ctaVariant = isChristmasLightsContext
-    ? 'christmasLights'
-    : isRoofingContext
-      ? 'roofingInspection'
-      : 'default'
+
+  if (isChristmasLightsContext) {
+    return (
+      <section id={CONSULTATION_ANCHOR_ID} className="scroll-mt-38" {...editAttributes}>
+        <DevTrace
+          markup="src/components/platform/sections/CtaSection.jsx"
+          content="christmas lights booking form"
+        />
+        <SchedulingForm />
+      </section>
+    )
+  }
+
+  const ctaTheme = section?.theme === 'dark' ? 'dark' : 'light'
+  const ctaVariant = isRoofingContext ? 'roofingInspection' : 'default'
 
   return (
     <>

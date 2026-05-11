@@ -1,7 +1,7 @@
 import Band from '@/components/Band'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 
-export function BandSection({ section, sectionId, editAttributes = {} }) {
+export function BandSection({ section, sectionId }) {
   return (
     <section
       className="bg-transparent"

@@ -4,7 +4,7 @@ import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
 import { cleanRuntimeHref } from '@/lib/sanity/stega'
 
-export function HailMapSection({ section, sectionId, editAttributes = {} }) {
+export function HailMapSection({ section, sectionId }) {
   const ctaLabel = section?.ctaLabel || 'Open interactive hail map'
   const ctaHref = section?.ctaHref?.startsWith('/') ? cleanRuntimeHref(section.ctaHref) : '/hail-map'
 
@@ -28,7 +28,7 @@ export function HailMapSection({ section, sectionId, editAttributes = {} }) {
         >
           <div className="grid content-end items-center justify-end gap-6 md:grid-cols-1">
             <div className="space-y-3">
-              <h2 className="text-center text-2xl font-semibold tracking-tight md:text-3xl">
+              <h2 className="text-center text-2xl font-semibold tracking-normal md:text-3xl">
                 {section?.title || 'Check hail risk and recent storm signals near your property'}
               </h2>
               {section?.body ? (

@@ -2,7 +2,7 @@ import PortableTextContent from '@/components/PortableTextContent'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 
-export function PricingSection({ section, sectionId, editAttributes = {} }) {
+export function PricingSection({ section, sectionId }) {
   const eyebrow = cleanRuntimeString(section?.eyebrow || '')
   const title = section?.title
   const body = section?.body
@@ -30,7 +30,7 @@ export function PricingSection({ section, sectionId, editAttributes = {} }) {
           </p>
         ) : null}
 
-        <h2 className="font-serif mb-2 text-3xl leading-tight tracking-tight text-balance md:mb-3 md:text-4xl lg:text-4xl">
+        <h2 className="font-serif mb-2 text-3xl leading-tight tracking-normal text-balance md:mb-3 md:text-4xl lg:text-4xl">
           {title}
         </h2>
 
@@ -60,7 +60,7 @@ export function PricingSection({ section, sectionId, editAttributes = {} }) {
                       className="border-accent border-l-2 py-2 pl-6 md:pl-8"
                     >
                       {noteTitle ? (
-                        <h3 className="font-serif mb-4 text-xl tracking-tight md:text-2xl">
+                        <h3 className="font-serif mb-4 text-xl tracking-normal md:text-2xl">
                           {noteTitle}
                         </h3>
                       ) : null}
@@ -78,7 +78,7 @@ export function PricingSection({ section, sectionId, editAttributes = {} }) {
                 return (
                   <div key={key} className="space-y-2">
                     {noteTitle ? (
-                      <h3 className="font-serif text-1xl tracking-tight md:text-xl">
+                      <h3 className="font-serif text-1xl tracking-normal md:text-xl">
                         {noteTitle}
                       </h3>
                     ) : null}

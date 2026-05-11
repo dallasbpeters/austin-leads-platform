@@ -33,7 +33,7 @@ function resolveRedirectPath(requestUrl) {
       if (allowedOrigins.has(asUrl.origin)) {
         return `${asUrl.pathname}${asUrl.search}${asUrl.hash}`
       }
-    } catch {}
+    } catch {} // eslint-disable-line no-empty
 
     if (candidate.startsWith('/')) {
       return candidate

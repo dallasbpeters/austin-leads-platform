@@ -24,8 +24,8 @@
   --destructive-foreground: hsl(0 0% 100%);
   --border: hsl(0 0% 92%);
   --input: hsl(0 0% 89%);
-  --ring: hsl(0 0% 11%);
-  --sidebar: hsl(0 0% 100%);
+  --ring: hsl(0, 0%, 86%);
+  --sidebar: lch(95.49% 0.01 296.81);
   --sidebar-foreground: hsl(0 0% 11%);
   --sidebar-primary: hsl(0 0% 11%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
@@ -39,7 +39,7 @@
   --font-mono: ui-monospace, monospace;
   --font-display: var(--font-google-sans-flex), sans-serif;
 
-  --radius: 0.5rem;
+  --radius: 0.3rem;
 
   --shadow-xs: 0;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -83,7 +83,7 @@
   --color-grid: var(--border);
   --color-grid-line: var(--border);
   --color-border: var(--border);
-  --color-border-strong: color-mix(in oklab, var(--border) 70%, var(--foreground));
+  --color-border-strong: var(--border);
   --color-text-strong: var(--foreground);
   --color-text: var(--muted-foreground);
   --color-text-muted: var(--muted-foreground);

@@ -1,0 +1,73 @@
+import js from '@eslint/js'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
+import css from '@eslint/css'
+import { defineConfig } from 'eslint/config'
+
+export default defineConfig([
+  // ── Ignores ──────────────────────────────────────────────────────────────
+  {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      '.sanity/**',
+      '.agents/**',
+      '.codex/**',
+      'scripts/**',
+      'public/**',
+    ],
+  },
+
+  // ── JS / JSX ─────────────────────────────────────────────────────────────
+  {
+    files: ['**/*.{js,mjs,cjs,jsx}'],
+    plugins: { js },
+    extends: ['js/recommended'],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    rules: {
+      // Silence unknown rule references from eslint-disable comments left
+      // by code that previously had eslint-plugin-react-hooks installed.
+      'no-unused-disable-directives': 'off',
+      // Allow _-prefixed vars as intentional discard patterns in destructuring.
+      'no-unused-vars': ['error', {
+        vars: 'all',
+        args: 'after-used',
+        varsIgnorePattern: '^_',
+        argsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+        destructuredArrayIgnorePattern: '^_',
+      }],
+    },
+  },
+
+  // ── TypeScript / TSX ─────────────────────────────────────────────────────
+  ...tseslint.configs.recommended.map((config) => ({
+    ...config,
+    files: ['**/*.{ts,tsx}'],
+  })),
+
+  // ── CSS ───────────────────────────────────────────────────────────────────
+  // Exclude theme.css — it uses Tailwind v4 @custom-variant / @theme at-rules
+  // that the standard CSS parser doesn't understand.
+  {
+    files: ['src/styles/**/*.css'],
+    ignores: ['src/styles/theme.css'],
+    plugins: { css },
+    language: 'css/css',
+    extends: ['css/recommended'],
+    rules: {
+      // CSS custom properties (--my-var) are valid; the static analyser can't
+      // resolve them and reports false positives.
+      'css/no-invalid-properties': 'off',
+      // We intentionally use newer CSS features (oklch, accent-color, etc.)
+      'css/use-baseline': 'off',
+      // !important is used deliberately in a few Tailwind override spots.
+      'css/no-important': 'off',
+    },
+  },
+])

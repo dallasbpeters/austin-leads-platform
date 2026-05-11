@@ -5,7 +5,7 @@ import { getGuideMetaByHref } from '@/lib/platform/guides'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
-export function GuideGridSection({ section, sectionId, editAttributes = {} }) {
+export function GuideGridSection({ section, sectionId }) {
   const gridHeaderId = `${sectionId}-header`
   const cards = (section.items || []).map((item, index) => ({
     number: String(index + 1).padStart(2, '0'),

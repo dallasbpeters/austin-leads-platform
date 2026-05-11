@@ -63,7 +63,7 @@ function StatusCard({ title, value, tone = 'neutral', detail }) {
   return (
     <div className={`rounded-xl border p-4 ${toneClass}`}>
       <div className="text-sm font-medium">{title}</div>
-      <div className="mt-2 text-2xl font-semibold tracking-tight">{value}</div>
+      <div className="mt-2 text-2xl font-semibold tracking-normal">{value}</div>
       {detail ? <div className="mt-2 text-sm leading-6 opacity-80">{detail}</div> : null}
     </div>
   )
@@ -144,7 +144,7 @@ export default function LeadSettingsClient({ initialSettings }) {
     <div className="space-y-6 p-6 lg:p-10">
       <div>
         <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Lead operations</p>
-        <h1 className="text-foreground mt-2 text-3xl tracking-tight">Lead settings</h1>
+        <h1 className="text-foreground mt-2 text-3xl tracking-normal">Lead settings</h1>
         <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
           Control where new lead notifications go, what sender appears in the inbox, and whether Resend
           notifications are active. You can also point notifications at a Resend template. The API key stays

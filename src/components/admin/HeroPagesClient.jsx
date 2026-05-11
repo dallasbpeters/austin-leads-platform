@@ -12,10 +12,17 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useHeroPagesManager } from '@/hooks/useHeroPagesManager'
 import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSource'
 import { cn } from '@/lib/utils'
+
+function portableTextToPlain(blocks) {
+  if (!Array.isArray(blocks)) return typeof blocks === 'string' ? blocks : ''
+  return blocks
+    .filter((b) => b._type === 'block' && Array.isArray(b.children))
+    .map((b) => b.children.map((c) => c.text ?? '').join(''))
+    .join(' ')
+}
 
 function ResultCard({ photo, onSelect, saving, canSelect }) {
   return (
@@ -113,7 +120,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Hero pages</p>
-          <h1 className="text-foreground mt-2 text-3xl tracking-tight">
+          <h1 className="text-foreground mt-2 text-3xl tracking-normal">
             Search Unsplash and attach hero images
           </h1>
           <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
@@ -294,13 +301,13 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                   <div className="text-muted-foreground text-sm tracking-[0.18em] uppercase">
                     {selectedSite?.name || 'No site selected'}
                   </div>
-                  <h2 className="text-foreground text-2xl tracking-tight">
+                  <h2 className="text-foreground text-2xl tracking-normal">
                     {selectedPage?.heroSection?.title ||
                       selectedPage?.title ||
                       (selectedSite ? `${selectedSite.name} homepage` : 'No hero site selected')}
                   </h2>
                   <p className="text-muted-foreground text-sm leading-7">
-                    {selectedPage?.heroSection?.body ||
+                    {portableTextToPlain(selectedPage?.heroSection?.body) ||
                       (selectedPage
                         ? 'This homepage is ready for a hero image.'
                         : selectedSite

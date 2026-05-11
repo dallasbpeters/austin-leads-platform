@@ -45,7 +45,7 @@ export default function PublishClient({ initialJobs, sites }) {
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">AI publishing</p>
-          <h1 className="text-foreground mt-2 text-3xl tracking-tight">Queue-assisted content drafting</h1>
+          <h1 className="text-foreground mt-2 text-3xl tracking-normal">Queue-assisted content drafting</h1>
           <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
             This phase ships the publishing workflow, review states, and Sanity handoff contract. Real
             provider execution can replace the placeholder gateway later without rebuilding the UI.

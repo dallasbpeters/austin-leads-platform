@@ -136,7 +136,7 @@ export default function DomainsClient({ initialDomains, vercelEnabled }) {
       {/* Page header */}
       <div>
         <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Domain operations</p>
-        <h1 className="text-foreground mt-2 text-3xl tracking-tight">Domains</h1>
+        <h1 className="text-foreground mt-2 text-3xl tracking-normal">Domains</h1>
         <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
           Add domains to your Vercel project, create landing pages backed by Sanity, or configure
           redirect-only domains. DNS records are surfaced per row after Vercel processes the domain.

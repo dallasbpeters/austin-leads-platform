@@ -800,6 +800,14 @@ const serviceGridItemType = {
       options: canvasPurpose('Optional large number shown instead of an icon (e.g. 01, 02, 03).'),
     },
     {
+      name: 'price',
+      title: 'Price',
+      type: 'number',
+      options: canvasPurpose('Price of the service.'),
+      precision: 2,
+      validation: (Rule) => Rule.min(0),
+    },
+    {
       name: 'body',
       title: 'Description',
       type: 'portableTextSimple',
@@ -1928,7 +1936,6 @@ const storySectionType = {
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
       options: canvasPurpose('Primary story heading.'),
     },
     {
@@ -1938,17 +1945,26 @@ const storySectionType = {
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Main explanatory copy for the story section.'),
     },
+    {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Subtitle for the story section.'),
+    },
   ],
   preview: {
     select: {
       title: 'title',
       eyebrow: 'eyebrow',
       body: 'body',
+      subtitle: 'subtitle',
     },
-    prepare({ title, eyebrow, body }) {
+    prepare({ title, eyebrow, body, subtitle }) {
       return {
         title: title || eyebrow || 'Story section',
-        subtitle: previewText(body, 'story'),
+        subtitle: previewText(body, subtitle || 'story'),
+
       }
     },
   },

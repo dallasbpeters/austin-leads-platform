@@ -29,7 +29,7 @@ export default function AnalyticsClient({ overview, providers, gaSnapshot, goals
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-foreground text-2xl tracking-tight">Analytics</h1>
+            <h1 className="text-foreground text-2xl tracking-normal">Analytics</h1>
             <p className="text-muted-foreground mt-1 text-sm">
               Manage provider connectivity, instrumentation readiness, and KPI definitions.
             </p>
@@ -92,7 +92,7 @@ export default function AnalyticsClient({ overview, providers, gaSnapshot, goals
                   <Icon className="text-muted-foreground h-4 w-4" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-foreground text-3xl font-semibold tracking-tight">{metric.value}</div>
+                  <div className="text-foreground text-3xl font-semibold tracking-normal">{metric.value}</div>
                 </CardContent>
               </Card>
             )

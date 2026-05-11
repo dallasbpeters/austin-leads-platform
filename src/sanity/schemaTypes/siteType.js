@@ -67,11 +67,6 @@ export default {
       fields: [
         { name: 'logo', title: 'Logo', type: 'image' },
         { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
-        { name: 'primary', title: 'Primary color', type: 'color' },
-        { name: 'secondary', title: 'Secondary color', type: 'color' },
-        { name: 'accent', title: 'Accent color', type: 'color' },
-        { name: 'surface', title: 'Surface color', type: 'color' },
-        { name: 'heroTone', title: 'Hero tone', type: 'color' },
       ],
     },
     {

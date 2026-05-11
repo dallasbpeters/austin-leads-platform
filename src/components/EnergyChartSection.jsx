@@ -6,6 +6,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ComposedChart,
   LabelList,
   Legend,
@@ -124,7 +125,6 @@ function resolveAreaPointValue(point, seriesIndex, seriesCount) {
 export default function EnergyChartSection({
   section = null,
   sectionId = 'energy-chart',
-  editAttributes = {},
 }) {
   const hasSanityPoints = Array.isArray(section?.chartPoints)
   const points = hasSanityPoints ? section.chartPoints.filter(Boolean) : defaultPoints
@@ -513,7 +513,7 @@ export default function EnergyChartSection({
           {section?.eyebrow ? (
             <p className="text-muted-foreground text-sm tracking-[0.2em] uppercase">{section.eyebrow}</p>
           ) : null}
-          <h2 className="text-3xl tracking-tight md:text-4xl">
+          <h2 className="text-3xl tracking-normal md:text-4xl">
             {section?.title || 'Home energy usage trend'}
           </h2>
           {section?.body ? (

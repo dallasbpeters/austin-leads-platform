@@ -1,7 +1,7 @@
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import SolarSwitch from '@/components/SolarSwitch'
 
-export function SolarSwitchSection({ section, sectionId, editAttributes = {} }) {
+export function SolarSwitchSection({ section, sectionId }) {
   return (
     <section
       className="bg-background border-border/60 border-b"

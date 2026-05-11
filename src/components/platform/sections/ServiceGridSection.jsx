@@ -185,7 +185,7 @@ function buildCardOverlay(hex, variant = 'large') {
   if (!hex) {
     const fallback = '11,59,66'
     if (variant === 'large')
-      return `linear-gradient(to top, rgba(${fallback},0.75) 20%, rgba(${fallback},0.08), transparent)`
+      return `linear-gradient(to top, rgba(${fallback},0.7) 50%, rgba(${fallback},0.08), transparent)`
     if (variant === 'medium')
       return `linear-gradient(to top, rgba(${fallback},0.70) 15%, rgba(${fallback},0.20), transparent)`
     return `linear-gradient(to top, rgba(${fallback},0.65) 5%, rgba(${fallback},0.20), transparent)`
@@ -195,7 +195,7 @@ function buildCardOverlay(hex, variant = 'large') {
   const b = parseInt(hex.slice(5, 7), 16)
   const c = `${r},${g},${b}`
   if (variant === 'large')
-    return `linear-gradient(to top, rgba(${c},0.75) 20%, rgba(${c},0.08), transparent)`
+    return `linear-gradient(to top, rgba(${c},0.95) 20%, rgba(${c},0.08), transparent)`
   if (variant === 'medium')
     return `linear-gradient(to top, rgba(${c},0.70) 15%, rgba(${c},0.20), transparent)`
   return `linear-gradient(to top, rgba(${c},0.65) 5%, rgba(${c},0.20), transparent)`
@@ -207,6 +207,7 @@ function enrichItems(rawItems) {
     return {
       ...item,
       number: item.number ? parseInt(item.number) : null,
+      price: item.price ? parseFloat(item.price) : null,
       copy: item.body || item.answer || null,
       imageUrl: serviceImage.url,
       imageAlt: serviceImage.alt,
@@ -223,7 +224,7 @@ function ServiceMedia({ item, overlayStyle }) {
         width={2000}
         height={2000}
         src={item.imageUrl}
-        alt={item.imageAlt}
+        alt={item.title}
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
       />
       <div className="absolute inset-0" style={overlayStyle} />
@@ -240,7 +241,7 @@ function ServiceCardLink({ item, keyPrefix, children }) {
   )
 }
 
-export function ServiceGridSection({ section, sectionId, editAttributes = {} }) {
+export function ServiceGridSection({ section, sectionId }) {
   const items = enrichItems(section.items)
   const roofingItems = enrichItems(section.roofingItems)
   const secondaryItems = enrichItems(section.secondaryItems)
@@ -261,11 +262,11 @@ export function ServiceGridSection({ section, sectionId, editAttributes = {} }) 
       <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
         <div className="mb-10 max-w-3xl">
           {section.eyebrow ? (
-            <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
+            <Badge variant="outline" className="text-primary border-primary">
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="text-foreground mt-5 text-3xl tracking-tight md:text-4xl">{section.title}</h2>
+          <h2 className="text-foreground mt-5 text-3xl tracking-normal md:text-4xl">{section.title}</h2>
           {section.subtitle ? (
             <PortableTextContent
               as="div"
@@ -282,11 +283,11 @@ export function ServiceGridSection({ section, sectionId, editAttributes = {} }) 
           ) : null}
         </div>
 
-        <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
+        <ul className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
           {items.map((item) => {
             const Icon = getServiceIcon(item)
             const card = (
-              <Card className="relative aspect-3/4" variant="media" radius="lg">
+              <Card component="li" className="relative aspect-3/4" variant="media" radius="lg">
                 <ServiceMedia
                   item={item}
                   overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'large') }}
@@ -296,17 +297,24 @@ export function ServiceGridSection({ section, sectionId, editAttributes = {} }) 
                     <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                       <Icon className="h-8 w-8" strokeWidth={2} />
                     </div>
-                  ) : <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                  ) : null
+                  }
+                  {item.number ? (
+                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                     <div className="type-accent text-[2.5rem] font-mono leading-[1.1] font-bold">{item.number}</div>
                   </div>
+                  ) : null
                   }
 
-                  <div className="type-accent capitalize text-sm font-mono leading-[1.1] font-bold">{item.eyebrow}</div>
-                  <div className="type-accent mb-3 text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
-                  <PortableTextContent
+                  <h3 className="uppercase text-sm font-mono leading-[1.1] font-bold">{item.eyebrow}</h3>
+                  <div className="type-accent mb-3 text-[1.975rem] leading-[1.1] font-bold">{item.title}</div>
+                    {item.price != null ? (
+                      <div className="mb-3 text-[1.575rem] leading-[1.1] font-bold">${item.price}</div>
+                    ) : null}
+                    <PortableTextContent
               as="div"
               value={item.copy}
-              className="text-md mt-1 font-semibold text-white"
+              className="text-sm mt-1 font-normal text-white"
             />
                 </div>
               </Card>
@@ -321,7 +329,7 @@ export function ServiceGridSection({ section, sectionId, editAttributes = {} }) 
               </ServiceCardLink>
             )
           })}
-        </div>
+        </ul>
 
         {roofingItems.length ? (
           <div className="border-border/60 mt-8 border-t pt-8">

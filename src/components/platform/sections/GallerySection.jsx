@@ -42,7 +42,7 @@ const resolveImageAlt = (item, index, fallback) =>
   cleanRuntimeString(item?.altText || item?.alt || fallback) ||
   `gallery photo ${index + 1}`
 
-export function GallerySection({ section, sectionId, editAttributes = {} }) {
+export function GallerySection({ section, sectionId }) {
   const images = Array.isArray(section?.images) ? section.images : []
   const title = cleanRuntimeString(section?.title || '')
 

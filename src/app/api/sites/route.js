@@ -116,7 +116,7 @@ export async function POST(request) {
 
   // 3. Add domain to Vercel (non-fatal — domain may already be attached)
   let vercelResult
-  let alreadyInVercel = false
+  let alreadyInVercel
   try {
     vercelResult = await addDomainToVercel({ domain })
   } catch (err) {

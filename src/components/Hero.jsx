@@ -1,4 +1,4 @@
-import Button from './Button'
+import { Button } from '@/components/ui/button'
 import Card from './Card'
 import Image from 'next/image'
 import ImageFader from './ImageFader'
@@ -7,26 +7,24 @@ import { getDevSectionAttributes } from './dev/DevTrace'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
-import { Portal } from 'radix-ui'
 
 const FALLBACK_HERO_ACTIONS = [
-  { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'primary' },
+  { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'default' },
   { label: 'See how the math works', href: '#calculator', variant: 'secondary' },
 ]
 
-// Sanity's `pageAction.variant` uses shadcn-style names (default/secondary/outline).
-// Translate them to the solar Button API (primary/secondary). Anything we don't
-// recognise falls through to the index-based default below.
+// Sanity `pageAction.variant` uses CMS-facing names (default/secondary/outline/primary…).
+// Map to `@/components/ui/button` variant props (`default` = filled primary / btn--primary).
 const HERO_ACTION_VARIANT_MAP = {
-  default: 'primary',
-  primary: 'primary',
+  default: 'default',
+  primary: 'default',
   secondary: 'secondary',
   outline: 'secondary',
   tertiary: 'secondary',
 }
 
 const resolveHeroActionVariant = (rawVariant, index) =>
-  HERO_ACTION_VARIANT_MAP[rawVariant] || (index === 0 ? 'primary' : 'secondary')
+  HERO_ACTION_VARIANT_MAP[rawVariant] || (index === 0 ? 'default' : 'secondary')
 
 export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }) {
   const heroImageUrl = getHeroImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
@@ -98,8 +96,6 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
     (metric) => metric?.label && metric?.value,
   )
   const hasHeroMetrics = heroMetrics.length > 0
-  const inlineMetricLabel = heroMetrics[0]?.label || 'Typical Austin Payback'
-  const inlineMetricValue = heroMetrics[0]?.value || '7–9 years'
   const metricTileBackground = hasHeroBackdropMedia
     ? 'rgba(255, 255, 255, 0.20)'
     : 'var(--color-card, var(--color-surface-elevated))'
@@ -122,7 +118,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
 
   return (
     <section
-      className="text-body type-accent relative min-h-[80vh] overflow-x-hidden"
+      className="text-body type-accent  min-h-[80vh] overflow-x-hidden relative top-0"
       style={{
         backgroundImage: 'radial-gradient(var(--color-grid) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
@@ -257,7 +253,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
                     href={action.href}
                     variant={resolveHeroActionVariant(action.variant, index)}
                     size="lg"
-                    pill
+                    shape="pill"
                   >
                     {action.label}
                   </Button>
@@ -302,7 +298,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
                         {metric.label}
                       </div>
                       <div
-                        className="text-lg font-semibold tracking-tight"
+                        className="text-lg font-semibold tracking-normal"
                         style={{ color: metricValueColor }}
                       >
                         {metric.value}
