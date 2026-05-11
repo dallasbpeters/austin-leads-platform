@@ -123,7 +123,7 @@ function SlidingDateGrid({
             <DropdownMenuContent align="center" className="min-w-[160px]">
               <DropdownMenuRadioGroup value={currentYm} onValueChange={jumpToMonth}>
                 {months.map((ym) => (
-                  <DropdownMenuRadioItem key={ym} value={ym}>
+                  <DropdownMenuRadioItem key={ym} value={ym} className="text-sm">
                     {new Date(ym + '-01T00:00:00Z').toLocaleDateString('en-US', {
                       month: 'long', year: 'numeric', timeZone: 'UTC',
                     })}

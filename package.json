@@ -55,6 +55,7 @@
     "@vercel/toolbar": "^0.2.2",
     "agentation": "^3.0.2",
     "ai": "^6.0.138",
+    "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "d3": "^7.9.0",

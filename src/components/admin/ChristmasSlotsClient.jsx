@@ -32,6 +32,12 @@ function fmtDisplay(str) {
   })
 }
 
+// `YYYY-MM-DD` sorts chronologically as a plain string — robust against
+// Neon returning either Date objects or stringified timestamps.
+const getDateKey = (slot) => String(slot?.install_date ?? '').split('T')[0]
+const compareByDateAsc = (a, b) => getDateKey(a).localeCompare(getDateKey(b))
+const sortSlotsAsc = (list) => [...list].sort(compareByDateAsc)
+
 // ── Multi-select calendar — inline, used in the Add form ─────────────────────
 
 function MultiCalendarPicker({ selected = [], onSelect }) {
@@ -125,9 +131,7 @@ async function saveSlot(installDate, capacity, isActive, notes, originalDate = n
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function ChristmasSlotsClient({ slots: initialSlots }) {
-  const [slots, setSlots] = useState(() =>
-    [...initialSlots].sort((a, b) => new Date(a.install_date?.split('T')[0] ?? 0).getTime() - new Date(b.install_date?.split('T')[0] ?? 0).getTime())
-  )
+  const [slots, setSlots] = useState(() => sortSlotsAsc(initialSlots))
 
   const [editing, setEditing] = useState(null)
   const [editValues, setEditValues] = useState({})
@@ -150,7 +154,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
     startTransition(async () => {
       try {
         await deleteSlotApi(installDate)
-        setSlots((prev) => prev.filter((s) => (s.install_date?.split('T')[0] ?? s.install_date) !== installDate))
+        setSlots((prev) => prev.filter((s) => getDateKey(s) !== installDate))
       } catch {
         setError('Delete failed. Try again.')
       }
@@ -168,13 +172,14 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
         const saved = result.slot ?? result
         setSlots((prev) => {
           if (originalKey !== newKey) {
-            return prev
-              .filter((s) => (s.install_date?.split('T')[0] ?? s.install_date) !== originalKey)
-              .map((s) => (s.install_date?.split('T')[0] ?? s.install_date) === newKey ? { ...s, ...saved } : s)
-              .concat(prev.some((s) => (s.install_date?.split('T')[0] ?? s.install_date) === newKey) ? [] : [{ ...saved, booked_count: 0 }])
-              .sort((a, b) => new Date(a.install_date?.split('T')[0] ?? 0).getTime() - new Date(b.install_date?.split('T')[0] ?? 0).getTime())
+            const filtered = prev.filter((s) => getDateKey(s) !== originalKey)
+            const exists = filtered.some((s) => getDateKey(s) === newKey)
+            const merged = exists
+              ? filtered.map((s) => (getDateKey(s) === newKey ? { ...s, ...saved } : s))
+              : [...filtered, { ...saved, booked_count: 0 }]
+            return sortSlotsAsc(merged)
           }
-          return prev.map((s) => (s.install_date?.split('T')[0] ?? s.install_date) === newKey ? { ...s, ...saved } : s)
+          return prev.map((s) => (getDateKey(s) === newKey ? { ...s, ...saved } : s))
         })
         setEditing(null)
       } catch {
@@ -197,15 +202,15 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
           let next = [...prev]
           for (const result of results) {
             const saved = result.slot ?? result
-            const key = saved.install_date?.split('T')[0] ?? saved.install_date
-            const exists = next.some((s) => (s.install_date?.split('T')[0] ?? s.install_date) === key)
+            const key = getDateKey(saved)
+            const exists = next.some((s) => getDateKey(s) === key)
             if (exists) {
-              next = next.map((s) => ((s.install_date?.split('T')[0] ?? s.install_date) === key ? { ...s, ...saved } : s))
+              next = next.map((s) => (getDateKey(s) === key ? { ...s, ...saved } : s))
             } else {
               next.push({ ...saved, booked_count: 0 })
             }
           }
-          return next.sort((a, b) => new Date(a.install_date?.split('T')[0] ?? 0).getTime() - new Date(b.install_date?.split('T')[0] ?? 0).getTime())
+          return sortSlotsAsc(next)
         })
         setNewDate({ installDates: [], capacity: 6, isActive: true, notes: '' })
         setAddOpen(false)
@@ -347,7 +352,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
 
           {/* Slot rows */}
           {slots.map((slot) => {
-            const dateKey = slot.install_date?.split('T')[0] ?? slot.install_date
+            const dateKey = getDateKey(slot)
             const isEditing = editing === slot.install_date
             const booked = slot.booked_count ?? 0
             const capacity = slot.capacity ?? 6
@@ -478,7 +483,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
             )
           })}
 
-          {slots.length === 0 && !showAddForm && (
+          {slots.length === 0 && !addOpen && (
             <p className="text-muted-foreground text-sm text-center py-12">
               No slots yet. Add a date to get started.
             </p>

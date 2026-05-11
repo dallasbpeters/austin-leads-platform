@@ -12,6 +12,7 @@ const protectedPaths = [
   '/hero-pages',
   '/settings',
   '/christmas',
+  '/users',
 ]
 const protectedApiPrefixes = [
   '/api/domains',
@@ -21,6 +22,7 @@ const protectedApiPrefixes = [
   '/api/hero-pages',
   '/api/unsplash',
   '/api/launch-checklist',
+  '/api/users',
 ]
 
 function normalizeHost(host) {
