@@ -48,13 +48,11 @@ export function brandColorHSLVars(color, prefix) {
  * onto the public-site wrapper element.
  *
  * Cascade contract:
- *   1. `src/styles/{slug}-theme.css` defines defaults at `:root` and the
- *      `.{slug}-theme` class — these are the *fallbacks*.
- *   2. This helper returns only the keys Sanity actually has a value for.
- *      Anything Sanity leaves blank is omitted from the returned object,
- *      so the descendant `var(--…)` lookup falls through to the theme file.
- *   3. Override priority (CSS cascade): inline style on this wrapper wins
- *      over the theme class, which wins over `:root`.
+ *   1. `src/styles/{slug}-theme.css` defines defaults at the themed scope —
+ *      these are the source of truth for `--background`, `--foreground`, etc.
+ *   2. This helper returns only the keys Sanity actually has a value for (e.g. HSL brand ramps).
+ *   3. Optional `brand.surface.hex` sets `--site-surface` only (never replaces `--background`)
+ *      so page backgrounds stay on the curated theme tokens unless a component reads `--site-surface`.
  *
  * To expose a new Sanity-driven token, add the field to `siteType.js`,
  * extend the GROQ projection in `content.js`, and add a branch below.
@@ -69,10 +67,11 @@ export function getSiteBrandStyleVars(site) {
     ...brandColorHSLVars(brand.accent, 'tertiary'),
   }
 
+  // Surface chip is optional UI chrome only — do not overwrite `--background`.
+  // Theme files (e.g. `.txchristmaslights-theme`) own page background tokens; pushing a
+  // CMS hex here was overriding cream oklch with flat grays on production Sanity docs.
   if (brand.surface?.hex) {
     vars['--site-surface'] = brand.surface.hex
-    vars['--background'] = brand.surface.hex
-    vars['--color-warm-bg'] = brand.surface.hex
   }
 
   if (brand.heroTone?.hex) {

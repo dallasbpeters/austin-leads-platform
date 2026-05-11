@@ -1,12 +1,13 @@
 /**
  * Texas Solar and Roofing Pros theme.
  *
- * Doubles as the platform's default theme — applied at `:root` so that
- * globals (body, .btn--*, .card--*) and Tailwind utilities work even
- * outside an explicit theme wrapper. The slug-named class is kept so
- * every domain follows the same `<slug>-theme` convention.
+ * Scoped to `.texas-solar-and-roofing-pros-theme` only so other tenants (e.g.
+ * `.txchristmaslights-theme` on `<html>`) never inherit `:root` solar tokens.
+ *
+ * Root layout applies `${slug}-theme` from `getThemeClassForSite`; Austin /
+ * texas hosts keep this class on `<html>`. Shared neutrals (`--color-white`, …)
+ * stay in `variables.css`.
  */
-:root,
 .texas-solar-and-roofing-pros-theme {
   --color-primary-h: 205;
   --color-primary-s: 99%;

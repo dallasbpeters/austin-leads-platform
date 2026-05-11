@@ -52,7 +52,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
         note: `route ${pathname || '/'} using ${useSolarShell ? 'solar shell' : 'generic shell'}`,
       })}
       {...pageEditAttrs}
-      style={{ ...brandStyle, backgroundColor: 'var(--site-surface, var(--background))' }}
+      style={{ ...brandStyle, backgroundColor: 'var(--background)' }}
     >
       <DevTrace
         markup="src/components/platform/PublicSite.jsx"
