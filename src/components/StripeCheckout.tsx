@@ -404,8 +404,8 @@ export function SchedulingForm() {
   const lt = leftText[step]
 
   return (
-    <section className="bg-primary text-background">
-      <div className="grid lg:grid-cols-2 items-center overflow-hidden">
+    <section className="bg-primary min-h-[70vh] text-background">
+      <div className="grid lg:grid-cols-2 items-stretch overflow-hidden h-full min-h-[70vh]">
 
         {/* ── Left: static, text updates in place ──────────────────────── */}
         <div className="px-12 py-16 lg:px-30 lg:py-24 relative overflow-hidden flex flex-col justify-center">
@@ -479,7 +479,7 @@ export function SchedulingForm() {
                             <p className={`font-serif text-2xl leading-none mb-1 ${isSelected ? 'text-foreground' : 'text-foreground'}`}>{pkg.name}</p>
                             <p className={`text-sm ${isSelected ? 'text-foreground/60' : 'text-foreground/60'}`}>{pkg.description}</p>
                             {packagePrices[pkg.slug] && (
-                              <p className={`text-md font-medium mt-1.5 ${isSelected ? 'text-foreground' : 'text-foreground/70'}`}>
+                              <p className={`text-lg mt-1.5 ${isSelected ? 'text-foreground' : 'text-foreground/70'}`}>
                                 {fmtCents(packagePrices[pkg.slug], depositCurrency)}
                               </p>
                             )}

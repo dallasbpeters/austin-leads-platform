@@ -9,7 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'btn--primary bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
+        default:
+          'btn--primary bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
         secondary: 'btn--secondary',
         tertiary: 'btn--tertiary',
         destructive:
@@ -21,7 +22,7 @@ const buttonVariants = cva(
       },
       shape: {
         default: 'btn--rounded',
-        pill: 'btn--pill',
+        pill: 'rounded-full btn--pill',
         circle: 'rounded-full p-0',
       },
       size: {
