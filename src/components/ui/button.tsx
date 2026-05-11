@@ -124,7 +124,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
     <span
       data-slot="button-inner"
       className={cn(
-        'inline-flex min-w-0 max-w-full items-center justify-center gap-[inherit]',
+        'inline-flex min-w-fit max-w-full items-center justify-center gap-[inherit]',
         innerClassName,
       )}
     >

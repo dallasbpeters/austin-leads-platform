@@ -99,8 +99,7 @@ function SlidingDateGrid({
           const { month, day, weekday } = fmtTile(slot.value)
           const isSelected = selected === slot.value
           return (
-            <Button
-            variant="outline"
+            <button
               key={slot.value}
               type="button"
               disabled={slot.isFull}
@@ -119,12 +118,12 @@ function SlidingDateGrid({
                 <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full" aria-hidden="true" />
               )}
               <span className={`text-[10px] uppercase tracking-widest font-medium ${isSelected ? 'text-foreground/50' : 'text-foreground/60'}`}>{weekday}</span>
-              <span className={`text-2xl leading-none ${isSelected ? 'text-foreground' : 'text-foreground'}`}>{day}</span>
+              <span className={`text-2xl font-bold leading-none ${isSelected ? 'text-foreground' : 'text-foreground'}`}>{day}</span>
               <span className={`text-[10px] uppercase tracking-widest ${isSelected ? 'text-foreground/50' : 'text-foreground/60'}`}>{month}</span>
               <span className={`text-[9px] mt-0.5 ${isSelected ? 'text-foreground/40' : 'text-foreground/40'}`} aria-hidden="true">
                 {slot.isFull ? 'Full' : `${slot.spotsLeft} left`}
               </span>
-            </Button>
+            </button>
           )
         })}
       </div>
@@ -332,7 +331,7 @@ export function SchedulingForm() {
               pill={false}
               fullWidth={false}
               onClick={() => setShowCheckout(false)}
-              className="text-sm text-background self-start justify-start"
+              className="text-sm text-background self-start justify-start hover:bg-none"
             >
               <ArrowLeft className="size-4" />
               Edit details
@@ -342,16 +341,6 @@ export function SchedulingForm() {
           {/* Right: Checkout */}
           <div className="bg-background text-foreground p-8 lg:p-16 flex place-items-center">
             <div className="w-full max-w-lg mx-auto">
-              <div className="mb-8">
-                <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-muted-foreground">Deposit</span>
-                  <span className="font-serif text-3xl">{fmtCents(depositAmountCents, depositCurrency)}</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Applied to your balance on install day
-                </p>
-              </div>
-
                 <EmbeddedCheckoutProvider
                   stripe={stripePromise}
                   options={{ fetchClientSecret, onComplete: () => setIsComplete(true) }}
@@ -435,7 +424,7 @@ export function SchedulingForm() {
                   <span className="text-xs uppercase tracking-[0.15em] text-background/50">Property</span>
                   <p className="text-lg mt-0.5">{formData.address}</p>
                 </div>
-                <Button variant="ghost" pill={false} fullWidth={false} onClick={() => goTo(2)} className="text-white hover:text-background justify-start px-0">
+                <Button variant="ghost" pill={false} fullWidth={false} onClick={() => goTo(2)} className="text-white hover:bg-primary hover:text-white/90 justify-start px-0">
                   <ArrowLeft className="size-4" /> Edit details
                 </Button>
               </div>
