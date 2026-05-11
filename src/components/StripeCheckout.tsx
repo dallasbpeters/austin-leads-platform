@@ -298,7 +298,7 @@ export function SchedulingForm() {
       <section className="bg-primary text-background">
         <div className="grid lg:grid-cols-2">
           {/* Left: Summary */}
-          <div className="px-8 py-16 lg:px-16 lg:py-24 grid grid-cols-1 place-content-center">
+          <div className="px-12 py-16 lg:px-30 lg:py-24 grid grid-cols-1 place-content-center">
             <p className="text-sm uppercase tracking-[0.2em] text-background/60 mb-8">
               Confirm & Pay
             </p>
@@ -408,7 +408,7 @@ export function SchedulingForm() {
       <div className="grid lg:grid-cols-2 items-center overflow-hidden">
 
         {/* ── Left: static, text updates in place ──────────────────────── */}
-        <div className="px-8 py-16 lg:px-16 lg:py-24 relative overflow-hidden flex flex-col justify-center">
+        <div className="px-12 py-16 lg:px-30 lg:py-24 relative overflow-hidden flex flex-col justify-center">
           <span className="absolute -left-8 top-1/2 -translate-y-1/2 font-serif text-[20rem] lg:text-[28rem] leading-none text-background/3 select-none pointer-events-none" aria-hidden="true">{lt.num}</span>
           <div className="relative z-10">
             <p className="text-sm uppercase tracking-[0.2em] text-background/60 mb-8">{lt.eyebrow}</p>
@@ -462,7 +462,7 @@ export function SchedulingForm() {
           >
             {/* Step 1: package cards */}
             {step === 1 && (
-              <div className="px-8 py-16 lg:px-16 lg:py-24">
+              <div className="px-12 py-16 lg:px-30 lg:py-24">
                 <div className="max-w-lg mx-auto space-y-3">
                   {PACKAGES.map((pkg) => {
                     const isSelected = formData.packageSlug === pkg.slug
@@ -500,7 +500,7 @@ export function SchedulingForm() {
 
             {/* Step 2: contact form on white */}
             {step === 2 && (
-              <div className="text-foreground px-8 py-16 lg:px-16 lg:py-24 flex flex-col justify-center h-full" style={{ backgroundColor: 'oklch(0.9940 0.0041 91.4453)' }}>
+              <div className="text-foreground px-12 py-16 lg:px-30 lg:py-24 flex flex-col justify-center h-full" style={{ backgroundColor: 'oklch(0.9940 0.0041 91.4453)' }}>
                 <form onSubmit={handleSubmit} className="max-w-lg mx-auto w-full space-y-8">
                   <div className="relative">
                     <label htmlFor="name" className={`absolute left-0 transition-all duration-200 pointer-events-none ${focusedField === 'name' || formData.name ? '-top-6 text-xs uppercase tracking-[0.15em] text-muted-foreground' : 'top-4 text-foreground/60'}`}>Full Name</label>
@@ -526,7 +526,7 @@ export function SchedulingForm() {
 
             {/* Step 3: date grid on red */}
             {step === 3 && (
-              <div className="px-8 py-16 lg:px-16 lg:py-24 flex flex-col justify-center">
+              <div className="px-12 py-16 lg:px-30 lg:py-24 flex flex-col justify-center">
                 <fieldset>
                   <legend className="text-xs uppercase tracking-[0.2em] text-background/60 mb-6">Select your install window</legend>
                   <SlidingDateGrid slots={slots} selected={formData.installDate} onSelect={handleDateSelect} loading={slotsLoading} />
