@@ -14,9 +14,7 @@ const portableTextComponents = {
     ),
   },
   list: {
-    bullet: ({ children }) => (
-      <ul className="list-disc space-y-1.5 pl-5 marker:text-current">{children}</ul>
-    ),
+    bullet: ({ children }) => <ul className="list-disc space-y-1.5 pl-5 marker:text-current">{children}</ul>,
     number: ({ children }) => (
       <ol className="list-decimal space-y-1.5 pl-5 marker:text-current">{children}</ol>
     ),

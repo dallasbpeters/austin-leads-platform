@@ -47,12 +47,10 @@ export default async function AdminLayout({ children }) {
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
-
-                    <SidebarMenuButton className="w-full">
-                      <Building2 className="shrink-0" />
-                      <span>Austin Leads</span>
-                    </SidebarMenuButton>
-
+                <SidebarMenuButton className="w-full">
+                  <Building2 className="shrink-0" />
+                  <span>Austin Leads</span>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarHeader>
@@ -81,7 +79,6 @@ export default async function AdminLayout({ children }) {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
-
         </Sidebar>
 
         {/* ── Main content ── */}
@@ -102,7 +99,7 @@ export default async function AdminLayout({ children }) {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="text-foreground placeholder:text-muted-foreground bg-muted border-border w-64 rounded-md border px-4 py-1.5 pl-8 text-sm outline-none focus:ring-2 focus:ring-foreground transition-shadow"
+                  className="text-foreground placeholder:text-muted-foreground bg-muted border-border focus:ring-foreground w-64 rounded-md border px-4 py-1.5 pl-8 text-sm transition-shadow outline-none focus:ring-2"
                 />
               </div>
               <button

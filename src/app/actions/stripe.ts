@@ -11,10 +11,7 @@ export interface BookingMetadata {
   packageSlug?: string
 }
 
-export async function startCheckoutSession(
-  productId: string,
-  metadata: BookingMetadata
-) {
+export async function startCheckoutSession(productId: string, metadata: BookingMetadata) {
   const product = PRODUCTS.find((p) => p.id === productId)
   if (!product) {
     throw new Error(`Product with id "${productId}" not found`)

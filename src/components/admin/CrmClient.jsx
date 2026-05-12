@@ -1,7 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CalendarClock, Mail, Phone, RefreshCw, Search, ShieldCheck, UserRound, CircleDot } from 'lucide-react'
+import {
+  CalendarClock,
+  Mail,
+  Phone,
+  RefreshCw,
+  Search,
+  ShieldCheck,
+  UserRound,
+  CircleDot,
+} from 'lucide-react'
 
 import { useCrmManager } from '@/hooks/useCrmManager'
 import { LEAD_PIPELINE_STAGES, LEAD_PRIORITIES, LEAD_STATUSES } from '@/lib/leads/constants'

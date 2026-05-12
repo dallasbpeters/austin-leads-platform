@@ -50,8 +50,13 @@ function SectionRailButton({ active, children, onClick }) {
   )
 }
 
-  export default function StyleGuideBrowser({ publicGroups, semanticVariables, adminVariables, txchristmaslightsVariables }) {
-    const allSections = [
+export default function StyleGuideBrowser({
+  publicGroups,
+  semanticVariables,
+  adminVariables,
+  txchristmaslightsVariables,
+}) {
+  const allSections = [
     ...(publicGroups || []).map((s) => ({ ...s, tokens: s.tokens || [] })),
     {
       id: 'semantic-theme-tokens',

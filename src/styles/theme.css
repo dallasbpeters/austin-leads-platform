@@ -10,7 +10,7 @@
  * `inline` keeps the var() reference at runtime, so theme switching
  * happens purely through CSS class scoping.
  */
- @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
   --color-background: var(--background);
@@ -58,4 +58,7 @@
 
   --animate-collapsible-down: collapsible-down 0.2s ease-out;
   --animate-collapsible-up: collapsible-up 0.2s ease-out;
+  --breakpoint-xs: 30rem;
+  --breakpoint-2xl: 100rem;
+  --breakpoint-3xl: 120rem;
 }

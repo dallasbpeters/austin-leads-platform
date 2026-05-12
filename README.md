@@ -430,12 +430,12 @@ The booking form is a 3-step flow (`StripeCheckout.tsx`):
 
 ### Stripe products
 
-| Product | ID | Starting price |
-|---|---|---|
-| Installation Deposit | `prod_UUaKPfJUHnzQsj` | $150 |
-| Roofline Installation | `prod_UUa1pQN1BUW4En` | $300 |
-| Full Front Installation | `prod_UUa1gj7myNcj07` | $500 |
-| Full Property Installation | `prod_UUa1c1RUUF8u7e` | $1,000 |
+| Product                    | ID                    | Starting price |
+| -------------------------- | --------------------- | -------------- |
+| Installation Deposit       | `prod_UUaKPfJUHnzQsj` | $150           |
+| Roofline Installation      | `prod_UUa1pQN1BUW4En` | $300           |
+| Full Front Installation    | `prod_UUa1gj7myNcj07` | $500           |
+| Full Property Installation | `prod_UUa1c1RUUF8u7e` | $1,000         |
 
 Prices are fetched live from Stripe via `/api/christmas/config` (1-hour cache). Update the price in Stripe; the site reflects it within an hour.
 

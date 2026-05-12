@@ -37,8 +37,7 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
     'The strongest quotes clearly separate contract cost, incentives, and expected production so you can compare options without guessing where the savings are supposed to come from.'
 
   const rawColor = section?.color
-  const accentHex =
-    (typeof rawColor === 'string' ? rawColor : rawColor?.hex) || ''
+  const accentHex = (typeof rawColor === 'string' ? rawColor : rawColor?.hex) || ''
   const sectionStyle = accentHex
     ? {
         background: `linear-gradient(188deg, color-mix(in oklch, ${accentHex} 6%, white) 3.24%, color-mix(in oklch, ${accentHex} 28%, white) 110.59%)`,

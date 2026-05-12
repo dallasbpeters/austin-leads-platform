@@ -51,11 +51,13 @@ function pickServiceGridItem(item) {
 function migrateItemArray(items) {
   if (!Array.isArray(items) || items.length === 0) return { items, changed: false }
   let changed = false
-  const next = items.map((item) => {
-    if (item?._type === 'serviceGridItem') return item
-    changed = true
-    return pickServiceGridItem(item)
-  }).filter(Boolean)
+  const next = items
+    .map((item) => {
+      if (item?._type === 'serviceGridItem') return item
+      changed = true
+      return pickServiceGridItem(item)
+    })
+    .filter(Boolean)
   return { items: next, changed }
 }
 
@@ -66,13 +68,22 @@ function migrateSection(section) {
   const next = { ...section }
 
   const primary = migrateItemArray(section.items)
-  if (primary.changed) { next.items = primary.items; changed = true }
+  if (primary.changed) {
+    next.items = primary.items
+    changed = true
+  }
 
   const roofing = migrateItemArray(section.roofingItems)
-  if (roofing.changed) { next.roofingItems = roofing.items; changed = true }
+  if (roofing.changed) {
+    next.roofingItems = roofing.items
+    changed = true
+  }
 
   const secondary = migrateItemArray(section.secondaryItems)
-  if (secondary.changed) { next.secondaryItems = secondary.items; changed = true }
+  if (secondary.changed) {
+    next.secondaryItems = secondary.items
+    changed = true
+  }
 
   return changed ? next : null
 }
@@ -96,7 +107,10 @@ for (const doc of docs) {
   let docChanged = false
   const nextSections = doc.sections.map((section) => {
     const migratedSection = migrateSection(section)
-    if (migratedSection) { docChanged = true; return migratedSection }
+    if (migratedSection) {
+      docChanged = true
+      return migratedSection
+    }
     return section
   })
 

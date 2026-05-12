@@ -1,6 +1,6 @@
 'use client'
 
-import React, { CSSProperties, useEffect, useMemo, useRef } from 'react'
+import { CSSProperties, useEffect, useMemo, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import geoJson from './texasCounties.json'
@@ -70,22 +70,20 @@ function boundsFromFeatures(features: GeoJSON.Feature[]): mapboxgl.LngLatBounds 
   if (!features.length) return null
   const bounds = new mapboxgl.LngLatBounds()
   features.forEach((f) => {
-    extractCoords(f.geometry as GeoJSON.Geometry).forEach(([lng, lat]) =>
-      bounds.extend([lng, lat]),
-    )
+    extractCoords(f.geometry as GeoJSON.Geometry).forEach(([lng, lat]) => bounds.extend([lng, lat]))
   })
   return bounds
 }
 
 function extractCoords(geometry: GeoJSON.Geometry): [number, number][] {
   if (geometry.type === 'Polygon') return geometry.coordinates[0] as [number, number][]
-  if (geometry.type === 'MultiPolygon')
-    return geometry.coordinates.flatMap((p) => p[0]) as [number, number][]
+  if (geometry.type === 'MultiPolygon') return geometry.coordinates.flatMap((p) => p[0]) as [number, number][]
   return []
 }
 
 function buildFilter(fipsList: string[]): mapboxgl.FilterSpecification {
-  if (fipsList.length === 0) return ['==', ['literal', false], true] as unknown as mapboxgl.FilterSpecification
+  if (fipsList.length === 0)
+    return ['==', ['literal', false], true] as unknown as mapboxgl.FilterSpecification
   return ['in', ['get', 'fips'], ['literal', fipsList]] as unknown as mapboxgl.FilterSpecification
 }
 
@@ -235,10 +233,7 @@ export const MapBox = ({
           const area = fipsToArea.get(f)
           const meta = FIPS_TO_META.get(f)
           const name = area?.displayName ?? meta?.city ?? meta?.name ?? 'County'
-          popup
-            .setLngLat(e.lngLat)
-            .setHTML(`<strong style="font-size:0.8125rem">${name}</strong>`)
-            .addTo(map)
+          popup.setLngLat(e.lngLat).setHTML(`<strong style="font-size:0.8125rem">${name}</strong>`).addTo(map)
         })
         map.on('mousemove', 'counties-fill', (e) => popup.setLngLat(e.lngLat))
         map.on('mouseleave', 'counties-fill', () => {
@@ -278,9 +273,9 @@ export const MapBox = ({
   const sectionStyle: CSSProperties = { position: 'relative' }
 
   return (
-    <section id="service-area" className="relative overflow-hidden scroll-m-16" style={sectionStyle}>
+    <section id="service-area" className="relative scroll-m-16 overflow-hidden" style={sectionStyle}>
       <div className="relative">
-        <header className="absolute top-5 left-5 z-10 max-w-xl rounded-lg border border-border bg-white/70 p-6 backdrop-blur-sm">
+        <header className="border-border absolute top-5 left-5 z-10 max-w-xl rounded-lg border bg-white/70 p-6 backdrop-blur-sm">
           {eyebrow && (
             <p className="type-accent mb-3 text-[0.6875rem] font-extrabold tracking-[0.16em] uppercase opacity-75">
               {eyebrow}
@@ -291,14 +286,12 @@ export const MapBox = ({
               {title}
             </h2>
           )}
-          {description && (
-            <p className="text-sm leading-relaxed">{description}</p>
-          )}
+          {description && <p className="text-sm leading-relaxed">{description}</p>}
         </header>
 
         <div
           ref={containerRef}
-          className="h-[520px] w-full"
+          className="h-130 w-full"
           role="img"
           aria-label={
             areas.length > 0

@@ -807,7 +807,8 @@ function sanitizeSection(section) {
     secondaryItems: Array.isArray(section.secondaryItems)
       ? section.secondaryItems.map(sanitizeItem)
       : section.secondaryItems,
-    description: typeof section.description === 'string' ? cleanRuntimeString(section.description) : section.description,
+    description:
+      typeof section.description === 'string' ? cleanRuntimeString(section.description) : section.description,
     areas: Array.isArray(section.areas)
       ? section.areas.map((area) => ({
           ...area,

@@ -6,8 +6,7 @@ import { structureTool } from 'sanity/structure'
 import { presentationTool } from 'sanity/presentation'
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
 import { studioStructure } from './src/sanity/studioStructure'
-import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
-
+import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
 
 import {
   dataset,

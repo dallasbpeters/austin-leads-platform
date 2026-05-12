@@ -9,7 +9,7 @@
 @import './admin-theme.css';
 
 @keyframes collapsible-down {
-  from {  
+  from {
     height: 0;
     opacity: 0;
   }
@@ -597,7 +597,6 @@ body.admin-body-locked {
   .hover-shadow-theme-brand:hover {
     box-shadow: var(--shadow-brand-hover);
   }
-
 
   .border-color-button-secondary {
     border-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 0.22);

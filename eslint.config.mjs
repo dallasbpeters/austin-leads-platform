@@ -34,14 +34,17 @@ export default defineConfig([
       // by code that previously had eslint-plugin-react-hooks installed.
       'no-unused-disable-directives': 'off',
       // Allow _-prefixed vars as intentional discard patterns in destructuring.
-      'no-unused-vars': ['error', {
-        vars: 'all',
-        args: 'after-used',
-        varsIgnorePattern: '^_',
-        argsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-        destructuredArrayIgnorePattern: '^_',
-      }],
+      'no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          args: 'after-used',
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
     },
   },
 

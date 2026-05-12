@@ -187,7 +187,8 @@ async function loadStyleGuideData() {
 }
 
 export default async function StyleGuidePage() {
-  const { publicGroups, semanticVariables, adminVariables, txchristmaslightsVariables } = await loadStyleGuideData()
+  const { publicGroups, semanticVariables, adminVariables, txchristmaslightsVariables } =
+    await loadStyleGuideData()
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,var(--background),var(--card))]">

@@ -154,9 +154,7 @@ export function getHeroVideoSource(videoField, videoAssetField = null, options =
 
   const posterField = videoField?.posterImage
   const poster =
-    buildSanityImageUrl(posterField, { width: options.posterWidth || 1920 }) ||
-    videoField?.urls?.poster ||
-    ''
+    buildSanityImageUrl(posterField, { width: options.posterWidth || 1920 }) || videoField?.urls?.poster || ''
 
   return {
     provider,

@@ -16,11 +16,11 @@
 
 ## Stripe Products & Prices (already created)
 
-| Product | Stripe Product ID | Price | Price ID |
-|---|---|---|---|
-| Installation Deposit | `prod_UUaKPfJUHnzQsj` | $150 | `price_1TVbAOF2OBzUX92SrsR0ZEC8` |
-| Roofline Installation | `prod_UUa1pQN1BUW4En` | $300 | `price_1TVay2F2OBzUX92SPQEWM2hZ` |
-| Full Front Installation | `prod_UUa1gj7myNcj07` | $500 | `price_1TVawuF2OBzUX92SwcfBYgmc` |
+| Product                    | Stripe Product ID     | Price  | Price ID                         |
+| -------------------------- | --------------------- | ------ | -------------------------------- |
+| Installation Deposit       | `prod_UUaKPfJUHnzQsj` | $150   | `price_1TVbAOF2OBzUX92SrsR0ZEC8` |
+| Roofline Installation      | `prod_UUa1pQN1BUW4En` | $300   | `price_1TVay2F2OBzUX92SPQEWM2hZ` |
+| Full Front Installation    | `prod_UUa1gj7myNcj07` | $500   | `price_1TVawuF2OBzUX92SwcfBYgmc` |
 | Full Property Installation | `prod_UUa1c1RUUF8u7e` | $1,000 | `price_1TVavlF2OBzUX92SuAIbshCM` |
 
 ---
@@ -98,6 +98,7 @@ pnpm test:coverage
 ```
 
 Expected output:
+
 - `stripe-webhook.test.ts` — 6 tests, all passing
 - `slots-available.test.ts` — 6 tests, all passing
 

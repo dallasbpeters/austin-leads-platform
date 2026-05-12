@@ -5,7 +5,7 @@ import {Button} from '@/components/ui/button'
 interface ChatInputProps {
   input: string
   setInput: (value: string) => void
-  onSubmit: (e: React.FormEvent) => void
+  onSubmit: (e: React.InputEvent) => void
   disabled: boolean
 }
 

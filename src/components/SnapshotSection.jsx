@@ -45,10 +45,7 @@ function inferSnapshotIcon(item) {
   return StatUp
 }
 
-export default function SnapshotSection({
-  section = null,
-  sectionId = 'texas-snapshot',
-}) {
+export default function SnapshotSection({ section = null, sectionId = 'texas-snapshot' }) {
   const eyebrow = section?.eyebrow || 'Texas Snapshot'
   const title = section?.title || 'The numbers people usually ask for.'
   const body =

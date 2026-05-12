@@ -12,25 +12,20 @@ export function PricingSection({ section, sectionId }) {
 
   return (
     <section
-      className="bg-white border-border/60 border-b px-6 py-20 md:py-32 lg:py-40"
+      className="border-border/60 border-b bg-white px-6 py-20 md:py-32 lg:py-40"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/PricingSection.jsx',
         content: 'pricing section',
       })}
     >
-      <DevTrace
-        markup="src/components/platform/sections/PricingSection.jsx"
-        content="pricing section"
-      />
+      <DevTrace markup="src/components/platform/sections/PricingSection.jsx" content="pricing section" />
       <div className="mx-auto max-w-3xl">
         {eyebrow ? (
-          <p className="text-muted-foreground mb-6 text-sm tracking-widest uppercase">
-            {section.eyebrow}
-          </p>
+          <p className="text-muted-foreground mb-6 text-sm tracking-widest uppercase">{section.eyebrow}</p>
         ) : null}
 
-        <h2 className="font-serif mb-2 text-3xl leading-tight tracking-normal text-balance md:mb-3 md:text-4xl lg:text-4xl">
+        <h2 className="mb-2 font-serif text-3xl leading-tight tracking-normal text-balance md:mb-3 md:text-4xl lg:text-4xl">
           {title}
         </h2>
 
@@ -38,14 +33,13 @@ export function PricingSection({ section, sectionId }) {
           <PortableTextContent
             as="div"
             value={body}
-            className="text-foreground/80 space-y-4 text-md leading-relaxed md:text-md"
+            className="text-foreground/80 text-md md:text-md space-y-4 leading-relaxed"
           />
         ) : null}
 
         {notes.length > 0 ? (
           <>
-
-            <div className="space-y-12 mt-4 md:space-y-16">
+            <div className="mt-4 space-y-12 md:space-y-16">
               {notes.map((note, index) => {
                 const noteTitle = note?.title
                 const noteBody = note?.body
@@ -55,14 +49,9 @@ export function PricingSection({ section, sectionId }) {
 
                 if (isCallout) {
                   return (
-                    <div
-                      key={key}
-                      className="border-accent border-l-2 py-2 pl-6 md:pl-8"
-                    >
+                    <div key={key} className="border-accent border-l-2 py-2 pl-6 md:pl-8">
                       {noteTitle ? (
-                        <h3 className="font-serif mb-4 text-xl tracking-normal md:text-2xl">
-                          {noteTitle}
-                        </h3>
+                        <h3 className="mb-4 font-serif text-xl tracking-normal md:text-2xl">{noteTitle}</h3>
                       ) : null}
                       {noteBody ? (
                         <PortableTextContent
@@ -78,9 +67,7 @@ export function PricingSection({ section, sectionId }) {
                 return (
                   <div key={key} className="space-y-2">
                     {noteTitle ? (
-                      <h3 className="font-serif text-1xl tracking-normal md:text-xl">
-                        {noteTitle}
-                      </h3>
+                      <h3 className="text-1xl font-serif tracking-normal md:text-xl">{noteTitle}</h3>
                     ) : null}
                     {noteBody ? (
                       <PortableTextContent

@@ -11,6 +11,8 @@ const buttonVariants = cva(
       variant: {
         default:
           'btn--primary bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
+        dark:
+          'bg-mist-900 text-white hover:bg-mist-900/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
         secondary: 'btn--secondary',
         tertiary: 'btn--tertiary',
         destructive:
@@ -45,18 +47,9 @@ const buttonVariants = cva(
   },
 )
 
-type ButtonVariant = 'default' | 'secondary' | 'tertiary' | 'destructive' | 'outline' | 'ghost' | 'link'
+type ButtonVariant = 'default' | 'dark' | 'secondary' | 'tertiary' | 'destructive' | 'outline' | 'ghost' | 'link'
 type ButtonShape = 'default' | 'pill' | 'circle'
-type ButtonSize =
-  | 'default'
-  | 'xs'
-  | 'sm'
-  | 'md'
-  | 'lg'
-  | 'icon'
-  | 'icon-xs'
-  | 'icon-sm'
-  | 'icon-lg'
+type ButtonSize = 'default' | 'xs' | 'sm' | 'md' | 'lg' | 'icon' | 'icon-xs' | 'icon-sm' | 'icon-lg'
 
 /** Native `className` is omitted then re-added optional — avoids TS intersection marking it required with index signatures. */
 export type ButtonProps = Omit<React.ComponentPropsWithoutRef<'button'>, 'size' | 'className'> & {
@@ -124,7 +117,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
     <span
       data-slot="button-inner"
       className={cn(
-        'inline-flex min-w-fit max-w-full items-center justify-center gap-[inherit]',
+        'inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]',
         innerClassName,
       )}
     >

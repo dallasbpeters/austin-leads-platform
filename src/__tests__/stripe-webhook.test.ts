@@ -80,8 +80,8 @@ describe('POST /api/stripe/webhook', () => {
     vi.mocked(headers).mockResolvedValue(new Headers({ 'stripe-signature': 'sig_test' }))
 
     // Default: constructEvent returns the event as-is
-    ;(stripe.webhooks.constructEvent as ReturnType<typeof vi.fn>).mockImplementation(
-      (_body, _sig, _secret) => JSON.parse(_body as string),
+    ;(stripe.webhooks.constructEvent as ReturnType<typeof vi.fn>).mockImplementation((_body, _sig, _secret) =>
+      JSON.parse(_body as string),
     )
     ;(getJobByStripeSessionId as ReturnType<typeof vi.fn>).mockResolvedValue(null)
   })
@@ -118,7 +118,7 @@ describe('POST /api/stripe/webhook', () => {
         siteSlug: 'txchristmaslights',
         stripeSessionId: 'cs_test_abc123',
         depositAmountCents: 15000,
-      })
+      }),
     )
   })
 

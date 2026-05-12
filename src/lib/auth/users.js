@@ -85,8 +85,7 @@ async function runEnsure() {
   } catch (err) {
     const message = String(err?.message ?? '')
     const isPgTypeRace =
-      err?.code === '23505' &&
-      (message.includes('pg_type_typname_nsp_index') || message.includes('pg_class'))
+      err?.code === '23505' && (message.includes('pg_type_typname_nsp_index') || message.includes('pg_class'))
     if (!isPgTypeRace) throw err
   }
 }
@@ -185,7 +184,7 @@ export async function updateUserFields(id, updates) {
     }
   }
 
-  const nextName = updates.name === undefined ? existing.name : (updates.name || null)
+  const nextName = updates.name === undefined ? existing.name : updates.name || null
   const nextRole = updates.role === undefined ? existing.role : normalizeRole(updates.role)
   const nextActive = updates.isActive === undefined ? existing.isActive : Boolean(updates.isActive)
 

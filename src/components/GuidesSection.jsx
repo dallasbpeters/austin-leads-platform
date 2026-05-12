@@ -14,11 +14,7 @@ function escapePathSegment(value) {
   return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
 }
 
-export default function GuidesSection({
-  section = null,
-  page = null,
-  sectionId = 'go-deeper',
-}) {
+export default function GuidesSection({ section = null, page = null, sectionId = 'go-deeper' }) {
   const title = section?.title || 'Go Deeper'
   const body = portableTextToPlainText(section?.body)
   const ctaLabel = section?.ctaLabel || 'See all guides'

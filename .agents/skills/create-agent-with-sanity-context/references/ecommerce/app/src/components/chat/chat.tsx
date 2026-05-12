@@ -139,7 +139,7 @@ export function Chat({onClose}: ChatProps) {
     messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
   }, [messages])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.InputEvent) => {
     e.preventDefault()
     if (!input.trim()) return
     sendMessage({text: input})

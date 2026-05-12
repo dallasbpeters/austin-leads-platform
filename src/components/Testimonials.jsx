@@ -143,11 +143,7 @@ const GoogleLogo = (props) => (
   </svg>
 )
 
-export default function Testimonials({
-  reviews = [],
-  section = null,
-  sectionId = 'testimonials-homepage',
-}) {
+export default function Testimonials({ reviews = [], section = null, sectionId = 'testimonials-homepage' }) {
   const sectionReviews = Array.isArray(section?.reviews) ? section.reviews.filter(Boolean) : []
   const siteReviews = Array.isArray(reviews) ? reviews.filter(Boolean) : []
   const resolvedReviews = sectionReviews.length

@@ -14,21 +14,22 @@ export async function GET() {
         return product?.stripePriceId
           ? stripe.prices.retrieve(product.stripePriceId)
           : Promise.reject(new Error('no price id'))
-      })
+      }),
     )
 
     const [depositResult, ...packageResults] = priceResults
 
     const depositAmountCents =
       depositResult.status === 'fulfilled' ? (depositResult.value.unit_amount ?? 15000) : 15000
-    const currency =
-      depositResult.status === 'fulfilled' ? depositResult.value.currency : 'usd'
+    const currency = depositResult.status === 'fulfilled' ? depositResult.value.currency : 'usd'
 
     const packages = packageIds.map((id, i) => {
       const product = PRODUCTS.find((p) => p.id === id)
       const result = packageResults[i]
       const amountCents =
-        result.status === 'fulfilled' ? (result.value.unit_amount ?? product?.priceInCents ?? 0) : (product?.priceInCents ?? 0)
+        result.status === 'fulfilled'
+          ? (result.value.unit_amount ?? product?.priceInCents ?? 0)
+          : (product?.priceInCents ?? 0)
       return { id, amountCents }
     })
 
@@ -38,9 +39,9 @@ export async function GET() {
       depositAmountCents: 15000,
       currency: 'usd',
       packages: [
-        { id: 'xmas-roofline',     amountCents: 30000 },
-        { id: 'xmas-full-front',   amountCents: 50000 },
-        { id: 'xmas-full-property',amountCents: 100000 },
+        { id: 'xmas-roofline', amountCents: 30000 },
+        { id: 'xmas-full-front', amountCents: 50000 },
+        { id: 'xmas-full-property', amountCents: 100000 },
       ],
     })
   }

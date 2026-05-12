@@ -25,24 +25,24 @@ import {
 } from '@/components/ui/sidebar'
 
 const overviewItems = [
-  { href: '/dashboard',  label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/analytics',  label: 'Analytics',  icon: TrendingUp },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/analytics', label: 'Analytics', icon: TrendingUp },
 ]
 
 const workspaceItems = [
-  { href: '/crm',        label: 'CRM',        icon: UsersRound },
-  { href: '/hero-pages', label: 'Hero Pages',  icon: ImagePlus },
-  { href: '/publish',    label: 'Publish',     icon: PenSquare },
-  { href: '/domains',    label: 'Domains',     icon: Globe2 },
-  { href: '/users',      label: 'Users',       icon: ShieldCheck },
-  { href: '/settings',   label: 'Settings',    icon: Settings2 },
-  { href: '/studio',     label: 'Studio',      icon: Bot },
-  { href: '/',           label: 'Live Site',   icon: Globe2 },
+  { href: '/crm', label: 'CRM', icon: UsersRound },
+  { href: '/hero-pages', label: 'Hero Pages', icon: ImagePlus },
+  { href: '/publish', label: 'Publish', icon: PenSquare },
+  { href: '/domains', label: 'Domains', icon: Globe2 },
+  { href: '/users', label: 'Users', icon: ShieldCheck },
+  { href: '/settings', label: 'Settings', icon: Settings2 },
+  { href: '/studio', label: 'Studio', icon: Bot },
+  { href: '/', label: 'Live Site', icon: Globe2 },
 ]
 
 const christmasItems = [
-  { href: '/christmas',        label: 'Jobs',  icon: UsersRound },
-  { href: '/christmas/slots',  label: 'Slots', icon: Sparkles },
+  { href: '/christmas', label: 'Jobs', icon: UsersRound },
+  { href: '/christmas/slots', label: 'Slots', icon: Sparkles },
 ]
 
 function NavGroup({ label, items }) {
@@ -75,8 +75,8 @@ function NavGroup({ label, items }) {
 export default function AdminNav() {
   return (
     <>
-      <NavGroup label="Overview"         items={overviewItems} />
-      <NavGroup label="Workspace"        items={workspaceItems} />
+      <NavGroup label="Overview" items={overviewItems} />
+      <NavGroup label="Workspace" items={workspaceItems} />
       <NavGroup label="Christmas Lights" items={christmasItems} />
     </>
   )

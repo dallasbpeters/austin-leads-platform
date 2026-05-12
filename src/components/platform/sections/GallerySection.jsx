@@ -31,16 +31,12 @@ const MASONRY_HEIGHTS = [
 const getImageCaption = (item) => {
   const neighborhood = cleanRuntimeString(item?.neighborhood || '')
   const packageName = cleanRuntimeString(item?.package || '')
-  const year =
-    typeof item?.year === 'number'
-      ? String(item.year)
-      : cleanRuntimeString(item?.year || '')
+  const year = typeof item?.year === 'number' ? String(item.year) : cleanRuntimeString(item?.year || '')
   return { neighborhood, year, packageName }
 }
 
 const resolveImageAlt = (item, index, fallback) =>
-  cleanRuntimeString(item?.altText || item?.alt || fallback) ||
-  `gallery photo ${index + 1}`
+  cleanRuntimeString(item?.altText || item?.alt || fallback) || `gallery photo ${index + 1}`
 
 export function GallerySection({ section, sectionId }) {
   const images = Array.isArray(section?.images) ? section.images : []
@@ -55,15 +51,11 @@ export function GallerySection({ section, sectionId }) {
   }, [])
 
   const handlePrev = useCallback(() => {
-    setLightboxIndex((current) =>
-      current === null ? null : (current - 1 + imageCount) % imageCount,
-    )
+    setLightboxIndex((current) => (current === null ? null : (current - 1 + imageCount) % imageCount))
   }, [imageCount])
 
   const handleNext = useCallback(() => {
-    setLightboxIndex((current) =>
-      current === null ? null : (current + 1) % imageCount,
-    )
+    setLightboxIndex((current) => (current === null ? null : (current + 1) % imageCount))
   }, [imageCount])
 
   // Arrow-key navigation while the lightbox is open. Esc is handled natively
@@ -86,10 +78,7 @@ export function GallerySection({ section, sectionId }) {
   // Preload neighbouring frames so prev/next feel instant.
   useEffect(() => {
     if (!isOpen || imageCount < 2) return
-    const neighbours = [
-      (lightboxIndex + 1) % imageCount,
-      (lightboxIndex - 1 + imageCount) % imageCount,
-    ]
+    const neighbours = [(lightboxIndex + 1) % imageCount, (lightboxIndex - 1 + imageCount) % imageCount]
     neighbours.forEach((index) => {
       const src = buildSanityImageUrl(images[index], { width: 2400 })
       if (src) {
@@ -106,8 +95,7 @@ export function GallerySection({ section, sectionId }) {
   const activeAlt = activeImage ? resolveImageAlt(activeImage, lightboxIndex, title) : ''
   const activeCaption = activeImage ? getImageCaption(activeImage) : null
   const hasActiveCaption = Boolean(
-    activeCaption &&
-      (activeCaption.neighborhood || activeCaption.year || activeCaption.packageName),
+    activeCaption && (activeCaption.neighborhood || activeCaption.year || activeCaption.packageName),
   )
 
   return (
@@ -144,7 +132,7 @@ export function GallerySection({ section, sectionId }) {
          * currently-shortest column, so the bottom of the grid never has the
          * gap that round-robin column distribution leaves behind.
          */}
-        <div className="columns-2 gap-3 md:columns-4 md:gap-4">
+        <div className="xs:columns-1 columns-2 gap-3 md:columns-2 md:gap-4 lg:columns-3 xl:columns-4">
           {images.map((item, index) => {
             const src = buildSanityImageUrl(item, { width: 1200 })
             if (!src) return null
@@ -179,9 +167,7 @@ export function GallerySection({ section, sectionId }) {
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/75 via-black/30 to-transparent" />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 text-left text-white">
                       {neighborhood ? (
-                        <p className="text-sm leading-tight font-medium md:text-base">
-                          {neighborhood}
-                        </p>
+                        <p className="text-sm leading-tight font-medium md:text-base">{neighborhood}</p>
                       ) : null}
                       {year || packageName ? (
                         <p className="mt-0.5 text-[0.7rem] tracking-[0.18em] text-white/85 uppercase">
@@ -199,16 +185,12 @@ export function GallerySection({ section, sectionId }) {
 
       <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
         <Dialog.Portal>
-          <Dialog.Overlay
-            className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-80 bg-black/95 backdrop-blur-sm"
-          />
+          <Dialog.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-80 bg-black/95 backdrop-blur-sm" />
           <Dialog.Content
             aria-describedby={undefined}
             className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-90 flex flex-col items-center justify-center p-4 outline-none select-none"
           >
-            <Dialog.Title className="sr-only">
-              {title || 'Gallery image viewer'}
-            </Dialog.Title>
+            <Dialog.Title className="sr-only">{title || 'Gallery image viewer'}</Dialog.Title>
 
             {/* Top bar: counter on the left, close on the right. */}
             <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4 md:p-6">
@@ -239,15 +221,11 @@ export function GallerySection({ section, sectionId }) {
             {hasActiveCaption ? (
               <div className="z-10 mt-6 max-w-[92vw] text-center text-white">
                 {activeCaption.neighborhood ? (
-                  <p className="text-base font-medium md:text-lg">
-                    {activeCaption.neighborhood}
-                  </p>
+                  <p className="text-base font-medium md:text-lg">{activeCaption.neighborhood}</p>
                 ) : null}
                 {activeCaption.year || activeCaption.packageName ? (
                   <p className="mt-1 text-[0.7rem] tracking-[0.22em] text-white/70 uppercase">
-                    {[activeCaption.year, activeCaption.packageName]
-                      .filter(Boolean)
-                      .join(' · ')}
+                    {[activeCaption.year, activeCaption.packageName].filter(Boolean).join(' · ')}
                   </p>
                 ) : null}
               </div>

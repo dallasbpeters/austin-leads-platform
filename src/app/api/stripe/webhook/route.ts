@@ -43,15 +43,15 @@ export async function POST(req: Request) {
       await ensureChristmasTables()
 
       await createJob({
-        fullName:               session.metadata.customerName      ?? session.customer_details?.name ?? 'Unknown',
-        email:                  session.customer_email              ?? session.customer_details?.email ?? '',
-        address:                session.metadata.propertyAddress   ?? '',
-        installDate:            session.metadata.installDate        ?? '',
-        packageSlug:            session.metadata.packageSlug        ?? 'unknown',
-        stripeSessionId:        session.id,
-        stripePaymentIntentId:  typeof session.payment_intent === 'string' ? session.payment_intent : null,
-        depositAmountCents:     session.amount_total ?? 15000,
-        siteSlug:               'txchristmaslights',
+        fullName: session.metadata.customerName ?? session.customer_details?.name ?? 'Unknown',
+        email: session.customer_email ?? session.customer_details?.email ?? '',
+        address: session.metadata.propertyAddress ?? '',
+        installDate: session.metadata.installDate ?? '',
+        packageSlug: session.metadata.packageSlug ?? 'unknown',
+        stripeSessionId: session.id,
+        stripePaymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+        depositAmountCents: session.amount_total ?? 15000,
+        siteSlug: 'txchristmaslights',
       })
 
       console.log('[stripe/webhook] job created for session', session.id)

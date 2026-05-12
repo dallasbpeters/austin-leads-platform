@@ -178,7 +178,13 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
               Manage admin accounts, email addresses, and passwords
             </p>
           </div>
-          <Popover open={addOpen} onOpenChange={(o) => { setAddOpen(o); if (!o) setNewUser({ email: '', name: '', password: '', isActive: true }) }}>
+          <Popover
+            open={addOpen}
+            onOpenChange={(o) => {
+              setAddOpen(o)
+              if (!o) setNewUser({ email: '', name: '', password: '', isActive: true })
+            }}
+          >
             <PopoverTrigger asChild>
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium">
                 + Add user
@@ -189,7 +195,12 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
 
               <div className="space-y-3">
                 <div>
-                  <label htmlFor="new-email" className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">Email</label>
+                  <label
+                    htmlFor="new-email"
+                    className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase"
+                  >
+                    Email
+                  </label>
                   <input
                     id="new-email"
                     type="email"
@@ -200,7 +211,12 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                   />
                 </div>
                 <div>
-                  <label htmlFor="new-name" className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">Name</label>
+                  <label
+                    htmlFor="new-name"
+                    className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase"
+                  >
+                    Name
+                  </label>
                   <input
                     id="new-name"
                     type="text"
@@ -211,7 +227,12 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                   />
                 </div>
                 <div>
-                  <label htmlFor="new-password" className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">Password</label>
+                  <label
+                    htmlFor="new-password"
+                    className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase"
+                  >
+                    Password
+                  </label>
                   <input
                     id="new-password"
                     type="password"
@@ -253,7 +274,11 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
             </PopoverContent>
           </Popover>
         </div>
-        {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
+        {error && (
+          <p role="alert" className="mt-2 text-sm text-red-600">
+            {error}
+          </p>
+        )}
       </div>
 
       {/* List */}
@@ -284,7 +309,9 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                       <div className="space-y-3">
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                           <div>
-                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">Email</label>
+                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">
+                              Email
+                            </label>
                             <input
                               type="email"
                               value={editValues.email}
@@ -293,7 +320,9 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                             />
                           </div>
                           <div>
-                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">Name</label>
+                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">
+                              Name
+                            </label>
                             <input
                               type="text"
                               value={editValues.name}
@@ -311,7 +340,9 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                             className="accent-primary"
                           />
                           Active (can sign in)
-                          {isSelf && <span className="text-muted-foreground text-xs">(can't deactivate yourself)</span>}
+                          {isSelf && (
+                            <span className="text-muted-foreground text-xs">(can't deactivate yourself)</span>
+                          )}
                         </label>
                         <div className="flex gap-2">
                           <button
@@ -333,10 +364,14 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                       </div>
                     ) : isResetting ? (
                       <div className="space-y-3">
-                        <p className="text-foreground text-sm font-medium">Set new password for {user.email}</p>
+                        <p className="text-foreground text-sm font-medium">
+                          Set new password for {user.email}
+                        </p>
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                           <div>
-                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">New password</label>
+                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">
+                              New password
+                            </label>
                             <input
                               type="password"
                               autoComplete="new-password"
@@ -346,7 +381,9 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                             />
                           </div>
                           <div>
-                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">Confirm</label>
+                            <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">
+                              Confirm
+                            </label>
                             <input
                               type="password"
                               autoComplete="new-password"
@@ -368,7 +405,10 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                           </button>
                           <button
                             type="button"
-                            onClick={() => { setResettingPassword(null); setPasswordValues({ password: '', confirm: '' }) }}
+                            onClick={() => {
+                              setResettingPassword(null)
+                              setPasswordValues({ password: '', confirm: '' })
+                            }}
                             className="text-muted-foreground hover:text-foreground rounded-lg px-4 py-1.5 text-sm transition-colors"
                           >
                             Cancel
@@ -435,8 +475,9 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
         </div>
 
         <p className="text-muted-foreground mt-4 text-xs">
-          Tip: the <code className="bg-muted rounded px-1">AUTH_ADMIN_EMAIL</code> / <code className="bg-muted rounded px-1">AUTH_ADMIN_PASSWORD</code> env vars
-          still grant sign-in as a break-glass fallback if you ever lock yourself out of the DB users above.
+          Tip: the <code className="bg-muted rounded px-1">AUTH_ADMIN_EMAIL</code> /{' '}
+          <code className="bg-muted rounded px-1">AUTH_ADMIN_PASSWORD</code> env vars still grant sign-in as a
+          break-glass fallback if you ever lock yourself out of the DB users above.
         </p>
       </div>
     </div>

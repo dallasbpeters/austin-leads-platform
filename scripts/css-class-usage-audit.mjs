@@ -56,7 +56,10 @@ function buildHaystack(files) {
 }
 
 const cssPaths = fs.existsSync(STYLES_DIR)
-  ? fs.readdirSync(STYLES_DIR).filter((n) => n.endsWith('.css')).map((n) => path.join(STYLES_DIR, n))
+  ? fs
+      .readdirSync(STYLES_DIR)
+      .filter((n) => n.endsWith('.css'))
+      .map((n) => path.join(STYLES_DIR, n))
   : []
 
 /** token -> files that define a selector containing `.token` */
@@ -89,18 +92,7 @@ const rootHtml = ['index.html', 'dashboard.html', 'publish.html']
 const haystack = buildHaystack([...srcFiles, ...rootHtml])
 
 /** Tokens that are substring noise from URLs, hex, etc. — keep conservative filter */
-const skipTokens = new Set([
-  'css',
-  'svg',
-  'png',
-  'jpg',
-  'jpeg',
-  'webp',
-  'gif',
-  'woff',
-  'woff2',
-  'ttf',
-])
+const skipTokens = new Set(['css', 'svg', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'woff', 'woff2', 'ttf'])
 
 const unused = []
 for (const cls of [...definedClasses].sort()) {

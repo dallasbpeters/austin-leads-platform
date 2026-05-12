@@ -3,8 +3,7 @@
 // property for reliable Mapbox expression matching, and caches aggressively
 // so the browser never hits the CDN directly.
 
-const SOURCE_URL =
-  'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
+const SOURCE_URL = 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
 
 let cached = null
 

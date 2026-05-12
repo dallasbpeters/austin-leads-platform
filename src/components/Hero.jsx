@@ -91,7 +91,9 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
   const title = hasSingleTitle ? titleRaw : 'Solar & Roofing, Simplified.'
   const titlePrimary = hasSplitTitle ? titlePrimaryRaw : 'Solar &'
   const titleAccent = hasSplitTitle ? titleAccentRaw : 'Roofing, simplified.'
-  const body = heroSection?.body || 'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
+  const body =
+    heroSection?.body ||
+    'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
   const heroMetrics = (Array.isArray(heroSection?.metrics) ? heroSection.metrics : []).filter(
     (metric) => metric?.label && metric?.value,
   )
@@ -118,7 +120,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
 
   return (
     <section
-      className="text-body type-accent  min-h-[80vh] overflow-x-hidden relative top-0"
+      className="text-body type-accent relative top-0 min-h-[80vh] overflow-x-hidden"
       style={{
         backgroundImage: 'radial-gradient(var(--color-grid) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
@@ -143,10 +145,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             preload="metadata"
             aria-label={heroVideoSource.alt || undefined}
           >
-            <source
-              src={heroVideoSource.src}
-              type={heroVideoSource.type || undefined}
-            />
+            <source src={heroVideoSource.src} type={heroVideoSource.type || undefined} />
           </video>
           <div className="absolute inset-0 z-10" style={overlayStyle} />
         </>
@@ -240,7 +239,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
               <PortableTextContent
                 as="div"
                 value={body}
-                className="text-lg mb-10 max-w-2xl leading-7"
+                className="mb-10 max-w-2xl text-lg leading-7"
                 style={{ color: softTextColor || 'var(--color-muted-foreground)' }}
               />
             ) : null}
@@ -259,70 +258,68 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
                   </Button>
                 ))}
               </div>
-
-          
             </div>
           </div>
 
           {hasHeroAside ? (
-          <div className="solar-fade-up solar-fade-up-delay">
-            <Card
-              className="p-6 backdrop-blur-md"
-              radius="lg"
-              style={{
-                backgroundColor: cardBackground,
-                borderColor: cardBorder,
-              }}
-            >
-              {hasHeroMetrics ? (
-                <div className="grid gap-3">
-                  <div
-                    className="text-[11px] font-bold tracking-[0.22em] uppercase"
-                    style={{ color: metricLabelColor }}
-                  >
-                    Snapshot
-                  </div>
-                  {heroMetrics.map((metric, index) => (
+            <div className="solar-fade-up solar-fade-up-delay">
+              <Card
+                className="p-6 backdrop-blur-md"
+                radius="lg"
+                style={{
+                  backgroundColor: cardBackground,
+                  borderColor: cardBorder,
+                }}
+              >
+                {hasHeroMetrics ? (
+                  <div className="grid gap-3">
                     <div
-                      key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-                      className="rounded-xl border px-4 py-3"
-                      style={{
-                        backgroundColor: metricTileBackground,
-                        borderColor: metricTileBorder,
-                      }}
+                      className="text-[11px] font-bold tracking-[0.22em] uppercase"
+                      style={{ color: metricLabelColor }}
                     >
-                      <div
-                        className="text-[11px] font-semibold tracking-[0.18em] uppercase"
-                        style={{ color: metricLabelColor }}
-                      >
-                        {metric.label}
-                      </div>
-                      <div
-                        className="text-lg font-semibold tracking-normal"
-                        style={{ color: metricValueColor }}
-                      >
-                        {metric.value}
-                      </div>
+                      Snapshot
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  <PortableTextContent
-                    as="div"
-                    value={cardCopy}
-                    className="font-wght-650 m-0 text-lg leading-7"
-                    style={{ color: heroTextColor || 'var(--color-text-strong)' }}
-                  />
-                  <div className="mt-6 flex gap-2">
-                    <div className="bg-primary h-1 w-8 rounded-full"></div>
-                    <div className="bg-primary h-1 w-2 rounded-full"></div>
-                    <div className="bg-primary h-1 w-2 rounded-full"></div>
+                    {heroMetrics.map((metric, index) => (
+                      <div
+                        key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
+                        className="rounded-xl border px-4 py-3"
+                        style={{
+                          backgroundColor: metricTileBackground,
+                          borderColor: metricTileBorder,
+                        }}
+                      >
+                        <div
+                          className="text-[11px] font-semibold tracking-[0.18em] uppercase"
+                          style={{ color: metricLabelColor }}
+                        >
+                          {metric.label}
+                        </div>
+                        <div
+                          className="text-lg font-semibold tracking-normal"
+                          style={{ color: metricValueColor }}
+                        >
+                          {metric.value}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </>
-              )}
-            </Card>
-          </div>
+                ) : (
+                  <>
+                    <PortableTextContent
+                      as="div"
+                      value={cardCopy}
+                      className="font-wght-650 m-0 text-lg leading-7"
+                      style={{ color: heroTextColor || 'var(--color-text-strong)' }}
+                    />
+                    <div className="mt-6 flex gap-2">
+                      <div className="bg-primary h-1 w-8 rounded-full"></div>
+                      <div className="bg-primary h-1 w-2 rounded-full"></div>
+                      <div className="bg-primary h-1 w-2 rounded-full"></div>
+                    </div>
+                  </>
+                )}
+              </Card>
+            </div>
           ) : null}
         </div>
       </div>

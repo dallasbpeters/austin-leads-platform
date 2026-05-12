@@ -463,7 +463,9 @@ const heroVideoType = {
       title: 'Muted',
       type: 'boolean',
       initialValue: true,
-      options: canvasPurpose('Required for autoplay in most browsers. Leave on unless the video has narration.'),
+      options: canvasPurpose(
+        'Required for autoplay in most browsers. Leave on unless the video has narration.',
+      ),
     },
     {
       name: 'controls',
@@ -1964,7 +1966,6 @@ const storySectionType = {
       return {
         title: title || eyebrow || 'Story section',
         subtitle: previewText(body, subtitle || 'story'),
-
       }
     },
   },
@@ -2675,9 +2676,7 @@ const pricingSectionType = {
       name: 'eyebrow',
       title: 'Eyebrow',
       type: 'string',
-      options: canvasPurpose(
-        'Optional short overline above the title (e.g. "How pricing works").',
-      ),
+      options: canvasPurpose('Optional short overline above the title (e.g. "How pricing works").'),
     },
     {
       name: 'title',

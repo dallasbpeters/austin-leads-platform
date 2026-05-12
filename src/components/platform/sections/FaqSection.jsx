@@ -20,7 +20,9 @@ export function FaqSection({ section, sectionId }) {
       />
       <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
         <div className="mb-10 max-w-3xl">
-          <h2 className="font-display text-foreground text-3xl tracking-normal md:text-4xl">{section.title}</h2>
+          <h2 className="font-display text-foreground text-3xl tracking-normal md:text-4xl">
+            {section.title}
+          </h2>
         </div>
         <div className="space-y-4">
           <Card className="bg-card border-border/80 p-4">

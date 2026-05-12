@@ -1,14 +1,12 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, SyntheticEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  EmbeddedCheckout,
-  EmbeddedCheckoutProvider,
-} from '@stripe/react-stripe-js'
+import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { startCheckoutSession, type BookingMetadata } from '@/app/actions/stripe'
 import { Button } from '@/components/ui/button'
+import { NavArrowDownSolid } from 'iconoir-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -81,15 +79,22 @@ function SlidingDateGrid({
     const today = new Date().toISOString().slice(0, 10)
     const idx = slots.findIndex((s) => s.value >= today)
     const target = idx >= 0 ? idx : slots.length - 1
-    setStart(Math.max(0, Math.min(Math.max(0, slots.length - WINDOW_SIZE), target - Math.floor(WINDOW_SIZE / 2))))
+    setStart(
+      Math.max(0, Math.min(Math.max(0, slots.length - WINDOW_SIZE), target - Math.floor(WINDOW_SIZE / 2))),
+    )
   }
 
   const monthLabel = currentYm
-    ? new Date(currentYm + '-01T00:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+    ? new Date(currentYm + '-01T00:00:00Z').toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
     : ''
 
-  if (loading) return <p className="text-sm text-muted-foreground py-4">Loading available dates…</p>
-  if (!slots.length) return <p className="text-sm text-muted-foreground py-4">No dates available yet. Check back soon.</p>
+  if (loading) return <p className="text-muted-foreground py-4 text-sm">Loading available dates…</p>
+  if (!slots.length)
+    return <p className="text-muted-foreground py-4 text-sm">No dates available yet. Check back soon.</p>
 
   return (
     <div className="space-y-3">
@@ -110,22 +115,23 @@ function SlidingDateGrid({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
+              <Button
+                variant="ghost"
                 type="button"
-                className="flex items-center gap-1 text-xs uppercase tracking-[0.18em] font-medium text-foreground hover:text-foreground/70 transition-colors whitespace-nowrap"
+                className=""
               >
                 {monthLabel}
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" className="opacity-50" aria-hidden="true">
-                  <path d="M0 0l5 6 5-6z" />
-                </svg>
-              </button>
+                <NavArrowDownSolid className="h-4 w-4" />
+              </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="min-w-[160px]">
+            <DropdownMenuContent align="center" className="min-w-40">
               <DropdownMenuRadioGroup value={currentYm} onValueChange={jumpToMonth}>
                 {months.map((ym) => (
                   <DropdownMenuRadioItem key={ym} value={ym} className="text-sm">
                     {new Date(ym + '-01T00:00:00Z').toLocaleDateString('en-US', {
-                      month: 'long', year: 'numeric', timeZone: 'UTC',
+                      month: 'long',
+                      year: 'numeric',
+                      timeZone: 'UTC',
                     })}
                   </DropdownMenuRadioItem>
                 ))}
@@ -133,13 +139,14 @@ function SlidingDateGrid({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <button
+          <Button
+            variant="ghost"
             type="button"
             onClick={jumpToToday}
-            className="text-[10px] uppercase tracking-wider text-foreground/60 hover:text-foreground border border-foreground/20 hover:border-foreground/40 rounded px-2 py-0.5 transition-colors whitespace-nowrap"
+            className="hover:bg-none"
           >
             Today
-          </button>
+          </Button>
         </div>
 
         <Button
@@ -149,7 +156,7 @@ function SlidingDateGrid({
           onClick={() => setStart((s) => Math.min(slots.length - WINDOW_SIZE, s + WINDOW_SIZE))}
           disabled={!canNext}
           aria-label="Next dates"
-          className="p-1.5 rounded-lg transition-colors disabled:opacity-30 hover:bg-background/10"
+          className="hover:bg-transparent rounded-lg p-1.5 transition-colors disabled:opacity-30"
         >
           <NavArrowRight className="h-5 w-5" />
         </Button>
@@ -168,40 +175,44 @@ function SlidingDateGrid({
               aria-pressed={isSelected}
               aria-label={`${weekday} ${month} ${day} — ${slot.isFull ? 'full' : `${slot.spotsLeft} spot${slot.spotsLeft === 1 ? '' : 's'} left`}`}
               onClick={() => !slot.isFull && onSelect(slot.value)}
-              className={`relative flex flex-col items-center justify-center gap-0.5 py-3 rounded-xl border transition-all duration-150 ${
-                slot.isFull
-                  ? 'border-border opacity-35 cursor-not-allowed'
+              className={`aspect-4/3 group cursor-pointer relative flex flex-col items-start justify-center gap-0.5 rounded-xl border px-4 py-3 transition-all duration-150 hover:bg-secondary/20
+              ${slot.isFull
+                  ? 'border-border cursor-not-allowed opacity-35'
                   : isSelected
-                    ? 'border-border bg-background text-foreground'
+                    ? 'border-border bg-secondary text-foreground hover:bg-secondary/90'
                     : 'border-border hover:border-border/70 text-foreground'
-              }`}
+                }`}
             >
               {isSelected && (
-                <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full" aria-hidden="true" />
+                <span
+                  className="bg-white absolute top-4 right-4 size-3 rounded-full"
+                  aria-hidden="true"
+                />
               )}
-              <span className={`text-[10px] uppercase tracking-widest font-medium ${isSelected ? 'text-foreground/50' : 'text-foreground/60'}`}>{weekday}</span>
-              <span className={`text-2xl font-bold leading-none ${isSelected ? 'text-foreground' : 'text-foreground'}`}>{day}</span>
-              <span className={`text-[10px] uppercase tracking-widest ${isSelected ? 'text-foreground/50' : 'text-foreground/60'}`}>{month}</span>
-              <span className={`text-[9px] mt-0.5 ${isSelected ? 'text-foreground/40' : 'text-foreground/40'}`} aria-hidden="true">
-                {slot.isFull ? 'Full' : `${slot.spotsLeft} left`}
+              <span
+                className={`text-[13px] font-medium tracking-widest uppercase ${isSelected ? 'text-white' : 'text-foreground/60'}`}
+              >
+                {weekday}
+              </span>
+              <span
+                className={`text-2xl leading-none font-bold ${isSelected ? 'text-white' : 'text-foreground'}`}
+              >
+                {day}
+              </span>
+              <span
+                className={`text-[14px] tracking-widest uppercase ${isSelected ? 'text-white' : 'text-foreground/60'}`}
+              >
+                {month}
+              </span>
+              <span
+                className={`mt-0.5 text-[11px] ${isSelected ? 'text-white/40' : 'text-foreground/40'}`}
+                aria-hidden="true"
+              >
+                {slot.isFull ? 'Full' : `${slot.spotsLeft} spots available`}
               </span>
             </button>
           )
         })}
-      </div>
-
-      {/* Progress dots */}
-      <div className="flex justify-center gap-1 pt-1" aria-hidden="true">
-        {Array.from({ length: Math.ceil(slots.length / WINDOW_SIZE) }).map((_, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => setStart(i * WINDOW_SIZE)}
-            className={`w-1.5 h-1.5 rounded-full transition-all ${
-              Math.floor(start / WINDOW_SIZE) === i ? 'bg-background w-3' : 'bg-background/30'
-            }`}
-          />
-        ))}
       </div>
     </div>
   )
@@ -250,7 +261,7 @@ export function SchedulingForm() {
           setPackagePrices(map)
         }
       })
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   const [formData, setFormData] = useState<BookingMetadata>({
@@ -301,7 +312,7 @@ export function SchedulingForm() {
     goTo(2)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (validateInfo()) goTo(3)
   }
@@ -310,14 +321,9 @@ export function SchedulingForm() {
     if (validateDate()) setShowCheckout(true)
   }
 
-  const fetchClientSecret = useCallback(
-    () => startCheckoutSession('deposit', formData),
-    [formData]
-  )
+  const fetchClientSecret = useCallback(() => startCheckoutSession('deposit', formData), [formData])
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
     if (errors[name as keyof BookingMetadata]) {
@@ -334,21 +340,23 @@ export function SchedulingForm() {
 
   if (isComplete) {
     return (
-      <section className="bg-foreground text-background min-h-screen flex place-items-center justify-center">
-        <div className="max-w-lg mx-auto px-8 text-center space-y-6">
-          <p className="text-sm uppercase tracking-[0.2em] text-background/60">You&apos;re booked</p>
-          <h2 className="font-serif text-5xl md:text-6xl leading-[1.05] tracking-normal">
-            See you in<br />
+      <section className="bg-foreground text-background flex min-h-screen place-items-center justify-center">
+        <div className="mx-auto max-w-lg space-y-6 px-8 text-center">
+          <p className="text-background/60 text-sm tracking-[0.2em] uppercase">You&apos;re booked</p>
+          <h2 className="font-serif text-5xl leading-[1.05] tracking-normal md:text-6xl">
+            See you on
+            <br />
             <span className="italic">
               {slots.find((d) => d.value === formData.installDate)?.label ?? 'November'}.
             </span>
           </h2>
-          <p className="text-lg text-background/70 max-w-md mx-auto">
-            Your deposit is confirmed. We&apos;ll reach out a few days before your install window to confirm details.
+          <p className="text-background/70 mx-auto max-w-md text-lg">
+            Your deposit is confirmed. You&apos;ll receive an invoice at {formData.email} with the remaining balance — payment is due by October 1st.
           </p>
-          <p className="text-sm text-background/50">
-            A receipt was sent to {formData.email}
+          <p className="text-background/60 mx-auto max-w-md text-sm">
+            We&apos;ll also reach out a few days before your install window to confirm details.
           </p>
+          <p className="text-background/40 text-xs">Deposit receipt sent to {formData.email}</p>
         </div>
       </section>
     )
@@ -359,32 +367,30 @@ export function SchedulingForm() {
       <section className="bg-primary text-background">
         <div className="grid lg:grid-cols-2">
           {/* Left: Summary */}
-          <div className="px-12 py-16 lg:px-30 lg:py-24 grid grid-cols-1 place-content-center">
-            <p className="text-sm uppercase tracking-[0.2em] text-background/60 mb-8">
-              Confirm & Pay
-            </p>
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-normal mb-12">
-              Almost<br />there.
+          <div className="grid grid-cols-1 place-content-center px-12 py-16 lg:px-30 lg:py-24">
+            <p className="text-background/60 mb-8 text-sm tracking-[0.2em] uppercase">Confirm & Pay</p>
+            <h2 className="mb-12 font-serif text-4xl leading-[1.1] tracking-normal md:text-5xl lg:text-6xl">
+              Almost
+              <br />
+              there.
             </h2>
-            
-            <div className="space-y-6 mb-12">
-              <div className="border-b border-background/20 pb-4">
-                <span className="text-xs uppercase tracking-[0.15em] text-background/50">Name</span>
-                <p className="text-xl mt-1">{formData.name}</p>
+
+            <div className="mb-12 space-y-6">
+              <div className="border-background/20 border-b pb-4">
+                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Name</span>
+                <p className="mt-1 text-xl">{formData.name}</p>
               </div>
-              <div className="border-b border-background/20 pb-4">
-                <span className="text-xs uppercase tracking-[0.15em] text-background/50">Email</span>
-                <p className="text-xl mt-1">{formData.email}</p>
+              <div className="border-background/20 border-b pb-4">
+                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Email</span>
+                <p className="mt-1 text-xl">{formData.email}</p>
               </div>
-              <div className="border-b border-background/20 pb-4">
-                <span className="text-xs uppercase tracking-[0.15em] text-background/50">Property</span>
-                <p className="text-xl mt-1">{formData.address}</p>
+              <div className="border-background/20 border-b pb-4">
+                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
+                <p className="mt-1 text-xl">{formData.address}</p>
               </div>
               <div className="pb-4">
-                <span className="text-xs uppercase tracking-[0.15em] text-background/50">Install Window</span>
-                <p className="text-xl mt-1">
-                  {slots.find((d) => d.value === formData.installDate)?.label}
-                </p>
+                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Window</span>
+                <p className="mt-1 text-xl">{slots.find((d) => d.value === formData.installDate)?.label}</p>
               </div>
             </div>
 
@@ -393,7 +399,7 @@ export function SchedulingForm() {
               pill={false}
               fullWidth={false}
               onClick={() => setShowCheckout(false)}
-              className="text-sm text-background self-start justify-start hover:bg-none"
+              className="text-background justify-start self-start text-sm hover:bg-none"
             >
               <ArrowLeft className="size-4" />
               Edit details
@@ -401,14 +407,14 @@ export function SchedulingForm() {
           </div>
 
           {/* Right: Checkout */}
-          <div className="bg-background text-foreground p-8 lg:p-16 flex place-items-center">
-            <div className="w-full max-w-lg mx-auto">
-                <EmbeddedCheckoutProvider
-                  stripe={stripePromise}
-                  options={{ fetchClientSecret, onComplete: () => setIsComplete(true) }}
-                >
-                  <EmbeddedCheckout />
-                </EmbeddedCheckoutProvider>
+          <div className="bg-background text-foreground flex place-items-center p-8 lg:p-16">
+            <div className="mx-auto w-full max-w-lg">
+              <EmbeddedCheckoutProvider
+                stripe={stripePromise}
+                options={{ fetchClientSecret, onComplete: () => setIsComplete(true) }}
+              >
+                <EmbeddedCheckout />
+              </EmbeddedCheckoutProvider>
             </div>
           </div>
         </div>
@@ -435,162 +441,302 @@ export function SchedulingForm() {
       slug: 'xmas-full-property',
       name: 'Full property',
       description: 'Full front and rear — quoted on walkthrough',
-      price: '$900.00',  
+      price: '$900.00',
     },
   ]
 
   // Left text per step — updates in place, no animation
   const leftText = {
-    1: { num: '01', eyebrow: 'Step 1 of 3 — Choose your package',
-         heading: <>{`Chose your`}<br /><span className="italic">package.</span></>,
-         sub: 'All packages include installation, mid-season service, and January takedown.' },
-    2: { num: '02', eyebrow: 'Step 2 of 3 — Your details',
-         heading: <>{`Let's start`}<br /><span className="italic">planning.</span></>,
-         sub: "Tell us about your property and we'll get your install on the calendar." },
-    3: { num: '03', eyebrow: 'Step 3 of 3 — Pick your date',
-         heading: <>{`When works`}<br /><span className="italic">for you?</span></>,
-         sub: null },
+    1: {
+      num: '01',
+      eyebrow: 'Step 1 of 3 — Choose your package',
+      heading: (
+        <>
+          {`Chose your`}
+          <br />
+          <span className="italic">package.</span>
+        </>
+      ),
+      sub: 'All packages include installation, mid-season service, and January takedown.',
+    },
+    2: {
+      num: '02',
+      eyebrow: 'Step 2 of 3 — Your details',
+      heading: (
+        <>
+          {`Let's start`}
+          <br />
+          <span className="italic">planning.</span>
+        </>
+      ),
+      sub: "Tell us about your property and we'll get your install on the calendar.",
+    },
+    3: {
+      num: '03',
+      eyebrow: 'Step 3 of 3 — Pick your date',
+      heading: (
+        <>
+          {`When works`}
+          <br />
+          <span className="italic">for you?</span>
+        </>
+      ),
+      sub: null,
+    },
   } as const
 
   const lt = leftText[step]
 
   return (
-    <section className="bg-primary min-h-[70vh] text-background">
-      <div className="grid lg:grid-cols-2 items-stretch overflow-hidden h-full min-h-[70vh]">
-
+    <section className="bg-primary text-background min-h-[70vh]">
+      <div className="grid h-full min-h-[70vh] items-stretch overflow-hidden md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.7fr_1.3fr]">
         {/* ── Left: static, text updates in place ──────────────────────── */}
-        <div className="px-12 py-16 lg:px-30 lg:py-24 relative overflow-hidden flex flex-col justify-center">
-          <span className="absolute -left-8 top-1/2 -translate-y-1/2 font-serif text-[20rem] lg:text-[28rem] leading-none text-background/3 select-none pointer-events-none" aria-hidden="true">{lt.num}</span>
+        <div className="relative flex flex-col justify-center overflow-hidden px-8 py-16 md:px-20 lg:px-30 lg:py-24">
+          <span
+            className="text-background/10 pointer-events-none absolute top-1/2 -left-8 -translate-y-1/2 font-serif text-[20rem] leading-none select-none lg:text-[28rem]"
+            aria-hidden="true"
+          >
+            {lt.num}
+          </span>
           <div className="relative z-10">
-            <p className="text-sm uppercase tracking-[0.2em] text-background/60 mb-8">{lt.eyebrow}</p>
-            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-[0.95] tracking-normal mb-8">{lt.heading}</h2>
-            <div className="inline-flex items-baseline gap-4 border-t border-background/20 pt-8 mb-8">
-                  <span className="text-sm uppercase tracking-[0.15em] text-background/50">Deposit</span>
-                  <span className="font-serif text-5xl lg:text-6xl">{fmtCents(depositAmountCents, depositCurrency)}</span>
-                </div>
-            {lt.sub && <div className="text-lg text-background/70 max-w-md mb-8">{lt.sub}</div>}
             {step === 2 && (
               <>
-                <Button variant="ghost" pill={false} fullWidth={false} onClick={() => goTo(1)} className="text-white hover:bg-primary hover:text-white/90 justify-start px-0">
+                <Button
+                  variant="ghost"
+                  pill={false}
+                  fullWidth={false}
+                  onClick={() => goTo(1)}
+                  className="hover:bg-primary justify-start px-0 text-white hover:text-white/90"
+                >
                   <ArrowLeft className="size-4" /> Back to packages
                 </Button>
               </>
             )}
             {step === 3 && (
-              <div className="space-y-4 mb-10">
-                <div className="border-b border-background/20 pb-3">
-                  <span className="text-xs uppercase tracking-[0.15em] text-background/50">Name</span>
-                  <p className="text-lg mt-0.5">{formData.name}</p>
-                </div>
-                <div className="border-b border-background/20 pb-3">
-                  <span className="text-xs uppercase tracking-[0.15em] text-background/50">Property</span>
-                  <p className="text-lg mt-0.5">{formData.address}</p>
-                </div>
-                <Button variant="ghost" pill={false} fullWidth={false} onClick={() => goTo(2)} className="text-white hover:bg-primary hover:text-white/90 justify-start px-0">
+              <>
+                <Button
+                  variant="ghost"
+                  pill={false}
+                  fullWidth={false}
+                  onClick={() => goTo(2)}
+                  className="hover:bg-primary justify-start px-0 text-white hover:text-white/90"
+                >
                   <ArrowLeft className="size-4" /> Edit details
                 </Button>
+              </>
+            )}
+            <p className="text-background/60 mb-8 text-sm tracking-[0.2em] uppercase">{lt.eyebrow}</p>
+            <h2 className="mb-8 font-serif text-4xl leading-[0.95] tracking-normal md:text-5xl lg:text-6xl">
+              {lt.heading}
+            </h2>
+            {lt.sub && <div className="text-background/70 mb-8 max-w-md text-lg">{lt.sub}</div>}
+            <div className="border-background/20 mb-8 inline-flex items-baseline gap-4 border-t pt-8">
+              <span className="text-background/50 text-sm tracking-[0.15em] uppercase">Deposit</span>
+              <span className="font-serif text-5xl lg:text-6xl">
+                {fmtCents(depositAmountCents, depositCurrency)}
+              </span>
+            </div>
+            {step === 3 && (
+              <div className="mb-10 space-y-4">
+                <div className="border-background/20 border-b pb-3">
+                  <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Name</span>
+                  <p className="mt-0.5 text-lg">{formData.name}</p>
+                </div>
+                <div className="border-background/20 border-b pb-3">
+                  <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
+                  <p className="mt-0.5 text-lg">{formData.address}</p>
+                </div>
               </div>
             )}
           </div>
         </div>
 
         {/* ── Right: slides on step change ─────────────────────────────── */}
-        <div className="bg-background overflow-hidden h-full">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={step}
-            custom={direction}
-            variants={{
-              enter: (d: number) => ({ x: d * 200, opacity: 0 }),
-              center: { x: 0, opacity: 1 },
-              exit:  (d: number) => ({ x: d * -200, opacity: 0 }),
-            }}
-            initial={false}
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.2, ease: [0.32, 0, 0.67, 0] }}
-            className="bg-background overflow-hidden h-full"
-          >
-            {/* Step 1: package cards */}
-            {step === 1 && (
-              <div className="px-12 py-16 lg:px-30 lg:py-24 grid place-content-center h-full">
-                <div className="max-w-lg mx-auto space-y-3">
+        <div className="bg-background h-full overflow-hidden">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={{
+                enter: (d: number) => ({ x: d * 200, opacity: 0 }),
+                center: { x: 0, opacity: 1 },
+                exit: (d: number) => ({ x: d * -200, opacity: 0 }),
+              }}
+              initial={false}
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.2, ease: [0.32, 0, 0.67, 0] }}
+              className="bg-background h-full overflow-hidden grid place-items-center"
+            >
+              {/* Step 1: package cards */}
+              {step === 1 && (
+                <div className="h-full px-5 md:px-15 lg:px-20 xl:px-60 py-10 md:py-30 mx-auto grid w-full grid-cols-1 place-content-center gap-6 space-x-3 ">
                   {PACKAGES.map((pkg) => {
                     const isSelected = formData.packageSlug === pkg.slug
                     return (
-                      <Button variant="outline" key={pkg.slug} type="button"
-                        onClick={() => { setFormData((p) => ({ ...p, packageSlug: pkg.slug })); setErrors((e) => ({ ...e, packageSlug: undefined })) }}
-                        className={`w-full justify-start text-left px-4 py-5 rounded-2xl border-2 transition-all duration-150 ${isSelected ? 'border border-accent bg-accent/10 text-foreground' : 'border'}`}
+                      <Button
+                        variant="outline"
+                        key={pkg.slug}
+                        type="button"
+                        onClick={() => {
+                          setFormData((p) => ({ ...p, packageSlug: pkg.slug }))
+                          setErrors((e) => ({ ...e, packageSlug: undefined }))
+                        }}
+                        className={`hover:bg-secondary/20 relative w-full content-end justify-start rounded-2xl border-2 px-4 py-5 text-left transition-all duration-150 ${isSelected ? 'border-secondary bg-secondary hover:bg-secondary/90 border text-white' : 'border'}`}
                       >
-                        <div className="flex items-start justify-start gap-4">
-                          <div className={`size-5 rounded-full border shrink-0 ml-4 flex items-center justify-center ${isSelected ? 'border-foreground bg-foreground' : 'border-foreground/40'}`}>
-                            {isSelected && <span className="size-2 rounded-full bg-background" />}
+                        <div className="grid grid-cols-1 content-end">
+
+                          <div
+                            className={`absolute top-3 right-3 flex size-5 shrink-0 items-center justify-center rounded-full border ${isSelected ? 'border-foreground bg-foreground' : 'border-foreground/40'}`}
+                          >
+                            {isSelected && <span className="bg-background size-2 rounded-full" />}
                           </div>
-                          <div>
-                            <p className={`text-xl leading-none mb-1 ${isSelected ? 'text-foreground' : 'text-foreground'}`}>{pkg.name}</p>
-                            <p className={`text-sm ${isSelected ? 'text-foreground/60' : 'text-foreground/60'}`}>{pkg.description}</p>
-                            {packagePrices[pkg.slug] && (
-                              <p className={`text-lg mt-1.5 ${isSelected ? 'text-foreground' : 'text-foreground/70'}`}>
-                                {fmtCents(packagePrices[pkg.slug], depositCurrency)}
-                              </p>
-                            )}
-                          </div>
+                          <span
+                            className={`mb-1 font-serif text-[1.5rem] leading-none whitespace-pre-line ${isSelected ? 'text-white' : 'text-foreground'}`}
+                          >
+                            {pkg.name}
+                          </span>
+                          <span
+                            className={`text-lg font-normal whitespace-pre-line ${isSelected ? 'text-white/60' : 'text-foreground/60'}`}
+                          >
+                            {pkg.description}
+                          </span>
+                          {packagePrices[pkg.slug] && (
+                            <p
+                              className={`mt-1.5 text-lg ${isSelected ? 'text-white' : 'text-foreground/70'}`}
+                            >
+                              {fmtCents(packagePrices[pkg.slug], depositCurrency)}
+                            </p>
+                          )}
                         </div>
                       </Button>
                     )
                   })}
-                  {errors.packageSlug && <p className="text-sm text-background/70 pt-1" role="alert">{errors.packageSlug}</p>}
-                  <Button type="button" onClick={handlePackageSubmit}
-                    className="w-full mt-4 h-16"
+                  {errors.packageSlug && (
+                    <p className="text-background/70 pt-1 text-sm" role="alert">
+                      {errors.packageSlug}
+                    </p>
+                  )}
+                  <Button
+                    type="button"
+                    onClick={handlePackageSubmit}
+                    className="col-start-1 col-end-1 mt-4 h-16 w-full"
                   >
                     Continue <ArrowRight className="size-4" />
                   </Button>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Step 2: contact form on white */}
-            {step === 2 && (
-              <div className="text-foreground px-12 py-16 lg:px-30 lg:py-24 grid place-content-center h-full" style={{ backgroundColor: 'oklch(0.9940 0.0041 91.4453)' }}>
-                <form onSubmit={handleSubmit} className="max-w-lg mx-auto w-full space-y-8">
-                  <div className="relative">
-                    <label htmlFor="name" className={`absolute left-0 transition-all duration-200 pointer-events-none ${focusedField === 'name' || formData.name ? '-top-6 text-xs uppercase tracking-[0.15em] text-muted-foreground' : 'top-4 text-foreground/60'}`}>Full Name</label>
-                    <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} onFocus={() => setFocusedField('name')} onBlur={() => setFocusedField(null)} className="w-full py-4 bg-transparent border-b-2 border-border text-foreground text-lg focus:outline-none focus:border-foreground transition-colors" />
-                    {errors.name && <p className="text-sm mt-2">{errors.name}</p>}
-                  </div>
-                  <div className="relative">
-                    <label htmlFor="email" className={`absolute left-0 transition-all duration-200 pointer-events-none ${focusedField === 'email' || formData.email ? '-top-6 text-xs uppercase tracking-[0.15em] text-muted-foreground' : 'top-4 text-foreground/60'}`}>Email Address</label>
-                    <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} onFocus={() => setFocusedField('email')} onBlur={() => setFocusedField(null)} className="w-full py-4 bg-transparent border-b-2 border-border text-foreground text-lg focus:outline-none focus:border-foreground transition-colors" />
-                    {errors.email && <p className="text-sm text-muted-foreground mt-2">{errors.email}</p>}
-                  </div>
-                  <div className="relative">
-                    <label htmlFor="address" className={`absolute left-0 transition-all duration-200 pointer-events-none ${focusedField === 'address' || formData.address ? '-top-6 text-xs uppercase tracking-[0.15em] text-muted-foreground' : 'top-4 text-foreground/60'}`}>Property Address</label>
-                    <input type="text" id="address" name="address" value={formData.address} onChange={handleInputChange} onFocus={() => setFocusedField('address')} onBlur={() => setFocusedField(null)} className="w-full py-4 bg-transparent border-b-2 border-border text-foreground text-lg focus:outline-none focus:border-foreground transition-colors" />
-                    {errors.address && <p className="text-sm text-muted-foreground mt-2">{errors.address}</p>}
-                  </div>
-                  <Button type="submit" fullWidth className="mt-8 h-16">
-                    Choose a date <ArrowRight className="size-4" />
+              {/* Step 2: contact form on white */}
+              {step === 2 && (
+                <div
+                  className="px-5 md:px-15 lg:px-20 xl:px-60 py-10 md:py-30 mx-auto grid w-full grid-cols-1 place-items-end gap-6 space-x-3"
+
+                >
+                  <form onSubmit={handleSubmit} className="grid items-center mx-auto w-full max-w-lg space-y-8 min-w-full">
+                    <div className="relative">
+                      <label
+                        htmlFor="name"
+                        className={`pointer-events-none absolute left-0 transition-all duration-200 ${focusedField === 'name' || formData.name ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                      >
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField('name')}
+                        onBlur={() => setFocusedField(null)}
+                        className="border-border text-foreground focus:border-foreground w-full border-b-2 bg-transparent py-4 text-lg transition-colors focus:outline-none"
+                      />
+                      {errors.name && <p className="mt-2 text-sm">{errors.name}</p>}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="email"
+                        className={`pointer-events-none absolute left-0 transition-all duration-200 ${focusedField === 'email' || formData.email ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                      >
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField(null)}
+                        className="border-border text-foreground focus:border-foreground w-full border-b-2 bg-transparent py-4 text-lg transition-colors focus:outline-none"
+                      />
+                      {errors.email && <p className="text-muted-foreground mt-2 text-sm">{errors.email}</p>}
+                    </div>
+                    <div className="relative">
+                      <label
+                        htmlFor="address"
+                        className={`pointer-events-none absolute left-0 transition-all duration-200 ${focusedField === 'address' || formData.address ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                      >
+                        Property Address
+                      </label>
+                      <input
+                        type="text"
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField('address')}
+                        onBlur={() => setFocusedField(null)}
+                        className="border-border text-foreground focus:border-foreground w-full border-b-2 bg-transparent py-4 text-lg transition-colors focus:outline-none"
+                      />
+                      {errors.address && (
+                        <p className="text-muted-foreground mt-2 text-sm">{errors.address}</p>
+                      )}
+                    </div>
+                    <Button type="submit" fullWidth className="mt-8 h-16">
+                      Choose a date <ArrowRight className="size-4" />
+                    </Button>
+                  </form>
+                </div>
+              )}
+
+              {/* Step 3: date grid on red */}
+              {step === 3 && (
+                <div className="px-5 md:px-15 lg:px-20 xl:px-60 py-10 md:py-30 mx-auto grid w-full grid-cols-1 place-items-stretch gap-6 space-x-3">
+                  <fieldset>
+                    <legend className="text-background/60 mb-6 text-xs tracking-[0.2em] uppercase">
+                      Select your install window
+                    </legend>
+                    <SlidingDateGrid
+                      slots={slots}
+                      selected={formData.installDate}
+                      onSelect={handleDateSelect}
+                      loading={slotsLoading}
+                    />
+                    {errors.installDate && (
+                      <p className="text-background/70 mt-3 text-sm" role="alert">
+                        {errors.installDate}
+                      </p>
+                    )}
+                  </fieldset>
+                  <Button
+                    variant="default"
+                    type="button"
+                    fullWidth
+                    onClick={handleDateSubmit}
+                    disabled={!formData.installDate}
+                    className="h-16"
+                  >
+                    Continue to payment <ArrowRight className="size-4" />
                   </Button>
-                </form>
-              </div>
-            )}
-
-            {/* Step 3: date grid on red */}
-            {step === 3 && (
-              <div className="grid place-content-center px-12 py-16 lg:px-30 lg:py-24 justify-center">
-                <fieldset>
-                  <legend className="text-xs uppercase tracking-[0.2em] text-background/60 mb-6">Select your install window</legend>
-                  <SlidingDateGrid slots={slots} selected={formData.installDate} onSelect={handleDateSelect} loading={slotsLoading} />
-                  {errors.installDate && <p className="text-sm text-background/70 mt-3" role="alert">{errors.installDate}</p>}
-                </fieldset>
-                <Button variant="default" type="button" fullWidth onClick={handleDateSubmit} disabled={!formData.installDate} className="h-16">
-                  Continue to payment <ArrowRight className="size-4" />
-                </Button>
-                <p className="text-center text-sm text-background/50 mt-4">{fmtCents(depositAmountCents, depositCurrency)} deposit applied to your final balance on install day.</p>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+                  <p className="text-background/50 mt-4 text-center text-sm">
+                    {fmtCents(depositAmountCents, depositCurrency)} deposit applied to your final balance on
+                    install day.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>

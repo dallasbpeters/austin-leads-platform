@@ -2,20 +2,20 @@
 
 **Scan date**: 2026-05-10  
 **Codebase**: `/Users/dallas/Development/austin-leads-platform`  
-**Scope**: ESLint (`typescript-eslint` + `js/recommended`) on `src/**/*.{js,jsx,ts,tsx,mjs}` — excludes `.agents/`, `.codex/`, `.next/`, `scripts/` per ESLint config  
+**Scope**: ESLint (`typescript-eslint` + `js/recommended`) on `src/**/*.{js,jsx,ts,tsx,mjs}` — excludes `.agents/`, `.codex/`, `.next/`, `scripts/` per ESLint config
 
 **Total ESLint dead-code signals (initial)**: 2  
-**Remediated in this pass**: 2  
+**Remediated in this pass**: 2
 
 ---
 
 ## Summary by category
 
-| Category | Initial | Notes |
-|----------|---------|--------|
+| Category                                                                        | Initial                                          | Notes                                             |
+| ------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------- |
 | CSS (`src/styles/*.css` class tokens → substring match in `src/**` + root HTML) | 47 likely-unused class tokens (of 115 extracted) | See **CSS class usage** below; method has caveats |
-| Slim | — | N/A for this repo |
-| React / Next (unused imports / vars) | 2 | Resolved below |
+| Slim                                                                            | —                                                | N/A for this repo                                 |
+| React / Next (unused imports / vars)                                            | 2                                                | Resolved below                                    |
 
 ---
 
@@ -24,7 +24,7 @@
 **How**: `scripts/css-class-usage-audit.mjs` scans `src/styles/*.css`, extracts `.class-name` tokens from selectors (comments stripped; `@keyframes` bodies skipped), then checks whether each token appears **anywhere as a substring** in:
 
 - `src/**/*.{jsx,tsx,js,ts,mjs,html,md}`
-- `index.html`, `dashboard.html`, `publish.html` at repo root  
+- `index.html`, `dashboard.html`, `publish.html` at repo root
 
 **Re-run**:
 
@@ -45,18 +45,18 @@ node scripts/css-class-usage-audit.mjs
 
 All definitions traced to **`src/styles/globals.css`** — mostly legacy palette utilities (`bg-primary-*`), hover/outline/shadow helpers, `google-sans*` modifiers, `btn--full`, and `solar-*` layout helpers.
 
-| Class token |
-|-------------|
-| `accent-color-primary`, `bg-blue-400`, `bg-button-secondary`, `bg-orange-soft` |
+| Class token                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------- |
+| `accent-color-primary`, `bg-blue-400`, `bg-button-secondary`, `bg-orange-soft`                                |
 | `bg-primary-100` … `bg-primary-900` (full ladder), `bg-secondary-300`, `bg-secondary-700`, `bg-secondary-800` |
-| `bg-surface`, `bg-tertiary`, `bg-tertiary-100`, `bg-tertiary-300`, `bg-tertiary-700`, `bg-tertiary-alt` |
-| `border-color-button-secondary`, `border-color-secondary` |
-| `btn--full` |
-| `google-sans`, `google-sans-normal`, `google-sans-medium`, `google-sans-bold` |
-| `hover-bg-button-secondary`, `hover-shadow-color-primary`, `hover-shadow-theme-brand`, `hover-text-primary` |
-| `outline-color-focus`, `shadow-color-primary`, `shadow-color-sm`, `shadow-color-xl`, `shadow-theme-brand` |
-| `solar-grid-bg`, `solar-range`, `solar-shell`, `solar-shell-narrow` |
-| `text-primary-300`, `text-primary-700`, `text-slate-400`, `text-slate-800`, `text-slate-950` |
+| `bg-surface`, `bg-tertiary`, `bg-tertiary-100`, `bg-tertiary-300`, `bg-tertiary-700`, `bg-tertiary-alt`       |
+| `border-color-button-secondary`, `border-color-secondary`                                                     |
+| `btn--full`                                                                                                   |
+| `google-sans`, `google-sans-normal`, `google-sans-medium`, `google-sans-bold`                                 |
+| `hover-bg-button-secondary`, `hover-shadow-color-primary`, `hover-shadow-theme-brand`, `hover-text-primary`   |
+| `outline-color-focus`, `shadow-color-primary`, `shadow-color-sm`, `shadow-color-xl`, `shadow-theme-brand`     |
+| `solar-grid-bg`, `solar-range`, `solar-shell`, `solar-shell-narrow`                                           |
+| `text-primary-300`, `text-primary-700`, `text-slate-400`, `text-slate-800`, `text-slate-950`                  |
 
 **Suggested cleanup**: Remove or consolidate blocks in `globals.css` `@layer components` only after spot-checking grep/CMS usage for tokens you care about.
 
@@ -66,10 +66,10 @@ All definitions traced to **`src/styles/globals.css`** — mostly legacy palette
 
 ### Automated findings (ESLint)
 
-| File | Issue | Action |
-|------|--------|--------|
-| `src/components/StripeCheckout.tsx` | Unused import `useRef` from `react` (`@typescript-eslint/no-unused-vars`) | Removed `useRef` from import list |
-| `src/components/ui/tooltip.jsx` | Unused import `import * as React from "react"` (`no-unused-vars`) | Removed unused `React` import (automatic JSX runtime) |
+| File                                | Issue                                                                     | Action                                                |
+| ----------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `src/components/StripeCheckout.tsx` | Unused import `useRef` from `react` (`@typescript-eslint/no-unused-vars`) | Removed `useRef` from import list                     |
+| `src/components/ui/tooltip.jsx`     | Unused import `import * as React from "react"` (`no-unused-vars`)         | Removed unused `React` import (automatic JSX runtime) |
 
 ### Verification
 
@@ -96,9 +96,9 @@ These match the spirit of the dead-code skill but need explicit tooling or human
 
 Per `.claude/skills/dead-code/SKILL.md`, the full pipeline also includes:
 
-- Creating a **Linear** issue and labeled branch  
-- Item-by-item **approval** in chat  
-- Cleanup **sub-agents** and deleting this report after merge  
+- Creating a **Linear** issue and labeled branch
+- Item-by-item **approval** in chat
+- Cleanup **sub-agents** and deleting this report after merge
 
 **Not executed in this pass** — no Linear issue or git branch was created. If you want that flow, say so with your Linear team/project preference and we can wire the next audit through `plugin-linear-linear` and a dedicated branch.
 
@@ -106,7 +106,7 @@ Per `.claude/skills/dead-code/SKILL.md`, the full pipeline also includes:
 
 ## Next steps (pick any)
 
-1. Keep this file as a record; open a Linear ticket manually using the table above if you track debt there.  
-2. Add `pnpm run lint` (wrapping the ESLint command) to CI so unused imports regress visibly.  
-3. Run **knip** (or similar) for a second-phase export/unused-file report — review output before deleting anything.  
+1. Keep this file as a record; open a Linear ticket manually using the table above if you track debt there.
+2. Add `pnpm run lint` (wrapping the ESLint command) to CI so unused imports regress visibly.
+3. Run **knip** (or similar) for a second-phase export/unused-file report — review output before deleting anything.
 4. Triage the **47 CSS tokens** above (grep + CMS check), then delete unused `@layer components` blocks in batches and run `pnpm build`.

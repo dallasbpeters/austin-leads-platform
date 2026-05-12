@@ -2,7 +2,7 @@ import { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { buildSanityImageUrl } from '@/lib/platform/imageSource'
 
 export default function GenericFooter({ site }) {
-    const logoUrl = buildSanityImageUrl(site?.brand?.logo, { width: 200 })
+  const logoUrl = buildSanityImageUrl(site?.brand?.logo, { width: 200 })
   const logoAlt = site?.brand?.logo?.alt || site?.name || ''
   return (
     <footer
@@ -17,15 +17,21 @@ export default function GenericFooter({ site }) {
         <div className="space-y-2">
           {logoUrl ? (
             <div className="flex items-center gap-2">
-            <img src={logoUrl} alt={logoAlt} width={200} height={200} className="h-12 w-auto object-contain filter brightness-120" />
-            <h2 className="text-secondary-foreground text-2xl tracking-normal">{site.name}</h2>
+              <img
+                src={logoUrl}
+                alt={logoAlt}
+                width={200}
+                height={200}
+                className="h-12 w-auto object-contain brightness-120 filter"
+              />
+              <h2 className="text-secondary-foreground text-2xl tracking-normal">{site.name}</h2>
             </div>
           ) : (
             <span aria-hidden className="text-secondary-foreground/70 text-sm tracking-[0.2em] uppercase">
               {(site?.name || 'S').charAt(0)}
             </span>
           )}
-          
+
           <p className="text-md text-secondary-foreground/70 max-w-2xl leading-6">{site.seo?.description}</p>
         </div>
         <div className="text-md text-secondary-foreground/70 space-y-2">

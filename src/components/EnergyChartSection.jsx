@@ -122,10 +122,7 @@ function resolveAreaPointValue(point, seriesIndex, seriesCount) {
   return 0
 }
 
-export default function EnergyChartSection({
-  section = null,
-  sectionId = 'energy-chart',
-}) {
+export default function EnergyChartSection({ section = null, sectionId = 'energy-chart' }) {
   const hasSanityPoints = Array.isArray(section?.chartPoints)
   const points = hasSanityPoints ? section.chartPoints.filter(Boolean) : defaultPoints
 

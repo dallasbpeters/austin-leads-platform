@@ -81,10 +81,7 @@ const fallbackCards = [
   },
 ]
 
-export default function CalculatorSection({
-  section = null,
-  sectionId = 'solar-calculator',
-}) {
+export default function CalculatorSection({ section = null, sectionId = 'solar-calculator' }) {
   const [bill, setBill] = useState(DEFAULT_BILL)
   const results = useMemo(() => calculate(bill), [bill])
   const title = section?.title || 'See what solar could save'

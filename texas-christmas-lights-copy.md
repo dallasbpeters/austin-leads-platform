@@ -1,5 +1,6 @@
 # Texas Christmas Lights — Landing Page Copy
-*txchristmaslights.com — includes all section copy + SEO meta content*
+
+_txchristmaslights.com — includes all section copy + SEO meta content_
 
 > **[Bracketed items]** need real client data before publishing.
 
@@ -26,7 +27,7 @@ See our work
 
 ## 2. Social proof bar
 
-*Four stats displayed inline beneath the hero. Replace bracketed values with real numbers.*
+_Four stats displayed inline beneath the hero. Replace bracketed values with real numbers._
 
 - [450]+ homes decorated in the Austin area
 - [7] seasons in business
@@ -54,11 +55,11 @@ After the holidays — we schedule takedowns from January 2 through January 31 �
 
 **Supporting note**
 
-*Eyebrow:* One thing to know
+_Eyebrow:_ One thing to know
 
-*Heading:* Dates go fast in July
+_Heading:_ Dates go fast in July
 
-*Text:* Most clients book 4–6 weeks before their target install date. A deposit holds your window once you confirm — no other commitment needed until install day.
+_Text:_ Most clients book 4–6 weeks before their target install date. A deposit holds your window once you confirm — no other commitment needed until install day.
 
 ---
 
@@ -81,7 +82,7 @@ Gutters, roofline peaks, and front entry. Clean coverage for the front face of t
 - Up to [120 linear feet] included
 - Additional footage available
 
-*Starting at $[XXX] · deposit to reserve*
+_Starting at $[XXX] · deposit to reserve_
 
 **Package 2 — Full front**
 Everything in the roofline package plus trees, bushes, walkways, and any exterior features along the front of the property.
@@ -91,7 +92,7 @@ Everything in the roofline package plus trees, bushes, walkways, and any exterio
 - Pathway stakes or rail wrapping
 - Stake lighting for bed borders
 
-*Starting at $[XXX] · deposit to reserve*
+_Starting at $[XXX] · deposit to reserve_
 
 **Package 3 — Full property**
 Roofline, front yard, backyard, side fences, trees throughout. This is the full picture — designed on a walkthrough so nothing gets missed.
@@ -101,12 +102,12 @@ Roofline, front yard, backyard, side fences, trees throughout. This is the full 
 - Fence and gate lighting
 - Custom layout from walkthrough
 
-*Custom quote · deposit to reserve*
+_Custom quote · deposit to reserve_
 
 **Add-on: Commercial property**
 Storefronts, office buildings, apartment entries, and retail spaces. We handle permitting coordination where required and can work overnight if the property needs it.
 
-*Custom quote · contact us for availability*
+_Custom quote · contact us for availability_
 
 ---
 
@@ -118,14 +119,14 @@ Recent installs
 **Headline**
 Work from around Austin
 
-**Subhead** *(optional)*
+**Subhead** _(optional)_
 Every job is photographed after install. These are real homes we've worked on in the Austin area — no stock photos.
 
 **Image caption format**
 [Neighborhood name] · [Package name] · [Year]
-*Example: "Round Rock · Full front · 2025"*
+_Example: "Round Rock · Full front · 2025"_
 
-**Empty state** *(before photos are added)*
+**Empty state** _(before photos are added)_
 Photos from this season's installs will appear here in November.
 
 ---
@@ -161,6 +162,7 @@ Austin and surrounding areas
 We currently serve Austin and the communities within [30 miles]. If you're not sure whether we cover your area, request a quote and we'll confirm.
 
 **Cities served**
+
 - Austin
 - Cedar Park
 - Round Rock
@@ -172,7 +174,7 @@ We currently serve Austin and the communities within [30 miles]. If you're not s
 - Lakeway
 - Bee Cave
 
-*Add or remove based on actual service coverage.*
+_Add or remove based on actual service coverage._
 
 ---
 
@@ -184,7 +186,7 @@ What clients say
 **Headline**
 From homeowners in the Austin area
 
-*Replace placeholder quotes with real client reviews before launch. Pull from Google if available — named reviews with a specific detail perform better than generic praise.*
+_Replace placeholder quotes with real client reviews before launch. Pull from Google if available — named reviews with a specific detail perform better than generic praise._
 
 **Testimonial 1 — placeholder**
 "They came out, did the whole front of the house, and were done before lunch. Lights looked exactly like what we talked about. They've got our business every year."
@@ -249,13 +251,14 @@ Reserve your install date
 Spots book up starting in July. Fill out the form and we'll follow up within [1 business day] with a quote and available windows. A deposit holds your date once you confirm.
 
 **Form fields**
+
 - Full name
 - Phone number
 - Email address
 - Street address or neighborhood
-- Property type *(select: Residential / Commercial)*
-- Package interest *(select: Roofline / Full front / Full property / Commercial / Not sure yet)*
-- Anything else we should know *(optional)*
+- Property type _(select: Residential / Commercial)_
+- Package interest _(select: Roofline / Full front / Full property / Commercial / Not sure yet)_
+- Anything else we should know _(optional)_
 
 **Submit button**
 Request a quote
@@ -270,7 +273,7 @@ We've got your request. Someone from our team will follow up within [1 business 
 **Business name**
 Texas Christmas Lights
 
-**Tagline** *(optional)*
+**Tagline** _(optional)_
 Professional installation in Austin and surrounding areas
 
 **Phone:** [(512) 000-0000]
@@ -288,81 +291,81 @@ Privacy policy · Terms of service · © [2025] Texas Christmas Lights
 
 ### Homepage
 
-| Field | Value |
-|---|---|
-| Page title | Professional Christmas light installation in Austin, TX \| Texas Christmas Lights |
+| Field            | Value                                                                                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page title       | Professional Christmas light installation in Austin, TX \| Texas Christmas Lights                                                                                                                         |
 | Meta description | Texas Christmas Lights installs, services, and removes holiday lighting for homes and businesses in Austin and surrounding areas. Flat-rate pricing. Book your install window early — dates fill in July. |
-| H1 | Professional Christmas light installation in Austin |
-| Canonical URL | https://txchristmaslights.com/ |
-| OG title | Professional Christmas light installation in Austin, TX |
-| OG description | We install your lights, handle mid-season service, and take everything down after the holidays. Serving Austin, Round Rock, Cedar Park, and surrounding areas. |
-| OG image alt | A two-story Austin home with warm white Christmas lights along the roofline and front trees at night |
+| H1               | Professional Christmas light installation in Austin                                                                                                                                                       |
+| Canonical URL    | https://txchristmaslights.com/                                                                                                                                                                            |
+| OG title         | Professional Christmas light installation in Austin, TX                                                                                                                                                   |
+| OG description   | We install your lights, handle mid-season service, and take everything down after the holidays. Serving Austin, Round Rock, Cedar Park, and surrounding areas.                                            |
+| OG image alt     | A two-story Austin home with warm white Christmas lights along the roofline and front trees at night                                                                                                      |
 
 ### Services page
 
-| Field | Value |
-|---|---|
-| Page title | Christmas light installation services in Austin \| Texas Christmas Lights |
+| Field            | Value                                                                                                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page title       | Christmas light installation services in Austin \| Texas Christmas Lights                                                                                                             |
 | Meta description | Residential and commercial Christmas light installation in the Austin area. Roofline, full-yard, and custom packages. Includes installation, mid-season service, and January removal. |
-| H1 | Christmas light installation for Austin homes and businesses |
-| Canonical URL | https://txchristmaslights.com/services |
-| OG title | Christmas light installation services — Austin, TX |
-| OG description | Roofline packages, full-yard installs, and commercial lighting. All packages include installation, upkeep, and post-holiday removal. |
-| OG image alt | Crew installing warm white lights along a single-story Austin home roofline |
+| H1               | Christmas light installation for Austin homes and businesses                                                                                                                          |
+| Canonical URL    | https://txchristmaslights.com/services                                                                                                                                                |
+| OG title         | Christmas light installation services — Austin, TX                                                                                                                                    |
+| OG description   | Roofline packages, full-yard installs, and commercial lighting. All packages include installation, upkeep, and post-holiday removal.                                                  |
+| OG image alt     | Crew installing warm white lights along a single-story Austin home roofline                                                                                                           |
 
 ### How it works page
 
-| Field | Value |
-|---|---|
-| Page title | How Christmas light installation works \| Texas Christmas Lights Austin |
+| Field            | Value                                                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page title       | How Christmas light installation works \| Texas Christmas Lights Austin                                                                                                   |
 | Meta description | Here's what to expect from booking to takedown: we quote your home, hold your date with a deposit, install everything on the scheduled day, and remove it all in January. |
-| H1 | From quote to takedown — here's what to expect |
-| Canonical URL | https://txchristmaslights.com/how-it-works |
-| OG title | How Christmas light installation works in Austin |
-| OG description | We handle the whole job — install, mid-season service, and removal. No tools required on your end. |
-| OG image alt | Crew member on a ladder running lights along a roofline at dusk |
+| H1               | From quote to takedown — here's what to expect                                                                                                                            |
+| Canonical URL    | https://txchristmaslights.com/how-it-works                                                                                                                                |
+| OG title         | How Christmas light installation works in Austin                                                                                                                          |
+| OG description   | We handle the whole job — install, mid-season service, and removal. No tools required on your end.                                                                        |
+| OG image alt     | Crew member on a ladder running lights along a roofline at dusk                                                                                                           |
 
 ### Service area page
 
-| Field | Value |
-|---|---|
-| Page title | Christmas light installation in Austin, Cedar Park, Round Rock and more \| Texas Christmas Lights |
+| Field            | Value                                                                                                                                                    |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page title       | Christmas light installation in Austin, Cedar Park, Round Rock and more \| Texas Christmas Lights                                                        |
 | Meta description | We serve Austin and communities within 30 miles, including Cedar Park, Round Rock, Pflugerville, Georgetown, Leander, Kyle, Buda, Lakeway, and Bee Cave. |
-| H1 | Service area: Austin and surrounding communities |
-| Canonical URL | https://txchristmaslights.com/service-area |
-| OG title | Where we install: Austin and nearby communities |
-| OG description | Serving Austin, Cedar Park, Round Rock, Pflugerville, Georgetown, Leander, Kyle, Buda, Lakeway, and Bee Cave. |
-| OG image alt | Map of the greater Austin, Texas area with service zone highlighted |
+| H1               | Service area: Austin and surrounding communities                                                                                                         |
+| Canonical URL    | https://txchristmaslights.com/service-area                                                                                                               |
+| OG title         | Where we install: Austin and nearby communities                                                                                                          |
+| OG description   | Serving Austin, Cedar Park, Round Rock, Pflugerville, Georgetown, Leander, Kyle, Buda, Lakeway, and Bee Cave.                                            |
+| OG image alt     | Map of the greater Austin, Texas area with service zone highlighted                                                                                      |
 
 ### FAQ page
 
-| Field | Value |
-|---|---|
-| Page title | Christmas light installation FAQ \| Texas Christmas Lights Austin |
+| Field            | Value                                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page title       | Christmas light installation FAQ \| Texas Christmas Lights Austin                                                                                         |
 | Meta description | Answers to common questions about our Christmas light installation service — pricing, deposits, mid-season service, takedown scheduling, and how to book. |
-| H1 | Common questions about our installation service |
-| Canonical URL | https://txchristmaslights.com/faq |
-| OG title | Christmas light installation FAQ — Austin, TX |
-| OG description | How deposits work, what's included, when to book, and what happens if something stops working. |
-| OG image alt | Front of an Austin home decorated with warm white lights at night |
+| H1               | Common questions about our installation service                                                                                                           |
+| Canonical URL    | https://txchristmaslights.com/faq                                                                                                                         |
+| OG title         | Christmas light installation FAQ — Austin, TX                                                                                                             |
+| OG description   | How deposits work, what's included, when to book, and what happens if something stops working.                                                            |
+| OG image alt     | Front of an Austin home decorated with warm white lights at night                                                                                         |
 
 ### Book / quote page
 
-| Field | Value |
-|---|---|
-| Page title | Get a Christmas light installation quote \| Texas Christmas Lights Austin |
+| Field            | Value                                                                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Page title       | Get a Christmas light installation quote \| Texas Christmas Lights Austin                                                                                 |
 | Meta description | Request a quote for professional Christmas light installation in Austin. Tell us about your home or business and we'll follow up within one business day. |
-| H1 | Reserve your install date |
-| Canonical URL | https://txchristmaslights.com/book |
-| OG title | Get a Christmas lights installation quote in Austin |
-| OG description | Spots book up starting in July. Request a quote and we'll confirm pricing and available windows within one business day. |
-| OG image alt | Warm Christmas lights along the roofline of an Austin home at night |
+| H1               | Reserve your install date                                                                                                                                 |
+| Canonical URL    | https://txchristmaslights.com/book                                                                                                                        |
+| OG title         | Get a Christmas lights installation quote in Austin                                                                                                       |
+| OG description   | Spots book up starting in July. Request a quote and we'll confirm pricing and available windows within one business day.                                  |
+| OG image alt     | Warm Christmas lights along the roofline of an Austin home at night                                                                                       |
 
 ---
 
 ### Structured data (schema.org)
 
-*Add as a JSON-LD script block in the page `<head>`. Update all bracketed values.*
+_Add as a JSON-LD script block in the page `<head>`. Update all bracketed values._
 
 ```json
 {
@@ -379,9 +382,16 @@ Privacy policy · Terms of service · © [2025] Texas Christmas Lights
     "addressCountry": "US"
   },
   "areaServed": [
-    "Austin, TX", "Cedar Park, TX", "Round Rock, TX",
-    "Pflugerville, TX", "Georgetown, TX", "Leander, TX",
-    "Kyle, TX", "Buda, TX", "Lakeway, TX", "Bee Cave, TX"
+    "Austin, TX",
+    "Cedar Park, TX",
+    "Round Rock, TX",
+    "Pflugerville, TX",
+    "Georgetown, TX",
+    "Leander, TX",
+    "Kyle, TX",
+    "Buda, TX",
+    "Lakeway, TX",
+    "Bee Cave, TX"
   ],
   "description": "Professional Christmas light installation, mid-season service, and post-holiday removal for homes and businesses in the Austin area.",
   "aggregateRating": {
@@ -396,7 +406,7 @@ Privacy policy · Terms of service · © [2025] Texas Christmas Lights
 
 ### Primary keyword targets
 
-*Use naturally in headings, body copy, and alt text. Don't force them.*
+_Use naturally in headings, body copy, and alt text. Don't force them._
 
 - Christmas light installation Austin TX
 - professional Christmas light installer Austin

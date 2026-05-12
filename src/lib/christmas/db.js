@@ -39,6 +39,7 @@ export async function ensureChristmasTables() {
       -- Customer
       full_name               TEXT NOT NULL,
       email                   TEXT NOT NULL,
+      phone                   TEXT,
       address                 TEXT NOT NULL,
 
       -- Booking
@@ -55,12 +56,17 @@ export async function ensureChristmasTables() {
       balance_amount_cents    INT,
       balance_status          TEXT NOT NULL DEFAULT 'unpaid',
 
-      -- Job status
+      -- Job status & crew
       status                  TEXT NOT NULL DEFAULT 'booked',
+      crew                    TEXT,
       notes                   TEXT,
       site_slug               TEXT NOT NULL DEFAULT 'txchristmaslights'
     )
   `
+
+  -- Guard: add columns that may be missing from older schema
+  await sql`ALTER TABLE christmas_jobs ADD COLUMN IF NOT EXISTS phone TEXT`
+  await sql`ALTER TABLE christmas_jobs ADD COLUMN IF NOT EXISTS crew  TEXT`
 }
 
 // ─── Slots ───────────────────────────────────────────────────────────────────
@@ -70,7 +76,13 @@ export async function deleteSlot(installDate) {
   await sql`DELETE FROM christmas_slots WHERE install_date = ${installDate}::DATE`
 }
 
-export async function upsertSlot({ installDate, capacity, isActive = true, notes = null, seasonYear = 2026 }) {
+export async function upsertSlot({
+  installDate,
+  capacity,
+  isActive = true,
+  notes = null,
+  seasonYear = 2026,
+}) {
   const sql = getSql()
   const id = installDate // use date as natural key
 
@@ -90,9 +102,10 @@ function normalizeDateRow(row) {
   if (!row) return row
   return {
     ...row,
-    install_date: row.install_date instanceof Date
-      ? row.install_date.toISOString().split('T')[0]
-      : String(row.install_date ?? '').split('T')[0],
+    install_date:
+      row.install_date instanceof Date
+        ? row.install_date.toISOString().split('T')[0]
+        : String(row.install_date ?? '').split('T')[0],
   }
 }
 
@@ -190,28 +203,37 @@ export async function getJobByStripeSessionId(sessionId) {
 export async function updateJob(id, updates) {
   const sql = getSql()
   const {
-    status,
-    depositStatus,
-    balanceAmountCents,
-    balanceStatus,
-    notes,
-    stripePaymentIntentId,
+    fullName, email, phone, address, installDate, packageSlug,
+    status, crew, notes,
+    depositStatus, balanceAmountCents, balanceStatus, stripePaymentIntentId,
   } = updates
 
   const [row] = await sql`
     UPDATE christmas_jobs
     SET
+      full_name                 = COALESCE(${fullName ?? null}, full_name),
+      email                     = COALESCE(${email ?? null}, email),
+      phone                     = COALESCE(${phone ?? null}, phone),
+      address                   = COALESCE(${address ?? null}, address),
+      install_date              = COALESCE(${installDate ?? null}::DATE, install_date),
+      package_slug              = COALESCE(${packageSlug ?? null}, package_slug),
       status                    = COALESCE(${status ?? null}, status),
+      crew                      = COALESCE(${crew ?? null}, crew),
+      notes                     = COALESCE(${notes ?? null}, notes),
       deposit_status            = COALESCE(${depositStatus ?? null}, deposit_status),
       balance_amount_cents      = COALESCE(${balanceAmountCents ?? null}, balance_amount_cents),
       balance_status            = COALESCE(${balanceStatus ?? null}, balance_status),
-      notes                     = COALESCE(${notes ?? null}, notes),
       stripe_payment_intent_id  = COALESCE(${stripePaymentIntentId ?? null}, stripe_payment_intent_id),
       updated_at                = NOW()
     WHERE id = ${id}
     RETURNING *
   `
   return row || null
+}
+
+export async function deleteJob(id) {
+  const sql = getSql()
+  await sql`DELETE FROM christmas_jobs WHERE id = ${id}`
 }
 
 export async function getJobsOverview() {
@@ -229,8 +251,16 @@ export async function getJobsOverview() {
     FROM christmas_jobs
     WHERE site_slug = 'txchristmaslights'
   `
-  return counts || {
-    total: 0, booked: 0, confirmed: 0, installed: 0, completed: 0, cancelled: 0,
-    deposits_collected_cents: 0, balances_outstanding: 0,
-  }
+  return (
+    counts || {
+      total: 0,
+      booked: 0,
+      confirmed: 0,
+      installed: 0,
+      completed: 0,
+      cancelled: 0,
+      deposits_collected_cents: 0,
+      balances_outstanding: 0,
+    }
+  )
 }

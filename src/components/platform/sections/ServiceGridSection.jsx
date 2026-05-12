@@ -194,8 +194,7 @@ function buildCardOverlay(hex, variant = 'large') {
   const g = parseInt(hex.slice(3, 5), 16)
   const b = parseInt(hex.slice(5, 7), 16)
   const c = `${r},${g},${b}`
-  if (variant === 'large')
-    return `linear-gradient(to top, rgba(${c},0.95) 20%, rgba(${c},0.08), transparent)`
+  if (variant === 'large') return `linear-gradient(to top, rgba(${c},0.95) 20%, rgba(${c},0.08), transparent)`
   if (variant === 'medium')
     return `linear-gradient(to top, rgba(${c},0.70) 15%, rgba(${c},0.20), transparent)`
   return `linear-gradient(to top, rgba(${c},0.65) 5%, rgba(${c},0.20), transparent)`
@@ -297,25 +296,25 @@ export function ServiceGridSection({ section, sectionId }) {
                     <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                       <Icon className="h-8 w-8" strokeWidth={2} />
                     </div>
-                  ) : null
-                  }
+                  ) : null}
                   {item.number ? (
                     <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                    <div className="type-accent text-[2.5rem] font-mono leading-[1.1] font-bold">{item.number}</div>
-                  </div>
-                  ) : null
-                  }
+                      <div className="type-accent font-mono text-[2.5rem] leading-[1.1] font-bold">
+                        {item.number}
+                      </div>
+                    </div>
+                  ) : null}
 
-                  <h3 className="uppercase text-sm font-mono leading-[1.1] font-bold">{item.eyebrow}</h3>
+                  <h3 className="font-mono text-sm leading-[1.1] font-bold uppercase">{item.eyebrow}</h3>
                   <div className="type-accent mb-3 text-[1.975rem] leading-[1.1] font-bold">{item.title}</div>
-                    {item.price != null ? (
-                      <div className="mb-3 text-[1.575rem] leading-[1.1] font-bold">${item.price}</div>
-                    ) : null}
-                    <PortableTextContent
-              as="div"
-              value={item.copy}
-              className="text-sm mt-1 font-normal text-white"
-            />
+                  {item.price != null ? (
+                    <div className="mb-3 text-[1.575rem] leading-[1.1] font-bold">${item.price}</div>
+                  ) : null}
+                  <PortableTextContent
+                    as="div"
+                    value={item.copy}
+                    className="mt-1 text-sm font-normal text-white"
+                  />
                 </div>
               </Card>
             )
@@ -393,7 +392,7 @@ export function ServiceGridSection({ section, sectionId }) {
                       <PortableTextContent
                         value={item.copy}
                         className="text-md mt-2 leading-6 text-white/82"
-                      />  
+                      />
                     </div>
                   </Card>
                 )

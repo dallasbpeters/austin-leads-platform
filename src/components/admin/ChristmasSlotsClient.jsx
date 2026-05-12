@@ -28,7 +28,10 @@ function fmtDisplay(str) {
   if (!str) return '—'
   const d = str.split('T')[0] ?? str
   return new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC',
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
   })
 }
 
@@ -41,12 +44,10 @@ const sortSlotsAsc = (list) => [...list].sort(compareByDateAsc)
 // ── Multi-select calendar — inline, used in the Add form ─────────────────────
 
 function MultiCalendarPicker({ selected = [], onSelect }) {
-  const [month, setMonth] = useState(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-  )
+  const [month, setMonth] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
 
   return (
-    <Card className="w-fit shadow-none border border-border">
+    <Card className="border-border w-fit border shadow-none">
       <CardContent className="p-0">
         <Calendar
           mode="multiple"
@@ -65,9 +66,7 @@ function MultiCalendarPicker({ selected = [], onSelect }) {
 // ── Single-date calendar picker — used in the Edit form ──────────────────────
 
 function CalendarPicker({ selected, onSelect }) {
-  const [month, setMonth] = useState(
-    selected ?? new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-  )
+  const [month, setMonth] = useState(selected ?? new Date(new Date().getFullYear(), new Date().getMonth(), 1))
 
   const handleSelect = (date) => {
     if (date) setMonth(new Date(date.getFullYear(), date.getMonth(), 1))
@@ -75,7 +74,7 @@ function CalendarPicker({ selected, onSelect }) {
   }
 
   return (
-    <Card size="sm" className="w-fit max-w-[300px] shadow-none border-0">
+    <Card size="sm" className="w-fit max-w-[300px] border-0 shadow-none">
       <CardContent className="p-0">
         <Calendar
           mode="single"
@@ -97,7 +96,7 @@ function DatePickerButton({ value, placeholder = 'Select date' }) {
   return (
     <PopoverTrigger asChild>
       <Button variant="outline" className="w-full justify-start gap-2 text-left font-normal">
-        <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+        <CalendarIcon className="text-muted-foreground h-4 w-4" />
         <span className={value ? 'text-foreground' : 'text-muted-foreground'}>
           {value ? fmtDisplay(toDateStr(value)) : placeholder}
         </span>
@@ -143,11 +142,19 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
   const startEdit = (slot) => {
     const dateKey = slot.install_date?.split('T')[0] ?? slot.install_date
     setEditing(slot.install_date)
-    setEditValues({ installDate: parseDate(dateKey), capacity: slot.capacity, isActive: slot.is_active, notes: slot.notes ?? '' })
+    setEditValues({
+      installDate: parseDate(dateKey),
+      capacity: slot.capacity,
+      isActive: slot.is_active,
+      notes: slot.notes ?? '',
+    })
     setAddOpen(false)
   }
 
-  const cancelEdit = () => { setEditing(null); setEditValues({}) }
+  const cancelEdit = () => {
+    setEditing(null)
+    setEditValues({})
+  }
 
   const handleDelete = (installDate) => {
     if (!confirm(`Delete slot for ${fmtDisplay(installDate)}? This cannot be undone.`)) return
@@ -164,11 +171,20 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
   const handleSave = (originalInstallDate) => {
     const originalKey = originalInstallDate?.split('T')[0] ?? originalInstallDate
     const newKey = toDateStr(editValues.installDate)
-    if (!newKey) { setError('Please select a date.'); return }
+    if (!newKey) {
+      setError('Please select a date.')
+      return
+    }
     setError(null)
     startTransition(async () => {
       try {
-        const result = await saveSlot(newKey, Number(editValues.capacity), editValues.isActive, editValues.notes || null, originalKey)
+        const result = await saveSlot(
+          newKey,
+          Number(editValues.capacity),
+          editValues.isActive,
+          editValues.notes || null,
+          originalKey,
+        )
         const saved = result.slot ?? result
         setSlots((prev) => {
           if (originalKey !== newKey) {
@@ -189,14 +205,17 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
   }
 
   const handleAdd = () => {
-    if (!newDate.installDates.length) { setError('Please select at least one date.'); return }
+    if (!newDate.installDates.length) {
+      setError('Please select at least one date.')
+      return
+    }
     setError(null)
     startTransition(async () => {
       try {
         const results = await Promise.all(
           newDate.installDates.map((d) =>
-            saveSlot(toDateStr(d), Number(newDate.capacity), newDate.isActive, newDate.notes || null)
-          )
+            saveSlot(toDateStr(d), Number(newDate.capacity), newDate.isActive, newDate.notes || null),
+          ),
         )
         setSlots((prev) => {
           let next = [...prev]
@@ -220,20 +239,34 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
     })
   }
 
-  const inputCls = 'border-border bg-background text-foreground w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary'
+  const inputCls =
+    'border-border bg-background text-foreground w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary'
 
   return (
-    <div className="flex flex-col h-full min-h-0 overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       {/* Header */}
-      <div className="border-border border-b px-6 py-4 shrink-0">
+      <div className="border-border shrink-0 border-b px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-foreground text-xl font-semibold">Install slots — 2026 season</h1>
-            <p className="text-muted-foreground text-sm mt-0.5">Manage capacity and availability for each install window</p>
+            <p className="text-muted-foreground mt-0.5 text-sm">
+              Manage capacity and availability for each install window
+            </p>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/christmas" className="text-muted-foreground hover:text-foreground text-sm transition-colors">← Jobs</a>
-            <Popover open={addOpen} onOpenChange={(o) => { setAddOpen(o); if (!o) setNewDate({ installDates: [], capacity: 6, isActive: true, notes: '' }) }}>
+            <a
+              href="/christmas"
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              ← Jobs
+            </a>
+            <Popover
+              open={addOpen}
+              onOpenChange={(o) => {
+                setAddOpen(o)
+                if (!o) setNewDate({ installDates: [], capacity: 6, isActive: true, notes: '' })
+              }}
+            >
               <PopoverTrigger asChild>
                 <Button
                   onClick={() => setEditing(null)}
@@ -242,9 +275,11 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                   + Add date
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-[340px] p-4 space-y-4">
-                <p className="text-foreground font-semibold text-sm">Add install dates</p>
-                <p className="text-muted-foreground text-xs -mt-2">Click dates to select, click again to deselect.</p>
+              <PopoverContent align="end" className="w-[340px] space-y-4 p-4">
+                <p className="text-foreground text-sm font-semibold">Add install dates</p>
+                <p className="text-muted-foreground -mt-2 text-xs">
+                  Click dates to select, click again to deselect.
+                </p>
 
                 <MultiCalendarPicker
                   selected={newDate.installDates}
@@ -260,7 +295,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                         return (
                           <span
                             key={str}
-                            className="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                            className="bg-primary/10 text-primary border-primary/20 inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium"
                           >
                             {fmtDisplay(str)}
                             <button
@@ -272,7 +307,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                                   installDates: v.installDates.filter((x) => toDateStr(x) !== str),
                                 }))
                               }
-                              className="ml-0.5 hover:text-red-600 transition-colors"
+                              className="ml-0.5 transition-colors hover:text-red-600"
                             >
                               <X className="h-3 w-3" />
                             </button>
@@ -284,7 +319,12 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label htmlFor="new-capacity" className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Capacity</label>
+                    <label
+                      htmlFor="new-capacity"
+                      className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase"
+                    >
+                      Capacity
+                    </label>
                     <input
                       id="new-capacity"
                       name="new-capacity"
@@ -297,7 +337,12 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                     />
                   </div>
                   <div>
-                    <label htmlFor="new-notes" className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Notes</label>
+                    <label
+                      htmlFor="new-notes"
+                      className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase"
+                    >
+                      Notes
+                    </label>
                     <input
                       id="new-notes"
                       name="new-notes"
@@ -310,7 +355,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                   </div>
                 </div>
 
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <label className="flex cursor-pointer items-center gap-2 text-sm">
                   <input
                     type="checkbox"
                     name="new-is-active"
@@ -330,8 +375,8 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                     {isPending
                       ? 'Saving…'
                       : newDate.installDates.length > 0
-                      ? `Add ${newDate.installDates.length} slot${newDate.installDates.length !== 1 ? 's' : ''}`
-                      : 'Add slots'}
+                        ? `Add ${newDate.installDates.length} slot${newDate.installDates.length !== 1 ? 's' : ''}`
+                        : 'Add slots'}
                   </button>
                   <button
                     onClick={() => setAddOpen(false)}
@@ -344,12 +389,15 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
             </Popover>
           </div>
         </div>
-        {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
+        {error && (
+          <p role="alert" className="mt-2 text-sm text-red-600">
+            {error}
+          </p>
+        )}
       </div>
 
       <div className="flex-1 overflow-auto p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {/* Slot rows */}
           {slots.map((slot) => {
             const dateKey = getDateKey(slot)
@@ -363,14 +411,16 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
             return (
               <div
                 key={dateKey}
-                className={`border-border rounded-xl border bg-background p-4 transition-shadow hover:shadow-sm ${!slot.is_active ? 'opacity-50' : ''} ${isEditing ? 'col-span-full' : ''}`}
+                className={`border-border bg-background rounded-xl border p-4 transition-shadow hover:shadow-sm ${!slot.is_active ? 'opacity-50' : ''} ${isEditing ? 'col-span-full' : ''}`}
                 aria-label={`Install slot: ${fmtDisplay(dateKey)}`}
               >
                 {isEditing ? (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Date</label>
+                        <label className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase">
+                          Date
+                        </label>
                         <Popover>
                           <DatePickerButton value={editValues.installDate} placeholder="Pick a date" />
                           <PopoverContent align="start" className="w-auto p-0">
@@ -382,7 +432,12 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                         </Popover>
                       </div>
                       <div>
-                        <label htmlFor={`${editId}-capacity`} className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Capacity</label>
+                        <label
+                          htmlFor={`${editId}-capacity`}
+                          className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase"
+                        >
+                          Capacity
+                        </label>
                         <input
                           id={`${editId}-capacity`}
                           name={`${editId}-capacity`}
@@ -396,7 +451,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                       </div>
                     </div>
 
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <label className="flex cursor-pointer items-center gap-2 text-sm">
                       <input
                         type="checkbox"
                         name={`${editId}-active`}
@@ -408,7 +463,12 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                     </label>
 
                     <div>
-                      <label htmlFor={`${editId}-notes`} className="text-muted-foreground text-xs uppercase tracking-wide block mb-1">Notes</label>
+                      <label
+                        htmlFor={`${editId}-notes`}
+                        className="text-muted-foreground mb-1 block text-xs tracking-wide uppercase"
+                      >
+                        Notes
+                      </label>
                       <input
                         id={`${editId}-notes`}
                         name={`${editId}-notes`}
@@ -429,14 +489,17 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                         >
                           {isPending ? 'Saving…' : 'Save'}
                         </button>
-                        <button onClick={cancelEdit} className="text-muted-foreground hover:text-foreground rounded-lg px-4 py-1.5 text-sm transition-colors">
+                        <button
+                          onClick={cancelEdit}
+                          className="text-muted-foreground hover:text-foreground rounded-lg px-4 py-1.5 text-sm transition-colors"
+                        >
                           Cancel
                         </button>
                       </div>
                       <button
                         onClick={() => handleDelete(dateKey)}
                         disabled={isPending}
-                        className="text-muted-foreground hover:text-red-600 text-xs transition-colors disabled:opacity-40"
+                        className="text-muted-foreground text-xs transition-colors hover:text-red-600 disabled:opacity-40"
                       >
                         Delete slot
                       </button>
@@ -444,10 +507,10 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                   </div>
                 ) : (
                   <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 min-w-0">
+                    <div className="flex min-w-0 items-center gap-4">
                       <div className="shrink-0">
                         <p className="text-foreground font-medium">{fmtDisplay(dateKey)}</p>
-                        {slot.notes && <p className="text-muted-foreground text-xs mt-0.5">{slot.notes}</p>}
+                        {slot.notes && <p className="text-muted-foreground mt-0.5 text-xs">{slot.notes}</p>}
                       </div>
                       <div className="flex items-center gap-2">
                         <div
@@ -456,24 +519,41 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                           aria-valuemin={0}
                           aria-valuemax={capacity}
                           aria-label={`${booked} of ${capacity} spots booked`}
-                          className="h-1.5 w-24 rounded-full bg-border overflow-hidden"
+                          className="bg-border h-1.5 w-24 overflow-hidden rounded-full"
                         >
                           <div
                             className={`h-full rounded-full transition-all ${isFull ? 'bg-red-400' : 'bg-primary'}`}
                             style={{ width: `${pct}%` }}
                           />
                         </div>
-                        <span className={`text-xs font-medium tabular-nums ${isFull ? 'text-red-600' : 'text-muted-foreground'}`} aria-hidden="true">
+                        <span
+                          className={`text-xs font-medium tabular-nums ${isFull ? 'text-red-600' : 'text-muted-foreground'}`}
+                          aria-hidden="true"
+                        >
                           {booked}/{capacity}
                         </span>
-                        {isFull && <span className="bg-red-100 text-red-700 text-xs font-medium rounded-full px-2 py-0.5" aria-label="Fully booked">Full</span>}
-                        {!slot.is_active && <span className="bg-gray-100 text-gray-600 text-xs font-medium rounded-full px-2 py-0.5" aria-label="Slot is inactive">Off</span>}
+                        {isFull && (
+                          <span
+                            className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700"
+                            aria-label="Fully booked"
+                          >
+                            Full
+                          </span>
+                        )}
+                        {!slot.is_active && (
+                          <span
+                            className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"
+                            aria-label="Slot is inactive"
+                          >
+                            Off
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button
                       onClick={() => startEdit(slot)}
                       aria-label={`Edit slot for ${fmtDisplay(dateKey)}`}
-                      className="shrink-0 text-muted-foreground hover:text-foreground border border-border rounded-lg px-3 py-1 text-xs font-medium transition-colors hover:bg-muted"
+                      className="text-muted-foreground hover:text-foreground border-border hover:bg-muted shrink-0 rounded-lg border px-3 py-1 text-xs font-medium transition-colors"
                     >
                       Edit
                     </button>
@@ -484,7 +564,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
           })}
 
           {slots.length === 0 && !addOpen && (
-            <p className="text-muted-foreground text-sm text-center py-12">
+            <p className="text-muted-foreground py-12 text-center text-sm">
               No slots yet. Add a date to get started.
             </p>
           )}

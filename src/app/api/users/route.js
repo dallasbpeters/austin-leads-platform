@@ -1,9 +1,5 @@
 import { auth } from '@/auth'
-import {
-  createUser,
-  ensurePlatformUsersTable,
-  listUsers,
-} from '@/lib/auth/users'
+import { createUser, ensurePlatformUsersTable, listUsers } from '@/lib/auth/users'
 
 async function requireAdmin() {
   const session = await auth().catch(() => null)

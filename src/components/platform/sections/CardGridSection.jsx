@@ -57,7 +57,6 @@ export function CardGridSection({ section, sectionId }) {
                   }`}
                 >
                   <div className={reverse ? 'md:order-2 md:text-right' : 'md:order-1'}>
-                    
                     <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">
                       {eyebrow}
                     </p>
@@ -66,7 +65,7 @@ export function CardGridSection({ section, sectionId }) {
                     </p>
                   </div>
                   <div className={reverse ? 'md:order-1' : 'md:order-2'}>
-                  {Icon ? (
+                    {Icon ? (
                       <div
                         className={`bg-primary/10 text-primary mb-4 inline-flex size-12 items-center justify-center rounded-full ${
                           reverse ? 'md:ml-auto' : ''

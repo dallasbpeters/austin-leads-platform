@@ -4,9 +4,9 @@ import { Analytics } from '@vercel/analytics/react'
 import { VercelToolbar } from '@vercel/toolbar/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
-import { Gloock, JetBrains_Mono } from "next/font/google";
-import localFont from "next/font/local";
-import { Agentation } from "agentation";
+import { Gloock, JetBrains_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
+import { Agentation } from 'agentation'
 import '../styles/globals.css'
 import { SanityLive } from '@/sanity/live'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
@@ -23,14 +23,13 @@ const googleSansFlex = localFont({
   variable: '--font-sans',
   display: 'swap',
   adjustFontFallback: false,
-});
+})
 
 const fontSerif = Gloock({
-  subsets: ["latin"],
-  variable: "--font-serif",
+  subsets: ['latin'],
+  variable: '--font-serif',
   weight: '400',
-});
-
+})
 
 const fontMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -95,7 +94,7 @@ export default async function RootLayout({ children }) {
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />
         <SpeedInsights />
-        {process.env.NODE_ENV === "development" && <Agentation />}
+        {process.env.NODE_ENV === 'development' && <Agentation />}
       </body>
     </html>
   )

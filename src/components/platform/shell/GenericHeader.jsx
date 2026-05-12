@@ -12,8 +12,7 @@ import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/san
 
 import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
 
-const CONTACT_LINK_CLASSES =
-  'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9'
+const CONTACT_LINK_CLASSES = 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9'
 
 function NavList({ items, onNavigate }) {
   return (
@@ -100,7 +99,6 @@ export default function GenericHeader({ site, navigation = [] }) {
     return () => observer.disconnect()
   }, [])
 
-
   return (
     <>
       <nav
@@ -116,13 +114,13 @@ export default function GenericHeader({ site, navigation = [] }) {
           <div className="flex items-center justify-between">
             <Link href="/" title={site?.name || ''} className="grid grid-flow-col items-center gap-2">
               {logoUrl ? (
-                <img src={logoUrl} alt={logoAlt} width={40} height={40} className="h-7 w-7 object-contain" />
+                <img src={logoUrl} alt={logoAlt} width={150} height={40} className="h-7 w-7 object-contain" />
               ) : (
-                <span aria-hidden className="text-primary type-display text-xl leading-none font-bold">
+                <span aria-hidden className="text-primary type-display text-xl leading-none font-medium">
                   {(siteName || 'S').charAt(0)}
                 </span>
               )}
-              <div className="sm:text-md type-accent leading-none font-bold text-inherit md:text-lg">
+              <div className="sm:text-md type-accent font-serif leading-none font-bold text-inherit md:text-lg">
                 {siteName}
               </div>
             </Link>
