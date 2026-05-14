@@ -76,7 +76,7 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
 
   return (
     <section
-      className="overflow-hidden bg-white"
+      className="overflow-hidden bg-background"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/StorySection.jsx',
