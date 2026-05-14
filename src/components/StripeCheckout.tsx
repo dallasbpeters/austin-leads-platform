@@ -708,7 +708,9 @@ export function SchedulingForm() {
                         <p className="text-primary mt-2 text-sm">{errors.address}</p>
                       )}
                     </div>
-                    <Button type="submit" fullWidth className="text-xl mt-8 h-16">
+                    <Button type="submit"
+                    disabled={!!errors.name || !!errors.email || !!errors.address}
+                    fullWidth className="text-xl mt-8 h-16">
                       Choose a date <ArrowRight className="size-6" />
                     </Button>
                   </form>
