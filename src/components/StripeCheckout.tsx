@@ -270,15 +270,15 @@ export function SchedulingForm() {
   const [errors, setErrors] = useState<Partial<BookingMetadata>>({})
   const [focusedField, setFocusedField] = useState<string | null>(null)
 
-  const validateInfo = () => {
+  const validateInfo = (data: BookingMetadata) => {
     const newErrors: Partial<BookingMetadata> = {}
-    if (!formData.name.trim()) newErrors.name = 'Name is required'
-    if (!formData.email.trim()) {
+    if (!data.name.trim()) newErrors.name = 'Name is required'
+    if (!data.email.trim()) {
       newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       newErrors.email = 'Please enter a valid email'
     }
-    if (!formData.address.trim()) newErrors.address = 'Property address is required'
+    if (!data.address.trim()) newErrors.address = 'Property address is required'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -306,25 +306,40 @@ export function SchedulingForm() {
 
   const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (validateInfo()) {
-      posthog.identify(formData.email, { email: formData.email, name: formData.name })
-      posthog.capture('booking_info_submitted', {
-        package_slug: formData.packageSlug,
-        site_slug: 'txchristmaslights',
-      })
-      goTo(3)
+    const form = e.currentTarget
+    const nameEl = form.elements.namedItem('name')
+    const emailEl = form.elements.namedItem('email')
+    const addressEl = form.elements.namedItem('address')
+    const snapshot: BookingMetadata = {
+      ...formData,
+      name: nameEl instanceof HTMLInputElement ? nameEl.value : formData.name,
+      email: emailEl instanceof HTMLInputElement ? emailEl.value : formData.email,
+      address: addressEl instanceof HTMLInputElement ? addressEl.value : formData.address,
     }
+    setFormData(snapshot)
+
+    if (!validateInfo(snapshot)) return
+
+    posthog.identify(snapshot.email, { email: snapshot.email, name: snapshot.name })
+    posthog.capture('booking_info_submitted', {
+      package_slug: snapshot.packageSlug,
+      site_slug: 'txchristmaslights',
+    })
+    goTo(3)
   }
 
   const handleDateSubmit = () => {
-    if (validateDate()) {
-      posthog.capture('booking_checkout_started', {
-        package_slug: formData.packageSlug,
-        install_date: formData.installDate,
-        site_slug: 'txchristmaslights',
-      })
-      setShowCheckout(true)
+    if (!validateDate()) return
+    if (!validateInfo(formData)) {
+      goTo(2)
+      return
     }
+    posthog.capture('booking_checkout_started', {
+      package_slug: formData.packageSlug,
+      install_date: formData.installDate,
+      site_slug: 'txchristmaslights',
+    })
+    setShowCheckout(true)
   }
 
   const fetchClientSecret = useCallback(() => startCheckoutSession('deposit', formData), [formData])
@@ -666,7 +681,11 @@ export function SchedulingForm() {
                         onBlur={() => setFocusedField(null)}
                         className="border-border text-foreground focus:border-foreground w-full border-b-2 bg-transparent py-4 text-lg transition-colors focus:outline-none"
                       />
-                      {errors.name && <p className="mt-2 text-sm">{errors.name}</p>}
+                      {errors.name && (
+                        <p className="text-primary mt-2 text-sm" role="alert">
+                          {errors.name}
+                        </p>
+                      )}
                     </div>
                     <div className="relative">
                       <label
@@ -708,9 +727,7 @@ export function SchedulingForm() {
                         <p className="text-primary mt-2 text-sm">{errors.address}</p>
                       )}
                     </div>
-                    <Button type="submit"
-                    disabled={!!errors.name || !!errors.email || !!errors.address}
-                    fullWidth className="text-xl mt-8 h-16">
+                    <Button type="submit" fullWidth className="text-xl mt-8 h-16">
                       Choose a date <ArrowRight className="size-6" />
                     </Button>
                   </form>
@@ -751,7 +768,7 @@ export function SchedulingForm() {
                     fullWidth
                     onClick={handleDateSubmit}
                     disabled={!formData.installDate}
-                    className="text-xlh-16"
+                    className="text-xl mt-8 h-16"
                   >
                     Continue to payment <ArrowRight className="size-6" />
                   </Button>
