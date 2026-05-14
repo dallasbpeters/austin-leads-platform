@@ -17,7 +17,7 @@ const KNOWN_PUBLIC_SITE_ATTRS = new Set(['texas-solar-and-roofing-pros', 'txchri
 /**
  * `data-public-site` on `<html>` (public routes) so tenant CSS scopes match
  * the Medium-style pattern and portals inherit tokens. Operator shells omit
- * this attribute; see `proxy.js` + `src/app/layout.jsx`.
+ * this attribute; see `src/proxy.js` + `src/app/layout.jsx`.
  */
 export function getPublicDataSiteAttribute(site) {
   if (isTxChristmasLightsSite(site)) return 'txchristmaslights'
