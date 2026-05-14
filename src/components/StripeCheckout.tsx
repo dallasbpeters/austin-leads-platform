@@ -656,9 +656,9 @@ export function SchedulingForm() {
                     pill={false}
                     fullWidth={false}
                     onClick={() => goTo(1)}
-                    className="hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
+                    className="px-0hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
                   >
-                    <ArrowLeft className="size-6" /> Back to packages
+                    <ArrowLeft className="size-5" /> Back to packages
                   </Button>
                   <form
                     onSubmit={handleSubmit}
@@ -745,9 +745,9 @@ export function SchedulingForm() {
                     pill={false}
                     fullWidth={false}
                     onClick={() => goTo(2)}
-                    className="hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
+                    className="px-0 hover:bg-background text-secondary hover:text-secondary/90 justify-start"
                   >
-                    <ArrowLeft className="size-6" /> Edit details
+                    <ArrowLeft className="size-5" /> Edit details
                   </Button>
                   <fieldset>
                     <legend className="text-foreground mb-6 text-xs tracking-[0.2em] uppercase">
