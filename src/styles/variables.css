@@ -26,10 +26,10 @@
   --color-black: #111111;
 
   /*
-   * Neutral operator-shell defaults when `<html>` has no tenant theme class
+   * Neutral operator-shell defaults when `<html>` has no `data-public-site`
    * (admin + sign-in). Mirrors `.admin-theme` light tokens so body/Radix
    * portals do not inherit tenant oranges from the primary domain host.
-   * Tenant `.texas-*` / `.txchristmaslights-*` classes override these per slot.
+   * `[data-public-site="…"]` in tenant theme files override these per slot.
    */
   --background: oklch(0.9911 0 0);
   --foreground: oklch(0.2046 0 0);

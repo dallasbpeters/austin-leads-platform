@@ -1,14 +1,15 @@
 /**
  * Texas Solar and Roofing Pros theme.
  *
- * Scoped to `.texas-solar-and-roofing-pros-theme` only so other tenants (e.g.
- * `.txchristmaslights-theme` on `<html>`) never inherit `:root` solar tokens.
+ * Active when `data-public-site="texas-solar-and-roofing-pros"` is set on an
+ * element (typically `<html>` for public routes). See `src/app/layout.jsx` and
+ * `proxy.js`. Selector matches any host element so style-guide previews can
+ * scope the same block on a wrapper `div`.
  *
- * Public hosts apply `${slug}-theme` on `<html>` via `src/app/layout.jsx`.
- * Operator routes (admin, sign-in, studio) omit that class so `.admin-theme`
- * is not overridden. Shared neutrals (`--color-white`, …) stay in `variables.css`.
+ * Operator shells omit `data-public-site`; `:root` neutrals in `variables.css`
+ * apply instead.
  */
-.texas-solar-and-roofing-pros-theme {
+[data-public-site='texas-solar-and-roofing-pros'] {
   --color-primary-h: 205;
   --color-primary-s: 99%;
   --color-primary-l: 36%;

@@ -11,8 +11,7 @@ const buttonVariants = cva(
       variant: {
         default:
           'btn--primary bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
-        dark:
-          'bg-mist-900 text-white hover:bg-mist-900/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
+        dark: 'bg-mist-900 text-white hover:bg-mist-900/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
         secondary: 'btn--secondary',
         tertiary: 'btn--tertiary',
         destructive:
@@ -47,7 +46,15 @@ const buttonVariants = cva(
   },
 )
 
-type ButtonVariant = 'default' | 'dark' | 'secondary' | 'tertiary' | 'destructive' | 'outline' | 'ghost' | 'link'
+type ButtonVariant =
+  | 'default'
+  | 'dark'
+  | 'secondary'
+  | 'tertiary'
+  | 'destructive'
+  | 'outline'
+  | 'ghost'
+  | 'link'
 type ButtonShape = 'default' | 'pill' | 'circle'
 type ButtonSize = 'default' | 'xs' | 'sm' | 'md' | 'lg' | 'icon' | 'icon-xs' | 'icon-sm' | 'icon-lg'
 

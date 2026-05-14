@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["./src/*"], // Maps @/ to the src folder
       "@components/*": ["./src/components/*"],

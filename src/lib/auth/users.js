@@ -260,3 +260,18 @@ export async function verifyCredentials(email, password) {
     return null
   }
 }
+
+/**
+ * OAuth (Google) sign-in: only emails with an active `platform_users` row may access the dashboard.
+ */
+export async function getActivePlatformUserForGoogle(email) {
+  try {
+    await ensurePlatformUsersTable()
+    const row = await getUserRowByEmail(email)
+    if (!row?.is_active) return null
+    return toPublicUser(row)
+  } catch (err) {
+    console.error('[auth/users] getActivePlatformUserForGoogle error:', err)
+    return null
+  }
+}

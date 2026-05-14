@@ -3,6 +3,8 @@
 import dynamic from 'next/dynamic'
 import { CloudRainWind, LocateFixed, MapPin, ShieldAlert, TriangleAlert, Wind } from 'lucide-react'
 
+import posthog from 'posthog-js'
+
 import { useHailWeatherLookup } from '@/hooks/useHailWeatherLookup'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -100,6 +102,7 @@ export default function HailWeatherLookup({ section }) {
           className="grid grid-cols-1 gap-3 md:grid-cols-[300px_400px_200px]"
           onSubmit={(event) => {
             event.preventDefault()
+            posthog.capture('hail_damage_lookup', { query, lookup_method: 'text_search' })
             searchByQuery()
           }}
         >
@@ -107,7 +110,10 @@ export default function HailWeatherLookup({ section }) {
             size="md"
             className="h-11"
             disabled={isPending}
-            onClick={searchByCurrentLocation}
+            onClick={() => {
+              posthog.capture('hail_damage_lookup', { lookup_method: 'geolocation' })
+              searchByCurrentLocation()
+            }}
             type="button"
             variant="outline"
           >

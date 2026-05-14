@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe/stripe'
 import { createJob, ensureChristmasTables, getJobByStripeSessionId } from '@/lib/christmas/db'
+import { getPostHogClient } from '@/lib/posthog-server'
 
 export const runtime = 'nodejs'
 
@@ -55,8 +56,23 @@ export async function POST(req: Request) {
       })
 
       console.log('[stripe/webhook] job created for session', session.id)
+
+      const email = session.customer_email ?? session.customer_details?.email ?? ''
+      const posthog = getPostHogClient()
+      posthog.capture({
+        distinctId: email || session.id,
+        event: 'deposit_payment_confirmed',
+        properties: {
+          stripe_session_id: session.id,
+          package_slug: session.metadata.packageSlug ?? 'unknown',
+          install_date: session.metadata.installDate ?? '',
+          deposit_amount_cents: session.amount_total ?? 15000,
+          site_slug: 'txchristmaslights',
+        },
+      })
     } catch (err) {
       console.error('[stripe/webhook] failed to create job:', err)
+      getPostHogClient().captureException(err)
       return new Response('Internal error creating job', { status: 500 })
     }
   }

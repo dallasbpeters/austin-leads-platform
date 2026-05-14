@@ -1,3 +1,4 @@
+import './sync-gemini-env.js'
 import { NextResponse } from 'next/server'
 import { POST as BasePOST } from 'sanity-plugin-gemini-ai-images-nextjs/route'
 

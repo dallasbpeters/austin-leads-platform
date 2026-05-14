@@ -1,11 +1,11 @@
 /**
  * TX Christmas Lights theme.
  *
- * Class-scoped so it composes with the rest of the platform; the shared
- * @theme inline mapping in theme.css forwards these slot vars to Tailwind
- * utilities.
+ * Active when `data-public-site="txchristmaslights"` is set (see root layout).
+ * Uses attribute selector (not only `html`) so embedded previews can wrap with
+ * the same `data-public-site` value.
  */
-.txchristmaslights-theme {
+[data-public-site='txchristmaslights'] {
   /* hsl fallback first — oklch wins where supported (avoids gray fallbacks on strict parsers / SSR quirks). */
   --background: oklch(0.9862 0.0142 84.5826);
   --foreground: oklch(0.2839 0.0358 151.906);
@@ -76,7 +76,7 @@
    * hsl(var(--color-primary-h) …). Texas solar used to leak these via :root;
    * define Christmas-aligned hues here so nothing inherits solar blues.
    */
-  --color-primary-h: 28;
+  --color-primary-h: 255;
   --color-primary-s: 52%;
   --color-primary-l: 53%;
   --color-secondary-h: 147;
@@ -138,8 +138,7 @@
   --color-cyan-950: var(--secondary);
 }
 
-[data-theme='dark'] .txchristmaslights-theme,
-.txchristmaslights-theme[data-theme='dark'] {
+[data-public-site='txchristmaslights'][data-theme='dark'] {
   --background: oklch(0.2334 0.0318 151.2489);
   --foreground: oklch(0.9303 0.01 155.0876);
   --card: oklch(0.2344 0.0295 152.0197);

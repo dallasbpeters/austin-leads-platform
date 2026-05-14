@@ -181,6 +181,17 @@ function resolveCardColorHex(item) {
   return hex.startsWith('#') ? hex : null
 }
 
+const formatServiceGridPrice = (value) => {
+  const n = Number(value)
+  if (!Number.isFinite(n)) return null
+  return n.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
 function buildCardOverlay(hex, variant = 'large') {
   if (!hex) {
     const fallback = '11,59,66'
@@ -206,7 +217,7 @@ function enrichItems(rawItems) {
     return {
       ...item,
       number: item.number ? parseInt(item.number) : null,
-      price: item.price ? parseFloat(item.price) : null,
+      price: item.price != null && Number.isFinite(Number(item.price)) ? Number(item.price) : null,
       copy: item.body || item.answer || null,
       imageUrl: serviceImage.url,
       imageAlt: serviceImage.alt,
@@ -308,7 +319,9 @@ export function ServiceGridSection({ section, sectionId }) {
                   <h3 className="font-mono text-sm leading-[1.1] font-bold uppercase">{item.eyebrow}</h3>
                   <div className="type-accent mb-3 text-[1.975rem] leading-[1.1] font-bold">{item.title}</div>
                   {item.price != null ? (
-                    <div className="mb-3 text-[1.575rem] leading-[1.1] font-bold">${item.price}</div>
+                    <div className="mb-3 text-[1.575rem] leading-[1.1] font-bold">
+                      {formatServiceGridPrice(item.price)}
+                    </div>
                   ) : null}
                   <PortableTextContent
                     as="div"

@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef, SyntheticEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
+import posthog from 'posthog-js'
 import { startCheckoutSession, type BookingMetadata } from '@/app/actions/stripe'
 import { Button } from '@/components/ui/button'
 import { NavArrowDownSolid } from 'iconoir-react'
@@ -14,6 +15,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, ArrowRight, NavArrowLeft, NavArrowRight } from 'iconoir-react'
 
 const WINDOW_SIZE = 9
@@ -86,10 +88,10 @@ function SlidingDateGrid({
 
   const monthLabel = currentYm
     ? new Date(currentYm + '-01T00:00:00Z').toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'UTC',
-    })
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+      })
     : ''
 
   if (loading) return <p className="text-muted-foreground py-4 text-sm">Loading available dates…</p>
@@ -115,11 +117,7 @@ function SlidingDateGrid({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                type="button"
-                className=""
-              >
+              <Button variant="ghost" type="button" className="">
                 {monthLabel}
                 <NavArrowDownSolid className="h-4 w-4" />
               </Button>
@@ -139,12 +137,7 @@ function SlidingDateGrid({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            variant="ghost"
-            type="button"
-            onClick={jumpToToday}
-            className="hover:bg-none"
-          >
+          <Button variant="ghost" type="button" onClick={jumpToToday} className="hover:bg-none">
             Today
           </Button>
         </div>
@@ -156,12 +149,11 @@ function SlidingDateGrid({
           onClick={() => setStart((s) => Math.min(slots.length - WINDOW_SIZE, s + WINDOW_SIZE))}
           disabled={!canNext}
           aria-label="Next dates"
-          className="hover:bg-transparent rounded-lg p-1.5 transition-colors disabled:opacity-30"
+          className="rounded-lg p-1.5 transition-colors hover:bg-transparent disabled:opacity-30"
         >
           <NavArrowRight className="h-5 w-5" />
         </Button>
       </div>
-
       {/* 9-tile grid */}
       <div className="grid grid-cols-3 gap-2">
         {visible.map((slot) => {
@@ -175,19 +167,16 @@ function SlidingDateGrid({
               aria-pressed={isSelected}
               aria-label={`${weekday} ${month} ${day} — ${slot.isFull ? 'full' : `${slot.spotsLeft} spot${slot.spotsLeft === 1 ? '' : 's'} left`}`}
               onClick={() => !slot.isFull && onSelect(slot.value)}
-              className={`aspect-4/3 group cursor-pointer relative flex flex-col items-start justify-center gap-0.5 rounded-xl border px-4 py-3 transition-all duration-150 hover:bg-secondary/20
-              ${slot.isFull
+              className={`group bg-white hover:bg-secondary/20 relative flex aspect-4/3 cursor-pointer flex-col items-start justify-center gap-0.5 rounded-xl border px-4 py-3 transition-all duration-150 ${
+                slot.isFull
                   ? 'border-border cursor-not-allowed opacity-35'
                   : isSelected
                     ? 'border-border bg-secondary text-foreground hover:bg-secondary/90'
                     : 'border-border hover:border-border/70 text-foreground'
-                }`}
+              }`}
             >
               {isSelected && (
-                <span
-                  className="bg-white absolute top-4 right-4 size-3 rounded-full"
-                  aria-hidden="true"
-                />
+                <span className="absolute top-4 right-4 size-3 rounded-full bg-white" aria-hidden="true" />
               )}
               <span
                 className={`text-[13px] font-medium tracking-widest uppercase ${isSelected ? 'text-white' : 'text-foreground/60'}`}
@@ -208,7 +197,7 @@ function SlidingDateGrid({
                 className={`mt-0.5 text-[11px] ${isSelected ? 'text-white/40' : 'text-foreground/40'}`}
                 aria-hidden="true"
               >
-                {slot.isFull ? 'Full' : `${slot.spotsLeft} spots available`}
+                {slot.isFull ? 'Full' : `${slot.spotsLeft} available`}
               </span>
             </button>
           )
@@ -261,7 +250,7 @@ export function SchedulingForm() {
           setPackagePrices(map)
         }
       })
-      .catch(() => { })
+      .catch(() => {})
   }, [])
 
   const [formData, setFormData] = useState<BookingMetadata>({
@@ -309,16 +298,34 @@ export function SchedulingForm() {
       return
     }
     setErrors({})
+    posthog.capture('booking_package_selected', {
+      package_slug: formData.packageSlug,
+      site_slug: 'txchristmaslights',
+    })
     goTo(2)
   }
 
   const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (validateInfo()) goTo(3)
+    if (validateInfo()) {
+      posthog.identify(formData.email, { email: formData.email, name: formData.name })
+      posthog.capture('booking_info_submitted', {
+        package_slug: formData.packageSlug,
+        site_slug: 'txchristmaslights',
+      })
+      goTo(3)
+    }
   }
 
   const handleDateSubmit = () => {
-    if (validateDate()) setShowCheckout(true)
+    if (validateDate()) {
+      posthog.capture('booking_checkout_started', {
+        package_slug: formData.packageSlug,
+        install_date: formData.installDate,
+        site_slug: 'txchristmaslights',
+      })
+      setShowCheckout(true)
+    }
   }
 
   const fetchClientSecret = useCallback(() => startCheckoutSession('deposit', formData), [formData])
@@ -336,6 +343,11 @@ export function SchedulingForm() {
     if (errors.installDate) {
       setErrors((prev) => ({ ...prev, installDate: undefined }))
     }
+    posthog.capture('booking_date_selected', {
+      install_date: value,
+      package_slug: formData.packageSlug,
+      site_slug: 'txchristmaslights',
+    })
   }
 
   if (isComplete) {
@@ -351,7 +363,8 @@ export function SchedulingForm() {
             </span>
           </h2>
           <p className="text-background/70 mx-auto max-w-md text-lg">
-            Your deposit is confirmed. You&apos;ll receive an invoice at {formData.email} with the remaining balance — payment is due by October 1st.
+            Your deposit is confirmed. You&apos;ll receive an invoice at {formData.email} with the remaining
+            balance — payment is due by October 1st.
           </p>
           <p className="text-background/60 mx-auto max-w-md text-sm">
             We&apos;ll also reach out a few days before your install window to confirm details.
@@ -389,7 +402,7 @@ export function SchedulingForm() {
                 <p className="mt-1 text-xl">{formData.address}</p>
               </div>
               <div className="pb-4">
-                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Window</span>
+                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Date</span>
                 <p className="mt-1 text-xl">{slots.find((d) => d.value === formData.installDate)?.label}</p>
               </div>
             </div>
@@ -411,7 +424,17 @@ export function SchedulingForm() {
             <div className="mx-auto w-full max-w-lg">
               <EmbeddedCheckoutProvider
                 stripe={stripePromise}
-                options={{ fetchClientSecret, onComplete: () => setIsComplete(true) }}
+                options={{
+                  fetchClientSecret,
+                  onComplete: () => {
+                    posthog.capture('booking_completed', {
+                      package_slug: formData.packageSlug,
+                      install_date: formData.installDate,
+                      site_slug: 'txchristmaslights',
+                    })
+                    setIsComplete(true)
+                  },
+                }}
               >
                 <EmbeddedCheckout />
               </EmbeddedCheckoutProvider>
@@ -429,19 +452,16 @@ export function SchedulingForm() {
       slug: 'xmas-roofline',
       name: 'Roofline',
       description: 'Roofline, gutter runs, and front entry',
-      price: '$400.00',
     },
     {
       slug: 'xmas-full-front',
-      name: 'Full front',
-      description: 'Roofline plus trees, bushes, and walkways',
-      price: '$700.00',
+      name: 'Full Front',
+      description: 'Roofline plus front walkways',
     },
     {
       slug: 'xmas-full-property',
-      name: 'Full property',
-      description: 'Full front and rear — quoted on walkthrough',
-      price: '$900.00',
+      name: 'Full Property',
+      description: 'Full front and rear',
     },
   ]
 
@@ -489,9 +509,24 @@ export function SchedulingForm() {
 
   return (
     <section className="bg-primary text-background min-h-[70vh]">
-      <div className="grid h-full min-h-[70vh] items-stretch overflow-hidden md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.7fr_1.3fr]">
+      <div className="grid h-full min-h-[70vh] items-stretch overflow-hidden md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.9fr_1.1fr]">
         {/* ── Left: static, text updates in place ──────────────────────── */}
-        <div className="relative flex flex-col justify-center overflow-hidden px-8 py-16 md:px-20 lg:px-30 lg:py-24">
+        <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+        key={step}
+        custom={direction}
+        variants={
+          {
+            enter: { opacity: 0 },
+            center: {  opacity: 1 },
+            exit: { opacity: 0 },
+          }
+        }
+        initial="enter"
+        animate="center"
+        exit="exit"
+        transition={{ duration: 0.24, ease: [0.32, 0, 0.67, 0] }}
+        className="relative flex flex-col justify-center overflow-hidden px-8 py-16 md:px-20 lg:px-30 lg:py-24">
           <span
             className="text-background/10 pointer-events-none absolute top-1/2 -left-8 -translate-y-1/2 font-serif text-[20rem] leading-none select-none lg:text-[28rem]"
             aria-hidden="true"
@@ -499,43 +534,19 @@ export function SchedulingForm() {
             {lt.num}
           </span>
           <div className="relative z-10">
-            {step === 2 && (
-              <>
-                <Button
-                  variant="ghost"
-                  pill={false}
-                  fullWidth={false}
-                  onClick={() => goTo(1)}
-                  className="hover:bg-primary justify-start px-0 text-white hover:text-white/90"
-                >
-                  <ArrowLeft className="size-4" /> Back to packages
-                </Button>
-              </>
-            )}
-            {step === 3 && (
-              <>
-                <Button
-                  variant="ghost"
-                  pill={false}
-                  fullWidth={false}
-                  onClick={() => goTo(2)}
-                  className="hover:bg-primary justify-start px-0 text-white hover:text-white/90"
-                >
-                  <ArrowLeft className="size-4" /> Edit details
-                </Button>
-              </>
-            )}
             <p className="text-background/60 mb-8 text-sm tracking-[0.2em] uppercase">{lt.eyebrow}</p>
             <h2 className="mb-8 font-serif text-4xl leading-[0.95] tracking-normal md:text-5xl lg:text-6xl">
               {lt.heading}
             </h2>
             {lt.sub && <div className="text-background/70 mb-8 max-w-md text-lg">{lt.sub}</div>}
+            {step === 1 && (
             <div className="border-background/20 mb-8 inline-flex items-baseline gap-4 border-t pt-8">
               <span className="text-background/50 text-sm tracking-[0.15em] uppercase">Deposit</span>
               <span className="font-serif text-5xl lg:text-6xl">
                 {fmtCents(depositAmountCents, depositCurrency)}
               </span>
             </div>
+            )}
             {step === 3 && (
               <div className="mb-10 space-y-4">
                 <div className="border-background/20 border-b pb-3">
@@ -549,8 +560,8 @@ export function SchedulingForm() {
               </div>
             )}
           </div>
-        </div>
-
+        </motion.div>
+        </AnimatePresence>
         {/* ── Right: slides on step change ─────────────────────────────── */}
         <div className="bg-background h-full overflow-hidden">
           <AnimatePresence mode="wait" custom={direction}>
@@ -566,11 +577,11 @@ export function SchedulingForm() {
               animate="center"
               exit="exit"
               transition={{ duration: 0.2, ease: [0.32, 0, 0.67, 0] }}
-              className="bg-background h-full overflow-hidden grid place-items-center"
+              className="bg-background grid h-full place-items-center overflow-hidden"
             >
               {/* Step 1: package cards */}
               {step === 1 && (
-                <div className="h-full px-5 md:px-15 lg:px-20 xl:px-60 py-10 md:py-30 mx-auto grid w-full grid-cols-1 place-content-center gap-6 space-x-3 ">
+                <div className="mx-auto grid h-full w-full grid-cols-1 place-content-center gap-3 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
                   {PACKAGES.map((pkg) => {
                     const isSelected = formData.packageSlug === pkg.slug
                     return (
@@ -585,7 +596,6 @@ export function SchedulingForm() {
                         className={`hover:bg-secondary/20 relative w-full content-end justify-start rounded-2xl border-2 px-4 py-5 text-left transition-all duration-150 ${isSelected ? 'border-secondary bg-secondary hover:bg-secondary/90 border text-white' : 'border'}`}
                       >
                         <div className="grid grid-cols-1 content-end">
-
                           <div
                             className={`absolute top-3 right-3 flex size-5 shrink-0 items-center justify-center rounded-full border ${isSelected ? 'border-foreground bg-foreground' : 'border-foreground/40'}`}
                           >
@@ -602,9 +612,7 @@ export function SchedulingForm() {
                             {pkg.description}
                           </span>
                           {packagePrices[pkg.slug] && (
-                            <p
-                              className={`mt-1.5 text-lg ${isSelected ? 'text-white' : 'text-foreground/70'}`}
-                            >
+                            <p className={`mt-1.5 text-lg ${isSelected ? 'text-white' : 'text-foreground'}`}>
                               {fmtCents(packagePrices[pkg.slug], depositCurrency)}
                             </p>
                           )}
@@ -629,15 +637,24 @@ export function SchedulingForm() {
 
               {/* Step 2: contact form on white */}
               {step === 2 && (
-                <div
-                  className="px-5 md:px-15 lg:px-20 xl:px-60 py-10 md:py-30 mx-auto grid w-full grid-cols-1 place-items-end gap-6 space-x-3"
-
-                >
-                  <form onSubmit={handleSubmit} className="grid items-center mx-auto w-full max-w-lg space-y-8 min-w-full">
+                <div className="mx-auto grid w-full grid-cols-1 place-items-start gap-6 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
+                  <Button
+                    variant="ghost"
+                    pill={false}
+                    fullWidth={false}
+                    onClick={() => goTo(1)}
+                    className="hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
+                  >
+                    <ArrowLeft className="size-4" /> Back to packages
+                  </Button>
+                  <form
+                    onSubmit={handleSubmit}
+                    className="mx-auto grid w-full max-w-lg min-w-full items-center space-y-4"
+                  >
                     <div className="relative">
                       <label
                         htmlFor="name"
-                        className={`pointer-events-none absolute left-0 transition-all duration-200 ${focusedField === 'name' || formData.name ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                        className={`pointer-events-none transition-all duration-200 ${focusedField === 'name' || formData.name ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
                       >
                         Full Name
                       </label>
@@ -656,7 +673,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="email"
-                        className={`pointer-events-none absolute left-0 transition-all duration-200 ${focusedField === 'email' || formData.email ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                        className={`pointer-events-none transition-all duration-200 ${focusedField === 'email' || formData.email ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
                       >
                         Email Address
                       </label>
@@ -675,7 +692,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="address"
-                        className={`pointer-events-none absolute left-0 transition-all duration-200 ${focusedField === 'address' || formData.address ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                        className={`pointer-events-none transition-all duration-200 ${focusedField === 'address' || formData.address ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
                       >
                         Property Address
                       </label>
@@ -702,9 +719,18 @@ export function SchedulingForm() {
 
               {/* Step 3: date grid on red */}
               {step === 3 && (
-                <div className="px-5 md:px-15 lg:px-20 xl:px-60 py-10 md:py-30 mx-auto grid w-full grid-cols-1 place-items-stretch gap-6 space-x-3">
+                <div className="mx-auto grid w-full grid-cols-1 place-items-stretch gap-6 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
+                  <Button
+                    variant="ghost"
+                    pill={false}
+                    fullWidth={false}
+                    onClick={() => goTo(2)}
+                    className="hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
+                  >
+                    <ArrowLeft className="size-4" /> Edit details
+                  </Button>
                   <fieldset>
-                    <legend className="text-background/60 mb-6 text-xs tracking-[0.2em] uppercase">
+                    <legend className="text-foreground mb-6 text-xs tracking-[0.2em] uppercase">
                       Select your install window
                     </legend>
                     <SlidingDateGrid

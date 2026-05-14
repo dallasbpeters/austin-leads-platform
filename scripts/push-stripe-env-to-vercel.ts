@@ -20,7 +20,7 @@ if (fs.existsSync(envFile)) {
 }
 
 const VERCEL_TOKEN = env.VERCEL_TOKEN
-const PROJECT_ID   = env.VERCEL_PROJECT_ID
+const PROJECT_ID = env.VERCEL_PROJECT_ID
 
 if (!VERCEL_TOKEN || !PROJECT_ID) {
   console.error('Missing VERCEL_TOKEN or VERCEL_PROJECT_ID in .env.development.local')
@@ -28,27 +28,26 @@ if (!VERCEL_TOKEN || !PROJECT_ID) {
 }
 
 const TEST_VARS: Record<string, string> = {
-  STRIPE_PRICE_DEPOSIT:           env.STRIPE_PRICE_DEPOSIT,
-  STRIPE_PRICE_XMAS_ROOFLINE:     env.STRIPE_PRICE_XMAS_ROOFLINE,
-  STRIPE_PRICE_XMAS_FULL_FRONT:   env.STRIPE_PRICE_XMAS_FULL_FRONT,
+  STRIPE_PRICE_DEPOSIT: env.STRIPE_PRICE_DEPOSIT,
+  STRIPE_PRICE_XMAS_ROOFLINE: env.STRIPE_PRICE_XMAS_ROOFLINE,
+  STRIPE_PRICE_XMAS_FULL_FRONT: env.STRIPE_PRICE_XMAS_FULL_FRONT,
   STRIPE_PRICE_XMAS_FULL_PROPERTY: env.STRIPE_PRICE_XMAS_FULL_PROPERTY,
 }
 
 // Live price IDs (original hardcoded values before env-var migration)
 const LIVE_VARS: Record<string, string> = {
-  STRIPE_PRICE_DEPOSIT:            'price_1TVbAOF2OBzUX92SrsR0ZEC8',
-  STRIPE_PRICE_XMAS_ROOFLINE:      'price_1TVay2F2OBzUX92SPQEWM2hZ',
-  STRIPE_PRICE_XMAS_FULL_FRONT:    'price_1TVawuF2OBzUX92SwcfBYgmc',
+  STRIPE_PRICE_DEPOSIT: 'price_1TVbAOF2OBzUX92SrsR0ZEC8',
+  STRIPE_PRICE_XMAS_ROOFLINE: 'price_1TVay2F2OBzUX92SPQEWM2hZ',
+  STRIPE_PRICE_XMAS_FULL_FRONT: 'price_1TVawuF2OBzUX92SwcfBYgmc',
   STRIPE_PRICE_XMAS_FULL_PROPERTY: 'price_1TVavlF2OBzUX92SuAIbshCM',
 }
 
 async function upsertEnvVar(key: string, value: string, targets: string[]) {
   // Check if it already exists
-  const listRes = await fetch(
-    `https://api.vercel.com/v10/projects/${PROJECT_ID}/env?decrypt=false`,
-    { headers: { Authorization: `Bearer ${VERCEL_TOKEN}` } }
-  )
-  const { envs = [] } = await listRes.json() as { envs: { id: string; key: string; target: string[] }[] }
+  const listRes = await fetch(`https://api.vercel.com/v10/projects/${PROJECT_ID}/env?decrypt=false`, {
+    headers: { Authorization: `Bearer ${VERCEL_TOKEN}` },
+  })
+  const { envs = [] } = (await listRes.json()) as { envs: { id: string; key: string; target: string[] }[] }
   const existing = envs.filter((e) => e.key === key && targets.some((t) => e.target.includes(t)))
 
   // Delete existing entries for these targets first to avoid conflicts

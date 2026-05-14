@@ -2,26 +2,38 @@ import { toRuntimeToken } from '@/lib/sanity/stega'
 
 export const CONSULTATION_ANCHOR_ID = 'consultation'
 
-const DEFAULT_THEME_CLASS = 'texas-solar-and-roofing-pros-theme'
+/** Values that match `[data-public-site="…"]` blocks in *-theme.css. */
+const KNOWN_PUBLIC_SITE_ATTRS = new Set(['texas-solar-and-roofing-pros', 'txchristmaslights'])
 
 /**
- * Map a site slug to its theme class. Theme files live at
- * src/styles/{slug}-theme.css and define a matching .{slug}-theme class
- * with the standard shadcn-style token set.
- *
- * `site.themeSlug` overrides the derived class so a Sanity editor can
- * switch the look without renaming the site.
+ * `data-public-site` on `<html>` (public routes) so tenant CSS scopes match
+ * the Medium-style pattern and portals inherit tokens. Operator shells omit
+ * this attribute; see `proxy.js` + `src/app/layout.jsx`.
  */
-export function getThemeClassForSite(site) {
-  const explicit = site?.themeSlug
-  if (typeof explicit === 'string' && explicit.trim()) {
-    return `${explicit.trim()}-theme`
-  }
+export function getPublicDataSiteAttribute(site) {
+  if (isTxChristmasLightsSite(site)) return 'txchristmaslights'
+  const explicit = typeof site?.themeSlug === 'string' ? site.themeSlug.trim().replace(/-theme$/, '') : ''
+  if (explicit && KNOWN_PUBLIC_SITE_ATTRS.has(explicit)) return explicit
+  return 'texas-solar-and-roofing-pros'
+}
 
+/**
+ * Texas Christmas Lights tenant (slug or `themeSlug` override).
+ */
+export function isTxChristmasLightsSite(site) {
+  const explicit = typeof site?.themeSlug === 'string' ? site.themeSlug.trim() : ''
   const slug = typeof site?.slug === 'string' ? site.slug.trim() : ''
-  if (!slug) return DEFAULT_THEME_CLASS
+  return (explicit || slug) === 'txchristmaslights'
+}
 
-  return `${slug}-theme`
+/**
+ * Sites whose theme file fully defines the hsl() pieces (`--color-primary-h`, …)
+ * used by globals + legacy sections. Sanity `brand.primary` HSL must not be
+ * inlined on the wrapper — it would override scoped theme tokens (e.g. solar hue
+ * stuck in CMS replacing Christmas tokens).
+ */
+function siteUsesThemeOwnedHslRamp(site) {
+  return isTxChristmasLightsSite(site)
 }
 
 /**
@@ -48,9 +60,10 @@ export function brandColorHSLVars(color, prefix) {
  * onto the public-site wrapper element.
  *
  * Cascade contract:
- *   1. `src/styles/{slug}-theme.css` defines defaults at the themed scope —
+ *   1. `src/styles/*-theme.css` defines defaults for `[data-public-site="…"]` —
  *      these are the source of truth for `--background`, `--foreground`, etc.
- *   2. This helper returns only the keys Sanity actually has a value for (e.g. HSL brand ramps).
+ *   2. This helper returns only the keys Sanity actually has a value for (e.g. HSL brand ramps),
+ *      except on `txchristmaslights` where the theme file owns `--color-*-h/s/l` (see `siteUsesThemeOwnedHslRamp`).
  *   3. Optional `brand.surface.hex` sets `--site-surface` only (never replaces `--background`)
  *      so page backgrounds stay on the curated theme tokens unless a component reads `--site-surface`.
  *
@@ -61,14 +74,20 @@ export function getSiteBrandStyleVars(site) {
   const brand = site?.brand
   if (!brand) return {}
 
+  const skipBrandHsl = siteUsesThemeOwnedHslRamp(site)
+
   const vars = {
-    ...brandColorHSLVars(brand.primary, 'primary'),
-    ...brandColorHSLVars(brand.secondary, 'secondary'),
-    ...brandColorHSLVars(brand.accent, 'tertiary'),
+    ...(skipBrandHsl
+      ? {}
+      : {
+          ...brandColorHSLVars(brand.primary, 'primary'),
+          ...brandColorHSLVars(brand.secondary, 'secondary'),
+          ...brandColorHSLVars(brand.accent, 'tertiary'),
+        }),
   }
 
   // Surface chip is optional UI chrome only — do not overwrite `--background`.
-  // Theme files (e.g. `.txchristmaslights-theme`) own page background tokens; pushing a
+  // Theme files for `[data-public-site="txchristmaslights"]` own page background tokens; pushing a
   // CMS hex here was overriding cream oklch with flat grays on production Sanity docs.
   if (brand.surface?.hex) {
     vars['--site-surface'] = brand.surface.hex

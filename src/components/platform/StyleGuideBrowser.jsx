@@ -184,10 +184,8 @@ export default function StyleGuideBrowser({
             </div>
 
             <div
-              className={cn(
-                'grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5',
-                section.theme === 'txchristmaslights' && 'txchristmaslights-theme',
-              )}
+              className={cn('grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5')}
+              {...(section.theme === 'txchristmaslights' ? { 'data-public-site': 'txchristmaslights' } : {})}
             >
               {section.tokens.map(({ token, value }) => (
                 <SwatchTile key={token} token={token} value={value} compact />

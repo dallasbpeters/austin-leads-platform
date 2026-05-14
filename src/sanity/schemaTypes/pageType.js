@@ -1,4 +1,5 @@
 import ChartPointsJsonInput from '../components/ChartPointsJsonInput'
+import { BlockContentIcon } from '@sanity/icons'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
@@ -35,6 +36,31 @@ const previewText = (value, fallback) => {
   if (!normalized) return fallback
   return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
 }
+/** Keeps the section block type visible in the Sections array list even when body copy exists. */
+const pageSectionListSubtitle = (sectionLabel, ...sources) => {
+  for (const source of sources) {
+    if (source == null || source === false) continue
+    const piece = typeof source === 'string' ? source.replace(/\s+/g, ' ').trim() : previewText(source, '')
+    if (piece) return `${sectionLabel} · ${piece}`
+  }
+  return sectionLabel
+}
+const LEGACY_PAGE_SECTION_LABELS = {
+  hero: 'Hero',
+  story: 'Story',
+  quote: 'Quote',
+  cta: 'CTA',
+  ctaBanner: 'Cross-lead banner',
+  highlights: 'Highlights',
+  steps: 'Steps',
+  faq: 'FAQ',
+  guideGrid: 'Guide grid',
+  serviceGrid: 'Service grid',
+  resourceGrid: 'Resource grid',
+  hailMap: 'Hail map',
+}
+const legacyPageSectionTypeLabel = (type) =>
+  (type && LEGACY_PAGE_SECTION_LABELS[type]) || (type ? `${type} section` : 'Legacy section')
 const arrayCount = (value) => (Array.isArray(value) ? value.length : 0)
 const ctaThemeOptions = [
   { title: 'Light', value: 'light' },
@@ -314,6 +340,7 @@ const heroImageType = {
   name: 'heroImage',
   title: 'Hero Image',
   type: 'object',
+  icon: BlockContentIcon,
   fields: [
     { name: 'source', title: 'Source', type: 'string', options: canvasExclude },
     { name: 'unsplashId', title: 'Unsplash ID', type: 'string', options: canvasExclude },
@@ -336,10 +363,11 @@ const heroImageType = {
       subtitle: 'creditName',
       media: 'urls.thumb',
     },
-    prepare({ title, subtitle }) {
+    prepare({ title, subtitle, media }) {
       return {
         title: title || 'Hero image',
         subtitle: subtitle ? `Photo by ${subtitle}` : 'Image metadata',
+        media: media ?? BlockContentIcon,
       }
     },
   },
@@ -351,6 +379,7 @@ const uploadedImageType = {
   type: 'image',
   options: {
     hotspot: true,
+    collapsible: false,
   },
   fields: [
     {
@@ -502,7 +531,7 @@ const heroVideoType = {
       return {
         title: title || 'Hero video',
         subtitle: previewText(subtitle, 'Video metadata'),
-        media: poster,
+        media: poster ?? BlockContentIcon,
       }
     },
   },
@@ -781,6 +810,7 @@ const serviceGridItemType = {
   name: 'serviceGridItem',
   title: 'Service Card',
   type: 'object',
+  icon: BlockContentIcon,
   fields: [
     {
       name: 'title',
@@ -803,10 +833,14 @@ const serviceGridItemType = {
     },
     {
       name: 'price',
-      title: 'Price',
+      title: 'Price (USD)',
       type: 'number',
-      options: canvasPurpose('Price of the service.'),
-      precision: 2,
+      options: {
+        step: 0.01,
+        ...canvasPurpose(
+          'Dollars. The public site shows two decimal places (e.g. $300.00). The input may not show trailing zeros until you use decimals.',
+        ),
+      },
       validation: (Rule) => Rule.min(0),
     },
     {
@@ -859,11 +893,18 @@ const serviceGridItemType = {
       title: 'title',
       eyebrow: 'eyebrow',
       subtitle: 'body',
+      price: 'price',
+      media: 'imageAsset',
     },
-    prepare({ title, eyebrow, subtitle }) {
+    prepare({ title, eyebrow, subtitle, price, media }) {
+      const line = previewText(eyebrow || subtitle, '')
+      const priceLine =
+        price != null && Number.isFinite(Number(price)) ? `$${Number(price).toFixed(2)}` : null
+      const subtitleText = [priceLine, line || null].filter(Boolean).join(' · ') || 'Service card'
       return {
         title: title || 'Service card',
-        subtitle: previewText(eyebrow || subtitle, 'Service card'),
+        subtitle: subtitleText.trim(),
+        media: media ?? BlockContentIcon,
       }
     },
   },
@@ -873,6 +914,7 @@ const guideCardItemType = {
   name: 'guideCardItem',
   title: 'Guide Card Item',
   type: 'object',
+  icon: BlockContentIcon,
   fields: [
     {
       name: 'number',
@@ -956,11 +998,13 @@ const guideCardItemType = {
       title: 'title',
       subtitle: 'body',
       href: 'href',
+      media: 'imageAsset',
     },
-    prepare({ title, subtitle, href }) {
+    prepare({ title, subtitle, href, media }) {
       return {
         title: title || 'Guide card',
         subtitle: previewText(subtitle, href || 'Guide card content'),
+        media: media ?? BlockContentIcon,
       }
     },
   },
@@ -1120,6 +1164,7 @@ const logoMarqueeItemType = {
   name: 'logoMarqueeItem',
   title: 'Logo Marquee Item',
   type: 'object',
+  icon: BlockContentIcon,
   fields: [
     {
       name: 'title',
@@ -1158,6 +1203,7 @@ const logoMarqueeItemType = {
       return {
         title: title || 'Logo',
         subtitle: href || assetUrl || imageAlt || 'Marquee logo item',
+        media: BlockContentIcon,
       }
     },
   },
@@ -1167,6 +1213,7 @@ const heroSlideItemType = {
   name: 'heroSlideItem',
   title: 'Hero Slide',
   type: 'object',
+  icon: BlockContentIcon,
   fields: [
     {
       name: 'title',
@@ -1197,6 +1244,7 @@ const heroSlideItemType = {
       return {
         title: title || 'Hero slide',
         subtitle: assetUrl ? 'Uploaded image' : imageAlt || 'External image',
+        media: BlockContentIcon,
       }
     },
   },
@@ -1240,6 +1288,7 @@ const resourceCardType = {
   name: 'resourceCard',
   title: 'Resource Card',
   type: 'object',
+  icon: BlockContentIcon,
   fields: [
     {
       name: 'icon',
@@ -1292,6 +1341,7 @@ const resourceCardType = {
       return {
         title: title || 'Resource card',
         subtitle: previewText(subtitle, 'Homepage resource card'),
+        media: BlockContentIcon,
       }
     },
   },
@@ -1301,6 +1351,7 @@ const resourceGridSectionType = {
   name: 'resourceGridSection',
   title: 'Resource Grid Section',
   type: 'object',
+  icon: BlockContentIcon,
   initialValue: {
     type: 'resourceGrid',
   },
@@ -1344,7 +1395,8 @@ const resourceGridSectionType = {
       const cardCount = arrayCount(items)
       return {
         title: title || 'Resource grid',
-        subtitle: previewText(body, `${cardCount || 0} cards`),
+        subtitle: pageSectionListSubtitle('Resource grid', body, `${cardCount || 0} cards`),
+        media: BlockContentIcon,
       }
     },
   },
@@ -1399,7 +1451,7 @@ const guideGridSectionType = {
       const cardCount = arrayCount(items)
       return {
         title: title || 'Guide grid',
-        subtitle: previewText(body, `${cardCount || 0} guides`),
+        subtitle: pageSectionListSubtitle('Guide grid', body, `${cardCount || 0} guides`),
       }
     },
   },
@@ -1409,6 +1461,7 @@ const serviceGridSectionType = {
   name: 'serviceGridSection',
   title: 'Service Grid Section',
   type: 'object',
+  icon: BlockContentIcon,
   initialValue: {
     type: 'serviceGrid',
   },
@@ -1496,7 +1549,8 @@ const serviceGridSectionType = {
 
       return {
         title: title || 'Service grid',
-        subtitle: previewText(eyebrow, countSummary),
+        subtitle: pageSectionListSubtitle('Service grid', eyebrow, countSummary),
+        media: BlockContentIcon,
       }
     },
   },
@@ -1506,6 +1560,7 @@ const aboutProfilePersonType = {
   name: 'aboutProfilePerson',
   title: 'About Profile Person',
   type: 'object',
+  icon: BlockContentIcon,
   fields: [
     {
       name: 'label',
@@ -1602,6 +1657,7 @@ const aboutProfilePersonType = {
       return {
         title: title || 'About profile person',
         subtitle: `${subtitle || 'Profile card'} • ${cardGradientStart || 'primary'} to ${cardGradientEnd || 'tidal'}`,
+        media: BlockContentIcon,
       }
     },
   },
@@ -1611,6 +1667,7 @@ const aboutProfileSectionType = {
   name: 'aboutProfileSection',
   title: 'About Profile Section',
   type: 'object',
+  icon: BlockContentIcon,
   initialValue: {
     type: 'aboutProfile',
   },
@@ -1658,7 +1715,8 @@ const aboutProfileSectionType = {
     prepare({ title, subtitle }) {
       return {
         title: title || 'About profiles',
-        subtitle: previewText(subtitle, 'Profile cards'),
+        subtitle: pageSectionListSubtitle('About profile section', subtitle, 'Profile cards'),
+        media: BlockContentIcon,
       }
     },
   },
@@ -1913,7 +1971,7 @@ const heroSectionType = {
     prepare({ title, titlePrimary, titleAccent, eyebrow, body }) {
       return {
         title: titlePrimary || title || eyebrow || 'Hero section',
-        subtitle: previewText(body, titleAccent || 'hero'),
+        subtitle: pageSectionListSubtitle('Hero section', body, titleAccent),
       }
     },
   },
@@ -1965,7 +2023,7 @@ const storySectionType = {
     prepare({ title, eyebrow, body, subtitle }) {
       return {
         title: title || eyebrow || 'Story section',
-        subtitle: previewText(body, subtitle || 'story'),
+        subtitle: pageSectionListSubtitle('Story section', body, subtitle),
       }
     },
   },
@@ -2029,12 +2087,13 @@ const calculatorSectionType = {
   preview: {
     select: {
       title: 'title',
-      subtitle: 'body',
+      body: 'body',
+      subtitle: 'subtitle',
     },
-    prepare({ title, subtitle }) {
+    prepare({ title, body, subtitle }) {
       return {
         title: title || 'Calculator section',
-        subtitle: previewText(subtitle, 'Solar calculator'),
+        subtitle: pageSectionListSubtitle('Calculator section', body, subtitle),
       }
     },
   },
@@ -2176,14 +2235,15 @@ const costsSectionType = {
   preview: {
     select: {
       title: 'title',
-      subtitle: 'body',
+      body: 'body',
+      subtitle: 'subtitle',
       items: 'items',
     },
-    prepare({ title, subtitle, items }) {
+    prepare({ title, body, subtitle, items }) {
       const count = arrayCount(items)
       return {
         title: title || 'Costs section',
-        subtitle: previewText(subtitle, `${count || 0} cost stats`),
+        subtitle: pageSectionListSubtitle('Costs section', body, subtitle, `${count || 0} cost stats`),
       }
     },
   },
@@ -2236,7 +2296,11 @@ const guidesSectionType = {
       const count = arrayCount(items)
       return {
         title: title || 'Guides section',
-        subtitle: previewText(subtitle, count ? `${count} guide cards` : 'Guide grid intro'),
+        subtitle: pageSectionListSubtitle(
+          'Guides section',
+          subtitle,
+          count ? `${count} guide cards` : 'Guide grid intro',
+        ),
       }
     },
   },
@@ -2289,7 +2353,7 @@ const snapshotSectionType = {
       const count = arrayCount(items)
       return {
         title: title || 'Snapshot section',
-        subtitle: previewText(subtitle, `${count || 0} snapshot cards`),
+        subtitle: pageSectionListSubtitle('Snapshot section', subtitle, `${count || 0} snapshot cards`),
       }
     },
   },
@@ -2350,7 +2414,7 @@ const incentivesSectionType = {
     prepare({ title, subtitle }) {
       return {
         title: title || 'Incentives section',
-        subtitle: previewText(subtitle, 'Incentive guidance'),
+        subtitle: pageSectionListSubtitle('Incentives section', subtitle, 'Incentive guidance'),
       }
     },
   },
@@ -2402,7 +2466,11 @@ const testimonialsSectionType = {
       const reviewCount = arrayCount(reviews)
       return {
         title: title || 'Testimonials section',
-        subtitle: previewText(subtitle, reviewCount ? `${reviewCount} selected reviews` : 'Customer proof'),
+        subtitle: pageSectionListSubtitle(
+          'Testimonials section',
+          subtitle,
+          reviewCount ? `${reviewCount} selected reviews` : 'Customer proof',
+        ),
       }
     },
   },
@@ -2449,7 +2517,7 @@ const highlightsSectionType = {
       const itemCount = arrayCount(items)
       return {
         title: title || 'Highlights section',
-        subtitle: previewText(subtitle, `${itemCount || 0} items`),
+        subtitle: pageSectionListSubtitle('Highlights section', subtitle, `${itemCount || 0} items`),
       }
     },
   },
@@ -2489,7 +2557,7 @@ const stepsSectionType = {
       const itemCount = arrayCount(items)
       return {
         title: title || 'Steps section',
-        subtitle: `${itemCount || 0} items`,
+        subtitle: pageSectionListSubtitle('Steps section', `${itemCount || 0} items`),
       }
     },
   },
@@ -2501,6 +2569,7 @@ const galleryImageType = {
   type: 'image',
   options: {
     hotspot: true,
+    collapsible: false,
   },
   fields: [
     {
@@ -2601,9 +2670,10 @@ const gallerySectionType = {
     },
     prepare({ title, eyebrow, images }) {
       const itemCount = arrayCount(images)
+      const tail = [eyebrow, `${itemCount || 0} images`].filter(Boolean).join(' · ')
       return {
         title: title || 'Gallery section',
-        subtitle: [eyebrow, `${itemCount || 0} images`].filter(Boolean).join(' · '),
+        subtitle: pageSectionListSubtitle('Gallery section', tail),
       }
     },
   },
@@ -2712,11 +2782,12 @@ const pricingSectionType = {
     },
     prepare({ title, eyebrow, notes }) {
       const noteCount = arrayCount(notes)
+      const tail = [eyebrow, noteCount ? `${noteCount} note${noteCount === 1 ? '' : 's'}` : null]
+        .filter(Boolean)
+        .join(' · ')
       return {
         title: title || 'Pricing section',
-        subtitle: [eyebrow, noteCount ? `${noteCount} note${noteCount === 1 ? '' : 's'}` : null]
-          .filter(Boolean)
-          .join(' · '),
+        subtitle: pageSectionListSubtitle('Pricing section', tail || 'Pricing copy and notes'),
       }
     },
   },
@@ -2756,7 +2827,7 @@ const faqSectionType = {
       const itemCount = arrayCount(items)
       return {
         title: title || 'FAQ section',
-        subtitle: `${itemCount || 0} questions`,
+        subtitle: pageSectionListSubtitle('FAQ section', `${itemCount || 0} questions`),
       }
     },
   },
@@ -2800,7 +2871,7 @@ const quoteSectionType = {
     prepare({ title, eyebrow, body }) {
       return {
         title: title || eyebrow || 'Quote section',
-        subtitle: previewText(body, 'Quote'),
+        subtitle: pageSectionListSubtitle('Quote section', body, 'Quote'),
       }
     },
   },
@@ -2930,7 +3001,7 @@ const ctaSectionType = {
     prepare({ title, subtitle }) {
       return {
         title: title || 'CTA section',
-        subtitle: previewText(subtitle, 'Call to action'),
+        subtitle: pageSectionListSubtitle('CTA section', subtitle, 'Call to action'),
       }
     },
   },
@@ -3027,7 +3098,7 @@ const scrollTextSectionType = {
     prepare({ title, text }) {
       return {
         title: title || 'Scroll text section',
-        subtitle: previewText(text, 'Texts to scroll'),
+        subtitle: pageSectionListSubtitle('Scroll text section', text, 'Scrolling text'),
       }
     },
   },
@@ -3126,7 +3197,7 @@ const ctaBannerSectionType = {
     prepare({ title, eyebrow, body }) {
       return {
         title: title || eyebrow || 'Cross-lead banner',
-        subtitle: previewText(body, 'Lead banner'),
+        subtitle: pageSectionListSubtitle('Cross-lead banner', body, 'Lead banner'),
       }
     },
   },
@@ -3182,7 +3253,7 @@ const secondaryCTASectionType = {
     prepare({ title, body }) {
       return {
         title: title || 'Secondary CTA section',
-        subtitle: previewText(body, 'Secondary CTA section'),
+        subtitle: pageSectionListSubtitle('Secondary CTA section', body, 'Secondary CTA'),
       }
     },
   },
@@ -3220,7 +3291,7 @@ const hailMapSectionType = {
     prepare({ title, body }) {
       return {
         title: title || 'Hail map section',
-        subtitle: previewText(body, 'Storm evidence lookup'),
+        subtitle: pageSectionListSubtitle('Hail map section', body, 'Storm evidence lookup'),
       }
     },
   },
@@ -3340,11 +3411,12 @@ const serviceAreaMapSectionType = {
     },
     prepare({ title, eyebrow, areas }) {
       const areaCount = arrayCount(areas)
+      const tail = [eyebrow, `${areaCount} ${areaCount === 1 ? 'county' : 'counties'}`]
+        .filter(Boolean)
+        .join(' · ')
       return {
         title: title || 'Service area map',
-        subtitle: [eyebrow, `${areaCount} ${areaCount === 1 ? 'county' : 'counties'}`]
-          .filter(Boolean)
-          .join(' · '),
+        subtitle: pageSectionListSubtitle('Service area map', tail),
       }
     },
   },
@@ -3451,7 +3523,7 @@ const bandSectionType = {
 
       return {
         title: 'Band section',
-        subtitle: flags || 'Decorative divider',
+        subtitle: pageSectionListSubtitle('Band section', flags || 'Decorative divider'),
       }
     },
   },
@@ -3501,9 +3573,10 @@ const logosSectionType = {
     },
     prepare({ internalLabel, title, items }) {
       const count = arrayCount(items)
+      const tail = `${count || 0} custom logos${title ? ` • ${title}` : ''}`
       return {
         title: internalLabel || title || 'Logos marquee',
-        subtitle: `${count || 0} custom logos${title ? ` • ${title}` : ''}`,
+        subtitle: pageSectionListSubtitle('Logos marquee', tail),
       }
     },
   },
@@ -3551,7 +3624,11 @@ const solarSwitchSectionType = {
       const leadingCount = arrayCount(leadingWords)
       return {
         title: accentWord ? `Solar switch: ${accentWord}` : 'Solar switch section',
-        subtitle: previewText(trailingText, `${leadingCount || 0} leading words`),
+        subtitle: pageSectionListSubtitle(
+          'Solar switch section',
+          trailingText,
+          `${leadingCount || 0} leading words`,
+        ),
       }
     },
   },
@@ -3753,14 +3830,15 @@ const energyChartSectionType = {
   preview: {
     select: {
       title: 'title',
+      body: 'body',
       points: 'chartPoints',
       period: 'chartPeriodLabel',
     },
-    prepare({ title, points, period }) {
+    prepare({ title, body, points, period }) {
       const count = arrayCount(points)
       return {
         title: title || 'Energy chart section',
-        subtitle: previewText(period, `${count || 0} points`),
+        subtitle: pageSectionListSubtitle('Energy chart section', body, period, `${count || 0} points`),
       }
     },
   },
@@ -3774,14 +3852,15 @@ const pageSectionType = {
   preview: {
     select: {
       title: 'title',
-      subtitle: 'type',
+      sectionType: 'type',
       eyebrow: 'eyebrow',
       body: 'body',
     },
-    prepare({ title, subtitle, eyebrow, body }) {
+    prepare({ title, sectionType, eyebrow, body }) {
+      const kind = legacyPageSectionTypeLabel(sectionType)
       return {
         title: title || eyebrow || 'Untitled section',
-        subtitle: previewText(body, subtitle || 'section'),
+        subtitle: pageSectionListSubtitle(kind, body),
       }
     },
   },

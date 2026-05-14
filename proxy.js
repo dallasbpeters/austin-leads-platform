@@ -25,6 +25,80 @@ const protectedApiPrefixes = [
   '/api/users',
 ]
 
+/** Routes that must not set `data-public-site` on `<html>` (operator / API). */
+const OPERATOR_SHELL_PREFIXES = [
+  '/dashboard',
+  '/analytics',
+  '/crm',
+  '/publish',
+  '/domains',
+  '/hero-pages',
+  '/settings',
+  '/christmas',
+  '/users',
+  '/sign-in',
+  '/studio',
+]
+
+function isOperatorShellPath(pathname) {
+  if (!pathname) return false
+  if (pathname.startsWith('/api/')) return true
+  return OPERATOR_SHELL_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`))
+}
+
+/**
+ * Same policy as {@link src/lib/platform/site-page.js} `resolveCurrentSite(searchParams)`:
+ * only honour `__site` / `/_site/:slug` for theme + RSC when localhost or draft mode.
+ */
+function allowPublicSiteParamOverride(request) {
+  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? ''
+  const isLocalHost = host.includes('localhost') || host.startsWith('127.0.0.1')
+  if (isLocalHost) return true
+  return request.cookies.has('__prerender_bypass')
+}
+
+function nextWithAlpHeaders(request) {
+  const requestHeaders = new Headers(request.headers)
+  const pathname = request.nextUrl.pathname
+  const url = request.nextUrl
+
+  if (isOperatorShellPath(pathname)) {
+    requestHeaders.set('x-alp-operator-shell', '1')
+    return NextResponse.next({ request: { headers: requestHeaders } })
+  }
+
+  let previewSlug = null
+
+  if (pathname.startsWith('/_site/')) {
+    const raw = pathname.slice('/_site/'.length).split('/').filter(Boolean)[0]
+    if (raw && allowPublicSiteParamOverride(request)) {
+      try {
+        previewSlug = decodeURIComponent(raw)
+      } catch {
+        previewSlug = raw
+      }
+    }
+  }
+
+  if (!previewSlug && pathname.startsWith('/preview/')) {
+    const parts = pathname.split('/').filter(Boolean)
+    if (parts[0] === 'preview' && parts[1]) {
+      previewSlug = parts[1]
+    }
+  }
+
+  if (!previewSlug && allowPublicSiteParamOverride(request)) {
+    const q = url.searchParams.get('__site')?.trim()
+    if (q) previewSlug = q
+  }
+
+  if (previewSlug) {
+    requestHeaders.set('x-alp-preview-site-slug', previewSlug)
+  }
+
+  return NextResponse.next({ request: { headers: requestHeaders } })
+}
+
 function normalizeHost(host) {
   return (host || '').replace(/:\d+$/, '').toLowerCase()
 }
@@ -76,11 +150,11 @@ export default async function middleware(request) {
     protectedApiPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
 
   if (!requiresAuth) {
-    return NextResponse.next()
+    return nextWithAlpHeaders(request)
   }
 
   if (isLoggedIn) {
-    return NextResponse.next()
+    return nextWithAlpHeaders(request)
   }
 
   if (pathname.startsWith('/api/')) {

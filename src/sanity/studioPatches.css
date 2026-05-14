@@ -1,0 +1,28 @@
+/**
+ * Loaded only by Sanity Studio (sanity.config.js) — not the Next.js app stylesheet.
+ * The image hotspot/crop dialog is part of Studio, so fixes belong here; globals.css
+ * never applies to the Studio shell or its portaled dialogs.
+ *
+ * In Presentation mode, nested flex panes can leave [role="dialog"] descendants with
+ * min-height 0 so the crop stack never gains height (header visible, body collapsed).
+ */
+[role='dialog']:has(img) {
+  display: flex;
+  flex-direction: column;
+  max-height: 92dvh;
+}
+
+[role='dialog']:has(img) [data-ui='Stack'] {
+  flex: 1 1 auto;
+}
+
+[role='dialog']:has(img) [data-ui='Flex'] {
+  min-height: 0;
+}
+
+[role='dialog']:has(img) img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+}

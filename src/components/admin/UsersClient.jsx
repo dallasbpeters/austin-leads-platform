@@ -284,7 +284,7 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
       {/* List */}
       <div className="flex-1 overflow-auto p-6">
         <div className="border-border overflow-hidden rounded-xl border">
-          <div className="bg-muted text-muted-foreground hidden grid-cols-[1.5fr_1fr_120px_120px_140px] gap-4 px-4 py-2 text-xs font-medium tracking-wide uppercase md:grid">
+          <div className="bg-muted text-muted-foreground hidden grid-cols-1 gap-4 px-4 py-2 text-xs font-medium tracking-wide uppercase md:grid md:grid-cols-5">
             <div>Email</div>
             <div>Name</div>
             <div>Status</div>
@@ -416,7 +416,7 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                         </div>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 items-center gap-2 md:grid-cols-[1.5fr_1fr_120px_120px_140px] md:gap-4">
+                      <div className="grid grid-cols-1 items-center gap-2 md:grid-cols-5 md:gap-4">
                         <div className="min-w-0">
                           <p className="text-foreground truncate text-sm font-medium">{user.email}</p>
                           {isSelf && <span className="text-muted-foreground text-xs">You</span>}
@@ -473,12 +473,6 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
             </ul>
           )}
         </div>
-
-        <p className="text-muted-foreground mt-4 text-xs">
-          Tip: the <code className="bg-muted rounded px-1">AUTH_ADMIN_EMAIL</code> /{' '}
-          <code className="bg-muted rounded px-1">AUTH_ADMIN_PASSWORD</code> env vars still grant sign-in as a
-          break-glass fallback if you ever lock yourself out of the DB users above.
-        </p>
       </div>
     </div>
   )

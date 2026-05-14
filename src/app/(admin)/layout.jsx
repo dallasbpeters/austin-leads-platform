@@ -93,29 +93,12 @@ export default async function AdminLayout({ children }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="relative hidden lg:block">
-                <Search className="text-muted-foreground absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="text-foreground placeholder:text-muted-foreground bg-muted border-border focus:ring-foreground w-64 rounded-md border px-4 py-1.5 pl-8 text-sm transition-shadow outline-none focus:ring-2"
-                />
-              </div>
-              <button
-                type="button"
-                className="text-muted-foreground hover:text-foreground relative transition-colors"
-              >
-                <Bell className="h-5 w-5" />
-                <span className="ring-background absolute top-0 right-0 h-2 w-2 rounded-full bg-rose-500 ring-2" />
-              </button>
-              <Link
-                href="/publish"
-                className="text-primary-foreground bg-primary hover:bg-primary/90 rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
-              >
-                Create Post
-              </Link>
-            </div>
+            <Link
+              href="/publish"
+              className="text-primary-foreground bg-primary hover:bg-primary/90 rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
+            >
+              Create Post
+            </Link>
           </header>
 
           <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</main>

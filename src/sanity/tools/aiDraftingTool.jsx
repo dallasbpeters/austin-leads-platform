@@ -544,7 +544,7 @@ export function AiDraftingTool() {
         >
           <Field
             label="AI image suite"
-            hint="Use the full Gemini image studio here. 'Use This Image' auto-fills Hero image URL below."
+            hint="Use the full Gemini image studio here. 'Use This Image' auto-fills Hero image URL below. If generate fails with 401, set SANITY_STUDIO_GEMINI_PLUGIN_API_KEY (Studio deploy) to match server GEMINI_PLUGIN_API_KEY."
           >
             <div
               style={{
@@ -559,6 +559,16 @@ export function AiDraftingTool() {
                 apiKey={geminiPluginApiKey}
                 onImageGenerated={handleImageGenerated}
               />
+            </div>
+            <div
+              style={{
+                marginTop: '0.35rem',
+                fontSize: '0.78rem',
+                color: '#9ca3af',
+                wordBreak: 'break-all',
+              }}
+            >
+              Endpoint: {geminiApiEndpoint}
             </div>
             {generatedAssetUrl ? (
               <div style={{ marginTop: '0.6rem', color: '#166534', fontSize: '0.85rem' }}>

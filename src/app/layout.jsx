@@ -8,10 +8,12 @@ import { Gloock, JetBrains_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 import { Agentation } from 'agentation'
 import '../styles/globals.css'
+import { headers } from 'next/headers'
 import { SanityLive } from '@/sanity/live'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { PostHogProvider } from '@/app/providers'
-import { resolveCurrentSite } from '@/lib/platform/content'
+import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
+import { getPublicDataSiteAttribute } from '@/components/platform/PublicSiteUtils'
 
 const googleSansFlex = localFont({
   src: [
@@ -61,18 +63,37 @@ export const metadata = {
 export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
   const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig()
-  /*
-   * Tenant theme classes (`.texas-solar-and-roofing-pros-theme`, `.txchristmaslights-theme`)
-   * are applied by the (site) route group's layout — never on <html>. The admin route group
-   * applies `.admin-theme` on its own wrapper. This keeps tenant tokens out of the operator
-   * shell entirely (no inheritance into Radix portals, body, etc.).
-   */
+  const headerList = await headers()
+  const isOperatorShell = headerList.get('x-alp-operator-shell') === '1'
+  const previewSiteSlug = headerList.get('x-alp-preview-site-slug')
   const currentSite = await resolveCurrentSite().catch(() => null)
+
+  let publicSiteAttr = null
+  if (!isOperatorShell) {
+    if (previewSiteSlug) {
+      const previewSite = await resolveSiteBySlug(previewSiteSlug).catch(() => null)
+      publicSiteAttr = getPublicDataSiteAttribute(previewSite)
+    } else {
+      publicSiteAttr = getPublicDataSiteAttribute(currentSite)
+    }
+  }
+
+  /*
+   * Public marketing: `data-public-site` on `<html>` activates the matching
+   * `[data-public-site="…"]` block in *-theme.css (all imported in globals).
+   * `proxy.js` sets `x-alp-operator-shell` for admin/API and
+   * `x-alp-preview-site-slug` for `/preview/…`, `/_site/:slug`, or `?__site=`
+   * (when override is allowed) so the operator shell never inherits tenant oranges.
+   */
   const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      {...(publicSiteAttr ? { 'data-public-site': publicSiteAttr } : {})}
+    >
       <head>
         <link
           rel="preload"

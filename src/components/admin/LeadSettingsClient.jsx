@@ -63,7 +63,7 @@ function StatusCard({ title, value, tone = 'neutral', detail }) {
   return (
     <div className={`rounded-xl border p-4 ${toneClass}`}>
       <div className="text-sm font-medium">{title}</div>
-      <div className="mt-2 text-2xl font-semibold tracking-normal">{value}</div>
+      <div className="mt-2 text-lg font-semibold tracking-normal">{value}</div>
       {detail ? <div className="mt-2 text-sm leading-6 opacity-80">{detail}</div> : null}
     </div>
   )
@@ -200,9 +200,13 @@ export default function LeadSettingsClient({ initialSettings }) {
         </CardHeader>
         <CardContent>
           <form className="grid gap-5" onSubmit={handleSubmit}>
-            <label className="bg-muted/20 border-border flex items-start gap-3 rounded-xl border p-4">
+            <label
+              htmlFor="emailNotificationsEnabled"
+              className="bg-muted/20 border-border flex items-start gap-3 rounded-xl border p-4"
+            >
               <input
                 type="checkbox"
+                id="emailNotificationsEnabled"
                 className="mt-1 h-4 w-4 accent-current"
                 checked={form.emailNotificationsEnabled}
                 onChange={(event) => updateField('emailNotificationsEnabled', event.target.checked)}
@@ -218,17 +222,23 @@ export default function LeadSettingsClient({ initialSettings }) {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Notification recipient</label>
+                <label htmlFor="notificationToEmail" className="text-foreground text-sm font-medium">
+                  Notification recipient
+                </label>
                 <Input
                   type="email"
+                  id="notificationToEmail"
                   value={form.notificationToEmail}
                   onChange={(event) => updateField('notificationToEmail', event.target.value)}
                   placeholder="kathy@texassolarandroofing.com"
                 />
               </div>
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Subject prefix</label>
+                <label htmlFor="subjectPrefix" className="text-foreground text-sm font-medium">
+                  Subject prefix
+                </label>
                 <Input
+                  id="subjectPrefix"
                   value={form.subjectPrefix}
                   onChange={(event) => updateField('subjectPrefix', event.target.value)}
                   placeholder="New lead"
@@ -238,17 +248,23 @@ export default function LeadSettingsClient({ initialSettings }) {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Sender name</label>
+                <label htmlFor="fromName" className="text-foreground text-sm font-medium">
+                  Sender name
+                </label>
                 <Input
+                  id="fromName"
                   value={form.fromName}
                   onChange={(event) => updateField('fromName', event.target.value)}
                   placeholder="Texas Solar and Roofing Pros"
                 />
               </div>
               <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium">Sender email</label>
+                <label htmlFor="fromEmail" className="text-foreground text-sm font-medium">
+                  Sender email
+                </label>
                 <Input
                   type="email"
+                  id="fromEmail"
                   value={form.fromEmail}
                   onChange={(event) => updateField('fromEmail', event.target.value)}
                   placeholder="leads@texassolarandroofing.com"
@@ -257,8 +273,11 @@ export default function LeadSettingsClient({ initialSettings }) {
             </div>
 
             <div className="grid gap-2">
-              <label className="text-foreground text-sm font-medium">Resend template ID</label>
+              <label htmlFor="resendTemplateId" className="text-foreground text-sm font-medium">
+                Resend template ID
+              </label>
               <Input
+                id="resendTemplateId"
                 value={form.resendTemplateId}
                 onChange={(event) => updateField('resendTemplateId', event.target.value)}
                 placeholder="tpl_123456789"

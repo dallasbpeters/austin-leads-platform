@@ -64,7 +64,7 @@ export async function ensureChristmasTables() {
     )
   `
 
-  -- Guard: add columns that may be missing from older schema
+  // Guard: add columns that may be missing from older schema
   await sql`ALTER TABLE christmas_jobs ADD COLUMN IF NOT EXISTS phone TEXT`
   await sql`ALTER TABLE christmas_jobs ADD COLUMN IF NOT EXISTS crew  TEXT`
 }
@@ -203,9 +203,19 @@ export async function getJobByStripeSessionId(sessionId) {
 export async function updateJob(id, updates) {
   const sql = getSql()
   const {
-    fullName, email, phone, address, installDate, packageSlug,
-    status, crew, notes,
-    depositStatus, balanceAmountCents, balanceStatus, stripePaymentIntentId,
+    fullName,
+    email,
+    phone,
+    address,
+    installDate,
+    packageSlug,
+    status,
+    crew,
+    notes,
+    depositStatus,
+    balanceAmountCents,
+    balanceStatus,
+    stripePaymentIntentId,
   } = updates
 
   const [row] = await sql`

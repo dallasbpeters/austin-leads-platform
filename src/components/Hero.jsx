@@ -135,7 +135,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
         <>
           <video
             key={heroVideoSource.src}
-            className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+            className="absolute inset-0 z-0 h-full w-full bg-black object-cover object-center"
             poster={heroVideoSource.poster || undefined}
             autoPlay={heroVideoSource.autoplay}
             loop={heroVideoSource.loop}
@@ -190,13 +190,13 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
           className="absolute inset-0 object-cover object-top opacity-10"
         />
       )}
-      <div className="relative z-20 mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-4 py-30">
+      <div className="relative z-20 mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-2 py-30 md:px-4">
         <div
           className={`grid w-full items-end gap-12 pb-12 ${
             hasHeroAside ? 'lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]' : 'lg:grid-cols-1'
           }`}
         >
-          <div className="solar-fade-up max-w-2xl">
+          <div className="solar-fade-up max-w-4xl">
             <div className="mb-8 inline-flex items-center gap-4">
               <div className="relative flex h-3 w-3">
                 <span
@@ -214,7 +214,7 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
             </div>
             {useSingleHeadline ? (
               <h1
-                className="type-display mb-3 text-[clamp(2.5rem,8vw,4rem)] leading-tight tracking-[-0.02em] text-black"
+                className="type-display mb-3 text-[clamp(3.5rem,8vw,5rem)] leading-tight tracking-[-0.02em] text-black"
                 style={heroTextColor ? { color: heroTextColor } : undefined}
               >
                 {title}

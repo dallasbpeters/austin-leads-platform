@@ -169,7 +169,7 @@ async function loadStyleGuideData() {
 
   const adminVariables = parseVariables(extractBlock(adminCss, '.admin-theme')).filter(isSwatchFriendly)
   const txchristmaslightsVariables = parseVariables(
-    extractBlock(christmasCss, '.txchristmaslights-theme'),
+    extractBlock(christmasCss, `[data-public-site='txchristmaslights']`),
   ).filter(isSwatchFriendly)
 
   const publicVariables = rootVariables.filter(({ token }) => token.startsWith('--color-'))

@@ -1,3 +1,4 @@
+import './src/sanity/studioPatches.css'
 import { agentContextPlugin } from '@sanity/agent-context/studio'
 import { assist } from '@sanity/assist'
 import { defineConfig } from 'sanity'
@@ -14,6 +15,7 @@ import {
   isSanityConfigured,
   localFrontendUrl,
   projectId,
+  studioDeploymentAppId,
   studioPreviewOrigin,
   studioUrl,
 } from './src/sanity/env'
@@ -29,15 +31,13 @@ const previewModeRoutes = {
   disable: '/api/draft-mode/disable',
 }
 
-const studioAppId = (process.env.SANITY_STUDIO_APP_ID || '').trim()
-
 export default defineConfig({
   name: 'default',
   title: 'Austin Leads Studio',
   projectId: projectId || 'missing-project-id',
   dataset,
   basePath: studioUrl,
-  ...(studioAppId ? { appId: studioAppId } : {}),
+  ...(studioDeploymentAppId ? { appId: studioDeploymentAppId } : {}),
   // Content Releases is Enterprise-only and defaults on in recent Studio; UI can try to
   // encode `{ tool, structure }` routes and crash with "Unable to find matching route for state".
   releases: { enabled: false },

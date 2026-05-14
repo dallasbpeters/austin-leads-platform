@@ -7,7 +7,7 @@ import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 import { roofingServices } from '@/lib/platform/service-catalog'
-import { getSectionDomId, getSiteBrandStyleVars, getThemeClassForSite } from './PublicSiteUtils'
+import { getSectionDomId, getSiteBrandStyleVars } from './PublicSiteUtils'
 import { GenericFooter, GenericHeader } from './shell'
 import { sectionRenderers, RoofingLogoCloudSection, CtaSection } from './sections'
 
@@ -39,12 +39,11 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
   const pageEditAttrs = getSanityPageEditAttributes(page, 'title')
   const pageSectionsEditAttrs = getSanityPageEditAttributes(page, 'sections')
 
-  const themeClass = getThemeClassForSite(site)
   const brandStyle = getSiteBrandStyleVars(site)
 
   return (
     <div
-      className={`${themeClass} text-foreground bg-background min-h-screen`}
+      className="text-foreground bg-background min-h-screen"
       {...getDevSectionAttributes({
         id: 'public-site-root',
         markup: 'src/components/platform/PublicSite.jsx',

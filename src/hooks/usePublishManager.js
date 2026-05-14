@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import posthog from 'posthog-js'
 
 import {
   buildDefaultPublishForm,
@@ -35,6 +36,10 @@ export function usePublishManager({ initialJobs, sites }) {
 
     try {
       await createPublishJob(form)
+      posthog.capture('admin_publish_job_created', {
+        site_slug: form.siteSlug,
+        job_title: form.title,
+      })
       setForm((current) => ({
         ...current,
         title: '',
