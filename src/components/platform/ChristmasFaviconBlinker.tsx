@@ -76,11 +76,13 @@ function toDataUri(svg: string): string {
   return 'data:image/svg+xml,' + encodeURIComponent(svg)
 }
 
-const FRAME_ON = toDataUri(buildSvg(SVG_BULBS.map(([on]) => on)))
-const FRAME_DIM = toDataUri(buildSvg(SVG_BULBS.map(([, dim]) => dim)))
-
 export function ChristmasFaviconBlinker() {
   useEffect(() => {
+    // Build data URIs lazily inside the effect — keeps large strings out of
+    // webpack's module-level cache to avoid the "big strings" serialization warning.
+    const frameOn = toDataUri(buildSvg(SVG_BULBS.map(([on]) => on)))
+    const frameDim = toDataUri(buildSvg(SVG_BULBS.map(([, dim]) => dim)))
+
     let link = document.querySelector<HTMLLinkElement>('link[rel="icon"][type="image/svg+xml"]')
     if (!link) {
       link = document.createElement('link')
@@ -90,16 +92,15 @@ export function ChristmasFaviconBlinker() {
     }
 
     let lit = true
-    link.href = FRAME_ON
+    link.href = frameOn
 
     const id = setInterval(() => {
       lit = !lit
-      link!.href = lit ? FRAME_ON : FRAME_DIM
+      link!.href = lit ? frameOn : frameDim
     }, 800)
 
     return () => {
       clearInterval(id)
-      // Restore the static file on unmount
       link!.href = '/favicon-txchristmaslights.svg'
     }
   }, [])
