@@ -15,7 +15,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, ArrowRight, NavArrowLeft, NavArrowRight } from 'iconoir-react'
 
 const WINDOW_SIZE = 9

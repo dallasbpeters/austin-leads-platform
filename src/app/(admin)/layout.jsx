@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Outfit, JetBrains_Mono } from 'next/font/google'
-import { Bell, Building2, Search } from 'lucide-react'
+import { Building2 } from 'lucide-react'
 
 import {
   Sidebar,
