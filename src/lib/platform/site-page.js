@@ -18,6 +18,11 @@ import {
 } from '@/lib/platform/content'
 import { isTxChristmasLightsSite, TX_CHRISTMAS_PUBLIC_COLLAGE_SRC, TX_CHRISTMAS_PUBLIC_LOGO_SRC } from '@/components/platform/PublicSiteUtils'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+import {
+  SHARE_DESCRIPTION_MAX,
+  SHARE_TITLE_MAX,
+  truncateForShare,
+} from '@/lib/platform/social-share-text'
 
 /**
  * Sanity Presentation passes ?__site=<slug> so the multi-tenant renderer can
@@ -115,8 +120,13 @@ function buildOgImageUrl(origin, site, page, pathname) {
   const isGuidePageByPath = String(pathname || '').startsWith('/guides')
   const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   const isGuidePage = isGuidePageByPath || isGuidePageByData
-  const title = page.seo?.title || page.title || site.name
-  const description = page.seo?.description || page.description || ''
+  const rawTitle = page.seo?.title || page.title || site.name
+  const rawDescription = page.seo?.description || page.description || ''
+  const title = isTxChristmasLightsSite(site) ? truncateForShare(rawTitle, SHARE_TITLE_MAX) : rawTitle
+  const description =
+    isTxChristmasLightsSite(site) && rawDescription
+      ? truncateForShare(rawDescription, SHARE_DESCRIPTION_MAX)
+      : rawDescription
 
   if (isGuidePage) {
     const guideSlug = String(pathname || '')
@@ -138,6 +148,7 @@ function buildOgImageUrl(origin, site, page, pathname) {
     url.searchParams.set('image', new URL(TX_CHRISTMAS_PUBLIC_COLLAGE_SRC, origin).toString())
     url.searchParams.set('primary', '#ea580c')
     url.searchParams.set('secondary', '#14532d')
+    url.searchParams.set('cta', 'Book your install')
   } else {
     if (site.brand?.primary) {
       url.searchParams.set('primary', site.brand.primary)
@@ -199,6 +210,11 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
     getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
   const title = page.seo?.title || page.title || site.seo?.title || site.name
   const description = page.seo?.description || page.description || site.seo?.description
+  const shareTitle = isTxChristmasLightsSite(site) ? truncateForShare(title, SHARE_TITLE_MAX) : title
+  const shareDescription =
+    isTxChristmasLightsSite(site) && description
+      ? truncateForShare(description, SHARE_DESCRIPTION_MAX)
+      : (description ?? '')
   const computedOgImage = buildOgImageUrl(currentOrigin, site, page, pathname)
   const ogImage = isGuidePage ? computedOgImage : page.seo?.ogImage || site.seo?.ogImage || computedOgImage
   const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
@@ -214,13 +230,13 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
 
   return {
     title,
-    description,
+    description: isTxChristmasLightsSite(site) ? shareDescription || description : description,
     alternates: {
       canonical,
     },
     openGraph: {
-      title,
-      description,
+      title: shareTitle,
+      description: shareDescription || undefined,
       url: canonical,
       siteName: site.name,
       appId: facebookAppId || undefined,
@@ -232,14 +248,14 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
           type: 'image/png',
           width: 1200,
           height: 630,
-          alt: `${title} | ${site.name}`,
+          alt: `${shareTitle} | ${site.name}`,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
+      title: shareTitle,
+      description: shareDescription || undefined,
       images: [ogImage],
     },
     robots: {

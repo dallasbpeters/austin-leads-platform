@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og'
 
+import { SHARE_DESCRIPTION_MAX, SHARE_TITLE_MAX, truncateForShare } from '@/lib/platform/social-share-text'
+
 export const runtime = 'edge'
 
 const OG_IMAGE_SIZE = {
@@ -431,22 +433,32 @@ export async function GET(request) {
   const fontFamily = await getFontFamily(requestUrl)
   const isGuideParam =
     getQueryParam(searchParams, 'g') === '1' || getQueryParam(searchParams, 'guide') === '1'
+  const isChristmasOg = getQueryParam(searchParams, 'theme') === 'txchristmaslights'
   const site = clampText(
     getQueryParam(searchParams, 's') || getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros',
     80,
   )
+  const titleBase =
+    getQueryParam(searchParams, 't') ||
+    getQueryParam(searchParams, 'title') ||
+    titleFromGuidePath(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path')) ||
+    site
   const title =
     clampText(
-      getQueryParam(searchParams, 't') ||
-        getQueryParam(searchParams, 'title') ||
-        titleFromGuidePath(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path')) ||
-        site,
-      120,
+      isChristmasOg ? truncateForShare(titleBase, SHARE_TITLE_MAX) : titleBase,
+      isChristmasOg ? SHARE_TITLE_MAX + 4 : 120,
     ) || site
+  const descriptionRaw = getQueryParam(searchParams, 'd') || getQueryParam(searchParams, 'description') || ''
   const description = clampText(
-    getQueryParam(searchParams, 'd') || getQueryParam(searchParams, 'description') || '',
-    180,
+    isChristmasOg && descriptionRaw
+      ? truncateForShare(descriptionRaw, SHARE_DESCRIPTION_MAX)
+      : descriptionRaw,
+    isChristmasOg ? SHARE_DESCRIPTION_MAX + 4 : 180,
   )
+  let cta = clampText(getQueryParam(searchParams, 'cta') || '', 44)
+  if (isChristmasOg && !cta) {
+    cta = 'Book your install'
+  }
   const path = clampText(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path') || '', 80)
   const category = clampText(
     getQueryParam(searchParams, 'c') || getQueryParam(searchParams, 'category') || '',
@@ -467,7 +479,6 @@ export async function GET(request) {
     getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'),
     '#016bb7',
   )
-  const isChristmasOg = getQueryParam(searchParams, 'theme') === 'txchristmaslights'
   const christmasLogoSrc = isChristmasOg
     ? new URL('/images/tx-christmas-logo-full.png', requestUrl.origin).toString()
     : ''
@@ -781,7 +792,7 @@ export async function GET(request) {
                     <div
                       style={{
                         display: 'flex',
-                        fontSize: 76,
+                        fontSize: isChristmasOg ? 62 : 76,
                         lineHeight: 0.96,
                         fontWeight: 800,
                         letterSpacing: '-0.06em',
@@ -794,13 +805,32 @@ export async function GET(request) {
                       <div
                         style={{
                           display: 'flex',
-                          fontSize: 30,
+                          fontSize: isChristmasOg ? 26 : 30,
                           lineHeight: 1.32,
                           color: copyColor,
                           maxWidth: 660,
                         }}
                       >
                         {description}
+                      </div>
+                    ) : null}
+                    {cta ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignSelf: 'flex-start',
+                          marginTop: 14,
+                          border: '2px solid rgba(255,255,255,0.92)',
+                          borderRadius: 9999,
+                          padding: '12px 28px',
+                          fontSize: 24,
+                          fontWeight: 700,
+                          letterSpacing: '-0.02em',
+                          color: '#ffffff',
+                          backgroundColor: 'rgba(234, 88, 12, 0.42)',
+                        }}
+                      >
+                        {cta}
                       </div>
                     ) : null}
                   </div>
