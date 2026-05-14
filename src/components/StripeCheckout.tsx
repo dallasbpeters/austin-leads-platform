@@ -532,11 +532,11 @@ export function SchedulingForm() {
             {lt.num}
           </span>
           <div className="relative z-10">
-            <p className="text-background/60 mb-8 text-sm tracking-[0.2em] uppercase">{lt.eyebrow}</p>
+            <p className="text-background mb-8 text-sm tracking-[0.2em] uppercase">{lt.eyebrow}</p>
             <h2 className="mb-8 font-serif text-4xl leading-[0.95] tracking-normal md:text-5xl lg:text-6xl">
               {lt.heading}
             </h2>
-            {lt.sub && <div className="text-background/70 mb-8 max-w-md text-lg">{lt.sub}</div>}
+            {lt.sub && <div className="text-background mb-8 max-w-md text-lg">{lt.sub}</div>}
             {step === 1 && (
             <div className="border-background/20 mb-8 inline-flex items-baseline gap-4 border-t pt-8">
               <span className="text-background/50 text-sm tracking-[0.15em] uppercase">Deposit</span>
@@ -547,12 +547,12 @@ export function SchedulingForm() {
             )}
             {step === 3 && (
               <div className="mb-10 space-y-4">
-                <div className="border-background/20 border-b pb-3">
-                  <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Name</span>
+                <div className="border-background/50 border-b pb-3">
+                  <span className="text-background text-xs tracking-[0.15em] uppercase">Name</span>
                   <p className="mt-0.5 text-lg">{formData.name}</p>
                 </div>
-                <div className="border-background/20 border-b pb-3">
-                  <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
+                <div className="border-background/50 border-b pb-3">
+                  <span className="text-background text-xs tracking-[0.15em] uppercase">Property</span>
                   <p className="mt-0.5 text-lg">{formData.address}</p>
                 </div>
               </div>
