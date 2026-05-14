@@ -400,7 +400,7 @@ export function SchedulingForm() {
                 <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
                 <p className="mt-1 text-xl">{formData.address}</p>
               </div>
-              <div className="pb-4 border-b">
+              <div className="border-background/20 border-b pb-4">
                 <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Date</span>
                 <p className="mt-1 text-xl">{slots.find((d) => d.value === formData.installDate)?.label}</p>
               </div>
@@ -410,7 +410,7 @@ export function SchedulingForm() {
           </div>
 
           {/* Right: Checkout */}
-          <div className="bg-white text-foreground flex place-items-center p-8 lg:p-16">
+          <div className="bg-white w-full text-foreground flex place-content-center place-items-stretch p-8 lg:p-16">
             <Button
               variant="ghost"
               pill={false}
