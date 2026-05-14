@@ -430,7 +430,6 @@ function titleFromGuidePath(pathname) {
 export async function GET(request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
-  const fontFamily = await getFontFamily(requestUrl)
   const isGuideParam =
     getQueryParam(searchParams, 'g') === '1' || getQueryParam(searchParams, 'guide') === '1'
   const isChristmasOg = getQueryParam(searchParams, 'theme') === 'txchristmaslights'
@@ -497,6 +496,50 @@ export async function GET(request) {
   const secondarySoft = '#FFFFFF'
   const copyColor = isChristmasOg ? '#fde68a' : '#dbe4ee'
   const isGuideLayout = isGuideParam || layout === 'guide' || path.startsWith('/guides/')
+  const isTxChristmasPrecomposedOg = isChristmasOg && Boolean(image) && !isGuideLayout
+
+  if (isTxChristmasPrecomposedOg) {
+    const bareImageResponse = new ImageResponse(
+      (
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            margin: 0,
+            padding: 0,
+            position: 'relative',
+            backgroundColor: '#000000',
+          }}
+        >
+          <img
+            alt=""
+            src={image}
+            width={OG_IMAGE_SIZE.width}
+            height={OG_IMAGE_SIZE.height}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+            }}
+          />
+        </div>
+      ),
+      { ...OG_IMAGE_SIZE },
+    )
+    const pngBuffer = await bareImageResponse.arrayBuffer()
+    return new Response(pngBuffer, {
+      status: 200,
+      headers: {
+        'content-type': 'image/png',
+        'content-length': String(pngBuffer.byteLength),
+        'cache-control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+      },
+    })
+  }
+
+  const fontFamily = await getFontFamily(requestUrl)
 
   const imageResponse = new ImageResponse(
     <div

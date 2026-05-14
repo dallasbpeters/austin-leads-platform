@@ -1,6 +1,6 @@
 import Hero from '@/components/Hero'
 
-import { isTxChristmasLightsSite, TX_CHRISTMAS_PUBLIC_COLLAGE_SRC } from '../PublicSiteUtils'
+import { isTxChristmasLightsSite, TX_CHRISTMAS_PUBLIC_HERO_FALLBACK_SRC } from '../PublicSiteUtils'
 
 /**
  * Multi-tenant section renderer for `_type: 'heroSection'`.
@@ -11,7 +11,7 @@ import { isTxChristmasLightsSite, TX_CHRISTMAS_PUBLIC_COLLAGE_SRC } from '../Pub
  * `[data-public-site]` on `<html>`, not through duplicated component logic.
  */
 export function HeroSection({ section, sectionId, site }) {
-  const fallbackBackdropSrc = isTxChristmasLightsSite(site) ? TX_CHRISTMAS_PUBLIC_COLLAGE_SRC : null
+  const fallbackBackdropSrc = isTxChristmasLightsSite(site) ? TX_CHRISTMAS_PUBLIC_HERO_FALLBACK_SRC : null
   return <Hero heroSection={section} sectionId={sectionId} fallbackBackdropSrc={fallbackBackdropSrc} />
 }
 

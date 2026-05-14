@@ -2,10 +2,13 @@ import { toRuntimeToken } from '@/lib/sanity/stega'
 
 export const CONSULTATION_ANCHOR_ID = 'consultation'
 
-/** Collage art for TX Christmas hero + `/api/og` (also `public/images/…`). */
-export const TX_CHRISTMAS_PUBLIC_COLLAGE_SRC = '/images/tx-christmas-hero-collage.png'
+/** Hero backdrop when CMS has no media (photo collage — not the precomposed OG art). */
+export const TX_CHRISTMAS_PUBLIC_HERO_FALLBACK_SRC = '/images/tx-christmas-hero-collage.png'
 
-/** Wordmark PNG for nav + Open Graph `og:logo`. */
+/** Precomposed 1200×630-style share image (copy + logo baked in) — `/api/og` only, full-bleed with no overlay. */
+export const TX_CHRISTMAS_PUBLIC_OG_IMAGE_SRC = '/images/tx-christmas-og.png'
+
+/** Wordmark PNG for nav (not used on generated OG when using {@link TX_CHRISTMAS_PUBLIC_OG_IMAGE_SRC}). */
 export const TX_CHRISTMAS_PUBLIC_LOGO_SRC = '/images/tx-christmas-logo-full.png'
 
 /** Values that match `[data-public-site="…"]` blocks in *-theme.css. */
