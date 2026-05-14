@@ -62,7 +62,6 @@ async function getSanityRedirects() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  optimizeFonts: false,
   outputFileTracingRoot: PROJECT_ROOT,
   turbopack: {
     root: PROJECT_ROOT,
