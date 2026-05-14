@@ -3,6 +3,7 @@ import Header from '@/components/Header'
 import GuideShareBar from '@/components/GuideShareBar'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
+import { ChristmasFaviconBlinker } from './ChristmasFaviconBlinker'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
@@ -59,6 +60,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
         note={`route ${pathname || '/'} using ${useSolarShell ? 'solar shell' : 'generic shell'}`}
       />
 
+      {site.slug === 'txchristmaslights' && <ChristmasFaviconBlinker />}
       {useSolarShell ? <Header /> : <GenericHeader site={site} navigation={navigation} />}
 
       <main
