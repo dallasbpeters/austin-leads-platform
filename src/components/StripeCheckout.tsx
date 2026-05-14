@@ -652,7 +652,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="name"
-                        className={`pointer-events-none transition-all duration-200 ${focusedField === 'name' || formData.name ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'name' || formData.name ? 'text-muted-foreground' : 'text-foreground/60 '}`}
                       >
                         Full Name
                       </label>
@@ -690,7 +690,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="address"
-                        className={`pointer-events-none transition-all duration-200 ${focusedField === 'address' || formData.address ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'address' || formData.address ? 'text-muted-foreground' : 'text-foreground/60 '}`}
                       >
                         Property Address
                       </label>
