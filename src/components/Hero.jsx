@@ -26,7 +26,11 @@ const HERO_ACTION_VARIANT_MAP = {
 const resolveHeroActionVariant = (rawVariant, index) =>
   HERO_ACTION_VARIANT_MAP[rawVariant] || (index === 0 ? 'default' : 'secondary')
 
-export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }) {
+export default function Hero({
+  heroSection = null,
+  sectionId = 'hero-homepage',
+  fallbackBackdropSrc = null,
+}) {
   const heroImageUrl = getHeroImageUrl(heroSection?.heroAsset, heroSection?.heroImage)
   const heroVideoSource = getHeroVideoSource(heroSection?.heroVideo, heroSection?.heroVideoAsset)
   const heroSlides = Array.isArray(heroSection?.heroSlides)
@@ -62,6 +66,9 @@ export default function Hero({ heroSection = null, sectionId = 'hero-homepage' }
   ).filter(
     (image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index,
   )
+  if (!usesVideo && rotatingHeroImages.length === 0 && fallbackBackdropSrc) {
+    rotatingHeroImages = [{ src: fallbackBackdropSrc, alt: 'Festive holiday lights' }]
+  }
   const hasHeroBackdropMedia = usesVideo || rotatingHeroImages.length > 0
   const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)

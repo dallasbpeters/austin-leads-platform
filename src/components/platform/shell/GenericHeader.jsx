@@ -10,7 +10,7 @@ import { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { buildSanityImageUrl } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
 
-import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
+import { CONSULTATION_ANCHOR_ID, TX_CHRISTMAS_PUBLIC_LOGO_SRC } from '../PublicSiteUtils'
 
 const CONTACT_LINK_CLASSES = 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9'
 
@@ -59,8 +59,9 @@ export default function GenericHeader({ site, navigation = [] }) {
   const [, setConsultationInView] = React.useState(false)
   const mobileMenuId = 'site-mobile-nav'
 
-  const logoUrl = buildSanityImageUrl(site?.brand?.logo, { width: 200 })
-  const logoAlt = site?.brand?.logo?.alt || site?.name || ''
+  const isChristmas = site?.slug === 'txchristmaslights'
+  const logoUrl = isChristmas ? TX_CHRISTMAS_PUBLIC_LOGO_SRC : buildSanityImageUrl(site?.brand?.logo, { width: 200 })
+  const logoAlt = isChristmas ? (site?.name || 'Texas Christmas Lights') : site?.brand?.logo?.alt || site?.name || ''
   const siteName = cleanRuntimeString(site?.shortName || site?.name || '')
 
   const navItems = React.useMemo(() => {
@@ -110,11 +111,25 @@ export default function GenericHeader({ site, navigation = [] }) {
           content: 'multi-tenant public-site nav driven by Sanity site doc',
         })}
       >
-        <div className="mx-auto w-full rounded-none bg-stone-100 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full">
+        <div
+          className={
+            isChristmas
+              ? 'border-border bg-card/95 mx-auto w-full rounded-none border px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full'
+              : 'mx-auto w-full rounded-none bg-stone-100 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full'
+          }
+        >
           <div className="flex items-center justify-between">
             <Link href="/" title={site?.name || ''} className="grid grid-flow-col items-center gap-2">
               {logoUrl ? (
-                <img src={logoUrl} alt={logoAlt} width={150} height={40} className="h-7 w-7 object-contain" />
+                <img
+                  src={logoUrl}
+                  alt={logoAlt}
+                  width={isChristmas ? 200 : 150}
+                  height={isChristmas ? 48 : 40}
+                  className={
+                    isChristmas ? 'h-9 w-auto max-w-[200px] object-contain md:h-10' : 'h-7 w-7 object-contain'
+                  }
+                />
               ) : (
                 <span aria-hidden className="text-primary type-display text-xl leading-none font-medium">
                   {(siteName || 'S').charAt(0)}

@@ -2,6 +2,12 @@ import { toRuntimeToken } from '@/lib/sanity/stega'
 
 export const CONSULTATION_ANCHOR_ID = 'consultation'
 
+/** Collage art for TX Christmas hero + `/api/og` (also `public/images/…`). */
+export const TX_CHRISTMAS_PUBLIC_COLLAGE_SRC = '/images/tx-christmas-hero-collage.png'
+
+/** Wordmark PNG for nav + Open Graph `og:logo`. */
+export const TX_CHRISTMAS_PUBLIC_LOGO_SRC = '/images/tx-christmas-logo-full.png'
+
 /** Values that match `[data-public-site="…"]` blocks in *-theme.css. */
 const KNOWN_PUBLIC_SITE_ATTRS = new Set(['texas-solar-and-roofing-pros', 'txchristmaslights'])
 

@@ -16,6 +16,7 @@ import {
   resolveSiteByHost,
   resolveSiteBySlug,
 } from '@/lib/platform/content'
+import { isTxChristmasLightsSite, TX_CHRISTMAS_PUBLIC_COLLAGE_SRC, TX_CHRISTMAS_PUBLIC_LOGO_SRC } from '@/components/platform/PublicSiteUtils'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 
 /**
@@ -132,12 +133,19 @@ function buildOgImageUrl(origin, site, page, pathname) {
     url.searchParams.set('description', description)
   }
 
-  if (site.brand?.primary) {
-    url.searchParams.set('primary', site.brand.primary)
-  }
+  if (isTxChristmasLightsSite(site)) {
+    url.searchParams.set('theme', 'txchristmaslights')
+    url.searchParams.set('image', new URL(TX_CHRISTMAS_PUBLIC_COLLAGE_SRC, origin).toString())
+    url.searchParams.set('primary', '#ea580c')
+    url.searchParams.set('secondary', '#14532d')
+  } else {
+    if (site.brand?.primary) {
+      url.searchParams.set('primary', site.brand.primary)
+    }
 
-  if (site.brand?.secondary) {
-    url.searchParams.set('secondary', site.brand.secondary)
+    if (site.brand?.secondary) {
+      url.searchParams.set('secondary', site.brand.secondary)
+    }
   }
 
   if (pathname && pathname !== '/') {
@@ -148,9 +156,11 @@ function buildOgImageUrl(origin, site, page, pathname) {
     url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
 
-  const heroImage = getPageHeroImage(page)
-  if (heroImage) {
-    url.searchParams.set('image', heroImage)
+  if (!isTxChristmasLightsSite(site)) {
+    const heroImage = getPageHeroImage(page)
+    if (heroImage) {
+      url.searchParams.set('image', heroImage)
+    }
   }
 
   return url.toString()
@@ -194,6 +204,14 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
   const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
+  const ogLogoBase =
+    (typeof currentOrigin === 'string' && currentOrigin.startsWith('http') ? currentOrigin : null) ||
+    (typeof canonical === 'string' && canonical.startsWith('http') ? new URL(canonical).origin : null) ||
+    `https://${host || 'localhost'}`
+  const ogLogoUrl = isTxChristmasLightsSite(site)
+    ? new URL(TX_CHRISTMAS_PUBLIC_LOGO_SRC, ogLogoBase).toString()
+    : null
+
   return {
     title,
     description,
@@ -228,6 +246,7 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
       index: shouldIndex,
       follow: shouldIndex,
     },
+    ...(ogLogoUrl ? { other: { 'og:logo': ogLogoUrl } } : {}),
   }
 }
 

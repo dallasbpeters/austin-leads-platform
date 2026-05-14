@@ -467,6 +467,10 @@ export async function GET(request) {
     getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'),
     '#016bb7',
   )
+  const isChristmasOg = getQueryParam(searchParams, 'theme') === 'txchristmaslights'
+  const christmasLogoSrc = isChristmasOg
+    ? new URL('/images/tx-christmas-logo-full.png', requestUrl.origin).toString()
+    : ''
   const guideBackground = solidHexForOgGuideBackground(
     getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'),
     DEFAULT_GUIDE_OG_BACKGROUND_HEX,
@@ -480,7 +484,7 @@ export async function GET(request) {
   const guideCategoryBg = guideUseLightInk ? 'rgba(15,23,42,0.1)' : 'rgba(255,255,255,0.12)'
   const guideCategoryText = guideUseLightInk ? '#020617' : '#ffffff'
   const secondarySoft = '#FFFFFF'
-  const copyColor = '#dbe4ee'
+  const copyColor = isChristmasOg ? '#fde68a' : '#dbe4ee'
   const isGuideLayout = isGuideParam || layout === 'guide' || path.startsWith('/guides/')
 
   const imageResponse = new ImageResponse(
@@ -622,7 +626,22 @@ export async function GET(request) {
                 gap: 12,
               }}
             >
-              <BrandLogo color={guideInk} />
+              {isChristmasOg && christmasLogoSrc ? (
+                <img
+                  alt=""
+                  src={christmasLogoSrc}
+                  height={52}
+                  width={220}
+                  style={{
+                    height: 52,
+                    width: 'auto',
+                    maxWidth: 240,
+                    objectFit: 'contain',
+                  }}
+                />
+              ) : (
+                <BrandLogo color={guideInk} />
+              )}
             </div>
           </div>
         </div>
@@ -647,7 +666,9 @@ export async function GET(request) {
               position: 'absolute',
               inset: 0,
               background: image
-                ? 'linear-gradient(45deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.5))'
+                ? isChristmasOg
+                  ? 'linear-gradient(105deg, rgba(28, 25, 23, 0.92) 0%, rgba(28, 25, 23, 0.55) 42%, rgba(41, 37, 36, 0.25) 100%)'
+                  : 'linear-gradient(45deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.5))'
                 : `linear-gradient(135deg, ${secondarySoft} 0%, ${secondary} 74%)`,
             }}
           />
@@ -701,19 +722,36 @@ export async function GET(request) {
                         gap: 16,
                       }}
                     >
-                      <BrandLogo color={primary} />
-                      <div
-                        style={{
-                          display: 'flex',
-                          fontSize: 30,
-                          fontWeight: 700,
-                          letterSpacing: '-0.03em',
-                          whiteSpace: 'nowrap',
-                          color: '#ffffff',
-                        }}
-                      >
-                        {site}
-                      </div>
+                      {isChristmasOg && christmasLogoSrc ? (
+                        <img
+                          alt=""
+                          src={christmasLogoSrc}
+                          height={56}
+                          width={260}
+                          style={{
+                            height: 56,
+                            width: 'auto',
+                            maxWidth: 300,
+                            objectFit: 'contain',
+                          }}
+                        />
+                      ) : (
+                        <>
+                          <BrandLogo color={primary} />
+                          <div
+                            style={{
+                              display: 'flex',
+                              fontSize: 30,
+                              fontWeight: 700,
+                              letterSpacing: '-0.03em',
+                              whiteSpace: 'nowrap',
+                              color: '#ffffff',
+                            }}
+                          >
+                            {site}
+                          </div>
+                        </>
+                      )}
                     </div>
                     {path ? (
                       <div
