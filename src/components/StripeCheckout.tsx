@@ -400,27 +400,27 @@ export function SchedulingForm() {
                 <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
                 <p className="mt-1 text-xl">{formData.address}</p>
               </div>
-              <div className="pb-4">
+              <div className="pb-4 border-b">
                 <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Date</span>
                 <p className="mt-1 text-xl">{slots.find((d) => d.value === formData.installDate)?.label}</p>
               </div>
             </div>
 
+            
+          </div>
+
+          {/* Right: Checkout */}
+          <div className="bg-white text-foreground flex place-items-center p-8 lg:p-16">
             <Button
               variant="ghost"
               pill={false}
               fullWidth={false}
               onClick={() => setShowCheckout(false)}
-              className="text-background justify-start self-start text-sm hover:bg-none"
+              className="text-foreground justify-start self-start text-sm hover:bg-none mb-8"
             >
               <ArrowLeft className="size-4" />
               Edit details
             </Button>
-          </div>
-
-          {/* Right: Checkout */}
-          <div className="bg-background text-foreground flex place-items-center p-8 lg:p-16">
-            <div className="mx-auto w-full max-w-lg">
               <EmbeddedCheckoutProvider
                 stripe={stripePromise}
                 options={{
@@ -437,7 +437,6 @@ export function SchedulingForm() {
               >
                 <EmbeddedCheckout />
               </EmbeddedCheckoutProvider>
-            </div>
           </div>
         </div>
       </section>
@@ -672,7 +671,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="email"
-                        className={`pointer-events-none transition-all duration-200 ${focusedField === 'email' || formData.email ? 'text-muted-foreground -top-6 text-xs tracking-[0.15em] uppercase' : 'text-foreground/60 top-4'}`}
+                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'email' || formData.email ? 'text-muted-foreground' : 'text-foreground/60 '}`}
                       >
                         Email Address
                       </label>
