@@ -626,7 +626,7 @@ export function SchedulingForm() {
                   <Button
                     type="button"
                     onClick={handlePackageSubmit}
-                    className="col-start-1 col-end-1 mt-4 h-16 w-full"
+                    className="text-xl col-start-1 col-end-1 mt-4 h-16 w-full"
                   >
                     Continue <ArrowRight className="size-4" />
                   </Button>
@@ -708,7 +708,7 @@ export function SchedulingForm() {
                         <p className="text-muted-foreground mt-2 text-sm">{errors.address}</p>
                       )}
                     </div>
-                    <Button type="submit" fullWidth className="mt-8 h-16">
+                    <Button type="submit" fullWidth className="text-xl mt-8 h-16">
                       Choose a date <ArrowRight className="size-4" />
                     </Button>
                   </form>
@@ -749,7 +749,7 @@ export function SchedulingForm() {
                     fullWidth
                     onClick={handleDateSubmit}
                     disabled={!formData.installDate}
-                    className="h-16"
+                    className="text-xlh-16"
                   >
                     Continue to payment <ArrowRight className="size-4" />
                   </Button>
