@@ -675,6 +675,7 @@ export function SchedulingForm() {
                         type="text"
                         id="name"
                         name="name"
+                        autoComplete="name"
                         value={formData.name}
                         onChange={handleInputChange}
                         onFocus={() => setFocusedField('name')}
@@ -698,6 +699,7 @@ export function SchedulingForm() {
                         type="email"
                         id="email"
                         name="email"
+                        autoComplete="email"
                         value={formData.email}
                         onChange={handleInputChange}
                         onFocus={() => setFocusedField('email')}
@@ -717,6 +719,7 @@ export function SchedulingForm() {
                         type="text"
                         id="address"
                         name="address"
+                        autoComplete="address"
                         value={formData.address}
                         onChange={handleInputChange}
                         onFocus={() => setFocusedField('address')}
