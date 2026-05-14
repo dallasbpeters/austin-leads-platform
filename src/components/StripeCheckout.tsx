@@ -537,7 +537,7 @@ export function SchedulingForm() {
               {lt.heading}
             </h2>
             {lt.sub && <div className="text-background mb-8 max-w-md text-lg">{lt.sub}</div>}
-            {step === 1 && (
+            {step !== 2 && step !== 3 && (
             <div className="border-background/20 mb-8 inline-flex items-baseline gap-4 border-t pt-8">
               <span className="text-background/50 text-sm tracking-[0.15em] uppercase">Deposit</span>
               <span className="font-serif text-5xl lg:text-6xl">
@@ -685,7 +685,7 @@ export function SchedulingForm() {
                         onBlur={() => setFocusedField(null)}
                         className="border-border text-foreground focus:border-foreground w-full border-b-2 bg-transparent py-4 text-lg transition-colors focus:outline-none"
                       />
-                      {errors.email && <p className="text-muted-foreground mt-2 text-sm">{errors.email}</p>}
+                      {errors.email && <p className="text-primary mt-2 text-sm">{errors.email}</p>}
                     </div>
                     <div className="relative">
                       <label
@@ -705,7 +705,7 @@ export function SchedulingForm() {
                         className="border-border text-foreground focus:border-foreground w-full border-b-2 bg-transparent py-4 text-lg transition-colors focus:outline-none"
                       />
                       {errors.address && (
-                        <p className="text-muted-foreground mt-2 text-sm">{errors.address}</p>
+                        <p className="text-primary mt-2 text-sm">{errors.address}</p>
                       )}
                     </div>
                     <Button type="submit" fullWidth className="text-xl mt-8 h-16">
