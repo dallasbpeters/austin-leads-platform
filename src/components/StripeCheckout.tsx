@@ -418,7 +418,7 @@ export function SchedulingForm() {
               onClick={() => setShowCheckout(false)}
               className="text-foreground justify-start self-start text-sm hover:bg-none mb-8"
             >
-              <ArrowLeft className="size-4" />
+              <ArrowLeft className="size-6" />
               Edit details
             </Button>
               <EmbeddedCheckoutProvider
@@ -628,7 +628,7 @@ export function SchedulingForm() {
                     onClick={handlePackageSubmit}
                     className="text-xl col-start-1 col-end-1 mt-4 h-16 w-full"
                   >
-                    Continue <ArrowRight className="size-4" />
+                    Continue <ArrowRight className="size-6" />
                   </Button>
                 </div>
               )}
@@ -643,7 +643,7 @@ export function SchedulingForm() {
                     onClick={() => goTo(1)}
                     className="hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
                   >
-                    <ArrowLeft className="size-4" /> Back to packages
+                    <ArrowLeft className="size-6" /> Back to packages
                   </Button>
                   <form
                     onSubmit={handleSubmit}
@@ -709,7 +709,7 @@ export function SchedulingForm() {
                       )}
                     </div>
                     <Button type="submit" fullWidth className="text-xl mt-8 h-16">
-                      Choose a date <ArrowRight className="size-4" />
+                      Choose a date <ArrowRight className="size-6" />
                     </Button>
                   </form>
                 </div>
@@ -725,7 +725,7 @@ export function SchedulingForm() {
                     onClick={() => goTo(2)}
                     className="hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
                   >
-                    <ArrowLeft className="size-4" /> Edit details
+                    <ArrowLeft className="size-6" /> Edit details
                   </Button>
                   <fieldset>
                     <legend className="text-foreground mb-6 text-xs tracking-[0.2em] uppercase">
@@ -751,7 +751,7 @@ export function SchedulingForm() {
                     disabled={!formData.installDate}
                     className="text-xlh-16"
                   >
-                    Continue to payment <ArrowRight className="size-4" />
+                    Continue to payment <ArrowRight className="size-6" />
                   </Button>
                   <p className="text-background/50 mt-4 text-center text-sm">
                     {fmtCents(depositAmountCents, depositCurrency)} deposit applied to your final balance on
