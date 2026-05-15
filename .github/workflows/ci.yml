@@ -16,28 +16,25 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-runs:
-  using: 'node24'
+
 
 jobs:
   test:
-    name: Test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
+    env:
+      # JavaScript actions (checkout, pnpm/setup, etc.) — Node 20 is deprecated on runners.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v5
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 11
+        # Pin is only in package.json "packageManager"; duplicate version here causes ERR_PNPM_BAD_PM_VERSION.
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
