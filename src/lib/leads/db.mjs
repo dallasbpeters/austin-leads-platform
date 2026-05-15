@@ -1,21 +1,7 @@
-import { neon } from '@neondatabase/serverless'
-
-function getDatabaseUrl() {
-  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''
-}
+import { getSql, hasDatabaseUrl } from '../db/pool.mjs'
 
 export function hasLeadDatabase() {
-  return Boolean(getDatabaseUrl())
-}
-
-function getSql() {
-  const databaseUrl = getDatabaseUrl()
-
-  if (!databaseUrl) {
-    throw new Error('Lead database is not configured.')
-  }
-
-  return neon(databaseUrl)
+  return hasDatabaseUrl()
 }
 
 export async function ensureLeadSubmissionsTable() {

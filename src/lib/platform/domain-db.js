@@ -1,23 +1,9 @@
-import { neon } from '@neondatabase/serverless'
+import { getSql, hasDatabaseUrl } from '../db/pool.js'
 
 import { initialDomainRecords } from './fixtures.js'
 
-function getDatabaseUrl() {
-  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''
-}
-
 export function hasDomainDatabase() {
-  return Boolean(getDatabaseUrl())
-}
-
-function getSql() {
-  const databaseUrl = getDatabaseUrl()
-
-  if (!databaseUrl) {
-    throw new Error('Domain database is not configured.')
-  }
-
-  return neon(databaseUrl)
+  return hasDatabaseUrl()
 }
 
 function normalizeDomainRow(row) {

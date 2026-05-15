@@ -1,8 +1,9 @@
 import bcrypt from 'bcryptjs'
-import { neon } from '@neondatabase/serverless'
+
+import { getSql } from '../db/pool.js'
 
 /*
- * Platform admin users — persisted in Neon Postgres.
+ * Platform admin users — persisted in Postgres (Supabase / Neon-compatible).
  *
  * The legacy env-var admin (AUTH_ADMIN_EMAIL / AUTH_ADMIN_PASSWORD) is still
  * supported by `src/auth.js` as a break-glass bootstrap account; DB-backed
@@ -12,12 +13,6 @@ import { neon } from '@neondatabase/serverless'
 const BCRYPT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 8
 const VALID_ROLES = new Set(['admin'])
-
-function getSql() {
-  const url = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''
-  if (!url) throw new Error('Database not configured.')
-  return neon(url)
-}
 
 export function normalizeEmail(value) {
   return value?.toString().trim().toLowerCase() ?? ''

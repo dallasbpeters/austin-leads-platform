@@ -1,10 +1,4 @@
-import { neon } from '@neondatabase/serverless'
-
-function getSql() {
-  const url = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''
-  if (!url) throw new Error('Database not configured.')
-  return neon(url)
-}
+import { getSql } from '../db/pool.js'
 
 // ─── Schema setup ────────────────────────────────────────────────────────────
 

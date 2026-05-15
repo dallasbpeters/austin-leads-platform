@@ -1,22 +1,8 @@
-import { neon } from '@neondatabase/serverless'
-import { LEAD_PIPELINE_STAGES } from './constants'
-
-function getDatabaseUrl() {
-  return process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || ''
-}
+import { getSql, hasDatabaseUrl } from '../db/pool.js'
+import { LEAD_PIPELINE_STAGES } from './constants.js'
 
 export function hasLeadDatabase() {
-  return Boolean(getDatabaseUrl())
-}
-
-function getSql() {
-  const databaseUrl = getDatabaseUrl()
-
-  if (!databaseUrl) {
-    throw new Error('Lead database is not configured.')
-  }
-
-  return neon(databaseUrl)
+  return hasDatabaseUrl()
 }
 
 function clampLimit(limit, fallback = 10, max = 100) {
