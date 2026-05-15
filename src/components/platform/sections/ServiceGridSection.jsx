@@ -227,7 +227,8 @@ function enrichItems(rawItems) {
 }
 
 function ServiceMedia({ item, overlayStyle }) {
-  if (!item.imageUrl) return <div className="absolute inset-0" style={overlayStyle} />
+  if (!item.imageUrl)
+    return <div className="pointer-events-none absolute inset-0" style={overlayStyle} />
   return (
     <>
       <Image
@@ -235,17 +236,17 @@ function ServiceMedia({ item, overlayStyle }) {
         height={2000}
         src={item.imageUrl}
         alt={item.title}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
-      <div className="absolute inset-0" style={overlayStyle} />
+      <div className="pointer-events-none absolute inset-0" style={overlayStyle} />
     </>
   )
 }
 
-function ServiceCardLink({ item, keyPrefix, children }) {
-  if (!item.href) return <div key={buildRuntimeKey(keyPrefix, item.title, item.href)}>{children}</div>
+function ServiceCardLink({ item, children }) {
+  if (!item.href) return <div className="service-grid-card-border-wrap block w-full">{children}</div>
   return (
-    <Link key={buildRuntimeKey(keyPrefix, item.title, item.href)} href={cleanRuntimeHref(item.href)}>
+    <Link href={cleanRuntimeHref(item.href)} className="service-grid-card-link block w-full rounded-2xl focus-visible:outline-none">
       {children}
     </Link>
   )
@@ -297,12 +298,17 @@ export function ServiceGridSection({ section, sectionId }) {
           {items.map((item) => {
             const Icon = getServiceIcon(item)
             const card = (
-              <Card component="li" className="relative aspect-3/4" variant="media" radius="lg">
-                <ServiceMedia
-                  item={item}
-                  overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'large') }}
-                />
-                <div className="absolute inset-x-0 bottom-0 p-8 text-white">
+              <Card className="service-grid-card-border group relative aspect-3/4 overflow-hidden rounded-2xl border-0 bg-transparent shadow-none contain-none">
+                <div className="service-grid-card-media-frame">
+                  <div className="service-grid-card-stack">
+                    <ServiceMedia
+                      item={item}
+                      overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'large') }}
+                    />
+                  </div>
+                  <div className="service-grid-card-ring" aria-hidden />
+                </div>
+                <div className="service-grid-card-copy rounded-[inherit] p-4 text-white">
                   {item.icon ? (
                     <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                       <Icon className="h-8 w-8" strokeWidth={2} />
@@ -328,15 +334,11 @@ export function ServiceGridSection({ section, sectionId }) {
                     value={item.copy}
                     className="mt-1 text-sm font-normal text-white"
                   />
-                </div>
+                  </div>
               </Card>
             )
             return (
-              <ServiceCardLink
-                key={buildRuntimeKey('service-item', item.title, item.href)}
-                item={item}
-                keyPrefix="service-item"
-              >
+              <ServiceCardLink key={buildRuntimeKey('service-item', item.title, item.href)} item={item}>
                 {card}
               </ServiceCardLink>
             )
@@ -352,7 +354,7 @@ export function ServiceGridSection({ section, sectionId }) {
               {roofingItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
-                  <Card className="relative aspect-4/5 overflow-hidden" variant="media" radius="lg">
+                  <Card className="relative group aspect-4/5 overflow-hidden" variant="media" radius="lg">
                     <ServiceMedia
                       item={item}
                       overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'medium') }}
@@ -370,11 +372,7 @@ export function ServiceGridSection({ section, sectionId }) {
                   </Card>
                 )
                 return (
-                  <ServiceCardLink
-                    key={buildRuntimeKey('roofing-item', item.title, item.href)}
-                    item={item}
-                    keyPrefix="roofing-item"
-                  >
+                  <ServiceCardLink key={buildRuntimeKey('roofing-item', item.title, item.href)} item={item}>
                     {card}
                   </ServiceCardLink>
                 )
@@ -392,7 +390,7 @@ export function ServiceGridSection({ section, sectionId }) {
               {secondaryItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
-                  <Card className="relative aspect-square overflow-hidden" variant="media" radius="lg">
+                  <Card className="relative group aspect-square overflow-hidden" variant="media" radius="lg">
                     <ServiceMedia
                       item={item}
                       overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'small') }}
@@ -410,11 +408,7 @@ export function ServiceGridSection({ section, sectionId }) {
                   </Card>
                 )
                 return (
-                  <ServiceCardLink
-                    key={buildRuntimeKey('secondary-item', item.title, item.href)}
-                    item={item}
-                    keyPrefix="secondary-item"
-                  >
+                  <ServiceCardLink key={buildRuntimeKey('secondary-item', item.title, item.href)} item={item}>
                     {card}
                   </ServiceCardLink>
                 )

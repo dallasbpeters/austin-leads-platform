@@ -36,7 +36,8 @@ function NavList({ onNavigate }) {
             onClick={onNavigate}
             className={`font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 hover:text-white hover:brightness-125 ${className}`}
           >
-            {label}
+            <span data-slot="button-inner" className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]">{label}</span>
+            
           </a>
         ) : (
           <Link
@@ -45,7 +46,7 @@ function NavList({ onNavigate }) {
             onClick={onNavigate}
             className={`font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent ${className}`}
           >
-            {label}
+            <span data-slot="button-inner" className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]">{label}</span>
           </Link>
         ),
       )}

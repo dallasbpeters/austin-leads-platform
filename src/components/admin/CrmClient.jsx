@@ -57,7 +57,14 @@ function badgeTone(value) {
   return 'bg-muted text-muted-foreground border-border'
 }
 
-export default function CrmClient({ initialOverview, initialPipeline, initialLeads, leadDbReady }) {
+export default function CrmClient({
+  initialOverview,
+  initialPipeline,
+  initialLeads,
+  leadDbReady,
+  dbConfigured = false,
+  dbError = null,
+}) {
   const {
     error,
     filters,
@@ -101,6 +108,66 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
   }
 
   if (!leadDbReady) {
+    if (dbConfigured) {
+      const errorMessage = dbError?.message || 'Unknown database error.'
+      const errorCode = dbError?.code || null
+      const errorCause = dbError?.cause || null
+      const looksLikeFetchFailure = /fetch failed|ECONNRESET|ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(
+        `${errorMessage} ${errorCause || ''}`,
+      )
+
+      return (
+        <div className="p-4 md:p-8">
+          <Card className="bg-card/80 border-border">
+            <CardHeader>
+              <CardTitle>CRM database unreachable</CardTitle>
+            </CardHeader>
+            <CardContent className="text-muted-foreground space-y-3 text-sm leading-7">
+              <p>
+                <code>DATABASE_URL</code> is configured, but the server failed to reach Neon when
+                loading this page.
+              </p>
+              {looksLikeFetchFailure ? (
+                <p>
+                  This usually means the Neon HTTP API (Cloudflare-fronted) is temporarily blocked
+                  or down. Check{' '}
+                  <a
+                    href="https://www.cloudflarestatus.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    cloudflarestatus.com
+                  </a>{' '}
+                  and{' '}
+                  <a
+                    href="https://neonstatus.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    neonstatus.com
+                  </a>
+                  , then reload.
+                </p>
+              ) : null}
+              <pre className="bg-muted text-foreground/80 max-w-full overflow-x-auto rounded border p-3 text-xs">
+                {[errorCode && `code: ${errorCode}`, `message: ${errorMessage}`, errorCause && `cause: ${errorCause}`]
+                  .filter(Boolean)
+                  .join('\n')}
+              </pre>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Retry
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )
+    }
+
     return (
       <div className="p-4 md:p-8">
         <Card className="bg-card/80 border-border">
@@ -226,7 +293,6 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                 <TableHead>Status</TableHead>
                 <TableHead>Priority</TableHead>
                 <TableHead>Submitted</TableHead>
-                <TableHead className="pr-4">Source</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -239,13 +305,7 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                     onClick={() => setSelectedLeadId(lead.id)}
                   >
                     <TableCell className="pl-4">
-                      <div className="space-y-1 whitespace-normal">
-                        <div className="text-foreground font-medium">{lead.full_name}</div>
-                        <div className="text-muted-foreground text-sm">{lead.email}</div>
-                        <div className="text-muted-foreground text-sm">
-                          {lead.phone || 'No phone provided'}
-                        </div>
-                      </div>
+                    {lead.full_name}
                     </TableCell>
                     <TableCell className="whitespace-normal">
                       {formatServiceInterest(lead.service_interest)}
@@ -266,12 +326,6 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                       </Badge>
                     </TableCell>
                     <TableCell className="whitespace-normal">{formatDate(lead.created_at)}</TableCell>
-                    <TableCell className="pr-4">
-                      <div className="space-y-1 whitespace-normal">
-                        <div>{lead.source_domain}</div>
-                        <div className="text-muted-foreground text-sm">{lead.page_path}</div>
-                      </div>
-                    </TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -296,7 +350,7 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
           </SheetHeader>
 
           {selectedLead ? (
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4">
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 pb-34">
               <div className="space-y-5">
                 <div className="bg-muted/20 border-border/70 rounded-xl border p-4">
                   <div className="flex items-start gap-3">
@@ -433,7 +487,7 @@ export default function CrmClient({ initialOverview, initialPipeline, initialLea
                 </div>
               </div>
 
-              <SheetFooter className="border-border/70 mt-6 border-t px-0 pt-4">
+              <SheetFooter className="bg-background absolute bottom-0 left-0 right-0 border-border/70 mt-6 border-t px-8 pt-4">
                 <Button onClick={handleSaveDetail} disabled={isSaving}>
                   {isSaving ? 'Saving…' : 'Save changes'}
                 </Button>

@@ -24,8 +24,10 @@ export default async function CrmPage() {
   }
   let initialPipeline = []
   let initialLeads = []
+  const dbConfigured = hasLeadDatabase()
+  let dbError = null
 
-  if (hasLeadDatabase()) {
+  if (dbConfigured) {
     try {
       await ensureLeadSubmissionsTable()
       const [overview, pipeline, leads] = await Promise.all([
@@ -38,8 +40,10 @@ export default async function CrmPage() {
       initialPipeline = pipeline
       initialLeads = leads
       leadDbReady = true
-    } catch {
+    } catch (error) {
       leadDbReady = false
+      dbError = serializeCrmError(error)
+      console.error('[crm] failed to load lead database', error)
     }
   }
 
@@ -49,6 +53,16 @@ export default async function CrmPage() {
       initialPipeline={initialPipeline}
       initialLeads={initialLeads}
       leadDbReady={leadDbReady}
+      dbConfigured={dbConfigured}
+      dbError={dbError}
     />
   )
+}
+
+function serializeCrmError(error) {
+  if (!error) return null
+  const message = error?.message || String(error)
+  const code = error?.code || error?.name || null
+  const cause = error?.cause?.message || error?.cause?.code || null
+  return { message, code, cause }
 }

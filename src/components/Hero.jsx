@@ -52,7 +52,7 @@ export default function Hero({
       : 'single'
   const usesVideo = heroMediaMode === 'video'
   const usesSlidesOnly = heroMediaMode === 'slides'
-  const rotatingHeroImages = (
+  const rotatingHeroImagesBase = (
     usesVideo
       ? []
       : usesSlidesOnly && hasHeroSlides
@@ -66,9 +66,10 @@ export default function Hero({
   ).filter(
     (image, index, images) => image.src && images.findIndex((entry) => entry.src === image.src) === index,
   )
-  if (!usesVideo && rotatingHeroImages.length === 0 && fallbackBackdropSrc) {
-    rotatingHeroImages = [{ src: fallbackBackdropSrc, alt: 'Festive holiday lights' }]
-  }
+  const rotatingHeroImages =
+    !usesVideo && rotatingHeroImagesBase.length === 0 && fallbackBackdropSrc
+      ? [{ src: fallbackBackdropSrc, alt: 'Festive holiday lights' }]
+      : rotatingHeroImagesBase
   const hasHeroBackdropMedia = usesVideo || rotatingHeroImages.length > 0
   const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)

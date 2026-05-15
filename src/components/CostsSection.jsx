@@ -58,7 +58,7 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
         content: 'local JSX copy',
       })}
     >
-      <div className="mx-auto w-full max-w-6xl px-4">
+      <div className="mx-auto w-full max-w-6xl px-12">
         <p
           className="type-accent mb-8 text-sm font-semibold tracking-[0.2em] text-cyan-900 uppercase"
           style={labelStyle}
