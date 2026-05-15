@@ -30,7 +30,6 @@ export async function GET() {
         seen.add(s.value)
         return true
       })
-      .filter((s) => !s.isFull)
       .sort((a, b) => a.value.localeCompare(b.value))
 
     return Response.json(available)
