@@ -58,8 +58,8 @@ export async function POST(req: Request) {
       console.log('[stripe/webhook] job created for session', session.id)
 
       const email = session.customer_email ?? session.customer_details?.email ?? ''
-      const posthog = getPostHogClient()
-      posthog.capture({
+      const posthog = getPostHogClient('txchristmaslights')
+      posthog?.capture({
         distinctId: email || session.id,
         event: 'deposit_payment_confirmed',
         properties: {
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       })
     } catch (err) {
       console.error('[stripe/webhook] failed to create job:', err)
-      getPostHogClient().captureException(err)
+      getPostHogClient('txchristmaslights')?.captureException(err)
       return new Response('Internal error creating job', { status: 500 })
     }
   }

@@ -15,7 +15,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ArrowLeft, ArrowRight, NavArrowLeft, NavArrowRight } from 'iconoir-react'
+import { ArrowLeft, ArrowRight, NavArrowLeft, NavArrowRight, Lock, CheckCircle } from 'iconoir-react'
 
 const WINDOW_SIZE = 9
 
@@ -26,16 +26,26 @@ type SlotOption = {
   isFull: boolean
 }
 
+const CHRISTMAS_SITE_SLUG = 'txchristmaslights'
+
+const STEP_NAMES: Record<1 | 2 | 3, 'package' | 'info' | 'date'> = {
+  1: 'package',
+  2: 'info',
+  3: 'date',
+}
+
 function SlidingDateGrid({
   slots,
   selected,
   onSelect,
   loading,
+  packageSlug,
 }: {
   slots: SlotOption[]
   selected: string
   onSelect: (v: string) => void
   loading: boolean
+  packageSlug: string
 }) {
   const [start, setStart] = useState(0)
 
@@ -70,10 +80,20 @@ function SlidingDateGrid({
 
   const currentYm = visible[0]?.value.slice(0, 7) ?? months[0] ?? ''
 
+  const captureCalendarNav = (direction: 'prev' | 'next' | 'today' | 'month_jump', targetMonth?: string) => {
+    posthog.capture('booking_calendar_navigated', {
+      direction,
+      target_month: targetMonth ?? null,
+      package_slug: packageSlug || null,
+      site_slug: CHRISTMAS_SITE_SLUG,
+    })
+  }
+
   const jumpToMonth = (ym: string) => {
     const idx = slots.findIndex((s) => s.value.startsWith(ym))
     if (idx < 0) return
     setStart(Math.max(0, Math.min(Math.max(0, slots.length - WINDOW_SIZE), idx)))
+    captureCalendarNav('month_jump', ym)
   }
 
   const jumpToToday = () => {
@@ -83,6 +103,7 @@ function SlidingDateGrid({
     setStart(
       Math.max(0, Math.min(Math.max(0, slots.length - WINDOW_SIZE), target - Math.floor(WINDOW_SIZE / 2))),
     )
+    captureCalendarNav('today', today.slice(0, 7))
   }
 
   const monthLabel = currentYm
@@ -105,7 +126,10 @@ function SlidingDateGrid({
           variant="ghost"
           shape="circle"
           size="icon-lg"
-          onClick={() => setStart((s) => Math.max(0, s - WINDOW_SIZE))}
+          onClick={() => {
+            setStart((s) => Math.max(0, s - WINDOW_SIZE))
+            captureCalendarNav('prev', visible[0]?.value.slice(0, 7))
+          }}
           disabled={!canPrev}
           aria-label="Previous dates"
         >
@@ -145,7 +169,10 @@ function SlidingDateGrid({
           variant="ghost"
           type="button"
           shape="circle"
-          onClick={() => setStart((s) => Math.min(slots.length - WINDOW_SIZE, s + WINDOW_SIZE))}
+          onClick={() => {
+            setStart((s) => Math.min(slots.length - WINDOW_SIZE, s + WINDOW_SIZE))
+            captureCalendarNav('next', visible[0]?.value.slice(0, 7))
+          }}
           disabled={!canNext}
           aria-label="Next dates"
           className="rounded-lg p-1.5 transition-colors hover:bg-transparent disabled:opacity-30"
@@ -166,7 +193,7 @@ function SlidingDateGrid({
               aria-pressed={isSelected}
               aria-label={`${weekday} ${month} ${day} — ${slot.isFull ? 'full' : `${slot.spotsLeft} spot${slot.spotsLeft === 1 ? '' : 's'} left`}`}
               onClick={() => !slot.isFull && onSelect(slot.value)}
-              className={`group bg-white hover:bg-secondary/20 relative flex aspect-4/3 cursor-pointer flex-col items-start justify-center gap-0.5 rounded-xl border px-4 py-3 transition-all duration-150 ${
+              className={`group hover:bg-secondary/20 relative flex aspect-4/3 cursor-pointer flex-col items-start justify-center gap-0.5 rounded-xl border bg-white px-4 py-3 transition-all duration-150 ${
                 slot.isFull
                   ? 'border-border cursor-not-allowed opacity-35'
                   : isSelected
@@ -208,6 +235,24 @@ function SlidingDateGrid({
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null
+
+const PACKAGES = [
+  {
+    slug: 'xmas-roofline',
+    name: 'Roofline',
+    description: 'Roofline, gutter runs, and front entry',
+  },
+  {
+    slug: 'xmas-full-front',
+    name: 'Full Front',
+    description: 'Roofline plus front walkways',
+  },
+  {
+    slug: 'xmas-full-property',
+    name: 'Full Property',
+    description: 'Full front and rear',
+  },
+]
 
 function fmtCents(cents: number, currency = 'usd') {
   return new Intl.NumberFormat('en-US', {
@@ -262,6 +307,18 @@ export function SchedulingForm() {
   const prevStep = useRef<number>(1)
 
   const goTo = (next: 1 | 2 | 3) => {
+    if (next < step) {
+      // User navigated backwards (e.g. step 2 → 1 via "Back to packages",
+      // step 3 → 2 via "Edit details"). Surfaces hesitation in the funnel.
+      posthog.capture('booking_step_back', {
+        from_step: step,
+        from_step_name: STEP_NAMES[step],
+        to_step: next,
+        to_step_name: STEP_NAMES[next],
+        package_slug: formData.packageSlug || null,
+        site_slug: CHRISTMAS_SITE_SLUG,
+      })
+    }
     prevStep.current = step
     setStep(next)
   }
@@ -269,6 +326,38 @@ export function SchedulingForm() {
   const [isComplete, setIsComplete] = useState(false)
   const [errors, setErrors] = useState<Partial<BookingMetadata>>({})
   const [focusedField, setFocusedField] = useState<string | null>(null)
+
+  // Latest-form ref so the step-view / confirmation effects can read the
+  // current package / install date without taking them as effect deps
+  // (which would re-fire the impression event on every keystroke).
+  const formDataRef = useRef(formData)
+  useEffect(() => {
+    formDataRef.current = formData
+  }, [formData])
+
+  // Step-view funnel — fires on initial mount with step=1 and on every
+  // step transition. Pair with `booking_*` completion events to compute
+  // per-step drop-off (saw step 2 → completed step 2, etc.).
+  useEffect(() => {
+    posthog.capture('booking_step_viewed', {
+      step,
+      step_name: STEP_NAMES[step],
+      package_slug: formDataRef.current.packageSlug || null,
+      site_slug: CHRISTMAS_SITE_SLUG,
+    })
+  }, [step])
+
+  // Confirmation screen impression — distinct from `booking_completed`
+  // (which fires inside the Stripe `onComplete` callback before the
+  // success screen mounts).
+  useEffect(() => {
+    if (!isComplete) return
+    posthog.capture('booking_completed_screen_viewed', {
+      package_slug: formDataRef.current.packageSlug || null,
+      install_date: formDataRef.current.installDate || null,
+      site_slug: CHRISTMAS_SITE_SLUG,
+    })
+  }, [isComplete])
 
   const validateInfo = (data: BookingMetadata) => {
     const newErrors: Partial<BookingMetadata> = {}
@@ -365,25 +454,46 @@ export function SchedulingForm() {
   }
 
   if (isComplete) {
+    const bookedPkg = PACKAGES.find((p) => p.slug === formData.packageSlug)
+    const bookedDate = slots.find((d) => d.value === formData.installDate)?.label ?? 'your scheduled date'
     return (
-      <section className="bg-foreground text-background flex min-h-screen place-items-center justify-center">
-        <div className="mx-auto max-w-lg space-y-6 px-8 text-center">
-          <p className="text-background/60 text-sm tracking-[0.2em] uppercase">You&apos;re booked</p>
-          <h2 className="font-serif text-5xl leading-[1.05] tracking-normal md:text-6xl">
-            See you on
-            <br />
-            <span className="italic">
-              {slots.find((d) => d.value === formData.installDate)?.label ?? 'November'}.
-            </span>
-          </h2>
-          <p className="text-background/70 mx-auto max-w-md text-lg">
-            Your deposit is confirmed. You&apos;ll receive an invoice at {formData.email} with the remaining
-            balance — payment is due by October 1st.
-          </p>
-          <p className="text-background/60 mx-auto max-w-md text-sm">
-            We&apos;ll also reach out a few days before your install window to confirm details.
-          </p>
-          <p className="text-background/40 text-xs">Deposit receipt sent to {formData.email}</p>
+      <section className="bg-foreground text-background flex min-h-screen place-items-center justify-center px-4">
+        <div className="w-full max-w-md">
+          <div className="text-foreground rounded-2xl bg-white p-8 shadow-sm">
+            <div className="mb-6 flex justify-center">
+              <div className="rounded-full bg-green-50 p-4">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+            </div>
+            <h2 className="mb-1 text-center font-serif text-3xl">You&apos;re booked.</h2>
+            <p className="text-muted-foreground mb-8 text-center text-sm">Deposit confirmed</p>
+
+            <div className="mb-6 space-y-3 border-t border-b py-6">
+              {bookedPkg && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground text-sm">Package</span>
+                  <span className="text-sm font-medium">{bookedPkg.name}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground text-sm">Install window</span>
+                <span className="text-sm font-medium">{bookedDate}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground text-sm">Property</span>
+                <span className="max-w-[55%] text-right text-sm font-medium">{formData.address}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground text-sm">Receipt sent to</span>
+                <span className="text-sm font-medium">{formData.email}</span>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground text-center text-sm">
+              You&apos;ll receive an invoice for the remaining balance — payment is due by October 1st.
+              We&apos;ll reach out a few days before your install window to confirm details.
+            </p>
+          </div>
         </div>
       </section>
     )
@@ -403,55 +513,77 @@ export function SchedulingForm() {
             </h2>
 
             <div className="mb-12 space-y-6">
+              {formData.packageSlug && (
+                <div className="border-background/20 border-b pb-4">
+                  <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Package</span>
+                  <p className="mt-1 text-xl">
+                    {PACKAGES.find((p) => p.slug === formData.packageSlug)?.name}
+                  </p>
+                </div>
+              )}
               <div className="border-background/20 border-b pb-4">
                 <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Name</span>
                 <p className="mt-1 text-xl">{formData.name}</p>
-              </div>
-              <div className="border-background/20 border-b pb-4">
-                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Email</span>
-                <p className="mt-1 text-xl">{formData.email}</p>
               </div>
               <div className="border-background/20 border-b pb-4">
                 <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
                 <p className="mt-1 text-xl">{formData.address}</p>
               </div>
               <div className="border-background/20 border-b pb-4">
-                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Date</span>
+                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Window</span>
                 <p className="mt-1 text-xl">{slots.find((d) => d.value === formData.installDate)?.label}</p>
               </div>
+              <div className="border-background/20 border-b pb-4">
+                <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Due today</span>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <p className="font-serif text-3xl">{fmtCents(depositAmountCents, depositCurrency)}</p>
+                  <span className="text-background/50 text-sm">deposit</span>
+                </div>
+                <p className="text-background/40 mt-1 text-xs">
+                  Remaining balance invoiced before Oct&nbsp;1st.
+                </p>
+              </div>
             </div>
-
-            
           </div>
 
           {/* Right: Checkout */}
-          <div className="bg-white w-full text-foreground flex place-content-center place-items-stretch p-8 lg:p-16">
+          <div className="text-foreground flex w-full flex-col place-items-stretch bg-white p-8 lg:p-16">
             <Button
               variant="ghost"
               pill={false}
               fullWidth={false}
-              onClick={() => setShowCheckout(false)}
-              className="text-foreground justify-start self-start text-sm hover:bg-none mb-8"
+              onClick={() => {
+                // User backed out of the Stripe panel before paying — strong
+                // abandonment signal. Distinct from in-step `booking_step_back`
+                // because they reached final review and bailed.
+                posthog.capture('booking_checkout_abandoned', {
+                  package_slug: formData.packageSlug || null,
+                  install_date: formData.installDate || null,
+                  site_slug: CHRISTMAS_SITE_SLUG,
+                })
+                setShowCheckout(false)
+              }}
+              className="text-foreground mb-8 justify-start self-start text-sm hover:bg-none"
             >
               <ArrowLeft className="size-6" />
               Edit details
             </Button>
-              <EmbeddedCheckoutProvider
-                stripe={stripePromise}
-                options={{
-                  fetchClientSecret,
-                  onComplete: () => {
-                    posthog.capture('booking_completed', {
-                      package_slug: formData.packageSlug,
-                      install_date: formData.installDate,
-                      site_slug: 'txchristmaslights',
-                    })
-                    setIsComplete(true)
-                  },
-                }}
-              >
-                <EmbeddedCheckout />
-              </EmbeddedCheckoutProvider>
+            <EmbeddedCheckoutProvider
+              stripe={stripePromise}
+              options={{
+                fetchClientSecret,
+                onComplete: () => {
+                  posthog.capture('booking_completed', {
+                    package_slug: formData.packageSlug,
+                    install_date: formData.installDate,
+                    site_slug: 'txchristmaslights',
+                  })
+                  setIsComplete(true)
+                },
+              }}
+            >
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
           </div>
         </div>
       </section>
@@ -460,23 +592,6 @@ export function SchedulingForm() {
 
   // ── Steps 1-3: persistent layout, only right panel slides ─────────────────
   const direction = step > prevStep.current ? 1 : -1
-  const PACKAGES = [
-    {
-      slug: 'xmas-roofline',
-      name: 'Roofline',
-      description: 'Roofline, gutter runs, and front entry',
-    },
-    {
-      slug: 'xmas-full-front',
-      name: 'Full Front',
-      description: 'Roofline plus front walkways',
-    },
-    {
-      slug: 'xmas-full-property',
-      name: 'Full Property',
-      description: 'Full front and rear',
-    },
-  ]
 
   // Left text per step — updates in place, no animation
   const leftText = {
@@ -525,58 +640,117 @@ export function SchedulingForm() {
       <div className="grid h-full min-h-[70vh] items-stretch overflow-hidden md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.9fr_1.1fr]">
         {/* ── Left: static, text updates in place ──────────────────────── */}
         <AnimatePresence mode="wait" custom={direction}>
-        <motion.div
-        key={step}
-        custom={direction}
-        variants={
-          {
-            enter: { opacity: 0 },
-            center: {  opacity: 1 },
-            exit: { opacity: 0 },
-          }
-        }
-        initial="enter"
-        animate="center"
-        exit="exit"
-        transition={{ duration: 0.24, ease: [0.32, 0, 0.67, 0] }}
-        className="relative flex flex-col justify-center overflow-hidden px-8 py-16 md:px-20 lg:px-30 lg:py-24">
-          <span
-            className="text-background/10 pointer-events-none absolute top-1/2 -left-8 -translate-y-1/2 font-serif text-[20rem] leading-none select-none lg:text-[28rem]"
-            aria-hidden="true"
+          <motion.div
+            key={step}
+            custom={direction}
+            variants={{
+              enter: { opacity: 0 },
+              center: { opacity: 1 },
+              exit: { opacity: 0 },
+            }}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.24, ease: [0.32, 0, 0.67, 0] }}
+            className="relative flex flex-col justify-center overflow-hidden px-8 py-16 md:px-20 lg:px-30 lg:py-24"
           >
-            {lt.num}
-          </span>
-          <div className="relative z-10">
-            <p className="text-background mb-8 text-sm tracking-[0.2em] uppercase">{lt.eyebrow}</p>
-            <h2 className="mb-8 font-serif text-4xl leading-[0.95] tracking-normal md:text-5xl lg:text-6xl">
-              {lt.heading}
-            </h2>
-            {lt.sub && <div className="text-background mb-8 max-w-md text-lg">{lt.sub}</div>}
-            {step !== 2 && step !== 3 && (
-            <div className="border-background/20 mb-8 inline-flex items-baseline gap-4 border-t pt-8">
-              <span className="text-background/50 text-sm tracking-[0.15em] uppercase">Deposit</span>
-              <span className="font-serif text-5xl lg:text-6xl">
-                {fmtCents(depositAmountCents, depositCurrency)}
-              </span>
+            <span
+              className="text-background/10 pointer-events-none absolute top-1/2 -left-8 -translate-y-1/2 font-serif text-[20rem] leading-none select-none lg:text-[28rem]"
+              aria-hidden="true"
+            >
+              {lt.num}
+            </span>
+            <div className="relative z-10">
+              <p className="text-background mb-8 text-sm tracking-[0.2em] uppercase">{lt.eyebrow}</p>
+              <h2 className="mb-8 font-serif text-4xl leading-[0.95] tracking-normal md:text-5xl lg:text-6xl">
+                {lt.heading}
+              </h2>
+              {lt.sub && <div className="text-background mb-8 max-w-md text-lg">{lt.sub}</div>}
+
+              {/* Step 1: show deposit amount */}
+              {step === 1 && (
+                <div className="border-background/20 mb-8 inline-flex items-baseline gap-4 border-t pt-8">
+                  <span className="text-background/50 text-sm tracking-[0.15em] uppercase">Deposit</span>
+                  <span className="font-serif text-5xl lg:text-6xl">
+                    {fmtCents(depositAmountCents, depositCurrency)}
+                  </span>
+                </div>
+              )}
+
+              {/* Steps 2–3: accumulated order summary */}
+              {(step === 2 || step === 3) && (
+                <div className="mb-8 max-w-xs space-y-4">
+                  {formData.packageSlug && (
+                    <div className="border-background/20 border-b pb-3">
+                      <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Package</span>
+                      <p className="mt-0.5 text-lg">
+                        {PACKAGES.find((p) => p.slug === formData.packageSlug)?.name}
+                      </p>
+                    </div>
+                  )}
+                  {step === 3 && formData.name && (
+                    <div className="border-background/20 border-b pb-3">
+                      <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Name</span>
+                      <p className="mt-0.5 text-lg">{formData.name}</p>
+                    </div>
+                  )}
+                  {step === 3 && formData.address && (
+                    <div className="border-background/20 border-b pb-3">
+                      <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
+                      <p className="mt-0.5 text-lg">{formData.address}</p>
+                    </div>
+                  )}
+                  <div className="pt-1">
+                    <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Due today</span>
+                    <div className="mt-0.5 flex items-baseline gap-3">
+                      <span className="font-serif text-4xl">
+                        {fmtCents(depositAmountCents, depositCurrency)}
+                      </span>
+                      <span className="text-background/50 text-sm">deposit</span>
+                    </div>
+                    <p className="text-background/40 mt-1.5 text-xs leading-snug">
+                      Remaining balance invoiced before Oct&nbsp;1st.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-            )}
-            {step === 3 && (
-              <div className="mb-10 space-y-4">
-                <div className="border-background/50 border-b pb-3">
-                  <span className="text-background text-xs tracking-[0.15em] uppercase">Name</span>
-                  <p className="mt-0.5 text-lg">{formData.name}</p>
-                </div>
-                <div className="border-background/50 border-b pb-3">
-                  <span className="text-background text-xs tracking-[0.15em] uppercase">Property</span>
-                  <p className="mt-0.5 text-lg">{formData.address}</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </motion.div>
+          </motion.div>
         </AnimatePresence>
         {/* ── Right: slides on step change ─────────────────────────────── */}
-        <div className="bg-background h-full overflow-hidden">
+        <div className="bg-background flex h-full flex-col overflow-hidden">
+          {/* Static step progress — does not animate */}
+          <div className="border-border/50 h-16 flex shrink-0 justify-end items-center gap-2 border-b px-2 py-2 md:px-10 lg:px-10 xl:px-10">
+            {step === 2 && (
+              <Button
+                variant="ghost"
+                pill={false}
+                fullWidth={false}
+                onClick={() => goTo(1)}
+                className="grow px-2 hover:bg-background text-secondary hover:text-primary justify-start"
+              >
+                Back to packages
+              </Button>
+            )}
+            {step === 3 && (
+              <Button
+                variant="ghost"
+                pill={false}
+                fullWidth={false}
+                onClick={() => goTo(2)}
+                className="grow px-2 hover:bg-background text-secondary hover:text-primary justify-start"
+              >
+                Back to details
+              </Button>
+            )}
+            {([1, 2, 3] as const).map((s) => (
+              <div
+                key={s}
+                className={`h-1 rounded-full transition-all duration-500 ${s <= step ? 'bg-secondary w-8' : 'bg-border w-4'}`}
+              />
+            ))}
+            <span className="text-muted-foreground ml-2 text-sm">Step {step} of 3</span>
+          </div>
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={step}
@@ -590,11 +764,11 @@ export function SchedulingForm() {
               animate="center"
               exit="exit"
               transition={{ duration: 0.2, ease: [0.32, 0, 0.67, 0] }}
-              className="bg-background grid h-full place-items-center overflow-hidden"
+              className="bg-background grid flex-1 place-items-center overflow-hidden"
             >
               {/* Step 1: package cards */}
               {step === 1 && (
-                <div className="mx-auto grid h-full w-full grid-cols-1 place-content-center gap-3 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
+                <div className="mx-auto grid h-full w-full max-w-4xl grid-cols-1 place-content-center gap-3 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
                   {PACKAGES.map((pkg) => {
                     const isSelected = formData.packageSlug === pkg.slug
                     return (
@@ -603,8 +777,19 @@ export function SchedulingForm() {
                         key={pkg.slug}
                         type="button"
                         onClick={() => {
+                          const fromSlug = formData.packageSlug
                           setFormData((p) => ({ ...p, packageSlug: pkg.slug }))
                           setErrors((e) => ({ ...e, packageSlug: undefined }))
+                          if (fromSlug && fromSlug !== pkg.slug) {
+                            // Switching between packages before submitting
+                            // step 1 — useful for comparing tier interest
+                            // independent of which one finally got chosen.
+                            posthog.capture('booking_package_changed', {
+                              from_package_slug: fromSlug,
+                              to_package_slug: pkg.slug,
+                              site_slug: CHRISTMAS_SITE_SLUG,
+                            })
+                          }
                         }}
                         className={`hover:bg-secondary/20 relative w-full content-end justify-start rounded-2xl border-2 px-4 py-5 text-left transition-all duration-150 ${isSelected ? 'border-secondary bg-secondary hover:bg-secondary/90 border text-white' : 'border'}`}
                       >
@@ -614,6 +799,11 @@ export function SchedulingForm() {
                           >
                             {isSelected && <span className="bg-background size-2 rounded-full" />}
                           </div>
+                          {packagePrices[pkg.slug] && (
+                            <p className={`my-1.5 text-xl ${isSelected ? 'text-white' : 'text-foreground'}`}>
+                              {fmtCents(packagePrices[pkg.slug], depositCurrency)}
+                            </p>
+                          )}
                           <span
                             className={`mb-1 font-serif text-[1.5rem] leading-none whitespace-pre-line ${isSelected ? 'text-white' : 'text-foreground'}`}
                           >
@@ -624,11 +814,6 @@ export function SchedulingForm() {
                           >
                             {pkg.description}
                           </span>
-                          {packagePrices[pkg.slug] && (
-                            <p className={`mt-1.5 text-lg ${isSelected ? 'text-white' : 'text-foreground'}`}>
-                              {fmtCents(packagePrices[pkg.slug], depositCurrency)}
-                            </p>
-                          )}
                         </div>
                       </Button>
                     )
@@ -641,25 +826,19 @@ export function SchedulingForm() {
                   <Button
                     type="button"
                     onClick={handlePackageSubmit}
-                    className="text-xl col-start-1 col-end-1 mt-4 h-16 w-full"
+                    className="col-start-1 col-end-1 mt-4 h-16 w-full text-xl"
                   >
                     Continue <ArrowRight className="size-6" />
                   </Button>
+                  <p className="text-muted-foreground flex items-center justify-center gap-1.5 text-xs">
+                    <Lock className="size-3" /> Secure checkout · SSL encrypted
+                  </p>
                 </div>
               )}
 
               {/* Step 2: contact form on white */}
               {step === 2 && (
-                <div className="mx-auto grid w-full grid-cols-1 place-items-start gap-6 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
-                  <Button
-                    variant="ghost"
-                    pill={false}
-                    fullWidth={false}
-                    onClick={() => goTo(1)}
-                    className="px-0hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
-                  >
-                    <ArrowLeft className="size-5" /> Back to packages
-                  </Button>
+                <div className="mx-auto grid w-full max-w-4xl grid-cols-1 place-items-start gap-6 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
                   <form
                     onSubmit={handleSubmit}
                     className="mx-auto grid w-full max-w-lg min-w-full items-center space-y-4"
@@ -667,7 +846,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="name"
-                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'name' || formData.name ? 'text-muted-foreground' : 'text-foreground/60 '}`}
+                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'name' || formData.name ? 'text-muted-foreground' : 'text-foreground/60'}`}
                       >
                         Full Name
                       </label>
@@ -691,7 +870,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="email"
-                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'email' || formData.email ? 'text-muted-foreground' : 'text-foreground/60 '}`}
+                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'email' || formData.email ? 'text-muted-foreground' : 'text-foreground/60'}`}
                       >
                         Email Address
                       </label>
@@ -711,7 +890,7 @@ export function SchedulingForm() {
                     <div className="relative">
                       <label
                         htmlFor="address"
-                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'address' || formData.address ? 'text-muted-foreground' : 'text-foreground/60 '}`}
+                        className={`pointer-events-none text-xs tracking-[0.15em] uppercase ${focusedField === 'address' || formData.address ? 'text-muted-foreground' : 'text-foreground/60'}`}
                       >
                         Property Address
                       </label>
@@ -726,26 +905,27 @@ export function SchedulingForm() {
                         onBlur={() => setFocusedField(null)}
                         className="border-border text-foreground focus:border-foreground w-full border-b-2 bg-transparent py-4 text-lg transition-colors focus:outline-none"
                       />
-                      {errors.address && (
-                        <p className="text-primary mt-2 text-sm">{errors.address}</p>
-                      )}
+                      {errors.address && <p className="text-primary mt-2 text-sm">{errors.address}</p>}
                     </div>
-                    <Button type="submit" fullWidth className="text-xl mt-8 h-16">
+                    <Button type="submit" fullWidth className="mt-8 h-16 text-xl">
                       Choose a date <ArrowRight className="size-6" />
                     </Button>
+                    <p className="text-muted-foreground mt-3 flex items-center justify-center gap-1.5 text-xs">
+                      <Lock className="size-3" /> Secure checkout · SSL encrypted
+                    </p>
                   </form>
                 </div>
               )}
 
               {/* Step 3: date grid on red */}
               {step === 3 && (
-                <div className="mx-auto grid w-full grid-cols-1 place-items-stretch gap-6 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
+                <div className="mx-auto grid w-full max-w-5xl grid-cols-1 place-items-stretch gap-6 space-x-3 px-5 py-10 md:px-10 md:py-20 lg:px-20 xl:px-40">
                   <Button
                     variant="ghost"
                     pill={false}
                     fullWidth={false}
                     onClick={() => goTo(2)}
-                    className="px-0 hover:bg-background text-secondary hover:text-secondary/90 justify-start"
+                    className="hover:bg-background text-secondary hover:text-secondary/90 justify-start px-0"
                   >
                     <ArrowLeft className="size-5" /> Edit details
                   </Button>
@@ -758,6 +938,7 @@ export function SchedulingForm() {
                       selected={formData.installDate}
                       onSelect={handleDateSelect}
                       loading={slotsLoading}
+                      packageSlug={formData.packageSlug}
                     />
                     {errors.installDate && (
                       <p className="text-background/70 mt-3 text-sm" role="alert">
@@ -771,11 +952,14 @@ export function SchedulingForm() {
                     fullWidth
                     onClick={handleDateSubmit}
                     disabled={!formData.installDate}
-                    className="text-xl mt-8 h-16"
+                    className="mt-8 h-16 text-xl"
                   >
                     Continue to payment <ArrowRight className="size-6" />
                   </Button>
-                  <p className="text-background/50 mt-4 text-center text-sm">
+                  <p className="text-muted-foreground flex items-center justify-center gap-1.5 text-xs">
+                    <Lock className="size-3" /> Secure checkout · SSL encrypted
+                  </p>
+                  <p className="text-muted-foreground mt-2 text-center text-xs">
                     {fmtCents(depositAmountCents, depositCurrency)} deposit applied to your final balance on
                     install day.
                   </p>

@@ -1,6 +1,6 @@
 'use client'
 
-import { CSSProperties, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import geoJson from './texasCounties.json'
@@ -59,10 +59,7 @@ const TX_ZOOM = 5.2
 // Tight Texas bounds used for fitBounds when no counties are configured
 const TX_BOUNDS = new mapboxgl.LngLatBounds([-106.65, 25.84], [-93.51, 36.5])
 
-// Shift the logical map center to 60% from the left so the overlay panel on
-// the left doesn't obscure the active counties.
-// left padding > right padding pushes the focal point rightward.
-const CENTER_OFFSET_PADDING = { top: 40, bottom: 40, left: 420, right: 80 }
+const CENTER_OFFSET_PADDING = { top: 48, bottom: 48, left: 48, right: 48 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -156,22 +153,11 @@ export const MapBox = ({
 
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 12 })
 
-    // Studio styles often enable terrain with source id `mapbox-dem` but omit the
-    // raster-dem definition — Mapbox then warns and terrain cutoff fails. Add the
-    // canonical DEM before the first paint, or drop terrain for a flat choropleth map.
+    // The Studio style references terrain source "mapbox-dem" but doesn't define it,
+    // which throws "Couldn't find terrain source 'mapbox-dem'". This is a flat
+    // choropleth — disable terrain unconditionally.
     map.once('style.load', () => {
-      try {
-        if (!map.getSource('mapbox-dem')) {
-          map.addSource('mapbox-dem', {
-            type: 'raster-dem',
-            url: 'mapbox://mapbox.mapbox-terrain-dem-v2',
-            tileSize: 512,
-            maxzoom: 14,
-          })
-        }
-      } catch {
-        map.setTerrain(null)
-      }
+      try { map.setTerrain(null) } catch {}
     })
 
     map.on('load', async () => {
@@ -270,28 +256,71 @@ export const MapBox = ({
   }, [configuredFips])
 
   // ── Render ───────────────────────────────────────────────────────────────────
-  const sectionStyle: CSSProperties = { position: 'relative' }
-
   return (
-    <section id="service-area" className="relative scroll-m-16 overflow-hidden" style={sectionStyle}>
-      <div className="relative">
-        <header className="border-border absolute top-5 left-5 z-10 max-w-xl rounded-lg border bg-white/70 p-6 backdrop-blur-sm">
+    <section
+      id="service-area"
+      className="scroll-m-16 overflow-hidden bg-mist-800"
+    >
+      <div className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.9fr_1.1fr]" style={{ minHeight: '480px' }}>
+
+        {/* Left: content panel */}
+        <div
+          className="flex flex-col justify-center px-10 py-14 lg:py-16"
+          style={{ borderRight: '1px solid rgba(255,255,255,0.08)' }}
+        >
           {eyebrow && (
-            <p className="type-accent mb-3 text-[0.6875rem] font-extrabold tracking-[0.16em] uppercase opacity-75">
+            <p
+              className="mb-4 text-xs font-bold tracking-[0.22em] uppercase"
+              style={{ color: 'var(--color-tertiary)' }}
+            >
               {eyebrow}
             </p>
           )}
           {title && (
-            <h2 className="type-display mb-4 text-[clamp(1.75rem,4vw,2.75rem)] leading-tight font-bold">
+            <h2 className="font-serif mb-4 text-[clamp(1.75rem,3vw,2.25rem)] leading-tight font-bold text-white">
               {title}
             </h2>
           )}
-          {description && <p className="text-sm leading-relaxed">{description}</p>}
-        </header>
+          {description && (
+            <p className="mb-8 text-[0.9375rem] leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
+              {description}
+            </p>
+          )}
+          {areas.length > 0 && (
+            <>
+              <p
+                className="mb-2.5 text-[0.65rem] font-bold tracking-[0.18em] uppercase"
+                style={{ color: 'rgba(255,255,255,0.30)' }}
+              >
+                Service counties
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {areas.map((area) => (
+                  <span
+                    key={area.countyKey}
+                    className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                    style={{
+                      color: 'rgba(255,255,255,0.80)',
+                      background: 'rgba(255,255,255,0.07)',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                    }}
+                  >
+                    <span
+                      className="h-1.5 w-1.5 shrink-0 rounded-full"
+                      style={{ background: 'var(--color-tertiary)' }}
+                    />
+                    {area.displayName}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
+        {/* Right: map */}
         <div
           ref={containerRef}
-          className="h-130 w-full"
+          className="h-80 lg:h-auto"
           role="img"
           aria-label={
             areas.length > 0

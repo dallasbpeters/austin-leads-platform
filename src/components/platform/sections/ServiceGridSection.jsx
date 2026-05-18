@@ -7,6 +7,7 @@ import {
   Car,
   Flash,
   HomeShield,
+  Star,
   Thunderstorm,
   WarningTriangle,
   WindowTabs,
@@ -216,6 +217,7 @@ function enrichItems(rawItems) {
     const serviceImage = getServiceImage(item)
     return {
       ...item,
+      isRecommended: item.isRecommended || false,
       number: item.number ? parseInt(item.number) : null,
       price: item.price != null && Number.isFinite(Number(item.price)) ? Number(item.price) : null,
       copy: item.body || item.answer || null,
@@ -294,11 +296,19 @@ export function ServiceGridSection({ section, sectionId }) {
           ) : null}
         </div>
 
-        <ul className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
+        <ul className="grid gap-6 max-[900px]:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => {
             const Icon = getServiceIcon(item)
             const card = (
-              <Card className="service-grid-card-border group relative aspect-3/4 overflow-hidden rounded-2xl border-0 bg-transparent shadow-none contain-none">
+              <Card className="service-grid-card-border group relative aspect-4/4 overflow-hidden rounded-2xl border-0 bg-transparent shadow-none contain-none">
+                {item.isRecommended ? (
+                  <div className="absolute top-3 right-5 z-10">
+                    <Badge variant="outline" className="text-white border-secondary bg-secondary">
+                      <Star className="h-4 w-4" />
+                      Recommended
+                    </Badge>
+                  </div>
+                ) : null}
                 <div className="service-grid-card-media-frame">
                   <div className="service-grid-card-stack">
                     <ServiceMedia

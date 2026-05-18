@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing Section — Design Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --secondary:  #0F363E;
+      --tertiary:   #F8981B;
+      --text-soft:  #4D6A6F;
+      --surface:    #ffffff;
+      --neutral:    #EEF3F7;
+      --rule:       rgba(15,54,62,0.10);
+      --font-serif: 'Bodoni Moda', Georgia, serif;
+      --font-sans:  'Figtree', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--neutral);
+      color: var(--secondary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .preview-label {
+      text-align: center;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #aaa;
+      padding: 16px;
+      background: var(--neutral);
+    }
+
+    /* ── Section ─────────────────────────────────────────── */
+    .pricing-section {
+      background: var(--surface);
+      border-bottom: 1px solid var(--rule);
+      padding: 56px 40px;
+    }
+
+    .inner {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    /* ── Main grid: left header | right steps ─────────────── */
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: auto auto;
+      gap: 0 56px;
+      align-items: start;
+    }
+
+    /* ── Left column ──────────────────────────────────────── */
+    .left {
+      grid-row: 1 / 3;
+      padding-top: 4px;
+    }
+
+    .eyebrow {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 14px;
+    }
+
+    .heading {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.2vw, 2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--secondary);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .intro {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--text-soft);
+    }
+
+    /* ── Steps grid (right) ───────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule);
+    }
+
+    .step {
+      padding: 20px 24px 20px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .step:not(:last-child) {
+      border-right: 1px solid var(--rule);
+      padding-right: 24px;
+      margin-right: 0;
+    }
+
+    .step:not(:first-child) {
+      padding-left: 24px;
+    }
+
+    .step-num {
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(15,54,62,0.30);
+      margin-bottom: 10px;
+    }
+
+    .step-title {
+      font-family: var(--font-serif);
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--secondary);
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+
+    .step-due {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      margin-bottom: 10px;
+    }
+
+    .step-amount {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--secondary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: var(--text-soft);
+    }
+
+    /* ── Callout ──────────────────────────────────────────── */
+    .callout {
+      padding-top: 20px;
+    }
+
+    .callout-title {
+      font-family: var(--font-serif);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 6px;
+    }
+
+    .callout-body {
+      font-size: 0.875rem;
+      line-height: 1.65;
+      color: var(--text-soft);
+      max-width: 54ch;
+    }
+
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width: 760px) {
+      .layout { grid-template-columns: 1fr; gap: 32px 0; }
+      .left { grid-row: auto; }
+      .steps { grid-template-columns: 1fr; }
+      .step { border-right: none !important; padding-left: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="preview-label">Design Preview — PricingSection.jsx</div>
+
+<section class="pricing-section">
+  <div class="inner">
+    <div class="layout">
+
+      <!-- Left: heading block -->
+      <div class="left">
+        <p class="eyebrow">How Pricing Works</p>
+        <h2 class="heading">Flat-rate pricing,<br>3 payments,<br>all due by Oct 1st.</h2>
+        <p class="intro">Every quote is a flat rate — no separate labor fees. We accept credit cards, PayPal, and Venmo.</p>
+      </div>
+
+      <!-- Right: 3-col step grid -->
+      <div class="steps">
+
+        <div class="step">
+          <p class="step-num">01</p>
+          <p class="step-title">Deposit</p>
+          <p class="step-due">Due at booking</p>
+          <p class="step-amount">$150</p>
+          <p class="step-desc">Holds your install window. Comes off your total at install.</p>
+        </div>
+
+        <div class="step">
+          <p class="step-num">02</p>
+          <p class="step-title">First Installment</p>
+          <p class="step-due">Due August 1st</p>
+          <p class="step-amount">½ bal.</p>
+          <p class="step-desc">First half of your remaining balance, invoiced directly.</p>
+        </div>
+
+        <div class="step">
+          <p class="step-num">03</p>
+          <p class="step-title">Final Payment</p>
+          <p class="step-due">Due October 1st</p>
+          <p class="step-amount">½ bal.</p>
+          <p class="step-desc">Clears your account before install day. No balance due on-site.</p>
+        </div>
+
+      </div>
+
+      <!-- Callout below the steps, right-aligned -->
+      <div class="callout">
+        <p class="callout-title">Why we require a deposit</p>
+        <p class="callout-body">Install windows book out quickly starting in July. The deposit holds your date — it comes off your total at install. Need to reschedule? Contact us at least 7 days out and we'll move you at no charge.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="preview-label">End of Preview</div>
+
+</body>
+</html>

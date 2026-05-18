@@ -812,6 +812,7 @@ const serviceGridItemType = {
   type: 'object',
   icon: BlockContentIcon,
   fields: [
+    { name: 'isRecommended', title: 'Is recommended', type: 'boolean', initialValue: false, options: canvasPurpose('Whether this section is recommended for the page.'), },
     {
       name: 'title',
       title: 'Title',
@@ -895,9 +896,10 @@ const serviceGridItemType = {
       subtitle: 'body',
       price: 'price',
       media: 'imageAsset',
+      isRecommended: 'isRecommended',
     },
-    prepare({ title, eyebrow, subtitle, price, media }) {
-      const line = previewText(eyebrow || subtitle, '')
+    prepare({ title, eyebrow, subtitle, price, media, isRecommended }) {
+      const line = isRecommended ? 'Recommended' : previewText(eyebrow || subtitle, '')
       const priceLine =
         price != null && Number.isFinite(Number(price)) ? `$${Number(price).toFixed(2)}` : null
       const subtitleText = [priceLine, line || null].filter(Boolean).join(' · ') || 'Service card'
@@ -2698,6 +2700,18 @@ const pricingNoteItemType = {
       options: canvasPurpose('Heading for the note (e.g. "Payment methods", "Why we require a deposit").'),
     },
     {
+      name: 'paymentDue',
+      title: 'Payment due',
+      type: 'string',
+      options: canvasPurpose('Timeframe for the payment due (e.g. "Due at booking", "Due August 1st").'),
+    },
+    {
+      name: 'amount',
+      title: 'Amount',
+      type: 'string',
+      options: canvasPurpose('Amount for the payment due (e.g. "$150", "½ bal.").'),
+    },
+    {
       name: 'body',
       title: 'Body',
       type: 'portableTextSimple',
@@ -2721,13 +2735,15 @@ const pricingNoteItemType = {
     select: {
       title: 'title',
       body: 'body',
+      paymentDue: 'paymentDue',
+      amount: 'amount',
       variant: 'variant',
     },
-    prepare({ title, body, variant }) {
+    prepare({ title, body, paymentDue, amount, variant }) {
       const label = variant === 'callout' ? 'Callout' : 'Standard'
       return {
         title: title || 'Pricing note',
-        subtitle: `${label} · ${previewText(body, 'Supporting copy')}`,
+        subtitle: `${label} · ${paymentDue} · ${amount} · ${previewText(body, 'Supporting copy')}`,
       }
     },
   },

@@ -69,10 +69,15 @@ export default async function RootLayout({ children }) {
   const currentSite = await resolveCurrentSite().catch(() => null)
 
   let publicSiteAttr = null
+  let analyticsSiteSlug = currentSite?.slug ?? null
   if (!isOperatorShell) {
     if (previewSiteSlug) {
       const previewSite = await resolveSiteBySlug(previewSiteSlug).catch(() => null)
       publicSiteAttr = getPublicDataSiteAttribute(previewSite)
+      // PostHog dual-project routing — when previewing via `/_site/:slug`,
+      // `/preview/:slug`, or `?__site=`, the visible site is the preview slug,
+      // not the host-derived one. Send analytics to the matching project.
+      if (previewSite?.slug) analyticsSiteSlug = previewSite.slug
     } else {
       publicSiteAttr = getPublicDataSiteAttribute(currentSite)
     }
@@ -109,7 +114,7 @@ export default async function RootLayout({ children }) {
       <body
         className={`${googleSansFlex.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >
-        <PostHogProvider siteSlug={currentSite?.slug}>{children}</PostHogProvider>
+        <PostHogProvider siteSlug={analyticsSiteSlug}>{children}</PostHogProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}
         {isDraftMode ? <SanityLive /> : null}
         {isDraftMode ? <VisualEditing /> : null}

@@ -114,6 +114,11 @@ export function PostHogProvider({ children, siteSlug }) {
       ui_host: 'https://us.posthog.com',
       defaults: '2026-01-30',
       loaded: (instance) => {
+        // Stamp every event with the active site so per-site dashboards can
+        // group/filter without each call-site repeating `site_slug:` props.
+        // Call sites are free to still pass `site_slug` explicitly — explicit
+        // props override super properties when both are set.
+        instance.register({ site_slug: siteSlug || 'unknown' })
         if (typeof window !== 'undefined') {
           window.posthog = instance
         }
@@ -163,6 +168,47 @@ export function PostHogProvider({ children, siteSlug }) {
     document.addEventListener('click', handleDocumentClick, true)
     return () => {
       document.removeEventListener('click', handleDocumentClick, true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    // `<a href="tel:…">`, `mailto:…`, and `sms:…` clicks skip the global
+    // button tracker (it only matches buttons / role="button" / opt-in anchors),
+    // so capture them separately. Useful on the Christmas site where the
+    // hero and footer CTAs phone/text the operator directly.
+    const handleContactClick = (event) => {
+      const target = event.target
+      if (!(target instanceof Element)) return
+
+      const anchor = target.closest('a[href]')
+      if (!anchor) return
+
+      const href = anchor.getAttribute('href') || ''
+      const lower = href.toLowerCase()
+      const linkType = lower.startsWith('tel:')
+        ? 'tel'
+        : lower.startsWith('mailto:')
+          ? 'mailto'
+          : lower.startsWith('sms:')
+            ? 'sms'
+            : null
+      if (!linkType) return
+
+      trackAnalyticsEvent('contact_link_clicked', {
+        link_type: linkType,
+        href,
+        link_text: (anchor.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120),
+        page_path: window.location.pathname,
+      })
+    }
+
+    document.addEventListener('click', handleContactClick, true)
+    return () => {
+      document.removeEventListener('click', handleContactClick, true)
     }
   }, [])
 

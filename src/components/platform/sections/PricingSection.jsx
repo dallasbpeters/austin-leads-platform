@@ -10,9 +10,17 @@ export function PricingSection({ section, sectionId }) {
 
   if (!title) return null
 
+  const stepNotes = notes.filter((n) => n?.variant !== 'callout')
+  const calloutNotes = notes.filter((n) => n?.variant === 'callout')
+
+  const stepCols =
+    stepNotes.length === 2 ? 'grid-cols-2' :
+    stepNotes.length >= 3 ? 'grid-cols-3' :
+    'grid-cols-1'
+
   return (
     <section
-      className="border-border/60 border-b bg-white px-6 py-20 md:py-32 lg:py-40"
+      className="border-b border-border bg-white px-3 py-14 md:py-20"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/PricingSection.jsx',
@@ -20,68 +28,100 @@ export function PricingSection({ section, sectionId }) {
       })}
     >
       <DevTrace markup="src/components/platform/sections/PricingSection.jsx" content="pricing section" />
-      <div className="mx-auto max-w-3xl">
-        {eyebrow ? (
-          <p className="text-muted-foreground mb-6 text-sm tracking-widest uppercase">{section.eyebrow}</p>
-        ) : null}
 
-        <h2 className="mb-2 font-serif text-3xl leading-tight tracking-normal text-balance md:mb-3 md:text-4xl lg:text-4xl">
-          {title}
-        </h2>
+      <div className="mx-auto max-w-6xl">
+        <div className="grid gap-10 lg:grid-cols-[260px_1fr] lg:gap-x-14">
 
-        {body ? (
-          <PortableTextContent
-            as="div"
-            value={body}
-            className="text-foreground/80 text-md md:text-md space-y-4 leading-relaxed"
-          />
-        ) : null}
+          {/* Left: heading block — spans both rows at lg */}
+          <div className="lg:row-span-2">
+            {eyebrow ? (
+              <p className="text-muted-foreground mb-4 text-xs tracking-[0.2em] uppercase">{eyebrow}</p>
+            ) : null}
+            <h2 className="font-serif text-foreground mb-4 text-2xl leading-tight tracking-normal text-balance md:text-3xl">
+              {title}
+            </h2>
+            {body ? (
+              <PortableTextContent
+                as="div"
+                value={body}
+                className="text-muted-foreground space-y-3 text-[0.9375rem] leading-relaxed"
+              />
+            ) : null}
+          </div>
 
-        {notes.length > 0 ? (
-          <>
-            <div className="mt-4 space-y-12 md:space-y-16">
-              {notes.map((note, index) => {
+          {/* Right top: step columns */}
+          {stepNotes.length > 0 ? (
+            <div className={`grid divide-x divide-border border-y border-border ${stepCols}`}>
+              {stepNotes.map((note, i) => {
                 const noteTitle = note?.title
                 const noteBody = note?.body
+                const paymentDue = note?.paymentDue
+                const amount = note?.amount
                 if (!noteTitle && !noteBody) return null
-                const isCallout = note?.variant === 'callout'
-                const key = buildRuntimeKey('pricing-note', note?._key, noteTitle, index)
-
-                if (isCallout) {
-                  return (
-                    <div key={key} className="border-accent border-l-2 py-2 pl-6 md:pl-8">
-                      {noteTitle ? (
-                        <h3 className="mb-4 font-serif text-xl tracking-normal md:text-2xl">{noteTitle}</h3>
-                      ) : null}
-                      {noteBody ? (
-                        <PortableTextContent
-                          as="div"
-                          value={noteBody}
-                          className="text-foreground/70 space-y-4 text-[1rem] leading-relaxed"
-                        />
-                      ) : null}
-                    </div>
-                  )
-                }
+                const key = buildRuntimeKey('pricing-step', note?._key, noteTitle, i)
 
                 return (
-                  <div key={key} className="space-y-2">
+                  <div
+                    key={key}
+                    className="py-5 first:pl-0 last:pr-0"
+                    style={{ paddingLeft: i > 0 ? '1.25rem' : 0, paddingRight: i < stepNotes.length - 1 ? '1.25rem' : 0 }}
+                  >
+                    <p className="text-foreground/30 mb-2 text-xs font-bold tracking-[0.16em] uppercase">
+                      0{i + 1}
+                    </p>
                     {noteTitle ? (
-                      <h3 className="text-1xl font-serif tracking-normal md:text-xl">{noteTitle}</h3>
+                      <h3 className="font-serif text-foreground mb-1 text-lg leading-tight tracking-normal">
+                        {noteTitle}
+                      </h3>
                     ) : null}
+                      <p className="text-amber-500 mb-1 text-xs font-bold uppercase tracking-[0.16em]">{paymentDue}</p>
+                      <p className="font-serif text-foreground mb-2 text-3xl leading-tight">{amount}</p>
+
                     {noteBody ? (
                       <PortableTextContent
                         as="div"
                         value={noteBody}
-                        className="text-foreground/70 space-y-1 text-base leading-relaxed md:text-sm"
+                        className="text-muted-foreground space-y-1 text-sm leading-relaxed"
                       />
                     ) : null}
                   </div>
                 )
               })}
             </div>
-          </>
-        ) : null}
+          ) : null}
+
+          {/* Right bottom: callout notes */}
+          {calloutNotes.length > 0 ? (
+            <div className="space-y-6">
+              {calloutNotes.map((note, index) => {
+                const noteTitle = note?.title
+                const noteBody = note?.body
+                if (!noteTitle && !noteBody) return null
+                const key = buildRuntimeKey('pricing-callout', note?._key, noteTitle, index)
+
+                return (
+                  <div key={key}>
+                    {noteTitle ? (
+                      <h3
+                        className="font-serif text-green-900 mb-2 text-xl font-bold tracking-normal"
+                      >
+                        {noteTitle}
+                      </h3>
+                    ) : null}
+                    {noteBody ? (
+                      <PortableTextContent
+                        as="div"
+                        value={noteBody}
+                        className="text-muted-foreground space-y-2 text-sm leading-relaxed"
+                      />
+                    ) : null}
+                  </div>
+                )
+              })}
+            </div>
+          ) : null}
+
+        </div>
       </div>
     </section>
   )

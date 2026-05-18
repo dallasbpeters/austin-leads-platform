@@ -60,8 +60,18 @@ export default function GenericHeader({ site, navigation = [] }) {
   const mobileMenuId = 'site-mobile-nav'
 
   const isChristmas = site?.slug === 'txchristmaslights'
-  const logoUrl = isChristmas ? TX_CHRISTMAS_PUBLIC_LOGO_SRC : buildSanityImageUrl(site?.brand?.logo, { width: 200 })
-  const logoAlt = isChristmas ? (site?.name || 'Texas Christmas Lights') : site?.brand?.logo?.alt || site?.name || ''
+  // Prefer the Sanity `brand.logo` (typically an icon mark) for every site,
+  // including Christmas. Fall back to the hardcoded `/images/tx-christmas-logo-full.png`
+  // wordmark only when Sanity has no logo uploaded yet, so a freshly-seeded
+  // Christmas site still renders something.
+  const sanityLogoUrl = buildSanityImageUrl(site?.brand?.logo, { width: 200 })
+  const usingChristmasWordmarkFallback = isChristmas && !sanityLogoUrl
+  const logoUrl = sanityLogoUrl || (isChristmas ? TX_CHRISTMAS_PUBLIC_LOGO_SRC : null)
+  const logoAlt = sanityLogoUrl
+    ? site?.brand?.logo?.alt || site?.name || ''
+    : isChristmas
+      ? site?.name || 'Texas Christmas Lights'
+      : site?.name || ''
   const siteName = cleanRuntimeString(site?.shortName || site?.name || '')
 
   const navItems = React.useMemo(() => {
@@ -124,10 +134,12 @@ export default function GenericHeader({ site, navigation = [] }) {
                 <img
                   src={logoUrl}
                   alt={logoAlt}
-                  width={isChristmas ? 200 : 150}
-                  height={isChristmas ? 48 : 40}
+                  width={usingChristmasWordmarkFallback ? 200 : 150}
+                  height={usingChristmasWordmarkFallback ? 48 : 40}
                   className={
-                    isChristmas ? 'h-9 w-auto max-w-[200px] object-contain md:h-10' : 'h-7 w-7 object-contain'
+                    usingChristmasWordmarkFallback
+                      ? 'h-9 w-auto max-w-[200px] object-contain md:h-10'
+                      : 'h-7 w-7 object-contain'
                   }
                 />
               ) : (

@@ -132,7 +132,7 @@ export function GallerySection({ section, sectionId }) {
          * currently-shortest column, so the bottom of the grid never has the
          * gap that round-robin column distribution leaves behind.
          */}
-        <div className="xs:columns-1 columns-2 gap-3 md:columns-2 md:gap-4 lg:columns-3 xl:columns-4">
+        <div className="columns-1 gap-3 sm:columns-2 md:columns-2 md:gap-4 lg:columns-3 xl:columns-4">
           {images.map((item, index) => {
             const src = buildSanityImageUrl(item, { width: 1200 })
             if (!src) return null

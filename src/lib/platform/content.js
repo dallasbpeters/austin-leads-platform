@@ -272,12 +272,14 @@ const sectionProjection = `
       }
     }
   },
-  // pricingSection: array of pricingNoteItem (title, body, variant).
+  // pricingSection: array of pricingNoteItem (title, body, variant, paymentDue, amount).
   notes[]{
     _key,
     title,
     body,
-    variant
+    variant,
+    paymentDue,
+    amount
   },
   // gallerySection: array of galleryImage (image with altText + neighborhood/year/package metadata).
   images[]{
@@ -406,6 +408,7 @@ const sectionProjection = `
     color,
     cardColor,
     price,
+    isRecommended,
     image,
     imageAsset{
       crop,
@@ -444,6 +447,7 @@ const sectionProjection = `
     color,
     cardColor,
     price,
+    isRecommended,
     image,
     imageAsset{
       crop,
@@ -475,6 +479,7 @@ const sectionProjection = `
     color,
     cardColor,
     price,
+    isRecommended,
     image,
     imageAsset{
       crop,
