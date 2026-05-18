@@ -791,7 +791,7 @@ export function SchedulingForm() {
                             })
                           }
                         }}
-                        className={`hover:bg-secondary/20 relative w-full content-end justify-start rounded-2xl border-2 px-4 py-5 text-left transition-all duration-150 ${isSelected ? 'border-secondary bg-secondary hover:bg-secondary/90 border text-white' : 'border'}`}
+                        className={`bg-white hover:bg-white/50 relative w-full content-end justify-start rounded-2xl border-2 px-4 py-5 text-left transition-all duration-150 ${isSelected ? 'border-secondary bg-secondary hover:bg-secondary/90 border text-white' : 'border'}`}
                       >
                         <div className="grid grid-cols-1 content-end">
                           <div
