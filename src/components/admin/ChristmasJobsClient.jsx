@@ -197,6 +197,9 @@ function InvoiceSection({ job, onJobUpdate }) {
         {invoiceData?.amountPaidCents != null && invoiceData.status === 'paid' && (
           <p className="text-xs text-green-700">{fmt(invoiceData.amountPaidCents)} paid</p>
         )}
+        {invoiceData?.note && (
+          <p className="text-muted-foreground text-xs italic">{invoiceData.note}</p>
+        )}
         {emailSent && (
           <p className="text-xs text-green-700">Email sent to {job.email}</p>
         )}
@@ -674,7 +677,7 @@ function CalendarView({ jobs, onSelectJob }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function ChristmasJobsClient({ jobs: initialJobs, overview: initialOverview }) {
+export default function ChristmasJobsClient({ jobs: initialJobs, overview: _initialOverview }) {
   const [jobs, setJobs] = useState(initialJobs)
   const [view, setView] = useState('table') // 'table' | 'calendar'
   const [selectedJob, setSelectedJob] = useState(null)

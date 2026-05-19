@@ -108,21 +108,33 @@ export async function POST(req: Request) {
     // Finalize to generate hosted_invoice_url
     const finalized = await stripe.invoices.finalizeInvoice(invoice.id)
 
-    // Stripe auto-pays $0 invoices (e.g. when customer credit is applied).
-    // Void and reject so the admin can adjust the balance and try again.
-    if (finalized.amount_due === 0 || finalized.status === 'paid') {
+    // Stripe automatically applies the customer's credit balance during finalization.
+    // If credits cover the full amount, the invoice is immediately marked 'paid'.
+    // Accept this as success — the balance is genuinely cleared.
+    if (finalized.status === 'paid') {
+      await setJobInvoiceId(jobId, finalized.id)
+      return Response.json({
+        invoiceId: finalized.id,
+        status: 'paid',
+        hostedUrl: finalized.hosted_invoice_url,
+        dashboardUrl: stripeDashboardUrl(finalized.id),
+        amountDueCents: 0,
+        amountPaidCents: finalized.amount_paid,
+        emailStatus: 'skipped',
+        note: 'Invoice was automatically settled via customer credits.',
+      })
+    }
+
+    // Genuine $0 amount_due with no credits applied — the job balance is likely unset.
+    // Delete (not void) the draft-finalized invoice so no credits accumulate on the customer.
+    if (finalized.amount_due === 0) {
       try {
-        if (finalized.status !== 'void') {
-          await stripe.invoices.voidInvoice(finalized.id)
-        }
+        await stripe.invoices.del(finalized.id)
       } catch {
-        // best-effort void
+        // best-effort cleanup
       }
       return Response.json(
-        {
-          error:
-            'Invoice amount resolved to $0 (customer credits may have been applied). Set balance_amount_cents on the job and try again.',
-        },
+        { error: 'Invoice amount is $0. Set a balance amount on the job and try again.' },
         { status: 422 },
       )
     }
