@@ -236,6 +236,17 @@ export async function updateJob(id, updates) {
   return row || null
 }
 
+export async function clearJobInvoiceId(id) {
+  const sql = getSql()
+  const [row] = await sql`
+    UPDATE christmas_jobs
+    SET stripe_invoice_id = NULL, updated_at = NOW()
+    WHERE id = ${id}
+    RETURNING *
+  `
+  return row || null
+}
+
 export async function setJobInvoiceId(id, stripeInvoiceId) {
   const sql = getSql()
   const [row] = await sql`

@@ -98,7 +98,9 @@ function StatusPipeline({ current, onChange, disabled }) {
 function InvoiceSection({ job, onJobUpdate }) {
   const [invoiceData, setInvoiceData] = useState(null)
   const [isCreating, startCreateTransition] = useTransition()
+  const [isDeleting, startDeleteTransition] = useTransition()
   const [createError, setCreateError] = useState(null)
+  const [emailSent, setEmailSent] = useState(false)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -124,9 +126,36 @@ function InvoiceSection({ job, onJobUpdate }) {
           return
         }
         setInvoiceData(data)
+        setEmailSent(data.emailStatus === 'sent')
         onJobUpdate({ ...job, stripe_invoice_id: data.invoiceId })
       } catch {
         setCreateError('Failed to create invoice.')
+      }
+    })
+  }
+
+  const handleDelete = () => {
+    const isPaid = invoiceData?.status === 'paid'
+    const msg = isPaid
+      ? 'This invoice is marked paid. Unlinking it will not issue a refund — it stays in Stripe as a record. Remove it from this job so you can create a new one?'
+      : 'Void this invoice in Stripe and remove it from this job? You can then create a new one.'
+    if (!confirm(msg)) return
+    startDeleteTransition(async () => {
+      try {
+        const res = await fetch('/api/stripe/invoices', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobId: job.id, invoiceId: job.stripe_invoice_id }),
+        })
+        if (!res.ok) {
+          const data = await res.json()
+          alert(data.error || 'Failed to delete invoice.')
+          return
+        }
+        setInvoiceData(null)
+        onJobUpdate({ ...job, stripe_invoice_id: null })
+      } catch {
+        alert('Failed to delete invoice.')
       }
     })
   }
@@ -162,6 +191,9 @@ function InvoiceSection({ job, onJobUpdate }) {
         {invoiceData?.amountPaidCents != null && invoiceData.status === 'paid' && (
           <p className="text-xs text-green-700">{fmt(invoiceData.amountPaidCents)} paid</p>
         )}
+        {emailSent && (
+          <p className="text-xs text-green-700">Email sent to {job.email}</p>
+        )}
         <div className="flex flex-wrap gap-3 pt-1">
           {invoiceData?.hostedUrl && (
             <button
@@ -183,6 +215,14 @@ function InvoiceSection({ job, onJobUpdate }) {
               Stripe Dashboard ↗
             </a>
           )}
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-muted-foreground ml-auto text-xs transition-colors hover:text-red-600 disabled:opacity-50"
+          >
+            {isDeleting ? 'Removing…' : 'Delete invoice'}
+          </button>
         </div>
       </div>
     )
@@ -203,7 +243,7 @@ function InvoiceSection({ job, onJobUpdate }) {
         disabled={isCreating}
         className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50"
       >
-        {isCreating ? 'Creating…' : 'Create invoice'}
+        {isCreating ? 'Sending…' : 'Create & send invoice'}
       </button>
     </div>
   )
@@ -442,6 +482,9 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
           </div>
         </fieldset>
 
+        {/* Invoice */}
+        <InvoiceSection job={job} onJobUpdate={onSave} />
+
         {/* Stripe deposit (read-only) */}
         {job.stripe_session_id && (
           <div className="border-border space-y-1 rounded-lg border p-3">
@@ -457,9 +500,6 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
             </a>
           </div>
         )}
-
-        {/* Invoice */}
-        <InvoiceSection job={job} onJobUpdate={onSave} />
 
         {error && (
           <p className="text-sm text-red-600" role="alert">
