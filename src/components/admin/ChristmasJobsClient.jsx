@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useMemo } from 'react'
+import { useState, useTransition, useMemo, useEffect } from 'react'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -21,6 +21,16 @@ const PACKAGES = [
   { id: 'xmas-full-property', label: 'Full Property' },
   { id: 'unknown', label: 'Unknown' },
 ]
+
+const INVOICE_STATUS_STYLES = {
+  draft: 'bg-gray-100 text-gray-500',
+  open: 'bg-blue-100 text-blue-800',
+  paid: 'bg-green-100 text-green-800',
+  void: 'bg-red-100 text-red-700',
+  uncollectible: 'bg-red-100 text-red-700',
+}
+
+const labelCls = 'text-muted-foreground text-xs uppercase tracking-wide block mb-1'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -79,6 +89,122 @@ function StatusPipeline({ current, onChange, disabled }) {
           </button>
         )
       })}
+    </div>
+  )
+}
+
+// ── InvoiceSection ────────────────────────────────────────────────────────────
+
+function InvoiceSection({ job, onJobUpdate }) {
+  const [invoiceData, setInvoiceData] = useState(null)
+  const [isCreating, startCreateTransition] = useTransition()
+  const [createError, setCreateError] = useState(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (!job.stripe_invoice_id) return
+    fetch(`/api/stripe/invoices/${job.stripe_invoice_id}`)
+      .then((r) => r.json())
+      .then((data) => setInvoiceData(data))
+      .catch(() => {})
+  }, [job.stripe_invoice_id])
+
+  const handleCreate = () => {
+    setCreateError(null)
+    startCreateTransition(async () => {
+      try {
+        const res = await fetch('/api/stripe/invoices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobId: job.id }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          setCreateError(data.error || 'Failed to create invoice.')
+          return
+        }
+        setInvoiceData(data)
+        onJobUpdate({ ...job, stripe_invoice_id: data.invoiceId })
+      } catch {
+        setCreateError('Failed to create invoice.')
+      }
+    })
+  }
+
+  const handleCopy = async (url) => {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
+
+  const statusBadge = invoiceData?.status ? (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${INVOICE_STATUS_STYLES[invoiceData.status] ?? 'bg-gray-100 text-gray-500'}`}
+    >
+      {invoiceData.status}
+    </span>
+  ) : null
+
+  if (job.stripe_invoice_id) {
+    return (
+      <div className="border-border space-y-2 rounded-lg border p-3">
+        <div className="flex items-center justify-between">
+          <p className={labelCls}>Invoice</p>
+          {statusBadge}
+        </div>
+        {invoiceData?.amountDueCents != null && invoiceData.status !== 'paid' && (
+          <p className="text-muted-foreground text-xs">{fmt(invoiceData.amountDueCents)} remaining</p>
+        )}
+        {invoiceData?.amountPaidCents != null && invoiceData.status === 'paid' && (
+          <p className="text-xs text-green-700">{fmt(invoiceData.amountPaidCents)} paid</p>
+        )}
+        <div className="flex flex-wrap gap-3 pt-1">
+          {invoiceData?.hostedUrl && (
+            <button
+              type="button"
+              onClick={() => handleCopy(invoiceData.hostedUrl)}
+              aria-label="Copy customer payment link to clipboard"
+              className="text-primary text-xs transition-colors hover:underline"
+            >
+              {copied ? 'Copied!' : 'Copy payment link'}
+            </button>
+          )}
+          {invoiceData?.dashboardUrl && (
+            <a
+              href={invoiceData.dashboardUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary text-xs hover:underline"
+            >
+              Stripe Dashboard ↗
+            </a>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="border-border space-y-2 rounded-lg border p-3">
+      <p className={labelCls}>Invoice</p>
+      <p className="text-muted-foreground text-xs">No invoice created yet.</p>
+      {createError && (
+        <p className="text-xs text-red-600" role="alert">
+          {createError}
+        </p>
+      )}
+      <button
+        type="button"
+        onClick={handleCreate}
+        disabled={isCreating}
+        className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50"
+      >
+        {isCreating ? 'Creating…' : 'Create invoice'}
+      </button>
     </div>
   )
 }
@@ -149,7 +275,6 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
 
   const inputCls =
     'border-border bg-background text-foreground w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary'
-  const labelCls = 'text-muted-foreground text-xs uppercase tracking-wide block mb-1'
 
   return (
     <aside
@@ -317,10 +442,10 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
           </div>
         </fieldset>
 
-        {/* Stripe info (read-only) */}
+        {/* Stripe deposit (read-only) */}
         {job.stripe_session_id && (
           <div className="border-border space-y-1 rounded-lg border p-3">
-            <p className={labelCls}>Stripe</p>
+            <p className={labelCls}>Deposit payment</p>
             <p className="text-muted-foreground truncate font-mono text-xs">{job.stripe_session_id}</p>
             <a
               href={`https://dashboard.stripe.com/test/payments/${job.stripe_payment_intent_id}`}
@@ -332,6 +457,9 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
             </a>
           </div>
         )}
+
+        {/* Invoice */}
+        <InvoiceSection job={job} onJobUpdate={onSave} />
 
         {error && (
           <p className="text-sm text-red-600" role="alert">

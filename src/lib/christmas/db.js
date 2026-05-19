@@ -61,6 +61,7 @@ export async function ensureChristmasTables() {
   // Guard: add columns that may be missing from older schema
   await sql`ALTER TABLE christmas_jobs ADD COLUMN IF NOT EXISTS phone TEXT`
   await sql`ALTER TABLE christmas_jobs ADD COLUMN IF NOT EXISTS crew  TEXT`
+  await sql`ALTER TABLE christmas_jobs ADD COLUMN IF NOT EXISTS stripe_invoice_id TEXT`
 }
 
 // ─── Slots ───────────────────────────────────────────────────────────────────
@@ -229,6 +230,17 @@ export async function updateJob(id, updates) {
       balance_status            = COALESCE(${balanceStatus ?? null}, balance_status),
       stripe_payment_intent_id  = COALESCE(${stripePaymentIntentId ?? null}, stripe_payment_intent_id),
       updated_at                = NOW()
+    WHERE id = ${id}
+    RETURNING *
+  `
+  return row || null
+}
+
+export async function setJobInvoiceId(id, stripeInvoiceId) {
+  const sql = getSql()
+  const [row] = await sql`
+    UPDATE christmas_jobs
+    SET stripe_invoice_id = ${stripeInvoiceId}, updated_at = NOW()
     WHERE id = ${id}
     RETURNING *
   `
