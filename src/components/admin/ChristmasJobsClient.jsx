@@ -16,11 +16,17 @@ const STATUS_STYLES = {
 }
 
 const PACKAGES = [
-  { id: 'xmas-roofline', label: 'Roofline' },
-  { id: 'xmas-full-front', label: 'Full Front' },
-  { id: 'xmas-full-property', label: 'Full Property' },
-  { id: 'unknown', label: 'Unknown' },
+  { id: 'xmas-roofline', label: 'Roofline', priceCents: 30000 },
+  { id: 'xmas-full-front', label: 'Full Front', priceCents: 50000 },
+  { id: 'xmas-full-property', label: 'Full Property', priceCents: 100000 },
+  { id: 'unknown', label: 'Unknown', priceCents: null },
 ]
+
+const calcBalance = (packageSlug, depositCents) => {
+  const pkg = PACKAGES.find((p) => p.id === packageSlug)
+  if (!pkg?.priceCents || !depositCents) return ''
+  return Math.max(0, pkg.priceCents - depositCents)
+}
 
 const INVOICE_STATUS_STYLES = {
   draft: 'bg-gray-100 text-gray-500',
@@ -73,7 +79,7 @@ async function apiDelete(id) {
 
 function StatusPipeline({ current, onChange, disabled }) {
   return (
-    <div className="flex flex-wrap items-center gap-1">
+    <div className="flex flex-wrap items-center gap-2">
       {STATUSES.map((s, i) => {
         const isActive = current === s
         const isPast = STATUSES.indexOf(current) > i && s !== 'cancelled'
@@ -172,7 +178,7 @@ function InvoiceSection({ job, onJobUpdate }) {
 
   const statusBadge = invoiceData?.status ? (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${INVOICE_STATUS_STYLES[invoiceData.status] ?? 'bg-gray-100 text-gray-500'}`}
+      className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium capitalize ${INVOICE_STATUS_STYLES[invoiceData.status] ?? 'bg-gray-100 text-gray-500'}`}
     >
       {invoiceData.status}
     </span>
@@ -263,7 +269,10 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
     crew: job.crew ?? '',
     notes: job.notes ?? '',
     deposit_status: job.deposit_status ?? 'pending',
-    balance_amount_cents: job.balance_amount_cents ?? '',
+    balance_amount_cents:
+      job.balance_amount_cents ??
+      calcBalance(job.package_slug, job.deposit_amount_cents) ??
+      '',
     balance_status: job.balance_status ?? 'unpaid',
   })
   const [dirty, setDirty] = useState(false)
@@ -403,11 +412,21 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
               <select
                 className={inputCls}
                 value={form.package_slug}
-                onChange={(e) => set('package_slug', e.target.value)}
+                onChange={(e) => {
+                  const slug = e.target.value
+                  setForm((f) => ({
+                    ...f,
+                    package_slug: slug,
+                    balance_amount_cents:
+                      calcBalance(slug, job.deposit_amount_cents) ?? f.balance_amount_cents,
+                  }))
+                  setDirty(true)
+                }}
               >
                 {PACKAGES.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.label}
+                    {p.priceCents ? ` — ${fmt(p.priceCents)}` : ''}
                   </option>
                 ))}
               </select>
@@ -462,7 +481,14 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
             </div>
           </div>
           <div>
-            <label className={labelCls}>Balance amount</label>
+            <div className="flex items-baseline justify-between">
+              <label className={labelCls}>Balance amount</label>
+              {calcBalance(form.package_slug, job.deposit_amount_cents) > 0 && (
+                <span className="text-muted-foreground text-xs">
+                  {fmt(PACKAGES.find((p) => p.id === form.package_slug)?.priceCents)} − {fmt(job.deposit_amount_cents)} deposit
+                </span>
+              )}
+            </div>
             <div className="relative">
               <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 text-sm">
                 $
@@ -859,14 +885,14 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: initi
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${job.deposit_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
+                            className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${job.deposit_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
                           >
                             {job.deposit_status === 'paid' ? fmt(job.deposit_amount_cents) : 'pending'}
                           </span>
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${job.balance_status === 'paid' ? 'bg-green-100 text-green-800' : job.balance_status === 'invoiced' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
+                            className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${job.balance_status === 'paid' ? 'bg-green-100 text-green-800' : job.balance_status === 'invoiced' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
                           >
                             {job.balance_status === 'paid'
                               ? fmt(job.balance_amount_cents)
@@ -877,7 +903,7 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: initi
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[job.status] ?? 'bg-gray-100 text-gray-600'}`}
+                            className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[job.status] ?? 'bg-gray-100 text-gray-600'}`}
                           >
                             {job.status}
                           </span>

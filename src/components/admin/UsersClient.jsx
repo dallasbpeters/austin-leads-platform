@@ -427,7 +427,7 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                             type="button"
                             onClick={() => !isSelf && handleToggleActive(user, !user.isActive)}
                             disabled={isSelf || isPending}
-                            className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
+                            className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
                               user.isActive
                                 ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
