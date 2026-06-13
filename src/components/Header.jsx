@@ -99,17 +99,14 @@ export default function Header() {
           content: 'local JSX nav and service catalog links',
         })}
       >
-        <div className="mx-auto w-full rounded-none bg-stone-100 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full">
+        <div className="mx-auto w-full rounded-none bg-stone-100 px-7 py-4 shadow-sm backdrop-blur-sm md:rounded-full">
           <div className="flex items-center justify-between">
             <Link
               href="/"
               title="Texas Solar & Roofing Pros"
               className="grid grid-flow-col items-center gap-2"
             >
-              <Logo />
-              <div className="sm:text-md type-accent leading-none font-bold text-inherit md:text-lg">
-                Texas Solar & Roofing Pros
-              </div>
+              <Logo height={60} width={80} />
             </Link>
             <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
             <div className="hidden lg:flex lg:items-center">

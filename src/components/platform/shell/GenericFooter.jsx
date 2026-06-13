@@ -20,9 +20,9 @@ export default function GenericFooter({ site }) {
               <img
                 src={logoUrl}
                 alt={logoAlt}
-                width={200}
-                height={200}
-                className="h-12 w-auto object-contain brightness-120 filter"
+                width={80}
+                height={80}
+                className="size-20 p-3 bg-white rounded-sm w-auto object-contain brightness-120 filter"
               />
               <h2 className="text-secondary-foreground text-2xl tracking-normal">{site.name}</h2>
             </div>

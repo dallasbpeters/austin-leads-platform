@@ -26,7 +26,7 @@ export default function Footer() {
               href="/"
               className="flex items-center gap-2 rounded-md text-xl font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
-              <Logo className="h-12 w-auto" />
+              <Logo className="size-18 rounded-sm w-auto bg-white p-2" />
               Texas Solar & Roofing Pros
             </Link>
             <p className="mt-3 max-w-md text-sm text-gray-300">

@@ -134,12 +134,12 @@ export default function GenericHeader({ site, navigation = [] }) {
                 <img
                   src={logoUrl}
                   alt={logoAlt}
-                  width={usingChristmasWordmarkFallback ? 200 : 150}
-                  height={usingChristmasWordmarkFallback ? 48 : 40}
+                  width={usingChristmasWordmarkFallback ? 70 : 70}
+                  height={usingChristmasWordmarkFallback ? 70 : 70}
                   className={
                     usingChristmasWordmarkFallback
-                      ? 'h-9 w-auto max-w-[200px] object-contain md:h-10'
-                      : 'h-7 w-7 object-contain'
+                      ? 'w-auto max-w-[200px] object-contain md:h-10'
+                      : 'object-contain'
                   }
                 />
               ) : (
@@ -147,9 +147,6 @@ export default function GenericHeader({ site, navigation = [] }) {
                   {(siteName || 'S').charAt(0)}
                 </span>
               )}
-              <div className="sm:text-md type-accent font-serif leading-none font-bold text-inherit md:text-lg">
-                {siteName}
-              </div>
             </Link>
             <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
             <div className="hidden lg:flex lg:items-center">
