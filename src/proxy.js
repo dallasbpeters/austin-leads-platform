@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { NextResponse } from 'next/server'
 
 import { getAllSites } from '@/lib/platform/content'
 
@@ -77,7 +77,7 @@ function parseSitePrefixRewrite(pathname) {
   const siteSlugRaw = slashIdx === -1 ? rest : rest.slice(0, slashIdx)
   const pagePath = slashIdx === -1 ? '/' : rest.slice(slashIdx) || '/'
   if (!siteSlugRaw) return null
-  let siteSlug = siteSlugRaw
+  let siteSlug
   try {
     siteSlug = decodeURIComponent(siteSlugRaw)
   } catch {

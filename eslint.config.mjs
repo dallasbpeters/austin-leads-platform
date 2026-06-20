@@ -1,8 +1,8 @@
+import css from '@eslint/css'
 import js from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
-import css from '@eslint/css'
-import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
   // ── Ignores ──────────────────────────────────────────────────────────────
@@ -15,6 +15,9 @@ export default defineConfig([
       '.codex/**',
       'scripts/**',
       'public/**',
+      'dist/**',
+      'coverage/**',
+      'skills/**',
     ],
   },
 
@@ -53,6 +56,24 @@ export default defineConfig([
     ...config,
     files: ['**/*.{ts,tsx}'],
   })),
+
+  // ── TypeScript unused-var patterns (override recommended defaults) ────────
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          args: 'after-used',
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
 
   // ── CSS ───────────────────────────────────────────────────────────────────
   // Exclude theme.css — it uses Tailwind v4 @custom-variant / @theme at-rules
