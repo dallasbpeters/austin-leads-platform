@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -9,17 +9,39 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
+import LeadCaptureForm from '@/components/LeadCaptureForm'
 
 interface JobberDialogProps {
   buttonLabel?: string
+  context?: Record<string, string>
 }
 
-const JOBBER_ID = 'e25e6086-5e48-4c5d-8588-8aa08968b7d6-4904121'
-
-export function JobberDialog({ buttonLabel = 'Book a Service' }: JobberDialogProps) {
+export function JobberDialog({ buttonLabel = 'Book a Service', context }: JobberDialogProps) {
   const [open, setOpen] = useState(false)
   const [isReady, setIsReady] = useState(false)
   const scriptRef = useRef<HTMLScriptElement | null>(null)
+
+  const analyticsParams = {
+    form_id: 'jobber_dialog',
+    button_label: buttonLabel,
+    lead_type: context?.sourceType || 'consultation',
+    source_section: context?.sourceSection || 'unknown',
+    site_slug: context?.siteSlug || 'unknown',
+    page_path: context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
+  }
+
+  const handleOpenChange = useCallback(
+    (next: boolean) => {
+      setOpen(next)
+      if (next) {
+        trackAnalyticsEvent('lead_form_dialog_opened', analyticsParams)
+      } else {
+        trackAnalyticsEvent('lead_form_dialog_closed', analyticsParams)
+      }
+    },
+    [analyticsParams],
+  )
 
   useEffect(() => {
     if (open && !isReady) {
@@ -50,7 +72,7 @@ export function JobberDialog({ buttonLabel = 'Book a Service' }: JobberDialogPro
   }, [isReady])
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="default">{buttonLabel}</Button>
       </DialogTrigger>
@@ -62,7 +84,7 @@ export function JobberDialog({ buttonLabel = 'Book a Service' }: JobberDialogPro
             the details and schedule your appointment.
           </DialogDescription>
         </DialogHeader>
-        {isReady && <div id={JOBBER_ID} />}
+        {isReady && <LeadCaptureForm context={context} />}
       </DialogContent>
     </Dialog>
   )

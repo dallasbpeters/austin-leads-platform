@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import Gradient from './Gradient'
-import LeadCaptureForm from './LeadCaptureForm'
+import { JobberDialog } from './jobber-dialog'
 import PortableTextContent from './PortableTextContent'
 
 const SECTION_VARIANTS = {
@@ -51,16 +51,13 @@ export default function ConsultationSection({
   theme = 'light',
   pagePath = '/',
   pageTitle = 'Texas Solar and Roofing Pros',
-  serviceOptions = null,
 }) {
   const isChristmasTheme = theme === 'christmasLights'
   const isDarkTheme = theme === 'dark' || isChristmasTheme
   const content = SECTION_VARIANTS[variant] || SECTION_VARIANTS.default
-  const _resolvedServiceOptions =
-    serviceOptions ?? section?.serviceOptions ?? content.serviceOptions ?? undefined
   const headline = section?.title || content.heading
   const copy = section?.body || content.copy
-  const _buttonLabel = section?.ctaLabel || content.buttonLabel
+  const buttonLabel = section?.ctaLabel || content.buttonLabel
   const avatarEyebrow = section?.avatarEyebrow || section?.personLabel || ''
   const avatarName = section?.avatarName || section?.personName || ''
   const avatarRole = section?.avatarRole || section?.personRole || ''
@@ -171,11 +168,11 @@ export default function ConsultationSection({
                     />
                   ) : null}
                 </div>
+                <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
               </div>
             </div>
           ) : null}
         </div>
-        <LeadCaptureForm context={leadContext} />
       </div>
       {isDarkTheme ? null : <Gradient zIndex={0} />}
     </section>

@@ -1,10 +1,11 @@
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
-import LeadCaptureForm from '@/components/LeadCaptureForm'
+// import LeadCaptureForm from '@/components/LeadCaptureForm'
 import PortableTextContent from '@/components/PortableTextContent'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
+import { JobberDialog } from '@components/jobber-dialog'
 
 import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
 
@@ -32,6 +33,8 @@ export function CtaBannerSection({ page, section, site }) {
     .join('')
   const avatarStyle = avatarColor ? { backgroundColor: avatarColor } : undefined
   const isDarkTheme = section?.theme !== 'light'
+  const buttonLabel = section?.ctaLabel || 'Request an Install'
+
   const leadContext = {
     sourceType: 'cross-lead',
     sourceSection: 'cta-banner',
@@ -121,12 +124,7 @@ export function CtaBannerSection({ page, section, site }) {
           className={`w-full gap-0 ${isDarkTheme ? 'border-white/12 bg-white/6 text-white backdrop-blur' : ''}`}
         >
           <CardContent>
-            <LeadCaptureForm
-              context={leadContext}
-              compact
-              className="grid w-full gap-4"
-              messageClassName="text-left"
-            />
+            <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
           </CardContent>
         </Card>
       </div>

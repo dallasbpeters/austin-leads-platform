@@ -283,7 +283,7 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
           <div>
             <label className={labelCls}>Notes</label>
             <textarea
-              className={inputCls + ' min-h-[80px] resize-y'}
+              className={inputCls + ' min-h-20 resize-y'}
               value={form.notes}
               onChange={(e) => set('notes', e.target.value)}
               placeholder="Gate code, access notes, special requests…"
@@ -692,7 +692,7 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
                           {job.phone && <p className="text-muted-foreground text-xs">{job.phone}</p>}
                         </td>
                         <td
-                          className="text-muted-foreground max-w-[160px] truncate px-4 py-3 text-xs"
+                          className="text-muted-foreground max-w-40 truncate px-4 py-3 text-xs"
                           title={job.address}
                         >
                           {job.address || '—'}
@@ -702,7 +702,7 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
                           {job.package_slug?.replace(/^xmas-/, '').replace(/-/g, ' ') ?? '—'}
                         </td>
                         <td
-                          className="text-muted-foreground max-w-[120px] truncate px-4 py-3 text-xs"
+                          className="text-muted-foreground max-w-30 truncate px-4 py-3 text-xs"
                           title={job.crew}
                         >
                           {job.crew || <span className="italic opacity-50">unassigned</span>}
@@ -745,7 +745,7 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
 
         {/* Detail panel */}
         {selectedJob && (
-          <div className="flex min-h-0 w-full flex-col overflow-hidden lg:w-[400px] lg:flex-none">
+          <div className="flex min-h-0 w-full flex-col overflow-hidden lg:w-100 lg:flex-none">
             <JobDetailPanel
               key={selectedJob.id}
               job={selectedJob}
