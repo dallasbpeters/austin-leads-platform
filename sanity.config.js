@@ -6,6 +6,7 @@ import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
 import { presentationTool } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
+import { googleAnalyticsPlugin } from 'sanity-plugin-ga-dashboard'
 
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
 import { SiteSwitcherNavigator } from './src/sanity/components/SiteSwitcherNavigator'
@@ -48,6 +49,9 @@ export default defineConfig({
     colorInput(),
     structureTool({ structure: studioStructure }),
     unsplashImageAsset(),
+    googleAnalyticsPlugin({
+      apiUrl: `${studioPreviewOrigin.replace(/\/$/, '')}/api/ga-data`,
+    }),
     presentationTool({
       previewUrl: {
         initial: studioPreviewOrigin,
