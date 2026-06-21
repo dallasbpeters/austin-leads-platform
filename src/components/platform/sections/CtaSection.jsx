@@ -1,6 +1,6 @@
 import ConsultationSection from '@/components/ConsultationSection'
 import DevTrace from '@/components/dev/DevTrace'
-import { SchedulingForm } from '@/components/StripeCheckout'
+import { DialogScrollableContent } from '@/components/jobber-dialog'
 import { roofingServices } from '@/lib/platform/service-catalog'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
 
@@ -24,9 +24,9 @@ export function CtaSection({ page, section, site, pathname, editAttributes }) {
       <section id={CONSULTATION_ANCHOR_ID} className="scroll-mt-38" {...editAttributes}>
         <DevTrace
           markup="src/components/platform/sections/CtaSection.jsx"
-          content="christmas lights booking form"
+          content="christmas lights booking dialog"
         />
-        <SchedulingForm />
+        <DialogScrollableContent />
       </section>
     )
   }
