@@ -1,5 +1,6 @@
+'use client'
 import { Button } from '@/components/ui/button'
-import Script from 'next/script'
+import { useEffect, useRef, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -9,11 +10,49 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
-export function DialogScrollableContent() {
+interface JobberDialogProps {
+  buttonLabel?: string
+}
+
+const JOBBER_ID = 'e25e6086-5e48-4c5d-8588-8aa08968b7d6-4904121'
+
+export function JobberDialog({ buttonLabel = 'Book a Service' }: JobberDialogProps) {
+  const [open, setOpen] = useState(false)
+  const [isReady, setIsReady] = useState(false)
+  const scriptRef = useRef<HTMLScriptElement | null>(null)
+
+  useEffect(() => {
+    if (open && !isReady) {
+      const timer = setTimeout(() => setIsReady(true), 50)
+      return () => clearTimeout(timer)
+    }
+  }, [open, isReady])
+
+  useEffect(() => {
+    if (!isReady) return
+
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = 'https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css'
+    document.head.appendChild(link)
+
+    const script = document.createElement('script')
+    script.src = 'https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js'
+    script.async = true
+    document.body.appendChild(script)
+    scriptRef.current = script
+
+    return () => {
+      document.head.removeChild(link)
+      if (script.parentNode) document.body.removeChild(script)
+      scriptRef.current = null
+    }
+  }, [isReady])
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Book a Service</Button>
+        <Button variant="default">{buttonLabel}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-h-[80vh]">
         <DialogHeader className="mb-4">
@@ -23,18 +62,7 @@ export function DialogScrollableContent() {
             the details and schedule your appointment.
           </DialogDescription>
         </DialogHeader>
-        <div id="e25e6086-5e48-4c5d-8588-8aa08968b7d6-4904121"></div>
-        <link
-          rel="stylesheet"
-          href="https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css"
-          media="screen"
-        />
-        <Script
-          src="https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js"
-          strategy="afterInteractive"
-          data-clienthub-id="e25e6086-5e48-4c5d-8588-8aa08968b7d6-4904121"
-          data-form-url="https://clienthub.getjobber.com/client_hubs/e25e6086-5e48-4c5d-8588-8aa08968b7d6/public/work_request/embedded_work_request_form?form_id=4904121"
-        />
+        {isReady && <div id={JOBBER_ID} />}
       </DialogContent>
     </Dialog>
   )

@@ -1,7 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
-
-import Card from './Card'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import Gradient from './Gradient'
 import LeadCaptureForm from './LeadCaptureForm'
@@ -58,11 +56,11 @@ export default function ConsultationSection({
   const isChristmasTheme = theme === 'christmasLights'
   const isDarkTheme = theme === 'dark' || isChristmasTheme
   const content = SECTION_VARIANTS[variant] || SECTION_VARIANTS.default
-  const resolvedServiceOptions =
+  const _resolvedServiceOptions =
     serviceOptions ?? section?.serviceOptions ?? content.serviceOptions ?? undefined
   const headline = section?.title || content.heading
   const copy = section?.body || content.copy
-  const buttonLabel = section?.ctaLabel || content.buttonLabel
+  const _buttonLabel = section?.ctaLabel || content.buttonLabel
   const avatarEyebrow = section?.avatarEyebrow || section?.personLabel || ''
   const avatarName = section?.avatarName || section?.personName || ''
   const avatarRole = section?.avatarRole || section?.personRole || ''
@@ -177,24 +175,7 @@ export default function ConsultationSection({
             </div>
           ) : null}
         </div>
-
-        <Card
-          className={`relative z-10 p-8 ${isDarkTheme ? 'border-white/12 bg-white/6 text-white backdrop-blur' : ''}`}
-          radius="lg"
-        >
-          <LeadCaptureForm
-            context={leadContext}
-            buttonLabel={buttonLabel}
-            serviceOptions={resolvedServiceOptions}
-            inputClassName={
-              isDarkTheme
-                ? 'border-b px-3 py-2 text-white placeholder:text-white/48'
-                : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'
-            }
-            labelClassName={isDarkTheme ? 'text-white/70' : 'text-slate-500'}
-            checkboxClassName={isDarkTheme ? 'accent-white' : 'accent-primary'}
-          />
-        </Card>
+        <LeadCaptureForm context={leadContext} />
       </div>
       {isDarkTheme ? null : <Gradient zIndex={0} />}
     </section>

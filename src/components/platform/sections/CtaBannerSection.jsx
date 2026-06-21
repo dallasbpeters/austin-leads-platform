@@ -117,20 +117,14 @@ export function CtaBannerSection({ page, section, site }) {
             </div>
           ) : null}
         </div>
-        <Card className={`gap-0 ${isDarkTheme ? 'border-white/12 bg-white/6 text-white backdrop-blur' : ''}`}>
+        <Card
+          className={`w-full gap-0 ${isDarkTheme ? 'border-white/12 bg-white/6 text-white backdrop-blur' : ''}`}
+        >
           <CardContent>
             <LeadCaptureForm
               context={leadContext}
               compact
-              buttonLabel={section.ctaLabel || 'Request a roofing intro'}
-              className="grid gap-4"
-              inputClassName={
-                isDarkTheme
-                  ? 'border-b px-3 py-2 text-white placeholder:text-white/48'
-                  : 'border-color-grid placeholder:text-slate-700 focus:border-primary text-foreground'
-              }
-              labelClassName={isDarkTheme ? 'text-white/70' : 'text-slate-500'}
-              checkboxClassName={isDarkTheme ? 'accent-white' : 'accent-primary'}
+              className="grid w-full gap-4"
               messageClassName="text-left"
             />
           </CardContent>

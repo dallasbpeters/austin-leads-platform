@@ -78,7 +78,7 @@ function ChristmasLightsInner({
   const wireSegments = Math.max(28, count * 3)
   const coreMeshRef = useRef<InstancedMesh>(null)
   const haloMeshRef = useRef<InstancedMesh>(null)
-  const cordGeometryRefs = useRef<Array<BufferGeometry<unknown> | null>>([])
+  const cordGeometryRefs = useRef<BufferGeometry[]>([])
 
   const cordPositions = useMemo(
     () => Array.from({ length: strands }, () => new Float32Array((wireSegments + 1) * 3)),
@@ -264,7 +264,7 @@ function ChristmasLightsInner({
         <line key={strandIndex}>
           <bufferGeometry
             ref={(node) => {
-              cordGeometryRefs.current[strandIndex] = node
+              if (node) cordGeometryRefs.current[strandIndex] = node as BufferGeometry
             }}
           >
             <bufferAttribute attach="attributes-position" args={[cordPositions[strandIndex], 3]} />

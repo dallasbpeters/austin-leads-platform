@@ -1,7 +1,7 @@
 'use client'
 
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState, useTransition, useMemo, useEffect } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -26,14 +26,6 @@ const calcBalance = (packageSlug, depositCents) => {
   const pkg = PACKAGES.find((p) => p.id === packageSlug)
   if (!pkg?.priceCents || !depositCents) return ''
   return Math.max(0, pkg.priceCents - depositCents)
-}
-
-const INVOICE_STATUS_STYLES = {
-  draft: 'bg-gray-100 text-gray-500',
-  open: 'bg-blue-100 text-blue-800',
-  paid: 'bg-green-100 text-green-800',
-  void: 'bg-red-100 text-red-700',
-  uncollectible: 'bg-red-100 text-red-700',
 }
 
 const labelCls = 'text-muted-foreground text-xs uppercase tracking-wide block mb-1'
@@ -100,161 +92,6 @@ function StatusPipeline({ current, onChange, disabled }) {
           </button>
         )
       })}
-    </div>
-  )
-}
-
-// ── InvoiceSection ────────────────────────────────────────────────────────────
-
-function InvoiceSection({ job, onJobUpdate }) {
-  const [invoiceData, setInvoiceData] = useState(null)
-  const [isCreating, startCreateTransition] = useTransition()
-  const [isDeleting, startDeleteTransition] = useTransition()
-  const [createError, setCreateError] = useState(null)
-  const [emailSent, setEmailSent] = useState(false)
-  const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
-    if (!job.stripe_invoice_id) return
-    fetch(`/api/stripe/invoices/${job.stripe_invoice_id}`)
-      .then((r) => r.json())
-      .then((data) => setInvoiceData(data))
-      .catch(() => {})
-  }, [job.stripe_invoice_id])
-
-  const handleCreate = () => {
-    setCreateError(null)
-    startCreateTransition(async () => {
-      try {
-        const res = await fetch('/api/stripe/invoices', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobId: job.id }),
-        })
-        const data = await res.json()
-        if (!res.ok) {
-          setCreateError(data.error || 'Failed to create invoice.')
-          return
-        }
-        setInvoiceData(data)
-        setEmailSent(data.emailStatus === 'sent')
-        onJobUpdate({ ...job, stripe_invoice_id: data.invoiceId })
-      } catch {
-        setCreateError('Failed to create invoice.')
-      }
-    })
-  }
-
-  const handleDelete = () => {
-    const isPaid = invoiceData?.status === 'paid'
-    const msg = isPaid
-      ? 'This invoice is marked paid. Unlinking it will not issue a refund — it stays in Stripe as a record. Remove it from this job so you can create a new one?'
-      : 'Void this invoice in Stripe and remove it from this job? You can then create a new one.'
-    if (!confirm(msg)) return
-    startDeleteTransition(async () => {
-      try {
-        const res = await fetch('/api/stripe/invoices', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobId: job.id, invoiceId: job.stripe_invoice_id }),
-        })
-        if (!res.ok) {
-          const data = await res.json()
-          alert(data.error || 'Failed to delete invoice.')
-          return
-        }
-        setInvoiceData(null)
-        onJobUpdate({ ...job, stripe_invoice_id: null })
-      } catch {
-        alert('Failed to delete invoice.')
-      }
-    })
-  }
-
-  const handleCopy = async (url) => {
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      /* clipboard unavailable */
-    }
-  }
-
-  const statusBadge = invoiceData?.status ? (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap capitalize ${INVOICE_STATUS_STYLES[invoiceData.status] ?? 'bg-gray-100 text-gray-500'}`}
-    >
-      {invoiceData.status}
-    </span>
-  ) : null
-
-  if (job.stripe_invoice_id) {
-    return (
-      <div className="border-border space-y-2 rounded-lg border p-3">
-        <div className="flex items-center justify-between">
-          <p className={labelCls}>Invoice</p>
-          {statusBadge}
-        </div>
-        {invoiceData?.amountDueCents != null && invoiceData.status !== 'paid' && (
-          <p className="text-muted-foreground text-xs">{fmt(invoiceData.amountDueCents)} remaining</p>
-        )}
-        {invoiceData?.amountPaidCents != null && invoiceData.status === 'paid' && (
-          <p className="text-xs text-green-700">{fmt(invoiceData.amountPaidCents)} paid</p>
-        )}
-        {invoiceData?.note && <p className="text-muted-foreground text-xs italic">{invoiceData.note}</p>}
-        {emailSent && <p className="text-xs text-green-700">Email sent to {job.email}</p>}
-        <div className="flex flex-wrap gap-3 pt-1">
-          {invoiceData?.hostedUrl && (
-            <button
-              type="button"
-              onClick={() => handleCopy(invoiceData.hostedUrl)}
-              aria-label="Copy customer payment link to clipboard"
-              className="text-primary text-xs transition-colors hover:underline"
-            >
-              {copied ? 'Copied!' : 'Copy payment link'}
-            </button>
-          )}
-          {invoiceData?.dashboardUrl && (
-            <a
-              href={invoiceData.dashboardUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary text-xs hover:underline"
-            >
-              Stripe Dashboard ↗
-            </a>
-          )}
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="text-muted-foreground ml-auto text-xs transition-colors hover:text-red-600 disabled:opacity-50"
-          >
-            {isDeleting ? 'Removing…' : 'Delete invoice'}
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="border-border space-y-2 rounded-lg border p-3">
-      <p className={labelCls}>Invoice</p>
-      <p className="text-muted-foreground text-xs">No invoice created yet.</p>
-      {createError && (
-        <p className="text-xs text-red-600" role="alert">
-          {createError}
-        </p>
-      )}
-      <button
-        type="button"
-        onClick={handleCreate}
-        disabled={isCreating}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50"
-      >
-        {isCreating ? 'Sending…' : 'Create & send invoice'}
-      </button>
     </div>
   )
 }
@@ -510,25 +347,6 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
             </div>
           </div>
         </fieldset>
-
-        {/* Invoice */}
-        <InvoiceSection job={job} onJobUpdate={onSave} />
-
-        {/* Stripe deposit (read-only) */}
-        {job.stripe_session_id && (
-          <div className="border-border space-y-1 rounded-lg border p-3">
-            <p className={labelCls}>Deposit payment</p>
-            <p className="text-muted-foreground truncate font-mono text-xs">{job.stripe_session_id}</p>
-            <a
-              href={`https://dashboard.stripe.com/test/payments/${job.stripe_payment_intent_id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary text-xs hover:underline"
-            >
-              View in Stripe ↗
-            </a>
-          </div>
-        )}
 
         {error && (
           <p className="text-sm text-red-600" role="alert">
