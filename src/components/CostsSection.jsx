@@ -40,7 +40,7 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
   const accentHex = (typeof rawColor === 'string' ? rawColor : rawColor?.hex) || ''
   const sectionStyle = accentHex
     ? {
-        background: `linear-gradient(188deg, color-mix(in oklch, ${accentHex} 6%, white) 3.24%, color-mix(in oklch, ${accentHex} 28%, white) 110.59%)`,
+        background: `linear-gradient(188deg, color-mix(in oklch, ${accentHex} 1%, white) 3.24%, color-mix(in oklch, ${accentHex} 12%, white) 110.59%)`,
       }
     : undefined
   const labelStyle = accentHex ? { color: accentHex } : undefined

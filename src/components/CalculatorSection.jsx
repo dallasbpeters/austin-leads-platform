@@ -9,6 +9,7 @@ import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import Card from './Card'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import PortableTextContent from './PortableTextContent'
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const DEFAULT_BILL = 200
 const MIN_BILL = 50
@@ -121,16 +122,16 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
       ></div>
       <div className="relative z-1 mx-auto w-[min(72rem,calc(100%-3rem))]">
         <div className="mb-14 text-center">
-          <h2 className="text-foreground type-display m-0 text-[clamp(3.875rem,4vw,5.25rem)]">{title}</h2>
+          <h2 className="text-foreground type-display m-0 text-[clamp(2.875rem,4vw,4.25rem)]">{title}</h2>
           <PortableTextContent
             as="div"
             value={body}
-            className="text-foreground mx-auto mt-3 max-w-208 text-base"
+            className="text-foreground mx-auto mt-3 max-w-208 text-[1rem]"
           />
         </div>
 
         <Card
-          className="grid grid-cols-[minmax(280px,2fr)_minmax(320px,3fr)] overflow-hidden max-[900px]:grid-cols-1"
+          className="grid grid-cols-[minmax(280px,2fr)_minmax(320px,3fr)] overflow-hidden shadow-md max-[900px]:grid-cols-1"
           variant="surfaceStrong"
           radius="lg"
         >
@@ -222,7 +223,21 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
             />
 
             <div className="col-span-full mt-2 flex flex-wrap items-center gap-4">
-              <Button href={ctaHref} size="md" shape="pill" className="w-full max-w-72">
+              <Button
+                href={ctaHref}
+                size="md"
+                shape="pill"
+                className="w-full max-w-72"
+                onClick={() =>
+                  trackAnalyticsEvent('calculator_cta_click', {
+                    cta_label: ctaLabel,
+                    cta_href: ctaHref,
+                    bill_amount: bill,
+                    system_size_kw: results.systemKw,
+                    page_path: typeof window !== 'undefined' ? window.location.pathname : '/unknown',
+                  })
+                }
+              >
                 {ctaLabel}
               </Button>
               <span className="text-sm text-slate-700">{ctaNote}</span>

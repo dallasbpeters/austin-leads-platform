@@ -77,7 +77,11 @@ const portableTextSimpleType = {
   of: [
     {
       type: 'block',
-      styles: [{ title: 'Normal', value: 'normal' }],
+      styles: [
+        { title: 'Normal', value: 'normal' },
+        { title: 'Heading 2', value: 'h2' },
+        { title: 'Heading 3', value: 'h3' },
+      ],
       lists: [
         { title: 'Bullet', value: 'bullet' },
         { title: 'Numbered', value: 'number' },
@@ -92,7 +96,7 @@ const portableTextSimpleType = {
             name: 'link',
             type: 'object',
             title: 'Link',
-            fields: [{ name: 'href', type: 'url', title: 'URL' }],
+            fields: [{ name: 'href', type: 'string', title: 'URL or anchor (#)' }],
           },
         ],
       },
@@ -4005,6 +4009,105 @@ const energyChartSectionType = {
   },
 }
 
+const videoSectionType = {
+  name: 'videoSection',
+  title: 'Video Section',
+  type: 'object',
+  initialValue: {
+    type: 'video',
+    autoplay: false,
+    loop: false,
+    muted: false,
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline above the video section heading.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Primary heading for the video section.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Supporting copy shown alongside the video.'),
+    },
+    {
+      name: 'videoUrl',
+      title: 'Video URL',
+      type: 'string',
+      description: 'Direct URL to an MP4 or WebM file.',
+      options: canvasPurpose('Direct URL to an externally hosted video file.'),
+    },
+    {
+      name: 'posterImage',
+      title: 'Poster image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Still frame shown before playback and as a fallback.'),
+    },
+    {
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+      options: canvasPurpose('Optional text caption displayed below the video player.'),
+    },
+    {
+      name: 'autoplay',
+      title: 'Autoplay',
+      type: 'boolean',
+      options: canvasPurpose('Start playback automatically when the section enters the viewport.'),
+    },
+    {
+      name: 'loop',
+      title: 'Loop',
+      type: 'boolean',
+      options: canvasPurpose('Restart the video from the beginning when it ends.'),
+    },
+    {
+      name: 'muted',
+      title: 'Muted',
+      type: 'boolean',
+      options: canvasPurpose('Mute the audio track by default.'),
+    },
+    {
+      name: 'aspectRatio',
+      title: 'Aspect ratio',
+      type: 'string',
+      initialValue: '16:9',
+      options: {
+        list: [
+          { title: '16:9', value: '16:9' },
+          { title: '4:3', value: '4:3' },
+          { title: '1:1 (Square)', value: '1:1' },
+          { title: '9:16 (Vertical)', value: '9:16' },
+        ],
+        layout: 'dropdown',
+        ...canvasPurpose('Width-to-height ratio of the video player.'),
+      },
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      caption: 'caption',
+    },
+    prepare({ title, body, caption }) {
+      return {
+        title: title || 'Video section',
+        subtitle: pageSectionListSubtitle('Video section', body, caption),
+      }
+    },
+  },
+}
+
 const pageSectionType = {
   name: 'pageSection',
   title: 'Legacy Page Section',
@@ -4141,6 +4244,7 @@ const baseFields = [
       { type: 'logosSection' },
       { type: 'solarSwitchSection' },
       { type: 'energyChartSection' },
+      { type: 'videoSection' },
       { type: 'serviceGridSection' },
       { type: 'resourceGridSection' },
       { type: 'guideGridSection' },
@@ -4249,6 +4353,7 @@ export default [
   logosSectionType,
   solarSwitchSectionType,
   energyChartSectionType,
+  videoSectionType,
   serviceGridSectionType,
   resourceGridSectionType,
   guideGridSectionType,

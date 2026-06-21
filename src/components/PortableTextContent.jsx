@@ -3,11 +3,30 @@ import { PortableText } from '@portabletext/react'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { cn } from '@/lib/utils'
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function getBlockText(value) {
+  return value?.children?.map((child) => child.text).join('') || ''
+}
+
 const portableTextComponents = {
   block: {
     normal: ({ children }) => <p>{children}</p>,
-    h2: ({ children }) => <h2 className="text-xl font-bold">{children}</h2>,
-    h3: ({ children }) => <h3 className="text-lg font-semibold">{children}</h3>,
+    h2: ({ children, value }) => (
+      <h2 id={slugify(getBlockText(value))} className="text-xl font-bold">
+        {children}
+      </h2>
+    ),
+    h3: ({ children, value }) => (
+      <h3 id={slugify(getBlockText(value))} className="text-lg font-semibold">
+        {children}
+      </h3>
+    ),
     h4: ({ children }) => <h4 className="text-base font-semibold">{children}</h4>,
     blockquote: ({ children }) => (
       <blockquote className="border-l-2 border-current pl-4 opacity-75">{children}</blockquote>

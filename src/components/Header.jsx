@@ -17,7 +17,6 @@ const LINKS = [
   { href: '/hail-damage', label: 'Hail & Storm Damage' },
   { href: '/guides', label: 'Guides' },
   { href: '/about', label: 'About Us' },
-  { href: 'https://tx-christmaslights.com', label: 'Christmas Lights' },
   {
     href: '#consultation',
     label: 'Contact',

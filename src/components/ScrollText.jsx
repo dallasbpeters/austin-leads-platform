@@ -45,13 +45,7 @@ function renderOptionalIcon(iconName, textColor, fontSize) {
   const isTexasFlag = ['TexasFlag', 'texasFlag', 'texas-flag', 'tx-flag'].includes(normalized)
 
   if (isTexasFlag) {
-    return (
-      <TexasFlag
-        width={Math.round(iconSize * 1.5)}
-        height={iconSize}
-        style={{ marginRight: 10, flexShrink: 0 }}
-      />
-    )
+    return <TexasFlag width={iconSize} height={iconSize} style={{ marginRight: 10, flexShrink: 0 }} />
   }
 
   const IconComponent = IconoirIcons[normalized]
@@ -126,8 +120,8 @@ function VelocityText({
           flexShrink: 0,
           fontSize: fontSize || '24px',
           color: resolvedTextColor,
-          fontWeight: 'bold',
-          letterSpacing: '-0.05em',
+          fontWeight: 500,
+          letterSpacing: '-0.02em',
           whiteSpace: 'pre',
           ...style,
           ...(showIcon ? { display: 'inline-flex', alignItems: 'center' } : {}),
@@ -148,6 +142,8 @@ function VelocityText({
           display: 'flex',
           whiteSpace: 'nowrap',
           textAlign: 'center',
+          backgroundColor: 'var(--color-primary)',
+          color: 'contrast-color(var(--color-primary))',
         }}
       >
         {spans}
@@ -188,6 +184,7 @@ export default function ScrollVelocity(props) {
         width: '100%',
         height: '100%',
         position: 'relative',
+        backgroundColor: 'var(--color-primary)',
         ...style,
       }}
     >

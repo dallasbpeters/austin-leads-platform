@@ -23,6 +23,7 @@ import { ServiceGridSection } from './ServiceGridSection'
 import { SolarSwitchSection } from './SolarSwitchSection'
 import { StepsSection } from './StepsSection'
 import { StorySection } from './StorySection'
+import { VideoSection } from './VideoSection'
 
 const EnergyChartSection = dynamic(() => import('@/components/EnergyChartSection'), { ssr: true })
 const CalculatorSection = dynamic(() => import('@/components/CalculatorSection'), { ssr: true })
@@ -61,6 +62,7 @@ export const sectionRenderers = {
   logos: RoofingLogoCloudSection,
   solarSwitch: SolarSwitchSection,
   energyChart: EnergyChartSection,
+  video: VideoSection,
   steps: StepsSection,
   cta: CtaSection,
   ctaBanner: CtaBannerSection,

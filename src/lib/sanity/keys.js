@@ -1,6 +1,6 @@
 import { stegaClean } from 'next-sanity'
 
-import { isHeroSectionBlock } from '../platform/section-helpers'
+import { isHeroSectionBlock } from '../platform/section-helpers.js'
 
 function toKeyPart(value) {
   return String(value || '')
@@ -154,6 +154,17 @@ export function normalizeSectionType(section) {
       _key: section._key,
       _type: 'storySection',
       type: 'story',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+    })
+  }
+
+  if (section.type === 'article') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'articleSection',
+      type: 'article',
       eyebrow: section.eyebrow,
       title: section.title,
       body: section.body,

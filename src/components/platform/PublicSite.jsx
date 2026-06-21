@@ -33,7 +33,10 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
     (topLevelPath === 'roofing' || (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug)))
   const showFallbackRoofingLogoCloud = showRoofingLogoCloud && !hasLogosSection
   const suppressDefaultLeadCapture =
-    pageSlug === 'privacy-policy' || pageSlug === 'terms' || pageSlug === 'services/detach-and-reset'
+    pageSlug === 'privacy-policy' ||
+    pageSlug === 'terms' ||
+    pageSlug === 'services/detach-and-reset' ||
+    pageSlug === 'thank-you'
   const isGuidePost = page.pageType === 'post' && pageSlug.startsWith('guides/')
   const shareUrl =
     cleanRuntimeString(page?.seo?.canonicalUrl) ||
@@ -67,6 +70,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
       <main
         {...getDevSectionAttributes({
           id: 'public-site-main',
+          class: 'main',
           markup: 'src/components/platform/PublicSite.jsx',
           content: `rendered sections for "${page.title}"`,
         })}

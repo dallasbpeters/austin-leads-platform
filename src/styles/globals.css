@@ -9,6 +9,45 @@
 @import './txchristmaslights-theme.css';
 @import './admin-theme.css';
 
+/* ─── View Transitions ────────────────────────────────────────────────────
+   Old page fades out and moves down; new page slides in from right and fades in.
+─────────────────────────────────────────────────────────────────────────── */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: view-transition-old 300ms ease-out both;
+}
+
+::view-transition-new(root) {
+  animation: view-transition-new 300ms ease-out both;
+}
+
+@keyframes view-transition-old {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes view-transition-new {
+  0% {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @keyframes collapsible-down {
   from {
     height: 0;
@@ -60,12 +99,10 @@
 }
 
 html {
-  position: relative;
   scroll-behavior: smooth;
 }
 
 body {
-  position: relative;
   margin: 0;
   font-family: var(--font-sans);
   background: var(--background);
@@ -74,6 +111,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+main {
+  display: flex;
+  min-height: 80vh;
+  flex-direction: column;
+}
+
+/* Global resets */
 a {
   text-decoration: none;
 }
@@ -91,6 +135,67 @@ h5,
 h6 {
   line-height: 1.1;
   font-weight: 800;
+}
+
+/* ─── Revert global resets inside Sanity Studio UI ──────────────────────────
+   Global element resets bleed into @sanity/ui components (hotspot dialogs,
+   crop editors, Presentation overlays). These revert rules restore browser
+   defaults for Sanity's UI tree.
+─────────────────────────────────────────────────────────────────────────── */
+sanity-visual-editing img,
+sanity-visual-editing picture,
+[data-ui] img,
+[data-ui] picture,
+[data-ui] video,
+[data-ui] canvas {
+  display: revert;
+  width: revert;
+  max-width: revert;
+  height: revert;
+}
+
+sanity-visual-editing h1,
+sanity-visual-editing h2,
+sanity-visual-editing h3,
+sanity-visual-editing h4,
+sanity-visual-editing h5,
+sanity-visual-editing h6,
+[data-ui] h1,
+[data-ui] h2,
+[data-ui] h3,
+[data-ui] h4,
+[data-ui] h5,
+[data-ui] h6 {
+  line-height: revert;
+  font-weight: revert;
+}
+
+sanity-visual-editing a,
+[data-ui] a {
+  text-decoration: revert;
+}
+
+/* Portaled dialogs render outside [data-ui] tree — revert for them too */
+[role='dialog'] img,
+[role='dialog'] picture {
+  display: revert;
+  width: revert;
+  max-width: revert;
+  height: revert;
+}
+
+[role='dialog'] h1,
+[role='dialog'] h2,
+[role='dialog'] h3,
+[role='dialog'] h4,
+[role='dialog'] h5,
+[role='dialog'] h6 {
+  line-height: revert;
+  font-weight: revert;
+}
+
+[role='dialog'] a {
+  text-decoration: revert;
 }
 
 #app {
@@ -116,35 +221,6 @@ sanity-visual-editing {
   border: 0;
   pointer-events: none;
   z-index: 2147483000;
-}
-
-/* ─── Sanity @sanity/ui overlay compatibility ───────────────────────────────
-   The visual-editing overlay renders @sanity/ui components ([data-ui]) in
-   that portal. Relax our base `img` constraints so crop/hotspot imagery keeps
-   intrinsic dimensions inside flex layouts.
-─────────────────────────────────────────────────────────────────────────── */
-[data-ui] img,
-[data-ui] picture,
-[data-ui] video,
-[data-ui] canvas {
-  display: block;
-  width: auto;
-  max-width: 100%;
-  height: auto;
-}
-
-[data-ui] h1,
-[data-ui] h2,
-[data-ui] h3,
-[data-ui] h4,
-[data-ui] h5,
-[data-ui] h6 {
-  line-height: revert;
-  font-weight: revert;
-}
-
-[data-ui] a {
-  text-decoration: revert;
 }
 
 html.admin-html-locked,

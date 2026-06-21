@@ -30,6 +30,7 @@ export function SiteSwitcherNavigator() {
     client
       .fetch(
         `*[_type == "site"] | order(name asc) {
+          _id,
           "slug": slug.current,
           name,
           primaryDomain,
@@ -86,7 +87,7 @@ export function SiteSwitcherNavigator() {
           const isActive = activeSiteSlug === site.slug
           return (
             <button
-              key={site.slug}
+              key={site._id}
               onClick={() => handleSiteClick(site.slug)}
               style={{
                 display: 'block',

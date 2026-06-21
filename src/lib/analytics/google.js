@@ -56,12 +56,36 @@ function getInlineServiceAccount() {
   }
 }
 
-export function getGoogleAnalyticsConfig() {
-  const measurementId = normalizePublicTagId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID)
+/**
+ * Per-site GA measurement IDs — JSON map keyed by site slug.
+ * Matches the PostHog pattern in src/lib/posthog-server.ts.
+ * Example:
+ *   NEXT_PUBLIC_GA_MEASUREMENT_IDS={"texas-solar-and-roofing-pros":"G-2D5H4B969C","txchristmaslights":"G-TJB8JYY5EP"}
+ */
+function parseSiteGaIds() {
+  const raw = process.env.NEXT_PUBLIC_GA_MEASUREMENT_IDS
+  if (!raw) return {}
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+const SITE_GA_IDS = parseSiteGaIds()
+
+export function getGoogleAnalyticsConfig(siteSlug) {
+  let measurementId = normalizePublicTagId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID)
   const gtmId = normalizePublicTagId(process.env.NEXT_PUBLIC_GTM_ID)
   const propertyId = normalizePropertyId(process.env.GOOGLE_ANALYTICS_PROPERTY_ID)
   const credentials =
     parseServiceAccountJson(process.env.GOOGLE_ANALYTICS_SERVICE_ACCOUNT_JSON) || getInlineServiceAccount()
+
+  // Prefer per-site GA ID if available
+  if (siteSlug && SITE_GA_IDS[siteSlug]) {
+    measurementId = normalizePublicTagId(SITE_GA_IDS[siteSlug])
+  }
 
   return {
     measurementId,

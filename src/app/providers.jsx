@@ -113,6 +113,7 @@ export function PostHogProvider({ children, siteSlug }) {
       api_host: host,
       ui_host: 'https://us.posthog.com',
       defaults: '2026-01-30',
+      capture_pageview: false, // manual pageview tracking below
       loaded: (instance) => {
         // Stamp every event with the active site so per-site dashboards can
         // group/filter without each call-site repeating `site_slug:` props.
@@ -128,6 +129,27 @@ export function PostHogProvider({ children, siteSlug }) {
     if (typeof window !== 'undefined') {
       window.posthog = posthog
     }
+  }, [])
+
+  // Manual page view tracking — fires on initial mount and on every
+  // `popstate` (back/forward) so SPA navigation is captured in both
+  // PostHog and GA4.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const trackPageView = () => {
+      trackAnalyticsEvent('page_view', {
+        page_path: window.location.pathname,
+        page_url: window.location.href,
+        page_title: document.title,
+        referrer: document.referrer || undefined,
+      })
+    }
+
+    trackPageView()
+
+    window.addEventListener('popstate', trackPageView)
+    return () => window.removeEventListener('popstate', trackPageView)
   }, [])
 
   useEffect(() => {
@@ -210,6 +232,50 @@ export function PostHogProvider({ children, siteSlug }) {
     return () => {
       document.removeEventListener('click', handleContactClick, true)
     }
+  }, [])
+
+  // Scroll depth tracking — fires once per milestone (25%, 50%, 75%, 100%)
+  // so we can measure content engagement without spamming events.
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+
+    const milestones = [25, 50, 75, 100]
+    const fired = new Set()
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY
+      const windowHeight = window.innerHeight
+      const docHeight = document.documentElement.scrollHeight
+      const scrollable = docHeight - windowHeight
+      if (scrollable <= 0) return
+
+      const scrollPercent = Math.round((scrollTop / scrollable) * 100)
+
+      for (const milestone of milestones) {
+        if (scrollPercent >= milestone && !fired.has(milestone)) {
+          fired.add(milestone)
+          trackAnalyticsEvent('scroll_depth', {
+            scroll_depth_percent: milestone,
+            page_path: window.location.pathname,
+          })
+        }
+      }
+    }
+
+    // Throttle scroll handler to ~16ms (60fps)
+    let ticking = false
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll()
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', throttledScroll, { passive: true })
+    return () => window.removeEventListener('scroll', throttledScroll)
   }, [])
 
   return <PHProvider client={posthog}>{children}</PHProvider>

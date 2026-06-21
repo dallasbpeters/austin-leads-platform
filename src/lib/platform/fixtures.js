@@ -1540,16 +1540,160 @@ We may use trusted providers for hosting, analytics, CRM, email, form handling, 
     templateLevel: 'hero',
     sections: [
       {
-        type: 'story',
+        type: 'article',
         eyebrow: 'Legal',
         title: 'Terms of Use',
-        body: `Website content should help you ask better questions, not replace professional review.
-
-The site is intended to provide general information about roofing, solar, storm damage, energy upgrades, insurance-related issues, and related services. It is not legal, tax, insurance, engineering, or project-specific advice for your situation.
-
-Using the site or submitting a form does not by itself create a contract, guarantee service availability, or guarantee project pricing. Final recommendations depend on property-specific facts such as roof condition, electrical conditions, storm evidence, policy terms, utility data, and actual inspection findings.
-
-The site may reference or rely on third-party tools, links, analytics, maps, and other platforms. We are not responsible for third-party content or systems outside our control.`,
+        body: [
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-intro',
+            markDefs: [],
+            children: [
+              {
+                _type: 'span',
+                marks: [],
+                text: 'These Legal Terms constitute a legally binding agreement made between you and Texas Solar and Roofing Pros concerning your access to and use of our website and services.',
+              },
+            ],
+          },
+          {
+            _type: 'block',
+            style: 'h2',
+            _key: 'fixture-toc',
+            markDefs: [],
+            children: [{ _type: 'span', marks: [], text: 'Table of Contents' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-toc-1',
+            markDefs: [{ _key: 'lk-1', _type: 'link', href: '#1-our-services' }],
+            children: [{ _type: 'span', marks: ['lk-1'], text: '1. OUR SERVICES' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-toc-2',
+            markDefs: [{ _key: 'lk-2', _type: 'link', href: '#2-intellectual-property-rights' }],
+            children: [{ _type: 'span', marks: ['lk-2'], text: '2. INTELLECTUAL PROPERTY RIGHTS' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-toc-3',
+            markDefs: [{ _key: 'lk-3', _type: 'link', href: '#3-user-representations' }],
+            children: [{ _type: 'span', marks: ['lk-3'], text: '3. USER REPRESENTATIONS' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-toc-4',
+            markDefs: [{ _key: 'lk-4', _type: 'link', href: '#4-prohibited-activities' }],
+            children: [{ _type: 'span', marks: ['lk-4'], text: '4. PROHIBITED ACTIVITIES' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-toc-5',
+            markDefs: [{ _key: 'lk-5', _type: 'link', href: '#13-disclaimer' }],
+            children: [{ _type: 'span', marks: ['lk-5'], text: '13. DISCLAIMER' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-toc-6',
+            markDefs: [{ _key: 'lk-6', _type: 'link', href: '#14-limitations-of-liability' }],
+            children: [{ _type: 'span', marks: ['lk-6'], text: '14. LIMITATIONS OF LIABILITY' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-toc-7',
+            markDefs: [{ _key: 'lk-7', _type: 'link', href: '#18-contact-us' }],
+            children: [{ _type: 'span', marks: ['lk-7'], text: '18. CONTACT US' }],
+          },
+          {
+            _type: 'block',
+            style: 'h2',
+            _key: 'fixture-1',
+            markDefs: [],
+            children: [{ _type: 'span', marks: [], text: '1. OUR SERVICES' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-1-p1',
+            markDefs: [],
+            children: [
+              {
+                _type: 'span',
+                marks: [],
+                text: 'The Services are not tailored to comply with industry-specific regulations (HIPAA, FISMA, etc.), so if your interactions would be subjected to such laws, you may not use the Services.',
+              },
+            ],
+          },
+          {
+            _type: 'block',
+            style: 'h2',
+            _key: 'fixture-13',
+            markDefs: [],
+            children: [{ _type: 'span', marks: [], text: '13. DISCLAIMER' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-13-p1',
+            markDefs: [],
+            children: [
+              {
+                _type: 'span',
+                marks: [],
+                text: 'THE SERVICES ARE PROVIDED ON AN AS-IS AND AS-AVAILABLE BASIS. YOU AGREE THAT YOUR USE OF THE SERVICES WILL BE AT YOUR SOLE RISK.',
+              },
+            ],
+          },
+          {
+            _type: 'block',
+            style: 'h2',
+            _key: 'fixture-14',
+            markDefs: [],
+            children: [{ _type: 'span', marks: [], text: '14. LIMITATIONS OF LIABILITY' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-14-p1',
+            markDefs: [],
+            children: [
+              {
+                _type: 'span',
+                marks: [],
+                text: 'IN NO EVENT WILL WE OR OUR DIRECTORS, EMPLOYEES, OR AGENTS BE LIABLE TO YOU OR ANY THIRD PARTY FOR ANY DIRECT, INDIRECT, CONSEQUENTIAL, EXEMPLARY, INCIDENTAL, SPECIAL, OR PUNITIVE DAMAGES.',
+              },
+            ],
+          },
+          {
+            _type: 'block',
+            style: 'h2',
+            _key: 'fixture-18',
+            markDefs: [],
+            children: [{ _type: 'span', marks: [], text: '18. CONTACT US' }],
+          },
+          {
+            _type: 'block',
+            style: 'normal',
+            _key: 'fixture-18-p1',
+            markDefs: [],
+            children: [
+              {
+                _type: 'span',
+                marks: [],
+                text: 'If you have questions about these Legal Terms, please contact us at Texas Solar and Roofing Pros, 1700 Pagedale Cove, Cedar Park, TX 78613, (512) 775-0561, info@texas-srp.com.',
+              },
+            ],
+          },
+        ],
       },
       {
         type: 'faq',

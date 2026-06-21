@@ -64,11 +64,11 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const isDraftMode = (await draftMode()).isEnabled
-  const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig()
   const headerList = await headers()
   const isOperatorShell = headerList.get('x-alp-operator-shell') === '1'
   const previewSiteSlug = headerList.get('x-alp-preview-site-slug')
   const currentSite = await resolveCurrentSite().catch(() => null)
+  const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig(currentSite?.slug)
 
   let publicSiteAttr = null
   let analyticsSiteSlug = currentSite?.slug ?? null

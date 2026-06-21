@@ -17,6 +17,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const WINDOW_SIZE = 9
 
@@ -33,6 +34,15 @@ const STEP_NAMES: Record<1 | 2 | 3, 'package' | 'info' | 'date'> = {
   1: 'package',
   2: 'info',
   3: 'date',
+}
+
+/**
+ * Send booking funnel events to both PostHog and GA4.
+ * PostHog gets the full payload; GA4 gets a sanitized version.
+ */
+function trackBookingEvent(eventName: string, params: Record<string, unknown>) {
+  posthog.capture(eventName, params)
+  trackAnalyticsEvent(eventName, params)
 }
 
 function SlidingDateGrid({
@@ -82,7 +92,7 @@ function SlidingDateGrid({
   const currentYm = visible[0]?.value.slice(0, 7) ?? months[0] ?? ''
 
   const captureCalendarNav = (direction: 'prev' | 'next' | 'today' | 'month_jump', targetMonth?: string) => {
-    posthog.capture('booking_calendar_navigated', {
+    trackBookingEvent('booking_calendar_navigated', {
       direction,
       target_month: targetMonth ?? null,
       package_slug: packageSlug || null,
@@ -312,7 +322,7 @@ export function SchedulingForm() {
     if (next < step) {
       // User navigated backwards (e.g. step 2 → 1 via "Back to packages",
       // step 3 → 2 via "Edit details"). Surfaces hesitation in the funnel.
-      posthog.capture('booking_step_back', {
+      trackBookingEvent('booking_step_back', {
         from_step: step,
         from_step_name: STEP_NAMES[step],
         to_step: next,
@@ -341,7 +351,7 @@ export function SchedulingForm() {
   // step transition. Pair with `booking_*` completion events to compute
   // per-step drop-off (saw step 2 → completed step 2, etc.).
   useEffect(() => {
-    posthog.capture('booking_step_viewed', {
+    trackBookingEvent('booking_step_viewed', {
       step,
       step_name: STEP_NAMES[step],
       package_slug: formDataRef.current.packageSlug || null,
@@ -354,7 +364,7 @@ export function SchedulingForm() {
   // success screen mounts).
   useEffect(() => {
     if (!isComplete) return
-    posthog.capture('booking_completed_screen_viewed', {
+    trackBookingEvent('booking_completed_screen_viewed', {
       package_slug: formDataRef.current.packageSlug || null,
       install_date: formDataRef.current.installDate || null,
       site_slug: CHRISTMAS_SITE_SLUG,
@@ -388,7 +398,7 @@ export function SchedulingForm() {
       return
     }
     setErrors({})
-    posthog.capture('booking_package_selected', {
+    trackBookingEvent('booking_package_selected', {
       package_slug: formData.packageSlug,
       site_slug: 'txchristmaslights',
     })
@@ -412,7 +422,7 @@ export function SchedulingForm() {
     if (!validateInfo(snapshot)) return
 
     posthog.identify(snapshot.email, { email: snapshot.email, name: snapshot.name })
-    posthog.capture('booking_info_submitted', {
+    trackBookingEvent('booking_info_submitted', {
       package_slug: snapshot.packageSlug,
       site_slug: 'txchristmaslights',
     })
@@ -425,7 +435,7 @@ export function SchedulingForm() {
       goTo(2)
       return
     }
-    posthog.capture('booking_checkout_started', {
+    trackBookingEvent('booking_checkout_started', {
       package_slug: formData.packageSlug,
       install_date: formData.installDate,
       site_slug: 'txchristmaslights',
@@ -450,7 +460,7 @@ export function SchedulingForm() {
     if (errors.installDate) {
       setErrors((prev) => ({ ...prev, installDate: undefined }))
     }
-    posthog.capture('booking_date_selected', {
+    trackBookingEvent('booking_date_selected', {
       install_date: value,
       package_slug: formData.packageSlug,
       site_slug: 'txchristmaslights',
@@ -764,7 +774,7 @@ export function SchedulingForm() {
                             // Switching between packages before submitting
                             // step 1 — useful for comparing tier interest
                             // independent of which one finally got chosen.
-                            posthog.capture('booking_package_changed', {
+                            trackBookingEvent('booking_package_changed', {
                               from_package_slug: fromSlug,
                               to_package_slug: pkg.slug,
                               site_slug: CHRISTMAS_SITE_SLUG,
@@ -945,7 +955,7 @@ export function SchedulingForm() {
                     pill={false}
                     fullWidth={false}
                     onClick={() => {
-                      posthog.capture('booking_checkout_abandoned', {
+                      trackBookingEvent('booking_checkout_abandoned', {
                         package_slug: formData.packageSlug || null,
                         install_date: formData.installDate || null,
                         site_slug: CHRISTMAS_SITE_SLUG,
@@ -964,7 +974,7 @@ export function SchedulingForm() {
                     options={{
                       fetchClientSecret,
                       onComplete: () => {
-                        posthog.capture('booking_completed', {
+                        trackBookingEvent('booking_completed', {
                           package_slug: formData.packageSlug,
                           install_date: formData.installDate,
                           site_slug: 'txchristmaslights',

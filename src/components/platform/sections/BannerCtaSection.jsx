@@ -25,7 +25,7 @@ export function BannerCtaSection({ section, sectionId }) {
         markup="src/components/platform/sections/BannerCtaSection.jsx"
         content={`banner CTA from ${section?._type || 'page section'}`}
       />
-      <div className="relative mx-auto grid min-h-[264px] max-w-7xl overflow-hidden rounded-lg">
+      <div className="relative mx-auto grid min-h-66 max-w-7xl overflow-hidden rounded-lg">
         <Image
           src={imageUrl}
           alt={imageAlt}
@@ -34,7 +34,7 @@ export function BannerCtaSection({ section, sectionId }) {
           className="object-cover"
         />
         <div className="bg-secondary/70 absolute inset-0" />
-        <div className="text-secondary-foreground relative z-10 grid min-h-[264px] items-center gap-8 px-6 py-10 md:grid-cols-[minmax(0,1fr)_auto] md:px-12">
+        <div className="text-secondary-foreground relative z-10 grid min-h-66 items-center gap-8 px-6 py-10 md:grid-cols-[minmax(0,1fr)_auto] md:px-12">
           <div className="max-w-2xl">
             {section?.eyebrow ? (
               <p className="text-secondary-foreground/70 mb-3 text-xs font-semibold tracking-[0.22em] uppercase">
@@ -48,7 +48,7 @@ export function BannerCtaSection({ section, sectionId }) {
               <PortableTextContent
                 as="div"
                 value={section.body}
-                className="text-secondary-foreground/82 mt-4 max-w-xl text-base leading-7"
+                className="text-secondary-foreground/82 mt-4 max-w-xl text-[1rem] leading-7"
               />
             ) : null}
           </div>
@@ -57,7 +57,7 @@ export function BannerCtaSection({ section, sectionId }) {
               href={ctaHref}
               shape="pill"
               size="md"
-              className="h-10 min-w-[140px] justify-self-start md:justify-self-center"
+              className="h-10 min-w-35 justify-self-start md:justify-self-center"
             >
               {ctaLabel}
             </Button>

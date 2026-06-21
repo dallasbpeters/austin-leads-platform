@@ -546,6 +546,29 @@ const sectionProjection = `
       }
     }
   },
+  // videoSection fields
+  videoUrl,
+  caption,
+  autoplay,
+  loop,
+  muted,
+  aspectRatio,
+  posterImage{
+    crop,
+    hotspot,
+    altText,
+    alt,
+    asset->{
+      _id,
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
   // serviceAreaMapSection fields
   description,
   accentColor,

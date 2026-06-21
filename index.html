@@ -11,5 +11,26 @@
 
   <body>
     <div id="app"></div>
+    <script>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      ;(function () {
+        var gaId = 'G-2D5H4B969C'
+        if (
+          location.hostname.includes('txchristmaslights') ||
+          location.hostname.includes('tx-christmas-lights')
+        ) {
+          gaId = 'G-TJB8JYY5EP'
+        }
+        var s = document.createElement('script')
+        s.async = true
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId
+        document.head.appendChild(s)
+        gtag('js', new Date())
+        gtag('config', gaId)
+      })()
+    </script>
   </body>
 </html>

@@ -1,6 +1,5 @@
 import Image from 'next/image'
 
-import { Button } from '@/components/ui/button'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
@@ -9,24 +8,12 @@ import Card from './Card'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import ImageFader from './ImageFader'
 import PortableTextContent from './PortableTextContent'
+import HeroActions from './HeroActions'
 
 const FALLBACK_HERO_ACTIONS = [
   { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'default' },
   { label: 'See how the math works', href: '#calculator', variant: 'secondary' },
 ]
-
-// Sanity `pageAction.variant` uses CMS-facing names (default/secondary/outline/primary…).
-// Map to `@/components/ui/button` variant props (`default` = filled primary / btn--primary).
-const HERO_ACTION_VARIANT_MAP = {
-  default: 'default',
-  primary: 'default',
-  secondary: 'secondary',
-  outline: 'secondary',
-  tertiary: 'secondary',
-}
-
-const resolveHeroActionVariant = (rawVariant, index) =>
-  HERO_ACTION_VARIANT_MAP[rawVariant] || (index === 0 ? 'default' : 'secondary')
 
 export default function Hero({
   heroSection = null,
@@ -256,17 +243,7 @@ export default function Hero({
 
             <div className="flex flex-wrap items-center gap-6 max-md:flex-col max-md:items-start">
               <div className="flex flex-wrap gap-3">
-                {heroActions.map((action, index) => (
-                  <Button
-                    key={buildRuntimeKey('hero-action', action.href, action.label, index)}
-                    href={action.href}
-                    variant={resolveHeroActionVariant(action.variant, index)}
-                    size="lg"
-                    shape="pill"
-                  >
-                    {action.label}
-                  </Button>
-                ))}
+                <HeroActions actions={heroActions} textColor={heroTextColor} />
               </div>
             </div>
           </div>

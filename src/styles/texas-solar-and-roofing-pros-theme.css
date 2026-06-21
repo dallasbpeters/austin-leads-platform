@@ -137,3 +137,7 @@
   --shadow-brand: 0 10px 24px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 20%);
   --shadow-brand-hover: 3px 3px 0 0 hsl(var(--color-primary-h) var(--color-primary-s) 65% / 22%);
 }
+
+.jobber-inline-work-request {
+  width: 100%;
+}

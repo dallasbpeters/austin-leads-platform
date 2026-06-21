@@ -1,8 +1,6 @@
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
-import PortableTextContent from '@/components/PortableTextContent'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Card } from '@/components/ui/card'
-import { buildRuntimeKey } from '@/lib/sanity/stega'
+import { FaqAccordion } from './FaqAccordion'
 
 export function FaqSection({ section, sectionId }) {
   return (
@@ -26,24 +24,7 @@ export function FaqSection({ section, sectionId }) {
         </div>
         <div className="space-y-4">
           <Card className="bg-card border-border/80 p-4">
-            <Accordion type="single" collapsible>
-              {section.items?.map((item, index) => (
-                <AccordionItem
-                  key={buildRuntimeKey('faq-item', item.question, index)}
-                  value={item.question}
-                  className="border-border/80 border-b"
-                >
-                  <AccordionTrigger className="text-foreground text-xl">{item.question}</AccordionTrigger>
-                  <AccordionContent>
-                    <PortableTextContent
-                      as="div"
-                      value={item.answer}
-                      className="text-muted-foreground text-lg leading-6"
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <FaqAccordion items={section.items} />
           </Card>
         </div>
       </div>
