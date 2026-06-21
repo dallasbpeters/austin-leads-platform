@@ -39,7 +39,9 @@ export async function POST(request) {
 
   if (!sanityWriteClient) {
     return NextResponse.json(
-      { error: 'SANITY_API_WRITE_TOKEN is not configured. Add it to .env.local and restart the dev server.' },
+      {
+        error: 'SANITY_API_WRITE_TOKEN is not configured. Add it to .env.local and restart the dev server.',
+      },
       { status: 503 },
     )
   }
@@ -108,7 +110,13 @@ export async function POST(request) {
             href: '#lead-form',
             variant: 'default',
           },
-          { _key: key(), _type: 'pageAction', label: 'Learn More', href: '#services', variant: 'outline' },
+          {
+            _key: key(),
+            _type: 'pageAction',
+            label: 'Learn More',
+            href: '#services',
+            variant: 'outline',
+          },
         ],
       },
     ],

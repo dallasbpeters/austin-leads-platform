@@ -1,12 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
 import Image from 'next/image'
 import { Dialog } from 'radix-ui'
-import { NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
+import { useCallback, useEffect, useState } from 'react'
 
-import PortableTextContent from '@/components/PortableTextContent'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
+import PortableTextContent from '@/components/PortableTextContent'
 import { buildSanityImageUrl } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 

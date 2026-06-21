@@ -1,10 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { AnimatePresence, motion, useInView } from 'framer-motion'
-import { useEffect, useMemo, useRef, useState } from 'react'
 import * as IconoirIcons from 'iconoir-react'
-import Image from 'next/image'
 import {
   AirConditioner,
   AreaSearch,
@@ -16,6 +13,9 @@ import {
   WindowTabs,
   Wrench,
 } from 'iconoir-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { buildRuntimeKey, cleanRuntimeHref } from '@/lib/sanity/stega'

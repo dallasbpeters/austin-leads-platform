@@ -1,11 +1,13 @@
 import { HomeShield, SunLight, Thunderstorm } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
 import Image from 'next/image'
+import Link from 'next/link'
+
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+
 import Card from './Card'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import PortableTextContent from './PortableTextContent'
-import Link from 'next/link'
 
 const defaultItems = [
   {

@@ -26,7 +26,12 @@ function fmt(cents) {
 function fmtDate(str) {
   if (!str) return ''
   const d = new Date(str)
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+  return d.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
 }
 
 function buildInvoiceHtml({ job, amountDueCents, hostedUrl, dueDate }) {
@@ -169,14 +174,20 @@ export async function sendInvoiceEmail({ job, amountDueCents, hostedUrl, dueDate
     })
 
     if (error) {
-      console.error('[christmas/email] Resend error sending invoice email.', { error, to: job.email })
+      console.error('[christmas/email] Resend error sending invoice email.', {
+        error,
+        to: job.email,
+      })
       return { status: 'error', reason: error.message }
     }
 
     console.info('[christmas/email] Invoice email sent.', { resendId: data?.id, to: job.email })
     return { status: 'sent', id: data?.id }
   } catch (err) {
-    console.error('[christmas/email] Unexpected error sending invoice email.', { err, to: job.email })
+    console.error('[christmas/email] Unexpected error sending invoice email.', {
+      err,
+      to: job.email,
+    })
     return { status: 'error', reason: err?.message ?? 'Unknown error' }
   }
 }

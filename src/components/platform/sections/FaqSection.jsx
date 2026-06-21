@@ -1,7 +1,7 @@
-import { Card } from '@/components/ui/card'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Card } from '@/components/ui/card'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
 
 export function FaqSection({ section, sectionId }) {

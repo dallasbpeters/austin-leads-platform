@@ -1,7 +1,7 @@
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
 
 export function StepsSection({ section, sectionId }) {

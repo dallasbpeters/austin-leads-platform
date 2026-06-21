@@ -170,7 +170,7 @@ When relevant, use the local project skills in:
 - Portable Text / rich text is used for body and paragraph fields; never render a Portable Text block array directly as a React child — use `<PortableText>` with `<div>` block wrappers in public views, or a `portableTextToPlain(blocks)` helper for plain-text admin previews.
 - In Next.js 16 the proxy (formerly middleware) lives at [`src/proxy.js`](./src/proxy.js); export the request handler as **`export async function proxy`**. The `config.matcher` export is unchanged. On `route.js`/`route.jsx` **API** handlers, do not export opengraph-image-only keys (`contentType`, `alt`, `size`); those belong to the `opengraph-image` file convention—set `Content-Type` on the `Response` and keep OG dimensions in ordinary constants.
 - `@sanity/client` v7 typings require **TypeScript 5.1+** (e.g. `const` type parameters). With Next.js, prefer `moduleResolution: "bundler"` over legacy `"node"`. After Stripe SDK bumps, update `apiVersion` literals in scripts to match the installed `stripe` package’s typed default.
-- Per-domain theme CSS files live in [`src/styles/`](./src/styles/) and follow the `<slug>-theme.css` pattern, all sharing the same CSS-variable shape so themes are switched, not redefined. Public tenant palettes (`texas-solar-and-roofing-pros-theme.css`, `txchristmaslights-theme.css`) are **not** imported from `globals.css`; [`PublicTenantThemeStyles`](./src/components/platform/PublicTenantThemeStyles.jsx) `await import()`s exactly one per request from [`(site)/layout.jsx`](<./src/app/(site)/layout.jsx>) and [`preview/[siteSlug]`](<./src/app/preview/[siteSlug]/[[...slug]]/page.jsx>) so the inactive tenant's CSS is never bundled/parsed. `admin-theme.css` stays in globals for operator routes. Tenant blocks use **`[data-public-site="texas-solar-and-roofing-pros"]`** and **`[data-public-site="txchristmaslights"]`**. [`src/proxy.js`](./src/proxy.js) sets `x-alp-operator-shell` on admin/API paths; it rewrites **`/_site/:slug/**` Presentation URLs to `?__site=` and sets `x-alp-preview-site-slug`; it also sets that header for `/preview/…` and for **`?__site=`** when the request is allowed the same site override as [`site-page.js`](./src/lib/platform/site-page.js) (localhost or draft / `__prerender_bypass` cookie). [`src/app/layout.jsx`](./src/app/layout.jsx) maps that header to `data-public-site` on `<html>` for public routes so Radix portals inherit the correct tokens. Admin layout is [`src/app/(admin)/layout.jsx`](<./src/app/(admin)/layout.jsx>) (standard Next.js root layout; do not reintroduce an `AdminShell` wrapper). For `txchristmaslights`, do not let Sanity `site.brand` HSL apply as inline wrapper vars—those override Christmas tokens like `--color-primary-h`; the theme CSS should own that ramp (`PublicSiteUtils.getSiteBrandStyleVars` / `siteUsesThemeOwnedHslRamp`).
+- Per-domain theme CSS files live in [`src/styles/`](./src/styles/) and follow the `<slug>-theme.css` pattern, all sharing the same CSS-variable shape so themes are switched, not redefined. Public tenant palettes (`texas-solar-and-roofing-pros-theme.css`, `txchristmaslights-theme.css`) are **not** imported from `globals.css`; [`PublicTenantThemeStyles`](./src/components/platform/PublicTenantThemeStyles.jsx) `await import()`s exactly one per request from [`(site)/layout.jsx`](<./src/app/(site)/layout.jsx>) and [`preview/[siteSlug]`](./src/app/preview/[siteSlug]/[[...slug]]/page.jsx) so the inactive tenant's CSS is never bundled/parsed. `admin-theme.css` stays in globals for operator routes. Tenant blocks use **`[data-public-site="texas-solar-and-roofing-pros"]`** and **`[data-public-site="txchristmaslights"]`**. [`src/proxy.js`](./src/proxy.js) sets `x-alp-operator-shell` on admin/API paths; it rewrites **`/\_site/:slug/**`Presentation URLs to`?**site=`and sets`x-alp-preview-site-slug`; it also sets that header for `/preview/…` and for **`?**site=`\*\* when the request is allowed the same site override as [`site-page.js`](./src/lib/platform/site-page.js) (localhost or draft / `\_\_prerender_bypass` cookie). [`src/app/layout.jsx`](./src/app/layout.jsx) maps that header to `data-public-site`on`<html>` for public routes so Radix portals inherit the correct tokens. Admin layout is [`src/app/(admin)/layout.jsx`](<./src/app/(admin)/layout.jsx>) (standard Next.js root layout; do not reintroduce an `AdminShell`wrapper). For`txchristmaslights`, do not let Sanity `site.brand`HSL apply as inline wrapper vars—those override Christmas tokens like`--color-primary-h`; the theme CSS should own that ramp (`PublicSiteUtils.getSiteBrandStyleVars`/`siteUsesThemeOwnedHslRamp`).
 - Concurrent Postgres DDL (`CREATE TABLE IF NOT EXISTS`) is not fully race-safe (e.g. Neon/serverless): parallel calls can throw `duplicate key value violates unique constraint "pg_type_typname_nsp_index"`. Memoize or serialize bootstrap DDL per process and treat that specific conflict as benign once the table exists.
 - Custom Sanity Presentation navigators live in [`src/sanity/components/`](./src/sanity/components/); multi-site preview URLs must be site-aware (preview host derives from the active site, not a hardcoded primary).
 - Mapbox GL JS paint properties do not support modern CSS color spaces (lab(), oklch()) — convert theme colors to sRGB hex/rgb() before map paint configs; env var `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`. Import `stegaClean` from `next-sanity` (not `@sanity/client/stega`); Sanity select values and hex colors are often stega-encoded — clean before map keys, object lookups, or other non-rendered use.
@@ -179,3 +179,130 @@ When relevant, use the local project skills in:
 - `pnpm build` runs Next.js with `--webpack`, while `pnpm dev` defaults to Turbopack in Next 16. After a Next minor bump (e.g. `16.1.6 → 16.2.6`) Turbopack can panic with template-injection invariants (`Expected to inject all imports`, `missing VAR_MODULE_GLOBAL_ERROR in template`) against stale 16.x build artifacts; stop dev and run `rm -rf .next node_modules/.cache .sanity/runtime && pnpm install && pnpm dev`. Fallback while a new Turbopack release stabilizes: `pnpm next dev --webpack` to match the build pipeline. [`scripts/dev-all.mjs`](./scripts/dev-all.mjs) (invoked by `pnpm dev`) spawns three children (`next`, `sanity`, `stripe listen --forward-to localhost:3000/api/stripe/webhook`); the Stripe child must be `{ name: 'stripe', args: ['run', 'stripe'] }` (the literal command string is in `package.json`, not the args). Before spawning, the script runs `stripe listen --print-secret`, extracts `whsec_…`, and rewrites `STRIPE_WEBHOOK_SECRET` in `.env.development.local` (idempotent — skips write if unchanged) because the Stripe CLI rotates the signing secret per session; failures are non-fatal so dev still boots.
 - Admin server components that load external data (e.g. [`src/app/(admin)/crm/page.jsx`](<./src/app/(admin)/crm/page.jsx>)) must distinguish `dbConfigured` vs `leadDbReady` vs a serialized `dbError` and forward all three to the client (`CrmClient`); never bare-`catch` a DB/fetch error and reuse the "missing env var" empty state, or the UI tells users to configure something already configured. Always `console.error` the caught error server-side so the dev terminal still surfaces the real stack.
 - PostHog is multi-project (one project per tenant site). Both browser SDK ([`src/app/providers.jsx`](./src/app/providers.jsx)) and server client ([`src/lib/posthog-server.ts`](./src/lib/posthog-server.ts)) resolve the API key from the per-site JSON map env var **`NEXT_PUBLIC_POSTHOG_KEYS`** keyed by site slug — never the single-project `NEXT_PUBLIC_POSTHOG_KEY` (the install wizard's default), which doesn't exist in this codebase and silently constructs `new PostHog(undefined, …)` so server events vanish. Server callers must pass the site slug explicitly: `getPostHogClient(siteSlug)`. The browser SDK's `loaded:` callback registers `site_slug` as a super-property via `instance.register({ site_slug })` so every event auto-tags the active tenant; explicit per-event `site_slug` props still override it. Browser SDK initializes once per page load (deps `[]`); soft-nav between `/_site/<slug>` routes in dev does **not** reinit the SDK — verify cross-tenant behavior with a hard reload.
+
+# Ultracite Code Standards
+
+This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
+
+## Quick Reference
+
+- **Format code**: `pnpm dlx ultracite fix`
+- **Check for issues**: `pnpm dlx ultracite check`
+- **Diagnose setup**: `pnpm dlx ultracite doctor`
+
+Oxlint + Oxfmt (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+
+---
+
+## Core Principles
+
+Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
+
+### Type Safety & Explicitness
+
+- Use explicit types for function parameters and return values when they enhance clarity
+- Prefer `unknown` over `any` when the type is genuinely unknown
+- Use const assertions (`as const`) for immutable values and literal types
+- Leverage TypeScript's type narrowing instead of type assertions
+- Use meaningful variable names instead of magic numbers - extract constants with descriptive names
+
+### Modern JavaScript/TypeScript
+
+- Use arrow functions for callbacks and short functions
+- Prefer `for...of` loops over `.forEach()` and indexed `for` loops
+- Use optional chaining (`?.`) and nullish coalescing (`??`) for safer property access
+- Prefer template literals over string concatenation
+- Use destructuring for object and array assignments
+- Use `const` by default, `let` only when reassignment is needed, never `var`
+
+### Async & Promises
+
+- Always `await` promises in async functions - don't forget to use the return value
+- Use `async/await` syntax instead of promise chains for better readability
+- Handle errors appropriately in async code with try-catch blocks
+- Don't use async functions as Promise executors
+
+### React & JSX
+
+- Use function components over class components
+- Call hooks at the top level only, never conditionally
+- Specify all dependencies in hook dependency arrays correctly
+- Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
+- Nest children between opening and closing tags instead of passing as props
+- Don't define components inside other components
+- Use semantic HTML and ARIA attributes for accessibility:
+  - Provide meaningful alt text for images
+  - Use proper heading hierarchy
+  - Add labels for form inputs
+  - Include keyboard event handlers alongside mouse events
+  - Use semantic elements (`<button>`, `<nav>`, etc.) instead of divs with roles
+
+### Error Handling & Debugging
+
+- Remove `console.log`, `debugger`, and `alert` statements from production code
+- Throw `Error` objects with descriptive messages, not strings or other values
+- Use `try-catch` blocks meaningfully - don't catch errors just to rethrow them
+- Prefer early returns over nested conditionals for error cases
+
+### Code Organization
+
+- Keep functions focused and under reasonable cognitive complexity limits
+- Extract complex conditions into well-named boolean variables
+- Use early returns to reduce nesting
+- Prefer simple conditionals over nested ternary operators
+- Group related code together and separate concerns
+
+### Security
+
+- Add `rel="noopener"` when using `target="_blank"` on links
+- Avoid `dangerouslySetInnerHTML` unless absolutely necessary
+- Don't use `eval()` or assign directly to `document.cookie`
+- Validate and sanitize user input
+
+### Performance
+
+- Avoid spread syntax in accumulators within loops
+- Use top-level regex literals instead of creating them in loops
+- Prefer specific imports over namespace imports
+- Avoid barrel files (index files that re-export everything)
+- Use proper image components (e.g., Next.js `<Image>`) over `<img>` tags
+
+### Framework-Specific Guidance
+
+**Next.js:**
+
+- Use Next.js `<Image>` component for images
+- Use `next/head` or App Router metadata API for head elements
+- Use Server Components for async data fetching instead of async Client Components
+
+**React 19+:**
+
+- Use ref as a prop instead of `React.forwardRef`
+
+**Solid/Svelte/Vue/Qwik:**
+
+- Use `class` and `for` attributes (not `className` or `htmlFor`)
+
+---
+
+## Testing
+
+- Write assertions inside `it()` or `test()` blocks
+- Avoid done callbacks in async tests - use async/await instead
+- Don't use `.only` or `.skip` in committed code
+- Keep test suites reasonably flat - avoid excessive `describe` nesting
+
+## When Oxlint + Oxfmt Can't Help
+
+Oxlint + Oxfmt's linter will catch most issues automatically. Focus your attention on:
+
+1. **Business logic correctness** - Oxlint + Oxfmt can't validate your algorithms
+2. **Meaningful naming** - Use descriptive names for functions, variables, and types
+3. **Architecture decisions** - Component structure, data flow, and API design
+4. **Edge cases** - Handle boundary conditions and error states
+5. **User experience** - Accessibility, performance, and usability considerations
+6. **Documentation** - Add comments for complex logic, but prefer self-documenting code
+
+---
+
+Most formatting and common issues are automatically fixed by Oxlint + Oxfmt. Run `pnpm dlx ultracite fix` before committing to ensure compliance.

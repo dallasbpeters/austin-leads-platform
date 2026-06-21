@@ -1,7 +1,8 @@
 import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe/stripe'
+
 import { createJob, ensureChristmasTables, getJobByStripeSessionId } from '@/lib/christmas/db'
 import { getPostHogClient } from '@/lib/posthog-server'
+import { stripe } from '@/lib/stripe/stripe'
 
 export const runtime = 'nodejs'
 

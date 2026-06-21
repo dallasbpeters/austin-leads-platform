@@ -1,16 +1,17 @@
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import GuideShareBar from '@/components/GuideShareBar'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
+import Footer from '@/components/Footer'
+import GuideShareBar from '@/components/GuideShareBar'
+import Header from '@/components/Header'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
-import { ChristmasFaviconBlinker } from './ChristmasFaviconBlinker'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
-import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
-import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 import { roofingServices } from '@/lib/platform/service-catalog'
+import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
+import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
+
+import { ChristmasFaviconBlinker } from './ChristmasFaviconBlinker'
 import { getSectionDomId, getSiteBrandStyleVars } from './PublicSiteUtils'
-import { GenericFooter, GenericHeader } from './shell'
 import { sectionRenderers, RoofingLogoCloudSection, CtaSection } from './sections'
+import { GenericFooter, GenericHeader } from './shell'
 
 export default function PublicSite({ site, page, pathname, navigation, jsonLd, reviews = [] }) {
   const useSolarShell = isPrimarySiteSlug(site.slug)

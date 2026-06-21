@@ -1,12 +1,14 @@
-import { Button } from '@/components/ui/button'
-import Card from './Card'
 import Image from 'next/image'
-import ImageFader from './ImageFader'
-import PortableTextContent from './PortableTextContent'
-import { getDevSectionAttributes } from './dev/DevTrace'
+
+import { Button } from '@/components/ui/button'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
+
+import Card from './Card'
+import { getDevSectionAttributes } from './dev/DevTrace'
+import ImageFader from './ImageFader'
+import PortableTextContent from './PortableTextContent'
 
 const FALLBACK_HERO_ACTIONS = [
   { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'default' },

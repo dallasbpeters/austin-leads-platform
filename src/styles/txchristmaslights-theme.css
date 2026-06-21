@@ -8,36 +8,36 @@
 [data-public-site='txchristmaslights'] {
   /* hsl fallback first — oklch wins where supported (avoids gray fallbacks on strict parsers / SSR quirks). */
   --background: oklch(0.9862 0.0142 84.5826);
-  --foreground: oklch(0.2839 0.0358 151.9060);
+  --foreground: oklch(0.2839 0.0358 151.906);
   --card: oklch(0.9967 0.0054 95.0974);
-  --card-foreground: oklch(0.2839 0.0358 151.9060);
-  --popover: oklch(1.0000 0 0);
-  --popover-foreground: oklch(0.2839 0.0358 151.9060);
+  --card-foreground: oklch(0.2839 0.0358 151.906);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2839 0.0358 151.906);
   --primary: oklch(0.5088 0.1616 37.9592);
-  --primary-foreground: oklch(1.0000 0 0);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.3923 0.0952 155.1226);
-  --secondary-foreground: oklch(1.0000 0 0);
+  --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.9703 0.0041 157.1781);
   --muted-foreground: oklch(0.5288 0.0348 161.2647);
-  --accent:  oklch(0.9290 0.2279 262.7247);
-  --accent-foreground: oklch(0.2839 0.0358 151.9060);
+  --accent: oklch(0.929 0.2279 262.7247);
+  --accent-foreground: oklch(0.2839 0.0358 151.906);
   --destructive: oklch(0.5088 0.1616 37.9592);
-  --destructive-foreground: oklch(1.0000 0 0);
+  --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.9344 0.0057 128.5289);
   --input: oklch(0.9313 0.0094 113.1681);
   --ring: oklch(0.5088 0.1616 37.9592);
   --chart-1: oklch(0.5088 0.1616 37.9592);
-  --chart-2: oklch(0.3830 0.0520 164.6409);
+  --chart-2: oklch(0.383 0.052 164.6409);
   --chart-3: oklch(0.8161 0.1705 77.4296);
-  --chart-4: oklch(0.5290 0.2279 262.7247);
+  --chart-4: oklch(0.529 0.2279 262.7247);
   --chart-5: oklch(0.6672 0.1796 30.7989);
-  --sidebar: oklch(0.9940 0.0041 91.4453);
-  --sidebar-foreground: oklch(0.2839 0.0358 151.9060);
+  --sidebar: oklch(0.994 0.0041 91.4453);
+  --sidebar-foreground: oklch(0.2839 0.0358 151.906);
   --sidebar-primary: oklch(0.5305 0.1962 28.2609);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
-  --sidebar-accent: oklch(0.8137 0.0865 269.9080);
-  --sidebar-accent-foreground: oklch(0.2839 0.0358 151.9060);
-  --sidebar-border: oklch(0.9303 0.0100 155.0876);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.8137 0.0865 269.908);
+  --sidebar-accent-foreground: oklch(0.2839 0.0358 151.906);
+  --sidebar-border: oklch(0.9303 0.01 155.0876);
   --sidebar-ring: oklch(0.5305 0.1962 28.2609);
   --radius: 0.75rem;
   --shadow-x: 0px;
@@ -46,26 +46,24 @@
   --shadow-spread: 0px;
   --shadow-opacity: 0.1;
   --shadow-color: 0 0% 0%;
-  --shadow-2xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow-md: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.10);
-  --shadow-lg: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
-  --shadow-xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
-  --shadow-2xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.25);
+  --shadow-2xs: 0px 4px 10px 0px hsl(0 0% 0% / 5%);
+  --shadow-xs: 0px 4px 10px 0px hsl(0 0% 0% / 5%);
+  --shadow-sm: 0px 4px 10px 0px hsl(0 0% 0% / 10%), 0px 1px 2px -1px hsl(0 0% 0% / 10%);
+  --shadow: 0px 4px 10px 0px hsl(0 0% 0% / 10%), 0px 1px 2px -1px hsl(0 0% 0% / 10%);
+  --shadow-md: 0px 4px 10px 0px hsl(0 0% 0% / 10%), 0px 2px 4px -1px hsl(0 0% 0% / 10%);
+  --shadow-lg: 0px 4px 10px 0px hsl(0 0% 0% / 10%), 0px 4px 6px -1px hsl(0 0% 0% / 10%);
+  --shadow-xl: 0px 4px 10px 0px hsl(0 0% 0% / 10%), 0px 8px 10px -1px hsl(0 0% 0% / 10%);
+  --shadow-2xl: 0px 4px 10px 0px hsl(0 0% 0% / 25%);
   --tracking-normal: 0.01em;
   --spacing: 0.25rem;
-
-  --shadow-glass-soft: 0px 4px 10px 0px hsl(0 0% 0% / 0.05);
+  --shadow-glass-soft: 0px 4px 10px 0px hsl(0 0% 0% / 5%);
   --shadow-brand: 0 10px 24px color-mix(in oklch, var(--primary) 22%, transparent);
   --shadow-brand-hover: 1px 1px 0 0 color-mix(in oklch, var(--primary) 28%, transparent);
-  --tracking-normal: 0.01em;
-  --font-sans: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
-  --font-accent: Google Sans Flex, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: Gloock, ui-serif, serif;
-  --font-mono: JetBrains Mono, monospace;
-  --font-display: Gloock, ui-sans-serif, sans-serif, system-ui;
+  --font-sans: google sans flex, ui-sans-serif, sans-serif, system-ui;
+  --font-accent: google sans flex, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: gloock, ui-serif, serif;
+  --font-mono: jetbrains mono, monospace;
+  --font-display: gloock, ui-sans-serif, sans-serif, system-ui;
 
   /*
    * hsl() angle/sat/light pieces — globals.css + a few sections still use
@@ -83,6 +81,7 @@
   --color-tertiary-l: 54%;
 
   /* Legacy palette bridge — keeps the hand-rolled .btn, .card, .bg-, and */
+
   /* .text- utilities in globals.css rendering under this theme. */
   --color-primary: var(--primary);
   --color-primary-100: color-mix(in oklch, var(--primary) 14%, var(--background));
@@ -136,36 +135,36 @@
 
 [data-public-site='txchristmaslights'][data-theme='dark'] {
   --background: oklch(0.2334 0.0318 151.2489);
-  --foreground: oklch(0.9303 0.0100 155.0876);
+  --foreground: oklch(0.9303 0.01 155.0876);
   --card: oklch(0.2344 0.0295 152.0197);
-  --card-foreground: oklch(0.9303 0.0100 155.0876);
+  --card-foreground: oklch(0.9303 0.01 155.0876);
   --popover: oklch(0.2344 0.0295 152.0197);
-  --popover-foreground: oklch(0.9303 0.0100 155.0876);
+  --popover-foreground: oklch(0.9303 0.01 155.0876);
   --primary: oklch(0.6792 0.2098 30.7858);
-  --primary-foreground: oklch(1.0000 0 0);
-  --secondary: oklch(0.7620 0.1704 157.1841);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.762 0.1704 157.1841);
   --secondary-foreground: oklch(0.2334 0.0318 151.2489);
-  --muted: oklch(0.2839 0.0358 151.9060);
+  --muted: oklch(0.2839 0.0358 151.906);
   --muted-foreground: oklch(0.7514 0.0227 158.4119);
   --accent: oklch(0.9176 0.1865 102.1441);
   --accent-foreground: oklch(0.2334 0.0318 151.2489);
-  --destructive: oklch(0.6998 0.1918 30.3380);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.2839 0.0358 151.9060);
-  --input: oklch(0.2839 0.0358 151.9060);
+  --destructive: oklch(0.6998 0.1918 30.338);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.2839 0.0358 151.906);
+  --input: oklch(0.2839 0.0358 151.906);
   --ring: oklch(0.6792 0.2098 30.7858);
   --chart-1: oklch(0.6792 0.2098 30.7858);
-  --chart-2: oklch(0.7620 0.1704 157.1841);
+  --chart-2: oklch(0.762 0.1704 157.1841);
   --chart-3: oklch(0.9176 0.1865 102.1441);
   --chart-4: oklch(0.6144 0.1564 253.1181);
   --chart-5: oklch(0.7436 0.1543 68.7094);
   --sidebar: oklch(0.2334 0.0318 151.2489);
-  --sidebar-foreground: oklch(0.9303 0.0100 155.0876);
+  --sidebar-foreground: oklch(0.9303 0.01 155.0876);
   --sidebar-primary: oklch(0.6792 0.2098 30.7858);
-  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.2344 0.0295 152.0197);
-  --sidebar-accent-foreground: oklch(0.7620 0.1704 157.1841);
-  --sidebar-border: oklch(0.2839 0.0358 151.9060);
+  --sidebar-accent-foreground: oklch(0.762 0.1704 157.1841);
+  --sidebar-border: oklch(0.2839 0.0358 151.906);
   --sidebar-ring: oklch(0.9176 0.1865 102.1441);
   --radius: 0.75rem;
   --shadow-x: 0px;
@@ -174,12 +173,12 @@
   --shadow-spread: 2px;
   --shadow-opacity: 0.2;
   --shadow-color: 255 255% 255%;
-  --shadow-2xs: 0px 0px 15px 2px hsl(255 255% 255% / 0.10);
-  --shadow-xs: 0px 0px 15px 2px hsl(255 255% 255% / 0.10);
-  --shadow-sm: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 1px 2px 1px hsl(255 255% 255% / 0.20);
-  --shadow: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 1px 2px 1px hsl(255 255% 255% / 0.20);
-  --shadow-md: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 2px 4px 1px hsl(255 255% 255% / 0.20);
-  --shadow-lg: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 4px 6px 1px hsl(255 255% 255% / 0.20);
-  --shadow-xl: 0px 0px 15px 2px hsl(255 255% 255% / 0.20), 0px 8px 10px 1px hsl(255 255% 255% / 0.20);
-  --shadow-2xl: 0px 0px 15px 2px hsl(255 255% 255% / 0.50);
+  --shadow-2xs: 0px 0px 15px 2px hsl(255 255% 255% / 10%);
+  --shadow-xs: 0px 0px 15px 2px hsl(255 255% 255% / 10%);
+  --shadow-sm: 0px 0px 15px 2px hsl(255 255% 255% / 20%), 0px 1px 2px 1px hsl(255 255% 255% / 20%);
+  --shadow: 0px 0px 15px 2px hsl(255 255% 255% / 20%), 0px 1px 2px 1px hsl(255 255% 255% / 20%);
+  --shadow-md: 0px 0px 15px 2px hsl(255 255% 255% / 20%), 0px 2px 4px 1px hsl(255 255% 255% / 20%);
+  --shadow-lg: 0px 0px 15px 2px hsl(255 255% 255% / 20%), 0px 4px 6px 1px hsl(255 255% 255% / 20%);
+  --shadow-xl: 0px 0px 15px 2px hsl(255 255% 255% / 20%), 0px 8px 10px 1px hsl(255 255% 255% / 20%);
+  --shadow-2xl: 0px 0px 15px 2px hsl(255 255% 255% / 50%);
 }

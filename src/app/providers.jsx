@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
-
 import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider } from 'posthog-js/react'
+import { useEffect } from 'react'
+
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const DEFAULT_POSTHOG_KEY = 'phc_adMRNqeoByZifxH3nDyCgZfjnMFIUIDnjKbytwTRNIk'

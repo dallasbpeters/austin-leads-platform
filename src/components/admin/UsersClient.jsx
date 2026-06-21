@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
 import { KeyRound, Trash2 } from 'lucide-react'
+import { useState, useTransition } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -12,7 +12,11 @@ const inputCls =
 function fmtDate(iso) {
   if (!iso) return '—'
   try {
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    return new Date(iso).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
   } catch {
     return '—'
   }
@@ -427,7 +431,7 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
                             type="button"
                             onClick={() => !isSelf && handleToggleActive(user, !user.isActive)}
                             disabled={isSelf || isPending}
-                            className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${
+                            className={`rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-colors ${
                               user.isActive
                                 ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

@@ -30,8 +30,9 @@ vi.mock('next/headers', () => ({
 }))
 
 import { headers } from 'next/headers'
-import { stripe } from '@/lib/stripe/stripe'
+
 import { createJob, getJobByStripeSessionId } from '@/lib/christmas/db'
+import { stripe } from '@/lib/stripe/stripe'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 

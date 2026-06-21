@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useTransition, useMemo, useEffect } from 'react'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useTransition, useMemo, useEffect } from 'react'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -48,7 +48,12 @@ function fmt(cents) {
 function fmtDate(str) {
   if (!str) return '—'
   const d = str instanceof Date ? str : new Date(str)
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
 }
 
 function toDateKey(str) {
@@ -178,7 +183,7 @@ function InvoiceSection({ job, onJobUpdate }) {
 
   const statusBadge = invoiceData?.status ? (
     <span
-      className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium capitalize ${INVOICE_STATUS_STYLES[invoiceData.status] ?? 'bg-gray-100 text-gray-500'}`}
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap capitalize ${INVOICE_STATUS_STYLES[invoiceData.status] ?? 'bg-gray-100 text-gray-500'}`}
     >
       {invoiceData.status}
     </span>
@@ -197,12 +202,8 @@ function InvoiceSection({ job, onJobUpdate }) {
         {invoiceData?.amountPaidCents != null && invoiceData.status === 'paid' && (
           <p className="text-xs text-green-700">{fmt(invoiceData.amountPaidCents)} paid</p>
         )}
-        {invoiceData?.note && (
-          <p className="text-muted-foreground text-xs italic">{invoiceData.note}</p>
-        )}
-        {emailSent && (
-          <p className="text-xs text-green-700">Email sent to {job.email}</p>
-        )}
+        {invoiceData?.note && <p className="text-muted-foreground text-xs italic">{invoiceData.note}</p>}
+        {emailSent && <p className="text-xs text-green-700">Email sent to {job.email}</p>}
         <div className="flex flex-wrap gap-3 pt-1">
           {invoiceData?.hostedUrl && (
             <button
@@ -273,9 +274,7 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
     notes: job.notes ?? '',
     deposit_status: job.deposit_status ?? 'pending',
     balance_amount_cents:
-      job.balance_amount_cents ??
-      calcBalance(job.package_slug, job.deposit_amount_cents) ??
-      '',
+      job.balance_amount_cents ?? calcBalance(job.package_slug, job.deposit_amount_cents) ?? '',
     balance_status: job.balance_status ?? 'unpaid',
   })
   const [dirty, setDirty] = useState(false)
@@ -488,7 +487,8 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
               <label className={labelCls}>Balance amount</label>
               {calcBalance(form.package_slug, job.deposit_amount_cents) > 0 && (
                 <span className="text-muted-foreground text-xs">
-                  {fmt(PACKAGES.find((p) => p.id === form.package_slug)?.priceCents)} − {fmt(job.deposit_amount_cents)} deposit
+                  {fmt(PACKAGES.find((p) => p.id === form.package_slug)?.priceCents)} −{' '}
+                  {fmt(job.deposit_amount_cents)} deposit
                 </span>
               )}
             </div>
@@ -599,7 +599,10 @@ function CalendarView({ jobs, onSelectJob }) {
     } else setMonth((m) => m + 1)
   }
 
-  const monthLabel = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  const monthLabel = new Date(year, month, 1).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  })
   const todayKey = toDateKey(today.toISOString())
 
   return (
@@ -888,14 +891,14 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${job.deposit_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${job.deposit_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
                           >
                             {job.deposit_status === 'paid' ? fmt(job.deposit_amount_cents) : 'pending'}
                           </span>
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${job.balance_status === 'paid' ? 'bg-green-100 text-green-800' : job.balance_status === 'invoiced' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${job.balance_status === 'paid' ? 'bg-green-100 text-green-800' : job.balance_status === 'invoiced' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}
                           >
                             {job.balance_status === 'paid'
                               ? fmt(job.balance_amount_cents)
@@ -906,7 +909,7 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
                         </td>
                         <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_STYLES[job.status] ?? 'bg-gray-100 text-gray-600'}`}
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap capitalize ${STATUS_STYLES[job.status] ?? 'bg-gray-100 text-gray-600'}`}
                           >
                             {job.status}
                           </span>

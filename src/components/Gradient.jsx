@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+
 import { cn } from '@/lib/utils'
 
 const baseStyle = {

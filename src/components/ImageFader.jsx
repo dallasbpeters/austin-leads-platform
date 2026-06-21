@@ -1,9 +1,10 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
+
+import { cn } from '@/lib/utils'
 
 export default function ImageFader({
   images = [

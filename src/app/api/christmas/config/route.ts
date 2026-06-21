@@ -1,5 +1,5 @@
-import { stripe } from '@/lib/stripe/stripe'
 import { PRODUCTS } from '@/lib/stripe/products'
+import { stripe } from '@/lib/stripe/stripe'
 
 export const revalidate = 3600
 

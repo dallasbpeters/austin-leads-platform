@@ -1,8 +1,10 @@
 import dynamic from 'next/dynamic'
+
 import GuidesSection from '@/components/GuidesSection'
 
 import { AboutProfileSection } from './AboutProfileSection'
 import { BandSection } from './BandSection'
+import { BannerCtaSection } from './BannerCtaSection'
 import { CardGridSection } from './CardGridSection'
 import { CtaBannerSection } from './CtaBannerSection'
 import { CtaSection } from './CtaSection'
@@ -11,12 +13,12 @@ import { GallerySection } from './GallerySection'
 import { GuideGridSection } from './GuideGridSection'
 import { HailMapSection } from './HailMapSection'
 import { HeroSection } from './HeroSection'
-import { ServiceAreaMapSection } from './ServiceAreaMapSection'
 import { PricingSection } from './PricingSection'
 import { QuoteBannerSection } from './QuoteBannerSection'
 import { RoofingLogoCloudSection } from './RoofingLogoCloudSection'
 import { ScrollTextSection } from './ScrollTextSection'
 import { SecondaryCTASection } from './SecondaryCTASection'
+import { ServiceAreaMapSection } from './ServiceAreaMapSection'
 import { ServiceGridSection } from './ServiceGridSection'
 import { SolarSwitchSection } from './SolarSwitchSection'
 import { StepsSection } from './StepsSection'
@@ -29,6 +31,7 @@ const IncentivesSection = dynamic(() => import('@/components/IncentivesSection')
 const ResourcesSection = dynamic(() => import('@/components/ResourcesSection'), { ssr: true })
 const SnapshotSection = dynamic(() => import('@/components/SnapshotSection'), { ssr: true })
 const Testimonials = dynamic(() => import('@/components/Testimonials'), { ssr: true })
+const ArticleSection = dynamic(() => import('@/components/ArticleSection'), { ssr: true })
 
 export const sectionRenderers = {
   hero: HeroSection,
@@ -51,8 +54,10 @@ export const sectionRenderers = {
   gallery: GallerySection,
   pricing: PricingSection,
   hailMap: HailMapSection,
+  article: ArticleSection,
   serviceAreaMap: ServiceAreaMapSection,
   band: BandSection,
+  bannerCta: BannerCtaSection,
   logos: RoofingLogoCloudSection,
   solarSwitch: SolarSwitchSection,
   energyChart: EnergyChartSection,

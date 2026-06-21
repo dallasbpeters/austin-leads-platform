@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-import { useClient } from 'sanity'
 import {
   defineAssistFieldAction,
   defineAssistFieldActionGroup,
@@ -7,6 +5,8 @@ import {
   isType,
   useUserInput,
 } from '@sanity/assist'
+import { useMemo } from 'react'
+import { useClient } from 'sanity'
 
 const AI_CONTEXT_DOC_ID = 'aiContext'
 

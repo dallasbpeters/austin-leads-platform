@@ -1,5 +1,5 @@
-import { ensureChristmasTables, listJobs } from '@/lib/christmas/db'
 import ChristmasJobsClient from '@/components/admin/ChristmasJobsClient'
+import { ensureChristmasTables, listJobs } from '@/lib/christmas/db'
 
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Christmas Lights — Jobs' }

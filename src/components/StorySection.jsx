@@ -1,8 +1,10 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { getDevSectionAttributes } from './dev/DevTrace'
+
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+
+import { getDevSectionAttributes } from './dev/DevTrace'
 
 export default function StorySection({ section = null, sectionId = 'how-it-works' }) {
   const ref = useRef(null)
@@ -76,7 +78,7 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
 
   return (
     <section
-      className="overflow-hidden bg-background"
+      className="bg-background overflow-hidden"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/StorySection.jsx',

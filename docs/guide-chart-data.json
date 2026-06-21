@@ -90,8 +90,18 @@
       "chartPoints": [
         { "_type": "energyChartPoint", "label": "Roof only", "barValue": 12000, "lineValue": 0 },
         { "_type": "energyChartPoint", "label": "Solar only", "barValue": 22400, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Separate + D&R later", "barValue": 38400, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Combined project", "barValue": 33000, "lineValue": 0 }
+        {
+          "_type": "energyChartPoint",
+          "label": "Separate + D&R later",
+          "barValue": 38400,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Combined project",
+          "barValue": 33000,
+          "lineValue": 0
+        }
       ]
     }
   },
@@ -174,10 +184,30 @@
       "showLegend": true,
       "showAxisLines": true,
       "chartPoints": [
-        { "_type": "energyChartPoint", "label": "Austin Energy rebate", "barValue": 2500, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Year 1 bill credits", "barValue": 1070, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Year 2 bill credits", "barValue": 1070, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Year 3 bill credits", "barValue": 1070, "lineValue": 0 }
+        {
+          "_type": "energyChartPoint",
+          "label": "Austin Energy rebate",
+          "barValue": 2500,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Year 1 bill credits",
+          "barValue": 1070,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Year 2 bill credits",
+          "barValue": 1070,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Year 3 bill credits",
+          "barValue": 1070,
+          "lineValue": 0
+        }
       ]
     }
   },
@@ -215,10 +245,30 @@
       "showLegend": true,
       "showAxisLines": true,
       "chartPoints": [
-        { "_type": "energyChartPoint", "label": "Austin Energy rebate", "barValue": 2500, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Year 1 bill credits", "barValue": 1070, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Year 2 bill credits", "barValue": 1070, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Year 3 bill credits", "barValue": 1070, "lineValue": 0 }
+        {
+          "_type": "energyChartPoint",
+          "label": "Austin Energy rebate",
+          "barValue": 2500,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Year 1 bill credits",
+          "barValue": 1070,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Year 2 bill credits",
+          "barValue": 1070,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Year 3 bill credits",
+          "barValue": 1070,
+          "lineValue": 0
+        }
       ]
     }
   },
@@ -256,11 +306,36 @@
       "showLegend": true,
       "showAxisLines": true,
       "chartPoints": [
-        { "_type": "energyChartPoint", "label": "3 kW (10 panels)", "barValue": 1800, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "5 kW (16 panels)", "barValue": 2500, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "8 kW (22 panels)", "barValue": 3500, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "10 kW (28 panels)", "barValue": 4200, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "12 kW+ (34+ panels)", "barValue": 5200, "lineValue": 0 }
+        {
+          "_type": "energyChartPoint",
+          "label": "3 kW (10 panels)",
+          "barValue": 1800,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "5 kW (16 panels)",
+          "barValue": 2500,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "8 kW (22 panels)",
+          "barValue": 3500,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "10 kW (28 panels)",
+          "barValue": 4200,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "12 kW+ (34+ panels)",
+          "barValue": 5200,
+          "lineValue": 0
+        }
       ]
     }
   },
@@ -305,7 +380,12 @@
         { "_type": "energyChartPoint", "label": "Premium panel", "barValue": 25, "lineValue": 92 },
         { "_type": "energyChartPoint", "label": "String inverter", "barValue": 12, "lineValue": 0 },
         { "_type": "energyChartPoint", "label": "Microinverter", "barValue": 25, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Workmanship (typical)", "barValue": 10, "lineValue": 0 }
+        {
+          "_type": "energyChartPoint",
+          "label": "Workmanship (typical)",
+          "barValue": 10,
+          "lineValue": 0
+        }
       ]
     }
   },
@@ -446,8 +526,18 @@
       "showAxisLines": true,
       "chartPoints": [
         { "_type": "energyChartPoint", "label": "System price", "barValue": 24000, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Cash (after rebate)", "barValue": 21500, "lineValue": 0 },
-        { "_type": "energyChartPoint", "label": "Financed (total paid)", "barValue": 52500, "lineValue": 0 }
+        {
+          "_type": "energyChartPoint",
+          "label": "Cash (after rebate)",
+          "barValue": 21500,
+          "lineValue": 0
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Financed (total paid)",
+          "barValue": 52500,
+          "lineValue": 0
+        }
       ]
     }
   },
@@ -488,9 +578,24 @@
       "showAxisLines": true,
       "chartPoints": [
         { "_type": "energyChartPoint", "label": "3-tab shingle", "barValue": 15, "lineValue": 25 },
-        { "_type": "energyChartPoint", "label": "Architectural shingle", "barValue": 20, "lineValue": 30 },
-        { "_type": "energyChartPoint", "label": "Impact-rated (Class 4)", "barValue": 25, "lineValue": 30 },
-        { "_type": "energyChartPoint", "label": "Standing seam metal", "barValue": 40, "lineValue": 50 },
+        {
+          "_type": "energyChartPoint",
+          "label": "Architectural shingle",
+          "barValue": 20,
+          "lineValue": 30
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Impact-rated (Class 4)",
+          "barValue": 25,
+          "lineValue": 30
+        },
+        {
+          "_type": "energyChartPoint",
+          "label": "Standing seam metal",
+          "barValue": 40,
+          "lineValue": 50
+        },
         { "_type": "energyChartPoint", "label": "Concrete tile", "barValue": 35, "lineValue": 50 },
         { "_type": "energyChartPoint", "label": "TPO/flat roof", "barValue": 15, "lineValue": 20 }
       ]

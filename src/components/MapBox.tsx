@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
 import mapboxgl from 'mapbox-gl'
+import { useEffect, useMemo, useRef } from 'react'
 import 'mapbox-gl/dist/mapbox-gl.css'
+
 import geoJson from './texasCounties.json'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -157,7 +158,9 @@ export const MapBox = ({
     // which throws "Couldn't find terrain source 'mapbox-dem'". This is a flat
     // choropleth — disable terrain unconditionally.
     map.once('style.load', () => {
-      try { map.setTerrain(null) } catch {}
+      try {
+        map.setTerrain(null)
+      } catch {}
     })
 
     map.on('load', async () => {
@@ -257,12 +260,11 @@ export const MapBox = ({
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <section
-      id="service-area"
-      className="scroll-m-16 overflow-hidden bg-mist-800"
-    >
-      <div className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.9fr_1.1fr]" style={{ minHeight: '480px' }}>
-
+    <section id="service-area" className="scroll-m-16 overflow-hidden bg-mist-800">
+      <div
+        className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.9fr_1.1fr]"
+        style={{ minHeight: '480px' }}
+      >
         {/* Left: content panel */}
         <div
           className="flex flex-col justify-center px-10 py-14 lg:py-16"
@@ -277,7 +279,7 @@ export const MapBox = ({
             </p>
           )}
           {title && (
-            <h2 className="font-serif mb-4 text-[clamp(1.75rem,3vw,2.25rem)] leading-tight font-bold text-white">
+            <h2 className="mb-4 font-serif text-[clamp(1.75rem,3vw,2.25rem)] leading-tight font-bold text-white">
               {title}
             </h2>
           )}

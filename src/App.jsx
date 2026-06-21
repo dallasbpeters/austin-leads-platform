@@ -1,21 +1,25 @@
+import { Agentation } from 'agentation'
+
+import { sectionRenderers } from '@/components/platform/sections'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
+
+import Band from './components/Band'
+import CalculatorSection from './components/CalculatorSection'
+import ConsultationSection from './components/ConsultationSection'
+import CostsSection from './components/CostsSection'
+import DevTrace from './components/dev/DevTrace'
+import Footer from './components/Footer'
+import GuidesSection from './components/GuidesSection'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import StorySection from './components/StorySection'
-import CalculatorSection from './components/CalculatorSection'
-import CostsSection from './components/CostsSection'
-import GuidesSection from './components/GuidesSection'
-import SnapshotSection from './components/SnapshotSection'
 import IncentivesSection from './components/IncentivesSection'
-import ResourcesSection from './components/ResourcesSection'
-import ConsultationSection from './components/ConsultationSection'
-import Footer from './components/Footer'
-import Band from './components/Band'
-import Testimonails from './components/Testimonials'
 import QuoteSection from './components/QuoteSection'
-import DevTrace from './components/dev/DevTrace'
-import { Agentation } from 'agentation'
-import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
-import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import ResourcesSection from './components/ResourcesSection'
+import SnapshotSection from './components/SnapshotSection'
+import StorySection from './components/StorySection'
+import Testimonails from './components/Testimonials'
+import ArticleSection from './components/ArticleSection'
 
 export default function App({
   homepage = null,
@@ -27,12 +31,24 @@ export default function App({
   homepageSource = 'fixture',
 }) {
   const homepageSections = homepage?.sections || []
+  const resolveSectionType = (section) => {
+    if (section?.type) {
+      return section.type
+    }
+
+    if (typeof section?._type === 'string' && section._type.endsWith('Section')) {
+      return section._type.slice(0, -'Section'.length)
+    }
+
+    return ''
+  }
   const findSection = (type, sanityType = '') =>
     homepageSections.find(
-      (section) => section.type === type || (sanityType && section._type === sanityType),
+      (section) => resolveSectionType(section) === type || (sanityType && section._type === sanityType),
     ) || null
   const homepageEditAttrs = getSanityPageEditAttributes(homepage, 'sections')
   const storySection = findSection('story', 'storySection')
+  const articleSection = findSection('article', 'articleSection')
   const calculatorSection = findSection('calculator', 'calculatorSection')
   const costsSection = findSection('costs', 'costsSection')
   const guidesSection = findSection('guides', 'guidesSection') || findSection('guideGrid', 'guideGridSection')
@@ -41,9 +57,37 @@ export default function App({
   const testimonialsSection = findSection('testimonials', 'testimonialsSection')
   const quoteSection = findSection('quote', 'quoteSection')
   const ctaSection = findSection('cta', 'ctaSection')
-  const bandSections = homepageSections.filter(
-    (section) => section.type === 'band' || section._type === 'bandSection',
-  )
+  const bandSections = homepageSections.filter((section) => resolveSectionType(section) === 'band')
+  const handledHomepageSectionTypes = new Set([
+    'hero',
+    'story',
+    'article',
+    'calculator',
+    'costs',
+    'guides',
+    'guideGrid',
+    'snapshot',
+    'incentives',
+    'testimonials',
+    'quote',
+    'cta',
+    'resourceGrid',
+    'resources',
+    'band',
+  ])
+  const extraHomepageSections = homepageSections.filter((section) => {
+    const sectionType = resolveSectionType(section)
+
+    if (!sectionType) {
+      return false
+    }
+
+    if (sectionType === 'cta') {
+      return section !== ctaSection
+    }
+
+    return !handledHomepageSectionTypes.has(sectionType)
+  })
   const firstBandSection = bandSections[0] || null
   const secondBandSection = bandSections[1] || null
   const extraBandSections = bandSections.slice(2)
@@ -51,6 +95,7 @@ export default function App({
     section ? getSanitySectionEditAttributes(homepage, section, fallbackPath) : {}
   const heroEditAttrs = getSanitySectionEditAttributes(homepage, heroSection, 'heroTitle')
   const storyEditAttrs = sectionEditAttrs(storySection)
+  const articleEditAttrs = sectionEditAttrs(articleSection)
   const calculatorEditAttrs = sectionEditAttrs(calculatorSection)
   const costsEditAttrs = sectionEditAttrs(costsSection)
   const guidesEditAttrs = sectionEditAttrs(guidesSection)
@@ -108,13 +153,17 @@ export default function App({
       <DevTrace markup="src/components/Header.jsx" content="local JSX nav and service catalog links" />
       <Header />
       <main {...getSanityPageEditAttributes(homepage, 'title')}>
-        <DevTrace
-          markup="src/components/Hero.jsx"
-          content={`local JSX hero copy + hero media from homepage record (${homepageSource})`}
-        />
-        <div {...heroEditAttrs}>
-          <Hero heroSection={heroSection} />
-        </div>
+        {heroSection ? (
+          <>
+            <DevTrace
+              markup="src/components/Hero.jsx"
+              content={`local JSX hero copy + hero media from homepage record (${homepageSource})`}
+            />
+            <div {...heroEditAttrs}>
+              <Hero heroSection={heroSection} />
+            </div>
+          </>
+        ) : null}
         {renderBand(
           firstBandSection,
           'homepage-band-1',
@@ -132,6 +181,17 @@ export default function App({
         <div {...storyEditAttrs}>
           <StorySection section={storySection} />
         </div>
+        {articleSection ? (
+          <>
+            <DevTrace
+              markup="src/components/ArticleSection.jsx"
+              content={`homepage article from ${homepageSource}`}
+            />
+            <div {...articleEditAttrs}>
+              <ArticleSection section={articleSection} />
+            </div>
+          </>
+        ) : null}
         <DevTrace
           markup="src/components/CalculatorSection.jsx"
           content={
@@ -218,6 +278,25 @@ export default function App({
           markup="src/components/ConsultationSection.jsx"
           content={ctaSection ? `homepage cta from ${homepageSource}` : 'local fallback cta + live lead form'}
         />
+        {extraHomepageSections.map((section, index) => {
+          const sectionType = resolveSectionType(section)
+          const Component = sectionRenderers[sectionType]
+          if (!Component) return null
+
+          return (
+            <div
+              key={`${section._key || sectionType || 'extra-homepage-section'}-${index}`}
+              {...getSanitySectionEditAttributes(homepage, section)}
+            >
+              <Component
+                page={homepage}
+                section={section}
+                site={site}
+                sectionId={`homepage-extra-${sectionType}-${index}`}
+              />
+            </div>
+          )
+        })}
         <ConsultationSection site={site} section={ctaSection} editAttributes={consultationEditAttrs} />
         {extraBandSections.map((section, index) =>
           renderBand(

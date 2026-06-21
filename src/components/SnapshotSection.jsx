@@ -1,6 +1,7 @@
-import Card from './Card'
 import * as IconoirIcons from 'iconoir-react'
 import { Wallet, StatUp, Leaf, Clock } from 'iconoir-react'
+
+import Card from './Card'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import PortableTextContent from './PortableTextContent'
 

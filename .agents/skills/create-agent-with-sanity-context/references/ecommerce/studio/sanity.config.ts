@@ -1,8 +1,8 @@
 import {AGENT_CONTEXT_SCHEMA_TYPE_NAME, agentContextPlugin} from '@sanity/agent-context/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
-import {type ListItemBuilder, type StructureBuilder, structureTool} from 'sanity/structure'
 import {markdownSchema} from 'sanity-plugin-markdown'
+import {type ListItemBuilder, type StructureBuilder, structureTool} from 'sanity/structure'
 
 import {agentInsightsPlugin} from './agent-insights-tool/agentInsightsPlugin'
 import {schemaTypes} from './schemaTypes'

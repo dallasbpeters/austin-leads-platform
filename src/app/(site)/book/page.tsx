@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+
 import { SchedulingForm } from '@/components/StripeCheckout'
 
 export const metadata: Metadata = {

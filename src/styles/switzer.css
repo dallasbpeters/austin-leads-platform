@@ -28,7 +28,7 @@
 * Switzer VariableItalic (Variable font)
 */
 @font-face {
-  font-family: 'Switzer-Variable';
+  font-family: Switzer-Variable;
   src:
     url('/fonts/Switzer-Variable.woff2') format('woff2'),
     url('/fonts/Switzer-Variable.woff') format('woff'),

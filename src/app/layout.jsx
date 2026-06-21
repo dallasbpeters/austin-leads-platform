@@ -1,19 +1,21 @@
-import { draftMode } from 'next/headers'
-import { VisualEditing } from 'next-sanity/visual-editing'
-import { Analytics } from '@vercel/analytics/react'
-import { VercelToolbar } from '@vercel/toolbar/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { VercelToolbar } from '@vercel/toolbar/next'
+import { Agentation } from 'agentation'
+import { VisualEditing } from 'next-sanity/visual-editing'
 import { Gloock, JetBrains_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
-import { Agentation } from 'agentation'
+import { draftMode } from 'next/headers'
+
 import '../styles/globals.css'
 import { headers } from 'next/headers'
-import { SanityLive } from '@/sanity/live'
-import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
+
 import { PostHogProvider } from '@/app/providers'
-import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
 import { getPublicDataSiteAttribute } from '@/components/platform/PublicSiteUtils'
+import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
+import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
+import { SanityLive } from '@/sanity/live'
 
 const googleSansFlex = localFont({
   src: [

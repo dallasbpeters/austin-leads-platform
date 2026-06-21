@@ -1,10 +1,10 @@
+import { createClient } from 'next-sanity'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { createClient } from 'next-sanity'
 
 import { pages, sites } from '../src/lib/platform/fixtures.js'
-import { normalizeRichTextFields } from '../src/lib/sanity/richTextFields.js'
 import { withSectionKeys } from '../src/lib/sanity/keys.js'
+import { normalizeRichTextFields } from '../src/lib/sanity/richTextFields.js'
 
 try {
   const envPath = resolve(import.meta.dirname, '..', '.env.local')

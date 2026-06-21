@@ -1,10 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent } from '@/components/ui/card'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
 import PortableTextContent from '@/components/PortableTextContent'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Card, CardContent } from '@/components/ui/card'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
+
 import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
 
 export function CtaBannerSection({ page, section, site }) {

@@ -37,17 +37,17 @@ _Previously existing events (`lead_form_view`, `lead_submit_attempt`, `generate_
 
 ## v2 — Christmas-specific events
 
-The original wizard pass tracked Christmas booking *completions* but not the upstream funnel (impressions, drop-off, hesitation). The dual-project routing fix also exposed that the only "Christmas-flavored" events were `booking_*` — everything else was either solar (`hail_damage_lookup`) or generic (`ui_button_click`). v2 adds:
+The original wizard pass tracked Christmas booking _completions_ but not the upstream funnel (impressions, drop-off, hesitation). The dual-project routing fix also exposed that the only "Christmas-flavored" events were `booking_*` — everything else was either solar (`hail_damage_lookup`) or generic (`ui_button_click`). v2 adds:
 
-| Event                              | Fires when                                                                              | File                                  |
-| ---------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------- |
-| `booking_step_viewed`              | SchedulingForm mounts (step 1) and on every step transition                             | `src/components/StripeCheckout.tsx`   |
-| `booking_package_changed`          | User switches packages on step 1 before submitting (signals package-tier comparison)    | `src/components/StripeCheckout.tsx`   |
-| `booking_step_back`                | User navigates backwards in the 3-step form ("Back to packages" / "Edit details")       | `src/components/StripeCheckout.tsx`   |
-| `booking_calendar_navigated`       | User pages prev/next, clicks "Today", or jumps months in the slot grid                  | `src/components/StripeCheckout.tsx`   |
-| `booking_checkout_abandoned`       | User clicks "Edit details" from the Stripe panel (left checkout without paying)         | `src/components/StripeCheckout.tsx`   |
-| `booking_completed_screen_viewed`  | The "You're booked." confirmation renders (distinct from `booking_completed` callback)  | `src/components/StripeCheckout.tsx`   |
-| `contact_link_clicked`             | Global: click on any `<a href="tel:…">`, `mailto:…`, or `sms:…` anchor                  | `src/app/providers.jsx`               |
+| Event                             | Fires when                                                                             | File                                |
+| --------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------- |
+| `booking_step_viewed`             | SchedulingForm mounts (step 1) and on every step transition                            | `src/components/StripeCheckout.tsx` |
+| `booking_package_changed`         | User switches packages on step 1 before submitting (signals package-tier comparison)   | `src/components/StripeCheckout.tsx` |
+| `booking_step_back`               | User navigates backwards in the 3-step form ("Back to packages" / "Edit details")      | `src/components/StripeCheckout.tsx` |
+| `booking_calendar_navigated`      | User pages prev/next, clicks "Today", or jumps months in the slot grid                 | `src/components/StripeCheckout.tsx` |
+| `booking_checkout_abandoned`      | User clicks "Edit details" from the Stripe panel (left checkout without paying)        | `src/components/StripeCheckout.tsx` |
+| `booking_completed_screen_viewed` | The "You're booked." confirmation renders (distinct from `booking_completed` callback) | `src/components/StripeCheckout.tsx` |
+| `contact_link_clicked`            | Global: click on any `<a href="tel:…">`, `mailto:…`, or `sms:…` anchor                 | `src/app/providers.jsx`             |
 
 ### `site_slug` super property
 
@@ -58,7 +58,7 @@ The original wizard pass tracked Christmas booking *completions* but not the ups
 
 ### Suggested PostHog dashboards / insights for v2
 
-1. **Booking step funnel** — funnel on `booking_step_viewed` → `booking_package_selected` → `booking_info_submitted` → `booking_date_selected` → `booking_checkout_started` → `booking_completed`. Per-step drop-off comes from comparing the *viewed* count to the *submitted* count at each tier.
+1. **Booking step funnel** — funnel on `booking_step_viewed` → `booking_package_selected` → `booking_info_submitted` → `booking_date_selected` → `booking_checkout_started` → `booking_completed`. Per-step drop-off comes from comparing the _viewed_ count to the _submitted_ count at each tier.
 2. **Abandonment** — trend on `booking_checkout_abandoned` and `booking_step_back`, broken down by `from_step` / `package_slug`.
 3. **Capacity demand** — `booking_calendar_navigated` filtered to `direction = "next"`, broken down by `target_month`. Tells you which months users are scrolling toward when current windows are full.
 4. **Contact intent** — `contact_link_clicked` broken down by `link_type` and `page_path`, scoped to the Christmas project. Identifies which pages drive phone-first leads vs. form-first leads.
@@ -74,12 +74,12 @@ The original wizard-created insights have been retuned for the Christmas project
 Top-to-bottom on https://us.posthog.com/project/417918/dashboard/1582616:
 
 1. [Christmas Lights Booking Funnel](/insights/zA1WzvkI) — `booking_package_selected → booking_info_submitted → booking_date_selected → booking_checkout_started → booking_completed` (added the missing date step).
-2. [Booking Step Impressions Funnel](/insights/PEQDKvlE) — `booking_step_viewed` (step 1) → (step 2) → (step 3) → `booking_completed`. *(Replaced "Lead Form: View to Submit Conversion".)*
+2. [Booking Step Impressions Funnel](/insights/PEQDKvlE) — `booking_step_viewed` (step 1) → (step 2) → (step 3) → `booking_completed`. _(Replaced "Lead Form: View to Submit Conversion".)_
 3. [Deposits Confirmed (Last 30 Days)](/insights/1Nmpn9Vz) — `deposit_payment_confirmed` BoldNumber. Unchanged.
-4. [Booking Abandonment Over Time](/insights/k5CDkmNo) — line chart of `booking_step_back` + `booking_checkout_abandoned`. *(Replaced "New Leads Over Time".)*
-5. [Package Selections by Tier](/insights/g7PqolmI) — bar chart of `booking_package_selected` broken down by `package_slug`. *(New.)*
-6. [Install Date Demand by Month](/insights/3lfLx2uL) — bar chart of `booking_calendar_navigated` broken down by `target_month`. *(New.)*
-7. [Contact Link Clicks (tel / mailto / sms)](/insights/GgoijbAu) — line chart of `contact_link_clicked` broken down by `link_type`. *(Replaced "Hail Damage Lookups Over Time".)*
+4. [Booking Abandonment Over Time](/insights/k5CDkmNo) — line chart of `booking_step_back` + `booking_checkout_abandoned`. _(Replaced "New Leads Over Time".)_
+5. [Package Selections by Tier](/insights/g7PqolmI) — bar chart of `booking_package_selected` broken down by `package_slug`. _(New.)_
+6. [Install Date Demand by Month](/insights/3lfLx2uL) — bar chart of `booking_calendar_navigated` broken down by `target_month`. _(New.)_
+7. [Contact Link Clicks (tel / mailto / sms)](/insights/GgoijbAu) — line chart of `contact_link_clicked` broken down by `link_type`. _(Replaced "Hail Damage Lookups Over Time".)_
 
 ### Solar project
 

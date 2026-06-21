@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useTransition } from 'react'
 import { CalendarIcon, X } from 'lucide-react'
+import { useState, useTransition } from 'react'
+
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent } from '@/components/ui/card'
@@ -135,7 +136,12 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
   const [editing, setEditing] = useState(null)
   const [editValues, setEditValues] = useState({})
   const [addOpen, setAddOpen] = useState(false)
-  const [newDate, setNewDate] = useState({ installDates: [], capacity: 6, isActive: true, notes: '' })
+  const [newDate, setNewDate] = useState({
+    installDates: [],
+    capacity: 6,
+    isActive: true,
+    notes: '',
+  })
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState(null)
 

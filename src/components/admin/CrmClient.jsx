@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import {
   CalendarClock,
   Mail,
@@ -11,11 +10,8 @@ import {
   UserRound,
   CircleDot,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
-import { useCrmManager } from '@/hooks/useCrmManager'
-import { LEAD_PIPELINE_STAGES, LEAD_PRIORITIES, LEAD_STATUSES } from '@/lib/leads/constants'
-import { LEAD_SERVICE_OPTIONS } from '@/lib/leads/service-options'
-import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,6 +27,10 @@ import {
 } from '@/components/ui/sheet'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
+import { useCrmManager } from '@/hooks/useCrmManager'
+import { LEAD_PIPELINE_STAGES, LEAD_PRIORITIES, LEAD_STATUSES } from '@/lib/leads/constants'
+import { LEAD_SERVICE_OPTIONS } from '@/lib/leads/service-options'
+import { cn } from '@/lib/utils'
 
 const serviceLabelMap = Object.fromEntries(LEAD_SERVICE_OPTIONS.map((option) => [option.value, option.label]))
 
@@ -124,13 +124,13 @@ export default function CrmClient({
             </CardHeader>
             <CardContent className="text-muted-foreground space-y-3 text-sm leading-7">
               <p>
-                <code>DATABASE_URL</code> is configured, but the server failed to reach Neon when
-                loading this page.
+                <code>DATABASE_URL</code> is configured, but the server failed to reach Neon when loading this
+                page.
               </p>
               {looksLikeFetchFailure ? (
                 <p>
-                  This usually means the Neon HTTP API (Cloudflare-fronted) is temporarily blocked
-                  or down. Check{' '}
+                  This usually means the Neon HTTP API (Cloudflare-fronted) is temporarily blocked or down.
+                  Check{' '}
                   <a
                     href="https://www.cloudflarestatus.com/"
                     target="_blank"
@@ -140,19 +140,18 @@ export default function CrmClient({
                     cloudflarestatus.com
                   </a>{' '}
                   and{' '}
-                  <a
-                    href="https://neonstatus.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline"
-                  >
+                  <a href="https://neonstatus.com/" target="_blank" rel="noreferrer" className="underline">
                     neonstatus.com
                   </a>
                   , then reload.
                 </p>
               ) : null}
               <pre className="bg-muted text-foreground/80 max-w-full overflow-x-auto rounded border p-3 text-xs">
-                {[errorCode && `code: ${errorCode}`, `message: ${errorMessage}`, errorCause && `cause: ${errorCause}`]
+                {[
+                  errorCode && `code: ${errorCode}`,
+                  `message: ${errorMessage}`,
+                  errorCause && `cause: ${errorCause}`,
+                ]
                   .filter(Boolean)
                   .join('\n')}
               </pre>
@@ -304,9 +303,7 @@ export default function CrmClient({
                     className="cursor-pointer"
                     onClick={() => setSelectedLeadId(lead.id)}
                   >
-                    <TableCell className="pl-4">
-                    {lead.full_name}
-                    </TableCell>
+                    <TableCell className="pl-4">{lead.full_name}</TableCell>
                     <TableCell className="whitespace-normal">
                       {formatServiceInterest(lead.service_interest)}
                     </TableCell>
@@ -487,7 +484,7 @@ export default function CrmClient({
                 </div>
               </div>
 
-              <SheetFooter className="bg-background absolute bottom-0 left-0 right-0 border-border/70 mt-6 border-t px-8 pt-4">
+              <SheetFooter className="bg-background border-border/70 absolute right-0 bottom-0 left-0 mt-6 border-t px-8 pt-4">
                 <Button onClick={handleSaveDetail} disabled={isSaving}>
                   {isSaving ? 'Saving…' : 'Save changes'}
                 </Button>

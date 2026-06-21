@@ -7,6 +7,7 @@ import {cn, formatPrice} from '@/lib/utils'
 import {urlFor} from '@/sanity/lib/image'
 
 import type {PRODUCT_QUERY_RESULT} from '../../sanity.types'
+
 import {AddToCartButton} from './add-to-cart-button'
 import {Badge} from './ui/badge'
 

@@ -1,7 +1,9 @@
-import { Card } from '@/components/ui/card'
-import { getDevSectionAttributes } from './dev/DevTrace'
-import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { useId } from 'react'
+
+import { Card } from '@/components/ui/card'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
+
+import { getDevSectionAttributes } from './dev/DevTrace'
 
 const fallbackReviews = [
   {

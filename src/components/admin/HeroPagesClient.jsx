@@ -1,7 +1,7 @@
 'use client'
 
-import Link from 'next/link'
 import { ExternalLink, ImagePlus, LoaderCircle, Search, Trash2 } from 'lucide-react'
+import Link from 'next/link'
 import ColorPicker from 'react-best-gradient-color-picker'
 
 import { Badge } from '@/components/ui/badge'
@@ -229,7 +229,10 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
                         id="hero-page-description"
                         value={createForm.description}
                         onChange={(event) =>
-                          setCreateForm((current) => ({ ...current, description: event.target.value }))
+                          setCreateForm((current) => ({
+                            ...current,
+                            description: event.target.value,
+                          }))
                         }
                         placeholder="Short description and initial hero body."
                       />

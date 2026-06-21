@@ -1,7 +1,7 @@
 import { createClient } from 'next-sanity'
 
-import { normalizeRichTextFields } from '../src/lib/sanity/richTextFields.js'
 import { withSectionKeys } from '../src/lib/sanity/keys.js'
+import { normalizeRichTextFields } from '../src/lib/sanity/richTextFields.js'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET

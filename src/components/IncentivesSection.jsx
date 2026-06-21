@@ -1,9 +1,11 @@
-import { Button } from '@/components/ui/button'
-import PortableTextContent from './PortableTextContent'
-import { getDevSectionAttributes } from './dev/DevTrace'
-import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import Image from 'next/image'
+
+import { Button } from '@/components/ui/button'
+import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+
+import { getDevSectionAttributes } from './dev/DevTrace'
+import PortableTextContent from './PortableTextContent'
 
 function splitParagraphs(value) {
   return portableTextToPlainText(value)

@@ -22,7 +22,7 @@ export default function GenericFooter({ site }) {
                 alt={logoAlt}
                 width={80}
                 height={80}
-                className="size-20 p-3 bg-white rounded-sm w-auto object-contain brightness-120 filter"
+                className="size-20 w-auto rounded-sm bg-white object-contain p-3 brightness-120 filter"
               />
               <h2 className="text-secondary-foreground text-2xl tracking-normal">{site.name}</h2>
             </div>

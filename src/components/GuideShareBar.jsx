@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
 import { Facebook, X, Linkedin, Mail, Copy, Check } from 'iconoir-react'
+import { useMemo, useState } from 'react'
+
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const shareLinks = [

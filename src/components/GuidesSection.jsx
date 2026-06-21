@@ -1,12 +1,13 @@
 import Link from 'next/link'
 
-import GuideCardGrid from './GuideCard'
-import PortableTextContent from './PortableTextContent'
-import { getDevSectionAttributes } from './dev/DevTrace'
 import { getFeaturedSolarGuideCards } from '@/lib/platform/guides'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
-import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
+
+import { getDevSectionAttributes } from './dev/DevTrace'
+import GuideCardGrid from './GuideCard'
+import PortableTextContent from './PortableTextContent'
 
 const guides = getFeaturedSolarGuideCards(3)
 

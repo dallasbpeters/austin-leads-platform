@@ -108,7 +108,9 @@ export async function POST(request) {
 
   if (!readToken) {
     return Response.json(
-      { error: 'SANITY_API_READ_TOKEN (or SANITY_API_VIEWER_TOKEN) is required for Agent Context MCP.' },
+      {
+        error: 'SANITY_API_READ_TOKEN (or SANITY_API_VIEWER_TOKEN) is required for Agent Context MCP.',
+      },
       { status: 500 },
     )
   }

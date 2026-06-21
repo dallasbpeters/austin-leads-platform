@@ -22,8 +22,8 @@ import {
   YAxis,
 } from 'recharts'
 
-import PortableTextContent from './PortableTextContent'
 import { getDevSectionAttributes } from './dev/DevTrace'
+import PortableTextContent from './PortableTextContent'
 
 const defaultPoints = [
   { label: 'Jul', barValue: 450, lineValue: 60 },

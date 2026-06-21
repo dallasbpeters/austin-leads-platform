@@ -1,6 +1,7 @@
+import type {Metadata} from 'next/types'
+
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
-import type {Metadata} from 'next/types'
 
 import {ProductDetails} from '@/components/product-details'
 import {client} from '@/sanity/lib/client'

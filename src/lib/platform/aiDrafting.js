@@ -1,6 +1,5 @@
 import { groq } from 'next-sanity'
 
-import { sanityAgentWriteClient, sanityWriteClient } from '@/sanity/client'
 import { withSectionKeys } from '@/lib/sanity/keys'
 import {
   buildDraftSkeleton,
@@ -10,6 +9,7 @@ import {
   trimDraftLines,
 } from '@/sanity/agent/draftHelpers'
 import { buildSanityAgentPublishingInstruction } from '@/sanity/agent/publishingInstructions'
+import { sanityAgentWriteClient, sanityWriteClient } from '@/sanity/client'
 import { syncGuideHeroToGuideGridItems } from '@/sanity/lib/syncGuideListingImages'
 
 const SANITY_AGENT_SCHEMA_ID = process.env.SANITY_AGENT_SCHEMA_ID || ''
@@ -23,7 +23,9 @@ async function syncGuideCardIntoGuidesSection({ siteId, guideDoc }) {
 }
 
 async function normalizeDraftSections(documentId) {
-  const draft = await sanityWriteClient.fetch(groq`*[_id == $documentId][0]{_id,sections}`, { documentId })
+  const draft = await sanityWriteClient.fetch(groq`*[_id == $documentId][0]{_id,sections}`, {
+    documentId,
+  })
 
   if (!draft?._id || !Array.isArray(draft.sections)) {
     return false

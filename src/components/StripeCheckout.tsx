@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef, SyntheticEvent } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
+import { AnimatePresence, motion } from 'framer-motion'
+import { NavArrowDownSolid } from 'iconoir-react'
+import { ArrowLeft, ArrowRight, NavArrowLeft, NavArrowRight, Lock, CheckCircle } from 'iconoir-react'
 import posthog from 'posthog-js'
+import { useState, useCallback, useEffect, useRef, SyntheticEvent } from 'react'
+
 import { startCheckoutSession, type BookingMetadata } from '@/app/actions/stripe'
 import { Button } from '@/components/ui/button'
-import { NavArrowDownSolid } from 'iconoir-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +17,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ArrowLeft, ArrowRight, NavArrowLeft, NavArrowRight, Lock, CheckCircle } from 'iconoir-react'
 
 const WINDOW_SIZE = 9
 
@@ -45,7 +46,7 @@ function SlidingDateGrid({
   selected: string
   onSelect: (v: string) => void
   loading: boolean
-  packageSlug: string
+  packageSlug: string | undefined
 }) {
   const [start, setStart] = useState(0)
 
@@ -429,7 +430,7 @@ export function SchedulingForm() {
       install_date: formData.installDate,
       site_slug: 'txchristmaslights',
     })
-    prevStep.current = step   // treat checkout as virtual step 4
+    prevStep.current = step // treat checkout as virtual step 4
     prevShowCheckout.current = false
     setShowCheckout(true)
   }
@@ -599,7 +600,9 @@ export function SchedulingForm() {
                   )}
                   {formData.installDate && (
                     <div className="border-background/20 border-b pb-3">
-                      <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Install Window</span>
+                      <span className="text-background/50 text-xs tracking-[0.15em] uppercase">
+                        Install Window
+                      </span>
                       <p className="mt-0.5 text-lg">
                         {slots.find((d) => d.value === formData.installDate)?.label}
                       </p>
@@ -649,7 +652,9 @@ export function SchedulingForm() {
                     <div className="mb-8 max-w-xs space-y-4">
                       {formData.packageSlug && (
                         <div className="border-background/20 border-b pb-3">
-                          <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Package</span>
+                          <span className="text-background/50 text-xs tracking-[0.15em] uppercase">
+                            Package
+                          </span>
                           <p className="mt-0.5 text-lg">
                             {PACKAGES.find((p) => p.slug === formData.packageSlug)?.name}
                           </p>
@@ -663,12 +668,16 @@ export function SchedulingForm() {
                       )}
                       {step === 3 && formData.address && (
                         <div className="border-background/20 border-b pb-3">
-                          <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Property</span>
+                          <span className="text-background/50 text-xs tracking-[0.15em] uppercase">
+                            Property
+                          </span>
                           <p className="mt-0.5 text-lg">{formData.address}</p>
                         </div>
                       )}
                       <div className="pt-1">
-                        <span className="text-background/50 text-xs tracking-[0.15em] uppercase">Due today</span>
+                        <span className="text-background/50 text-xs tracking-[0.15em] uppercase">
+                          Due today
+                        </span>
                         <div className="mt-0.5 flex items-baseline gap-3">
                           <span className="font-serif text-4xl">
                             {fmtCents(depositAmountCents, depositCurrency)}
@@ -689,14 +698,14 @@ export function SchedulingForm() {
         {/* ── Right: slides on step change ─────────────────────────────── */}
         <div className="bg-background flex h-full flex-col overflow-hidden">
           {/* Static step progress — does not animate */}
-          <div className="border-border/50 h-16 flex shrink-0 justify-end items-center gap-2 border-b px-2 py-2 md:px-10 lg:px-10 xl:px-10">
+          <div className="border-border/50 flex h-16 shrink-0 items-center justify-end gap-2 border-b px-2 py-2 md:px-10 lg:px-10 xl:px-10">
             {!showCheckout && step === 2 && (
               <Button
                 variant="ghost"
                 pill={false}
                 fullWidth={false}
                 onClick={() => goTo(1)}
-                className="grow px-2 hover:bg-background text-secondary hover:text-primary justify-start"
+                className="hover:bg-background text-secondary hover:text-primary grow justify-start px-2"
               >
                 Back to packages
               </Button>
@@ -707,7 +716,7 @@ export function SchedulingForm() {
                 pill={false}
                 fullWidth={false}
                 onClick={() => goTo(2)}
-                className="grow px-2 hover:bg-background text-secondary hover:text-primary justify-start"
+                className="hover:bg-background text-secondary hover:text-primary grow justify-start px-2"
               >
                 Back to details
               </Button>
@@ -762,7 +771,7 @@ export function SchedulingForm() {
                             })
                           }
                         }}
-                        className={`bg-white hover:bg-white/50 relative w-full content-end justify-start rounded-2xl border-2 px-4 py-5 text-left transition-all duration-150 ${isSelected ? 'border-secondary bg-secondary hover:bg-secondary/90 border text-white' : 'border'}`}
+                        className={`relative w-full content-end justify-start rounded-2xl border-2 bg-white px-4 py-5 text-left transition-all duration-150 hover:bg-white/50 ${isSelected ? 'border-secondary bg-secondary hover:bg-secondary/90 border text-white' : 'border'}`}
                       >
                         <div className="grid grid-cols-1 content-end">
                           <div

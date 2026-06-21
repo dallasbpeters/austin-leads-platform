@@ -1,5 +1,4 @@
 import { getSql, hasDatabaseUrl } from '../db/pool.js'
-
 import { initialDomainRecords } from './fixtures.js'
 
 export function hasDomainDatabase() {

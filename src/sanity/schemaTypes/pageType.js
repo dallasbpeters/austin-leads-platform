@@ -1,5 +1,6 @@
-import ChartPointsJsonInput from '../components/ChartPointsJsonInput'
 import { BlockContentIcon } from '@sanity/icons'
+
+import ChartPointsJsonInput from '../components/ChartPointsJsonInput'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
@@ -51,6 +52,7 @@ const LEGACY_PAGE_SECTION_LABELS = {
   quote: 'Quote',
   cta: 'CTA',
   ctaBanner: 'Cross-lead banner',
+  bannerCta: 'Banner CTA',
   highlights: 'Highlights',
   steps: 'Steps',
   faq: 'FAQ',
@@ -351,7 +353,12 @@ const heroImageType = {
     { name: 'width', title: 'Width', type: 'number', options: canvasExclude },
     { name: 'height', title: 'Height', type: 'number', options: canvasExclude },
     { name: 'creditName', title: 'Photographer name', type: 'string', options: canvasExclude },
-    { name: 'creditUsername', title: 'Photographer username', type: 'string', options: canvasExclude },
+    {
+      name: 'creditUsername',
+      title: 'Photographer username',
+      type: 'string',
+      options: canvasExclude,
+    },
     { name: 'creditUrl', title: 'Photographer URL', type: 'url', options: canvasExclude },
     { name: 'unsplashUrl', title: 'Unsplash photo URL', type: 'url', options: canvasExclude },
     { name: 'downloadLocation', title: 'Download location', type: 'url', options: canvasExclude },
@@ -812,7 +819,13 @@ const serviceGridItemType = {
   type: 'object',
   icon: BlockContentIcon,
   fields: [
-    { name: 'isRecommended', title: 'Is recommended', type: 'boolean', initialValue: false, options: canvasPurpose('Whether this section is recommended for the page.'), },
+    {
+      name: 'isRecommended',
+      title: 'Is recommended',
+      type: 'boolean',
+      initialValue: false,
+      options: canvasPurpose('Whether this section is recommended for the page.'),
+    },
     {
       name: 'title',
       title: 'Title',
@@ -1854,8 +1867,18 @@ const heroSpecificFields = [
     type: 'color',
     options: canvasExclude,
   },
-  { name: 'heroOverlayEndColor', title: 'Hero overlay end color', type: 'color', options: canvasExclude },
-  { name: 'heroOverlayDirection', title: 'Hero overlay direction', type: 'string', options: canvasExclude },
+  {
+    name: 'heroOverlayEndColor',
+    title: 'Hero overlay end color',
+    type: 'color',
+    options: canvasExclude,
+  },
+  {
+    name: 'heroOverlayDirection',
+    title: 'Hero overlay direction',
+    type: 'string',
+    options: canvasExclude,
+  },
   {
     name: 'heroOverlayStartOpacity',
     title: 'Hero overlay start opacity',
@@ -1868,7 +1891,12 @@ const heroSpecificFields = [
     type: 'number',
     options: canvasExclude,
   },
-  { name: 'heroOverlayOpacity', title: 'Hero overlay opacity', type: 'number', options: canvasExclude },
+  {
+    name: 'heroOverlayOpacity',
+    title: 'Hero overlay opacity',
+    type: 'number',
+    options: canvasExclude,
+  },
   {
     name: 'heroImage',
     title: 'Hero image',
@@ -2026,6 +2054,50 @@ const storySectionType = {
       return {
         title: title || eyebrow || 'Story section',
         subtitle: pageSectionListSubtitle('Story section', body, subtitle),
+      }
+    },
+  },
+}
+
+const articleSectionType = {
+  name: 'articleSection',
+  title: 'Article Section',
+  type: 'object',
+  initialValue: {
+    type: 'article',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline or kicker text for the article section.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Primary article heading.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main explanatory copy for the article section.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      body: 'body',
+    },
+    prepare({ title, eyebrow, body }) {
+      return {
+        title: title || eyebrow || 'Article section',
+        subtitle: pageSectionListSubtitle('Article section', body),
       }
     },
   },
@@ -3219,6 +3291,79 @@ const ctaBannerSectionType = {
   },
 }
 
+const bannerCtaSectionType = {
+  name: 'bannerCtaSection',
+  title: 'Banner CTA Section',
+  type: 'object',
+  initialValue: {
+    type: 'bannerCta',
+    ctaHref: '#consultation',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional label above the banner headline.'),
+    },
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Main headline shown over the banner image.'),
+    },
+    {
+      name: 'body',
+      title: 'Copy',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional supporting copy shown under the banner headline.'),
+    },
+    {
+      name: 'ctaLabel',
+      title: 'Button label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('CTA button text.'),
+    },
+    {
+      name: 'ctaHref',
+      title: 'Button URL',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('CTA destination URL or page anchor.'),
+    },
+    {
+      name: 'image',
+      title: 'External image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'imageAsset',
+      title: 'Uploaded image',
+      type: 'uploadedImage',
+      options: canvasExclude,
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      ctaLabel: 'ctaLabel',
+      media: 'imageAsset',
+    },
+    prepare({ title, body, ctaLabel, media }) {
+      return {
+        title: title || 'Banner CTA section',
+        subtitle: pageSectionListSubtitle('Banner CTA section', ctaLabel, body),
+        media: media ?? BlockContentIcon,
+      }
+    },
+  },
+}
+
 const secondaryCTASectionType = {
   name: 'secondaryCTASection',
   title: 'Secondary CTA Section',
@@ -3972,6 +4117,7 @@ const baseFields = [
     of: [
       { type: 'heroSection' },
       { type: 'storySection' },
+      { type: 'articleSection' },
       { type: 'calculatorSection' },
       { type: 'costsSection' },
       { type: 'guidesSection' },
@@ -3986,6 +4132,7 @@ const baseFields = [
       { type: 'quoteSection' },
       { type: 'ctaSection' },
       { type: 'ctaBannerSection' },
+      { type: 'bannerCtaSection' },
       { type: 'secondaryCTASection' },
       { type: 'scrollTextSection' },
       { type: 'hailMapSection' },
@@ -4077,6 +4224,7 @@ export default [
   resourceCardType,
   heroSectionType,
   storySectionType,
+  articleSectionType,
   calculatorSectionType,
   costStatItemType,
   paybackSummaryItemType,
@@ -4092,6 +4240,7 @@ export default [
   quoteSectionType,
   ctaSectionType,
   ctaBannerSectionType,
+  bannerCtaSectionType,
   secondaryCTASectionType,
   hailMapSectionType,
   serviceAreaItemType,

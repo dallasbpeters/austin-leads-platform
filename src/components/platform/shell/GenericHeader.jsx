@@ -1,12 +1,12 @@
 'use client'
 
-import * as React from 'react'
-import Link from 'next/link'
 import { Menu, Xmark } from 'iconoir-react'
+import Link from 'next/link'
+import * as React from 'react'
 
+import { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import { buildSanityImageUrl } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
 
@@ -45,9 +45,9 @@ function NavList({ items, onNavigate }) {
         }
 
         return (
-          <Link key={key} href={href} onClick={onNavigate} className={className}>
-            <span data-slot="button-inner">{label}</span>
-          </Link>
+          <Button variant="primary" key={key} href={href} onClick={onNavigate} className={className}>
+            {label}
+          </Button>
         )
       })}
     </>
@@ -114,7 +114,7 @@ export default function GenericHeader({ site, navigation = [] }) {
     <>
       <nav
         id="site-top"
-        className="text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-7xl translate-x-[-50%] px-0 sm:top-0 md:top-2 md:px-4"
+        className="text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
         {...getDevSectionAttributes({
           id: 'site-header',
           markup: 'src/components/platform/shell/GenericHeader.jsx',
@@ -124,8 +124,8 @@ export default function GenericHeader({ site, navigation = [] }) {
         <div
           className={
             isChristmas
-              ? 'border-border bg-card/95 mx-auto w-full rounded-none border px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full'
-              : 'mx-auto w-full rounded-none bg-stone-100 px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full'
+              ? 'bg-card/95 mx-auto w-full rounded-none px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full'
+              : 'mx-auto w-full rounded-none bg-stone-100 px-5 py-2 shadow-md backdrop-blur-sm md:rounded-full'
           }
         >
           <div className="flex items-center justify-between">
@@ -138,7 +138,7 @@ export default function GenericHeader({ site, navigation = [] }) {
                   height={usingChristmasWordmarkFallback ? 70 : 70}
                   className={
                     usingChristmasWordmarkFallback
-                      ? 'w-auto max-w-[200px] object-contain md:h-10'
+                      ? 'w-auto max-w-50 object-contain md:h-10'
                       : 'object-contain'
                   }
                 />
@@ -174,7 +174,7 @@ export default function GenericHeader({ site, navigation = [] }) {
             openNav ? 'max-h-128 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className="bg-card border-border md:border-border mx-auto w-full rounded-none border-b px-4 py-2 shadow-sm md:rounded-md md:border">
+          <div className="bg-card mx-auto w-full rounded-none border-b px-4 py-2 shadow-sm md:rounded-md md:border">
             <div
               className={`mt-2 space-y-1 transition-all duration-200 ${
                 openNav ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0'

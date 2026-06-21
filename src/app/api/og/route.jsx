@@ -500,32 +500,30 @@ export async function GET(request) {
 
   if (isTxChristmasPrecomposedOg) {
     const bareImageResponse = new ImageResponse(
-      (
-        <div
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          margin: 0,
+          padding: 0,
+          position: 'relative',
+          backgroundColor: '#000000',
+        }}
+      >
+        <img
+          alt=""
+          src={image}
+          width={OG_IMAGE_SIZE.width}
+          height={OG_IMAGE_SIZE.height}
           style={{
-            display: 'flex',
             width: '100%',
             height: '100%',
-            margin: 0,
-            padding: 0,
-            position: 'relative',
-            backgroundColor: '#000000',
+            objectFit: 'cover',
+            objectPosition: 'center',
           }}
-        >
-          <img
-            alt=""
-            src={image}
-            width={OG_IMAGE_SIZE.width}
-            height={OG_IMAGE_SIZE.height}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center',
-            }}
-          />
-        </div>
-      ),
+        />
+      </div>,
       { ...OG_IMAGE_SIZE },
     )
     const pngBuffer = await bareImageResponse.arrayBuffer()

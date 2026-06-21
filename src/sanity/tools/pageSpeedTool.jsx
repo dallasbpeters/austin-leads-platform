@@ -49,7 +49,14 @@ function ScoreCard({ label, score }) {
 
 function AuditRow({ label, audit }) {
   return (
-    <div style={{ display: 'grid', gap: '0.2rem', borderTop: '1px solid #f3f4f6', paddingTop: '0.65rem' }}>
+    <div
+      style={{
+        display: 'grid',
+        gap: '0.2rem',
+        borderTop: '1px solid #f3f4f6',
+        paddingTop: '0.65rem',
+      }}
+    >
       <div style={{ fontSize: '0.92rem', fontWeight: 600 }}>
         {label}: <span style={{ color: scoreColor(audit?.score) }}>{audit?.score ?? '—'}</span>
       </div>
@@ -98,7 +105,13 @@ export function PageSpeedTool() {
 
   return (
     <div
-      style={{ padding: '1.5rem', display: 'grid', gap: '1rem', maxWidth: '1024px', marginInline: 'auto' }}
+      style={{
+        padding: '1.5rem',
+        display: 'grid',
+        gap: '1rem',
+        maxWidth: '1024px',
+        marginInline: 'auto',
+      }}
     >
       <div style={{ display: 'grid', gap: '0.5rem' }}>
         <div
@@ -134,7 +147,11 @@ export function PageSpeedTool() {
             value={url}
             onChange={(event) => setUrl(event.target.value)}
             placeholder="https://example.com/page"
-            style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+            style={{
+              padding: '0.75rem 0.8rem',
+              borderRadius: '0.6rem',
+              border: '1px solid #d1d5db',
+            }}
           />
         </label>
 

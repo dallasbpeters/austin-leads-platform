@@ -1,8 +1,9 @@
 import Image from 'next/image'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
 

@@ -1,8 +1,11 @@
+import { Building2 } from 'lucide-react'
+import { Outfit, JetBrains_Mono } from 'next/font/google'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { Outfit, JetBrains_Mono } from 'next/font/google'
-import { Building2 } from 'lucide-react'
 
+import AdminBodyScrollLock from '@/components/admin/AdminBodyScrollLock'
+import AdminNav from '@/components/admin/AdminNav'
+import SignOutButton from '@/components/admin/SignOutButton'
 import {
   Sidebar,
   SidebarContent,
@@ -15,10 +18,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-
-import AdminBodyScrollLock from '@/components/admin/AdminBodyScrollLock'
-import AdminNav from '@/components/admin/AdminNav'
-import SignOutButton from '@/components/admin/SignOutButton'
 import { safeAuth } from '@/lib/auth/session'
 
 const fontSans = Outfit({ subsets: ['latin'], variable: '--font-sans' })
@@ -67,10 +66,10 @@ export default async function AdminLayout({ children }) {
                     {user?.name?.[0] || 'A'}
                   </div>
                   <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-                    <div className="text-foreground truncate text-sm font-medium">
+                    <div className="truncate text-sm font-medium text-white">
                       {user?.name || 'Platform Admin'}
                     </div>
-                    <div className="text-muted-foreground truncate text-xs">{user?.email}</div>
+                    <div className="truncate text-xs text-white">{user?.email}</div>
                   </div>
                 </div>
                 <div className="group-data-[collapsible=icon]:hidden">

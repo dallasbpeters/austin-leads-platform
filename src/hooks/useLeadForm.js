@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from 'react'
 
-import { submitLead } from '@/services/leads'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import { normalizeLeadServiceInterest } from '@/lib/leads/service-options'
+import { submitLead } from '@/services/leads'
 
 function defaultState(defaultServiceInterest) {
   return {

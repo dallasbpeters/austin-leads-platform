@@ -1,8 +1,8 @@
 // deskStructure.ts
-import {Preflight, DeadLinks} from '@planetary/sanity-plugin-preflight'
-import {RocketIcon} from '@sanity/icons'
+import { Preflight, DeadLinks } from '@planetary/sanity-plugin-preflight'
+import { RocketIcon } from '@sanity/icons'
 
-export const getDefaultDocumentNode = (S, {schemaType}) => {
+export const getDefaultDocumentNode = (S, { schemaType }) => {
   // Only show the Preflight plugin on selected document types
   if (['article', 'page', 'post', 'servicePage', 'locationPage'].includes(schemaType)) {
     return S.document().views([

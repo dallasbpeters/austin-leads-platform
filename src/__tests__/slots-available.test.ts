@@ -7,8 +7,8 @@ vi.mock('@/lib/christmas/db', () => ({
   listSlots: vi.fn(),
 }))
 
-import { listSlots } from '@/lib/christmas/db'
 import { GET } from '@/app/api/christmas/slots/available/route'
+import { listSlots } from '@/lib/christmas/db'
 
 function makeSlot(date: string, overrides = {}) {
   return {

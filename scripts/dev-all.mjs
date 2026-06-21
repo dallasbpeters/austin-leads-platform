@@ -60,9 +60,7 @@ function refreshStripeWebhookSecret() {
   const current = readFileSync(ENV_FILE, 'utf8')
   const line = `${ENV_KEY}=${secret}`
   const pattern = new RegExp(`^\\s*#?\\s*${ENV_KEY}=.*$`, 'm')
-  const next = pattern.test(current)
-    ? current.replace(pattern, line)
-    : `${current.trimEnd()}\n${line}\n`
+  const next = pattern.test(current) ? current.replace(pattern, line) : `${current.trimEnd()}\n${line}\n`
 
   if (next === current) {
     console.log(`[stripe] ${ENV_KEY} already up to date.`)

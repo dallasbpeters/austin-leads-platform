@@ -1,7 +1,7 @@
 'use client'
 
-import { startTransition } from 'react'
 import { DatabaseZap, RefreshCcw, Target, TriangleAlert, Waypoints } from 'lucide-react'
+import { startTransition } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -43,7 +43,11 @@ export default function AnalyticsClient({ overview, providers, gaSnapshot, goals
         <div className="mb-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {(gaSnapshot?.status === 'available'
             ? [
-                { label: 'GA4 users', value: formatAnalyticsNumber(gaSnapshot.totalUsers), icon: Waypoints },
+                {
+                  label: 'GA4 users',
+                  value: formatAnalyticsNumber(gaSnapshot.totalUsers),
+                  icon: Waypoints,
+                },
                 {
                   label: 'GA4 sessions',
                   value: formatAnalyticsNumber(gaSnapshot.sessions),

@@ -11,6 +11,7 @@ import {
 } from 'framer-motion'
 import * as IconoirIcons from 'iconoir-react'
 import { useLayoutEffect, useRef, useState } from 'react'
+
 import TexasFlag from '@/components/TexasFlag'
 
 function useElementWidth(ref) {

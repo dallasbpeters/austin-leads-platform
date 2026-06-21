@@ -1,8 +1,8 @@
 import { auth } from '@/auth'
-import { stripe } from '@/lib/stripe/stripe'
-import { PRODUCTS } from '@/lib/stripe/products'
 import { getJobById, setJobInvoiceId, clearJobInvoiceId, ensureChristmasTables } from '@/lib/christmas/db'
 import { sendInvoiceEmail } from '@/lib/christmas/email'
+import { PRODUCTS } from '@/lib/stripe/products'
+import { stripe } from '@/lib/stripe/stripe'
 
 export const runtime = 'nodejs'
 

@@ -1,5 +1,4 @@
 import 'server-only'
-
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
 import { unstable_noStore as noStore } from 'next/cache'
 

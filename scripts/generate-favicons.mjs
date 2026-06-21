@@ -1,7 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-
 import pngToIco from 'png-to-ico'
 import sharp from 'sharp'
 

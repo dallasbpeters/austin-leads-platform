@@ -12,7 +12,12 @@ export default {
     { name: 'shortName', title: 'Short name', type: 'string' },
     { name: 'category', title: 'Category', type: 'string', validation: (Rule) => Rule.required() },
     { name: 'categoryLabel', title: 'Category label', type: 'string' },
-    { name: 'tier', title: 'Tier', type: 'string', options: { list: ['hero', 'landing', 'redirect'] } },
+    {
+      name: 'tier',
+      title: 'Tier',
+      type: 'string',
+      options: { list: ['hero', 'landing', 'redirect'] },
+    },
     {
       name: 'slug',
       title: 'Slug',
@@ -20,7 +25,12 @@ export default {
       options: { source: 'name' },
       validation: (Rule) => Rule.required(),
     },
-    { name: 'primaryDomain', title: 'Primary domain', type: 'string', validation: (Rule) => Rule.required() },
+    {
+      name: 'primaryDomain',
+      title: 'Primary domain',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    },
     { name: 'aliases', title: 'Aliases', type: 'array', of: [{ type: 'string' }] },
     { name: 'redirectTarget', title: 'Redirect target', type: 'string' },
     {

@@ -1,10 +1,11 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+
 import Card from './Card'
+import { getDevSectionAttributes } from './dev/DevTrace'
 import Gradient from './Gradient'
 import LeadCaptureForm from './LeadCaptureForm'
 import PortableTextContent from './PortableTextContent'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
-import { getDevSectionAttributes } from './dev/DevTrace'
 
 const SECTION_VARIANTS = {
   default: {

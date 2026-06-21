@@ -1,5 +1,4 @@
 import 'server-only'
-
 import {createClient} from '@sanity/client'
 
 if (!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID) {

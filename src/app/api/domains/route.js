@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 
 import { requireAdminRequest } from '@/lib/auth/guards'
+import { getAllSites } from '@/lib/platform/content'
 import {
   hasDomainDatabase,
   listDomainRecordsDb,
   seedInitialDomainRecords,
   upsertDomainRecordDb,
 } from '@/lib/platform/domain-db'
-import { getAllSites } from '@/lib/platform/content'
 import { listDomainRecords, upsertDomainRecord } from '@/lib/platform/store'
 import { addDomainToVercel, isVercelConfigured, listProjectDomainsOnVercel } from '@/lib/platform/vercel'
 

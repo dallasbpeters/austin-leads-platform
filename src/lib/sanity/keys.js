@@ -1,4 +1,5 @@
 import { stegaClean } from 'next-sanity'
+
 import { isHeroSectionBlock } from '../platform/section-helpers'
 
 function toKeyPart(value) {
@@ -317,6 +318,21 @@ export function normalizeSectionType(section) {
       avatarBlurb: section.avatarBlurb || section.personBlurb,
       avatarImage: section.avatarImage || section.profileImage,
       avatarImageAsset: section.avatarImageAsset || section.profileImageAsset,
+    })
+  }
+
+  if (section.type === 'bannerCta' || section._type === 'bannerCtaSection') {
+    return omitUndefined({
+      _key: section._key,
+      _type: 'bannerCtaSection',
+      type: 'bannerCta',
+      eyebrow: section.eyebrow,
+      title: section.title,
+      body: section.body,
+      ctaLabel: section.ctaLabel,
+      ctaHref: section.ctaHref,
+      image: section.image,
+      imageAsset: section.imageAsset,
     })
   }
 

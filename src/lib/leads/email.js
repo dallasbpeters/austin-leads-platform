@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+
 import { getLeadRoutingSettings } from './settings'
 
 function getResendApiKey() {

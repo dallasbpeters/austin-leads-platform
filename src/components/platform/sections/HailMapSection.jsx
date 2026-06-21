@@ -1,5 +1,6 @@
-import Link from 'next/link'
 import { FastArrowRight } from 'iconoir-react'
+import Link from 'next/link'
+
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
 import { cleanRuntimeHref } from '@/lib/sanity/stega'

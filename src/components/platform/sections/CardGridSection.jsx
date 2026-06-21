@@ -1,4 +1,5 @@
 import * as IconoirIcons from 'iconoir-react'
+
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
 import { buildRuntimeKey } from '@/lib/sanity/stega'

@@ -1,9 +1,8 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import {
   Bot,
+  FileSignature,
   Globe2,
   ImagePlus,
   LayoutDashboard,
@@ -14,12 +13,16 @@ import {
   TrendingUp,
   UsersRound,
 } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
@@ -31,14 +34,17 @@ const overviewItems = [
 
 const workspaceItems = [
   { href: '/crm', label: 'CRM', icon: UsersRound },
+  { href: '/clients', label: 'Clients', icon: UsersRound },
   { href: '/hero-pages', label: 'Hero Pages', icon: ImagePlus },
   { href: '/publish', label: 'Publish', icon: PenSquare },
+  { href: '/documents', label: 'Documents', icon: FileSignature },
   { href: '/domains', label: 'Domains', icon: Globe2 },
   { href: '/users', label: 'Users', icon: ShieldCheck },
   { href: '/settings', label: 'Settings', icon: Settings2 },
   { href: '/studio', label: 'Studio', icon: Bot },
   { href: '/', label: 'Live Site', icon: Globe2 },
 ]
+const nestedItems = [{ href: '/documents/history', label: 'History', icon: PenSquare }]
 
 const christmasItems = [
   { href: '/christmas', label: 'Jobs', icon: UsersRound },
@@ -51,10 +57,12 @@ function NavGroup({ label, items }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
+
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map(({ href, label: itemLabel, icon: Icon }) => {
             const active = pathname === href || (href !== '/' && pathname.startsWith(`${href}/`))
+            const subItemsForHref = href === '/documents' ? nestedItems : []
             return (
               <SidebarMenuItem key={href}>
                 <SidebarMenuButton asChild isActive={active} tooltip={itemLabel}>
@@ -63,6 +71,20 @@ function NavGroup({ label, items }) {
                     <span>{itemLabel}</span>
                   </Link>
                 </SidebarMenuButton>
+                {active && subItemsForHref.length ? (
+                  <SidebarMenuSub>
+                    {subItemsForHref.map(({ href: nestedHref, label: nestedLabel, icon: NestedIcon }) => (
+                      <SidebarMenuSubItem key={nestedHref}>
+                        <SidebarMenuButton asChild isActive={pathname === nestedHref}>
+                          <Link href={nestedHref}>
+                            <NestedIcon />
+                            <span>{nestedLabel}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                ) : null}
               </SidebarMenuItem>
             )
           })}

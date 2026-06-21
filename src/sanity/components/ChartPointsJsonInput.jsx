@@ -50,7 +50,13 @@ function normalizePoint(value, index) {
     const barValue = coerceNumber(value[1]) ?? 0
     const lineValue = coerceNumber(value[2]) ?? 0
     const areaValues = normalizeAreaValuesArray(value[3])
-    const point = { _type: 'energyChartPoint', _key: generateKey(index), label, barValue, lineValue }
+    const point = {
+      _type: 'energyChartPoint',
+      _key: generateKey(index),
+      label,
+      barValue,
+      lineValue,
+    }
     if (areaValues) {
       point.areaValues = areaValues
     }

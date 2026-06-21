@@ -26,16 +26,9 @@ import pg from 'pg'
  * URL params and apply `{ ssl: { rejectUnauthorized: false } }` explicitly.
  */
 
-const SESSION_KEYS = [
-  'STORAGEDB_POSTGRES_URL_NON_POOLING',
-  'POSTGRES_URL_NON_POOLING',
-]
+const SESSION_KEYS = ['STORAGEDB_POSTGRES_URL_NON_POOLING', 'POSTGRES_URL_NON_POOLING']
 
-const POOLED_KEYS = [
-  'STORAGEDB_POSTGRES_URL',
-  'POSTGRES_URL',
-  'NEON_DATABASE_URL',
-]
+const POOLED_KEYS = ['STORAGEDB_POSTGRES_URL', 'POSTGRES_URL', 'NEON_DATABASE_URL']
 
 function isProductionRuntime() {
   return (

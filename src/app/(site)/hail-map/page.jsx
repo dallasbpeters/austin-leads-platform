@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
 import Footer from '@/components/Footer'
-import Header from '@/components/Header'
 import HailWeatherLookup from '@/components/HailWeatherLookup'
+import Header from '@/components/Header'
 import LeadCaptureForm from '@/components/LeadCaptureForm'
 import { Card, CardContent } from '@/components/ui/card'
 import { resolveCurrentSite } from '@/lib/platform/content'

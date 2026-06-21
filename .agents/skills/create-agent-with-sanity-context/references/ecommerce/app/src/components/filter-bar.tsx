@@ -8,6 +8,7 @@ import {type ProductFiltersInput} from '@/lib/client-tools'
 import {SORT_OPTIONS} from '@/sanity/queries/products'
 
 import type {FILTER_OPTIONS_QUERY_RESULT} from '../../sanity.types'
+
 import {Button} from './ui/button'
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from './ui/select'
 

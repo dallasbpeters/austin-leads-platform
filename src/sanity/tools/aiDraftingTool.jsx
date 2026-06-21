@@ -2,7 +2,6 @@ import React from 'react'
 import { useClient } from 'sanity'
 import { ImageGeneratorContent } from 'sanity-plugin-gemini-ai-images'
 
-import { studioPreviewOrigin, studioUrl } from '../env'
 import {
   buildDraftSkeleton,
   normalizeDraftSlugForContentType,
@@ -13,6 +12,7 @@ import {
   buildSanityAgentPublishingInstruction,
   SANITY_AGENT_PUBLISHING_SETUP_NOTES,
 } from '../agent/publishingInstructions'
+import { studioPreviewOrigin, studioUrl } from '../env'
 import { syncGuideHeroToGuideGridItems } from '../lib/syncGuideListingImages'
 
 const SANITY_AGENT_SCHEMA_ID =
@@ -333,7 +333,13 @@ export function AiDraftingTool() {
 
   return (
     <div
-      style={{ padding: '1.5rem', display: 'grid', gap: '1.25rem', maxWidth: '960px', marginInline: 'auto' }}
+      style={{
+        padding: '1.5rem',
+        display: 'grid',
+        gap: '1.25rem',
+        maxWidth: '960px',
+        marginInline: 'auto',
+      }}
     >
       <div style={{ display: 'grid', gap: '0.5rem' }}>
         <div
@@ -467,7 +473,11 @@ export function AiDraftingTool() {
               value={form.siteId}
               disabled={loadingSites}
               onChange={(event) => setForm((current) => ({ ...current, siteId: event.target.value }))}
-              style={{ padding: '0.7rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+              style={{
+                padding: '0.7rem 0.8rem',
+                borderRadius: '0.6rem',
+                border: '1px solid #d1d5db',
+              }}
             >
               {sites.map((site) => (
                 <option key={site._id} value={site._id}>
@@ -481,7 +491,11 @@ export function AiDraftingTool() {
             <select
               value={form.contentType}
               onChange={(event) => setForm((current) => ({ ...current, contentType: event.target.value }))}
-              style={{ padding: '0.7rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+              style={{
+                padding: '0.7rem 0.8rem',
+                borderRadius: '0.6rem',
+                border: '1px solid #d1d5db',
+              }}
             >
               {CONTENT_TYPE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -497,7 +511,11 @@ export function AiDraftingTool() {
             value={form.title}
             onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
             placeholder="Texas storm damage roof insurance claims"
-            style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+            style={{
+              padding: '0.75rem 0.8rem',
+              borderRadius: '0.6rem',
+              border: '1px solid #d1d5db',
+            }}
           />
         </Field>
 
@@ -513,7 +531,11 @@ export function AiDraftingTool() {
                 setForm((current) => ({ ...current, slug: event.target.value }))
               }}
               placeholder="guides/texas-storm-damage-roof-insurance-claims"
-              style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+              style={{
+                padding: '0.75rem 0.8rem',
+                borderRadius: '0.6rem',
+                border: '1px solid #d1d5db',
+              }}
             />
             <button
               type="button"
@@ -586,7 +608,11 @@ export function AiDraftingTool() {
                 value={assetSearch}
                 onChange={(event) => setAssetSearch(event.target.value)}
                 placeholder="Search by filename..."
-                style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+                style={{
+                  padding: '0.75rem 0.8rem',
+                  borderRadius: '0.6rem',
+                  border: '1px solid #d1d5db',
+                }}
               />
               <div
                 style={{
@@ -672,7 +698,11 @@ export function AiDraftingTool() {
               value={form.heroImageUrl}
               onChange={(event) => setForm((current) => ({ ...current, heroImageUrl: event.target.value }))}
               placeholder="https://images.unsplash.com/photo-..."
-              style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+              style={{
+                padding: '0.75rem 0.8rem',
+                borderRadius: '0.6rem',
+                border: '1px solid #d1d5db',
+              }}
             />
           </Field>
 
@@ -684,7 +714,11 @@ export function AiDraftingTool() {
               value={form.heroImageAlt}
               onChange={(event) => setForm((current) => ({ ...current, heroImageAlt: event.target.value }))}
               placeholder="Crew inspecting a hail-damaged Texas roof"
-              style={{ padding: '0.75rem 0.8rem', borderRadius: '0.6rem', border: '1px solid #d1d5db' }}
+              style={{
+                padding: '0.75rem 0.8rem',
+                borderRadius: '0.6rem',
+                border: '1px solid #d1d5db',
+              }}
             />
           </Field>
         </div>

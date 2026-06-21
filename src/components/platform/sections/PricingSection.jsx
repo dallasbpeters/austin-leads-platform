@@ -1,5 +1,5 @@
-import PortableTextContent from '@/components/PortableTextContent'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
+import PortableTextContent from '@/components/PortableTextContent'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 
 export function PricingSection({ section, sectionId }) {
@@ -14,13 +14,11 @@ export function PricingSection({ section, sectionId }) {
   const calloutNotes = notes.filter((n) => n?.variant === 'callout')
 
   const stepCols =
-    stepNotes.length === 2 ? 'grid-cols-2' :
-    stepNotes.length >= 3 ? 'grid-cols-3' :
-    'grid-cols-1'
+    stepNotes.length === 2 ? 'grid-cols-2' : stepNotes.length >= 3 ? 'grid-cols-3' : 'grid-cols-1'
 
   return (
     <section
-      className="border-b border-border bg-white px-3 py-14 md:py-20"
+      className="border-border border-b bg-white px-3 py-14 md:py-20"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/PricingSection.jsx',
@@ -31,13 +29,12 @@ export function PricingSection({ section, sectionId }) {
 
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-10 lg:grid-cols-[260px_1fr] lg:gap-x-14">
-
           {/* Left: heading block — spans both rows at lg */}
           <div className="lg:row-span-2">
             {eyebrow ? (
               <p className="text-muted-foreground mb-4 text-xs tracking-[0.2em] uppercase">{eyebrow}</p>
             ) : null}
-            <h2 className="font-serif text-foreground mb-4 text-2xl leading-tight tracking-normal text-balance md:text-3xl">
+            <h2 className="text-foreground mb-4 font-serif text-2xl leading-tight tracking-normal text-balance md:text-3xl">
               {title}
             </h2>
             {body ? (
@@ -51,7 +48,7 @@ export function PricingSection({ section, sectionId }) {
 
           {/* Right top: step columns */}
           {stepNotes.length > 0 ? (
-            <div className={`grid divide-x divide-border border-y border-border ${stepCols}`}>
+            <div className={`divide-border border-border grid divide-x border-y ${stepCols}`}>
               {stepNotes.map((note, i) => {
                 const noteTitle = note?.title
                 const noteBody = note?.body
@@ -64,18 +61,23 @@ export function PricingSection({ section, sectionId }) {
                   <div
                     key={key}
                     className="py-5 first:pl-0 last:pr-0"
-                    style={{ paddingLeft: i > 0 ? '1.25rem' : 0, paddingRight: i < stepNotes.length - 1 ? '1.25rem' : 0 }}
+                    style={{
+                      paddingLeft: i > 0 ? '1.25rem' : 0,
+                      paddingRight: i < stepNotes.length - 1 ? '1.25rem' : 0,
+                    }}
                   >
                     <p className="text-foreground/30 mb-2 text-xs font-bold tracking-[0.16em] uppercase">
                       0{i + 1}
                     </p>
                     {noteTitle ? (
-                      <h3 className="font-serif text-foreground mb-1 text-lg leading-tight tracking-normal">
+                      <h3 className="text-foreground mb-1 font-serif text-lg leading-tight tracking-normal">
                         {noteTitle}
                       </h3>
                     ) : null}
-                      <p className="text-amber-500 mb-1 text-xs font-bold uppercase tracking-[0.16em]">{paymentDue}</p>
-                      <p className="font-serif text-foreground mb-2 text-3xl leading-tight">{amount}</p>
+                    <p className="mb-1 text-xs font-bold tracking-[0.16em] text-amber-500 uppercase">
+                      {paymentDue}
+                    </p>
+                    <p className="text-foreground mb-2 font-serif text-3xl leading-tight">{amount}</p>
 
                     {noteBody ? (
                       <PortableTextContent
@@ -102,9 +104,7 @@ export function PricingSection({ section, sectionId }) {
                 return (
                   <div key={key}>
                     {noteTitle ? (
-                      <h3
-                        className="font-serif text-green-900 mb-2 text-xl font-bold tracking-normal"
-                      >
+                      <h3 className="mb-2 font-serif text-xl font-bold tracking-normal text-green-900">
                         {noteTitle}
                       </h3>
                     ) : null}
@@ -120,7 +120,6 @@ export function PricingSection({ section, sectionId }) {
               })}
             </div>
           ) : null}
-
         </div>
       </div>
     </section>

@@ -1,8 +1,9 @@
 import ConsultationSection from '@/components/ConsultationSection'
-import { SchedulingForm } from '@/components/StripeCheckout'
 import DevTrace from '@/components/dev/DevTrace'
-import { cleanRuntimeString } from '@/lib/sanity/stega'
+import { SchedulingForm } from '@/components/StripeCheckout'
 import { roofingServices } from '@/lib/platform/service-catalog'
+import { cleanRuntimeString } from '@/lib/sanity/stega'
+
 import { CONSULTATION_ANCHOR_ID } from '../PublicSiteUtils'
 
 export function CtaSection({ page, section, site, pathname, editAttributes }) {

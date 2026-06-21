@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { getDevSectionAttributes } from './dev/DevTrace'
-
 import { cva } from 'class-variance-authority'
+import { useEffect, useRef, useState } from 'react'
+
 import { cn } from '@/lib/utils'
+
+import { getDevSectionAttributes } from './dev/DevTrace'
 
 const quoteVariants = cva('relative p-6 sm:p-10 rounded-3xl overflow-hidden ring-1 ring-white/10', {
   variants: {

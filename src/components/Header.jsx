@@ -1,15 +1,14 @@
 'use client'
 
-import Link from 'next/link'
-import Logo from './Logo'
-import { getDevSectionAttributes } from './dev/DevTrace'
-
-import * as React from 'react'
 import { Menu, Xmark } from 'iconoir-react'
+import Link from 'next/link'
+import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
-
 import { Separator } from '@/components/ui/separator'
+
+import { getDevSectionAttributes } from './dev/DevTrace'
+import Logo from './Logo'
 
 const LINKS = [
   { href: '/solar', label: 'Solar' },
@@ -18,6 +17,7 @@ const LINKS = [
   { href: '/hail-damage', label: 'Hail & Storm Damage' },
   { href: '/guides', label: 'Guides' },
   { href: '/about', label: 'About Us' },
+  { href: 'https://tx-christmaslights.com', label: 'Christmas Lights' },
   {
     href: '#consultation',
     label: 'Contact',
@@ -30,23 +30,33 @@ function NavList({ onNavigate }) {
     <>
       {LINKS.map(({ label, href, className }) =>
         href.startsWith('#') ? (
-          <a
+          <Button
+            variant="primary"
             key={href}
             href={href}
             onClick={onNavigate}
-            className={`font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 hover:text-white hover:brightness-125 ${className}`}
+            className={`font-wght-500 medium text-foreground btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 text-[1rem] hover:text-white hover:brightness-125 ${className}`}
           >
-            <span data-slot="button-inner" className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]">{label}</span>
-            
-          </a>
+            <span
+              data-slot="button-inner"
+              className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]"
+            >
+              {label}
+            </span>
+          </Button>
         ) : (
           <Link
             key={href}
             href={href}
             onClick={onNavigate}
-            className={`font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent ${className}`}
+            className={`font-wght-450 medium text-foreground hover:text-primary btn text-md flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent ${className}`}
           >
-            <span data-slot="button-inner" className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]">{label}</span>
+            <span
+              data-slot="button-inner"
+              className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]"
+            >
+              {label}
+            </span>
           </Link>
         ),
       )}
@@ -92,14 +102,14 @@ export default function Header() {
     <>
       <nav
         id="site-top"
-        className="text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-7xl translate-x-[-50%] px-0 sm:top-0 md:top-2 md:px-4"
+        className="text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
         {...getDevSectionAttributes({
           id: 'site-header',
           markup: 'src/components/Header.jsx',
           content: 'local JSX nav and service catalog links',
         })}
       >
-        <div className="mx-auto w-full rounded-none bg-stone-100 px-7 py-4 shadow-sm backdrop-blur-sm md:rounded-full">
+        <div className="mx-auto w-full rounded-none bg-stone-100 px-7 py-4 shadow-md backdrop-blur-sm md:rounded-full">
           <div className="flex items-center justify-between">
             <Link
               href="/"

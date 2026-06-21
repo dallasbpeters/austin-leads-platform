@@ -1,4 +1,5 @@
 import { createClient } from 'next-sanity'
+
 import { normalizeSectionType, withSectionKeys } from '../src/lib/sanity/keys.js'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID

@@ -1,14 +1,14 @@
 import './src/sanity/studioPatches.css'
 import { agentContextPlugin } from '@sanity/agent-context/studio'
 import { assist } from '@sanity/assist'
-import { defineConfig } from 'sanity'
 import { colorInput } from '@sanity/color-input'
-import { structureTool } from 'sanity/structure'
-import { presentationTool } from 'sanity/presentation'
-import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
-import { studioStructure } from './src/sanity/studioStructure'
+import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
+import { presentationTool } from 'sanity/presentation'
+import { structureTool } from 'sanity/structure'
 
+import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
+import { SiteSwitcherNavigator } from './src/sanity/components/SiteSwitcherNavigator'
 import {
   dataset,
   frontendOriginAllowlist,
@@ -19,12 +19,12 @@ import {
   studioPreviewOrigin,
   studioUrl,
 } from './src/sanity/env'
-import { SiteSwitcherNavigator } from './src/sanity/components/SiteSwitcherNavigator'
 import { guideImageSyncPlugin } from './src/sanity/plugins/guideImageSyncPlugin'
+import { presentationDocuments, presentationLocations } from './src/sanity/presentation'
+import { schemaTypes } from './src/sanity/schemaTypes'
+import { studioStructure } from './src/sanity/studioStructure'
 import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
 import { pageSpeedTool } from './src/sanity/tools/pageSpeedTool'
-import { schemaTypes } from './src/sanity/schemaTypes'
-import { presentationDocuments, presentationLocations } from './src/sanity/presentation'
 
 const previewModeRoutes = {
   enable: '/api/draft-mode/enable',

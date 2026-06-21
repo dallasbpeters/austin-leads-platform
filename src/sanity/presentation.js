@@ -121,7 +121,10 @@ export const presentationLocations = {
       if (!path) return null
       return {
         locations: [
-          { title: doc.title || 'Untitled page', href: tenantHref(slugFromSiteRef(doc.siteRef), path) },
+          {
+            title: doc.title || 'Untitled page',
+            href: tenantHref(slugFromSiteRef(doc.siteRef), path),
+          },
         ],
       }
     },

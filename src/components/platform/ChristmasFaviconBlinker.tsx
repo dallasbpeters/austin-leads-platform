@@ -6,11 +6,11 @@ import { useEffect } from 'react'
 // Built from the same ornament geometry as tx-christmas-logo-alt.svg.
 // Encoding is done at runtime to avoid base64 bloat in the bundle.
 const SVG_BULBS: [on: string, dim: string][] = [
-  ['rgb(6,102,53)', 'rgb(3,50,25)'],   // green
+  ['rgb(6,102,53)', 'rgb(3,50,25)'], // green
   ['rgb(85,127,248)', 'rgb(40,65,130)'], // blue
-  ['rgb(222,76,17)', 'rgb(110,38,8)'],  // orange
+  ['rgb(222,76,17)', 'rgb(110,38,8)'], // orange
   ['rgb(85,127,248)', 'rgb(40,65,130)'], // blue
-  ['rgb(222,76,17)', 'rgb(110,38,8)'],  // orange
+  ['rgb(222,76,17)', 'rgb(110,38,8)'], // orange
 ]
 
 // Shared SVG structure from tx-christmas-logo-alt.svg, parameterised by bulb fills.

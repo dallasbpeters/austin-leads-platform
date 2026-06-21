@@ -76,7 +76,13 @@ const portfolioDomains = [
     category: 'roofing',
     slug: 'roof-pros-of-austin',
   },
-  { domain: 'solarpanelsatx.com', seoScore: 100, tier: 'Hero', category: 'solar', slug: 'solar-panels-atx' },
+  {
+    domain: 'solarpanelsatx.com',
+    seoScore: 100,
+    tier: 'Hero',
+    category: 'solar',
+    slug: 'solar-panels-atx',
+  },
   {
     domain: 'austinsolarsolutions.com',
     seoScore: 100,
@@ -112,7 +118,13 @@ const portfolioDomains = [
     category: 'weddings',
     slug: 'elite-weddings-austin',
   },
-  { domain: 'roofsfortexas.com', seoScore: 40, tier: 'Mid', category: 'roofing', slug: 'roofs-for-texas' },
+  {
+    domain: 'roofsfortexas.com',
+    seoScore: 40,
+    tier: 'Mid',
+    category: 'roofing',
+    slug: 'roofs-for-texas',
+  },
   {
     domain: 'austinsolarenergy.net',
     seoScore: 40,
@@ -141,7 +153,13 @@ const portfolioDomains = [
     category: 'weddings',
     slug: 'elite-events-austin',
   },
-  { domain: 'texasplanners.com', seoScore: 40, tier: 'Mid', category: 'weddings', slug: 'texas-planners' },
+  {
+    domain: 'texasplanners.com',
+    seoScore: 40,
+    tier: 'Mid',
+    category: 'weddings',
+    slug: 'texas-planners',
+  },
   {
     domain: 'austinseliteweddings.com',
     seoScore: 40,
@@ -149,7 +167,13 @@ const portfolioDomains = [
     category: 'weddings',
     slug: 'austins-elite-weddings',
   },
-  { domain: 'austinweddings.net', seoScore: 40, tier: 'Mid', category: 'weddings', slug: 'austin-weddings' },
+  {
+    domain: 'austinweddings.net',
+    seoScore: 40,
+    tier: 'Mid',
+    category: 'weddings',
+    slug: 'austin-weddings',
+  },
   {
     domain: 'austinshomebuilders.com',
     seoScore: 40,
@@ -166,7 +190,12 @@ const portfolioDomains = [
   { domain: 'austinweddings.events', seoScore: 10, tier: 'Redirect', category: 'weddings' },
   { domain: 'austinweddings.online', seoScore: 10, tier: 'Redirect', category: 'weddings' },
   { domain: 'austinweddings.us', seoScore: 10, tier: 'Redirect', category: 'weddings' },
-  { domain: 'austinweddingsandspecialevents.com', seoScore: 10, tier: 'Redirect', category: 'weddings' },
+  {
+    domain: 'austinweddingsandspecialevents.com',
+    seoScore: 10,
+    tier: 'Redirect',
+    category: 'weddings',
+  },
   { domain: 'kathielovessolar.com', seoScore: 10, tier: 'Redirect', category: 'solar' },
   { domain: 'solarpanels-texas.com', seoScore: 10, tier: 'Redirect', category: 'solar' },
   { domain: 'texas-solarroofs.com', seoScore: 10, tier: 'Redirect', category: 'solar' },
@@ -588,6 +617,20 @@ export const pages = [
             },
           },
         ],
+      },
+      {
+        type: 'bannerCta',
+        eyebrow: 'Free consultation',
+        title: 'Not sure whether the roof, solar, or storm claim comes first?',
+        body: 'Start with a short conversation about the house and the timing. We will help you sort the next step before anyone talks scope or pricing.',
+        ctaLabel: 'Start here',
+        ctaHref: '#consultation',
+        image: {
+          urls: {
+            regular: '/images/solar-install.png',
+          },
+          alt: 'Solar installation crew working on a residential roof',
+        },
       },
       {
         type: 'cta',

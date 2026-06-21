@@ -47,7 +47,9 @@ async function upsertEnvVar(key: string, value: string, targets: string[]) {
   const listRes = await fetch(`https://api.vercel.com/v10/projects/${PROJECT_ID}/env?decrypt=false`, {
     headers: { Authorization: `Bearer ${VERCEL_TOKEN}` },
   })
-  const { envs = [] } = (await listRes.json()) as { envs: { id: string; key: string; target: string[] }[] }
+  const { envs = [] } = (await listRes.json()) as {
+    envs: { id: string; key: string; target: string[] }[]
+  }
   const existing = envs.filter((e) => e.key === key && targets.some((t) => e.target.includes(t)))
 
   // Delete existing entries for these targets first to avoid conflicts

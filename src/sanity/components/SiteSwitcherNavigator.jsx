@@ -68,7 +68,12 @@ export function SiteSwitcherNavigator() {
 
       {loading ? (
         <div
-          style={{ padding: '16px', textAlign: 'center', color: 'var(--card-muted-fg-color)', fontSize: 13 }}
+          style={{
+            padding: '16px',
+            textAlign: 'center',
+            color: 'var(--card-muted-fg-color)',
+            fontSize: 13,
+          }}
         >
           Loading…
         </div>

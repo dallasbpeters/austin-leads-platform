@@ -3,7 +3,10 @@ import { notFound } from 'next/navigation'
 
 import App from '@/App'
 import PublicSite from '@/components/platform/PublicSite'
-import { getHeroImageUrl } from '@/lib/platform/imageSource'
+import {
+  isTxChristmasLightsSite,
+  TX_CHRISTMAS_PUBLIC_OG_IMAGE_SRC,
+} from '@/components/platform/PublicSiteUtils'
 import {
   createJsonLd,
   getHomepageForSite,
@@ -16,13 +19,9 @@ import {
   resolveSiteByHost,
   resolveSiteBySlug,
 } from '@/lib/platform/content'
-import { isTxChristmasLightsSite, TX_CHRISTMAS_PUBLIC_OG_IMAGE_SRC } from '@/components/platform/PublicSiteUtils'
+import { getHeroImageUrl } from '@/lib/platform/imageSource'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
-import {
-  SHARE_DESCRIPTION_MAX,
-  SHARE_TITLE_MAX,
-  truncateForShare,
-} from '@/lib/platform/social-share-text'
+import { SHARE_DESCRIPTION_MAX, SHARE_TITLE_MAX, truncateForShare } from '@/lib/platform/social-share-text'
 
 /**
  * Sanity Presentation passes ?__site=<slug> so the multi-tenant renderer can

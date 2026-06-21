@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useTransition } from 'react'
 import { AlertCircle, LockKeyhole } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-
 import posthog from 'posthog-js'
+import { useState, useTransition } from 'react'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'

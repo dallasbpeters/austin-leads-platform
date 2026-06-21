@@ -1,8 +1,8 @@
+import { AirConditioner, AreaSearch, BatteryCharging, HomeShield, WindowTabs } from 'iconoir-react'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { AirConditioner, AreaSearch, BatteryCharging, HomeShield, WindowTabs } from 'iconoir-react'
 
 const width = 1600
 const height = 1600

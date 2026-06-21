@@ -1,13 +1,14 @@
-import { draftMode, headers } from 'next/headers'
 import { groq, stegaClean } from 'next-sanity'
+import { draftMode, headers } from 'next/headers'
 
-import { getSanityServerClient, sanityWriteClient } from '@/sanity/client'
-import { pages, sites } from './fixtures'
-import { defaultLaunchChecklist } from './launchChecklist'
-import { hasImageSource } from './imageSource'
+import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 import { withSectionKeys } from '@/lib/sanity/keys'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
-import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+import { getSanityServerClient, sanityWriteClient } from '@/sanity/client'
+
+import { pages, sites } from './fixtures'
+import { hasImageSource } from './imageSource'
+import { defaultLaunchChecklist } from './launchChecklist'
 
 const heroVideoProjection = `
   heroVideo{
@@ -778,6 +779,8 @@ function sanitizeSection(section) {
     personBlurb: section.personBlurb,
     certificationLabel: section.certificationLabel,
     certificationTitle: section.certificationTitle,
+    image: section.image,
+    imageAsset: section.imageAsset,
     secondaryPersonLabel: section.secondaryPersonLabel,
     secondaryPersonName: section.secondaryPersonName,
     secondaryPersonRole: section.secondaryPersonRole,

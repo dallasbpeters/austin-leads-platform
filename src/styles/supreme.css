@@ -19,7 +19,7 @@
 'wght' (range from 100.0 to 800.0
 */
 @font-face {
-  font-family: 'Supreme-Variable';
+  font-family: Supreme-Variable;
   src:
     url('/fonts/Supreme-Variable.woff2') format('woff2'),
     url('/fonts/Supreme-Variable.woff') format('woff'),

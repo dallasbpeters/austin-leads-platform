@@ -1,5 +1,3 @@
-import Link from 'next/link'
-import Image from 'next/image'
 import {
   AirConditioner,
   AreaSearch,
@@ -14,13 +12,16 @@ import {
   Wrench,
 } from 'iconoir-react'
 import * as IconoirIcons from 'iconoir-react'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
+import Image from 'next/image'
+import Link from 'next/link'
+
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 import PortableTextContent from '@/components/PortableTextContent'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
-import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
 
 const serviceIconMap = {
   audit: AreaSearch,
@@ -229,8 +230,7 @@ function enrichItems(rawItems) {
 }
 
 function ServiceMedia({ item, overlayStyle }) {
-  if (!item.imageUrl)
-    return <div className="pointer-events-none absolute inset-0" style={overlayStyle} />
+  if (!item.imageUrl) return <div className="pointer-events-none absolute inset-0" style={overlayStyle} />
   return (
     <>
       <Image
@@ -248,7 +248,10 @@ function ServiceMedia({ item, overlayStyle }) {
 function ServiceCardLink({ item, children }) {
   if (!item.href) return <div className="service-grid-card-border-wrap block w-full">{children}</div>
   return (
-    <Link href={cleanRuntimeHref(item.href)} className="service-grid-card-link block w-full rounded-2xl focus-visible:outline-none">
+    <Link
+      href={cleanRuntimeHref(item.href)}
+      className="service-grid-card-link block w-full rounded-2xl focus-visible:outline-none"
+    >
       {children}
     </Link>
   )
@@ -303,7 +306,7 @@ export function ServiceGridSection({ section, sectionId }) {
               <Card className="service-grid-card-border group relative aspect-4/4 overflow-hidden rounded-2xl border-0 bg-transparent shadow-none contain-none">
                 {item.isRecommended ? (
                   <div className="absolute top-3 right-5 z-10">
-                    <Badge variant="outline" className="text-white border-secondary bg-secondary">
+                    <Badge variant="outline" className="border-secondary bg-secondary text-white">
                       <Star className="h-4 w-4" />
                       Recommended
                     </Badge>
@@ -344,7 +347,7 @@ export function ServiceGridSection({ section, sectionId }) {
                     value={item.copy}
                     className="mt-1 text-sm font-normal text-white"
                   />
-                  </div>
+                </div>
               </Card>
             )
             return (
@@ -364,7 +367,7 @@ export function ServiceGridSection({ section, sectionId }) {
               {roofingItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
-                  <Card className="relative group aspect-4/5 overflow-hidden" variant="media" radius="lg">
+                  <Card className="group relative aspect-4/5 overflow-hidden" variant="media" radius="lg">
                     <ServiceMedia
                       item={item}
                       overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'medium') }}
@@ -400,7 +403,7 @@ export function ServiceGridSection({ section, sectionId }) {
               {secondaryItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
-                  <Card className="relative group aspect-square overflow-hidden" variant="media" radius="lg">
+                  <Card className="group relative aspect-square overflow-hidden" variant="media" radius="lg">
                     <ServiceMedia
                       item={item}
                       overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'small') }}

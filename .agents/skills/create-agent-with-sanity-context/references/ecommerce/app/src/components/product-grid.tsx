@@ -1,4 +1,5 @@
 import type {PRODUCTS_QUERY_RESULT} from '../../sanity.types'
+
 import {ProductCard} from './product-card'
 
 interface ProductGridProps {

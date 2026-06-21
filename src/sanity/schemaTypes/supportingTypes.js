@@ -130,7 +130,12 @@ export default [
       },
     },
     fields: [
-      { name: 'question', title: 'Question', type: 'string', validation: (Rule) => Rule.required() },
+      {
+        name: 'question',
+        title: 'Question',
+        type: 'string',
+        validation: (Rule) => Rule.required(),
+      },
       { name: 'answer', title: 'Answer', type: 'text', validation: (Rule) => Rule.required() },
       { name: 'site', title: 'Site', type: 'reference', to: [{ type: 'site' }] },
     ],
