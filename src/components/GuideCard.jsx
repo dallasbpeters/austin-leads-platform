@@ -213,7 +213,7 @@ function GuideCardBody({ card }) {
       whileHover="hover"
     >
       <div className="grid grid-cols-2 items-start text-current/88">
-        {CardIcon ? <CardIcon className="size-8" /> : <ArrowIcon />}
+        {CardIcon ? <CardIcon className="size-8" aria-hidden="true" /> : <ArrowIcon />}
         {card.number ? (
           <span className="w-full text-right text-[2rem] font-semibold">{card.number}</span>
         ) : null}

@@ -244,7 +244,8 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
           <div className="flex items-center gap-2 px-1">
             <div
               ref={scrubberRef}
-              className="relative h-6 flex-1 cursor-pointer"
+              className="relative h-6 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              tabIndex={0}
               onMouseDown={handleScrubStart}
               onMouseMove={(e) => {
                 if (isScrubbing) handleScrub(e)
@@ -256,7 +257,6 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
               aria-valuemin={0}
               aria-valuemax={duration}
               aria-valuenow={currentTime}
-              tabIndex={0}
               onKeyDown={(e) => {
                 const video = videoRef.current
                 if (!video || !duration) return

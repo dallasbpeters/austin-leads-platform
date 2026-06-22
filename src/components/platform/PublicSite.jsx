@@ -68,6 +68,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
       {useSolarShell ? <Header /> : <GenericHeader site={site} navigation={navigation} />}
 
       <main
+        id="main-content"
         {...getDevSectionAttributes({
           id: 'public-site-main',
           class: 'main',

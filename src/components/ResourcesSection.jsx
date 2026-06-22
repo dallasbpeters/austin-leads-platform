@@ -127,7 +127,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-charade),rgba(11,59,66,0.2),transparent)]"></div>
                   <div className="absolute inset-x-0 bottom-0 p-8 text-white">
                     <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                      <Icon className="h-8 w-8" strokeWidth={2} />
+                      <Icon className="h-8 w-8" strokeWidth={2} aria-hidden="true" />
                     </div>
                     <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
                     <PortableTextContent

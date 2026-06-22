@@ -531,6 +531,8 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
             <div className="w-full min-w-0" style={{ minHeight: `${chartHeight}px` }}>
               <div
                 className="min-h-40 w-full"
+                role="img"
+                aria-label={`${section?.title || 'Home energy usage trend'} chart showing ${periodLabel}`}
                 style={{
                   width: '100%',
                   height: `${chartHeight}px`,

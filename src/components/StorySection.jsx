@@ -92,11 +92,11 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
             {section.eyebrow}
           </p>
         ) : null}
-        <h2
+        <p
           ref={ref}
           className="font-500 type-accent m-0 text-[clamp(1.5rem,4vw,2.25rem)] tracking-[-0.02em] text-neutral-800"
         >
-          {title ? `${title} ` : null}
+          {title ? <strong className="block">{title}</strong> : null}
           {bodyParts.map((part) =>
             part.wordIndex !== null ? (
               <span
@@ -114,7 +114,7 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
               <span key={`emphasis-${index}-${part}`}>{part}</span>
             ))}
           </span>
-        </h2>
+        </p>
       </div>
     </section>
   )

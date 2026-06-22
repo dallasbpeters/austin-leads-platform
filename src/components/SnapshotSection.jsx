@@ -94,6 +94,7 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
           height="400"
           viewBox="0 0 24 24"
           className="absolute top-10 left-[10%] h-100 w-100"
+          aria-hidden="true"
         >
           <g fill="none" stroke="currentColor" strokeWidth="1.5">
             <circle cx="12" cy="12" r="6"></circle>

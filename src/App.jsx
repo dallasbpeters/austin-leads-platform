@@ -157,7 +157,7 @@ export default function App({
       />
       <DevTrace markup="src/components/Header.jsx" content="local JSX nav and service catalog links" />
       <Header />
-      <main {...getSanityPageEditAttributes(homepage, 'title')}>
+      <main id="main-content" {...getSanityPageEditAttributes(homepage, 'title')}>
         {heroSection ? (
           <>
             <DevTrace

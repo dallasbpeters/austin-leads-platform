@@ -110,7 +110,7 @@ export default function GuideShareBar({ url = '', title = '' }) {
             aria-label={item.label}
             title={item.label}
           >
-            <item.Icon width={16} height={16} />
+            <item.Icon width={16} height={16} aria-hidden="true" />
           </a>
         ))}
         <button
@@ -120,7 +120,11 @@ export default function GuideShareBar({ url = '', title = '' }) {
           aria-label="Copy guide link"
           title={copied ? 'Copied' : 'Copy link'}
         >
-          {copied ? <Check width={16} height={16} /> : <Copy width={16} height={16} />}
+          {copied ? (
+            <Check width={16} height={16} aria-hidden="true" />
+          ) : (
+            <Copy width={16} height={16} aria-hidden="true" />
+          )}
         </button>
       </div>
     </section>

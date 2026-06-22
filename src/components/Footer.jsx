@@ -94,7 +94,7 @@ export default function Footer() {
               className="inline-flex items-center gap-1 text-gray-300 hover:text-gray-300"
             >
               Back to top
-              <DotArrowUp className="h-3 w-3" />
+              <DotArrowUp className="h-3 w-3" aria-hidden="true" />
             </Link>
           </div>
         </div>

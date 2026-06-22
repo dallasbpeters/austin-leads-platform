@@ -95,7 +95,13 @@ const LogoCloud = ({ items = null }) => {
             }
 
             return (
-              <a key={logo.key} href={logo.href} target="_blank" rel="noreferrer" className="inline-flex">
+              <a
+                key={logo.key}
+                href={logo.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex"
+              >
                 {image}
               </a>
             )

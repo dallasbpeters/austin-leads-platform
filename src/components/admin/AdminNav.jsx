@@ -67,7 +67,7 @@ function NavGroup({ label, items }) {
               <SidebarMenuItem key={href}>
                 <SidebarMenuButton asChild isActive={active} tooltip={itemLabel}>
                   <Link href={href}>
-                    <Icon />
+                    <Icon aria-hidden="true" />
                     <span>{itemLabel}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -77,7 +77,7 @@ function NavGroup({ label, items }) {
                       <SidebarMenuSubItem key={nestedHref}>
                         <SidebarMenuButton asChild isActive={pathname === nestedHref}>
                           <Link href={nestedHref}>
-                            <NestedIcon />
+                            <NestedIcon aria-hidden="true" />
                             <span>{nestedLabel}</span>
                           </Link>
                         </SidebarMenuButton>

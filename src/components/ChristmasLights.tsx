@@ -281,7 +281,10 @@ function ChristmasLightsInner({
 
 export function ChristmasLights({ style, ...props }: ChristmasLightsProps) {
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', ...style }}>
+    <div
+      aria-hidden="true"
+      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', ...style }}
+    >
       <Canvas
         camera={{ position: [0, 1.2, 4.5], fov: 42 }}
         gl={{ alpha: true, antialias: true }}

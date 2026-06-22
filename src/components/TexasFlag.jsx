@@ -6,6 +6,7 @@ function TexasFlag(props, height, width) {
       width={width || 100}
       height={height || 100}
       viewBox="0 0 600 600"
+      aria-hidden="true"
       {...props}
     >
       <path fill="#bf0a30" d="M0 0h900v600H0z" />
