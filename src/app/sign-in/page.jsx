@@ -38,7 +38,7 @@ export default async function SignInPage({ searchParams }) {
           <h1 className="text-foreground max-w-2xl text-4xl tracking-normal md:text-5xl">
             Keep the operator side private while the public domains stay indexable.
           </h1>
-          <p className="text-muted-foreground max-w-2xl text-base leading-8">
+          <p className="text-muted-foreground max-w-2xl text-[1rem] leading-8">
             Sign in with Google {googleAuthEnabled ? '(enabled for registered admins) ' : ''}or your admin
             email and password.
           </p>

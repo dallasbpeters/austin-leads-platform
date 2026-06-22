@@ -27,7 +27,7 @@ const portableTextComponents = {
         {children}
       </h3>
     ),
-    h4: ({ children }) => <h4 className="text-base font-semibold">{children}</h4>,
+    h4: ({ children }) => <h4 className="text-[1rem] font-semibold">{children}</h4>,
     blockquote: ({ children }) => (
       <blockquote className="border-l-2 border-current pl-4 opacity-75">{children}</blockquote>
     ),

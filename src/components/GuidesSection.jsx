@@ -65,7 +65,7 @@ export default function GuidesSection({ section = null, page = null, sectionId =
             <PortableTextContent
               as="div"
               value={body}
-              className="mt-3 max-w-3xl text-base leading-7 text-slate-600"
+              className="mt-3 max-w-3xl text-[1rem] leading-7 text-slate-600"
             />
           ) : null}
         </div>

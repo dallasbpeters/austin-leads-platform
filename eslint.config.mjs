@@ -2,6 +2,7 @@ import css from '@eslint/css'
 import js from '@eslint/js'
 import { defineConfig } from 'eslint/config'
 import globals from 'globals'
+import oxlint from 'eslint-plugin-oxlint'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig([
@@ -18,8 +19,15 @@ export default defineConfig([
       'dist/**',
       'coverage/**',
       'skills/**',
+      'playwright-report/**',
+      'test-results/**',
+      'src/e2e/**',
+      'playwright.config.ts',
     ],
   },
+
+  // ── Disable ESLint rules already covered by oxlint ───────────────────────
+  oxlint.configs['flat/all'],
 
   // ── JS / JSX ─────────────────────────────────────────────────────────────
   {

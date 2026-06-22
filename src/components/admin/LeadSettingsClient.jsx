@@ -145,7 +145,7 @@ export default function LeadSettingsClient({ initialSettings }) {
       <div>
         <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Lead operations</p>
         <h1 className="text-foreground mt-2 text-3xl tracking-normal">Lead settings</h1>
-        <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+        <p className="text-muted-foreground mt-3 max-w-3xl text-[1rem] leading-7">
           Control where new lead notifications go, what sender appears in the inbox, and whether Resend
           notifications are active. You can also point notifications at a Resend template. The API key stays
           server-side in env vars.

@@ -167,7 +167,7 @@ export function GallerySection({ section, sectionId }) {
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/75 via-black/30 to-transparent" />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 text-left text-white">
                       {neighborhood ? (
-                        <p className="text-sm leading-tight font-medium md:text-base">{neighborhood}</p>
+                        <p className="text-sm leading-tight font-medium md:text-[1rem]">{neighborhood}</p>
                       ) : null}
                       {year || packageName ? (
                         <p className="mt-0.5 text-[0.7rem] tracking-[0.18em] text-white/85 uppercase">
@@ -221,7 +221,7 @@ export function GallerySection({ section, sectionId }) {
             {hasActiveCaption ? (
               <div className="z-10 mt-6 max-w-[92vw] text-center text-white">
                 {activeCaption.neighborhood ? (
-                  <p className="text-base font-medium md:text-lg">{activeCaption.neighborhood}</p>
+                  <p className="text-[1rem] font-medium md:text-lg">{activeCaption.neighborhood}</p>
                 ) : null}
                 {activeCaption.year || activeCaption.packageName ? (
                   <p className="mt-1 text-[0.7rem] tracking-[0.22em] text-white/70 uppercase">

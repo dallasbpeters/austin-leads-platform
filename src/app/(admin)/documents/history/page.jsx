@@ -12,7 +12,7 @@ export default async function DocumentsHistoryPage() {
       <div className="p-6 lg:p-10">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Documents</CardTitle>
+            <CardTitle className="text-[1rem]">Documents</CardTitle>
             <CardDescription>Document database is not configured.</CardDescription>
           </CardHeader>
         </Card>
@@ -29,7 +29,7 @@ export default async function DocumentsHistoryPage() {
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Documents</p>
           <h1 className="text-foreground mt-2 text-3xl tracking-normal">Stored PDFs</h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <p className="text-muted-foreground mt-3 max-w-3xl text-[1rem] leading-7">
             Browse saved files with list and grid previews sized for scanning, not editing.
           </p>
         </div>

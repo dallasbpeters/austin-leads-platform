@@ -2567,7 +2567,6 @@ const highlightsSectionType = {
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (Rule) => Rule.required(),
       options: canvasPurpose('Section heading for the highlights block.'),
     },
     {

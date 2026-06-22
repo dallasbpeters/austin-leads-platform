@@ -24,7 +24,7 @@ export function RoofingLogoCloudSection({ section = {}, sectionId }) {
               <PortableTextContent
                 as="div"
                 value={section.body}
-                className="text-muted-foreground mx-auto mt-4 max-w-3xl text-base leading-8"
+                className="text-muted-foreground mx-auto mt-4 max-w-3xl text-[1rem] leading-8"
               />
             ) : null}
           </div>

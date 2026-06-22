@@ -101,7 +101,7 @@ export default function Header() {
     <>
       <nav
         id="site-top"
-        className="text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
+        className="site-header text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
         {...getDevSectionAttributes({
           id: 'site-header',
           markup: 'src/components/Header.jsx',

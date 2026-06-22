@@ -1287,7 +1287,7 @@ export default function DocumentsClient({
           <h1 className="text-foreground mt-2 text-3xl tracking-normal">
             Create and send signature requests
           </h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <p className="text-muted-foreground mt-3 max-w-3xl text-[1rem] leading-7">
             Store client records, send signing links through Resend, and keep audit metadata attached to each
             request.
           </p>
@@ -1357,7 +1357,7 @@ export default function DocumentsClient({
             <CardHeader>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <CardTitle className="text-base">Client and recipients</CardTitle>
+                  <CardTitle className="text-[1rem]">Client and recipients</CardTitle>
                   <CardDescription>Client is signer 1.</CardDescription>
                 </div>
                 <Button variant="outline" size="sm" href="/clients">
@@ -1520,7 +1520,7 @@ export default function DocumentsClient({
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
+              <CardTitle className="flex items-center gap-2 text-[1rem]">
                 <FileSignature className="h-4 w-4" />
                 Document source
               </CardTitle>
@@ -1732,7 +1732,7 @@ export default function DocumentsClient({
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Send</CardTitle>
+              <CardTitle className="text-[1rem]">Send</CardTitle>
               <CardDescription>Delivery and order.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1810,7 +1810,7 @@ export default function DocumentsClient({
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Notes</CardTitle>
+              <CardTitle className="text-[1rem]">Notes</CardTitle>
             </CardHeader>
             <CardContent className="text-muted-foreground space-y-2 text-sm leading-6">
               <p>Saved documents show up after send.</p>
@@ -2008,7 +2008,9 @@ export default function DocumentsClient({
                             name={`selected-${selectedBuilderField.id}-label`}
                             value={selectedBuilderField.label}
                             onChange={(event) =>
-                              updateBuilderField(selectedBuilderField.id, { label: event.target.value })
+                              updateBuilderField(selectedBuilderField.id, {
+                                label: event.target.value,
+                              })
                             }
                           />
                         </div>
@@ -2151,7 +2153,7 @@ export default function DocumentsClient({
           <CardHeader>
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <CardTitle className="text-base">Documents</CardTitle>
+                <CardTitle className="text-[1rem]">Documents</CardTitle>
                 <CardDescription>Stored PDFs and reused files.</CardDescription>
               </div>
               <Button variant="outline" onClick={refreshDocumentData} disabled={refreshing}>
@@ -2168,7 +2170,7 @@ export default function DocumentsClient({
                     <div className="flex flex-col gap-3">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <CardTitle className="text-base">{document.title}</CardTitle>
+                          <CardTitle className="text-[1rem]">{document.title}</CardTitle>
                           <CardDescription>{document.file_name}</CardDescription>
                         </div>
                         <Badge variant="outline">{document.source_type || 'document'}</Badge>

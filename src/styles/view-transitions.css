@@ -1,0 +1,63 @@
+/* View Transitions - separate file to prevent Tailwind stripping */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 300ms ease-out both view-transition-old;
+}
+
+::view-transition-new(root) {
+  animation: 300ms ease-out both view-transition-new;
+}
+
+@keyframes view-transition-old {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+    filter: blur(8px);
+  }
+}
+
+@keyframes view-transition-new {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+    filter: blur(8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Exclude site header from view transitions */
+.site-header {
+  view-transition-name: header-excluded;
+}
+
+::view-transition-group(header-excluded) {
+  animation: none;
+}
+
+::view-transition-old(header-excluded) {
+  display: none;
+}
+
+::view-transition-new(header-excluded) {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

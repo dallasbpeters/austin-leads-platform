@@ -114,7 +114,7 @@ export default function ClientsClient({ initialClients, clientDbReady, dbConfigu
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Client records</p>
           <h1 className="text-foreground mt-2 text-3xl tracking-normal">Clients</h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <p className="text-muted-foreground mt-3 max-w-3xl text-[1rem] leading-7">
             Store client identity and contact details before sending documents for signature.
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function ClientsClient({ initialClients, clientDbReady, dbConfigu
       <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
+            <CardTitle className="flex items-center gap-2 text-[1rem]">
               <UserRound className="h-4 w-4" />
               Add client
             </CardTitle>
@@ -209,7 +209,7 @@ export default function ClientsClient({ initialClients, clientDbReady, dbConfigu
           <CardHeader>
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <CardTitle className="text-base">Stored clients</CardTitle>
+                <CardTitle className="text-[1rem]">Stored clients</CardTitle>
                 <CardDescription>{clients.length} total client records</CardDescription>
               </div>
               <div className="relative md:w-80">

@@ -12,6 +12,7 @@ import '../styles/globals.css'
 import { headers } from 'next/headers'
 
 import { PostHogProvider } from '@/app/providers'
+import ViewTransitionWrapper from '@/components/ViewTransitionWrapper'
 import { getPublicDataSiteAttribute } from '@/components/platform/PublicSiteUtils'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
@@ -116,6 +117,7 @@ export default async function RootLayout({ children }) {
       <body
         className={`${googleSansFlex.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >
+        <ViewTransitionWrapper />
         <PostHogProvider siteSlug={analyticsSiteSlug}>{children}</PostHogProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}
         {isDraftMode ? <SanityLive /> : null}

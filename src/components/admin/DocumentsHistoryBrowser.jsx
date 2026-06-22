@@ -163,7 +163,7 @@ export default function DocumentsHistoryBrowser({ documents }) {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">No documents yet</CardTitle>
+            <CardTitle className="text-[1rem]">No documents yet</CardTitle>
             <CardDescription>Save or send a PDF to populate the library.</CardDescription>
           </CardHeader>
         </Card>

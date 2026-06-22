@@ -1,30 +1,16 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
-function buildAnalyticsParams(context) {
-  return {
-    form_id: 'lead_capture_form',
-    lead_type: context?.sourceType || 'consultation',
-    source_section: context?.sourceSection || 'unknown',
-    site_slug: context?.siteSlug || 'unknown',
-    page_path: context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
-  }
-}
+// Module-level guard: Jobber's async script can't be safely removed and re-added
+// (the in-flight request still completes and injects even after DOM removal).
+// Load once per page session and let Jobber manage the iframe lifecycle.
+let _jobberScriptAdded = false
 
 export default function LeadCaptureForm({ context }) {
   const formRef = useRef(null)
   const hasTrackedViewRef = useRef(false)
-  const hasTrackedLoadedRef = useRef(false)
-  const hasTrackedInteractionRef = useRef(false)
-  const injectedRef = useRef(false)
-
-  const trackFormLoaded = useCallback(() => {
-    if (hasTrackedLoadedRef.current) return
-    hasTrackedLoadedRef.current = true
-    trackAnalyticsEvent('lead_form_loaded', buildAnalyticsParams(context))
-  }, [context])
 
   useEffect(() => {
     const element = formRef.current
@@ -39,7 +25,14 @@ export default function LeadCaptureForm({ context }) {
 
       hasTrackedViewRef.current = true
 
-      trackAnalyticsEvent('lead_form_view', buildAnalyticsParams(context))
+      trackAnalyticsEvent('lead_form_view', {
+        form_id: 'lead_capture_form',
+        lead_type: context?.sourceType || 'consultation',
+        source_section: context?.sourceSection || 'unknown',
+        site_slug: context?.siteSlug || 'unknown',
+        page_path:
+          context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
+      })
     }
 
     if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined') {
@@ -65,8 +58,8 @@ export default function LeadCaptureForm({ context }) {
   }, [context])
 
   useEffect(() => {
-    if (!formRef.current || injectedRef.current) return
-    injectedRef.current = true
+    if (_jobberScriptAdded) return
+    _jobberScriptAdded = true
 
     const link = document.createElement('link')
     link.rel = 'stylesheet'
@@ -81,32 +74,11 @@ export default function LeadCaptureForm({ context }) {
       'form_url',
       'https://clienthub.getjobber.com/client_hubs/e25e6086-5e48-4c5d-8588-8aa08968b7d6/public/work_request/embedded_work_request_form?form_id=4904121',
     )
-    script.onload = () => {
-      setTimeout(trackFormLoaded, 500)
-    }
-
-    setTimeout(() => {
-      formRef.current?.appendChild(script)
-    }, 100)
-  }, [trackFormLoaded])
-
-  useEffect(() => {
-    const el = formRef.current
-    if (!el) return
-
-    const handleInteraction = () => {
-      if (hasTrackedInteractionRef.current) return
-      hasTrackedInteractionRef.current = true
-      trackAnalyticsEvent('lead_form_interaction', buildAnalyticsParams(context))
-    }
-
-    el.addEventListener('click', handleInteraction, { once: true })
-
-    return () => el.removeEventListener('click', handleInteraction)
-  }, [context])
+    document.body.appendChild(script)
+  }, [])
 
   return (
-    <div className="w-full" ref={formRef}>
+    <div ref={formRef}>
       <div id="e25e6086-5e48-4c5d-8588-8aa08968b7d6-4904121"></div>
     </div>
   )

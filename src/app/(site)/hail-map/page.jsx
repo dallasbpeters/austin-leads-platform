@@ -47,7 +47,7 @@ export default async function HailMapPage() {
             Back to hail damage page
           </Link>
           <h1 className="text-3xl tracking-normal text-white md:text-4xl">Hail map + roof review</h1>
-          <p className="mt-2 max-w-3xl text-base leading-7 text-white/76">
+          <p className="mt-2 max-w-3xl text-[1rem] leading-7 text-white/76">
             Check storm evidence first, then share your details to get guidance on roof condition, claims, and
             next steps.
           </p>
@@ -65,7 +65,7 @@ export default async function HailMapPage() {
           <div className="space-y-4">
             <p className="text-sm tracking-[0.22em] text-white/58 uppercase">Roofing consultation</p>
             <h2 className="max-w-3xl text-3xl tracking-normal md:text-4xl">Request a hail damage review</h2>
-            <p className="max-w-2xl text-base leading-8 text-white/78">
+            <p className="max-w-2xl text-[1rem] leading-8 text-white/78">
               If storm evidence and roof symptoms line up, we can help you plan inspection timing, claim
               questions, and next steps.
             </p>

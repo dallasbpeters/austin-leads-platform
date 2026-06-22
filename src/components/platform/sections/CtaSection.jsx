@@ -1,6 +1,6 @@
 import ConsultationSection from '@/components/ConsultationSection'
 import DevTrace from '@/components/dev/DevTrace'
-import { SchedulingForm } from '@/components/StripeCheckout'
+import { SchedulingForm } from '@/components/BookingForm'
 import { roofingServices } from '@/lib/platform/service-catalog'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
 

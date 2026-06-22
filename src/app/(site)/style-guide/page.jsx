@@ -201,7 +201,7 @@ export default async function StyleGuidePage() {
             <h1 className="text-foreground text-4xl font-bold tracking-normal sm:text-5xl">
               Theme style guide
             </h1>
-            <p className="text-muted-foreground max-w-3xl text-base leading-7">
+            <p className="text-muted-foreground max-w-3xl text-[1rem] leading-7">
               Generated directly from <code>src/styles/*-theme.css</code>, so the swatches stay in sync with
               the actual theme files. This page is intentionally blocked from crawlers.
             </p>

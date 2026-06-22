@@ -172,8 +172,8 @@ export default function Testimonials({ reviews = [], section = null, sectionId =
         content: reviews.length ? 'homepage reviews from Sanity' : 'local fallback testimonial content',
       })}
     >
-      <div className="mr-auto mb-20 ml-auto max-w-7xl text-center sm:px-3 md:px-6 lg:px-8">
-        <h2 className="text-foreground animate-delay-200 dynamic-zoom-in mb-6 text-4xl font-medium tracking-normal sm:text-6xl">
+      <div className="mr-auto mb-5 ml-auto max-w-7xl text-center sm:px-3 md:px-6 lg:px-8">
+        <h2 className="text-foreground animate-delay-200 dynamic-zoom-in mb-6 text-3xl font-medium tracking-normal sm:text-4xl">
           {title}
           <span className="bg-primary block bg-clip-text leading-relaxed font-medium tracking-normal text-transparent">
             {subtitle}

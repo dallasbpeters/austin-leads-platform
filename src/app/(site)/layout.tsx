@@ -1,5 +1,3 @@
-import { ViewTransition } from 'react'
-
 import DevTrace from '@/components/dev/DevTrace'
 import { resolveCurrentSite } from '@/lib/platform/content'
 
@@ -14,15 +12,11 @@ export async function generateMetadata() {
   }
 }
 
-export default async function SiteLayout({ children }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <DevTrace
-        markup="src/app/(site)/layout.jsx"
-        content="site route shell"
-        note="ViewTransition boundary; tenant tokens come from <html data-public-site> in root layout"
-      />
-      <ViewTransition>{children}</ViewTransition>
+      <DevTrace markup="src/app/(site)/layout.tsx" content="site route shell" />
+      {children}
     </div>
   )
 }

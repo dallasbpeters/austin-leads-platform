@@ -2,7 +2,6 @@ import DevTrace, { getDevSectionAttributes } from '@/components/dev/DevTrace'
 // import LeadCaptureForm from '@/components/LeadCaptureForm'
 import PortableTextContent from '@/components/PortableTextContent'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent } from '@/components/ui/card'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { JobberDialog } from '@components/jobber-dialog'
@@ -61,7 +60,7 @@ export function CtaBannerSection({ page, section, site }) {
         markup="src/components/platform/sections/CtaBannerSection.jsx"
         content={`cross-lead banner from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-7xl place-items-center gap-12 px-3 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 place-items-center gap-12 px-3 md:px-6 lg:grid-cols-2 lg:px-10">
         <div className="space-y-4">
           {section.eyebrow ? (
             <p
@@ -70,11 +69,11 @@ export function CtaBannerSection({ page, section, site }) {
               {section.eyebrow}
             </p>
           ) : null}
-          <h2 className="max-w-3xl text-3xl tracking-normal md:text-4xl">{section.title}</h2>
+          <h2 className="max-w-6xl text-3xl tracking-normal md:text-4xl">{section.title}</h2>
           <PortableTextContent
             as="div"
             value={section.body}
-            className={`max-w-2xl text-base leading-8 ${isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`}
+            className={`max-w-2xl text-[1rem] leading-8 ${isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`}
           />
           {avatarName ? (
             <div className="max-w-xl pt-2">
@@ -86,7 +85,7 @@ export function CtaBannerSection({ page, section, site }) {
                 >
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
                   <AvatarFallback
-                    className={`text-base font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`}
+                    className={`text-[1rem] font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`}
                     style={avatarStyle}
                   >
                     {avatarInitials || 'TS'}
@@ -119,14 +118,8 @@ export function CtaBannerSection({ page, section, site }) {
               </div>
             </div>
           ) : null}
+          <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
         </div>
-        <Card
-          className={`w-full gap-0 ${isDarkTheme ? 'border-white/12 bg-white/6 text-white backdrop-blur' : ''}`}
-        >
-          <CardContent>
-            <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
-          </CardContent>
-        </Card>
       </div>
     </section>
   )

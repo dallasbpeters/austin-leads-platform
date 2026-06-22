@@ -1,6 +1,5 @@
 /* eslint-disable css/no-invalid-at-rules */
 @import 'tailwindcss';
-@import 'tw-animate-css';
 @import './switzer.css';
 @import './bespoke-serif.css';
 @import './variables.css';
@@ -8,45 +7,7 @@
 @import './texas-solar-and-roofing-pros-theme.css';
 @import './txchristmaslights-theme.css';
 @import './admin-theme.css';
-
-/* ─── View Transitions ────────────────────────────────────────────────────
-   Old page fades out and moves down; new page slides in from right and fades in.
-─────────────────────────────────────────────────────────────────────────── */
-@view-transition {
-  navigation: auto;
-}
-
-::view-transition-old(root) {
-  animation: view-transition-old 300ms ease-out both;
-}
-
-::view-transition-new(root) {
-  animation: view-transition-new 300ms ease-out both;
-}
-
-@keyframes view-transition-old {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-}
-
-@keyframes view-transition-new {
-  0% {
-    opacity: 0;
-    transform: translateX(24px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+@import './view-transitions.css';
 
 @keyframes collapsible-down {
   from {
@@ -766,7 +727,7 @@ body.admin-body-locked {
 
   .solar-k-word {
     display: inline-block;
-    opacity: 0.2;
+    opacity: 0.75;
     transition: opacity 0.25s ease;
   }
 
@@ -910,25 +871,25 @@ body.admin-body-locked {
 }
 
 :root {
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(0deg 0% 98%);
+  --sidebar-foreground: hsl(240deg 5.3% 26.1%);
+  --sidebar-primary: hsl(240deg 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0deg 0% 98%);
+  --sidebar-accent: hsl(240deg 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240deg 5.9% 10%);
+  --sidebar-border: hsl(220deg 13% 91%);
+  --sidebar-ring: hsl(217.2deg 91.2% 59.8%);
 }
 
 .dark {
-  --sidebar: hsl(240 5.9% 10%);
-  --sidebar-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 1% 82%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(240deg 5.9% 10%);
+  --sidebar-foreground: hsl(240deg 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3deg 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0deg 0% 100%);
+  --sidebar-accent: hsl(240deg 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240deg 4.8% 95.9%);
+  --sidebar-border: hsl(240deg 1% 82%);
+  --sidebar-ring: hsl(217.2deg 91.2% 59.8%);
 }
 
 @theme inline {

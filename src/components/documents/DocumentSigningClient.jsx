@@ -214,7 +214,7 @@ export default function DocumentSigningClient({ request, recipient, client, prev
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.55fr)]">
           <Card className="overflow-hidden">
             <CardHeader className="border-b">
-              <CardTitle className="text-base">Document</CardTitle>
+              <CardTitle className="text-[1rem]">Document</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               {activePreviewUrl ? (
@@ -237,7 +237,7 @@ export default function DocumentSigningClient({ request, recipient, client, prev
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Signer</CardTitle>
+                <CardTitle className="text-[1rem]">Signer</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -358,7 +358,7 @@ export default function DocumentSigningClient({ request, recipient, client, prev
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Request</CardTitle>
+                <CardTitle className="text-[1rem]">Request</CardTitle>
                 <CardDescription>Stored record.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3 text-sm leading-6">
@@ -386,7 +386,7 @@ export default function DocumentSigningClient({ request, recipient, client, prev
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Link</CardTitle>
+                <CardTitle className="text-[1rem]">Link</CardTitle>
                 <CardDescription>Use this page later if needed.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">

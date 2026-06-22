@@ -46,7 +46,7 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
       <div className="mx-auto grid max-w-6xl items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2">
         <div className="grid place-items-start gap-4">
           <h2 className="text-secondary type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
-          <div className="type-accent text-base leading-7 font-normal text-slate-500">
+          <div className="type-accent text-[1rem] leading-7 font-normal text-slate-500">
             {resolvedParagraphs.map((paragraph) => (
               <PortableTextContent key={paragraph} as="p" value={paragraph} />
             ))}

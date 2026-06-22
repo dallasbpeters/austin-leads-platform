@@ -93,7 +93,7 @@ export default function HailWeatherLookup({ section }) {
           <PortableTextContent
             as="div"
             value={section.body}
-            className="text-muted-foreground max-w-2xl text-base leading-8"
+            className="text-muted-foreground max-w-2xl text-[1rem] leading-8"
           />
         </div>
 

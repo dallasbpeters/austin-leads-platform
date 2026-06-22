@@ -66,6 +66,9 @@ const nextConfig = {
   turbopack: {
     root: PROJECT_ROOT,
   },
+  experimental: {
+    viewTransition: true,
+  },
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
   images: {
     qualities: [100, 90, 82, 75, 70, 68],
@@ -124,9 +127,6 @@ const nextConfig = {
         port: '',
       },
     ],
-  },
-  experimental: {
-    viewTransition: true,
   },
   async rewrites() {
     return [

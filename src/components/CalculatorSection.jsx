@@ -157,6 +157,7 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
               />
             </div>
             <Slider
+              aria-label="Monthly electric bill"
               min={MIN_BILL}
               max={MAX_BILL}
               step={10}

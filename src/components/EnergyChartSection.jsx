@@ -520,7 +520,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
 
         <div className="border-border/70 bg-card rounded-2xl border p-4 md:p-6">
           <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <p className="text-sm font-semibold md:text-base">{periodLabel}</p>
+            <p className="text-sm font-semibold md:text-[1rem]">{periodLabel}</p>
           </div>
 
           {chartData.length === 0 ? (

@@ -36,5 +36,14 @@
     "**/*.ts",
     "**/*.tsx"
   ],
-  "exclude": ["node_modules", ".agents", ".codex", "skills"]
+  "exclude": [
+    "node_modules",
+    ".agents",
+    ".codex",
+    "skills",
+    "oxfmt.config.ts",
+    "oxlint.config.ts",
+    "playwright.config.ts",
+    "src/e2e"
+  ]
 }

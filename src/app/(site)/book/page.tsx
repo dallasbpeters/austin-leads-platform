@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { SchedulingForm } from '@/components/StripeCheckout'
+import { SchedulingForm } from '@/components/BookingForm'
 
 export const metadata: Metadata = {
   title: 'Reserve your install date | Texas Christmas Lights',

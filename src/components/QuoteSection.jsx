@@ -155,7 +155,7 @@ export default function QuoteSection({
         </div>
 
         <div className="mt-8 flex items-center justify-center sm:mt-10">
-          <span className="text-sm font-medium text-neutral-300 sm:text-base">{attribution}</span>
+          <span className="text-sm font-medium text-neutral-300 sm:text-[1rem]">{attribution}</span>
         </div>
       </div>
     </section>

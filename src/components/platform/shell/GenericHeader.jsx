@@ -78,7 +78,7 @@ export default function GenericHeader({ site, navigation = [] }) {
     const items = navigation.map((item) => ({ ...item, kind: 'page' }))
     items.push({
       href: `#${CONSULTATION_ANCHOR_ID}`,
-      label: 'Contact',
+      label: 'Schedule Your Install',
       kind: 'contact',
     })
     return items
@@ -148,7 +148,7 @@ export default function GenericHeader({ site, navigation = [] }) {
                 </span>
               )}
             </Link>
-            <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
+            <Separator orientation="vertical" className="bg-primary hidden h-5 lg:block" />
             <div className="hidden lg:flex lg:items-center">
               <NavList items={navItems} />
             </div>

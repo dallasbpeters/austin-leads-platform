@@ -5,7 +5,7 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }) {
+function Slider({ className, defaultValue, value, min = 0, max = 100, 'aria-label': ariaLabel, ...props }) {
   const _values = React.useMemo(
     () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min]),
     [value, defaultValue, min],
@@ -18,6 +18,7 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
       value={value}
       min={min}
       max={max}
+      aria-label={ariaLabel}
       className={cn(
         'relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
         className,
@@ -41,6 +42,7 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, ...props }
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={index}
+          aria-label={ariaLabel || `Value ${_values[index]}`}
           className="bg-primary border-primary shadow-theme-sm ring-primary/50 block size-4 shrink-0 rounded-full border transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
         />
       ))}

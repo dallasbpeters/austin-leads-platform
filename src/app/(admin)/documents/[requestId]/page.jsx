@@ -71,7 +71,7 @@ export default async function DocumentRequestPage({ params }) {
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Document request</p>
           <h1 className="text-foreground mt-2 text-3xl tracking-normal">{request.title}</h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <p className="text-muted-foreground mt-3 max-w-3xl text-[1rem] leading-7">
             Stored document, signer status, and audit records in one place.
           </p>
         </div>
@@ -87,7 +87,7 @@ export default async function DocumentRequestPage({ params }) {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Preview</CardTitle>
+            <CardTitle className="text-[1rem]">Preview</CardTitle>
             <CardDescription>Stored PDF or original source file.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -159,7 +159,7 @@ export default async function DocumentRequestPage({ params }) {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Request</CardTitle>
+              <CardTitle className="text-[1rem]">Request</CardTitle>
               <CardDescription>Stored metadata.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm leading-6">
@@ -194,7 +194,7 @@ export default async function DocumentRequestPage({ params }) {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Recipients</CardTitle>
+              <CardTitle className="text-[1rem]">Recipients</CardTitle>
               <CardDescription>Signer status.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -217,7 +217,7 @@ export default async function DocumentRequestPage({ params }) {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Audit</CardTitle>
+              <CardTitle className="text-[1rem]">Audit</CardTitle>
               <CardDescription>Events stored for the request.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">

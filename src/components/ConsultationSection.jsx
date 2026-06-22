@@ -119,14 +119,14 @@ export default function ConsultationSection({
       <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 py-12 sm:px-3 md:grid-cols-[1.1fr_1fr] md:px-6 lg:px-16">
         <div>
           <h2
-            className={`type-display mb-4 text-[clamp(2.875rem,6vw,3.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'text-secondary'}`}
+            className={`type-display mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'text-secondary'}`}
           >
             {headline}
           </h2>
           <PortableTextContent
             as="div"
             value={copy}
-            className={`type-accent text-base font-semibold ${isDarkTheme ? 'text-white/78' : 'text-slate-500'}`}
+            className={`type-accent text-[1rem] font-semibold ${isDarkTheme ? 'text-white/78' : 'text-slate-500'}`}
           />
           {avatarName ? (
             <div className="mt-8 max-w-xl">
@@ -138,7 +138,7 @@ export default function ConsultationSection({
                 >
                   {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
                   <AvatarFallback
-                    className={`text-base font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`}
+                    className={`text-[1rem] font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`}
                     style={avatarStyle}
                   >
                     {avatarInitials || 'TS'}
@@ -168,10 +168,12 @@ export default function ConsultationSection({
                     />
                   ) : null}
                 </div>
-                <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
               </div>
             </div>
           ) : null}
+          <div className="mt-8">
+            <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
+          </div>
         </div>
       </div>
       {isDarkTheme ? null : <Gradient zIndex={0} />}

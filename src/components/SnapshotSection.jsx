@@ -114,7 +114,7 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
           <PortableTextContent
             as="div"
             value={body}
-            className="type-accent m-0 text-base font-semibold text-white/70"
+            className="type-accent m-0 text-[1rem] font-semibold text-white/70"
           />
         </div>
 

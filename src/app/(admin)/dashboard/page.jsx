@@ -99,7 +99,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="flex flex-col gap-4 lg:col-span-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-foreground text-base">Publishing Workflow</h3>
+              <h3 className="text-foreground text-[1rem]">Publishing Workflow</h3>
             </div>
 
             <div className="bg-card border-border shadow-theme-sm overflow-hidden rounded-xl border">
@@ -138,7 +138,7 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-6">
             <Card className="shadow-theme-sm">
               <CardHeader>
-                <CardTitle className="text-base">Analytics</CardTitle>
+                <CardTitle className="text-[1rem]">Analytics</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {gaSnapshot?.status === 'available' ? (
@@ -218,7 +218,7 @@ export default async function DashboardPage() {
 
             <Card className="shadow-theme-sm">
               <CardHeader>
-                <CardTitle className="text-base">Leads</CardTitle>
+                <CardTitle className="text-[1rem]">Leads</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-3 gap-3">
@@ -282,7 +282,7 @@ export default async function DashboardPage() {
 
             <Card className="shadow-theme-sm">
               <CardHeader>
-                <CardTitle className="text-base">Infrastructure</CardTitle>
+                <CardTitle className="text-[1rem]">Infrastructure</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-muted-foreground bg-muted/30 border-border rounded-xl border p-4 text-sm leading-6">

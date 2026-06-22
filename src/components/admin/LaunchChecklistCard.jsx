@@ -32,7 +32,7 @@ export default function LaunchChecklistCard({ checklist }) {
   return (
     <Card className="shadow-theme-sm">
       <CardHeader>
-        <CardTitle className="text-base">{currentChecklist.title}</CardTitle>
+        <CardTitle className="text-[1rem]">{currentChecklist.title}</CardTitle>
         {currentChecklist.summary ? (
           <p className="text-muted-foreground text-sm leading-6">{currentChecklist.summary}</p>
         ) : null}

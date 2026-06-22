@@ -189,7 +189,7 @@
               </g>
             </g>
           </svg>
-          <div class="type-accent text-color-slate-950 text-base leading-none font-semibold">
+          <div class="type-accent text-color-slate-950 text-[1rem] leading-none font-semibold">
             Texas Solar &amp; Roofing Pros
           </div></a
         >
@@ -263,7 +263,6 @@
               background-color: #000000;
               will-change: opacity, filter;
               opacity: 1;
-              blur: 0;
             "
           />
           <div
@@ -324,7 +323,7 @@
             </div>
             <div class="solar-fade-up solar-fade-up-delay">
               <div
-                class="card card--radius-lg card--surface p-8 backdrop-blur-[12px]"
+                class="card card--radius-lg card--surface p-8 backdrop-blur-md"
                 style="background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.16)"
               >
                 <p class="m-0 text-lg leading-7 font-light" style="color: #ffffff">
@@ -539,26 +538,26 @@
       </section>
       <section class="bg-color-warm relative overflow-hidden py-24">
         <div
-          class="absolute top-0 right-0 h-[60rem] w-[32rem] translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]"
+          class="absolute top-0 right-0 h-240 w-lg translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]"
           style="background: hsl(var(--color-primary-h) var(--color-primary-s) 72% / 0.1)"
         ></div>
         <div
           class="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]"
           style="background: hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)"
         ></div>
-        <div class="relative z-[1] mx-auto w-[min(72rem,calc(100%-3rem))]">
+        <div class="relative z-1 mx-auto w-[min(72rem,calc(100%-3rem))]">
           <div class="mb-14 text-center">
             <h2 class="type-display text-foreground m-0 text-[clamp(3.875rem,4vw,5.25rem)]">
               See what solar could save
             </h2>
-            <p class="text-foreground mx-auto mt-3 max-w-[52rem] text-base">
+            <p class="text-foreground mx-auto mt-3 max-w-208 text-[1rem]">
               Enter your average monthly electric bill and we&#x27;ll estimate system size, possible savings,
               and a likely payback range. Solar stands on its own here, even when roofing decisions affect the
               bigger project.
             </p>
           </div>
           <div
-            class="card card--radius-lg card--surface-strong grid [grid-template-columns:minmax(280px,2fr)_minmax(320px,3fr)] overflow-hidden max-[900px]:grid-cols-1"
+            class="card card--radius-lg card--surface-strong grid grid-cols-[minmax(280px,2fr)_minmax(320px,3fr)] overflow-hidden max-[900px]:grid-cols-1"
           >
             <div
               class="flex flex-col justify-center bg-[linear-gradient(to_bottom_right,var(--color-cyan-950),var(--color-cyan-900))] p-8 text-white"
@@ -585,7 +584,7 @@
                 data-orientation="horizontal"
                 aria-disabled="false"
                 data-slot="slider"
-                class="relative mb-4 flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col"
+                class="relative mb-4 flex w-full touch-none items-center select-none data-disabled:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col"
                 style="--radix-slider-thumb-transform: translateX(-50%)"
                 ><span
                   data-orientation="horizontal"
@@ -760,7 +759,7 @@
               >
                 Most homeowners still see solar break even in roughly 7–9 years.
               </p>
-              <p class="text-color-neutral-500 mt-3 text-base leading-7 font-semibold">
+              <p class="text-color-neutral-500 mt-3 text-[1rem] leading-7 font-semibold">
                 The strongest quotes clearly separate contract cost, incentives, and expected production so
                 you can compare options without guessing where the savings are supposed to come from.
               </p>
@@ -786,7 +785,7 @@
             <div style="opacity: 0; transform: translateY(28px)">
               <a href="/guides/how-solar-works-austin"
                 ><article
-                  class="shadow-theme-sm bg-color-primary flex h-full min-h-[380px] flex-col overflow-hidden rounded-xl border-0 p-6 text-white"
+                  class="shadow-theme-sm bg-color-primary flex h-full min-h-95 flex-col overflow-hidden rounded-xl border-0 p-6 text-white"
                   style="transform: none"
                 >
                   <div class="flex items-center justify-between text-current/88">
@@ -847,7 +846,7 @@
             <div style="opacity: 0; transform: translateY(28px)">
               <a href="/guides/austin-solar-costs-and-savings"
                 ><article
-                  class="shadow-theme-sm bg-color-secondary flex h-full min-h-[380px] flex-col overflow-hidden rounded-xl border-0 p-6 text-white"
+                  class="shadow-theme-sm bg-color-secondary flex h-full min-h-95 flex-col overflow-hidden rounded-xl border-0 p-6 text-white"
                   style="transform: none"
                 >
                   <div class="flex items-center justify-between text-current/88">
@@ -908,7 +907,7 @@
             <div style="opacity: 0; transform: translateY(28px)">
               <a href="/guides/austin-solar-incentives"
                 ><article
-                  class="shadow-theme-sm bg-color-tertiary flex h-full min-h-[380px] flex-col overflow-hidden rounded-xl border-0 p-6 text-white"
+                  class="shadow-theme-sm bg-color-tertiary flex h-full min-h-95 flex-col overflow-hidden rounded-xl border-0 p-6 text-white"
                   style="transform: none"
                 >
                   <div class="flex items-center justify-between text-current/88">
@@ -983,7 +982,7 @@
             width="400"
             height="400"
             viewBox="0 0 24 24"
-            class="absolute top-10 left-[10%] h-[400px] w-[400px]"
+            class="absolute top-10 left-[10%] h-100 w-100"
           >
             <g fill="none" stroke="currentColor" stroke-width="1.5">
               <circle cx="12" cy="12" r="6"></circle>
@@ -994,13 +993,13 @@
             </g>
           </svg>
         </div>
-        <div class="relative z-[1] mx-auto w-[min(80rem,calc(100%-3rem))]">
+        <div class="relative z-1 mx-auto w-[min(80rem,calc(100%-3rem))]">
           <div class="mx-auto mb-16 max-w-3xl text-center">
             <p class="type-accent text-color-primary mb-4 text-sm font-semibold tracking-[0.2em] uppercase">
               Texas Snapshot
             </p>
             <h2 class="mb-4 text-[clamp(1.875rem,4vw,2.25rem)]">The numbers people usually ask for.</h2>
-            <p class="type-accent m-0 text-base font-semibold text-white/70">
+            <p class="type-accent m-0 text-[1rem] font-semibold text-white/70">
               These are directional homeowner benchmarks, not a substitute for a roof inspection, claim
               review, or project-specific production model.
             </p>
@@ -1333,7 +1332,7 @@
             <h2 class="type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]">
               Roof insurance and claim realities
             </h2>
-            <div class="type-accent text-color-slate-500 text-base leading-7 font-semibold">
+            <div class="type-accent text-color-slate-500 text-[1rem] leading-7 font-semibold">
               <p>
                 Roof claims get expensive when the details are misunderstood. This section is here to explain
                 hail damage, aging roofs, RCV vs ACV policies, claim timing, and when detach and reset becomes
@@ -1349,7 +1348,7 @@
               Review roofing + insurance basics
             </button>
           </div>
-          <div class="h-[400px] overflow-hidden rounded-3xl">
+          <div class="h-100 overflow-hidden rounded-3xl">
             <img
               src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?q=80&amp;w=2058&amp;auto=format&amp;fit=crop"
               alt="Austin Neighborhood"
@@ -1364,7 +1363,7 @@
             class="text-foreground font-display dynamic-zoom-in animate-delay-200 mb-6 text-4xl font-medium tracking-tight sm:text-6xl"
           >
             What customers are saying<span
-              class="bg-primary block bg-clip-text leading-[var(--leading-relaxed)] font-medium tracking-tight text-transparent"
+              class="bg-primary block bg-clip-text leading-relaxed font-medium tracking-tight text-transparent"
               >about Texas Solar and Roofing Pros</span
             >
           </h2>
@@ -1420,7 +1419,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1438,7 +1437,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1456,7 +1455,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1534,7 +1533,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1552,7 +1551,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1570,7 +1569,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1648,7 +1647,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1666,7 +1665,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1684,7 +1683,7 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="h-[16px] w-[16px] fill-current"
+                      class="h-4 w-4 fill-current"
                       data-icon-replaced="true"
                       style="width: 16px; height: 16px; color: rgb(250, 204, 21)"
                     >
@@ -1814,7 +1813,7 @@
             </p>
           </div>
           <div class="mt-8 flex items-center justify-center sm:mt-10">
-            <span class="text-sm font-medium text-neutral-300 sm:text-base"
+            <span class="text-sm font-medium text-neutral-300 sm:text-[1rem]"
               >Texas Solar and Roofing Pros</span
             >
           </div>
@@ -1841,7 +1840,7 @@
           </div>
           <div class="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
             <a href="/hail-damage"
-              ><div class="card card--radius-lg card--media relative aspect-[1/1]">
+              ><div class="card card--radius-lg card--media relative aspect-square">
                 <img
                   src="https://cdn.sanity.io/images/xuhfhjna/production/a76af0ae609c4f8afec87ca49762b5c3f48ef719-1024x1024.png"
                   alt="Hail Damage"
@@ -1852,7 +1851,7 @@
                 ></div>
                 <div class="absolute inset-x-0 bottom-0 p-8 text-white">
                   <div
-                    class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]"
+                    class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm"
                   >
                     <svg
                       width="1.5em"
@@ -1885,7 +1884,7 @@
                 </div>
               </div></a
             ><a href="/incentives"
-              ><div class="card card--radius-lg card--media relative aspect-[1/1]">
+              ><div class="card card--radius-lg card--media relative aspect-square">
                 <img
                   src="https://cdn.sanity.io/images/xuhfhjna/production/6e91666b402b00604fe55ed15558316c58e42a7b-1200x673.jpg"
                   alt="Roofing + Insurance"
@@ -1896,7 +1895,7 @@
                 ></div>
                 <div class="absolute inset-x-0 bottom-0 p-8 text-white">
                   <div
-                    class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]"
+                    class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm"
                   >
                     <svg
                       width="1.5em"
@@ -1935,7 +1934,7 @@
                 </div>
               </div></a
             ><a href="/costs"
-              ><div class="card card--radius-lg card--media relative aspect-[1/1]">
+              ><div class="card card--radius-lg card--media relative aspect-square">
                 <img
                   src="https://cdn.sanity.io/images/xuhfhjna/production/30dfa510e98eedbb50327d17c0972193d73c57d4-5824x3264.jpg"
                   alt="Solar + Savings"
@@ -1946,7 +1945,7 @@
                 ></div>
                 <div class="absolute inset-x-0 bottom-0 p-8 text-white">
                   <div
-                    class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]"
+                    class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm"
                   >
                     <svg
                       width="1.5em"
@@ -2001,7 +2000,7 @@
             <h2 class="type-display text-color-secondary mb-4 text-[clamp(2.875rem,6vw,3.75rem)]">
               Tell us what<br />you&#x27;re dealing with
             </h2>
-            <p class="type-accent text-color-slate-500 max-w-[26rem] text-base font-semibold">
+            <p class="type-accent text-color-slate-500 max-w-104 text-[1rem] font-semibold">
               If you&#x27;re dealing with hail damage, an older roof, an insurance question, or a solar
               project you want to price out properly, send the details and we&#x27;ll help you figure out the
               right next step.
@@ -2281,7 +2280,7 @@
     <script>
       self.__next_f.push([
         1,
-        '2:["$","html",null,{"lang":"en","children":["$","body",null,{"className":"bg-background text-foreground","children":[["$","$Le",null,{"src":"https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js","strategy":"beforeInteractive"}],["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"className":"flex min-h-screen items-center justify-center bg-background px-6","children":["$","div",null,{"className":"max-w-xl text-center","children":[["$","p",null,{"className":"text-sm uppercase tracking-[0.22em] text-muted-foreground","children":"404"}],["$","h1",null,{"className":"mt-4 text-4xl tracking-tight text-foreground","children":"This page does not exist on the current domain."}],["$","p",null,{"className":"mt-4 text-base leading-8 text-muted-foreground","children":"The request reached the platform, but there is no page mapped for that path on this site yet."}],["$","div",null,{"className":"mt-8 flex justify-center gap-3","children":[["$","$Lf",null,{"href":"/","children":"Go home","data-slot":"button","data-variant":"default","data-size":"default","className":"inline-flex shrink-0 items-center justify-center gap-2 rounded-sm text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [\u0026_svg]:pointer-events-none [\u0026_svg]:shrink-0 [\u0026_svg:not([class*=\'size-\'])]:size-4 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[\u003esvg]:px-3","ref":null}],["$","$Lf",null,{"href":"/dashboard","children":"Open dashboard","data-slot":"button","data-variant":"outline","data-size":"default","className":"inline-flex shrink-0 items-center justify-center gap-2 rounded-sm text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [\u0026_svg]:pointer-events-none [\u0026_svg]:shrink-0 [\u0026_svg:not([class*=\'size-\'])]:size-4 shadow-theme-xs border bg-background hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-9 px-4 py-2 has-[\u003esvg]:px-3","ref":null}]]}]]}]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],null,["$","$L10",null,{}],["$","$L11",null,{}]]}]}]\n',
+        '2:["$","html",null,{"lang":"en","children":["$","body",null,{"className":"bg-background text-foreground","children":[["$","$Le",null,{"src":"https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js","strategy":"beforeInteractive"}],["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","main",null,{"className":"flex min-h-screen items-center justify-center bg-background px-6","children":["$","div",null,{"className":"max-w-xl text-center","children":[["$","p",null,{"className":"text-sm uppercase tracking-[0.22em] text-muted-foreground","children":"404"}],["$","h1",null,{"className":"mt-4 text-4xl tracking-tight text-foreground","children":"This page does not exist on the current domain."}],["$","p",null,{"className":"mt-4 text-[1rem] leading-8 text-muted-foreground","children":"The request reached the platform, but there is no page mapped for that path on this site yet."}],["$","div",null,{"className":"mt-8 flex justify-center gap-3","children":[["$","$Lf",null,{"href":"/","children":"Go home","data-slot":"button","data-variant":"default","data-size":"default","className":"inline-flex shrink-0 items-center justify-center gap-2 rounded-sm text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [\u0026_svg]:pointer-events-none [\u0026_svg]:shrink-0 [\u0026_svg:not([class*=\'size-\'])]:size-4 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 has-[\u003esvg]:px-3","ref":null}],["$","$Lf",null,{"href":"/dashboard","children":"Open dashboard","data-slot":"button","data-variant":"outline","data-size":"default","className":"inline-flex shrink-0 items-center justify-center gap-2 rounded-sm text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [\u0026_svg]:pointer-events-none [\u0026_svg]:shrink-0 [\u0026_svg:not([class*=\'size-\'])]:size-4 shadow-theme-xs border bg-background hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50 h-9 px-4 py-2 has-[\u003esvg]:px-3","ref":null}]]}]]}]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],null,["$","$L10",null,{}],["$","$L11",null,{}]]}]}]\n',
       ])
     </script>
     <script>
@@ -2338,7 +2337,7 @@
     <script>
       self.__next_f.push([
         1,
-        '1c:["$","div",null,{"className":"mb-12 border-t border-blue-300"}]\n1d:["$","div",null,{"className":"flex items-baseline gap-8 max-[900px]:flex-col","children":[["$","p",null,{"className":"text-blue-900 shrink-0 text-sm font-semibold uppercase tracking-[0.2em]","children":"Realistic Payback"}],["$","div",null,{"children":[["$","p",null,{"className":"text-color-neutral-900 text-[clamp(1.5rem,4vw,1.875rem)] font-semibold leading-[1.35]","children":"Most homeowners still see solar break even in roughly 7–9 years."}],["$","p",null,{"className":"text-color-neutral-500 mt-3 text-base font-semibold leading-7","children":"The strongest quotes clearly separate contract cost, incentives, and expected production so you can compare options without guessing where the savings are supposed to come from."}]]}]]}]\n',
+        '1c:["$","div",null,{"className":"mb-12 border-t border-blue-300"}]\n1d:["$","div",null,{"className":"flex items-baseline gap-8 max-[900px]:flex-col","children":[["$","p",null,{"className":"text-blue-900 shrink-0 text-sm font-semibold uppercase tracking-[0.2em]","children":"Realistic Payback"}],["$","div",null,{"children":[["$","p",null,{"className":"text-color-neutral-900 text-[clamp(1.5rem,4vw,1.875rem)] font-semibold leading-[1.35]","children":"Most homeowners still see solar break even in roughly 7–9 years."}],["$","p",null,{"className":"text-color-neutral-500 mt-3 text-[1rem] font-semibold leading-7","children":"The strongest quotes clearly separate contract cost, incentives, and expected production so you can compare options without guessing where the savings are supposed to come from."}]]}]]}]\n',
       ])
     </script>
     <script>
@@ -2350,7 +2349,7 @@
     <script>
       self.__next_f.push([
         1,
-        '1f:["$","section",null,{"className":"bg-color-cyan-950 relative overflow-hidden   py-24 text-white","children":[["$","div",null,{"className":"pointer-events-none absolute inset-0 opacity-10","children":["$","svg",null,{"xmlns":"http://www.w3.org/2000/svg","width":"400","height":"400","viewBox":"0 0 24 24","className":"absolute left-[10%] top-10 h-[400px] w-[400px]","children":["$","g",null,{"fill":"none","stroke":"currentColor","strokeWidth":"1.5","children":[["$","circle",null,{"cx":"12","cy":"12","r":"6"}],["$","path",null,{"strokeLinecap":"round","d":"M12 2v1m0 18v1m10-10h-1M3 12H2m17.07-7.07l-.392.393M5.322 18.678l-.393.393m14.141-.001l-.392-.393M5.322 5.322l-.393-.393"}]]}]}]}],["$","div",null,{"className":"relative z-[1] mx-auto w-[min(80rem,calc(100%-3rem))]","children":[["$","div",null,{"className":"mx-auto mb-16 max-w-3xl text-center","children":[["$","p",null,{"className":"type-accent text-color-primary mb-4 text-sm font-semibold uppercase tracking-[0.2em]","children":"Texas Snapshot"}],["$","h2",null,{"className":"mb-4 text-[clamp(1.875rem,4vw,2.25rem)]","children":"The numbers people usually ask for."}],["$","p",null,{"className":"type-accent m-0 text-base font-semibold text-white/70","children":"These are directional homeowner benchmarks, not a substitute for a roof inspection, claim review, or project-specific production model."}]]}],["$","div",null,{"className":"grid gap-6 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1 md:grid-cols-4","children":[["$","div","$$18k-$28k",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:wallet-money-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"$$18k-$28k"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"Typical residential solar range before credits and roof-related adders"}]]}],["$","div","10+ years",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:chart-square-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"10+ years"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"Roof age is where insurance and timing questions usually start"}]]}],["$","div","2 years",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:leaf-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"2 years"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"A common claim window for detach-and-reset conversations after roof work"}]]}],["$","div","7–9 years",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:history-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"7–9 years"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"Typical solar payback range once the roof plan is already solid"}]]}]]}]]}]]}]\n',
+        '1f:["$","section",null,{"className":"bg-color-cyan-950 relative overflow-hidden   py-24 text-white","children":[["$","div",null,{"className":"pointer-events-none absolute inset-0 opacity-10","children":["$","svg",null,{"xmlns":"http://www.w3.org/2000/svg","width":"400","height":"400","viewBox":"0 0 24 24","className":"absolute left-[10%] top-10 h-[400px] w-[400px]","children":["$","g",null,{"fill":"none","stroke":"currentColor","strokeWidth":"1.5","children":[["$","circle",null,{"cx":"12","cy":"12","r":"6"}],["$","path",null,{"strokeLinecap":"round","d":"M12 2v1m0 18v1m10-10h-1M3 12H2m17.07-7.07l-.392.393M5.322 18.678l-.393.393m14.141-.001l-.392-.393M5.322 5.322l-.393-.393"}]]}]}]}],["$","div",null,{"className":"relative z-[1] mx-auto w-[min(80rem,calc(100%-3rem))]","children":[["$","div",null,{"className":"mx-auto mb-16 max-w-3xl text-center","children":[["$","p",null,{"className":"type-accent text-color-primary mb-4 text-sm font-semibold uppercase tracking-[0.2em]","children":"Texas Snapshot"}],["$","h2",null,{"className":"mb-4 text-[clamp(1.875rem,4vw,2.25rem)]","children":"The numbers people usually ask for."}],["$","p",null,{"className":"type-accent m-0 text-[1rem] font-semibold text-white/70","children":"These are directional homeowner benchmarks, not a substitute for a roof inspection, claim review, or project-specific production model."}]]}],["$","div",null,{"className":"grid gap-6 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1 md:grid-cols-4","children":[["$","div","$$18k-$28k",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:wallet-money-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"$$18k-$28k"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"Typical residential solar range before credits and roof-related adders"}]]}],["$","div","10+ years",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:chart-square-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"10+ years"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"Roof age is where insurance and timing questions usually start"}]]}],["$","div","2 years",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:leaf-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"2 years"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"A common claim window for detach-and-reset conversations after roof work"}]]}],["$","div","7–9 years",{"className":"card card--radius-md card--dark-glass p-8","children":[["$","div",null,{"className":"bg-white/10 text-color-primary mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full","children":["$","iconify-icon",null,{"icon":"solar:history-linear","class":"text-xl"}]}],["$","div",null,{"className":"type-accent mb-2 text-[1.875rem] font-bold","children":"7–9 years"}],["$","div",null,{"className":"type-accent text-sm font-semibold leading-6 text-white/60","children":"Typical solar payback range once the roof plan is already solid"}]]}]]}]]}]]}]\n',
       ])
     </script>
     <script>
@@ -2359,7 +2358,7 @@
     <script>
       self.__next_f.push([
         1,
-        '21:["$","section",null,{"className":"bg-color-warm   py-24","id":"incentives","children":["$","div",null,{"className":"mx-auto grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2","children":[["$","div",null,{"className":"grid place-items-start gap-4","children":[["$","h2",null,{"className":"type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]","children":"Roof insurance and claim realities"}],["$","div",null,{"className":"type-accent text-color-slate-500 text-base font-semibold leading-7","children":[["$","p",null,{"children":"Roof claims get expensive when the details are misunderstood. This section is here to explain hail damage, aging roofs, RCV vs ACV policies, claim timing, and when detach and reset becomes part of the job."}],["$","p",null,{"children":"The goal is simple: help you understand whether you are looking at normal roof wear, storm damage with an insurance angle, or a roofing project that needs to be planned correctly before solar enters the picture."}]]}],["$","button",null,{"type":"button","className":"btn btn--primary btn--md btn--pill","children":"Review roofing + insurance basics"}]]}],["$","div",null,{"className":"h-[400px] overflow-hidden rounded-3xl","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1613665813446-82a78c468a1d?q=80\u0026w=2058\u0026auto=format\u0026fit=crop","alt":"Austin Neighborhood","className":"h-full w-full object-cover"}]}]]}]}]\n',
+        '21:["$","section",null,{"className":"bg-color-warm   py-24","id":"incentives","children":["$","div",null,{"className":"mx-auto grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2","children":[["$","div",null,{"className":"grid place-items-start gap-4","children":[["$","h2",null,{"className":"type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]","children":"Roof insurance and claim realities"}],["$","div",null,{"className":"type-accent text-color-slate-500 text-[1rem] font-semibold leading-7","children":[["$","p",null,{"children":"Roof claims get expensive when the details are misunderstood. This section is here to explain hail damage, aging roofs, RCV vs ACV policies, claim timing, and when detach and reset becomes part of the job."}],["$","p",null,{"children":"The goal is simple: help you understand whether you are looking at normal roof wear, storm damage with an insurance angle, or a roofing project that needs to be planned correctly before solar enters the picture."}]]}],["$","button",null,{"type":"button","className":"btn btn--primary btn--md btn--pill","children":"Review roofing + insurance basics"}]]}],["$","div",null,{"className":"h-[400px] overflow-hidden rounded-3xl","children":["$","img",null,{"src":"https://images.unsplash.com/photo-1613665813446-82a78c468a1d?q=80\u0026w=2058\u0026auto=format\u0026fit=crop","alt":"Austin Neighborhood","className":"h-full w-full object-cover"}]}]]}]}]\n',
       ])
     </script>
     <script>
@@ -2368,13 +2367,13 @@
     <script>
       self.__next_f.push([
         1,
-        '24:["$","section",null,{"className":"bg-color-warm py-24","id":"resources","style":{"backgroundImage":"linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)","backgroundSize":"24px 24px"},"children":["$","div",null,{"className":"mx-auto w-[min(80rem,calc(100%-3rem))]","children":[["$","div",null,{"className":"mx-auto mb-16 max-w-3xl text-center","children":[["$","h2",null,{"className":"type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]","children":"Solar and Roofing Resources"}],["$","p",null,{"className":"type-accent text-foreground m-0 text-[clamp(1rem,4vw,1.25rem)]","children":"Expert resources for understanding roofing, solar, repairs, and what to do next."}]]}],["$","div",null,{"className":"grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3","children":[["$","$Lf","Hail Damage",{"href":"/hail-damage","children":["$","div",null,{"className":"card card--radius-lg card--media relative aspect-[1/1]","children":[["$","img",null,{"src":"https://cdn.sanity.io/images/xuhfhjna/production/a76af0ae609c4f8afec87ca49762b5c3f48ef719-1024x1024.png","alt":"Hail Damage","className":"absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"}],["$","div",null,{"className":"absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"}],["$","div",null,{"className":"absolute inset-x-0 bottom-0 p-8 text-white","children":[["$","div",null,{"className":"mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]","children":["$","$L2b",null,{"className":"h-5 w-5","strokeWidth":2.2}]}],["$","div",null,{"className":"type-accent text-[1.875rem] leading-[1.1] font-bold","children":"Hail Damage"}],["$","div",null,{"className":"mt-1 text-sm font-semibold text-white/70","children":"Storm history, roof damage signs, and what to do\\nafter a hail event"}]]}]]}]}],["$","$Lf","Roofing + Insurance",{"href":"/incentives","children":["$","div",null,{"className":"card card--radius-lg card--media relative aspect-[1/1]","children":[["$","img",null,{"src":"https://cdn.sanity.io/images/xuhfhjna/production/6e91666b402b00604fe55ed15558316c58e42a7b-1200x673.jpg","alt":"Roofing + Insurance","className":"absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"}],["$","div",null,{"className":"absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"}],["$","div",null,{"className":"absolute inset-x-0 bottom-0 p-8 text-white","children":[["$","div",null,{"className":"mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]","children":["$","$L2c",null,{"className":"h-5 w-5","strokeWidth":2.2}]}],["$","div",null,{"className":"type-accent text-[1.875rem] leading-[1.1] font-bold","children":"Roofing + Insurance"}],["$","div",null,{"className":"mt-1 text-sm font-semibold text-white/70","children":"Roof age, claim language, and the insurance details\\nthat change the job"}]]}]]}]}],["$","$Lf","Solar + Savings",{"href":"/costs","children":["$","div",null,{"className":"card card--radius-lg card--media relative aspect-[1/1]","children":[["$","img",null,{"src":"https://cdn.sanity.io/images/xuhfhjna/production/30dfa510e98eedbb50327d17c0972193d73c57d4-5824x3264.jpg","alt":"Solar + Savings","className":"absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"}],["$","div",null,{"className":"absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"}],["$","div",null,{"className":"absolute inset-x-0 bottom-0 p-8 text-white","children":[["$","div",null,{"className":"mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-[8px]","children":"$L2d"}],"$L2e","$L2f"]}]]}]}]]}]]}]}]\n',
+        '24:["$","section",null,{"className":"bg-color-warm py-24","id":"resources","style":{"backgroundImage":"linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)","backgroundSize":"24px 24px"},"children":["$","div",null,{"className":"mx-auto w-[min(80rem,calc(100%-3rem))]","children":[["$","div",null,{"className":"mx-auto mb-16 max-w-3xl text-center","children":[["$","h2",null,{"className":"type-accent text-color-secondary m-0 text-[clamp(1.875rem,4vw,2.25rem)]","children":"Solar and Roofing Resources"}],["$","p",null,{"className":"type-accent text-foreground m-0 text-[clamp(1rem,4vw,1.25rem)]","children":"Expert resources for understanding roofing, solar, repairs, and what to do next."}]]}],["$","div",null,{"className":"grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3","children":[["$","$Lf","Hail Damage",{"href":"/hail-damage","children":["$","div",null,{"className":"card card--radius-lg card--media relative aspect-square","children":[["$","img",null,{"src":"https://cdn.sanity.io/images/xuhfhjna/production/a76af0ae609c4f8afec87ca49762b5c3f48ef719-1024x1024.png","alt":"Hail Damage","className":"absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"}],["$","div",null,{"className":"absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"}],["$","div",null,{"className":"absolute inset-x-0 bottom-0 p-8 text-white","children":[["$","div",null,{"className":"mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm","children":["$","$L2b",null,{"className":"h-5 w-5","strokeWidth":2.2}]}],["$","div",null,{"className":"type-accent text-[1.875rem] leading-[1.1] font-bold","children":"Hail Damage"}],["$","div",null,{"className":"mt-1 text-sm font-semibold text-white/70","children":"Storm history, roof damage signs, and what to do\\nafter a hail event"}]]}]]}]}],["$","$Lf","Roofing + Insurance",{"href":"/incentives","children":["$","div",null,{"className":"card card--radius-lg card--media relative aspect-square","children":[["$","img",null,{"src":"https://cdn.sanity.io/images/xuhfhjna/production/6e91666b402b00604fe55ed15558316c58e42a7b-1200x673.jpg","alt":"Roofing + Insurance","className":"absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"}],["$","div",null,{"className":"absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"}],["$","div",null,{"className":"absolute inset-x-0 bottom-0 p-8 text-white","children":[["$","div",null,{"className":"mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm","children":["$","$L2c",null,{"className":"h-5 w-5","strokeWidth":2.2}]}],["$","div",null,{"className":"type-accent text-[1.875rem] leading-[1.1] font-bold","children":"Roofing + Insurance"}],["$","div",null,{"className":"mt-1 text-sm font-semibold text-white/70","children":"Roof age, claim language, and the insurance details\\nthat change the job"}]]}]]}]}],["$","$Lf","Solar + Savings",{"href":"/costs","children":["$","div",null,{"className":"card card--radius-lg card--media relative aspect-square","children":[["$","img",null,{"src":"https://cdn.sanity.io/images/xuhfhjna/production/30dfa510e98eedbb50327d17c0972193d73c57d4-5824x3264.jpg","alt":"Solar + Savings","className":"absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"}],["$","div",null,{"className":"absolute inset-0 bg-[linear-gradient(to_top,rgba(11,59,66,0.9),rgba(11,59,66,0.2),transparent)]"}],["$","div",null,{"className":"absolute inset-x-0 bottom-0 p-8 text-white","children":[["$","div",null,{"className":"mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm","children":"$L2d"}],"$L2e","$L2f"]}]]}]}]]}]]}]}]\n',
       ])
     </script>
     <script>
       self.__next_f.push([
         1,
-        '25:["$","section",null,{"className":"border-color-grid relative overflow-hidden border-t py-24","id":"estimate","style":{"backgroundImage":"linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))"},"children":[["$","div",null,{"className":"relative z-20 mx-auto grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2","children":[["$","div",null,{"children":[["$","h2",null,{"className":"type-display text-color-secondary mb-4 text-[clamp(2.875rem,6vw,3.75rem)]","children":["Tell us what",["$","br",null,{}],"you\'re dealing with"]}],["$","p",null,{"className":"type-accent text-color-slate-500 max-w-[26rem] text-base font-semibold","children":"If you\'re dealing with hail damage, an older roof, an insurance question, or a solar project you want to price out properly, send the details and we\'ll help you figure out the right next step."}]]}],["$","div",null,{"className":"card card--radius-lg card--surface relative z-10 p-8","id":"consultation","children":["$","$L30",null,{"context":{"sourceType":"consultation","sourceSection":"homepage-consultation","serviceInterest":"solar-roofing","siteSlug":"austin-solar-pros","siteName":"Texas Solar and Roofing Pros","sourceDomain":"texassolarandroofingpros.com","pagePath":"/","pageTitle":"Texas Solar and Roofing Pros","metadata":{"entryPoint":"homepage"}},"buttonLabel":"Contact Us Today","inputClassName":"border-color-grid placeholder:text-color-slate-700 focus:border-primary text-foreground","labelClassName":"text-color-slate-500","checkboxClassName":"accent-primary"}]}]]}],["$","$L31",null,{"zIndex":0}]]}]\n',
+        '25:["$","section",null,{"className":"border-color-grid relative overflow-hidden border-t py-24","id":"estimate","style":{"backgroundImage":"linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))"},"children":[["$","div",null,{"className":"relative z-20 mx-auto grid w-[min(80rem,calc(100%-3rem))] items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2","children":[["$","div",null,{"children":[["$","h2",null,{"className":"type-display text-color-secondary mb-4 text-[clamp(2.875rem,6vw,3.75rem)]","children":["Tell us what",["$","br",null,{}],"you\'re dealing with"]}],["$","p",null,{"className":"type-accent text-color-slate-500 max-w-[26rem] text-[1rem] font-semibold","children":"If you\'re dealing with hail damage, an older roof, an insurance question, or a solar project you want to price out properly, send the details and we\'ll help you figure out the right next step."}]]}],["$","div",null,{"className":"card card--radius-lg card--surface relative z-10 p-8","id":"consultation","children":["$","$L30",null,{"context":{"sourceType":"consultation","sourceSection":"homepage-consultation","serviceInterest":"solar-roofing","siteSlug":"austin-solar-pros","siteName":"Texas Solar and Roofing Pros","sourceDomain":"texassolarandroofingpros.com","pagePath":"/","pageTitle":"Texas Solar and Roofing Pros","metadata":{"entryPoint":"homepage"}},"buttonLabel":"Contact Us Today","inputClassName":"border-color-grid placeholder:text-color-slate-700 focus:border-primary text-foreground","labelClassName":"text-color-slate-500","checkboxClassName":"accent-primary"}]}]]}],["$","$L31",null,{"zIndex":0}]]}]\n',
       ])
     </script>
     <script>

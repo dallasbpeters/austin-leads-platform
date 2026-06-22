@@ -294,7 +294,7 @@ export function ServiceGridSection({ section, sectionId }) {
             <PortableTextContent
               as="div"
               value={section.body}
-              className="text-muted-foreground mt-4 text-base leading-8"
+              className="text-muted-foreground mt-4 text-[1rem] leading-8"
             />
           ) : null}
         </div>

@@ -3,6 +3,7 @@ import { Agentation } from 'agentation'
 import { sectionRenderers } from '@/components/platform/sections'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
+import { CookieConsent } from '@/components/blocks/cookie-consent'
 
 import Band from './components/Band'
 import CalculatorSection from './components/CalculatorSection'
@@ -20,6 +21,10 @@ import SnapshotSection from './components/SnapshotSection'
 import StorySection from './components/StorySection'
 import Testimonails from './components/Testimonials'
 import ArticleSection from './components/ArticleSection'
+
+export function CookieConsentWrapper() {
+  return <CookieConsent variant="small" />
+}
 
 export default function App({
   homepage = null,
@@ -148,7 +153,7 @@ export default function App({
       <DevTrace
         markup="src/App.jsx"
         content="homepage composition shell"
-        note="route-level ViewTransition lives in src/app/(site)/layout.jsx"
+        note="ViewTransition wraps main content only (header/footer excluded)"
       />
       <DevTrace markup="src/components/Header.jsx" content="local JSX nav and service catalog links" />
       <Header />
@@ -309,6 +314,7 @@ export default function App({
       </main>
       <DevTrace markup="src/components/Footer.jsx" content="local JSX footer + service catalog links" />
       <Footer />
+      <CookieConsentWrapper />
       {process.env.NODE_ENV === 'development' && <Agentation />}
       {jsonLd ? (
         <script

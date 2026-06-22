@@ -150,7 +150,7 @@ export function AboutProfileSection({ section, sectionId }) {
                               {person.certificationLabel}
                             </div>
                           ) : null}
-                          <div className="text-base leading-6 font-semibold text-white">
+                          <div className="text-[1rem] leading-6 font-semibold text-white">
                             {person.certificationTitle}
                           </div>
                         </div>
@@ -176,7 +176,7 @@ export function AboutProfileSection({ section, sectionId }) {
             <PortableTextContent
               as="div"
               value={section.body}
-              className="text-muted-foreground mt-2 text-base leading-8"
+              className="text-muted-foreground mt-2 text-[1rem] leading-8"
             />
           ) : null}
         </div>

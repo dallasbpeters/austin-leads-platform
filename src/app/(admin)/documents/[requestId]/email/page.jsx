@@ -46,7 +46,7 @@ export default async function DocumentEmailPreviewPage({ params }) {
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Email preview</p>
           <h1 className="text-foreground mt-2 text-3xl tracking-normal">{request.title}</h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <p className="text-muted-foreground mt-3 max-w-3xl text-[1rem] leading-7">
             React Email rendering for the signature request.
           </p>
         </div>
@@ -57,7 +57,7 @@ export default async function DocumentEmailPreviewPage({ params }) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Rendered email</CardTitle>
+          <CardTitle className="text-[1rem]">Rendered email</CardTitle>
           <CardDescription>What the recipient will receive.</CardDescription>
         </CardHeader>
         <CardContent>

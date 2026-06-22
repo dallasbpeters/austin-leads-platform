@@ -6,6 +6,10 @@
       "env": {
         "TOKEN": "894f5414cd1adbb508b46b7851dd2f13723842a883ab4f99bcd58fde031ced1c"
       }
+    },
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
     }
   }
 }

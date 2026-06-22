@@ -112,7 +112,7 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
             <PortableTextContent
               as="div"
               value={paybackBody}
-              className="mt-3 text-base leading-7 font-semibold text-neutral-500"
+              className="mt-3 text-[1rem] leading-7 font-semibold text-neutral-500"
             />
           </div>
         </div>

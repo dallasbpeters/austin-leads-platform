@@ -123,7 +123,7 @@ export default function HeroPagesClient({ initialPages, heroSites, unsplashEnabl
           <h1 className="text-foreground mt-2 text-3xl tracking-normal">
             Search Unsplash and attach hero images
           </h1>
-          <p className="text-muted-foreground mt-3 max-w-3xl text-base leading-7">
+          <p className="text-muted-foreground mt-3 max-w-3xl text-[1rem] leading-7">
             Choose a hero-tier page, search Unsplash from the admin, then store the selected image metadata
             directly on the hero section in Sanity.
           </p>

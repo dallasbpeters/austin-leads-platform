@@ -50,7 +50,7 @@
   --color-tertiary-alt: hsl(calc(var(--color-tertiary-h) + 16) 56% 67%);
   --color-warm-bg: hsl(calc(var(--color-primary-h) - 2) 54% 199%);
   --color-surface: hsl(calc(var(--color-primary-h) - 2) 34% 95%);
-  --color-surface-elevated: hsl(0 0% 100%);
+  --color-surface-elevated: hsl(0deg 0% 100%);
   --color-grid: hsl(calc(var(--color-primary-h) - 2) 18% 82%);
   --color-grid-line: hsl(calc(var(--color-primary-h) - 2) 18% 92%);
   --color-border: hsl(calc(var(--color-primary-h) - 2) 20% 88%);
@@ -94,7 +94,7 @@
   --muted-foreground: var(--color-text-muted);
   --accent: var(--color-primary-100);
   --accent-foreground: var(--color-text-strong);
-  --destructive: hsl(0 84% 60%);
+  --destructive: hsl(0deg 84% 60%);
   --destructive-foreground: var(--color-white);
   --border: var(--color-border);
   --input: var(--color-border);

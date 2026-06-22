@@ -1,25 +1,35 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import posthog from 'posthog-js'
 
-export type BookingMetadata = {
-  name: string
-  email: string
-  address: string
-  installDate: string
-  packageSlug?: string
-}
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
+
+let _jobberCheckoutScriptAdded = false
 
 function JobberCheckoutForm() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [ready, setReady] = useState(false)
+  const hasTrackedView = useRef(false)
 
   useEffect(() => {
-    setReady(true)
-  }, [])
+    const container = containerRef.current
+    if (!container) return
+    if (!hasTrackedView.current) {
+      hasTrackedView.current = true
 
-  useEffect(() => {
-    if (!ready || !containerRef.current) return
+      const eventParams = {
+        form_id: 'jobber_checkout_form',
+        form_type: 'work_request',
+        site_slug: 'txchristmaslights',
+        page_path: typeof window !== 'undefined' ? window.location.pathname : '/unknown',
+      }
+
+      posthog.capture('jobber_form_view', eventParams)
+      trackAnalyticsEvent('jobber_form_view', eventParams)
+    }
+
+    if (_jobberCheckoutScriptAdded) return
+    _jobberCheckoutScriptAdded = true
 
     const link = document.createElement('link')
     link.rel = 'stylesheet'
@@ -35,15 +45,10 @@ function JobberCheckoutForm() {
       'https://clienthub.getjobber.com/client_hubs/e25e6086-5e48-4c5d-8588-8aa08968b7d6/public/work_request/embedded_work_request_form?form_id=4905459',
     )
     document.body.appendChild(script)
-
-    return () => {
-      document.head.removeChild(link)
-      document.body.removeChild(script)
-    }
-  }, [ready])
+  }, [])
 
   return (
-    <div className="flex h-full w-full flex-col place-items-stretch bg-white p-8 lg:p-16">
+    <div className="grid h-full w-full place-items-center bg-white p-8 lg:p-16">
       <div ref={containerRef} id="e25e6086-5e48-4c5d-8588-8aa08968b7d6-4905459" />
     </div>
   )
@@ -53,7 +58,6 @@ export function SchedulingForm() {
   return (
     <section className="bg-primary text-background min-h-[70vh]">
       <div className="grid h-full min-h-[70vh] items-stretch overflow-hidden md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.9fr_1.1fr]">
-        {/* ── Left: branding / summary ────────────────────────────────── */}
         <div className="relative flex flex-col justify-center overflow-hidden px-8 py-16 md:px-20 lg:px-30 lg:py-24">
           <span
             className="text-background/10 pointer-events-none absolute top-1/2 -left-8 -translate-y-1/2 font-serif text-[20rem] leading-none select-none lg:text-[28rem]"
@@ -79,7 +83,6 @@ export function SchedulingForm() {
             </div>
           </div>
         </div>
-        {/* ── Right: Jobber form ─────────────────────────────────────── */}
         <div className="bg-background flex h-full flex-col overflow-hidden">
           <JobberCheckoutForm />
         </div>
