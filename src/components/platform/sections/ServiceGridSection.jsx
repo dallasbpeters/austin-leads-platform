@@ -198,19 +198,18 @@ function buildCardOverlay(hex, variant = 'large') {
   if (!hex) {
     const fallback = '11,59,66'
     if (variant === 'large')
-      return `linear-gradient(to top, rgba(${fallback},0.7) 50%, rgba(${fallback},0.08), transparent)`
+      return `linear-gradient(to top, rgba(${fallback},0.8) 50%, rgba(${fallback},0.08), transparent)`
     if (variant === 'medium')
-      return `linear-gradient(to top, rgba(${fallback},0.70) 15%, rgba(${fallback},0.20), transparent)`
-    return `linear-gradient(to top, rgba(${fallback},0.65) 5%, rgba(${fallback},0.20), transparent)`
+      return `linear-gradient(to top, rgba(${fallback},0.8) 15%, rgba(${fallback},0.20), transparent)`
+    return `linear-gradient(to top, rgba(${fallback},0.8) 5%, rgba(${fallback},0.20), transparent)`
   }
   const r = parseInt(hex.slice(1, 3), 16)
   const g = parseInt(hex.slice(3, 5), 16)
   const b = parseInt(hex.slice(5, 7), 16)
   const c = `${r},${g},${b}`
-  if (variant === 'large') return `linear-gradient(to top, rgba(${c},0.95) 20%, rgba(${c},0.08), transparent)`
-  if (variant === 'medium')
-    return `linear-gradient(to top, rgba(${c},0.70) 15%, rgba(${c},0.20), transparent)`
-  return `linear-gradient(to top, rgba(${c},0.65) 5%, rgba(${c},0.20), transparent)`
+  if (variant === 'large') return `linear-gradient(to top, rgba(${c},0.8) 20%, rgba(${c},0.08), transparent)`
+  if (variant === 'medium') return `linear-gradient(to top, rgba(${c},0.8) 15%, rgba(${c},0.20), transparent)`
+  return `linear-gradient(to top, rgba(${c},0.8) 5%, rgba(${c},0.20), transparent)`
 }
 
 function enrichItems(rawItems) {
