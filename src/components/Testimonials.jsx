@@ -59,7 +59,7 @@ function Ratings({ stars = 5 }) {
   const idPrefix = useId()
 
   return (
-    <div className="flex items-center gap-1 text-yellow-400">
+    <div className="flex items-center gap-1 text-yellow-400" aria-label={`${safeStars} out of 5 stars`}>
       {Array.from({ length: 5 }).map((_, index) => {
         const fillRatio = Math.max(0, Math.min(1, safeStars - index))
         const fillPercent = `${fillRatio * 100}%`
@@ -119,7 +119,14 @@ function ReviewerAvatar({ review }) {
 }
 
 const GoogleLogo = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1556 1587" width="1.5em" height="1.5em" {...props}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1556 1587"
+    width="1.5em"
+    height="1.5em"
+    aria-hidden="true"
+    {...props}
+  >
     <g id="Layer">
       <path
         id="Layer"

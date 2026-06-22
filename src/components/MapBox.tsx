@@ -323,11 +323,11 @@ export const MapBox = ({
         <div
           ref={containerRef}
           className="h-80 lg:h-auto"
-          role="img"
+          role="application"
           aria-label={
             areas.length > 0
-              ? `Map of ${areas.length} service ${areas.length === 1 ? 'county' : 'counties'} in Texas`
-              : 'Service area map of Texas'
+              ? `Interactive map of ${areas.length} service ${areas.length === 1 ? 'county' : 'counties'} in Texas`
+              : 'Interactive service area map of Texas'
           }
         />
       </div>

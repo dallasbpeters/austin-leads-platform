@@ -24,7 +24,7 @@ export default function GenericFooter({ site }) {
                 height={80}
                 className="size-20 w-auto rounded-sm bg-white object-contain p-3 brightness-120 filter"
               />
-              <h2 className="text-secondary-foreground text-2xl tracking-normal">{site.name}</h2>
+              <h3 className="text-secondary-foreground text-2xl tracking-normal">{site.name}</h3>
             </div>
           ) : (
             <span aria-hidden className="text-secondary-foreground/70 text-sm tracking-[0.2em] uppercase">

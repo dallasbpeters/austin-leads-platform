@@ -129,7 +129,11 @@ export default function GenericHeader({ site, navigation = [] }) {
           }
         >
           <div className="flex items-center justify-between">
-            <Link href="/" title={site?.name || ''} className="grid grid-flow-col items-center gap-2">
+            <Link
+              href="/"
+              aria-label={`${site?.name || 'Site'} - Home`}
+              className="grid grid-flow-col items-center gap-2"
+            >
               {logoUrl ? (
                 <img
                   src={logoUrl}

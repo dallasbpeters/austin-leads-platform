@@ -445,6 +445,7 @@ function ArrowIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <path d="M7 7h10v10"></path>
       <path d="M7 17 17 7"></path>
@@ -464,6 +465,7 @@ function SunIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      aria-hidden="true"
     >
       <circle cx="12" cy="12" r="4"></circle>
       <path d="M12 2v2"></path>

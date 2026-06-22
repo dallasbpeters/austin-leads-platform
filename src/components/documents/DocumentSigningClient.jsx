@@ -296,6 +296,8 @@ export default function DocumentSigningClient({ request, recipient, client, prev
                       <div className="rounded-lg border bg-white p-2">
                         <canvas
                           ref={canvasRef}
+                          role="img"
+                          aria-label="Draw your signature here"
                           className="block h-50 w-full touch-none rounded-md bg-white"
                           onPointerDown={startDrawing}
                           onPointerMove={drawPoint}

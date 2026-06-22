@@ -112,10 +112,11 @@ export default function Header() {
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              title="Texas Solar & Roofing Pros"
+              aria-label="Texas Solar & Roofing Pros - Home"
               className="grid grid-flow-col items-center gap-2"
             >
               <Logo height={60} width={80} />
+              <span className="sr-only">Texas Solar & Roofing Pros</span>
             </Link>
             <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
             <div className="hidden lg:flex lg:items-center">

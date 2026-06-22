@@ -34,7 +34,7 @@ export default function Footer() {
               upgrades for Texas homeowners.
             </p>
             <div className="mt-4">
-              <h2 className="text-sm">Contact</h2>
+              <h3 className="text-sm">Contact</h3>
               <ul className="mt-3 space-y-2 text-sm text-gray-300">
                 <li>
                   <a href="mailto:info@texassolarandroofingpros.com" className="hover:text-gray-200">
@@ -45,7 +45,7 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h2 className="text-sm">Services</h2>
+            <h3 className="text-sm">Services</h3>
             <ul className="mt-3 space-y-2 text-sm text-gray-300">
               {mainServices.map((service) => (
                 <li key={service.slug}>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
           <div>
             <div>
-              <h2 className="text-sm">Roofing</h2>
+              <h3 className="text-sm">Roofing</h3>
               <ul className="mt-3 space-y-2 text-sm text-gray-300">
                 {roofingServices.map((service) => (
                   <li key={service.slug}>
@@ -100,8 +100,9 @@ export default function Footer() {
         </div>
       </div>
       <AutoSizedText
+        aria-hidden="true"
         tabIndex={-1}
-        className="aria-hidden pointer-events-none absolute bottom-10 left-0 table text-center leading-2 font-extrabold tracking-normal whitespace-nowrap text-white/6"
+        className="pointer-events-none absolute bottom-10 left-0 table text-center leading-2 font-extrabold tracking-normal whitespace-nowrap text-white/6"
       >
         Texas Solar & Roofing
       </AutoSizedText>

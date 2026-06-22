@@ -116,13 +116,15 @@ export default function HailWeatherLookup({ section }) {
             type="button"
             variant="outline"
           >
-            <LocateFixed className="size-4" />
+            <LocateFixed className="size-4" aria-hidden="true" />
             Current location
           </Button>
+          <label htmlFor="hail-weather-lookup-query" className="sr-only">
+            Search location
+          </label>
           <Input
             id="hail-weather-lookup-query"
             name="hail-weather-lookup-query"
-            htmlFor="hail-weather-lookup-query"
             className="border-border/70 h-11 w-full bg-white"
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Enter ZIP code, city, or neighborhood"
@@ -152,12 +154,12 @@ export default function HailWeatherLookup({ section }) {
                 <div
                   className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-[0.16em] uppercase ${riskTone(risk.level)}`}
                 >
-                  <ShieldAlert className="size-3.5" />
+                  <ShieldAlert className="size-3.5" aria-hidden="true" />
                   {risk.level} risk
                 </div>
                 {data?.location?.name ? (
                   <div className="text-muted-foreground inline-flex items-center gap-2 text-sm">
-                    <MapPin className="size-4" />
+                    <MapPin className="size-4" aria-hidden="true" />
                     {data.location.name}
                   </div>
                 ) : null}
@@ -174,7 +176,7 @@ export default function HailWeatherLookup({ section }) {
           <Card className="bg-card border-border/80">
             <CardContent className="p-4">
               <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
-                <CloudRainWind className="size-8" />
+                <CloudRainWind className="size-8" aria-hidden="true" />
                 Conditions
               </div>
               <div className="text-foreground mt-3 text-lg font-semibold">
@@ -189,7 +191,7 @@ export default function HailWeatherLookup({ section }) {
           <Card className="bg-card border-border/80">
             <CardContent className="p-4">
               <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
-                <Wind className="size-8" />
+                <Wind className="size-8" aria-hidden="true" />
                 Gusts
               </div>
               <div className="text-foreground mt-3 text-lg font-semibold">
@@ -202,7 +204,7 @@ export default function HailWeatherLookup({ section }) {
           <Card className="bg-card border-border/80">
             <CardContent className="p-4">
               <div className="text-muted-foreground inline-flex items-center gap-2 text-xs font-semibold tracking-[0.16em] uppercase">
-                <TriangleAlert className="size-8" />
+                <TriangleAlert className="size-8" aria-hidden="true" />
                 Alerts
               </div>
               <div className="text-foreground mt-3 text-lg font-semibold">{alerts.length}</div>
