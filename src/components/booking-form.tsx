@@ -29,7 +29,7 @@ const JobberCheckoutForm = () => {
   }, [])
 
   return (
-    <div ref={containerRef} className="h-full min-h-[720px] w-full bg-white">
+    <div ref={containerRef} className="grid h-full min-h-180 w-full grid-cols-1 place-items-center bg-white">
       <JobberWorkRequestEmbed className="h-full rounded-none" formId={JOBBER_FORM_IDS.txchristmaslights} />
     </div>
   )
