@@ -1,332 +1,402 @@
+// oxlint-disable sort-keys
 const baseMeta = {
-  siteSlug: 'texas-solar-and-roofing-pros',
   pageType: 'servicePage',
+  siteSlug: 'texas-solar-and-roofing-pros',
   templateLevel: 'hero',
 }
 
 export const mainServices = [
   {
-    slug: 'energy-audits',
-    title: 'Energy Audits',
-    icon: 'audit',
-    menuDescription: 'Find out where energy is being wasted in your home.',
-    eyebrow: 'Find the waste first',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Your bills are high but nobody can tell you why',
     body: `Your electric bill isn't lying -- your house is losing energy somewhere. An energy audit uses blower door testing, thermal imaging, and duct diagnostics to find every leak, gap, and failure so you know exactly what to fix and in what order.`,
-    image: {
-      urls: { regular: '/assets/services/photos/energy-audits.jpg' },
-      alt: 'Thermostat control being adjusted during a home energy audit',
-    },
     detail: {
-      heroEyebrow: 'Home performance',
-      heroBody:
-        'Most Texas homes lose 20-30% of their energy through gaps, bad insulation, and duct leaks. An energy audit shows you where that waste is happening and ranks fixes by how much money they save and how quickly they pay for themselves.',
-      storyTitle: 'Stop guessing where your money goes.',
-      storyBody: `You can feel the draft by the back door. You know the upstairs is ten degrees hotter than downstairs. But you don't know which problems cost you $40 a month and which ones cost $400. That's what an audit answers -- with diagnostic equipment that sees what you can't: air leaks behind walls, duct losses in the attic, insulation gaps that have been there since the house was built. You walk away with a prioritized fix list ranked by savings, not guesswork.`,
-      highlights: [
-        {
-          title: 'Blower door testing reveals hidden air leaks',
-          body: `A blower door depressurizes your home and measures exactly how much air escapes and where -- around outlets, plumbing, attic hatches, and penetrations you'd never find by feel.`,
-        },
-        {
-          title: `Thermal imaging shows what's missing behind walls`,
-          body: 'An infrared camera maps temperature differences across every wall and ceiling. Missing insulation, moisture problems, and thermal bridges light up on screen -- no guessing, no tearing open drywall.',
-        },
-        {
-          title: 'Duct leakage testing catches hidden HVAC losses',
-          body: 'In many Texas homes, 20-30% of the conditioned air your system produces never reaches your rooms. Duct testing measures exactly how much escapes and where, usually in the attic.',
-        },
-      ],
-      steps: [
-        {
-          title: 'Gather 12 months of electric bills and schedule your audit',
-          body: `Your billing history helps the auditor understand your home's performance compared to similar houses in your area. Bring notes about any comfort issues too (hot rooms, drafts, humidity) so testing focuses on what matters most.`,
-        },
-        {
-          title: 'Blower door depressurization, infrared scan, and duct leakage test',
-          body: `The blower door pulls air out of the house to measure total leakage in CFM50. An infrared camera maps temperature differences on every wall and ceiling -- exposing missing insulation, moisture, and thermal bridges you'd never spot visually. Duct testing measures how much conditioned air leaks before it reaches your rooms.`,
-        },
-        {
-          title: 'Receive a dollar-ranked fix list with payback timelines',
-          body: 'Each recommendation shows you the cost, annual savings, and payback period. Air sealing might pay back in 8 months. A duct repair might save $600 per year. You choose what to tackle first based on real numbers.',
-        },
-      ],
       faq: [
         {
-          question: 'Do I need an energy audit before solar?',
           answer: `Not always, but it's smart when bills are high and the house has obvious comfort issues. Fixing waste first means you can size a smaller, cheaper solar system -- and stop overpaying in the meantime.`,
+          question: 'Do I need an energy audit before solar?',
         },
         {
-          question: 'Will an audit actually save me money?',
           answer:
             'Homeowners who follow the top 2-3 recommendations usually see energy bill reductions of 15-30%. Most audits pay for themselves within the first year through the savings you get from making fixes.',
+          question: 'Will an audit actually save me money?',
         },
       ],
-    },
-  },
-  {
-    slug: 'insulation-and-air-sealing',
-    title: 'Insulation and Air Sealing',
-    icon: 'insulation',
-    menuDescription: 'Close the air leaks that drive up your electric bill.',
-    eyebrow: 'Keep conditioned air inside',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Rooms run hot, your AC never stops, or your attic is underinsulated',
-    body: 'Most high electric bills come from air leaks and thin insulation, not a bad AC. Sealing gaps and adding insulation lets your system work less for the same comfort.',
-    image: {
-      urls: { regular: '/assets/services/photos/insulation-air-sealing.jpg' },
-      alt: 'Residential attic space with reflective insulation installed',
-    },
-    detail: {
-      heroEyebrow: 'Efficiency upgrades',
-      heroBody: `Texas heat wins if your attic insulation is thin or settled, and your house has air leaks at every gap. You'll be paying to cool the outdoors. Proper insulation and air sealing change that equation directly.`,
-      storyTitle: 'Your AC works fine, but your house envelope is the problem.',
-      storyBody:
-        'Hot attic air leaks down through gaps around light fixtures, plumbing stacks, and the attic hatch. Outside air leaks in around outlets, windows, and where framing meets the foundation. Your AC runs constantly to compensate. Air sealing closes these leaks first. Then blown-in insulation fills around wires, pipes, and joists for even coverage. The result: rooms stay more consistent, your system runs less, and the thermostat stays where you set it.',
+      heroBody:
+        'Most Texas homes lose 20-30% of their energy through gaps, bad insulation, and duct leaks. An energy audit shows you where that waste is happening and ranks fixes by how much money they save and how quickly they pay for themselves.',
+      heroEyebrow: 'Home performance',
       highlights: [
         {
-          title: 'Attic air sealing plugs the biggest leaks first',
-          body: 'Before any insulation goes in, every hole in your attic floor gets sealed: wiring holes, plumbing stacks, recessed lights, top plates. These are the main routes where hot attic air leaks into your living space.',
+          body: `A blower door depressurizes your home and measures exactly how much air escapes and where -- around outlets, plumbing, attic hatches, and penetrations you'd never find by feel.`,
+          title: 'Blower door testing reveals hidden air leaks',
         },
         {
-          title: 'Blown-in insulation fills every gap evenly',
-          body: `Blown-in insulation fills around wires, pipes, and joists completely. Batts leave gaps and sag over time. Blown-in handles the tight spots batts can't reach.`,
+          body: 'An infrared camera maps temperature differences across every wall and ceiling. Missing insulation, moisture problems, and thermal bridges light up on screen -- no guessing, no tearing open drywall.',
+          title: `Thermal imaging shows what's missing behind walls`,
         },
         {
-          title: 'Rooms stay more consistent in temperature',
-          body: 'Rooms that were five to ten degrees hotter or cooler than the rest of the house even out. Your system runs less, your bill drops, and you stop making constant thermostat adjustments.',
+          body: 'In many Texas homes, 20-30% of the conditioned air your system produces never reaches your rooms. Duct testing measures exactly how much escapes and where, usually in the attic.',
+          title: 'Duct leakage testing catches hidden HVAC losses',
         },
       ],
       steps: [
         {
-          title: 'Measure existing R-value and map every air leakage path',
-          body: 'We measure your current insulation depth and condition, then use a blower door to find where air escapes: top plates, wiring holes, plumbing chases, recessed lights, the attic hatch. Comparing what you have to what your climate zone needs (R-38 to R-60) tells us what work is necessary.',
+          body: `Your billing history helps the auditor understand your home's performance compared to similar houses in your area. Bring notes about any comfort issues too (hot rooms, drafts, humidity) so testing focuses on what matters most.`,
+          title: 'Gather 12 months of electric bills and schedule your audit',
         },
         {
-          title: 'Seal the attic floor before any insulation goes in',
-          body: `Every hole gets sealed with fire-rated caulk or spray foam: wiring holes, plumbing stacks, HVAC chases, top plates, recessed lights. Most contractors skip this step because it's slow and unseen. But it's the critical step. Insulation doesn't block air movement; it only slows heat. You have to seal the holes first.`,
+          body: `The blower door pulls air out of the house to measure total leakage in CFM50. An infrared camera maps temperature differences on every wall and ceiling -- exposing missing insulation, moisture, and thermal bridges you'd never spot visually. Duct testing measures how much conditioned air leaks before it reaches your rooms.`,
+          title: 'Blower door depressurization, infrared scan, and duct leakage test',
         },
         {
-          title: 'Blow insulation to target depth and retest with a blower door',
-          body: 'Blown-in cellulose or fiberglass fills around every wire, pipe, and joist completely. Depth markers confirm the thickness. A final blower door test shows whether the air sealing reached its target. You see the before and after numbers side by side.',
+          body: 'Each recommendation shows you the cost, annual savings, and payback period. Air sealing might pay back in 8 months. A duct repair might save $600 per year. You choose what to tackle first based on real numbers.',
+          title: 'Receive a dollar-ranked fix list with payback timelines',
         },
       ],
+      storyBody: `You can feel the draft by the back door. You know the upstairs is ten degrees hotter than downstairs. But you don't know which problems cost you $40 a month and which ones cost $400. That's what an audit answers -- with diagnostic equipment that sees what you can't: air leaks behind walls, duct losses in the attic, insulation gaps that have been there since the house was built. You walk away with a prioritized fix list ranked by savings, not guesswork.`,
+      storyTitle: 'Stop guessing where your money goes.',
+    },
+    eyebrow: 'Find the waste first',
+    icon: 'audit',
+    image: {
+      alt: 'Thermostat control being adjusted during a home energy audit',
+      urls: { regular: '/assets/services/photos/energy-audits.jpg' },
+    },
+    menuDescription: 'Find out where energy is being wasted in your home.',
+    slug: 'energy-audits',
+    subtitleLabel: 'Best when',
+    subtitleValue: 'Your bills are high but nobody can tell you why',
+    title: 'Energy Audits',
+  },
+  {
+    body: 'Most high electric bills come from air leaks and thin insulation, not a bad AC. Sealing gaps and adding insulation lets your system work less for the same comfort.',
+    detail: {
       faq: [
         {
-          question: 'Can insulation lower my bill without replacing HVAC?',
           answer:
             'In many homes the building envelope makes the system work harder than necessary. Tightening the shell reduces how hard the system has to work and often improves comfort before you consider any equipment changes.',
+          question: 'Can insulation lower my bill without replacing HVAC?',
         },
         {
-          question: 'How much will this actually save?',
           answer:
             'Most homeowners see 15-25% lower heating and cooling costs after proper insulation and air sealing. In a Texas summer with $300+ electric bills, that matters.',
+          question: 'How much will this actually save?',
         },
       ],
-    },
-  },
-  {
-    slug: 'duct-sealing',
-    title: 'Duct Sealing',
-    icon: 'ducts',
-    menuDescription: 'Stop losing cooled air before it reaches your rooms.',
-    eyebrow: 'Fix hidden HVAC losses',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'Some rooms never cool down or the system runs constantly',
-    body: `If your ducts leak in a 140-degree attic, you're paying to cool space you never use. Duct sealing closes those gaps so the air reaches your rooms.`,
-    image: {
-      urls: { regular: '/assets/services/photos/duct-sealing.jpg' },
-      alt: 'Architectural vent detail representing HVAC airflow and duct performance',
-    },
-    detail: {
-      heroEyebrow: 'HVAC performance',
-      heroBody: `Up to 30% of the air your system produces never reaches your rooms. It leaks at joints, connections, and gaps, usually into your attic where it doesn't help your comfort but definitely affects your bill.`,
-      storyTitle: `The cold air you're paying for is going into your attic.`,
-      storyBody: `You set the thermostat to 72, but the bedroom reads 78. The kitchen is fine, but the living room won't cool down. Before you blame the AC, look at the delivery system. Every loose joint, torn flex duct, and disconnected boot is a hole where cold air escapes into 140-degree heat. Those leaks also pull hot attic air and dust into your supply. Duct sealing with mastic and metallic tape closes those gaps. A before and after pressure test proves the improvement.`,
+      heroBody: `Texas heat wins if your attic insulation is thin or settled, and your house has air leaks at every gap. You'll be paying to cool the outdoors. Proper insulation and air sealing change that equation directly.`,
+      heroEyebrow: 'Efficiency upgrades',
       highlights: [
         {
-          title: `Pressurized testing shows exactly how much air you're losing`,
-          body: 'A duct blaster test measures total leakage. Most homes test at 20-30% leakage. After sealing, that drops below 10%. You see the before and after numbers side by side.',
+          body: 'Before any insulation goes in, every hole in your attic floor gets sealed: wiring holes, plumbing stacks, recessed lights, top plates. These are the main routes where hot attic air leaks into your living space.',
+          title: 'Attic air sealing plugs the biggest leaks first',
         },
         {
-          title: 'Joint and connection sealing targets the worst leaks',
-          body: 'The biggest losses happen where duct sections meet boots, plenums, and branch lines. Mastic sealant and metallic tape at these connections stop the majority of air loss in one pass.',
+          body: `Blown-in insulation fills around wires, pipes, and joists completely. Batts leave gaps and sag over time. Blown-in handles the tight spots batts can't reach.`,
+          title: 'Blown-in insulation fills every gap evenly',
         },
         {
-          title: 'Better airflow means more even temperatures',
-          body: 'That back bedroom that never cools down is probably at the end of a duct run with leaks upstream stealing its air. Seal those leaks and airflow rebalances. No new equipment needed.',
+          body: 'Rooms that were five to ten degrees hotter or cooler than the rest of the house even out. Your system runs less, your bill drops, and you stop making constant thermostat adjustments.',
+          title: 'Rooms stay more consistent in temperature',
         },
       ],
       steps: [
         {
-          title: 'Pressurize the duct system and measure total leakage in CFM',
-          body: 'A duct blaster test seals your registers and pressurizes the duct system to measure how much air escapes before reaching your rooms. Most Texas homes test at 20-30% leakage. This baseline tells us how bad the problem is and where to focus.',
+          body: 'We measure your current insulation depth and condition, then use a blower door to find where air escapes: top plates, wiring holes, plumbing chases, recessed lights, the attic hatch. Comparing what you have to what your climate zone needs (R-38 to R-60) tells us what work is necessary.',
+          title: 'Measure existing R-value and map every air leakage path',
         },
         {
-          title: 'Seal every joint, boot, and connection with mastic -- not duct tape',
-          body: `Mastic sealant and UL-rated metallic tape seal every joint where duct sections meet boots, plenums, and branch lines. Crushed flex gets reshaped or replaced. Disconnected runs get reconnected. Standard duct tape dries out and fails in 140-degree Texas attics within two years, which is why we don't use it.`,
+          body: `Every hole gets sealed with fire-rated caulk or spray foam: wiring holes, plumbing stacks, HVAC chases, top plates, recessed lights. Most contractors skip this step because it's slow and unseen. But it's the critical step. Insulation doesn't block air movement; it only slows heat. You have to seal the holes first.`,
+          title: 'Seal the attic floor before any insulation goes in',
         },
         {
-          title: 'Retest to confirm leakage dropped below 10% and check every register',
-          body: 'The duct blaster runs again so you see the improvement in numbers. Then we measure airflow at each register to confirm air reaches every room. That back bedroom should be getting its full CFM now.',
+          body: 'Blown-in cellulose or fiberglass fills around every wire, pipe, and joist completely. Depth markers confirm the thickness. A final blower door test shows whether the air sealing reached its target. You see the before and after numbers side by side.',
+          title: 'Blow insulation to target depth and retest with a blower door',
         },
       ],
+      storyBody:
+        'Hot attic air leaks down through gaps around light fixtures, plumbing stacks, and the attic hatch. Outside air leaks in around outlets, windows, and where framing meets the foundation. Your AC runs constantly to compensate. Air sealing closes these leaks first. Then blown-in insulation fills around wires, pipes, and joists for even coverage. The result: rooms stay more consistent, your system runs less, and the thermostat stays where you set it.',
+      storyTitle: 'Your AC works fine, but your house envelope is the problem.',
+    },
+    eyebrow: 'Keep conditioned air inside',
+    icon: 'insulation',
+    image: {
+      alt: 'Residential attic space with reflective insulation installed',
+      urls: { regular: '/assets/services/photos/insulation-air-sealing.jpg' },
+    },
+    menuDescription: 'Close the air leaks that drive up your electric bill.',
+    slug: 'insulation-and-air-sealing',
+    subtitleLabel: 'Best when',
+    subtitleValue: 'Rooms run hot, your AC never stops, or your attic is underinsulated',
+    title: 'Insulation and Air Sealing',
+  },
+  {
+    body: `If your ducts leak in a 140-degree attic, you're paying to cool space you never use. Duct sealing closes those gaps so the air reaches your rooms.`,
+    detail: {
       faq: [
         {
-          question: 'Can duct sealing really lower energy use?',
           answer:
             'Yes. If conditioned air is lost before it reaches your rooms, the system runs longer to compensate. Sealing cuts that waste and often makes the house noticeably more comfortable the same day.',
+          question: 'Can duct sealing really lower energy use?',
         },
         {
-          question: `Is this worth doing if I'm replacing my AC soon?`,
           answer: `Sealed ducts let you buy a smaller, less expensive system because it doesn't have to overcome duct losses. It's one of the best things to do before a new HVAC install.`,
+          question: `Is this worth doing if I'm replacing my AC soon?`,
         },
       ],
-    },
-  },
-  {
-    slug: 'window-replacement',
-    title: 'Window & Door Replacement',
-    icon: 'windows',
-    menuDescription: 'Replace the windows that are letting Texas heat pour in.',
-    eyebrow: 'Reduce heat gain and loss',
-    subtitleLabel: 'Best when',
-    subtitleValue: 'You feel the heat radiating through the glass every afternoon',
-    body: `Single-pane and aging windows let Texas heat pour in and make your AC work overtime. Low-E, double-pane replacements cut heat gain and reduce UV damage.`,
-    image: {
-      urls: { regular: '/assets/services/photos/window-replacement.jpg' },
-      alt: 'Crew installing new residential windows on a house exterior',
-    },
-    detail: {
-      heroEyebrow: 'Envelope upgrades',
-      heroBody: `Windows are the weakest link in your home's thermal envelope. Single-pane and aging double-pane windows let heat pour in and UV rays damage your floors and furniture. Your AC runs extra hard to compensate. The right replacements change all that.`,
-      storyTitle: 'Your old windows are working against your AC.',
-      storyBody:
-        'Every BTU of heat through your windows is a BTU your AC has to remove. Older double-pane windows with failed seals (fog between the glass) have lost most of their insulation. Low-E coated, argon-filled replacements cut heat gain significantly. Proper installation eliminates the drafts old windows are known for. Your rooms stay cooler, your system runs less, and your floors stop fading from UV.',
+      heroBody: `Up to 30% of the air your system produces never reaches your rooms. It leaks at joints, connections, and gaps, usually into your attic where it doesn't help your comfort but definitely affects your bill.`,
+      heroEyebrow: 'HVAC performance',
       highlights: [
         {
-          title: 'Low-E coating blocks heat without blocking light',
-          body: 'Low-emissivity coatings reflect infrared heat back outside while letting visible light through. Bright rooms without the greenhouse effect.',
+          body: 'A duct blaster test measures total leakage. Most homes test at 20-30% leakage. After sealing, that drops below 10%. You see the before and after numbers side by side.',
+          title: `Pressurized testing shows exactly how much air you're losing`,
         },
         {
-          title: 'Proper installation eliminates air leaks around frames',
-          body: 'A good window installed badly still leaks. Professional installation includes shimming, insulation, and sealing around every frame to eliminate drafts.',
+          body: 'The biggest losses happen where duct sections meet boots, plenums, and branch lines. Mastic sealant and metallic tape at these connections stop the majority of air loss in one pass.',
+          title: 'Joint and connection sealing targets the worst leaks',
         },
         {
-          title: `Noise reduction that's obvious immediately`,
-          body: `Double-pane windows with gas fill reduce exterior noise. If you live near a busy road, you'll notice the difference the first night.`,
+          body: 'That back bedroom that never cools down is probably at the end of a duct run with leaks upstream stealing its air. Seal those leaks and airflow rebalances. No new equipment needed.',
+          title: 'Better airflow means more even temperatures',
         },
       ],
       steps: [
         {
-          title: 'Measure every opening and check framing for rot or damage',
-          body: 'Width, height, depth, and squareness determine whether you need an insert (pocket) install or a full-frame replacement. Insert windows fit inside an existing sound frame. Full-frame goes to the studs for a tighter seal but costs more. We check your framing condition and recommend what makes sense.',
+          body: 'A duct blaster test seals your registers and pressurizes the duct system to measure how much air escapes before reaching your rooms. Most Texas homes test at 20-30% leakage. This baseline tells us how bad the problem is and where to focus.',
+          title: 'Pressurize the duct system and measure total leakage in CFM',
         },
         {
-          title: `Match glass specs to each wall's sun exposure`,
-          body: 'South and west-facing windows in Texas take intense afternoon heat. They need a lower solar heat gain coefficient (SHGC) than north-facing windows. We specify Low-E coatings, gas fill, and frame materials based on which direction each window faces, how much shade it gets, and your actual cooling load.',
+          body: `Mastic sealant and UL-rated metallic tape seal every joint where duct sections meet boots, plenums, and branch lines. Crushed flex gets reshaped or replaced. Disconnected runs get reconnected. Standard duct tape dries out and fails in 140-degree Texas attics within two years, which is why we don't use it.`,
+          title: 'Seal every joint, boot, and connection with mastic -- not duct tape',
         },
         {
-          title: 'Install with proper flashing, insulate the rough opening, and test',
-          body: 'Old windows come out, new ones are shimmed level. The rough opening gets sealed with low-expansion foam. Full-frame replacements use flashing tape for proper water management (head and jambs sealed, sill left to drain). Every window gets operation-checked before we leave.',
+          body: 'The duct blaster runs again so you see the improvement in numbers. Then we measure airflow at each register to confirm air reaches every room. That back bedroom should be getting its full CFM now.',
+          title: 'Retest to confirm leakage dropped below 10% and check every register',
         },
       ],
+      storyBody: `You set the thermostat to 72, but the bedroom reads 78. The kitchen is fine, but the living room won't cool down. Before you blame the AC, look at the delivery system. Every loose joint, torn flex duct, and disconnected boot is a hole where cold air escapes into 140-degree heat. Those leaks also pull hot attic air and dust into your supply. Duct sealing with mastic and metallic tape closes those gaps. A before and after pressure test proves the improvement.`,
+      storyTitle: `The cold air you're paying for is going into your attic.`,
+    },
+    eyebrow: 'Fix hidden HVAC losses',
+    icon: 'ducts',
+    image: {
+      alt: 'Architectural vent detail representing HVAC airflow and duct performance',
+      urls: { regular: '/assets/services/photos/duct-sealing.jpg' },
+    },
+    menuDescription: 'Stop losing cooled air before it reaches your rooms.',
+    slug: 'duct-sealing',
+    subtitleLabel: 'Best when',
+    subtitleValue: 'Some rooms never cool down or the system runs constantly',
+    title: 'Duct Sealing',
+  },
+  {
+    body: `Single-pane and aging windows let Texas heat pour in and make your AC work overtime. Low-E, double-pane replacements cut heat gain and reduce UV damage.`,
+    detail: {
       faq: [
         {
-          question: 'Will new windows solve high energy bills by themselves?',
           answer: `They help, but they're just one part of the envelope. Most homeowners see 12-25% cooling savings. The biggest payoff comes when windows are done with insulation and air sealing.`,
+          question: 'Will new windows solve high energy bills by themselves?',
         },
         {
-          question: 'Can I replace windows one room at a time?',
           answer:
             'Yes. Many homeowners start with the rooms that get the most sun or have the worst comfort problems. We help you prioritize which windows give you the biggest return first.',
+          question: 'Can I replace windows one room at a time?',
         },
       ],
-    },
-  },
-  {
-    slug: 'heat-pump-upgrades',
-    title: 'Heat Pump Upgrades',
-    icon: 'heatpump',
-    menuDescription: 'One system heats and cools, using much less energy.',
-    eyebrow: 'Modernize heating and cooling',
-    subtitleLabel: 'Best when',
-    subtitleValue: `Your AC and furnace are old, expensive, or can't keep up`,
-    body: 'A heat pump replaces both your AC and furnace by moving heat instead of generating it, so it uses 2-3x less energy. Texas winters are mild enough that heat pumps handle them easily.',
-    image: {
-      urls: { regular: '/assets/services/photos/heat-pump-upgrades.jpg' },
-      alt: 'Residential outdoor heat pump unit mounted beside a home',
-    },
-    detail: {
-      heroEyebrow: 'Equipment planning',
-      heroBody: `A heat pump handles heating and cooling but uses significantly less energy. For Texas homeowners with high summer bills and mild winters, it's one of the best comfort investments you can make.`,
-      storyTitle: `One system does both, for a fraction of what you're paying now.`,
-      storyBody:
-        'You probably have a furnace for winter and an AC for summer: two separate systems, neither very efficient. A heat pump replaces both. In summer it removes heat; in winter it adds heat from outside. Because it moves heat instead of generating it, it uses 2-3x less energy. With utility rebates available, the payback time is quick.',
+      heroBody: `Windows are the weakest link in your home's thermal envelope. Single-pane and aging double-pane windows let heat pour in and UV rays damage your floors and furniture. Your AC runs extra hard to compensate. The right replacements change all that.`,
+      heroEyebrow: 'Envelope upgrades',
       highlights: [
         {
-          title: '2-3x more efficient than traditional furnaces',
-          body: `A gas furnace burns fuel to make heat. A heat pump moves heat with electricity, so it's much more efficient. The difference shows on every bill.`,
+          body: 'Low-emissivity coatings reflect infrared heat back outside while letting visible light through. Bright rooms without the greenhouse effect.',
+          title: 'Low-E coating blocks heat without blocking light',
         },
         {
-          title: 'Utility rebates available for qualifying installs',
-          body: 'Texas utilities offer rebates for high-efficiency heat pump installations. We help you identify every incentive you qualify for and handle the paperwork.',
+          body: 'A good window installed badly still leaks. Professional installation includes shimming, insulation, and sealing around every frame to eliminate drafts.',
+          title: 'Proper installation eliminates air leaks around frames',
         },
         {
-          title: 'Variable-speed models reduce temperature swings',
-          body: 'Modern variable-speed heat pumps adjust output continuously instead of cycling on and off, so temperatures stay more consistent and humidity is better managed.',
+          body: `Double-pane windows with gas fill reduce exterior noise. If you live near a busy road, you'll notice the difference the first night.`,
+          title: `Noise reduction that's obvious immediately`,
         },
       ],
       steps: [
         {
-          title: 'Run a Manual J load calculation to size the system to your actual house',
-          body: `Square footage alone doesn't determine the right system. Insulation, window area, orientation, duct condition, and occupancy all matter. A Manual J calculation accounts for all of it and gives a precise BTU load. An oversized system short-cycles and wears out early.`,
+          body: 'Width, height, depth, and squareness determine whether you need an insert (pocket) install or a full-frame replacement. Insert windows fit inside an existing sound frame. Full-frame goes to the studs for a tighter seal but costs more. We check your framing condition and recommend what makes sense.',
+          title: 'Measure every opening and check framing for rot or damage',
         },
         {
-          title: 'Remove old furnace and AC, install heat pump with proper refrigerant line sizing',
-          body: 'Old equipment comes out. The new heat pump outdoor unit and air handler go in per manufacturer spec. Refrigerant lines are properly brazed, ductwork adjusted, and wiring done to code.',
+          body: 'South and west-facing windows in Texas take intense afternoon heat. They need a lower solar heat gain coefficient (SHGC) than north-facing windows. We specify Low-E coatings, gas fill, and frame materials based on which direction each window faces, how much shade it gets, and your actual cooling load.',
+          title: `Match glass specs to each wall's sun exposure`,
         },
         {
-          title: 'Commission the system: verify charge, measure static pressure, check every register',
-          body: 'Refrigerant charge is verified using superheat and subcooling, not just pressure. Static pressure is measured to confirm the duct system works with the new equipment. Airflow is checked at every register. We program the thermostat and walk you through everything.',
+          body: 'Old windows come out, new ones are shimmed level. The rough opening gets sealed with low-expansion foam. Full-frame replacements use flashing tape for proper water management (head and jambs sealed, sill left to drain). Every window gets operation-checked before we leave.',
+          title: 'Install with proper flashing, insulate the rough opening, and test',
         },
       ],
-      faq: [
-        {
-          question: 'Do heat pumps work in Texas winters?',
-          answer:
-            'Texas is actually the ideal climate for heat pumps. Modern models work well in cold weather, and Texas rarely gets very cold. No backup heat is needed.',
-        },
-        {
-          question: 'How much will I save on energy bills?',
-          answer: `Most Texas homeowners switching from a standard AC/furnace combo see 20-40% savings on heating and 10-15% on cooling. The exact number depends on your current system's age.`,
-        },
-      ],
+      storyBody:
+        'Every BTU of heat through your windows is a BTU your AC has to remove. Older double-pane windows with failed seals (fog between the glass) have lost most of their insulation. Low-E coated, argon-filled replacements cut heat gain significantly. Proper installation eliminates the drafts old windows are known for. Your rooms stay cooler, your system runs less, and your floors stop fading from UV.',
+      storyTitle: 'Your old windows are working against your AC.',
     },
+    eyebrow: 'Reduce heat gain and loss',
+    icon: 'windows',
+    image: {
+      alt: 'Crew installing new residential windows on a house exterior',
+      urls: { regular: '/assets/services/photos/window-replacement.jpg' },
+    },
+    menuDescription: 'Replace the windows that are letting Texas heat pour in.',
+    slug: 'window-replacement',
+    subtitleLabel: 'Best when',
+    subtitleValue: 'You feel the heat radiating through the glass every afternoon',
+    title: 'Window & Door Replacement',
   },
   {
-    slug: 'solar-and-battery-installations',
-    title: 'Solar and Battery Installations',
-    icon: 'solarbattery',
-    menuDescription: 'Generate your own power and take control of your electric bill.',
-    eyebrow: 'Generate and store power',
-    subtitleLabel: 'Best when',
-    subtitleValue: `You're ready to control your energy bill long-term`,
-    body: 'Solar panels turn your roof into a power source, and a battery keeps critical systems running when the grid goes down. Panels cost less than half what they did ten years ago.',
-    image: {
-      urls: {
-        regular:
-          'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
-      },
-      alt: 'Solar array installation under a bright sky',
-    },
+    body: 'A heat pump replaces both your AC and furnace by moving heat instead of generating it, so it uses 2-3x less energy. Texas winters are mild enough that heat pumps handle them easily.',
     detail: {
-      heroEyebrow: 'Solar planning',
-      heroBody: `After grid failures in 2021 and blackouts since, Texas homeowners learned the grid isn't always reliable. Solar and battery storage let you generate your own power, lower your bill, and keep critical systems running during outages.`,
-      storyTitle: `Your roof is already collecting energy. You're just not using it.`,
+      faq: [
+        {
+          answer:
+            'Texas is actually the ideal climate for heat pumps. Modern models work well in cold weather, and Texas rarely gets very cold. No backup heat is needed.',
+          question: 'Do heat pumps work in Texas winters?',
+        },
+        {
+          answer: `Most Texas homeowners switching from a standard AC/furnace combo see 20-40% savings on heating and 10-15% on cooling. The exact number depends on your current system's age.`,
+          question: 'How much will I save on energy bills?',
+        },
+      ],
+      heroBody: `A heat pump handles heating and cooling but uses significantly less energy. For Texas homeowners with high summer bills and mild winters, it's one of the best comfort investments you can make.`,
+      heroEyebrow: 'Equipment planning',
+      highlights: [
+        {
+          body: `A gas furnace burns fuel to make heat. A heat pump moves heat with electricity, so it's much more efficient. The difference shows on every bill.`,
+          title: '2-3x more efficient than traditional furnaces',
+        },
+        {
+          body: 'Texas utilities offer rebates for high-efficiency heat pump installations. We help you identify every incentive you qualify for and handle the paperwork.',
+          title: 'Utility rebates available for qualifying installs',
+        },
+        {
+          body: 'Modern variable-speed heat pumps adjust output continuously instead of cycling on and off, so temperatures stay more consistent and humidity is better managed.',
+          title: 'Variable-speed models reduce temperature swings',
+        },
+      ],
+      steps: [
+        {
+          body: `Square footage alone doesn't determine the right system. Insulation, window area, orientation, duct condition, and occupancy all matter. A Manual J calculation accounts for all of it and gives a precise BTU load. An oversized system short-cycles and wears out early.`,
+          title: 'Run a Manual J load calculation to size the system to your actual house',
+        },
+        {
+          body: 'Old equipment comes out. The new heat pump outdoor unit and air handler go in per manufacturer spec. Refrigerant lines are properly brazed, ductwork adjusted, and wiring done to code.',
+          title: 'Remove old furnace and AC, install heat pump with proper refrigerant line sizing',
+        },
+        {
+          body: 'Refrigerant charge is verified using superheat and subcooling, not just pressure. Static pressure is measured to confirm the duct system works with the new equipment. Airflow is checked at every register. We program the thermostat and walk you through everything.',
+          title: 'Commission the system: verify charge, measure static pressure, check every register',
+        },
+      ],
       storyBody:
-        'That sunlight turns into heat your AC has to fight. Solar panels convert it into electricity instead. Add a battery for backup power with no fuel, noise, or maintenance. Panels cost 70% less than ten years ago. We design your system around your real bills, not estimates.',
+        'You probably have a furnace for winter and an AC for summer: two separate systems, neither very efficient. A heat pump replaces both. In summer it removes heat; in winter it adds heat from outside. Because it moves heat instead of generating it, it uses 2-3x less energy. With utility rebates available, the payback time is quick.',
+      storyTitle: `One system does both, for a fraction of what you're paying now.`,
+    },
+    eyebrow: 'Modernize heating and cooling',
+    icon: 'heatpump',
+    image: {
+      alt: 'Residential outdoor heat pump unit mounted beside a home',
+      urls: { regular: '/assets/services/photos/heat-pump-upgrades.jpg' },
+    },
+    menuDescription: 'One system heats and cools, using much less energy.',
+    slug: 'heat-pump-upgrades',
+    subtitleLabel: 'Best when',
+    subtitleValue: `Your AC and furnace are old, expensive, or can't keep up`,
+    title: 'Heat Pump Upgrades',
+  },
+  {
+    body: 'Solar panels turn your roof into a power source, and a battery keeps critical systems running when the grid goes down. Panels cost less than half what they did ten years ago.',
+    detail: {
+      faq: [
+        {
+          answer:
+            'Solar cells convert sunlight into DC electricity. An inverter converts that to AC, which is what your home uses. Whatever you produce offsets what you pull from the grid, and your meter tracks the difference.',
+          question: 'How do solar panels actually generate electricity?',
+        },
+        {
+          answer:
+            'Most panels are warrantied for 25 years and continue producing past that. Production drops slowly over time -- expect about 85-90% of original output at year 25. Inverters typically need replacing once in that span.',
+          question: 'How long do solar panels last?',
+        },
+        {
+          answer:
+            'Yes. Output drops on overcast days but panels still generate. Your system is sized based on annual production, which accounts for weather patterns across the year.',
+          question: 'Do panels still produce on cloudy days?',
+        },
+        {
+          answer:
+            'A typical residential system in Texas runs $15,000-30,000 depending on size, equipment, and roof complexity. Battery adds $8,000-15,000 depending on capacity. Your proposal breaks down every line item so you see exactly where the money goes.',
+          question: 'How much does a solar system cost in Texas?',
+        },
+        {
+          answer:
+            'Yes. Most solar loans start at $0 down. But watch the dealer fee -- some lenders bake 15-30% into the loan balance. We show you the total cost of each financing option so you can compare.',
+          question: 'Can I finance solar with no money down?',
+        },
+        {
+          answer:
+            'No. Solar lenders file a UCC-1 fixture filing on the panels, not a lien on your property. If you sell, the loan transfers or gets paid off at closing.',
+          question: 'Does a solar loan put a lien on my home?',
+        },
+        {
+          answer:
+            'Consultation, site survey, system design, permitting, installation (1-2 days), city inspection, then utility permission to operate. Start to finish is typically 6-10 weeks, with most of that waiting on permits and utility paperwork.',
+          question: 'What does the install process look like?',
+        },
+        {
+          answer:
+            'Usually 6-10 weeks. The install itself takes 1-2 days. The rest is permits, engineering, and waiting for your utility to approve interconnection. We handle all of it.',
+          question: 'How long from signing to system on?',
+        },
+        {
+          answer:
+            'Texas law protects your right to install solar. HOAs can set reasonable rules about placement but cannot prohibit it. We handle the paperwork and architectural review submissions.',
+          question: 'I have an HOA -- can I still go solar?',
+        },
+        {
+          answer:
+            'When the grid goes down, your battery automatically disconnects from the grid and powers critical circuits -- typically refrigerator, lights, Wi-Fi, and a few outlets. How long it lasts depends on battery size and what you run.',
+          question: 'What does a battery actually do during an outage?',
+        },
+        {
+          answer:
+            'No. Most residential systems are grid-tied and work without a battery. You export excess power during the day and pull from the grid at night. A battery adds backup power and can improve economics depending on your rate plan.',
+          question: 'Do I need a battery for solar to work?',
+        },
+        {
+          answer:
+            'Critter guards are mesh screens that seal the gap between your panels and roof. Rats, squirrels, and birds nest under panels and chew wiring. If you have tree cover or wildlife in the area, they pay for themselves fast.',
+          question: 'What are critter guards and do I need them?',
+        },
+        {
+          answer:
+            'Once or twice a year. Most issues show up in your monitoring app as production drops. A visual check for debris, cracked glass, or critter damage takes care of the rest.',
+          question: 'How often should panels be inspected?',
+        },
+        {
+          answer:
+            'Hail (large enough to crack the glass), fallen branches, rodents chewing wiring, and in rare cases, installer error. Panels are tougher than they look -- rated for 1-inch hail at 50+ mph -- but Texas storms can exceed that.',
+          question: 'What can actually damage solar panels?',
+        },
+        {
+          answer: `If your roof has less than 10 years of life left, do the roof first. Putting panels on a roof that needs replacing soon means paying to remove and reinstall them later. We'll give you an honest answer on timing.`,
+          question: 'Do I need a new roof before going solar?',
+        },
+        {
+          answer:
+            'No. Available incentives go to the system owner. If you lease, the leasing company keeps them. Ownership is almost always better financially if you can finance or pay cash.',
+          question: 'Do I get incentives if I lease instead of buy?',
+        },
+        {
+          question: 'What are solar buyback programs?',
+          answer:
+            'Many Texas utilities buy excess electricity your system sends to the grid. Rates and terms vary by provider -- some pay retail, some pay wholesale, some give bill credits. We help you understand what your specific utility offers before you sign.',
+        },
+      ],
+      heroBody: `After grid failures in 2021 and blackouts since, Texas homeowners learned the grid isn't always reliable. Solar and battery storage let you generate your own power, lower your bill, and keep critical systems running during outages.`,
+      heroEyebrow: 'Solar planning',
       highlights: [
         {
           title: 'Custom system design based on your actual usage',
@@ -355,93 +425,24 @@ export const mainServices = [
           body: `Panels, racking, inverter, and battery go on your roof and wall. After city inspection and utility permission to operate (PTO), the system goes live. We set up your monitoring app so you see production in real time -- and we verify the first week's output against the design model to make sure everything performs as promised.`,
         },
       ],
-      faq: [
-        {
-          question: 'How do solar panels actually generate electricity?',
-          answer:
-            'Solar cells convert sunlight into DC electricity. An inverter converts that to AC, which is what your home uses. Whatever you produce offsets what you pull from the grid, and your meter tracks the difference.',
-        },
-        {
-          question: 'How long do solar panels last?',
-          answer:
-            'Most panels are warrantied for 25 years and continue producing past that. Production drops slowly over time -- expect about 85-90% of original output at year 25. Inverters typically need replacing once in that span.',
-        },
-        {
-          question: 'Do panels still produce on cloudy days?',
-          answer:
-            'Yes. Output drops on overcast days but panels still generate. Your system is sized based on annual production, which accounts for weather patterns across the year.',
-        },
-        {
-          question: 'How much does a solar system cost in Texas?',
-          answer:
-            'A typical residential system in Texas runs $15,000-30,000 depending on size, equipment, and roof complexity. Battery adds $8,000-15,000 depending on capacity. Your proposal breaks down every line item so you see exactly where the money goes.',
-        },
-        {
-          question: 'Can I finance solar with no money down?',
-          answer:
-            'Yes. Most solar loans start at $0 down. But watch the dealer fee -- some lenders bake 15-30% into the loan balance. We show you the total cost of each financing option so you can compare.',
-        },
-        {
-          question: 'Does a solar loan put a lien on my home?',
-          answer:
-            'No. Solar lenders file a UCC-1 fixture filing on the panels, not a lien on your property. If you sell, the loan transfers or gets paid off at closing.',
-        },
-        {
-          question: 'What does the install process look like?',
-          answer:
-            'Consultation, site survey, system design, permitting, installation (1-2 days), city inspection, then utility permission to operate. Start to finish is typically 6-10 weeks, with most of that waiting on permits and utility paperwork.',
-        },
-        {
-          question: 'How long from signing to system on?',
-          answer:
-            'Usually 6-10 weeks. The install itself takes 1-2 days. The rest is permits, engineering, and waiting for your utility to approve interconnection. We handle all of it.',
-        },
-        {
-          question: 'I have an HOA -- can I still go solar?',
-          answer:
-            'Texas law protects your right to install solar. HOAs can set reasonable rules about placement but cannot prohibit it. We handle the paperwork and architectural review submissions.',
-        },
-        {
-          question: 'What does a battery actually do during an outage?',
-          answer:
-            'When the grid goes down, your battery automatically disconnects from the grid and powers critical circuits -- typically refrigerator, lights, Wi-Fi, and a few outlets. How long it lasts depends on battery size and what you run.',
-        },
-        {
-          question: 'Do I need a battery for solar to work?',
-          answer:
-            'No. Most residential systems are grid-tied and work without a battery. You export excess power during the day and pull from the grid at night. A battery adds backup power and can improve economics depending on your rate plan.',
-        },
-        {
-          question: 'What are critter guards and do I need them?',
-          answer:
-            'Critter guards are mesh screens that seal the gap between your panels and roof. Rats, squirrels, and birds nest under panels and chew wiring. If you have tree cover or wildlife in the area, they pay for themselves fast.',
-        },
-        {
-          question: 'How often should panels be inspected?',
-          answer:
-            'Once or twice a year. Most issues show up in your monitoring app as production drops. A visual check for debris, cracked glass, or critter damage takes care of the rest.',
-        },
-        {
-          question: 'What can actually damage solar panels?',
-          answer:
-            'Hail (large enough to crack the glass), fallen branches, rodents chewing wiring, and in rare cases, installer error. Panels are tougher than they look -- rated for 1-inch hail at 50+ mph -- but Texas storms can exceed that.',
-        },
-        {
-          question: 'Do I need a new roof before going solar?',
-          answer: `If your roof has less than 10 years of life left, do the roof first. Putting panels on a roof that needs replacing soon means paying to remove and reinstall them later. We'll give you an honest answer on timing.`,
-        },
-        {
-          question: 'Do I get incentives if I lease instead of buy?',
-          answer:
-            'No. Available incentives go to the system owner. If you lease, the leasing company keeps them. Ownership is almost always better financially if you can finance or pay cash.',
-        },
-        {
-          question: 'What are solar buyback programs?',
-          answer:
-            'Many Texas utilities buy excess electricity your system sends to the grid. Rates and terms vary by provider -- some pay retail, some pay wholesale, some give bill credits. We help you understand what your specific utility offers before you sign.',
-        },
-      ],
+      storyBody:
+        'That sunlight turns into heat your AC has to fight. Solar panels convert it into electricity instead. Add a battery for backup power with no fuel, noise, or maintenance. Panels cost 70% less than ten years ago. We design your system around your real bills, not estimates.',
+      storyTitle: `Your roof is already collecting energy. You're just not using it.`,
     },
+    eyebrow: 'Generate and store power',
+    icon: 'solarbattery',
+    image: {
+      alt: 'Solar array installation under a bright sky',
+      urls: {
+        regular:
+          'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=1600&auto=format&fit=crop',
+      },
+    },
+    menuDescription: 'Generate your own power and take control of your electric bill.',
+    slug: 'solar-and-battery-installations',
+    subtitleLabel: 'Best when',
+    subtitleValue: `You're ready to control your energy bill long-term`,
+    title: 'Solar and Battery Installations',
   },
 ]
 

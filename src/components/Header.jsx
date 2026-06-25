@@ -18,9 +18,9 @@ const LINKS = [
   { href: '/guides', label: 'Guides' },
   { href: '/about', label: 'About Us' },
   {
+    className: 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9 hover:bg-primary/80',
     href: '#consultation',
     label: 'Contact',
-    className: 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9 hover:bg-primary/80',
   },
 ]
 
@@ -70,14 +70,16 @@ export default function Header() {
 
   React.useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) setOpenNav(false)
+      if (window.innerWidth >= 1024) {
+        setOpenNav(false)
+      }
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   React.useEffect(() => {
-    const section = document.getElementById('consultation')
+    const section = document.querySelector('#consultation')
 
     if (!section || typeof IntersectionObserver === 'undefined') {
       return
@@ -103,12 +105,16 @@ export default function Header() {
         id="site-top"
         className="site-header text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
         {...getDevSectionAttributes({
+          content: 'local JSX nav and service catalog links',
           id: 'site-header',
           markup: 'src/components/Header.jsx',
-          content: 'local JSX nav and service catalog links',
         })}
       >
-        <div className="mx-auto w-full rounded-none bg-stone-100 px-7 py-4 shadow-md backdrop-blur-sm md:rounded-full">
+        <div
+          className={`mx-auto w-full rounded-none bg-stone-100 px-7 py-4 shadow-md backdrop-blur-sm ${
+            openNav ? 'md:rounded-tl-lg md:rounded-tr-lg' : 'md:rounded-full'
+          }`}
+        >
           <div className="flex items-center justify-between">
             <Link
               href="/"
@@ -140,11 +146,11 @@ export default function Header() {
         <div
           id={mobileMenuId}
           aria-hidden={!openNav}
-          className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-out lg:hidden ${
+          className={`relative z-100 overflow-hidden transition-[max-height,opacity] duration-300 ease-out lg:hidden ${
             openNav ? 'max-h-128 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className="bg-card border-border md:border-border mx-auto w-full rounded-none border-b px-4 py-2 shadow-sm md:rounded-md md:border">
+          <div className="border-border md:border-border mx-auto w-full rounded-none border-b bg-stone-100 px-4 py-2 pb-8 shadow-sm md:rounded-br-lg md:rounded-bl-lg md:border">
             <div
               className={`mt-2 space-y-1 transition-all duration-200 ${
                 openNav ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0'

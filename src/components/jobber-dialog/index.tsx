@@ -42,30 +42,16 @@ export function JobberDialog({ buttonLabel = 'Book a Service', context }: Jobber
     }
   }, [open, isReady])
 
-  useEffect(() => {
-    if (!isReady) return
-
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = 'https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css'
-    link.media = 'screen'
-    document.head.appendChild(link)
-
-    return () => {
-      document.head.removeChild(link)
-    }
-  }, [isReady])
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="default">{buttonLabel}</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-h-[80vh]">
-        <DialogHeader className="mb-4">
+      <DialogContent className="grid max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-4 sm:max-w-4xl sm:p-6">
+        <DialogHeader className="mb-2 pr-8">
           <DialogTitle className="text-lg font-semibold">Book a Service</DialogTitle>
         </DialogHeader>
-        {isReady && <LeadCaptureForm context={context} />}
+        <div className="min-h-0 overflow-y-auto">{isReady && <LeadCaptureForm context={context} />}</div>
       </DialogContent>
     </Dialog>
   )

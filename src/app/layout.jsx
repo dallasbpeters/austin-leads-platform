@@ -6,10 +6,9 @@ import { Agentation } from 'agentation'
 import { VisualEditing } from 'next-sanity/visual-editing'
 import { Gloock, JetBrains_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
-import { draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 
 import '../styles/globals.css'
-import { headers } from 'next/headers'
 
 import { PostHogProvider } from '@/app/providers'
 import ViewTransitionWrapper from '@/components/ViewTransitionWrapper'
@@ -19,6 +18,8 @@ import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
 import { SanityLive } from '@/sanity/live'
 
 const googleSansFlex = localFont({
+  adjustFontFallback: false,
+  display: 'swap',
   src: [
     {
       path: '../../public/fonts/GoogleSansFlex.ttf',
@@ -26,8 +27,6 @@ const googleSansFlex = localFont({
     },
   ],
   variable: '--font-sans',
-  display: 'swap',
-  adjustFontFallback: false,
 })
 
 const fontSerif = Gloock({
@@ -42,8 +41,24 @@ const fontMono = JetBrains_Mono({
 })
 
 export const metadata = {
-  title: 'Austin Leads Platform',
+  apple: [
+    {
+      sizes: '180x180',
+      type: 'image/png',
+      url: '/apple-touch-icon.png',
+    },
+  ],
   description: 'Multi-tenant Next.js platform for Austin and Texas local service domains.',
+  icons: {
+    icon: [
+      { sizes: 'any', url: '/favicon.ico' },
+      { type: 'image/svg+xml', url: '/favicon.svg' },
+      { sizes: '32x32', type: 'image/png', url: '/favicon-32x32.png' },
+      { sizes: '16x16', type: 'image/png', url: '/favicon-16x16.png' },
+    ],
+    shortcut: ['/favicon.ico'],
+  },
+  title: 'Austin Leads Platform',
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
     other: {
@@ -51,19 +66,10 @@ export const metadata = {
         process.env.FACEBOOK_SITE_VERIFICATION || process.env.FACEBOOK_DOMAIN_VERIFICATION,
     },
   },
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-    ],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
-    shortcut: ['/favicon.ico'],
-  },
 }
 
 export default async function RootLayout({ children }) {
+  // oxlint-disable-next-line unicorn/no-await-expression-member
   const isDraftMode = (await draftMode()).isEnabled
   const headerList = await headers()
   const isOperatorShell = headerList.get('x-alp-operator-shell') === '1'
@@ -80,7 +86,9 @@ export default async function RootLayout({ children }) {
       // PostHog dual-project routing — when previewing via `/_site/:slug`,
       // `/preview/:slug`, or `?__site=`, the visible site is the preview slug,
       // not the host-derived one. Send analytics to the matching project.
-      if (previewSite?.slug) analyticsSiteSlug = previewSite.slug
+      if (previewSite?.slug) {
+        analyticsSiteSlug = previewSite.slug
+      }
     } else {
       publicSiteAttr = getPublicDataSiteAttribute(currentSite)
     }

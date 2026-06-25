@@ -78,6 +78,18 @@ main {
   flex-direction: column;
 }
 
+.jobber-inline-work-request {
+  width: 100%;
+}
+
+.jobber-inline-work-request iframe,
+iframe.jobber-work-request {
+  display: block !important;
+  width: 100% !important;
+  min-height: min(760px, calc(100dvh - 10rem)) !important;
+  border: 0 !important;
+}
+
 /* Global resets */
 a {
   text-decoration: none;

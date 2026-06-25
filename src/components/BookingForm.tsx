@@ -3,9 +3,8 @@
 import { useEffect, useRef } from 'react'
 import posthog from 'posthog-js'
 
+import JobberWorkRequestEmbed, { JOBBER_FORM_IDS } from '@/components/JobberWorkRequestEmbed'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
-
-let _jobberCheckoutScriptAdded = false
 
 function JobberCheckoutForm() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -13,43 +12,23 @@ function JobberCheckoutForm() {
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
-    if (!hasTrackedView.current) {
-      hasTrackedView.current = true
+    if (!container || hasTrackedView.current) return
+    hasTrackedView.current = true
 
-      const eventParams = {
-        form_id: 'jobber_checkout_form',
-        form_type: 'work_request',
-        site_slug: 'txchristmaslights',
-        page_path: typeof window !== 'undefined' ? window.location.pathname : '/unknown',
-      }
-
-      posthog.capture('jobber_form_view', eventParams)
-      trackAnalyticsEvent('jobber_form_view', eventParams)
+    const eventParams = {
+      form_id: 'jobber_checkout_form',
+      form_type: 'work_request',
+      site_slug: 'txchristmaslights',
+      page_path: typeof window !== 'undefined' ? window.location.pathname : '/unknown',
     }
 
-    if (_jobberCheckoutScriptAdded) return
-    _jobberCheckoutScriptAdded = true
-
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = 'https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css'
-    link.media = 'screen'
-    document.head.appendChild(link)
-
-    const script = document.createElement('script')
-    script.src = 'https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js'
-    script.setAttribute('clienthub_id', 'e25e6086-5e48-4c5d-8588-8aa08968b7d6-4905459')
-    script.setAttribute(
-      'form_url',
-      'https://clienthub.getjobber.com/client_hubs/e25e6086-5e48-4c5d-8588-8aa08968b7d6/public/work_request/embedded_work_request_form?form_id=4905459',
-    )
-    document.body.appendChild(script)
+    posthog.capture('jobber_form_view', eventParams)
+    trackAnalyticsEvent('jobber_form_view', eventParams)
   }, [])
 
   return (
-    <div className="grid h-full w-full place-items-center bg-white p-8 lg:p-16">
-      <div ref={containerRef} id="e25e6086-5e48-4c5d-8588-8aa08968b7d6-4905459" />
+    <div ref={containerRef} className="h-full min-h-[720px] w-full bg-white">
+      <JobberWorkRequestEmbed className="h-full rounded-none" formId={JOBBER_FORM_IDS.txchristmaslights} />
     </div>
   )
 }

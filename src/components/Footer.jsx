@@ -9,18 +9,23 @@ import { mainServices, roofingServices } from '@/lib/platform/service-catalog'
 import { getDevSectionAttributes } from './dev/DevTrace'
 import Logo from './Logo'
 
+const footerServices = [
+  ...roofingServices,
+  ...mainServices.filter((service) => service.slug === 'solar-and-battery-installations'),
+]
+
 export default function Footer() {
   return (
     <footer
       className="bg-secondary-950 relative w-full overflow-hidden border-t border-white/10 text-white"
       {...getDevSectionAttributes({
+        content: 'local JSX footer + service catalog links',
         id: 'site-footer',
         markup: 'src/components/Footer.jsx',
-        content: 'local JSX footer + service catalog links',
       })}
     >
       <div className="z-2 mx-auto max-w-7xl px-4 py-12 sm:px-3 md:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2">
             <Link
               href="/"
@@ -47,7 +52,7 @@ export default function Footer() {
           <div>
             <h3 className="text-sm">Services</h3>
             <ul className="mt-3 space-y-2 text-sm text-gray-300">
-              {mainServices.map((service) => (
+              {footerServices.map((service) => (
                 <li key={service.slug}>
                   <Link href={`/services/${service.slug}`} className="hover:text-gray-200">
                     {service.title}
@@ -56,27 +61,13 @@ export default function Footer() {
               ))}
             </ul>
           </div>
-          <div>
-            <div>
-              <h3 className="text-sm">Roofing</h3>
-              <ul className="mt-3 space-y-2 text-sm text-gray-300">
-                {roofingServices.map((service) => (
-                  <li key={service.slug}>
-                    <Link href={`/services/${service.slug}`} className="hover:text-gray-200">
-                      {service.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
         </div>
-        <div className="mt-10 flex flex-col items-start justify-between gap-4 sm:flex-row md:items-center">
-          <p className="text-sm text-gray-300">
+        <div className="mt-10 grid gap-8 md:grid-cols-3">
+          <p className="text-sm text-gray-300 md:col-span-2">
             © Texas Solar & Roofing Pros. All rights reserved.
             <span id="year"> 2026</span>
           </p>
-          <div className="flex items-center gap-4 text-sm text-gray-500">
+          <div className="flex items-center gap-4 text-sm text-gray-500 md:col-span-1">
             <Link href="/services" className="text-gray-300 hover:text-gray-300">
               Services
             </Link>
