@@ -425,14 +425,14 @@ The booking form is a 3-step flow (`StripeCheckout.tsx`):
 1. **Package selection** — three options pulled from Stripe prices via `/api/christmas/config`
 2. **Contact info** — name, email, property address
 3. **Date selection** — sliding 9-tile calendar grid, live slot availability from `/api/christmas/slots/available`
-4. **Stripe embedded checkout** — $150 deposit via `price_1TVbAOF2OBzUX92SrsR0ZEC8`
+4. **Stripe embedded checkout** — 30% deposit via `price_1TVbAOF2OBzUX92SrsR0ZEC8`
 5. **Success state** — confirms booking date
 
 ### Stripe products
 
 | Product                    | ID                    | Starting price |
 | -------------------------- | --------------------- | -------------- |
-| Installation Deposit       | `prod_UUaKPfJUHnzQsj` | $150           |
+| Installation Deposit       | `prod_UUaKPfJUHnzQsj` | 30%            |
 | Roofline Installation      | `prod_UUa1pQN1BUW4En` | $300           |
 | Full Front Installation    | `prod_UUa1gj7myNcj07` | $500           |
 | Full Property Installation | `prod_UUa1c1RUUF8u7e` | $1,000         |

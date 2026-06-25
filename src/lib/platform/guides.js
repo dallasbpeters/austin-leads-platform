@@ -339,7 +339,7 @@ export const solarGuides = [
             _type: 'pageItem',
             question: 'Is a monthly payment lower than my electric bill enough to sign?',
             answer:
-              'No. A solar loan payment of $150 per month that replaces a $180 electric bill sounds like savings, but if the loan runs 25 years with embedded dealer fees and the total paid is $45,000 for a system that cost $24,000 in cash, you have not saved money — you have restructured it. Always compare total cost over the life of the system, not just the monthly number.',
+              'No. A solar loan payment of 30% per month that replaces a $180 electric bill sounds like savings, but if the loan runs 25 years with embedded dealer fees and the total paid is $45,000 for a system that cost $24,000 in cash, you have not saved money — you have restructured it. Always compare total cost over the life of the system, not just the monthly number.',
           },
           {
             _type: 'pageItem',

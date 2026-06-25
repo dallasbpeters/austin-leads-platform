@@ -2784,7 +2784,7 @@ const pricingNoteItemType = {
       name: 'amount',
       title: 'Amount',
       type: 'string',
-      options: canvasPurpose('Amount for the payment due (e.g. "$150", "½ bal.").'),
+      options: canvasPurpose('Amount for the payment due (e.g. "30%", "½ bal.").'),
     },
     {
       name: 'body',
