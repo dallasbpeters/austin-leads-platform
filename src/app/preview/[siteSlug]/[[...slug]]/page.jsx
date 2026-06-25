@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import App from '@/App'
-import PublicSite from '@/components/platform/PublicSite'
+import PublicSite from '@/components/platform/public-site'
 import {
   createJsonLd,
   getHeroHomepageForSite,

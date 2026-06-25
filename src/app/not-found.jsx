@@ -1,4 +1,4 @@
-import ContextualNotFound from '@/components/ContextualNotFound'
+import ContextualNotFound from '@/components/contextual-not-found'
 
 export default function NotFound() {
   return (

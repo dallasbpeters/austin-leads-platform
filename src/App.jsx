@@ -5,22 +5,22 @@ import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import { CookieConsent } from '@/components/blocks/cookie-consent'
 
-import Band from './components/Band'
-import CalculatorSection from './components/CalculatorSection'
-import ConsultationSection from './components/ConsultationSection'
-import CostsSection from './components/CostsSection'
-import DevTrace from './components/dev/DevTrace'
-import Footer from './components/Footer'
-import GuidesSection from './components/GuidesSection'
-import Header from './components/Header'
-import Hero from './components/Hero'
-import IncentivesSection from './components/IncentivesSection'
-import QuoteSection from './components/QuoteSection'
-import ResourcesSection from './components/ResourcesSection'
-import SnapshotSection from './components/SnapshotSection'
-import StorySection from './components/StorySection'
-import Testimonails from './components/Testimonials'
-import ArticleSection from './components/ArticleSection'
+import Band from './components/band'
+import CalculatorSection from './components/calculator-section'
+import ConsultationSection from './components/consultation-section'
+import CostsSection from './components/costs-section'
+import DevTrace from './components/dev/dev-trace'
+import Footer from './components/footer'
+import GuidesSection from './components/guides-section'
+import Header from './components/header'
+import Hero from './components/hero'
+import IncentivesSection from './components/incentives-section'
+import QuoteSection from './components/quote-section'
+import ResourcesSection from './components/resources-section'
+import SnapshotSection from './components/snapshot-section'
+import StorySection from './components/story-section'
+import Testimonails from './components/testimonials'
+import ArticleSection from './components/article-section'
 
 export function CookieConsentWrapper() {
   return <CookieConsent variant="small" />
@@ -155,13 +155,13 @@ export default function App({
         content="homepage composition shell"
         note="ViewTransition wraps main content only (header/footer excluded)"
       />
-      <DevTrace markup="src/components/Header.jsx" content="local JSX nav and service catalog links" />
+      <DevTrace markup="src/components/header.jsx" content="local JSX nav and service catalog links" />
       <Header />
       <main id="main-content" {...getSanityPageEditAttributes(homepage, 'title')}>
         {heroSection ? (
           <>
             <DevTrace
-              markup="src/components/Hero.jsx"
+              markup="src/components/hero.jsx"
               content={`local JSX hero copy + hero media from homepage record (${homepageSource})`}
             />
             <div {...heroEditAttrs}>
@@ -174,13 +174,13 @@ export default function App({
           'homepage-band-1',
           {
             colors: ['#2660AE', '#1C447F', '#0C333A', 'var(--color-secondary-alt)', 'var(--color-amber-600)'],
-            tint: 'var(--color-secondary-950)',
             maxHeight: 12,
+            tint: 'var(--color-secondary-950)',
           },
           firstBandSection ? firstBandEditAttrs : homepageEditAttrs,
         )}
         <DevTrace
-          markup="src/components/StorySection.jsx"
+          markup="src/components/story-section.jsx"
           content={storySection ? `homepage story from ${homepageSource}` : 'local fallback story copy'}
         />
         <div {...storyEditAttrs}>
@@ -189,7 +189,7 @@ export default function App({
         {articleSection ? (
           <>
             <DevTrace
-              markup="src/components/ArticleSection.jsx"
+              markup="src/components/article-section.jsx"
               content={`homepage article from ${homepageSource}`}
             />
             <div {...articleEditAttrs}>
@@ -198,7 +198,7 @@ export default function App({
           </>
         ) : null}
         <DevTrace
-          markup="src/components/CalculatorSection.jsx"
+          markup="src/components/calculator-section.jsx"
           content={
             calculatorSection
               ? `homepage calculator copy from ${homepageSource}`
@@ -209,14 +209,14 @@ export default function App({
           <CalculatorSection section={calculatorSection} />
         </div>
         <DevTrace
-          markup="src/components/CostsSection.jsx"
+          markup="src/components/costs-section.jsx"
           content={costsSection ? `homepage costs copy from ${homepageSource}` : 'local JSX copy'}
         />
         <div {...costsEditAttrs}>
           <CostsSection section={costsSection} />
         </div>
         <DevTrace
-          markup="src/components/GuidesSection.jsx"
+          markup="src/components/guides-section.jsx"
           content={
             guidesSection
               ? `homepage guides framing copy from ${homepageSource} + guide cards from guides library`
@@ -227,7 +227,7 @@ export default function App({
           <GuidesSection section={guidesSection} page={homepage} />
         </div>
         <DevTrace
-          markup="src/components/SnapshotSection.jsx"
+          markup="src/components/snapshot-section.jsx"
           content={snapshotSection ? `homepage snapshot copy from ${homepageSource}` : 'local JSX copy'}
         />
         <div {...snapshotEditAttrs}>
@@ -240,14 +240,14 @@ export default function App({
           secondBandSection ? secondBandEditAttrs : homepageEditAttrs,
         )}
         <DevTrace
-          markup="src/components/IncentivesSection.jsx"
+          markup="src/components/incentives-section.jsx"
           content={incentivesSection ? `homepage incentives copy from ${homepageSource}` : 'local JSX copy'}
         />
         <div {...incentivesEditAttrs}>
           <IncentivesSection section={incentivesSection} />
         </div>
         <DevTrace
-          markup="src/components/Testimonials.jsx"
+          markup="src/components/testimonials.jsx"
           content={
             testimonialsSection
               ? `homepage testimonials heading from ${homepageSource} and reviews from ${reviews.length ? 'sanity' : 'local fallback testimonials'}`
@@ -260,7 +260,7 @@ export default function App({
         {quoteSection ? (
           <>
             <DevTrace
-              markup="src/components/QuoteSection.jsx"
+              markup="src/components/quote-section.jsx"
               content={`homepage quote from ${homepageSource}`}
             />
             <div {...quoteEditAttrs}>
@@ -273,20 +273,22 @@ export default function App({
           </>
         ) : null}
         <DevTrace
-          markup="src/components/ResourcesSection.jsx"
+          markup="src/components/resources-section.jsx"
           content={`typed homepage resource grid from ${resourcesSection ? homepageSource : 'local fallback cards'}`}
         />
         <div {...resourcesEditAttrs}>
           <ResourcesSection section={resourcesSection} />
         </div>
         <DevTrace
-          markup="src/components/ConsultationSection.jsx"
+          markup="src/components/consultation-section.jsx"
           content={ctaSection ? `homepage cta from ${homepageSource}` : 'local fallback cta + live lead form'}
         />
         {extraHomepageSections.map((section, index) => {
           const sectionType = resolveSectionType(section)
           const Component = sectionRenderers[sectionType]
-          if (!Component) return null
+          if (!Component) {
+            return null
+          }
 
           return (
             <div
@@ -312,7 +314,7 @@ export default function App({
           ),
         )}
       </main>
-      <DevTrace markup="src/components/Footer.jsx" content="local JSX footer + service catalog links" />
+      <DevTrace markup="src/components/footer.jsx" content="local JSX footer + service catalog links" />
       <Footer />
       <CookieConsentWrapper />
       {process.env.NODE_ENV === 'development' && <Agentation />}

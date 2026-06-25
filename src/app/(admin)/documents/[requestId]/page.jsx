@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import DocumentRequestActions from '@/components/admin/DocumentRequestActions'
-import PdfPreviewSurface from '@/components/admin/PdfPreviewSurface'
+import DocumentRequestActions from '@/components/admin/document-request-actions'
+import PdfPreviewSurface from '@/components/admin/pdf-preview-surface'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

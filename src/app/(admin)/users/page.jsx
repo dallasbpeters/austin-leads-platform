@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-import UsersClient from '@/components/admin/UsersClient'
+import UsersClient from '@/components/admin/users-client'
 import { safeAuth } from '@/lib/auth/session'
 import { ensurePlatformUsersTable, listUsers } from '@/lib/auth/users'
 

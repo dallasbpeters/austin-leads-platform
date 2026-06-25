@@ -1,4 +1,4 @@
-import AnalyticsClient from '@/components/admin/AnalyticsClient'
+import AnalyticsClient from '@/components/admin/analytics-client'
 import { getGoogleAnalyticsSnapshot } from '@/lib/analytics/google'
 import { getAllRenderableSites } from '@/lib/platform/content'
 import { getAnalyticsOverview, getAnalyticsProviders, listAnalyticsGoals } from '@/lib/platform/store'

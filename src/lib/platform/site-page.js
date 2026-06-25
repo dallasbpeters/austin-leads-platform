@@ -2,11 +2,11 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import App from '@/App'
-import PublicSite from '@/components/platform/PublicSite'
+import PublicSite from '@/components/platform/public-site'
 import {
   isTxChristmasLightsSite,
   TX_CHRISTMAS_PUBLIC_OG_IMAGE_SRC,
-} from '@/components/platform/PublicSiteUtils'
+} from '@/components/platform/public-site-utils'
 import {
   createJsonLd,
   getHomepageForSite,

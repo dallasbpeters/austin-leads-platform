@@ -1,7 +1,7 @@
 import { FileText, Server, SquarePen } from 'lucide-react'
 import Link from 'next/link'
 
-import LaunchChecklistCard from '@/components/admin/LaunchChecklistCard'
+import LaunchChecklistCard from '@/components/admin/launch-checklist-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getGoogleAnalyticsSnapshot } from '@/lib/analytics/google'
 import {

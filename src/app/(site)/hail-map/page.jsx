@@ -1,9 +1,9 @@
 import Link from 'next/link'
 
-import Footer from '@/components/Footer'
-import HailWeatherLookup from '@/components/HailWeatherLookup'
-import Header from '@/components/Header'
-import LeadCaptureForm from '@/components/LeadCaptureForm'
+import Footer from '@/components/footer'
+import HailWeatherLookup from '@/components/hail-weather-lookup'
+import Header from '@/components/header'
+import LeadCaptureForm from '@/components/lead-capture-form'
 import { Card, CardContent } from '@/components/ui/card'
 import { resolveCurrentSite } from '@/lib/platform/content'
 

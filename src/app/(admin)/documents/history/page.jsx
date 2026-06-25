@@ -1,4 +1,4 @@
-import DocumentsHistoryBrowser from '@/components/admin/DocumentsHistoryBrowser'
+import DocumentsHistoryBrowser from '@/components/admin/documents-history-browser'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ensureDocumentTables, hasDocumentDatabase, listDocumentLibraryItems } from '@/lib/documents/db'
 

@@ -1,4 +1,4 @@
-import PublishClient from '@/components/admin/PublishClient'
+import PublishClient from '@/components/admin/publish-client'
 import { getAllRenderableSites } from '@/lib/platform/content'
 import { listPublishJobs } from '@/lib/platform/store'
 

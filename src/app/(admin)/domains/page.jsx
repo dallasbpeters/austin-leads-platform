@@ -1,4 +1,4 @@
-import DomainsClient from '@/components/admin/DomainsClient'
+import DomainsClient from '@/components/admin/domains-client'
 import { hasDomainDatabase, listDomainRecordsDb, seedInitialDomainRecords } from '@/lib/platform/domain-db'
 import { listDomainRecords } from '@/lib/platform/store'
 import { isVercelConfigured } from '@/lib/platform/vercel'

@@ -1,71 +1,71 @@
 import dynamic from 'next/dynamic'
 
-import GuidesSection from '@/components/GuidesSection'
+import GuidesSection from '@/components/guides-section'
 
-import { AboutProfileSection } from './AboutProfileSection'
-import { BandSection } from './BandSection'
-import { BannerCtaSection } from './BannerCtaSection'
-import { CardGridSection } from './CardGridSection'
-import { CtaBannerSection } from './CtaBannerSection'
-import { CtaSection } from './CtaSection'
-import { FaqSection } from './FaqSection'
-import { GallerySection } from './GallerySection'
-import { GuideGridSection } from './GuideGridSection'
-import { HailMapSection } from './HailMapSection'
-import { HeroSection } from './HeroSection'
-import { PricingSection } from './PricingSection'
-import { QuoteBannerSection } from './QuoteBannerSection'
-import { RoofingLogoCloudSection } from './RoofingLogoCloudSection'
-import { ScrollTextSection } from './ScrollTextSection'
-import { SecondaryCTASection } from './SecondaryCTASection'
-import { ServiceAreaMapSection } from './ServiceAreaMapSection'
-import { ServiceGridSection } from './ServiceGridSection'
-import { SolarSwitchSection } from './SolarSwitchSection'
-import { StepsSection } from './StepsSection'
-import { StorySection } from './StorySection'
-import { VideoSection } from './VideoSection'
+import { AboutProfileSection } from './about-profile-section'
+import { BandSection } from './band-section'
+import { BannerCtaSection } from './banner-cta-section'
+import { CardGridSection } from './card-grid-section'
+import { CtaBannerSection } from './cta-banner-section'
+import { CtaSection } from './cta-section'
+import { FaqSection } from './faq-section'
+import { GallerySection } from './gallery-section'
+import { GuideGridSection } from './guide-grid-section'
+import { HailMapSection } from './hail-map-section'
+import { HeroSection } from './hero-section'
+import { PricingSection } from './pricing-section'
+import { QuoteBannerSection } from './quote-banner-section'
+import { RoofingLogoCloudSection } from './roofing-logo-cloud-section'
+import { ScrollTextSection } from './scroll-text-section'
+import { SecondaryCTASection } from './secondary-cta-section'
+import { ServiceAreaMapSection } from './service-area-map-section'
+import { ServiceGridSection } from './service-grid-section'
+import { SolarSwitchSection } from './solar-switch-section'
+import { StepsSection } from './steps-section'
+import { StorySection } from './story-section'
+import { VideoSection } from './video-section'
 
-const EnergyChartSection = dynamic(() => import('@/components/EnergyChartSection'), { ssr: true })
-const CalculatorSection = dynamic(() => import('@/components/CalculatorSection'), { ssr: true })
-const CostsSection = dynamic(() => import('@/components/CostsSection'), { ssr: true })
-const IncentivesSection = dynamic(() => import('@/components/IncentivesSection'), { ssr: true })
-const ResourcesSection = dynamic(() => import('@/components/ResourcesSection'), { ssr: true })
-const SnapshotSection = dynamic(() => import('@/components/SnapshotSection'), { ssr: true })
-const Testimonials = dynamic(() => import('@/components/Testimonials'), { ssr: true })
-const ArticleSection = dynamic(() => import('@/components/ArticleSection'), { ssr: true })
+const EnergyChartSection = dynamic(() => import('@/components/energy-chart-section'), { ssr: true })
+const CalculatorSection = dynamic(() => import('@/components/calculator-section'), { ssr: true })
+const CostsSection = dynamic(() => import('@/components/costs-section'), { ssr: true })
+const IncentivesSection = dynamic(() => import('@/components/incentives-section'), { ssr: true })
+const ResourcesSection = dynamic(() => import('@/components/resources-section'), { ssr: true })
+const SnapshotSection = dynamic(() => import('@/components/snapshot-section'), { ssr: true })
+const Testimonials = dynamic(() => import('@/components/testimonials'), { ssr: true })
+const ArticleSection = dynamic(() => import('@/components/article-section'), { ssr: true })
 
 export const sectionRenderers = {
-  hero: HeroSection,
-  story: StorySection,
-  calculator: CalculatorSection,
-  costs: CostsSection,
-  guides: GuidesSection,
-  snapshot: SnapshotSection,
-  incentives: IncentivesSection,
-  testimonials: Testimonials,
-  resourceGrid: ResourcesSection,
-  scrollText: ScrollTextSection,
   aboutProfile: AboutProfileSection,
-  secondaryCTA: SecondaryCTASection,
-  quote: QuoteBannerSection,
-  highlights: CardGridSection,
-  guideGrid: GuideGridSection,
-  serviceGrid: ServiceGridSection,
-  faq: FaqSection,
-  gallery: GallerySection,
-  pricing: PricingSection,
-  hailMap: HailMapSection,
   article: ArticleSection,
-  serviceAreaMap: ServiceAreaMapSection,
   band: BandSection,
   bannerCta: BannerCtaSection,
-  logos: RoofingLogoCloudSection,
-  solarSwitch: SolarSwitchSection,
-  energyChart: EnergyChartSection,
-  video: VideoSection,
-  steps: StepsSection,
+  calculator: CalculatorSection,
+  costs: CostsSection,
   cta: CtaSection,
   ctaBanner: CtaBannerSection,
+  energyChart: EnergyChartSection,
+  faq: FaqSection,
+  gallery: GallerySection,
+  guideGrid: GuideGridSection,
+  guides: GuidesSection,
+  hailMap: HailMapSection,
+  hero: HeroSection,
+  highlights: CardGridSection,
+  incentives: IncentivesSection,
+  logos: RoofingLogoCloudSection,
+  pricing: PricingSection,
+  quote: QuoteBannerSection,
+  resourceGrid: ResourcesSection,
+  scrollText: ScrollTextSection,
+  secondaryCTA: SecondaryCTASection,
+  serviceAreaMap: ServiceAreaMapSection,
+  serviceGrid: ServiceGridSection,
+  snapshot: SnapshotSection,
+  solarSwitch: SolarSwitchSection,
+  steps: StepsSection,
+  story: StorySection,
+  testimonials: Testimonials,
+  video: VideoSection,
 }
 
 export { RoofingLogoCloudSection }

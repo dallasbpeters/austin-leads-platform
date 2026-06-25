@@ -9,7 +9,7 @@ import { structureTool } from 'sanity/structure'
 import { googleAnalyticsPlugin } from 'sanity-plugin-ga-dashboard'
 
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
-import { SiteSwitcherNavigator } from './src/sanity/components/SiteSwitcherNavigator'
+import { SiteSwitcherNavigator } from './src/sanity/components/site-switcher-navigator'
 import {
   dataset,
   frontendOriginAllowlist,

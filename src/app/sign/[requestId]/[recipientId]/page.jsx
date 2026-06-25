@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import DocumentSigningClient from '@/components/documents/DocumentSigningClient'
+import DocumentSigningClient from '@/components/documents/document-signing-client'
 import {
   ensureDocumentTables,
   getDocumentLibraryItemById,

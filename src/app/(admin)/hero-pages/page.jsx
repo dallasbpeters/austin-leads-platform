@@ -1,4 +1,4 @@
-import HeroPagesClient from '@/components/admin/HeroPagesClient'
+import HeroPagesClient from '@/components/admin/hero-pages-client'
 import { getHeroPages, getHeroSitesForAdmin } from '@/lib/platform/content'
 import { isUnsplashConfigured } from '@/lib/platform/unsplash'
 import { sanityWriteClient } from '@/sanity/client'

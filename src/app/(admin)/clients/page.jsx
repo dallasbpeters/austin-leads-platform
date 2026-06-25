@@ -1,4 +1,4 @@
-import ClientsClient from '@/components/admin/ClientsClient'
+import ClientsClient from '@/components/admin/clients-client'
 import { ensureDocumentTables, hasDocumentDatabase, listDocumentClients } from '@/lib/documents/db'
 
 export const metadata = {

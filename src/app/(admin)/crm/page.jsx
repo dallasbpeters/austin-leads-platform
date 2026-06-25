@@ -1,4 +1,4 @@
-import CrmClient from '@/components/admin/CrmClient'
+import CrmClient from '@/components/admin/crm-client'
 import {
   ensureLeadSubmissionsTable,
   getLeadPipelineSummary,

@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 
-import SignInForm from '@/components/auth/SignInForm'
+import SignInForm from '@/components/auth/sign-in-form'
 import { safeAuth } from '@/lib/auth/session'
 
 export const metadata = {

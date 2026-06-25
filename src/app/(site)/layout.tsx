@@ -1,4 +1,4 @@
-import DevTrace from '@/components/dev/DevTrace'
+import DevTrace from '@/components/dev/dev-trace'
 import { resolveCurrentSite } from '@/lib/platform/content'
 
 export async function generateMetadata() {

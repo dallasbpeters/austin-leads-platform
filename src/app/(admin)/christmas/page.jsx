@@ -1,4 +1,4 @@
-import ChristmasJobsClient from '@/components/admin/ChristmasJobsClient'
+import ChristmasJobsClient from '@/components/admin/christmas-jobs-client'
 import { ensureChristmasTables, listJobs } from '@/lib/christmas/db'
 
 export const dynamic = 'force-dynamic'

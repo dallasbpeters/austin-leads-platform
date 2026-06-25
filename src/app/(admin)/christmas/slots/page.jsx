@@ -1,4 +1,4 @@
-import ChristmasSlotsClient from '@/components/admin/ChristmasSlotsClient'
+import ChristmasSlotsClient from '@/components/admin/christmas-slots-client'
 import { ensureChristmasTables, listSlots } from '@/lib/christmas/db'
 
 export const dynamic = 'force-dynamic'

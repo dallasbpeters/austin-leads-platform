@@ -1,6 +1,6 @@
 import { BlockContentIcon } from '@sanity/icons'
 
-import ChartPointsJsonInput from '../components/ChartPointsJsonInput'
+import ChartPointsJsonInput from '../components/chart-points-json-input'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })

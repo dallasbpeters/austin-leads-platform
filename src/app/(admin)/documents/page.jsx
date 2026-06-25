@@ -1,4 +1,4 @@
-import DocumentsClient from '@/components/admin/DocumentsClient'
+import DocumentsClient from '@/components/admin/documents-client'
 import {
   ensureDocumentTables,
   hasDocumentDatabase,

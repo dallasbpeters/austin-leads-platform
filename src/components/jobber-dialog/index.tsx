@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { useCallback, useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
-import LeadCaptureForm from '@/components/LeadCaptureForm'
+import LeadCaptureForm from '@/components/lead-capture-form'
 
 interface JobberDialogProps {
   buttonLabel?: string

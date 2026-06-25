@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation'
 
 import { buildMetadataForCurrentSite } from '@/lib/platform/site-page'
 import { resolveCurrentSite } from '@/lib/platform/content'
-import Footer from '@/components/Footer'
-import Header from '@/components/Header'
-import JobberWorkRequestEmbed from '@/components/JobberWorkRequestEmbed'
+import Footer from '@/components/footer'
+import Header from '@/components/header'
+import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
 
 /** @returns {Promise<import('next').Metadata>} */
 export async function generateMetadata() {

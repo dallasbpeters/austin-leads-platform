@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import StyleGuideBrowser from '@/components/platform/StyleGuideBrowser'
+import StyleGuideBrowser from '@/components/platform/style-guide-browser'
 
 const semanticTokenNames = new Set([
   '--background',

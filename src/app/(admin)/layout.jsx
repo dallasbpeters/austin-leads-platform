@@ -3,9 +3,9 @@ import { Outfit, JetBrains_Mono } from 'next/font/google'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-import AdminBodyScrollLock from '@/components/admin/AdminBodyScrollLock'
-import AdminNav from '@/components/admin/AdminNav'
-import SignOutButton from '@/components/admin/SignOutButton'
+import AdminBodyScrollLock from '@/components/admin/admin-body-scroll-lock'
+import AdminNav from '@/components/admin/admin-nav'
+import SignOutButton from '@/components/admin/sign-out-button'
 import {
   Sidebar,
   SidebarContent,
