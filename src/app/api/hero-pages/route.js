@@ -31,97 +31,14 @@ function createSlug(value) {
     .replace(/^-|-$/g, '')
 }
 
-export async function POST(request) {
-  const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+function resolveDocumentType(pageType) {
+  if (pageType === 'service') return 'servicePage'
+  if (pageType === 'location') return 'locationPage'
+  return 'page'
+}
 
-  if (!sanityWriteClient) {
-    return NextResponse.json({ error: 'Sanity write credentials are not configured.' }, { status: 503 })
-  }
-
-  const body = await request.json()
-  const title = body?.title?.trim()
-  const siteId = body?.siteId?.trim()
-  const pageType = body?.pageType?.trim() || 'home'
-  const description = body?.description?.trim() || ''
-
-  if (!title || !siteId) {
-    return NextResponse.json({ error: 'Title and hero site are required.' }, { status: 400 })
-  }
-
-  let site = await sanityWriteClient.fetch(
-    groq`*[_type == "site" && _id == $siteId && tier == "hero"][0]{
-      _id,
-      "id": _id,
-      "slug": slug.current,
-      name,
-      primaryDomain,
-      tier
-    }`,
-    { siteId },
-  )
-
-  if (!site) {
-    const fixtureSite = getSiteById(siteId)
-
-    if (!fixtureSite || fixtureSite.tier !== 'hero') {
-      return NextResponse.json({ error: 'That hero site does not exist in Sanity yet.' }, { status: 400 })
-    }
-
-    await sanityWriteClient.createIfNotExists({
-      _id: fixtureSite.id,
-      _type: 'site',
-      name: fixtureSite.name,
-      shortName: fixtureSite.shortName,
-      category: fixtureSite.category,
-      categoryLabel: fixtureSite.categoryLabel,
-      tier: fixtureSite.tier,
-      slug: {
-        _type: 'slug',
-        current: fixtureSite.slug,
-      },
-      primaryDomain: fixtureSite.primaryDomain,
-      aliases: fixtureSite.aliases || [],
-      redirectTarget: fixtureSite.redirectTarget || '',
-      brand: fixtureSite.brand || {},
-      seo: fixtureSite.seo || {},
-      leadForm: fixtureSite.leadForm || {},
-      organization: fixtureSite.organization || {},
-    })
-
-    site = {
-      id: fixtureSite.id,
-      slug: fixtureSite.slug,
-      name: fixtureSite.name,
-      primaryDomain: fixtureSite.primaryDomain,
-      tier: fixtureSite.tier,
-    }
-  }
-
-  const slug = pageType === 'home' ? '/' : createSlug(body?.slug?.trim() || title)
-
-  const existingPage = await sanityWriteClient.fetch(
-    groq`*[
-      _type in ["page", "servicePage", "locationPage"] &&
-      site._ref == $siteId &&
-      slug.current == $slug
-    ][0]{
-      _id
-    }`,
-    { siteId, slug },
-  )
-
-  if (existingPage?._id) {
-    return NextResponse.json(
-      { error: 'A page with that slug already exists for this site.' },
-      { status: 409 },
-    )
-  }
-
-  const documentType =
-    pageType === 'service' ? 'servicePage' : pageType === 'location' ? 'locationPage' : 'page'
-
-  const sections = withSectionKeys([
+function buildHeroPageSections(site, title, description) {
+  return withSectionKeys([
     {
       _type: 'heroSection',
       type: 'hero',
@@ -140,24 +57,75 @@ export async function POST(request) {
       items: [],
     },
   ])
+}
 
-  const created = await sanityWriteClient.create({
-    _type: documentType,
-    title,
-    description,
-    pageType,
-    templateLevel: 'hero',
-    site: {
-      _type: 'reference',
-      _ref: site.id,
-    },
-    slug: {
-      _type: 'slug',
-      current: slug,
-    },
-    sections,
+async function fetchOrCreateSanitySite(sanityWriteClient, siteId) {
+  const existing = await sanityWriteClient.fetch(
+    groq`*[_type == "site" && _id == $siteId && tier == "hero"][0]{
+      _id,
+      "id": _id,
+      "slug": slug.current,
+      name,
+      primaryDomain,
+      tier
+    }`,
+    { siteId },
+  )
+
+  if (existing) return existing
+
+  const fixtureSite = getSiteById(siteId)
+  if (!fixtureSite || fixtureSite.tier !== 'hero') return null
+
+  await sanityWriteClient.createIfNotExists({
+    _id: fixtureSite.id,
+    _type: 'site',
+    name: fixtureSite.name,
+    shortName: fixtureSite.shortName,
+    category: fixtureSite.category,
+    categoryLabel: fixtureSite.categoryLabel,
+    tier: fixtureSite.tier,
+    slug: { _type: 'slug', current: fixtureSite.slug },
+    primaryDomain: fixtureSite.primaryDomain,
+    aliases: fixtureSite.aliases || [],
+    redirectTarget: fixtureSite.redirectTarget || '',
+    brand: fixtureSite.brand || {},
+    seo: fixtureSite.seo || {},
+    leadForm: fixtureSite.leadForm || {},
+    organization: fixtureSite.organization || {},
   })
 
+  return {
+    id: fixtureSite.id,
+    slug: fixtureSite.slug,
+    name: fixtureSite.name,
+    primaryDomain: fixtureSite.primaryDomain,
+    tier: fixtureSite.tier,
+  }
+}
+
+async function checkDuplicatePage(sanityWriteClient, siteId, slug) {
+  const existing = await sanityWriteClient.fetch(
+    groq`*[
+      _type in ["page", "servicePage", "locationPage"] &&
+      site._ref == $siteId &&
+      slug.current == $slug
+    ][0]{ _id }`,
+    { siteId, slug },
+  )
+  return existing?._id
+}
+
+async function parseHeroPageBody(request) {
+  const body = await request.json()
+  const title = body?.title?.trim()
+  const siteId = body?.siteId?.trim()
+  const pageType = body?.pageType?.trim() || 'home'
+  const description = body?.description?.trim() || ''
+  return { body, title, siteId, pageType, description }
+}
+
+function buildHeroPageResponse(sections, site, title, slug, pageType, created) {
   return NextResponse.json(
     {
       page: {
@@ -172,4 +140,51 @@ export async function POST(request) {
     },
     { status: 201 },
   )
+}
+
+function computePageSlug(pageType, body, title) {
+  return pageType === 'home' ? '/' : createSlug(body?.slug?.trim() || title)
+}
+
+export async function POST(request) {
+  const unauthorized = await requireAdminRequest()
+  if (unauthorized) return unauthorized
+
+  if (!sanityWriteClient) {
+    return NextResponse.json({ error: 'Sanity write credentials are not configured.' }, { status: 503 })
+  }
+
+  const { body, title, siteId, pageType, description } = await parseHeroPageBody(request)
+
+  if (!title || !siteId)
+    return NextResponse.json({ error: 'Title and hero site are required.' }, { status: 400 })
+
+  const site = await fetchOrCreateSanitySite(sanityWriteClient, siteId)
+  if (!site)
+    return NextResponse.json({ error: 'That hero site does not exist in Sanity yet.' }, { status: 400 })
+
+  const slug = computePageSlug(pageType, body, title)
+  const existingPageId = await checkDuplicatePage(sanityWriteClient, siteId, slug)
+
+  if (existingPageId)
+    return NextResponse.json(
+      { error: 'A page with that slug already exists for this site.' },
+      { status: 409 },
+    )
+
+  const documentType = resolveDocumentType(pageType)
+  const sections = buildHeroPageSections(site, title, description)
+
+  const created = await sanityWriteClient.create({
+    _type: documentType,
+    title,
+    description,
+    pageType,
+    templateLevel: 'hero',
+    site: { _type: 'reference', _ref: site.id },
+    slug: { _type: 'slug', current: slug },
+    sections,
+  })
+
+  return buildHeroPageResponse(sections, site, title, slug, pageType, created)
 }

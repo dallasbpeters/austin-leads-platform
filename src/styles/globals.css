@@ -739,12 +739,16 @@ body.admin-body-locked {
 
   .solar-k-word {
     display: inline-block;
-    opacity: 0.75;
-    transition: opacity 0.25s ease;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .solar-k-word.is-active {
     opacity: 1;
+    transform: translateY(0);
   }
 
   .solar-range::-webkit-slider-thumb {

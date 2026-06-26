@@ -114,11 +114,46 @@ function getPageHeroImage(page) {
   )
 }
 
+function isGuidePath(pathname) {
+  return String(pathname || '').startsWith('/guides')
+}
+
+function isGuidePageData(page) {
+  return page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
+}
+
+function buildGuideOgImageUrl(origin, pathname) {
+  const guideSlug = String(pathname || '')
+    .split('/')
+    .filter(Boolean)
+    .at(-1)
+  return new URL(`/api/og-image/guides/${encodeURIComponent(guideSlug || '')}`, origin).toString()
+}
+
+function applyChristmasBrandParams(url, origin) {
+  url.searchParams.set('theme', 'txchristmaslights')
+  url.searchParams.set('image', new URL(TX_CHRISTMAS_PUBLIC_OG_IMAGE_SRC, origin).toString())
+  url.searchParams.set('primary', '#ea580c')
+  url.searchParams.set('secondary', '#14532d')
+}
+
+function applyStandardBrandParams(url, site) {
+  if (site.brand?.primary) url.searchParams.set('primary', site.brand.primary)
+  if (site.brand?.secondary) url.searchParams.set('secondary', site.brand.secondary)
+}
+
+function applyHeroImageIfSlug(url, site, page) {
+  if (isTxChristmasLightsSite(site)) return
+  const heroImage = getPageHeroImage(page)
+  if (heroImage) url.searchParams.set('image', heroImage)
+}
+
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
-  const isGuidePageByPath = String(pathname || '').startsWith('/guides')
-  const isGuidePageByData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
-  const isGuidePage = isGuidePageByPath || isGuidePageByData
+  const isGuidePage = isGuidePath(pathname) || isGuidePageData(page)
+
+  if (isGuidePage) return buildGuideOgImageUrl(origin, pathname)
+
   const rawTitle = page.seo?.title || page.title || site.name
   const rawDescription = page.seo?.description || page.description || ''
   const title = isTxChristmasLightsSite(site) ? truncateForShare(rawTitle, SHARE_TITLE_MAX) : rawTitle
@@ -127,103 +162,95 @@ function buildOgImageUrl(origin, site, page, pathname) {
       ? truncateForShare(rawDescription, SHARE_DESCRIPTION_MAX)
       : rawDescription
 
-  if (isGuidePage) {
-    const guideSlug = String(pathname || '')
-      .split('/')
-      .filter(Boolean)
-      .at(-1)
-    return new URL(`/api/og-image/guides/${encodeURIComponent(guideSlug || '')}`, origin).toString()
-  }
-
   url.searchParams.set('site', site.name)
   url.searchParams.set('title', title)
 
-  if (description) {
-    url.searchParams.set('description', description)
-  }
+  if (description) url.searchParams.set('description', description)
 
   if (isTxChristmasLightsSite(site)) {
-    url.searchParams.set('theme', 'txchristmaslights')
-    url.searchParams.set('image', new URL(TX_CHRISTMAS_PUBLIC_OG_IMAGE_SRC, origin).toString())
-    url.searchParams.set('primary', '#ea580c')
-    url.searchParams.set('secondary', '#14532d')
+    applyChristmasBrandParams(url, origin)
   } else {
-    if (site.brand?.primary) {
-      url.searchParams.set('primary', site.brand.primary)
-    }
-
-    if (site.brand?.secondary) {
-      url.searchParams.set('secondary', site.brand.secondary)
-    }
+    applyStandardBrandParams(url, site)
   }
 
-  if (pathname && pathname !== '/') {
-    url.searchParams.set('path', pathname)
-  }
+  if (pathname && pathname !== '/') url.searchParams.set('path', pathname)
 
   if (page?._updatedAt) {
     url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
 
-  if (!isTxChristmasLightsSite(site)) {
-    const heroImage = getPageHeroImage(page)
-    if (heroImage) {
-      url.searchParams.set('image', heroImage)
-    }
-  }
+  if (!isTxChristmasLightsSite(site)) applyHeroImageIfSlug(url, site, page)
 
   return url.toString()
 }
 
-export async function buildMetadataForCurrentSite(slugParts = [], searchParams = {}) {
-  const requestHeaders = await headers()
-  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
-  const forwardedProto = requestHeaders.get('x-forwarded-proto')
-  const site = await resolveCurrentSite(searchParams)
-  if (!site) return { title: 'Not found', robots: { index: false, follow: false } }
-  const page = await getPageForRequest(site, slugParts)
-  const normalizedHost = (host || '').toLowerCase()
-  const isIndexableHost =
+function resolveIndexableHost(normalizedHost, site) {
+  return (
     normalizedHost === site.primaryDomain ||
     site.aliases?.includes(normalizedHost) ||
     normalizedHost === `www.${site.primaryDomain}`
+  )
+}
 
-  if (!page) {
-    return {
-      title: `${site.name} | Page not found`,
-      robots: {
-        index: false,
-        follow: false,
-      },
-    }
+function buildNotFoundMetadata(site) {
+  return { title: `${site.name} | Page not found`, robots: { index: false, follow: false } }
+}
+
+function computeIsGuidePage(page, pathname) {
+  const byPath = pathname.startsWith('/guides')
+  const byData = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
+  return byPath || byData
+}
+
+function resolveShareStrings(site, title, description) {
+  if (!isTxChristmasLightsSite(site)) return { shareTitle: title, shareDescription: description || '' }
+  return {
+    shareTitle: truncateForShare(title, SHARE_TITLE_MAX),
+    shareDescription: description ? truncateForShare(description, SHARE_DESCRIPTION_MAX) : '',
   }
+}
 
-  const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
-  const isGuidePageByPath = pathname.startsWith('/guides')
-  const isGuidePageByData = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
-  const isGuidePage = isGuidePageByPath || isGuidePageByData
-  const fallbackCanonical = getPrimaryUrl(site, pathname)
-  const canonical = resolveCanonicalUrl({ page, site, pathname, fallbackCanonical })
-  const currentOrigin =
-    getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
-  const title = page.seo?.title || page.title || site.seo?.title || site.name
-  const description = page.seo?.description || page.description || site.seo?.description
-  const shareTitle = isTxChristmasLightsSite(site) ? truncateForShare(title, SHARE_TITLE_MAX) : title
-  const shareDescription =
-    isTxChristmasLightsSite(site) && description
-      ? truncateForShare(description, SHARE_DESCRIPTION_MAX)
-      : (description ?? '')
-  const computedOgImage = buildOgImageUrl(currentOrigin, site, page, pathname)
-  const ogImage = isGuidePage ? computedOgImage : page.seo?.ogImage || site.seo?.ogImage || computedOgImage
-  const shouldIndex = isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
-  const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
+function resolveOgImageUrl(site, page, isGuidePage, computedOgImage) {
+  if (isGuidePage) return computedOgImage
+  return page.seo?.ogImage || site.seo?.ogImage || computedOgImage
+}
 
+function resolveFacebookAppId() {
+  return (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
+}
+
+function resolveCurrentOriginValue(host, forwardedProto, canonical) {
+  return getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
+}
+
+function resolveTitleSeo(page, site) {
+  return page.seo?.title || page.title || site.seo?.title || site.name
+}
+
+function resolveDescriptionSeo(page, site) {
+  return page.seo?.description || page.description || site.seo?.description
+}
+
+function resolveShouldIndex(isIndexableHost, page, site) {
+  return isIndexableHost && page.seo?.noIndex !== true && site.seo?.noIndex !== true
+}
+
+function buildPageMetadataObject({
+  title,
+  description,
+  site,
+  shareTitle,
+  shareDescription,
+  ogImage,
+  canonical,
+  facebookAppId,
+  page,
+  shouldIndex,
+}) {
   return {
     title,
     description: isTxChristmasLightsSite(site) ? shareDescription || description : description,
-    alternates: {
-      canonical,
-    },
+    alternates: { canonical },
     openGraph: {
       title: shareTitle,
       description: shareDescription || undefined,
@@ -233,13 +260,7 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
       locale: 'en_US',
       type: page.pageType === 'post' ? 'article' : 'website',
       images: [
-        {
-          url: ogImage,
-          type: 'image/png',
-          width: 1200,
-          height: 630,
-          alt: `${shareTitle} | ${site.name}`,
-        },
+        { url: ogImage, type: 'image/png', width: 1200, height: 630, alt: `${shareTitle} | ${site.name}` },
       ],
     },
     twitter: {
@@ -248,56 +269,94 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
       description: shareDescription || undefined,
       images: [ogImage],
     },
-    robots: {
-      index: shouldIndex,
-      follow: shouldIndex,
-    },
+    robots: { index: shouldIndex, follow: shouldIndex },
   }
 }
 
-export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
+export async function buildMetadataForCurrentSite(slugParts = [], searchParams = {}) {
+  const requestHeaders = await headers()
+  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
   const site = await resolveCurrentSite(searchParams)
 
-  if (!site) notFound()
-
-  if (isPrimarySiteSlug(site.slug) && slugParts.length === 0) {
-    const homepage = await getHomepageForSite(site.slug)
-    const heroHomepage = await getHeroHomepageForSite(site.slug)
-    const heroSection = homepage
-      ? (homepage.heroSection ?? homepage.sections?.find(isHeroSectionBlock) ?? null)
-      : (heroHomepage?.heroSection ?? null)
-    const resourcesSection =
-      homepage?.sections?.find((section) => section._type === 'resourceGridSection') ??
-      homepage?.sections?.find((section) => section.type === 'resourceGrid') ??
-      homepage?.sections?.find((section) => section.type === 'resources') ??
-      null
-    const reviews = await getHomepageReviewsForSite(site.slug)
-    const jsonLd = createJsonLd(site, homepage || heroHomepage, '/')
-
-    return (
-      <App
-        homepage={homepage}
-        heroSection={heroSection}
-        resourcesSection={resourcesSection}
-        reviews={reviews}
-        site={site}
-        jsonLd={jsonLd}
-        homepageSource={homepage?.source || heroHomepage?.source || 'fixture'}
-      />
-    )
-  }
+  if (!site) return { title: 'Not found', robots: { index: false, follow: false } }
 
   const page = await getPageForRequest(site, slugParts)
+  const normalizedHost = (host || '').toLowerCase()
 
-  if (!page) {
-    notFound()
-  }
+  if (!page) return buildNotFoundMetadata(site)
 
+  const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
+  const isGuidePage = computeIsGuidePage(page, pathname)
+  const fallbackCanonical = getPrimaryUrl(site, pathname)
+  const canonical = resolveCanonicalUrl({ page, site, pathname, fallbackCanonical })
+  const currentOrigin = resolveCurrentOriginValue(host, requestHeaders.get('x-forwarded-proto'), canonical)
+  const title = resolveTitleSeo(page, site)
+  const description = resolveDescriptionSeo(page, site)
+
+  return buildPageMetadataObject({
+    title,
+    description,
+    site,
+    ...resolveShareStrings(site, title, description),
+    ogImage: resolveOgImageUrl(site, page, isGuidePage, buildOgImageUrl(currentOrigin, site, page, pathname)),
+    canonical,
+    facebookAppId: resolveFacebookAppId(),
+    page,
+    shouldIndex: resolveShouldIndex(resolveIndexableHost(normalizedHost, site), page, site),
+  })
+}
+
+function findResourcesSection(homepage) {
+  return (
+    homepage?.sections?.find((section) => section._type === 'resourceGridSection') ??
+    homepage?.sections?.find((section) => section.type === 'resourceGrid') ??
+    homepage?.sections?.find((section) => section.type === 'resources') ??
+    null
+  )
+}
+
+function resolveHeroSection(homepage, heroHomepage) {
+  if (homepage) return homepage.heroSection ?? homepage.sections?.find(isHeroSectionBlock) ?? null
+  return heroHomepage?.heroSection ?? null
+}
+
+async function renderSolarHomepage(site) {
+  const homepage = await getHomepageForSite(site.slug)
+  const heroHomepage = await getHeroHomepageForSite(site.slug)
+  const heroSection = resolveHeroSection(homepage, heroHomepage)
+  const resourcesSection = findResourcesSection(homepage)
+  const reviews = await getHomepageReviewsForSite(site.slug)
+  const jsonLd = createJsonLd(site, homepage || heroHomepage, '/')
+
+  return (
+    <App
+      homepage={homepage}
+      heroSection={heroSection}
+      resourcesSection={resourcesSection}
+      reviews={reviews}
+      site={site}
+      jsonLd={jsonLd}
+      homepageSource={homepage?.source || heroHomepage?.source || 'fixture'}
+    />
+  )
+}
+
+function resolvePageReviews(site, page, slugParts) {
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
   const hasTestimonialsSection = Array.isArray(page.sections)
     ? page.sections.some((section) => section.type === 'testimonials')
     : false
-  const reviews = hasTestimonialsSection ? await getHomepageReviewsForSite(site.slug) : []
+  const reviews = hasTestimonialsSection ? getHomepageReviewsForSite(site.slug) : []
+
+  return { pathname, reviews }
+}
+
+async function renderGenericSitePage(site, slugParts) {
+  const page = await getPageForRequest(site, slugParts)
+
+  if (!page) notFound()
+
+  const { pathname, reviews } = resolvePageReviews(site, page, slugParts)
 
   return (
     <PublicSite
@@ -309,4 +368,16 @@ export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
       reviews={reviews}
     />
   )
+}
+
+export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
+  const site = await resolveCurrentSite(searchParams)
+
+  if (!site) notFound()
+
+  if (isPrimarySiteSlug(site.slug) && slugParts.length === 0) {
+    return renderSolarHomepage(site)
+  }
+
+  return renderGenericSitePage(site, slugParts)
 }

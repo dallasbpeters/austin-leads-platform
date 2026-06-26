@@ -16,29 +16,24 @@ import {
   searchUnsplashPhotos,
 } from '@/services/admin/hero-pages'
 
+function overlayColor(section, primary, fallbackKey, defaultValue) {
+  return section?.[primary] || section?.[fallbackKey] || defaultValue
+}
+
+function overlayOpacity(section, primary, fallbackKey, defaultValue) {
+  return String(section?.[primary] ?? section?.[fallbackKey] ?? defaultValue)
+}
+
 function buildDefaultAppearance(selectedPage) {
+  const section = selectedPage?.heroSection
   return {
-    heroTextColor: selectedPage?.heroSection?.heroTextColor || '#ffffff',
-    heroOverlayStartColor:
-      selectedPage?.heroSection?.heroOverlayStartColor ||
-      selectedPage?.heroSection?.heroOverlayColor ||
-      '#0f172a',
-    heroOverlayEndColor:
-      selectedPage?.heroSection?.heroOverlayEndColor ||
-      selectedPage?.heroSection?.heroOverlayColor ||
-      '#0f172a',
-    heroOverlayDirection: selectedPage?.heroSection?.heroOverlayDirection || '180deg',
-    heroOverlayStartOpacity: String(
-      selectedPage?.heroSection?.heroOverlayStartOpacity ??
-        selectedPage?.heroSection?.heroOverlayOpacity ??
-        0.15,
-    ),
-    heroOverlayEndOpacity: String(
-      selectedPage?.heroSection?.heroOverlayEndOpacity ??
-        selectedPage?.heroSection?.heroOverlayOpacity ??
-        0.6,
-    ),
-    heroOverlayOpacity: String(selectedPage?.heroSection?.heroOverlayOpacity ?? 0.42),
+    heroTextColor: section?.heroTextColor || '#ffffff',
+    heroOverlayStartColor: overlayColor(section, 'heroOverlayStartColor', 'heroOverlayColor', '#0f172a'),
+    heroOverlayEndColor: overlayColor(section, 'heroOverlayEndColor', 'heroOverlayColor', '#0f172a'),
+    heroOverlayDirection: section?.heroOverlayDirection || '180deg',
+    heroOverlayStartOpacity: overlayOpacity(section, 'heroOverlayStartOpacity', 'heroOverlayOpacity', 0.15),
+    heroOverlayEndOpacity: overlayOpacity(section, 'heroOverlayEndOpacity', 'heroOverlayOpacity', 0.6),
+    heroOverlayOpacity: String(section?.heroOverlayOpacity ?? 0.42),
   }
 }
 

@@ -408,6 +408,42 @@ function normalizeForecast(forecast) {
   return { current, daily }
 }
 
+function logSettledRejection(result, label, latitude, longitude) {
+  if (result.status === 'fulfilled') return
+  console.error(`${label} lookup failed`, {
+    error: result.reason instanceof Error ? result.reason.message : result.reason,
+    latitude,
+    longitude,
+  })
+}
+
+function getSettledValue(result, fallback) {
+  return result.status === 'fulfilled' ? result.value : fallback
+}
+
+function computeProviderStatus(...settledResults) {
+  const [forecastData, alerts, hailRowsResult, reportRowsResult] = settledResults
+  return {
+    forecast: forecastData.status === 'fulfilled' ? 'ok' : 'error',
+    alerts: alerts.status === 'fulfilled' ? 'ok' : 'error',
+    hailSignatures: hailRowsResult.status === 'fulfilled' ? 'ok' : 'error',
+    stormReports: reportRowsResult.status === 'fulfilled' ? 'ok' : 'error',
+  }
+}
+
+function normalizeStormPoints(hailRows, reportRows) {
+  const hailPoints = hailRows
+    .map((row) => normalizeSwdiPoint(row, 'hail-signature'))
+    .filter(Boolean)
+    .slice(0, 250)
+  const reportPoints = reportRows
+    .map((row) => normalizeSwdiPoint(row, 'storm-report'))
+    .filter(Boolean)
+    .filter((row) => !row.event || /hail/i.test(row.event))
+    .slice(0, 250)
+  return { hailPoints, reportPoints }
+}
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')?.trim()
@@ -434,76 +470,32 @@ export async function GET(request) {
     const startDate = new Date()
     startDate.setDate(endDate.getDate() - 30)
 
-    const [forecastData, alerts, hailRowsResult, reportRowsResult] = await Promise.allSettled([
+    const settled = await Promise.allSettled([
       fetchForecast(location.latitude, location.longitude),
       fetchAlerts(location.latitude, location.longitude),
       fetchSwdiDataset('nx3hail', bbox, startDate, endDate),
       fetchSwdiDataset('plsr', bbox, startDate, endDate),
     ])
 
-    if (forecastData.status !== 'fulfilled') {
-      console.error('Weather forecast lookup failed', {
-        error: forecastData.reason instanceof Error ? forecastData.reason.message : forecastData.reason,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      })
-    }
+    const labels = ['Weather forecast', 'Weather alerts', 'SWDI hail', 'SWDI storm report']
+    settled.forEach((result, index) =>
+      logSettledRejection(result, labels[index], location.latitude, location.longitude),
+    )
 
-    if (alerts.status !== 'fulfilled') {
-      console.error('Weather alerts lookup failed', {
-        error: alerts.reason instanceof Error ? alerts.reason.message : alerts.reason,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      })
-    }
-
-    if (hailRowsResult.status !== 'fulfilled') {
-      console.error('SWDI hail lookup failed', {
-        error: hailRowsResult.reason instanceof Error ? hailRowsResult.reason.message : hailRowsResult.reason,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      })
-    }
-
-    if (reportRowsResult.status !== 'fulfilled') {
-      console.error('SWDI storm report lookup failed', {
-        error:
-          reportRowsResult.reason instanceof Error
-            ? reportRowsResult.reason.message
-            : reportRowsResult.reason,
-        latitude: location.latitude,
-        longitude: location.longitude,
-      })
-    }
+    const [forecastData, alerts, hailRowsResult, reportRowsResult] = settled
 
     const forecast =
       forecastData.status === 'fulfilled'
         ? normalizeForecast(forecastData.value)
         : { current: null, daily: [] }
-    const alertItems = alerts.status === 'fulfilled' ? alerts.value : []
-    const hailRows = hailRowsResult.status === 'fulfilled' ? hailRowsResult.value : []
-    const reportRows = reportRowsResult.status === 'fulfilled' ? reportRowsResult.value : []
-    const hailPoints = hailRows
-      .map((row) => normalizeSwdiPoint(row, 'hail-signature'))
-      .filter(Boolean)
-      .slice(0, 250)
-    const reportPoints = reportRows
-      .map((row) => normalizeSwdiPoint(row, 'storm-report'))
-      .filter(Boolean)
-      .filter((row) => !row.event || /hail/i.test(row.event))
-      .slice(0, 250)
-    const stormEvents = buildStormEvents({
-      location,
-      hailPoints,
-      reportPoints,
-    })
+    const alertItems = getSettledValue(alerts, [])
+    const hailRows = getSettledValue(hailRowsResult, [])
+    const reportRows = getSettledValue(reportRowsResult, [])
+    const { hailPoints, reportPoints } = normalizeStormPoints(hailRows, reportRows)
+    const stormEvents = buildStormEvents({ location, hailPoints, reportPoints })
     const risk =
       forecastData.status === 'fulfilled' || alerts.status === 'fulfilled'
-        ? deriveRisk({
-            alerts: alertItems,
-            current: forecast.current,
-            daily: forecast.daily,
-          })
+        ? deriveRisk({ alerts: alertItems, current: forecast.current, daily: forecast.daily })
         : fallbackRisk(location.name)
 
     return NextResponse.json({
@@ -513,12 +505,7 @@ export async function GET(request) {
       daily: forecast.daily,
       alerts: alertItems,
       risk,
-      providerStatus: {
-        forecast: forecastData.status === 'fulfilled' ? 'ok' : 'error',
-        alerts: alerts.status === 'fulfilled' ? 'ok' : 'error',
-        hailSignatures: hailRowsResult.status === 'fulfilled' ? 'ok' : 'error',
-        stormReports: reportRowsResult.status === 'fulfilled' ? 'ok' : 'error',
-      },
+      providerStatus: computeProviderStatus(...settled),
       hailLayer: {
         bbox,
         startDate: startDate.toISOString(),

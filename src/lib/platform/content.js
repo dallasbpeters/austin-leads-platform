@@ -656,198 +656,122 @@ function resolveSanityColorValue(value) {
   return value
 }
 
-function sanitizeSection(section) {
-  if (!section) {
-    return section
-  }
+function coerceNumberField(value) {
+  if (typeof value === 'number') return value
+  if (value) return Number(value)
+  return value
+}
 
+function sanitizeSection(section) {
+  if (!section) return section
+
+  const s = section
   return {
-    ...section,
-    _type: cleanRuntimeString(section._type),
-    _key: cleanRuntimeString(section._key),
-    type: cleanRuntimeString(section.type),
-    heroMediaMode: cleanRuntimeString(section.heroMediaMode),
-    subtitle: section.subtitle,
-    cardCopy: section.cardCopy,
-    leadingWords: Array.isArray(section.leadingWords)
-      ? section.leadingWords.filter(Boolean)
-      : section.leadingWords,
-    accentWord: section.accentWord,
-    trailingText: section.trailingText,
-    chartPeriodLabel: cleanRuntimeString(section.chartPeriodLabel),
-    chartPrimaryLabel: cleanRuntimeString(section.chartPrimaryLabel),
-    chartSecondaryLabel: cleanRuntimeString(section.chartSecondaryLabel),
-    chartUnitLabel: cleanRuntimeString(section.chartUnitLabel),
-    chartLineUnitLabel: cleanRuntimeString(section.chartLineUnitLabel),
-    chartYAxisMax:
-      typeof section.chartYAxisMax === 'number'
-        ? section.chartYAxisMax
-        : section.chartYAxisMax
-          ? Number(section.chartYAxisMax)
-          : section.chartYAxisMax,
-    chartBarColor: resolveSanityColorValue(section.chartBarColor),
-    chartLineColor: resolveSanityColorValue(section.chartLineColor),
-    chartType: cleanRuntimeString(section.chartType),
-    showGrid: section.showGrid !== false,
-    showLegend: section.showLegend !== false,
-    showAxisLines: section.showAxisLines !== false,
-    chartAreaFillOpacity:
-      typeof section.chartAreaFillOpacity === 'number'
-        ? section.chartAreaFillOpacity
-        : section.chartAreaFillOpacity
-          ? Number(section.chartAreaFillOpacity)
-          : section.chartAreaFillOpacity,
-    colors: Array.isArray(section.colors)
-      ? section.colors.map(resolveSanityColorValue).filter(Boolean)
-      : section.colors,
-    tint: resolveSanityColorValue(section.tint),
-    titlePrimary: section.titlePrimary,
-    titleAccent: section.titleAccent,
-    roofingTitle: section.roofingTitle,
-    secondaryTitle: section.secondaryTitle,
-    heroGradient: cleanRuntimeString(section.heroGradient),
-    heroTextColor: resolveSanityColorValue(section.heroTextColor),
-    heroOverlayColor: resolveSanityColorValue(section.heroOverlayColor),
-    heroOverlayStartColor: resolveSanityColorValue(section.heroOverlayStartColor),
-    heroOverlayEndColor: resolveSanityColorValue(section.heroOverlayEndColor),
-    heroOverlayDirection: cleanRuntimeString(section.heroOverlayDirection),
-    minHeight:
-      typeof section.minHeight === 'number'
-        ? section.minHeight
-        : section.minHeight
-          ? Number(section.minHeight)
-          : section.minHeight,
-    maxHeight:
-      typeof section.maxHeight === 'number'
-        ? section.maxHeight
-        : section.maxHeight
-          ? Number(section.maxHeight)
-          : section.maxHeight,
-    rotate: Boolean(section.rotate),
-    scrollStart:
-      typeof section.scrollStart === 'number'
-        ? section.scrollStart
-        : section.scrollStart
-          ? Number(section.scrollStart)
-          : section.scrollStart,
-    scrollEnd:
-      typeof section.scrollEnd === 'number'
-        ? section.scrollEnd
-        : section.scrollEnd
-          ? Number(section.scrollEnd)
-          : section.scrollEnd,
-    reverse: Boolean(section.reverse),
-    autoAnimate: Boolean(section.autoAnimate),
-    speed:
-      typeof section.speed === 'number'
-        ? section.speed
-        : section.speed
-          ? Number(section.speed)
-          : section.speed,
-    amplitude:
-      typeof section.amplitude === 'number'
-        ? section.amplitude
-        : section.amplitude
-          ? Number(section.amplitude)
-          : section.amplitude,
-    text: Array.isArray(section.text) ? section.text.map(cleanRuntimeString).filter(Boolean) : section.text,
-    texts: Array.isArray(section.texts)
-      ? section.texts.map(cleanRuntimeString).filter(Boolean)
-      : section.texts,
-    fontSize:
-      typeof section.fontSize === 'number'
-        ? section.fontSize
-        : section.fontSize
-          ? Number(section.fontSize)
-          : section.fontSize,
-    textColor: resolveSanityColorValue(section.textColor),
-    showIcon: Boolean(section.showIcon),
-    showFlag: Boolean(section.showFlag),
-    icon: cleanRuntimeString(section.icon),
-    velocity:
-      typeof section.velocity === 'number'
-        ? section.velocity
-        : section.velocity
-          ? Number(section.velocity)
-          : section.velocity,
-    direction: cleanRuntimeString(section.direction),
-    startPosition:
-      typeof section.startPosition === 'number'
-        ? section.startPosition
-        : section.startPosition
-          ? Number(section.startPosition)
-          : section.startPosition,
-    damping:
-      typeof section.damping === 'number'
-        ? section.damping
-        : section.damping
-          ? Number(section.damping)
-          : section.damping,
-    stiffness:
-      typeof section.stiffness === 'number'
-        ? section.stiffness
-        : section.stiffness
-          ? Number(section.stiffness)
-          : section.stiffness,
-    numCopies:
-      typeof section.numCopies === 'number'
-        ? section.numCopies
-        : section.numCopies
-          ? Number(section.numCopies)
-          : section.numCopies,
-    people: Array.isArray(section.people) ? section.people.map(sanitizePerson) : section.people,
-    personLabel: section.personLabel,
-    personName: section.personName,
-    personRole: section.personRole,
-    personBlurb: section.personBlurb,
-    certificationLabel: section.certificationLabel,
-    certificationTitle: section.certificationTitle,
-    image: section.image,
-    imageAsset: section.imageAsset,
-    secondaryPersonLabel: section.secondaryPersonLabel,
-    secondaryPersonName: section.secondaryPersonName,
-    secondaryPersonRole: section.secondaryPersonRole,
-    secondaryPersonBlurb: section.secondaryPersonBlurb,
-    ctaLabel: section.ctaLabel,
-    color: resolveSanityColorValue(section.color),
-    accentColor: resolveSanityColorValue(section.accentColor),
-    backgroundColor: resolveSanityColorValue(section.backgroundColor),
-    theme: cleanRuntimeString(section.theme),
-    ctaHref: cleanRuntimeString(section.ctaHref),
-    avatarEyebrow: section.avatarEyebrow,
-    avatarName: section.avatarName,
-    avatarRole: section.avatarRole,
-    avatarBlurb: section.avatarBlurb,
-    avatarColor: resolveSanityColorValue(section.avatarColor),
-    actions: Array.isArray(section.actions) ? section.actions.map(sanitizeAction) : section.actions,
-    reviews: Array.isArray(section.reviews) ? section.reviews.map(sanitizeReview) : section.reviews,
-    heroSlides: Array.isArray(section.heroSlides) ? section.heroSlides.map(sanitizeItem) : section.heroSlides,
-    items: Array.isArray(section.items) ? section.items.map(sanitizeItem) : section.items,
-    chartPoints: Array.isArray(section.chartPoints)
-      ? section.chartPoints.map((point) => ({
+    ...s,
+    _type: cleanRuntimeString(s._type),
+    _key: cleanRuntimeString(s._key),
+    type: cleanRuntimeString(s.type),
+    heroMediaMode: cleanRuntimeString(s.heroMediaMode),
+    subtitle: s.subtitle,
+    cardCopy: s.cardCopy,
+    leadingWords: Array.isArray(s.leadingWords) ? s.leadingWords.filter(Boolean) : s.leadingWords,
+    accentWord: s.accentWord,
+    trailingText: s.trailingText,
+    chartPeriodLabel: cleanRuntimeString(s.chartPeriodLabel),
+    chartPrimaryLabel: cleanRuntimeString(s.chartPrimaryLabel),
+    chartSecondaryLabel: cleanRuntimeString(s.chartSecondaryLabel),
+    chartUnitLabel: cleanRuntimeString(s.chartUnitLabel),
+    chartLineUnitLabel: cleanRuntimeString(s.chartLineUnitLabel),
+    chartYAxisMax: coerceNumberField(s.chartYAxisMax),
+    chartBarColor: resolveSanityColorValue(s.chartBarColor),
+    chartLineColor: resolveSanityColorValue(s.chartLineColor),
+    chartType: cleanRuntimeString(s.chartType),
+    showGrid: s.showGrid !== false,
+    showLegend: s.showLegend !== false,
+    showAxisLines: s.showAxisLines !== false,
+    chartAreaFillOpacity: coerceNumberField(s.chartAreaFillOpacity),
+    colors: Array.isArray(s.colors) ? s.colors.map(resolveSanityColorValue).filter(Boolean) : s.colors,
+    tint: resolveSanityColorValue(s.tint),
+    titlePrimary: s.titlePrimary,
+    titleAccent: s.titleAccent,
+    roofingTitle: s.roofingTitle,
+    secondaryTitle: s.secondaryTitle,
+    heroGradient: cleanRuntimeString(s.heroGradient),
+    heroTextColor: resolveSanityColorValue(s.heroTextColor),
+    heroOverlayColor: resolveSanityColorValue(s.heroOverlayColor),
+    heroOverlayStartColor: resolveSanityColorValue(s.heroOverlayStartColor),
+    heroOverlayEndColor: resolveSanityColorValue(s.heroOverlayEndColor),
+    heroOverlayDirection: cleanRuntimeString(s.heroOverlayDirection),
+    minHeight: coerceNumberField(s.minHeight),
+    maxHeight: coerceNumberField(s.maxHeight),
+    rotate: Boolean(s.rotate),
+    scrollStart: coerceNumberField(s.scrollStart),
+    scrollEnd: coerceNumberField(s.scrollEnd),
+    reverse: Boolean(s.reverse),
+    autoAnimate: Boolean(s.autoAnimate),
+    speed: coerceNumberField(s.speed),
+    amplitude: coerceNumberField(s.amplitude),
+    text: Array.isArray(s.text) ? s.text.map(cleanRuntimeString).filter(Boolean) : s.text,
+    texts: Array.isArray(s.texts) ? s.texts.map(cleanRuntimeString).filter(Boolean) : s.texts,
+    fontSize: coerceNumberField(s.fontSize),
+    textColor: resolveSanityColorValue(s.textColor),
+    showIcon: Boolean(s.showIcon),
+    showFlag: Boolean(s.showFlag),
+    icon: cleanRuntimeString(s.icon),
+    velocity: coerceNumberField(s.velocity),
+    direction: cleanRuntimeString(s.direction),
+    startPosition: coerceNumberField(s.startPosition),
+    damping: coerceNumberField(s.damping),
+    stiffness: coerceNumberField(s.stiffness),
+    numCopies: coerceNumberField(s.numCopies),
+    people: Array.isArray(s.people) ? s.people.map(sanitizePerson) : s.people,
+    personLabel: s.personLabel,
+    personName: s.personName,
+    personRole: s.personRole,
+    personBlurb: s.personBlurb,
+    certificationLabel: s.certificationLabel,
+    certificationTitle: s.certificationTitle,
+    image: s.image,
+    imageAsset: s.imageAsset,
+    secondaryPersonLabel: s.secondaryPersonLabel,
+    secondaryPersonName: s.secondaryPersonName,
+    secondaryPersonRole: s.secondaryPersonRole,
+    secondaryPersonBlurb: s.secondaryPersonBlurb,
+    ctaLabel: s.ctaLabel,
+    color: resolveSanityColorValue(s.color),
+    accentColor: resolveSanityColorValue(s.accentColor),
+    backgroundColor: resolveSanityColorValue(s.backgroundColor),
+    theme: cleanRuntimeString(s.theme),
+    ctaHref: cleanRuntimeString(s.ctaHref),
+    avatarEyebrow: s.avatarEyebrow,
+    avatarName: s.avatarName,
+    avatarRole: s.avatarRole,
+    avatarBlurb: s.avatarBlurb,
+    avatarColor: resolveSanityColorValue(s.avatarColor),
+    actions: Array.isArray(s.actions) ? s.actions.map(sanitizeAction) : s.actions,
+    reviews: Array.isArray(s.reviews) ? s.reviews.map(sanitizeReview) : s.reviews,
+    heroSlides: Array.isArray(s.heroSlides) ? s.heroSlides.map(sanitizeItem) : s.heroSlides,
+    items: Array.isArray(s.items) ? s.items.map(sanitizeItem) : s.items,
+    chartPoints: Array.isArray(s.chartPoints)
+      ? s.chartPoints.map((point) => ({
           ...point,
           _key: cleanRuntimeString(point?._key),
           label: cleanRuntimeString(point?.label),
           barValue: typeof point?.barValue === 'number' ? point.barValue : Number(point?.barValue || 0),
           lineValue: typeof point?.lineValue === 'number' ? point.lineValue : Number(point?.lineValue || 0),
         }))
-      : section.chartPoints,
-    roofingItems: Array.isArray(section.roofingItems)
-      ? section.roofingItems.map(sanitizeItem)
-      : section.roofingItems,
-    secondaryItems: Array.isArray(section.secondaryItems)
-      ? section.secondaryItems.map(sanitizeItem)
-      : section.secondaryItems,
-    description:
-      typeof section.description === 'string' ? cleanRuntimeString(section.description) : section.description,
-    areas: Array.isArray(section.areas)
-      ? section.areas.map((area) => ({
+      : s.chartPoints,
+    roofingItems: Array.isArray(s.roofingItems) ? s.roofingItems.map(sanitizeItem) : s.roofingItems,
+    secondaryItems: Array.isArray(s.secondaryItems) ? s.secondaryItems.map(sanitizeItem) : s.secondaryItems,
+    description: typeof s.description === 'string' ? cleanRuntimeString(s.description) : s.description,
+    areas: Array.isArray(s.areas)
+      ? s.areas.map((area) => ({
           ...area,
           _key: cleanRuntimeString(area?._key),
           countyKey: cleanRuntimeString(area?.countyKey),
           displayName: cleanRuntimeString(area?.displayName),
         }))
-      : section.areas,
+      : s.areas,
   }
 }
 
@@ -1002,6 +926,55 @@ async function getSanityReadContext({ stega = true } = {}) {
   }
 }
 
+function pageHasFlatHeroContent(page) {
+  return !!(
+    page.heroEyebrow ||
+    page.heroTitle ||
+    page.heroTitlePrimary ||
+    page.heroTitleAccent ||
+    page.heroBody ||
+    page.cardCopy ||
+    hasImageSource(page.heroAsset, page.heroImage) ||
+    (page.heroSlides?.length ?? 0) > 0 ||
+    (page.heroMetrics?.length ?? 0) > 0 ||
+    (page.heroActions?.length ?? 0) > 0
+  )
+}
+
+function resolveNullableField(value) {
+  return value ?? null
+}
+
+function buildHeroSectionFromPage(page) {
+  return {
+    _type: 'heroSection',
+    type: 'hero',
+    heroMediaMode: cleanRuntimeString(page.heroMediaMode),
+    eyebrow: page.heroEyebrow || null,
+    title: page.heroTitle || page.title || null,
+    titlePrimary: page.heroTitlePrimary || null,
+    titleAccent: page.heroTitleAccent || null,
+    cardCopy: page.cardCopy || null,
+    body: page.heroBody || page.description || null,
+    heroGradient: resolveNullableField(page.heroGradient),
+    heroTextColor: resolveNullableField(page.heroTextColor),
+    heroOverlayColor: resolveNullableField(page.heroOverlayColor),
+    heroOverlayStartColor: resolveNullableField(page.heroOverlayStartColor),
+    heroOverlayEndColor: resolveNullableField(page.heroOverlayEndColor),
+    heroOverlayDirection: resolveNullableField(page.heroOverlayDirection),
+    heroOverlayStartOpacity: resolveNullableField(page.heroOverlayStartOpacity),
+    heroOverlayEndOpacity: resolveNullableField(page.heroOverlayEndOpacity),
+    heroOverlayOpacity: resolveNullableField(page.heroOverlayOpacity),
+    heroAsset: resolveNullableField(page.heroAsset),
+    heroImage: resolveNullableField(page.heroImage),
+    heroVideo: resolveNullableField(page.heroVideo),
+    heroVideoAsset: resolveNullableField(page.heroVideoAsset),
+    heroSlides: Array.isArray(page.heroSlides) ? page.heroSlides : [],
+    metrics: Array.isArray(page.heroMetrics) ? page.heroMetrics : [],
+    actions: Array.isArray(page.heroActions) ? page.heroActions : [],
+  }
+}
+
 function buildHomepageHeroSection(page) {
   if (!page) {
     return null
@@ -1013,49 +986,11 @@ function buildHomepageHeroSection(page) {
     return sectionHero
   }
 
-  const hasFlatHeroContent =
-    page.heroEyebrow ||
-    page.heroTitle ||
-    page.heroTitlePrimary ||
-    page.heroTitleAccent ||
-    page.heroBody ||
-    page.cardCopy ||
-    hasImageSource(page.heroAsset, page.heroImage) ||
-    (page.heroSlides?.length ?? 0) > 0 ||
-    (page.heroMetrics?.length ?? 0) > 0 ||
-    (page.heroActions?.length ?? 0) > 0
-
-  if (!hasFlatHeroContent) {
+  if (!pageHasFlatHeroContent(page)) {
     return null
   }
 
-  return {
-    _type: 'heroSection',
-    type: 'hero',
-    heroMediaMode: cleanRuntimeString(page.heroMediaMode),
-    eyebrow: page.heroEyebrow || null,
-    title: page.heroTitle || page.title || null,
-    titlePrimary: page.heroTitlePrimary || null,
-    titleAccent: page.heroTitleAccent || null,
-    cardCopy: page.cardCopy || null,
-    body: page.heroBody || page.description || null,
-    heroGradient: page.heroGradient ?? null,
-    heroTextColor: page.heroTextColor ?? null,
-    heroOverlayColor: page.heroOverlayColor ?? null,
-    heroOverlayStartColor: page.heroOverlayStartColor ?? null,
-    heroOverlayEndColor: page.heroOverlayEndColor ?? null,
-    heroOverlayDirection: page.heroOverlayDirection ?? null,
-    heroOverlayStartOpacity: page.heroOverlayStartOpacity ?? null,
-    heroOverlayEndOpacity: page.heroOverlayEndOpacity ?? null,
-    heroOverlayOpacity: page.heroOverlayOpacity ?? null,
-    heroAsset: page.heroAsset ?? null,
-    heroImage: page.heroImage ?? null,
-    heroVideo: page.heroVideo ?? null,
-    heroVideoAsset: page.heroVideoAsset ?? null,
-    heroSlides: Array.isArray(page.heroSlides) ? page.heroSlides : [],
-    metrics: Array.isArray(page.heroMetrics) ? page.heroMetrics : [],
-    actions: Array.isArray(page.heroActions) ? page.heroActions : [],
-  }
+  return buildHeroSectionFromPage(page)
 }
 
 function withPageSource(page, source) {
@@ -2322,113 +2257,125 @@ export function getPrimaryUrl(site, pathname = '/') {
   return `https://${site.primaryDomain}${safePath}`
 }
 
-export function createJsonLd(site, page, pathname = '/') {
-  const canonicalUrl = getPrimaryUrl(site, pathname)
-  const organizationId = `${getPrimaryUrl(site, '/')}#organization`
-  const websiteId = `${getPrimaryUrl(site, '/')}#website`
-  const webpageId = `${canonicalUrl}#webpage`
-  const organization = {
-    '@type': site.organization?.type || 'LocalBusiness',
+function buildBreadcrumbList(site, pathname, canonicalUrl) {
+  const homeCrumb = {
+    '@type': 'ListItem',
+    position: 1,
+    name: 'Home',
+    item: getPrimaryUrl(site, '/'),
+  }
+
+  const crumbs = pathname
+    .split('/')
+    .filter(Boolean)
+    .reduce(
+      (items, segment, index, all) => {
+        const href = `/${all.slice(0, index + 1).join('/')}`
+        items.push({
+          '@type': 'ListItem',
+          position: items.length + 1,
+          name: segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+          item: getPrimaryUrl(site, href),
+        })
+        return items
+      },
+      [homeCrumb],
+    )
+
+  return {
+    '@type': 'BreadcrumbList',
+    '@id': `${canonicalUrl}#breadcrumb`,
+    itemListElement: crumbs,
+  }
+}
+
+function selectFirstTruthy(...candidates) {
+  for (const candidate of candidates) {
+    if (candidate) return candidate
+  }
+  return undefined
+}
+
+function buildArticleGraphNode(canonicalUrl, page, site, webpageId, organizationId) {
+  return {
+    '@type': 'Article',
+    '@id': `${canonicalUrl}#article`,
+    headline: page.title,
+    description: selectFirstTruthy(page.seo?.description, page.description, site.seo?.description),
+    mainEntityOfPage: { '@id': webpageId },
+    about: site.categoryLabel,
+    publisher: { '@id': organizationId },
+    datePublished: selectFirstTruthy(page.createdAt, page._createdAt, page.updatedAt, page._updatedAt),
+    dateModified: selectFirstTruthy(page.updatedAt, page._updatedAt, page.createdAt, page._createdAt),
+    url: canonicalUrl,
+  }
+}
+
+function buildFaqGraphNode(canonicalUrl, faqSection) {
+  return {
+    '@type': 'FAQPage',
+    '@id': `${canonicalUrl}#faq`,
+    mainEntity: (faqSection.items || []).map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: portableTextToPlainText(item.answer),
+      },
+    })),
+  }
+}
+
+function buildOrganizationNode(site, organizationId) {
+  return {
+    '@type': selectFirstTruthy(site.organization?.type, 'LocalBusiness'),
     '@id': organizationId,
-    name: site.organization?.name || site.name,
+    name: selectFirstTruthy(site.organization?.name, site.name),
     url: getPrimaryUrl(site, '/'),
     telephone: site.organization?.phone,
     email: site.organization?.email,
     areaServed: site.organization?.serviceArea,
   }
+}
+
+export function createJsonLd(site, page, pathname = '/') {
+  const canonicalUrl = getPrimaryUrl(site, pathname)
+  const organizationId = `${getPrimaryUrl(site, '/')}#organization`
+  const websiteId = `${getPrimaryUrl(site, '/')}#website`
+  const webpageId = `${canonicalUrl}#webpage`
+  const organization = buildOrganizationNode(site, organizationId)
   const website = {
     '@type': 'WebSite',
     '@id': websiteId,
     url: getPrimaryUrl(site, '/'),
     name: site.name,
-    publisher: {
-      '@id': organizationId,
-    },
+    publisher: { '@id': organizationId },
   }
   const webPage = {
     '@type': 'WebPage',
     '@id': webpageId,
-    name: page?.title || site.name,
-    description: page?.seo?.description || page?.description || site.seo?.description,
+    name: selectFirstTruthy(page?.title, site.name),
+    description: page
+      ? selectFirstTruthy(page.seo?.description, page.description, site.seo?.description)
+      : site.seo?.description,
     url: canonicalUrl,
-    isPartOf: {
-      '@id': websiteId,
-    },
+    isPartOf: { '@id': websiteId },
   }
-  const breadcrumbs = {
-    '@type': 'BreadcrumbList',
-    '@id': `${canonicalUrl}#breadcrumb`,
-    itemListElement: pathname
-      .split('/')
-      .filter(Boolean)
-      .reduce(
-        (items, segment, index, all) => {
-          const href = `/${all.slice(0, index + 1).join('/')}`
-          items.push({
-            '@type': 'ListItem',
-            position: items.length + 1,
-            name: segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-            item: getPrimaryUrl(site, href),
-          })
-          return items
-        },
-        [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: getPrimaryUrl(site, '/'),
-          },
-        ],
-      ),
-  }
+  const breadcrumbs = buildBreadcrumbList(site, pathname, canonicalUrl)
   const graph = [organization, website, webPage, breadcrumbs]
 
   if (page?.pageType === 'post') {
-    graph.push({
-      '@type': 'Article',
-      '@id': `${canonicalUrl}#article`,
-      headline: page.title,
-      description: page?.seo?.description || page?.description || site.seo?.description,
-      mainEntityOfPage: {
-        '@id': webpageId,
-      },
-      about: site.categoryLabel,
-      publisher: {
-        '@id': organizationId,
-      },
-      datePublished: page?.createdAt || page?._createdAt || page?.updatedAt || page?._updatedAt,
-      dateModified: page?.updatedAt || page?._updatedAt || page?.createdAt || page?._createdAt,
-      url: canonicalUrl,
-    })
-
-    return {
-      '@context': 'https://schema.org',
-      '@graph': graph,
-    }
+    graph.push(buildArticleGraphNode(canonicalUrl, page, site, webpageId, organizationId))
+    return { '@context': 'https://schema.org', '@graph': graph }
   }
 
   const faqSection = page?.sections?.find((section) => section.type === 'faq')
 
   if (faqSection) {
-    graph.push({
-      '@type': 'FAQPage',
-      '@id': `${canonicalUrl}#faq`,
-      mainEntity: (faqSection.items || []).map((item) => ({
-        '@type': 'Question',
-        name: item.question,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: portableTextToPlainText(item.answer),
-        },
-      })),
-    })
+    graph.push(buildFaqGraphNode(canonicalUrl, faqSection))
   }
 
-  return {
-    '@context': 'https://schema.org',
-    '@graph': graph,
-  }
+  return { '@context': 'https://schema.org', '@graph': graph }
 }
 
 export async function publishPageToSanity(job) {

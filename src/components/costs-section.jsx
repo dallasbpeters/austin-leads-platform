@@ -19,34 +19,71 @@ const fallbackStatItems = [
   },
 ]
 
-export default function CostsSection({ section = null, sectionId = 'costs' }) {
-  const eyebrow = section?.eyebrow || 'Solar Costs'
-  const title = section?.title || 'What Does Solar Actually Cost?'
-  const body =
-    section?.body ||
-    'A residential solar installation in Texas often lands between $18,000 and $28,000 before incentives. The final number depends on system size, equipment, electrical work, and how much energy the home actually uses.'
-  const subtitle =
-    section?.subtitle ||
-    'If you are trying to decide whether solar is worth it, start with the numbers that matter most: total project cost, incentives, expected production, and realistic payback.'
-  const stats = section?.items?.length ? section.items : fallbackStatItems
-  const paybackEyebrow = section?.secondaryTitle || 'Realistic Payback'
-  const paybackTitle =
+const TEXT_FIELDS = [
+  ['eyebrow', 'eyebrow', 'Solar Costs'],
+  ['title', 'title', 'What Does Solar Actually Cost?'],
+  [
+    'body',
+    'body',
+    'A residential solar installation in Texas often lands between $18,000 and $28,000 before incentives. The final number depends on system size, equipment, electrical work, and how much energy the home actually uses.',
+  ],
+  [
+    'subtitle',
+    'subtitle',
+    'If you are trying to decide whether solar is worth it, start with the numbers that matter most: total project cost, incentives, expected production, and realistic payback.',
+  ],
+  ['paybackEyebrow', 'secondaryTitle', 'Realistic Payback'],
+]
+
+function resolveSectionContent(section) {
+  const content = {}
+  for (const [key, field, fallback] of TEXT_FIELDS) {
+    content[key] = section?.[field] || fallback
+  }
+  content.stats = section?.items?.length ? section.items : fallbackStatItems
+  content.paybackTitle =
     section?.secondaryItems?.[0]?.title || 'Most homeowners still see solar break even in roughly 7–9 years.'
-  const paybackBody =
+  content.paybackBody =
     section?.secondaryItems?.[0]?.body ||
     'The strongest quotes clearly separate contract cost, incentives, and expected production so you can compare options without guessing where the savings are supposed to come from.'
+  return content
+}
 
+function getSectionStyles(section) {
   const rawColor = section?.color
   const accentHex = (typeof rawColor === 'string' ? rawColor : rawColor?.hex) || ''
-  const sectionStyle = accentHex
-    ? {
-        background: `linear-gradient(188deg, color-mix(in oklch, ${accentHex} 1%, white) 3.24%, color-mix(in oklch, ${accentHex} 12%, white) 110.59%)`,
-      }
-    : undefined
-  const labelStyle = accentHex ? { color: accentHex } : undefined
-  const dividerStyle = accentHex
-    ? { borderColor: `color-mix(in oklch, ${accentHex} 28%, transparent)` }
-    : undefined
+  if (!accentHex) {
+    return { sectionStyle: undefined, labelStyle: undefined, dividerStyle: undefined }
+  }
+  return {
+    sectionStyle: {
+      background: `linear-gradient(188deg, color-mix(in oklch, ${accentHex} 1%, white) 3.24%, color-mix(in oklch, ${accentHex} 12%, white) 110.59%)`,
+    },
+    labelStyle: { color: accentHex },
+    dividerStyle: { borderColor: `color-mix(in oklch, ${accentHex} 28%, transparent)` },
+  }
+}
+
+function StatItem({ item, labelStyle }) {
+  return (
+    <div key={item._key || item.title}>
+      <p className="mb-3 text-6xl font-bold text-neutral-900">{item.number}</p>
+      <p className="mb-3 text-sm font-semibold tracking-[0.2em] text-cyan-800 uppercase" style={labelStyle}>
+        {item.title}
+      </p>
+      <PortableTextContent
+        as="div"
+        value={item.body}
+        className="text-[0.9375rem] leading-7 font-semibold text-neutral-500"
+      />
+    </div>
+  )
+}
+
+export default function CostsSection({ section = null, sectionId = 'costs' }) {
+  const { eyebrow, title, body, subtitle, stats, paybackEyebrow, paybackTitle, paybackBody } =
+    resolveSectionContent(section)
+  const { sectionStyle, labelStyle, dividerStyle } = getSectionStyles(section)
 
   return (
     <section
@@ -76,28 +113,12 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
           value={subtitle}
           className="mt-3 text-[1.125rem] leading-7 font-semibold text-neutral-500"
         />
-
         <div className="my-16 grid gap-12 lg:grid-cols-3">
           {stats.map((item) => (
-            <div key={item._key || item.title}>
-              <p className="mb-3 text-6xl font-bold text-neutral-900">{item.number}</p>
-              <p
-                className="mb-3 text-sm font-semibold tracking-[0.2em] text-cyan-800 uppercase"
-                style={labelStyle}
-              >
-                {item.title}
-              </p>
-              <PortableTextContent
-                as="div"
-                value={item.body}
-                className="text-[0.9375rem] leading-7 font-semibold text-neutral-500"
-              />
-            </div>
+            <StatItem key={item._key || item.title} item={item} labelStyle={labelStyle} />
           ))}
         </div>
-
-        <div className="mb-12 border-t border-blue-300" style={dividerStyle}></div>
-
+        <div className="mb-12 border-t border-blue-300" style={dividerStyle} />
         <div className="flex items-baseline gap-8 max-[900px]:flex-col">
           <p
             className="shrink-0 text-sm font-semibold tracking-[0.2em] text-blue-900 uppercase"

@@ -104,34 +104,35 @@ function createBuilderFieldAtPoint(type, rect, point) {
   }
 }
 
-function renderBuilderFieldCard(field, isSelected = false) {
-  const isSignature = field.type === 'signature'
-  const isInitials = field.type === 'initials'
-  const isCheckbox = field.type === 'checkbox'
-  const isDate = field.type === 'date'
-  const isName = field.type === 'name'
-  const isEmail = field.type === 'email'
-  const isCompany = field.type === 'company'
-  const isTitle = field.type === 'title'
+function buildFieldDisplayLabel(field) {
+  const typeStyleMap = {
+    signature: { label: 'Sign Here', fixed: true },
+    initials: { label: '', fixed: false },
+    checkbox: { label: '', fixed: false },
+  }
+  const entry = typeStyleMap[field.type]
+  if (entry?.fixed) return entry.label
   const labelText = field.label?.trim() || ''
   const defaultText = field.defaultValue?.trim() || ''
-  const displayLabel = isSignature
-    ? 'Sign Here'
-    : isInitials
-      ? labelText || 'Initials'
-      : isCheckbox
-        ? labelText
-        : isDate
-          ? defaultText || labelText
-          : isName
-            ? defaultText || labelText
-            : isEmail
-              ? defaultText || labelText
-              : isCompany
-                ? defaultText || labelText
-                : isTitle
-                  ? defaultText || labelText
-                  : defaultText || labelText
+  if (field.type === 'initials') return labelText || 'Initials'
+  if (field.type === 'checkbox') return labelText
+  return defaultText || labelText
+}
+
+function computeFieldTypeClass(type) {
+  const classMap = {
+    signature: 'inline-block bg-amber-100 px-1 py-0.5 text-[22px] font-normal text-slate-950',
+    initials: 'text-[20px] font-normal text-slate-950',
+    checkbox: 'text-[18px] font-medium text-slate-950',
+    date: 'text-sm font-medium text-slate-950 underline decoration-slate-300 underline-offset-4',
+  }
+  return classMap[type] || 'text-sm font-medium text-slate-950'
+}
+
+function renderBuilderFieldCard(field, isSelected = false) {
+  const isCheckbox = field.type === 'checkbox'
+  const displayLabel = buildFieldDisplayLabel(field)
+  const typeClass = computeFieldTypeClass(field.type)
 
   return (
     <div
@@ -145,21 +146,7 @@ function renderBuilderFieldCard(field, isSelected = false) {
             <Check className="h-3 w-3 text-slate-900" />
           </span>
         ) : null}
-        <span
-          className={`tracking-normal ${
-            isSignature
-              ? 'inline-block bg-amber-100 px-1 py-0.5 text-[22px] font-normal text-slate-950'
-              : isInitials
-                ? 'text-[20px] font-normal text-slate-950'
-                : isCheckbox
-                  ? 'text-[18px] font-medium text-slate-950'
-                  : isDate
-                    ? 'text-sm font-medium text-slate-950 underline decoration-slate-300 underline-offset-4'
-                    : 'text-sm font-medium text-slate-950'
-          }`}
-        >
-          {displayLabel}
-        </span>
+        <span className={`tracking-normal ${typeClass}`}>{displayLabel}</span>
         {field.required !== false && displayLabel ? <span className="mt-0.5 text-red-500">*</span> : null}
       </div>
     </div>
@@ -1280,6 +1267,229 @@ export default function DocumentsClient({
   }
 
   return (
+    <DocumentSigningShell
+      docusealConfigured={docusealConfigured}
+      resendConfigured={resendConfigured}
+      documentDbReady={documentDbReady}
+      dbConfigured={dbConfigured}
+      dbError={dbError}
+      docusealBaseUrl={docusealBaseUrl}
+      error={error}
+      result={result}
+      mode={mode}
+      setMode={setMode}
+      sourceMode={sourceMode}
+      setSourceMode={setSourceMode}
+      name={name}
+      setName={setName}
+      documentName={documentName}
+      setDocumentName={setDocumentName}
+      file={file}
+      setFile={setFile}
+      clients={clients}
+      clientId={clientId}
+      selectedClient={selectedClient}
+      quickClientName={quickClientName}
+      setQuickClientName={setQuickClientName}
+      quickClientEmail={quickClientEmail}
+      setQuickClientEmail={setQuickClientEmail}
+      selectClient={selectClient}
+      clearClient={clearClient}
+      createQuickClient={createQuickClient}
+      creatingClient={creatingClient}
+      additionalRecipients={additionalRecipients}
+      addRecipient={addRecipient}
+      removeRecipient={removeRecipient}
+      updateRecipient={updateRecipient}
+      fieldIds={fieldIds}
+      documents={documents}
+      filteredDocuments={filteredDocuments}
+      documentAssetId={documentAssetId}
+      setDocumentAssetId={setDocumentAssetId}
+      selectDocument={selectDocument}
+      savedDocumentQuery={savedDocumentQuery}
+      setSavedDocumentQuery={setSavedDocumentQuery}
+      selectedDocument={selectedDocument}
+      builderOpen={builderOpen}
+      setBuilderOpen={setBuilderOpen}
+      builderTool={builderTool}
+      setBuilderTool={setBuilderTool}
+      builderPage={builderPage}
+      setBuilderPage={setBuilderPage}
+      builderPageCount={builderPageCount}
+      builderSaving={builderSaving}
+      builderStatus={builderStatus}
+      filePreviewUrl={filePreviewUrl}
+      selectedBuilderField={selectedBuilderField}
+      builderPreviewSourceUrl={builderPreviewSourceUrl}
+      renderBuilderPageOverlay={renderBuilderPageOverlay}
+      startDraggingTool={startDraggingTool}
+      handleBuilderToolDrop={handleBuilderToolDrop}
+      saveCurrentPdf={saveCurrentPdf}
+      removeBuilderField={removeBuilderField}
+      updateBuilderField={updateBuilderField}
+      submitDocument={submitDocument}
+      submitting={submitting}
+      sendEmail={sendEmail}
+      setSendEmail={setSendEmail}
+      requireEmail2fa={requireEmail2fa}
+      setRequireEmail2fa={setRequireEmail2fa}
+      order={order}
+      setOrder={setOrder}
+      legalDisclosureAccepted={legalDisclosureAccepted}
+      setLegalDisclosureAccepted={setLegalDisclosureAccepted}
+      showHistory={showHistory}
+      refreshDocumentData={refreshDocumentData}
+      refreshing={refreshing}
+    />
+  )
+}
+
+function DocumentSigningAlerts({
+  documentDbReady,
+  dbConfigured,
+  dbError,
+  docusealConfigured,
+  docusealBaseUrl,
+  resendConfigured,
+  error,
+}) {
+  const alerts = []
+  if (!documentDbReady) {
+    alerts.push({
+      title: 'Database not ready',
+      description: dbConfigured
+        ? 'The database is configured, but document tables did not load.'
+        : 'Set up the platform database before sending documents.',
+      error: dbError,
+    })
+  }
+  if (!docusealConfigured) {
+    alerts.push({
+      title: 'Signing service not connected',
+      description: (
+        <>
+          Configure the signing service connection. Target:{' '}
+          <span className="font-medium">{docusealBaseUrl}</span>.
+        </>
+      ),
+    })
+  }
+  if (documentDbReady && !resendConfigured) {
+    alerts.push({
+      title: 'Resend not ready',
+      description: (
+        <>
+          Add <span className="font-medium">RESEND_API_KEY</span> and{' '}
+          <span className="font-medium">RESEND_FROM_EMAIL</span>.
+        </>
+      ),
+    })
+  }
+
+  return (
+    <>
+      {alerts.map((alert) => (
+        <Alert key={alert.title}>
+          <AlertTriangle className="absolute top-3.5 left-4 h-4 w-4" />
+          <AlertTitle>{alert.title}</AlertTitle>
+          <AlertDescription>
+            {alert.description}
+            {alert.error ? (
+              <pre className="bg-muted text-foreground/80 mt-3 overflow-x-auto rounded border p-3 text-xs">
+                {JSON.stringify(alert.error, null, 2)}
+              </pre>
+            ) : null}
+          </AlertDescription>
+        </Alert>
+      ))}
+      {error ? (
+        <Alert variant="destructive">
+          <AlertTriangle className="absolute top-3.5 left-4 h-4 w-4" />
+          <AlertTitle>Submission failed</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      ) : null}
+    </>
+  )
+}
+
+function DocumentSigningShell({
+  docusealConfigured,
+  resendConfigured,
+  documentDbReady,
+  dbConfigured,
+  dbError,
+  docusealBaseUrl,
+  error,
+  result,
+  mode,
+  setMode,
+  sourceMode,
+  setSourceMode,
+  name,
+  setName,
+  documentName,
+  setDocumentName,
+  file,
+  setFile,
+  clients,
+  clientId,
+  selectedClient,
+  quickClientName,
+  setQuickClientName,
+  quickClientEmail,
+  setQuickClientEmail,
+  selectClient,
+  clearClient,
+  createQuickClient,
+  creatingClient,
+  additionalRecipients,
+  addRecipient,
+  removeRecipient,
+  updateRecipient,
+  fieldIds,
+  documents,
+  filteredDocuments,
+  documentAssetId,
+  setDocumentAssetId,
+  selectDocument,
+  savedDocumentQuery,
+  setSavedDocumentQuery,
+  selectedDocument,
+  builderOpen,
+  setBuilderOpen,
+  builderTool,
+  setBuilderTool,
+  builderPage,
+  setBuilderPage,
+  builderPageCount,
+  builderSaving,
+  builderStatus,
+  filePreviewUrl,
+  selectedBuilderField,
+  builderPreviewSourceUrl,
+  renderBuilderPageOverlay,
+  startDraggingTool,
+  handleBuilderToolDrop,
+  saveCurrentPdf,
+  removeBuilderField,
+  updateBuilderField,
+  submitDocument,
+  submitting,
+  sendEmail,
+  setSendEmail,
+  requireEmail2fa,
+  setRequireEmail2fa,
+  order,
+  setOrder,
+  legalDisclosureAccepted,
+  setLegalDisclosureAccepted,
+  showHistory,
+  refreshDocumentData,
+  refreshing,
+}) {
+  return (
     <div className="space-y-8 p-6 lg:p-10">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
@@ -1302,512 +1512,75 @@ export default function DocumentsClient({
         </div>
       </div>
 
-      {!documentDbReady ? (
-        <Alert>
-          <AlertTriangle className="absolute top-3.5 left-4 h-4 w-4" />
-          <AlertTitle>Database not ready</AlertTitle>
-          <AlertDescription>
-            {dbConfigured
-              ? 'The database is configured, but document tables did not load.'
-              : 'Set up the platform database before sending documents.'}
-            {dbError ? (
-              <pre className="bg-muted text-foreground/80 mt-3 overflow-x-auto rounded border p-3 text-xs">
-                {JSON.stringify(dbError, null, 2)}
-              </pre>
-            ) : null}
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
-      {!docusealConfigured ? (
-        <Alert>
-          <AlertTriangle className="absolute top-3.5 left-4 h-4 w-4" />
-          <AlertTitle>Signing service not connected</AlertTitle>
-          <AlertDescription>
-            Configure the signing service connection. Target:{' '}
-            <span className="font-medium">{docusealBaseUrl}</span>.
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
-      {documentDbReady && !resendConfigured ? (
-        <Alert>
-          <AlertTriangle className="absolute top-3.5 left-4 h-4 w-4" />
-          <AlertTitle>Resend not ready</AlertTitle>
-          <AlertDescription>
-            Add <span className="font-medium">RESEND_API_KEY</span> and{' '}
-            <span className="font-medium">RESEND_FROM_EMAIL</span>.
-          </AlertDescription>
-        </Alert>
-      ) : null}
-
-      {error ? (
-        <Alert variant="destructive">
-          <AlertTriangle className="absolute top-3.5 left-4 h-4 w-4" />
-          <AlertTitle>Submission failed</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      ) : null}
+      <DocumentSigningAlerts
+        documentDbReady={documentDbReady}
+        dbConfigured={dbConfigured}
+        dbError={dbError}
+        docusealConfigured={docusealConfigured}
+        docusealBaseUrl={docusealBaseUrl}
+        resendConfigured={resendConfigured}
+        error={error}
+      />
 
       <ResultPanel result={result} />
 
       <form className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]" onSubmit={submitDocument}>
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <CardTitle className="text-[1rem]">Client and recipients</CardTitle>
-                  <CardDescription>Client is signer 1.</CardDescription>
-                </div>
-                <Button variant="outline" size="sm" href="/clients">
-                  Manage clients
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
-                <div className="grid gap-2">
-                  <label className="text-foreground text-sm font-medium" htmlFor={fieldIds.clientSelect}>
-                    Client
-                  </label>
-                  <select
-                    id={fieldIds.clientSelect}
-                    name="clientId"
-                    className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
-                    value={clientId}
-                    onChange={(event) => selectClient(event.target.value)}
-                    disabled={!clients.length}
-                  >
-                    <option value="">Select a client</option>
-                    {clients.map((client) => (
-                      <option key={client.id} value={client.id}>
-                        {client.name} - {client.email}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <Button type="button" variant="outline" onClick={clearClient} disabled={!clientId}>
-                  Clear
-                </Button>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-                <Input
-                  id={fieldIds.quickClientName}
-                  name="quickClientName"
-                  value={quickClientName}
-                  onChange={(event) => setQuickClientName(event.target.value)}
-                  placeholder="Jane Customer"
-                />
-                <Input
-                  id={fieldIds.quickClientEmail}
-                  name="quickClientEmail"
-                  type="email"
-                  value={quickClientEmail}
-                  onChange={(event) => setQuickClientEmail(event.target.value)}
-                  placeholder="jane@example.com"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={createQuickClient}
-                  disabled={creatingClient || !quickClientName.trim() || !quickClientEmail.trim()}
-                >
-                  {creatingClient ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Plus className="h-4 w-4" />
-                  )}
-                  Add
-                </Button>
-              </div>
-
-              {selectedClient ? (
-                <div className="border-border rounded-md border p-3 text-sm">
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <div className="font-medium">{selectedClient.name}</div>
-                      <div className="text-muted-foreground">
-                        {selectedClient.email}
-                        {selectedClient.phone ? ` · ${selectedClient.phone}` : ''}
-                      </div>
-                    </div>
-                    <Badge variant="outline">Signer 1</Badge>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-muted-foreground border-border rounded-md border border-dashed p-3 text-sm">
-                  Pick a client to fill signer 1.
-                </div>
-              )}
-
-              {selectedClient ? (
-                <div className="space-y-3">
-                  {additionalRecipients.map((recipient, index) => (
-                    <div key={index} className="border-border rounded-md border p-3">
-                      <div className="mb-3 flex items-center justify-between">
-                        <div className="text-sm font-medium">Signer {index + 2}</div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => removeRecipient(index)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Remove</span>
-                        </Button>
-                      </div>
-                      <div className="grid gap-3 md:grid-cols-3">
-                        <div className="grid gap-2">
-                          <label
-                            className="text-foreground text-xs font-medium"
-                            htmlFor={`recipient-name-${index}`}
-                          >
-                            Name
-                          </label>
-                          <Input
-                            id={`recipient-name-${index}`}
-                            name={`recipientName${index + 2}`}
-                            value={recipient.name}
-                            onChange={(event) => updateRecipient(index, { name: event.target.value })}
-                            placeholder="Jane Customer"
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <label
-                            className="text-foreground text-xs font-medium"
-                            htmlFor={`recipient-email-${index}`}
-                          >
-                            Email
-                          </label>
-                          <Input
-                            id={`recipient-email-${index}`}
-                            name={`recipientEmail${index + 2}`}
-                            type="email"
-                            value={recipient.email}
-                            onChange={(event) => updateRecipient(index, { email: event.target.value })}
-                            placeholder="jane@example.com"
-                            required
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <label
-                            className="text-foreground text-xs font-medium"
-                            htmlFor={`recipient-role-${index}`}
-                          >
-                            Role
-                          </label>
-                          <Input
-                            id={`recipient-role-${index}`}
-                            name={`recipientRole${index + 2}`}
-                            value={recipient.role}
-                            onChange={(event) => updateRecipient(index, { role: event.target.value })}
-                            placeholder={`Signer ${index + 2}`}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <Button type="button" variant="outline" onClick={addRecipient}>
-                    <Plus className="h-4 w-4" />
-                    Add recipient
-                  </Button>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[1rem]">
-                <FileSignature className="h-4 w-4" />
-                Document source
-              </CardTitle>
-              <CardDescription>Upload, build, or reuse.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-3 md:grid-cols-3">
-                <button
-                  className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
-                    mode === 'pdf' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
-                  }`}
-                  type="button"
-                  onClick={() => setMode('pdf')}
-                >
-                  <div className="font-medium">PDF</div>
-                  <div className="text-muted-foreground mt-1 text-xs">Upload or reuse.</div>
-                </button>
-                <button
-                  className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
-                    mode === 'pdf' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
-                  }`}
-                  type="button"
-                  onClick={() => setBuilderOpen(true)}
-                >
-                  <div className="font-medium">Builder</div>
-                  <div className="text-muted-foreground mt-1 text-xs">Open page editor.</div>
-                </button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-auto p-3"
-                  onClick={() => setBuilderOpen(true)}
-                >
-                  Edit fields
-                </Button>
-              </div>
-
-              {mode === 'pdf' ? (
-                <div className="space-y-3">
-                  <Input
-                    id={fieldIds.requestTitle}
-                    name="requestTitle"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="Proposal"
-                  />
-
-                  <div className="grid gap-2">
-                    <label className="text-foreground text-sm font-medium" htmlFor={fieldIds.documentName}>
-                      Document name
-                    </label>
-                    <Input
-                      id={fieldIds.documentName}
-                      name="documentName"
-                      value={documentName}
-                      onChange={(event) => setDocumentName(event.target.value)}
-                      placeholder="Branded PDF"
-                    />
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <button
-                      className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
-                        sourceMode === 'upload' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
-                      }`}
-                      type="button"
-                      onClick={() => {
-                        setSourceMode('upload')
-                        setDocumentAssetId('')
-                      }}
-                    >
-                      <div className="font-medium">Upload</div>
-                      <div className="text-muted-foreground mt-1 text-xs">New file.</div>
-                    </button>
-                    <button
-                      className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
-                        sourceMode === 'reuse' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
-                      }`}
-                      type="button"
-                      onClick={() => setSourceMode('reuse')}
-                    >
-                      <div className="font-medium">Saved</div>
-                      <div className="text-muted-foreground mt-1 text-xs">Stored file.</div>
-                    </button>
-                  </div>
-
-                  {sourceMode === 'upload' ? (
-                    <div className="space-y-3">
-                      <label
-                        className="border-border bg-muted/20 hover:bg-muted/40 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-4 py-6 text-center transition-colors"
-                        htmlFor={fieldIds.uploadFile}
-                      >
-                        <UploadCloud className="text-muted-foreground h-7 w-7" />
-                        <span className="text-foreground mt-2 text-sm font-medium">
-                          {file ? file.name : 'Upload PDF'}
-                        </span>
-                        <span className="text-muted-foreground mt-1 text-xs">Include field tags.</span>
-                        <Input
-                          id={fieldIds.uploadFile}
-                          name="uploadFile"
-                          className="sr-only"
-                          type="file"
-                          accept="application/pdf,.pdf"
-                          onChange={(event) => setFile(event.target.files?.[0] || null)}
-                        />
-                      </label>
-                      {filePreviewUrl ? (
-                        <div className="overflow-hidden rounded-md border">
-                          <PdfPreviewSurface
-                            sourceUrl={filePreviewUrl}
-                            title="Uploaded PDF preview"
-                            emptyLabel="Upload a PDF to preview it here."
-                          />
-                        </div>
-                      ) : null}
-                      <Button type="button" variant="outline" onClick={() => setBuilderOpen(true)}>
-                        Edit fields
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="grid gap-2">
-                        <label
-                          className="text-foreground text-sm font-medium"
-                          htmlFor={fieldIds.savedDocumentSearch}
-                        >
-                          Saved document
-                        </label>
-                        <Input
-                          id={fieldIds.savedDocumentSearch}
-                          name="savedDocumentSearch"
-                          value={savedDocumentQuery}
-                          onChange={(event) => setSavedDocumentQuery(event.target.value)}
-                          placeholder="Search saved PDFs"
-                          disabled={!documents.length}
-                        />
-                        <div className="text-muted-foreground text-xs">
-                          Showing {filteredDocuments.length} of {documents.length} saved documents.
-                        </div>
-                        <div className="border-border bg-background max-h-72 overflow-auto rounded-md border">
-                          {filteredDocuments.length ? (
-                            filteredDocuments.map((document) => {
-                              const isSelected = document.id === documentAssetId
-                              return (
-                                <button
-                                  key={document.id}
-                                  id={isSelected ? fieldIds.savedDocument : undefined}
-                                  type="button"
-                                  className={`border-border/70 block w-full border-b px-3 py-3 text-left last:border-b-0 ${
-                                    isSelected ? 'bg-blue-50' : 'hover:bg-muted/40'
-                                  }`}
-                                  onClick={() => selectDocument(document.id)}
-                                >
-                                  <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                      <div className="truncate text-sm font-medium">{document.title}</div>
-                                      <div className="text-muted-foreground truncate text-xs">
-                                        {document.file_name}
-                                      </div>
-                                    </div>
-                                    <div className="text-muted-foreground shrink-0 text-[10px] tracking-[0.18em] uppercase">
-                                      {document.source_type || 'document'}
-                                    </div>
-                                  </div>
-                                  <div className="text-muted-foreground mt-1 truncate text-[11px]">
-                                    {document.client_name || 'Unknown client'}
-                                    {document.request_title ? ` | ${document.request_title}` : ''}
-                                  </div>
-                                </button>
-                              )
-                            })
-                          ) : (
-                            <div className="text-muted-foreground px-3 py-4 text-sm">
-                              No saved documents match this search.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      {selectedDocument ? (
-                        <div className="overflow-hidden rounded-md border">
-                          <PdfPreviewSurface
-                            sourceUrl={`/api/documents/library/${selectedDocument.id}/file`}
-                            title={selectedDocument.title}
-                            emptyLabel="Choose a saved PDF to reuse."
-                            maxRenderWidth={520}
-                          />
-                        </div>
-                      ) : (
-                        <div className="text-muted-foreground border-border rounded-md border border-dashed p-3 text-sm">
-                          Choose a saved PDF to reuse.
-                        </div>
-                      )}
-                      <Button type="button" variant="outline" onClick={() => setBuilderOpen(true)}>
-                        Edit fields
-                      </Button>
-                    </div>
-                  )}
-                  {sourceMode === 'upload' || sourceMode === 'reuse' ? (
-                    <div className="border-border bg-muted/10 text-muted-foreground rounded-md border p-3 text-xs">
-                      Open the PDF builder to place signatures and text fields directly on this document.
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
+          <ClientRecipientsCard
+            clients={clients}
+            clientId={clientId}
+            selectedClient={selectedClient}
+            quickClientName={quickClientName}
+            setQuickClientName={setQuickClientName}
+            quickClientEmail={quickClientEmail}
+            setQuickClientEmail={setQuickClientEmail}
+            selectClient={selectClient}
+            clearClient={clearClient}
+            createQuickClient={createQuickClient}
+            creatingClient={creatingClient}
+            additionalRecipients={additionalRecipients}
+            addRecipient={addRecipient}
+            removeRecipient={removeRecipient}
+            updateRecipient={updateRecipient}
+            fieldIds={fieldIds}
+          />
+          <DocumentSourceCard
+            mode={mode}
+            setMode={setMode}
+            sourceMode={sourceMode}
+            setSourceMode={setSourceMode}
+            name={name}
+            setName={setName}
+            documentName={documentName}
+            setDocumentName={setDocumentName}
+            file={file}
+            setFile={setFile}
+            documents={documents}
+            filteredDocuments={filteredDocuments}
+            documentAssetId={documentAssetId}
+            selectDocument={selectDocument}
+            savedDocumentQuery={savedDocumentQuery}
+            setSavedDocumentQuery={setSavedDocumentQuery}
+            selectedDocument={selectedDocument}
+            setBuilderOpen={setBuilderOpen}
+            filePreviewUrl={filePreviewUrl}
+            fieldIds={fieldIds}
+            setDocumentAssetId={setDocumentAssetId}
+          />
         </div>
-
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[1rem]">Send</CardTitle>
-              <CardDescription>Delivery and order.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <label className="flex items-start gap-3">
-                <input
-                  id={fieldIds.sendEmail}
-                  name="sendEmail"
-                  className="border-input text-primary mt-1 h-4 w-4 rounded"
-                  type="checkbox"
-                  checked={sendEmail}
-                  onChange={(event) => setSendEmail(event.target.checked)}
-                />
-                <span>
-                  <span className="text-foreground block text-sm font-medium">Email</span>
-                  <span className="text-muted-foreground text-sm">Use Resend.</span>
-                </span>
-              </label>
-
-              <label className="flex items-start gap-3">
-                <input
-                  id={fieldIds.require2fa}
-                  name="requireEmail2fa"
-                  className="border-input text-primary mt-1 h-4 w-4 rounded"
-                  type="checkbox"
-                  checked={requireEmail2fa}
-                  onChange={(event) => setRequireEmail2fa(event.target.checked)}
-                />
-                <span>
-                  <span className="text-foreground block text-sm font-medium">Email 2FA</span>
-                  <span className="text-muted-foreground text-sm">Verify by code.</span>
-                </span>
-              </label>
-
-              <div className="grid gap-2">
-                <label className="text-foreground text-sm font-medium" htmlFor={fieldIds.order}>
-                  Order
-                </label>
-                <select
-                  id={fieldIds.order}
-                  name="order"
-                  className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
-                  value={order}
-                  onChange={(event) => setOrder(event.target.value)}
-                >
-                  <option value="preserved">Preserved</option>
-                  <option value="random">All at once</option>
-                </select>
-              </div>
-
-              <label className="border-border bg-muted/20 flex items-start gap-3 rounded-md border p-3">
-                <input
-                  id={fieldIds.consent}
-                  name="legalDisclosureAccepted"
-                  className="border-input text-primary mt-1 h-4 w-4 rounded"
-                  type="checkbox"
-                  checked={legalDisclosureAccepted}
-                  onChange={(event) => setLegalDisclosureAccepted(event.target.checked)}
-                />
-                <span>
-                  <span className="text-foreground block text-sm font-medium">Consent</span>
-                  <span className="text-muted-foreground text-sm">Store audit records.</span>
-                </span>
-              </label>
-
-              <Button type="submit" disabled={submitting} fullWidth>
-                {submitting ? (
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
-                {submitting ? 'Sending...' : 'Send'}
-              </Button>
-            </CardContent>
-          </Card>
-
+          <SendOptionsCard
+            sendEmail={sendEmail}
+            setSendEmail={setSendEmail}
+            requireEmail2fa={requireEmail2fa}
+            setRequireEmail2fa={setRequireEmail2fa}
+            order={order}
+            setOrder={setOrder}
+            legalDisclosureAccepted={legalDisclosureAccepted}
+            setLegalDisclosureAccepted={setLegalDisclosureAccepted}
+            submitting={submitting}
+            fieldIds={fieldIds}
+          />
           <Card>
             <CardHeader>
               <CardTitle className="text-[1rem]">Notes</CardTitle>
@@ -1820,407 +1593,1020 @@ export default function DocumentsClient({
         </div>
       </form>
 
-      <Sheet open={builderOpen} onOpenChange={setBuilderOpen}>
-        <SheetContent
-          side="bottom"
-          showCloseButton={false}
-          className="h-dvh w-screen max-w-none rounded-none border-t p-0"
-        >
-          <SheetHeader className="border-border/70 border-b px-6 pt-6 pb-4">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <DocumentBuilderSheet
+        builderOpen={builderOpen}
+        setBuilderOpen={setBuilderOpen}
+        builderTool={builderTool}
+        setBuilderTool={setBuilderTool}
+        builderPage={builderPage}
+        setBuilderPage={setBuilderPage}
+        builderPageCount={builderPageCount}
+        builderSaving={builderSaving}
+        builderStatus={builderStatus}
+        sourceMode={sourceMode}
+        selectedDocument={selectedDocument}
+        selectedBuilderField={selectedBuilderField}
+        builderPreviewSourceUrl={builderPreviewSourceUrl}
+        renderBuilderPageOverlay={renderBuilderPageOverlay}
+        startDraggingTool={startDraggingTool}
+        handleBuilderToolDrop={handleBuilderToolDrop}
+        saveCurrentPdf={saveCurrentPdf}
+        removeBuilderField={removeBuilderField}
+        updateBuilderField={updateBuilderField}
+        file={file}
+      />
+
+      {showHistory ? (
+        <DocumentHistoryCard
+          documents={documents}
+          refreshDocumentData={refreshDocumentData}
+          refreshing={refreshing}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+function ClientRecipientsCard({
+  clients,
+  clientId,
+  selectedClient,
+  quickClientName,
+  setQuickClientName,
+  quickClientEmail,
+  setQuickClientEmail,
+  selectClient,
+  clearClient,
+  createQuickClient,
+  creatingClient,
+  additionalRecipients,
+  addRecipient,
+  removeRecipient,
+  updateRecipient,
+  fieldIds,
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle className="text-[1rem]">Client and recipients</CardTitle>
+            <CardDescription>Client is signer 1.</CardDescription>
+          </div>
+          <Button variant="outline" size="sm" href="/clients">
+            Manage clients
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="grid gap-2">
+            <label className="text-foreground text-sm font-medium" htmlFor={fieldIds.clientSelect}>
+              Client
+            </label>
+            <select
+              id={fieldIds.clientSelect}
+              name="clientId"
+              className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
+              value={clientId}
+              onChange={(event) => selectClient(event.target.value)}
+              disabled={!clients.length}
+            >
+              <option value="">Select a client</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.name} - {client.email}
+                </option>
+              ))}
+            </select>
+          </div>
+          <Button type="button" variant="outline" onClick={clearClient} disabled={!clientId}>
+            Clear
+          </Button>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+          <Input
+            id={fieldIds.quickClientName}
+            name="quickClientName"
+            value={quickClientName}
+            onChange={(event) => setQuickClientName(event.target.value)}
+            placeholder="Jane Customer"
+          />
+          <Input
+            id={fieldIds.quickClientEmail}
+            name="quickClientEmail"
+            type="email"
+            value={quickClientEmail}
+            onChange={(event) => setQuickClientEmail(event.target.value)}
+            placeholder="jane@example.com"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={createQuickClient}
+            disabled={creatingClient || !quickClientName.trim() || !quickClientEmail.trim()}
+          >
+            {creatingClient ? (
+              <LoaderCircle className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+            Add
+          </Button>
+        </div>
+
+        {selectedClient ? (
+          <div className="border-border rounded-md border p-3 text-sm">
+            <div className="flex items-center justify-between gap-2">
               <div>
-                <SheetTitle>PDF builder</SheetTitle>
-                <SheetDescription>Add signature and text fields on the page.</SheetDescription>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="outline" onClick={() => setBuilderOpen(false)}>
-                  Close
-                </Button>
-                <Button
-                  type="button"
-                  variant="default"
-                  onClick={saveCurrentPdf}
-                  disabled={builderSaving || (!file && !selectedDocument && sourceMode !== 'generated')}
-                >
-                  {builderSaving ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  {builderSaving ? 'Saving...' : 'Generate & save PDF'}
-                </Button>
-              </div>
-            </div>
-            {builderStatus ? <div className="mt-3 text-sm text-emerald-700">{builderStatus}</div> : null}
-          </SheetHeader>
-          <div className="grid h-[calc(100dvh-4.75rem)] min-h-0 grid-cols-1 gap-0 overflow-hidden lg:grid-cols-[300px_minmax(0,1fr)_320px]">
-            <div className="border-border space-y-4 overflow-y-auto border-r px-5 py-4">
-              <div className="space-y-3">
-                <div>
-                  <div className="text-sm font-medium">Tools</div>
-                  <div className="text-muted-foreground text-xs">Drag one onto the page.</div>
+                <div className="font-medium">{selectedClient.name}</div>
+                <div className="text-muted-foreground">
+                  {selectedClient.email}
+                  {selectedClient.phone ? ` · ${selectedClient.phone}` : ''}
                 </div>
-                <div className="space-y-2">
-                  {builderToolSpecs.map((tool) => (
-                    <button
-                      key={tool.type}
-                      type="button"
-                      draggable
-                      onDragStart={(event) => startDraggingTool(tool.type, event)}
-                      onClick={() => setBuilderTool(tool.type)}
-                      className={`border-border bg-background flex w-full items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors ${
-                        builderTool === tool.type ? 'border-blue-500 bg-blue-50/60' : 'hover:bg-muted/30'
-                      }`}
+              </div>
+              <Badge variant="outline">Signer 1</Badge>
+            </div>
+          </div>
+        ) : (
+          <div className="text-muted-foreground border-border rounded-md border border-dashed p-3 text-sm">
+            Pick a client to fill signer 1.
+          </div>
+        )}
+
+        {selectedClient ? (
+          <div className="space-y-3">
+            {additionalRecipients.map((recipient, index) => (
+              <div key={index} className="border-border rounded-md border p-3">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="text-sm font-medium">Signer {index + 2}</div>
+                  <Button type="button" variant="ghost" size="icon-sm" onClick={() => removeRecipient(index)}>
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Remove</span>
+                  </Button>
+                </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="grid gap-2">
+                    <label
+                      className="text-foreground text-xs font-medium"
+                      htmlFor={`recipient-name-${index}`}
                     >
-                      <GripVertical className="text-muted-foreground h-4 w-4 shrink-0" />
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium">{tool.label}</div>
-                        <div className="text-muted-foreground text-xs">Drag to page</div>
-                      </div>
-                    </button>
-                  ))}
+                      Name
+                    </label>
+                    <Input
+                      id={`recipient-name-${index}`}
+                      name={`recipientName${index + 2}`}
+                      value={recipient.name}
+                      onChange={(event) => updateRecipient(index, { name: event.target.value })}
+                      placeholder="Jane Customer"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <label
+                      className="text-foreground text-xs font-medium"
+                      htmlFor={`recipient-email-${index}`}
+                    >
+                      Email
+                    </label>
+                    <Input
+                      id={`recipient-email-${index}`}
+                      name={`recipientEmail${index + 2}`}
+                      type="email"
+                      value={recipient.email}
+                      onChange={(event) => updateRecipient(index, { email: event.target.value })}
+                      placeholder="jane@example.com"
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <label
+                      className="text-foreground text-xs font-medium"
+                      htmlFor={`recipient-role-${index}`}
+                    >
+                      Role
+                    </label>
+                    <Input
+                      id={`recipient-role-${index}`}
+                      name={`recipientRole${index + 2}`}
+                      value={recipient.role}
+                      onChange={(event) => updateRecipient(index, { role: event.target.value })}
+                      placeholder={`Signer ${index + 2}`}
+                    />
+                  </div>
                 </div>
               </div>
+            ))}
+            <Button type="button" variant="outline" onClick={addRecipient}>
+              <Plus className="h-4 w-4" />
+              Add recipient
+            </Button>
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  )
+}
+
+function DocumentSourceCard({
+  mode,
+  setMode,
+  sourceMode,
+  setSourceMode,
+  name,
+  setName,
+  documentName,
+  setDocumentName,
+  file,
+  setFile,
+  documents,
+  filteredDocuments,
+  documentAssetId,
+  selectDocument,
+  savedDocumentQuery,
+  setSavedDocumentQuery,
+  selectedDocument,
+  setBuilderOpen,
+  filePreviewUrl,
+  fieldIds,
+  setDocumentAssetId,
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-[1rem]">
+          <FileSignature className="h-4 w-4" />
+          Document source
+        </CardTitle>
+        <CardDescription>Upload, build, or reuse.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid gap-3 md:grid-cols-3">
+          <button
+            className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
+              mode === 'pdf' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
+            }`}
+            type="button"
+            onClick={() => setMode('pdf')}
+          >
+            <div className="font-medium">PDF</div>
+            <div className="text-muted-foreground mt-1 text-xs">Upload or reuse.</div>
+          </button>
+          <button
+            className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
+              mode === 'pdf' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
+            }`}
+            type="button"
+            onClick={() => setBuilderOpen(true)}
+          >
+            <div className="font-medium">Builder</div>
+            <div className="text-muted-foreground mt-1 text-xs">Open page editor.</div>
+          </button>
+          <Button type="button" variant="outline" className="h-auto p-3" onClick={() => setBuilderOpen(true)}>
+            Edit fields
+          </Button>
+        </div>
+
+        {mode === 'pdf' ? (
+          <div className="space-y-3">
+            <Input
+              id={fieldIds.requestTitle}
+              name="requestTitle"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Proposal"
+            />
+
+            <div className="grid gap-2">
+              <label className="text-foreground text-sm font-medium" htmlFor={fieldIds.documentName}>
+                Document name
+              </label>
+              <Input
+                id={fieldIds.documentName}
+                name="documentName"
+                value={documentName}
+                onChange={(event) => setDocumentName(event.target.value)}
+                placeholder="Branded PDF"
+              />
             </div>
 
-            <div className="flex min-h-0 flex-col bg-slate-100/60">
-              <div className="border-border/70 flex items-center justify-between gap-3 border-b px-6 py-3">
-                <div>
-                  <div className="text-sm font-medium">Document editor</div>
-                  <div className="text-muted-foreground text-xs">Drop tools onto the paper.</div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-muted-foreground text-xs">
-                    {sourceMode === 'generated'
-                      ? 'Generated PDF'
-                      : sourceMode === 'reuse'
-                        ? 'Saved PDF'
-                        : 'Uploaded PDF'}
-                  </div>
-                  {builderPageCount > 1 ? (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setBuilderPage((current) => clamp(current - 1, 1, builderPageCount))}
-                        disabled={builderPage <= 1}
-                      >
-                        Prev
-                      </Button>
-                      <div className="text-muted-foreground text-xs">
-                        Page {builderPage} of {builderPageCount}
-                      </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setBuilderPage((current) => clamp(current + 1, 1, builderPageCount))}
-                        disabled={builderPage >= builderPageCount}
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="text-muted-foreground text-xs">Page 1</div>
-                  )}
-                </div>
-              </div>
-              <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-auto px-6 py-6">
-                <div className="relative flex h-full min-h-170 w-full max-w-225 items-center justify-center rounded-2xl bg-slate-200/70 p-6 shadow-inner">
-                  <div className="relative h-full w-full max-w-180 overflow-hidden rounded-sm bg-white ring-1 ring-slate-200">
-                    {builderPreviewSourceUrl ? (
-                      <PdfPreviewSurface
-                        sourceUrl={builderPreviewSourceUrl}
-                        pageNumber={builderPage}
-                        title={
-                          sourceMode === 'generated'
-                            ? 'Generated PDF preview'
-                            : sourceMode === 'reuse'
-                              ? selectedDocument?.title || 'Saved PDF preview'
-                              : 'Uploaded PDF preview'
-                        }
-                        emptyLabel={
-                          sourceMode === 'generated'
-                            ? 'Create a branded PDF to preview it here.'
-                            : sourceMode === 'reuse'
-                              ? 'Choose a saved PDF to reuse.'
-                              : 'Upload a PDF to preview it here.'
-                        }
-                        overlay={renderBuilderPageOverlay(builderPage)}
-                        maxRenderWidth={700}
-                        maxRenderHeight={900}
-                      />
-                    ) : (
-                      <div
-                        className="relative flex h-full w-full items-center justify-center bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)]"
-                        onDragOver={(event) => event.preventDefault()}
-                        onDrop={(event) => handleBuilderToolDrop(builderPage, event)}
-                      >
-                        <div className="absolute inset-x-0 top-0 h-14 border-b bg-slate-50/80" />
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(148,163,184,0.14)_1px,transparent_0)] bg-size-[16px_16px] opacity-60" />
-                        <div className="relative z-10 max-w-sm rounded-md border border-dashed border-slate-300 bg-white/90 px-6 py-5 text-center shadow-sm">
-                          <div className="text-sm font-medium text-slate-900">Drop a tool here</div>
-                          <div className="text-muted-foreground mt-1 text-xs">
-                            Build the PDF by dragging items from the left panel.
-                          </div>
-                        </div>
-                        {renderBuilderPageOverlay(builderPage)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="text-muted-foreground mt-3 px-1 text-xs leading-5">
-                  These markers are stored with the request as field coordinates for uploaded, reused, and
-                  generated PDFs.
-                </div>
-              </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <button
+                className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
+                  sourceMode === 'upload' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
+                }`}
+                type="button"
+                onClick={() => {
+                  setSourceMode('upload')
+                  setDocumentAssetId('')
+                }}
+              >
+                <div className="font-medium">Upload</div>
+                <div className="text-muted-foreground mt-1 text-xs">New file.</div>
+              </button>
+              <button
+                className={`border-border bg-background text-foreground rounded-md border p-3 text-left transition-colors ${
+                  sourceMode === 'reuse' ? 'ring-ring ring-2' : 'hover:bg-muted/50'
+                }`}
+                type="button"
+                onClick={() => setSourceMode('reuse')}
+              >
+                <div className="font-medium">Saved</div>
+                <div className="text-muted-foreground mt-1 text-xs">Stored file.</div>
+              </button>
             </div>
 
-            <div className="border-border overflow-y-auto border-l px-5 py-4">
-              <div className="space-y-4">
-                <div>
-                  <div className="text-sm font-medium">Field settings</div>
-                  <div className="text-muted-foreground text-xs">Edit the selected field here.</div>
-                </div>
-                {selectedBuilderField ? (
-                  <div className="space-y-3">
-                    <div className="rounded-md border bg-white p-3">
-                      <div className="mb-3 flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-sm font-medium">{selectedBuilderField.label}</div>
-                          <div className="text-muted-foreground text-xs">
-                            {selectedBuilderField.type} field
-                          </div>
-                        </div>
-                        <Badge variant="outline">{selectedBuilderField.page || 1}</Badge>
-                      </div>
-                      <div className="grid gap-3">
-                        <div className="grid gap-2">
-                          <label
-                            className="text-foreground text-xs font-medium"
-                            htmlFor={`selected-${selectedBuilderField.id}-label`}
-                          >
-                            Label
-                          </label>
-                          <Input
-                            id={`selected-${selectedBuilderField.id}-label`}
-                            name={`selected-${selectedBuilderField.id}-label`}
-                            value={selectedBuilderField.label}
-                            onChange={(event) =>
-                              updateBuilderField(selectedBuilderField.id, {
-                                label: event.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <label
-                            className="text-foreground text-xs font-medium"
-                            htmlFor={`selected-${selectedBuilderField.id}-type`}
-                          >
-                            Type
-                          </label>
-                          <select
-                            id={`selected-${selectedBuilderField.id}-type`}
-                            name={`selected-${selectedBuilderField.id}-type`}
-                            className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
-                            value={selectedBuilderField.type}
-                            onChange={(event) =>
-                              updateBuilderField(selectedBuilderField.id, {
-                                type: event.target.value,
-                                ...getBuilderToolSpec(event.target.value),
-                              })
-                            }
-                          >
-                            {builderToolSpecs.map((tool) => (
-                              <option key={tool.type} value={tool.type}>
-                                {tool.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="grid gap-2">
-                          <label
-                            className="text-foreground text-xs font-medium"
-                            htmlFor={`selected-${selectedBuilderField.id}-page`}
-                          >
-                            Page
-                          </label>
-                          <select
-                            id={`selected-${selectedBuilderField.id}-page`}
-                            name={`selected-${selectedBuilderField.id}-page`}
-                            className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
-                            value={selectedBuilderField.page || 1}
-                            onChange={(event) =>
-                              updateBuilderField(selectedBuilderField.id, {
-                                page: Number(event.target.value) || 1,
-                              })
-                            }
-                          >
-                            {Array.from({ length: Math.max(1, builderPageCount) }, (_, index) => (
-                              <option key={index + 1} value={index + 1}>
-                                Page {index + 1}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        {selectedBuilderField.type === 'signature' ||
-                        selectedBuilderField.type === 'initials' ? (
-                          <div className="grid gap-2">
-                            <label
-                              className="text-foreground text-xs font-medium"
-                              htmlFor={`selected-${selectedBuilderField.id}-role`}
-                            >
-                              Role
-                            </label>
-                            <Input
-                              id={`selected-${selectedBuilderField.id}-role`}
-                              name={`selected-${selectedBuilderField.id}-role`}
-                              value={selectedBuilderField.role}
-                              onChange={(event) =>
-                                updateBuilderField(selectedBuilderField.id, {
-                                  role: event.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        ) : selectedBuilderField.type !== 'checkbox' ? (
-                          <div className="grid gap-2">
-                            <label
-                              className="text-foreground text-xs font-medium"
-                              htmlFor={`selected-${selectedBuilderField.id}-default`}
-                            >
-                              Default value
-                            </label>
-                            <Input
-                              id={`selected-${selectedBuilderField.id}-default`}
-                              name={`selected-${selectedBuilderField.id}-default`}
-                              value={selectedBuilderField.defaultValue}
-                              onChange={(event) =>
-                                updateBuilderField(selectedBuilderField.id, {
-                                  defaultValue: event.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        ) : null}
-                        <label className="flex items-center gap-3 text-sm">
-                          <input
-                            id={`selected-${selectedBuilderField.id}-required`}
-                            name={`selected-${selectedBuilderField.id}-required`}
-                            type="checkbox"
-                            className="border-input text-primary h-4 w-4 rounded"
-                            checked={selectedBuilderField.required !== false}
-                            onChange={(event) =>
-                              updateBuilderField(selectedBuilderField.id, {
-                                required: event.target.checked,
-                              })
-                            }
-                          />
-                          <span>
-                            <span className="text-foreground block text-sm font-medium">Required</span>
-                            <span className="text-muted-foreground text-xs">
-                              Show the red star in the preview.
-                            </span>
-                          </span>
-                        </label>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeBuilderField(selectedBuilderField.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Remove field
-                        </Button>
-                      </div>
+            {sourceMode === 'upload' ? (
+              <div className="space-y-3">
+                <label
+                  className="border-border bg-muted/20 hover:bg-muted/40 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed px-4 py-6 text-center transition-colors"
+                  htmlFor={fieldIds.uploadFile}
+                >
+                  <UploadCloud className="text-muted-foreground h-7 w-7" />
+                  <span className="text-foreground mt-2 text-sm font-medium">
+                    {file ? file.name : 'Upload PDF'}
+                  </span>
+                  <span className="text-muted-foreground mt-1 text-xs">Include field tags.</span>
+                  <Input
+                    id={fieldIds.uploadFile}
+                    name="uploadFile"
+                    className="sr-only"
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    onChange={(event) => setFile(event.target.files?.[0] || null)}
+                  />
+                </label>
+                {filePreviewUrl ? (
+                  <div className="overflow-hidden rounded-md border">
+                    <PdfPreviewSurface
+                      sourceUrl={filePreviewUrl}
+                      title="Uploaded PDF preview"
+                      emptyLabel="Upload a PDF to preview it here."
+                    />
+                  </div>
+                ) : null}
+                <Button type="button" variant="outline" onClick={() => setBuilderOpen(true)}>
+                  Edit fields
+                </Button>
+              </div>
+            ) : (
+              <DocumentReuseForm
+                documents={documents}
+                filteredDocuments={filteredDocuments}
+                documentAssetId={documentAssetId}
+                selectDocument={selectDocument}
+                savedDocumentQuery={savedDocumentQuery}
+                setSavedDocumentQuery={setSavedDocumentQuery}
+                selectedDocument={selectedDocument}
+                setBuilderOpen={setBuilderOpen}
+                fieldIds={fieldIds}
+              />
+            )}
+            {sourceMode === 'upload' || sourceMode === 'reuse' ? (
+              <div className="border-border bg-muted/10 text-muted-foreground rounded-md border p-3 text-xs">
+                Open the PDF builder to place signatures and text fields directly on this document.
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  )
+}
+
+function DocumentReuseForm({
+  documents,
+  filteredDocuments,
+  documentAssetId,
+  selectDocument,
+  savedDocumentQuery,
+  setSavedDocumentQuery,
+  selectedDocument,
+  setBuilderOpen,
+  fieldIds,
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="grid gap-2">
+        <label className="text-foreground text-sm font-medium" htmlFor={fieldIds.savedDocumentSearch}>
+          Saved document
+        </label>
+        <Input
+          id={fieldIds.savedDocumentSearch}
+          name="savedDocumentSearch"
+          value={savedDocumentQuery}
+          onChange={(event) => setSavedDocumentQuery(event.target.value)}
+          placeholder="Search saved PDFs"
+          disabled={!documents.length}
+        />
+        <div className="text-muted-foreground text-xs">
+          Showing {filteredDocuments.length} of {documents.length} saved documents.
+        </div>
+        <div className="border-border bg-background max-h-72 overflow-auto rounded-md border">
+          {filteredDocuments.length ? (
+            filteredDocuments.map((document) => {
+              const isSelected = document.id === documentAssetId
+              return (
+                <button
+                  key={document.id}
+                  id={isSelected ? fieldIds.savedDocument : undefined}
+                  type="button"
+                  className={`border-border/70 block w-full border-b px-3 py-3 text-left last:border-b-0 ${
+                    isSelected ? 'bg-blue-50' : 'hover:bg-muted/40'
+                  }`}
+                  onClick={() => selectDocument(document.id)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium">{document.title}</div>
+                      <div className="text-muted-foreground truncate text-xs">{document.file_name}</div>
+                    </div>
+                    <div className="text-muted-foreground shrink-0 text-[10px] tracking-[0.18em] uppercase">
+                      {document.source_type || 'document'}
                     </div>
                   </div>
+                  <div className="text-muted-foreground mt-1 truncate text-[11px]">
+                    {document.client_name || 'Unknown client'}
+                    {document.request_title ? ` | ${document.request_title}` : ''}
+                  </div>
+                </button>
+              )
+            })
+          ) : (
+            <div className="text-muted-foreground px-3 py-4 text-sm">
+              No saved documents match this search.
+            </div>
+          )}
+        </div>
+      </div>
+      {selectedDocument ? (
+        <div className="overflow-hidden rounded-md border">
+          <PdfPreviewSurface
+            sourceUrl={`/api/documents/library/${selectedDocument.id}/file`}
+            title={selectedDocument.title}
+            emptyLabel="Choose a saved PDF to reuse."
+            maxRenderWidth={520}
+          />
+        </div>
+      ) : (
+        <div className="text-muted-foreground border-border rounded-md border border-dashed p-3 text-sm">
+          Choose a saved PDF to reuse.
+        </div>
+      )}
+      <Button type="button" variant="outline" onClick={() => setBuilderOpen(true)}>
+        Edit fields
+      </Button>
+    </div>
+  )
+}
+
+function SendOptionsCard({
+  sendEmail,
+  setSendEmail,
+  requireEmail2fa,
+  setRequireEmail2fa,
+  order,
+  setOrder,
+  legalDisclosureAccepted,
+  setLegalDisclosureAccepted,
+  submitting,
+  fieldIds,
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-[1rem]">Send</CardTitle>
+        <CardDescription>Delivery and order.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <label className="flex items-start gap-3">
+          <input
+            id={fieldIds.sendEmail}
+            name="sendEmail"
+            className="border-input text-primary mt-1 h-4 w-4 rounded"
+            type="checkbox"
+            checked={sendEmail}
+            onChange={(event) => setSendEmail(event.target.checked)}
+          />
+          <span>
+            <span className="text-foreground block text-sm font-medium">Email</span>
+            <span className="text-muted-foreground text-sm">Use Resend.</span>
+          </span>
+        </label>
+
+        <label className="flex items-start gap-3">
+          <input
+            id={fieldIds.require2fa}
+            name="requireEmail2fa"
+            className="border-input text-primary mt-1 h-4 w-4 rounded"
+            type="checkbox"
+            checked={requireEmail2fa}
+            onChange={(event) => setRequireEmail2fa(event.target.checked)}
+          />
+          <span>
+            <span className="text-foreground block text-sm font-medium">Email 2FA</span>
+            <span className="text-muted-foreground text-sm">Verify by code.</span>
+          </span>
+        </label>
+
+        <div className="grid gap-2">
+          <label className="text-foreground text-sm font-medium" htmlFor={fieldIds.order}>
+            Order
+          </label>
+          <select
+            id={fieldIds.order}
+            name="order"
+            className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
+            value={order}
+            onChange={(event) => setOrder(event.target.value)}
+          >
+            <option value="preserved">Preserved</option>
+            <option value="random">All at once</option>
+          </select>
+        </div>
+
+        <label className="border-border bg-muted/20 flex items-start gap-3 rounded-md border p-3">
+          <input
+            id={fieldIds.consent}
+            name="legalDisclosureAccepted"
+            className="border-input text-primary mt-1 h-4 w-4 rounded"
+            type="checkbox"
+            checked={legalDisclosureAccepted}
+            onChange={(event) => setLegalDisclosureAccepted(event.target.checked)}
+          />
+          <span>
+            <span className="text-foreground block text-sm font-medium">Consent</span>
+            <span className="text-muted-foreground text-sm">Store audit records.</span>
+          </span>
+        </label>
+
+        <Button type="submit" disabled={submitting} fullWidth>
+          {submitting ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          {submitting ? 'Sending...' : 'Send'}
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+function DocumentBuilderSheet({
+  builderOpen,
+  setBuilderOpen,
+  builderTool,
+  setBuilderTool,
+  builderPage,
+  setBuilderPage,
+  builderPageCount,
+  builderSaving,
+  builderStatus,
+  sourceMode,
+  selectedDocument,
+  selectedBuilderField,
+  builderPreviewSourceUrl,
+  renderBuilderPageOverlay,
+  startDraggingTool,
+  handleBuilderToolDrop,
+  saveCurrentPdf,
+  removeBuilderField,
+  updateBuilderField,
+  file,
+}) {
+  return (
+    <Sheet open={builderOpen} onOpenChange={setBuilderOpen}>
+      <SheetContent
+        side="bottom"
+        showCloseButton={false}
+        className="h-dvh w-screen max-w-none rounded-none border-t p-0"
+      >
+        <SheetHeader className="border-border/70 border-b px-6 pt-6 pb-4">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <SheetTitle>PDF builder</SheetTitle>
+              <SheetDescription>Add signature and text fields on the page.</SheetDescription>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={() => setBuilderOpen(false)}>
+                Close
+              </Button>
+              <Button
+                type="button"
+                variant="default"
+                onClick={saveCurrentPdf}
+                disabled={builderSaving || (!file && !selectedDocument && sourceMode !== 'generated')}
+              >
+                {builderSaving ? (
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
                 ) : (
-                  <div className="text-muted-foreground rounded-md border border-dashed p-4 text-sm">
-                    Select a field on the page to edit it here.
-                  </div>
+                  <Send className="h-4 w-4" />
                 )}
+                {builderSaving ? 'Saving...' : 'Generate & save PDF'}
+              </Button>
+            </div>
+          </div>
+          {builderStatus ? <div className="mt-3 text-sm text-emerald-700">{builderStatus}</div> : null}
+        </SheetHeader>
+        <div className="grid h-[calc(100dvh-4.75rem)] min-h-0 grid-cols-1 gap-0 overflow-hidden lg:grid-cols-[300px_minmax(0,1fr)_320px]">
+          <div className="border-border space-y-4 overflow-y-auto border-r px-5 py-4">
+            <div className="space-y-3">
+              <div>
+                <div className="text-sm font-medium">Tools</div>
+                <div className="text-muted-foreground text-xs">Drag one onto the page.</div>
+              </div>
+              <div className="space-y-2">
+                {builderToolSpecs.map((tool) => (
+                  <button
+                    key={tool.type}
+                    type="button"
+                    draggable
+                    onDragStart={(event) => startDraggingTool(tool.type, event)}
+                    onClick={() => setBuilderTool(tool.type)}
+                    className={`border-border bg-background flex w-full items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors ${
+                      builderTool === tool.type ? 'border-blue-500 bg-blue-50/60' : 'hover:bg-muted/30'
+                    }`}
+                  >
+                    <GripVertical className="text-muted-foreground h-4 w-4 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium">{tool.label}</div>
+                      <div className="text-muted-foreground text-xs">Drag to page</div>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
 
-      {showHistory ? (
-        <Card>
-          <CardHeader>
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <CardTitle className="text-[1rem]">Documents</CardTitle>
-                <CardDescription>Stored PDFs and reused files.</CardDescription>
+          <div className="flex min-h-0 flex-col bg-slate-100/60">
+            <BuilderEditorToolbar
+              sourceMode={sourceMode}
+              builderPageCount={builderPageCount}
+              builderPage={builderPage}
+              setBuilderPage={setBuilderPage}
+            />
+            <BuilderEditorCanvas
+              builderPreviewSourceUrl={builderPreviewSourceUrl}
+              builderPage={builderPage}
+              sourceMode={sourceMode}
+              selectedDocument={selectedDocument}
+              renderBuilderPageOverlay={renderBuilderPageOverlay}
+              handleBuilderToolDrop={handleBuilderToolDrop}
+            />
+            <div className="text-muted-foreground mt-3 px-1 text-xs leading-5">
+              These markers are stored with the request as field coordinates for uploaded, reused, and
+              generated PDFs.
+            </div>
+          </div>
+
+          <div className="border-border overflow-y-auto border-l px-5 py-4">
+            <BuilderFieldSettings
+              selectedBuilderField={selectedBuilderField}
+              builderPageCount={builderPageCount}
+              updateBuilderField={updateBuilderField}
+              removeBuilderField={removeBuilderField}
+            />
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+function BuilderEditorToolbar({ sourceMode, builderPageCount, builderPage, setBuilderPage }) {
+  const sourceLabel =
+    sourceMode === 'generated' ? 'Generated PDF' : sourceMode === 'reuse' ? 'Saved PDF' : 'Uploaded PDF'
+
+  return (
+    <div className="border-border/70 flex items-center justify-between gap-3 border-b px-6 py-3">
+      <div>
+        <div className="text-sm font-medium">Document editor</div>
+        <div className="text-muted-foreground text-xs">Drop tools onto the paper.</div>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="text-muted-foreground text-xs">{sourceLabel}</div>
+        {builderPageCount > 1 ? (
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setBuilderPage((current) => clamp(current - 1, 1, builderPageCount))}
+              disabled={builderPage <= 1}
+            >
+              Prev
+            </Button>
+            <div className="text-muted-foreground text-xs">
+              Page {builderPage} of {builderPageCount}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setBuilderPage((current) => clamp(current + 1, 1, builderPageCount))}
+              disabled={builderPage >= builderPageCount}
+            >
+              Next
+            </Button>
+          </div>
+        ) : (
+          <div className="text-muted-foreground text-xs">Page 1</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function BuilderEditorCanvas({
+  builderPreviewSourceUrl,
+  builderPage,
+  sourceMode,
+  selectedDocument,
+  renderBuilderPageOverlay,
+  handleBuilderToolDrop,
+}) {
+  const title =
+    sourceMode === 'generated'
+      ? 'Generated PDF preview'
+      : sourceMode === 'reuse'
+        ? selectedDocument?.title || 'Saved PDF preview'
+        : 'Uploaded PDF preview'
+
+  const emptyLabel =
+    sourceMode === 'generated'
+      ? 'Create a branded PDF to preview it here.'
+      : sourceMode === 'reuse'
+        ? 'Choose a saved PDF to reuse.'
+        : 'Upload a PDF to preview it here.'
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-auto px-6 py-6">
+      <div className="relative flex h-full min-h-170 w-full max-w-225 items-center justify-center rounded-2xl bg-slate-200/70 p-6 shadow-inner">
+        <div className="relative h-full w-full max-w-180 overflow-hidden rounded-sm bg-white ring-1 ring-slate-200">
+          {builderPreviewSourceUrl ? (
+            <PdfPreviewSurface
+              sourceUrl={builderPreviewSourceUrl}
+              pageNumber={builderPage}
+              title={title}
+              emptyLabel={emptyLabel}
+              overlay={renderBuilderPageOverlay(builderPage)}
+              maxRenderWidth={700}
+              maxRenderHeight={900}
+            />
+          ) : (
+            <div
+              className="relative flex h-full w-full items-center justify-center bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfe_100%)]"
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => handleBuilderToolDrop(builderPage, event)}
+            >
+              <div className="absolute inset-x-0 top-0 h-14 border-b bg-slate-50/80" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(148,163,184,0.14)_1px,transparent_0)] bg-size-[16px_16px] opacity-60" />
+              <div className="relative z-10 max-w-sm rounded-md border border-dashed border-slate-300 bg-white/90 px-6 py-5 text-center shadow-sm">
+                <div className="text-sm font-medium text-slate-900">Drop a tool here</div>
+                <div className="text-muted-foreground mt-1 text-xs">
+                  Build the PDF by dragging items from the left panel.
+                </div>
               </div>
-              <Button variant="outline" onClick={refreshDocumentData} disabled={refreshing}>
-                <RefreshCw className={refreshing ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
-                Refresh
-              </Button>
+              {renderBuilderPageOverlay(builderPage)}
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 xl:grid-cols-2">
-              {documents.map((document) => (
-                <Card key={document.id} className="overflow-hidden">
-                  <CardHeader className="border-b">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <CardTitle className="text-[1rem]">{document.title}</CardTitle>
-                          <CardDescription>{document.file_name}</CardDescription>
-                        </div>
-                        <Badge variant="outline">{document.source_type || 'document'}</Badge>
-                      </div>
-                      <div className="text-muted-foreground text-xs">
-                        {document.client_name || 'Unknown client'}
-                        {document.request_title ? ` · ${document.request_title}` : ''}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4 p-0">
-                    <div className="h-136 border-b">
-                      <PdfPreviewSurface
-                        sourceUrl={`/api/documents/library/${document.id}/file`}
-                        title={document.title}
-                        emptyLabel="No PDF preview available."
-                      />
-                    </div>
-                    <div className="flex flex-wrap gap-2 px-6 pb-6">
-                      <Button asChild variant="outline" size="sm">
-                        <Link
-                          href={`/api/documents/library/${document.id}/file`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Open file
-                        </Link>
-                      </Button>
-                      {document.request_id ? (
-                        <Button asChild variant="outline" size="sm">
-                          <Link href={`/documents/${document.request_id}`}>View request</Link>
-                        </Button>
-                      ) : null}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function BuilderFieldSettings({
+  selectedBuilderField,
+  builderPageCount,
+  updateBuilderField,
+  removeBuilderField,
+}) {
+  if (!selectedBuilderField) {
+    return (
+      <div className="text-muted-foreground rounded-md border border-dashed p-4 text-sm">
+        Select a field on the page to edit it here.
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <div className="text-sm font-medium">Field settings</div>
+        <div className="text-muted-foreground text-xs">Edit the selected field here.</div>
+      </div>
+      <div className="space-y-3">
+        <div className="rounded-md border bg-white p-3">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-medium">{selectedBuilderField.label}</div>
+              <div className="text-muted-foreground text-xs">{selectedBuilderField.type} field</div>
             </div>
-            {!documents.length ? (
-              <div className="text-muted-foreground border-border mt-4 rounded-md border p-4 text-sm">
-                No stored documents yet.{' '}
-                <Link href="/documents" className="underline">
-                  Send or save a PDF
-                </Link>{' '}
-                to populate this list.
+            <Badge variant="outline">{selectedBuilderField.page || 1}</Badge>
+          </div>
+          <div className="grid gap-3">
+            <div className="grid gap-2">
+              <label
+                className="text-foreground text-xs font-medium"
+                htmlFor={`selected-${selectedBuilderField.id}-label`}
+              >
+                Label
+              </label>
+              <Input
+                id={`selected-${selectedBuilderField.id}-label`}
+                name={`selected-${selectedBuilderField.id}-label`}
+                value={selectedBuilderField.label}
+                onChange={(event) =>
+                  updateBuilderField(selectedBuilderField.id, { label: event.target.value })
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <label
+                className="text-foreground text-xs font-medium"
+                htmlFor={`selected-${selectedBuilderField.id}-type`}
+              >
+                Type
+              </label>
+              <select
+                id={`selected-${selectedBuilderField.id}-type`}
+                name={`selected-${selectedBuilderField.id}-type`}
+                className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
+                value={selectedBuilderField.type}
+                onChange={(event) =>
+                  updateBuilderField(selectedBuilderField.id, {
+                    type: event.target.value,
+                    ...getBuilderToolSpec(event.target.value),
+                  })
+                }
+              >
+                {builderToolSpecs.map((tool) => (
+                  <option key={tool.type} value={tool.type}>
+                    {tool.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid gap-2">
+              <label
+                className="text-foreground text-xs font-medium"
+                htmlFor={`selected-${selectedBuilderField.id}-page`}
+              >
+                Page
+              </label>
+              <select
+                id={`selected-${selectedBuilderField.id}-page`}
+                name={`selected-${selectedBuilderField.id}-page`}
+                className="border-input bg-background text-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-10 rounded-sm border px-3 text-sm outline-none focus-visible:ring-[3px]"
+                value={selectedBuilderField.page || 1}
+                onChange={(event) =>
+                  updateBuilderField(selectedBuilderField.id, { page: Number(event.target.value) || 1 })
+                }
+              >
+                {Array.from({ length: Math.max(1, builderPageCount) }, (_, index) => (
+                  <option key={index + 1} value={index + 1}>
+                    Page {index + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {selectedBuilderField.type === 'signature' || selectedBuilderField.type === 'initials' ? (
+              <div className="grid gap-2">
+                <label
+                  className="text-foreground text-xs font-medium"
+                  htmlFor={`selected-${selectedBuilderField.id}-role`}
+                >
+                  Role
+                </label>
+                <Input
+                  id={`selected-${selectedBuilderField.id}-role`}
+                  name={`selected-${selectedBuilderField.id}-role`}
+                  value={selectedBuilderField.role}
+                  onChange={(event) =>
+                    updateBuilderField(selectedBuilderField.id, { role: event.target.value })
+                  }
+                />
+              </div>
+            ) : selectedBuilderField.type !== 'checkbox' ? (
+              <div className="grid gap-2">
+                <label
+                  className="text-foreground text-xs font-medium"
+                  htmlFor={`selected-${selectedBuilderField.id}-default`}
+                >
+                  Default value
+                </label>
+                <Input
+                  id={`selected-${selectedBuilderField.id}-default`}
+                  name={`selected-${selectedBuilderField.id}-default`}
+                  value={selectedBuilderField.defaultValue}
+                  onChange={(event) =>
+                    updateBuilderField(selectedBuilderField.id, { defaultValue: event.target.value })
+                  }
+                />
               </div>
             ) : null}
-          </CardContent>
-        </Card>
-      ) : null}
+            <label className="flex items-center gap-3 text-sm">
+              <input
+                id={`selected-${selectedBuilderField.id}-required`}
+                name={`selected-${selectedBuilderField.id}-required`}
+                type="checkbox"
+                className="border-input text-primary h-4 w-4 rounded"
+                checked={selectedBuilderField.required !== false}
+                onChange={(event) =>
+                  updateBuilderField(selectedBuilderField.id, { required: event.target.checked })
+                }
+              />
+              <span>
+                <span className="text-foreground block text-sm font-medium">Required</span>
+                <span className="text-muted-foreground text-xs">Show the red star in the preview.</span>
+              </span>
+            </label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => removeBuilderField(selectedBuilderField.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Remove field
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
+  )
+}
+
+function DocumentHistoryCard({ documents, refreshDocumentData, refreshing }) {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <CardTitle className="text-[1rem]">Documents</CardTitle>
+            <CardDescription>Stored PDFs and reused files.</CardDescription>
+          </div>
+          <Button variant="outline" onClick={refreshDocumentData} disabled={refreshing}>
+            <RefreshCw className={refreshing ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
+            Refresh
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-6 xl:grid-cols-2">
+          {documents.map((document) => (
+            <Card key={document.id} className="overflow-hidden">
+              <CardHeader className="border-b">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-[1rem]">{document.title}</CardTitle>
+                      <CardDescription>{document.file_name}</CardDescription>
+                    </div>
+                    <Badge variant="outline">{document.source_type || 'document'}</Badge>
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    {document.client_name || 'Unknown client'}
+                    {document.request_title ? ` · ${document.request_title}` : ''}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 p-0">
+                <div className="h-136 border-b">
+                  <PdfPreviewSurface
+                    sourceUrl={`/api/documents/library/${document.id}/file`}
+                    title={document.title}
+                    emptyLabel="No PDF preview available."
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2 px-6 pb-6">
+                  <Button asChild variant="outline" size="sm">
+                    <Link
+                      href={`/api/documents/library/${document.id}/file`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open file
+                    </Link>
+                  </Button>
+                  {document.request_id ? (
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/documents/${document.request_id}`}>View request</Link>
+                    </Button>
+                  ) : null}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        {!documents.length ? (
+          <div className="text-muted-foreground border-border mt-4 rounded-md border p-4 text-sm">
+            No stored documents yet.{' '}
+            <Link href="/documents" className="underline">
+              Send or save a PDF
+            </Link>{' '}
+            to populate this list.
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
   )
 }

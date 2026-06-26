@@ -21,6 +21,116 @@ function key() {
   return Math.random().toString(36).slice(2, 14)
 }
 
+function buildSiteDocument(siteId, slug, name, domain, category) {
+  return {
+    _type: 'site',
+    _id: siteId,
+    name,
+    shortName: name,
+    slug: { _type: 'slug', current: slug },
+    primaryDomain: domain,
+    category: category || 'general',
+    tier: 'landing',
+    seo: {
+      title: name,
+      description: `${name} — your trusted local experts in ${category || 'home services'} in Austin, Texas.`,
+    },
+    leadForm: {
+      title: 'Get a Free Estimate',
+      description: 'Tell us about your project and we will get back to you within 24 hours.',
+      ctaLabel: 'Request Estimate',
+    },
+  }
+}
+
+function buildHomepageSections(name, category) {
+  const heroBody = [
+    {
+      _key: key(),
+      _type: 'block',
+      style: 'normal',
+      children: [
+        {
+          _key: key(),
+          _type: 'span',
+          marks: [],
+          text: `Your trusted local ${category || 'home service'} experts. Serving the Austin metro area with quality you can count on.`,
+        },
+      ],
+      markDefs: [],
+    },
+  ]
+  const actions = [
+    {
+      _key: key(),
+      _type: 'pageAction',
+      label: 'Get a Free Estimate',
+      href: '#lead-form',
+      variant: 'default',
+    },
+    { _key: key(), _type: 'pageAction', label: 'Learn More', href: '#services', variant: 'outline' },
+  ]
+  return [
+    {
+      _key: key(),
+      _type: 'heroSection',
+      type: 'hero',
+      eyebrow: 'Austin, Texas',
+      title: name,
+      body: heroBody,
+      heroMediaMode: 'single',
+      actions,
+    },
+  ]
+}
+
+function buildHomepageDocument(siteId, name, category) {
+  return {
+    _type: 'page',
+    title: `${name} — Home`,
+    description: `Homepage for ${name}`,
+    slug: { _type: 'slug', current: '/' },
+    pageType: 'home',
+    templateLevel: 'landing',
+    site: { _type: 'reference', _ref: siteId },
+    sections: buildHomepageSections(name, category),
+  }
+}
+
+async function attachVercelDomainSafe(domain) {
+  try {
+    return await addDomainToVercel({ domain })
+  } catch (err) {
+    const alreadyInVercel = err?.status === 409 || /already in use/i.test(err?.message ?? '')
+    console.warn('[sites] Vercel domain attachment:', err.message)
+    return {
+      domain,
+      verified: alreadyInVercel,
+      verificationStatus: alreadyInVercel ? 'active' : 'pending',
+      dnsInstructions: [],
+      projectId: null,
+    }
+  }
+}
+
+function buildDomainRecord(domain, slug, vercelResult) {
+  return {
+    domain,
+    siteSlug: slug,
+    tier: 'landing',
+    redirectTarget: null,
+    projectId: vercelResult?.projectId ?? null,
+    verified: vercelResult?.verified ?? false,
+    verificationStatus: vercelResult?.verificationStatus ?? 'pending',
+    dnsInstructions: vercelResult?.dnsInstructions ?? [],
+    apexName: vercelResult?.apexName ?? null,
+  }
+}
+
+async function persistDomainRecord(domainRecord) {
+  return hasDomainDatabase() ? await upsertDomainRecordDb(domainRecord) : upsertDomainRecord(domainRecord)
+}
+
 export async function POST(request) {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) return unauthorized
@@ -48,114 +158,13 @@ export async function POST(request) {
 
   const siteId = `site-${slug}`
 
-  // 1. Create or replace the Sanity site document (no arrays, so no _key needed)
-  const site = await sanityWriteClient.createOrReplace({
-    _type: 'site',
-    _id: siteId,
-    name,
-    shortName: name,
-    slug: { _type: 'slug', current: slug },
-    primaryDomain: domain,
-    category: category || 'general',
-    tier: 'landing',
-    seo: {
-      title: name,
-      description: `${name} — your trusted local experts in ${category || 'home services'} in Austin, Texas.`,
-    },
-    leadForm: {
-      title: 'Get a Free Estimate',
-      description: 'Tell us about your project and we will get back to you within 24 hours.',
-      ctaLabel: 'Request Estimate',
-    },
-  })
-
-  // 2. Create the homepage — every array item needs a unique _key
-  const page = await sanityWriteClient.create({
-    _type: 'page',
-    title: `${name} — Home`,
-    description: `Homepage for ${name}`,
-    slug: { _type: 'slug', current: '/' },
-    pageType: 'home',
-    templateLevel: 'landing',
-    site: { _type: 'reference', _ref: siteId },
-    sections: [
-      {
-        _key: key(),
-        _type: 'heroSection',
-        type: 'hero',
-        eyebrow: 'Austin, Texas',
-        title: name,
-        body: [
-          {
-            _key: key(),
-            _type: 'block',
-            style: 'normal',
-            children: [
-              {
-                _key: key(),
-                _type: 'span',
-                marks: [],
-                text: `Your trusted local ${category || 'home service'} experts. Serving the Austin metro area with quality you can count on.`,
-              },
-            ],
-            markDefs: [],
-          },
-        ],
-        heroMediaMode: 'single',
-        actions: [
-          {
-            _key: key(),
-            _type: 'pageAction',
-            label: 'Get a Free Estimate',
-            href: '#lead-form',
-            variant: 'default',
-          },
-          {
-            _key: key(),
-            _type: 'pageAction',
-            label: 'Learn More',
-            href: '#services',
-            variant: 'outline',
-          },
-        ],
-      },
-    ],
-  })
-
-  // 3. Add domain to Vercel (non-fatal — domain may already be attached)
-  let vercelResult
-  let alreadyInVercel
-  try {
-    vercelResult = await addDomainToVercel({ domain })
-  } catch (err) {
-    // 409 = domain already exists in this or another project
-    alreadyInVercel = err?.status === 409 || /already in use/i.test(err?.message ?? '')
-    console.warn('[sites] Vercel domain attachment:', err.message)
-    vercelResult = {
-      domain,
-      verified: alreadyInVercel,
-      verificationStatus: alreadyInVercel ? 'active' : 'pending',
-      dnsInstructions: [],
-      projectId: null,
-    }
-  }
-
-  // 4. Persist the domain record locally
-  const domainRecord = {
-    domain,
-    siteSlug: slug,
-    tier: 'landing',
-    redirectTarget: null,
-    projectId: vercelResult?.projectId ?? null,
-    verified: vercelResult?.verified ?? false,
-    verificationStatus: vercelResult?.verificationStatus ?? 'pending',
-    dnsInstructions: vercelResult?.dnsInstructions ?? [],
-    apexName: vercelResult?.apexName ?? null,
-  }
-
-  const persisted = hasDomainDatabase()
-    ? await upsertDomainRecordDb(domainRecord)
-    : upsertDomainRecord(domainRecord)
+  const site = await sanityWriteClient.createOrReplace(
+    buildSiteDocument(siteId, slug, name, domain, category),
+  )
+  const page = await sanityWriteClient.create(buildHomepageDocument(siteId, name, category))
+  const vercelResult = await attachVercelDomainSafe(domain)
+  const domainRecord = buildDomainRecord(domain, slug, vercelResult)
+  const persisted = await persistDomainRecord(domainRecord)
 
   return NextResponse.json({ site, page, domain: persisted, vercel: vercelResult }, { status: 201 })
 }

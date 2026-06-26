@@ -63,18 +63,31 @@ function determineRecipientStatus(providerStatus, completedAt, declinedAt) {
   return 'sent'
 }
 
-function matchesRecipient(recipient, submitter) {
+function matchesByDocusealSlug(recipient, submitter) {
   const recipientSlug = recipient?.metadata?.docusealSubmitter?.slug
-  const recipientSubmitterId = recipient?.provider_submitter_id
   const submitterSlug = submitter?.slug || submitter?.embed_src?.split('/s/').pop() || null
-  const submitterId = submitter?.id || submitter?.uuid || submitter?.submitter_id || null
+  return !!(recipientSlug && submitterSlug && recipientSlug === submitterSlug)
+}
 
+function matchesBySubmitterId(recipient, submitter) {
+  const recipientSubmitterId = recipient?.provider_submitter_id
+  const submitterId = submitter?.id || submitter?.uuid || submitter?.submitter_id || null
+  return !!(recipientSubmitterId && submitterId && String(recipientSubmitterId) === String(submitterId))
+}
+
+function matchesByEmail(recipient, submitter) {
+  return !!(
+    recipient?.email &&
+    submitter?.email &&
+    String(recipient.email).toLowerCase() === String(submitter.email).toLowerCase()
+  )
+}
+
+function matchesRecipient(recipient, submitter) {
   return (
-    (recipientSlug && submitterSlug && recipientSlug === submitterSlug) ||
-    (recipientSubmitterId && submitterId && String(recipientSubmitterId) === String(submitterId)) ||
-    (recipient?.email &&
-      submitter?.email &&
-      String(recipient.email).toLowerCase() === String(submitter.email).toLowerCase())
+    matchesByDocusealSlug(recipient, submitter) ||
+    matchesBySubmitterId(recipient, submitter) ||
+    matchesByEmail(recipient, submitter)
   )
 }
 
@@ -101,6 +114,76 @@ async function loadProviderSubmission(request) {
   return response.json()
 }
 
+function inferWebhookStatus(body) {
+  if (body?.completedAt) return 'completed'
+  if (body?.declinedAt) return 'declined'
+  return body?.status || body?.providerStatus || null
+}
+
+async function resolveSyncStatuses(requestRecord, body, providerSubmission, recipientId) {
+  const providerStatus = cleanString(
+    providerSubmission?.status || inferWebhookStatus(body) || requestRecord.status,
+  ).toLowerCase()
+  const providerRecipients = normalizeSubmitters(providerSubmission)
+  const nextRequestStatus = determineRequestStatus(providerStatus)
+  const nextRecipientStatus = determineRecipientStatus(
+    providerStatus,
+    body?.completedAt || providerSubmission?.completed_at || null,
+    body?.declinedAt || providerSubmission?.declined_at || null,
+  )
+  const allRecipients = await listDocumentRecipients(requestRecord.id)
+  const overallStatus = determineOverallStatus(
+    allRecipients.map((item) => (item.id === recipientId ? nextRecipientStatus : item.status)),
+    providerStatus,
+  )
+
+  return { providerStatus, providerRecipients, nextRequestStatus, nextRecipientStatus, overallStatus }
+}
+
+async function updateRequestFromSync(
+  requestRecord,
+  body,
+  providerSubmission,
+  nextRequestStatus,
+  overallStatus,
+) {
+  const updatedRequest = await updateSignatureRequestStatus(requestRecord.id, {
+    status: nextRequestStatus,
+    sentAt: requestRecord.sent_at || body?.sentAt || null,
+    providerPayload: { providerSubmission, webhook: body },
+  })
+
+  if (overallStatus === nextRequestStatus) return updatedRequest
+
+  return updateSignatureRequestStatus(requestRecord.id, {
+    status: overallStatus,
+    sentAt: requestRecord.sent_at || body?.sentAt || null,
+    providerPayload: { providerSubmission, webhook: body },
+  })
+}
+
+async function updateRecipientFromProvider(recipient, providerRecipients, nextRecipientStatus, body) {
+  const matchedProviderRecipient = providerRecipients.find((item) => matchesRecipient(recipient, item)) || {}
+
+  return updateDocumentRecipientStatus(recipient.id, {
+    status: nextRecipientStatus,
+    sentAt: recipient.sent_at || body?.sentAt || null,
+    providerSubmitterId:
+      matchedProviderRecipient?.id ||
+      matchedProviderRecipient?.uuid ||
+      matchedProviderRecipient?.submitter_id ||
+      recipient.provider_submitter_id,
+    signingUrl:
+      matchedProviderRecipient?.embed_src || matchedProviderRecipient?.url || matchedProviderRecipient?.slug
+        ? `https://docuseal.com/s/${matchedProviderRecipient.slug}`
+        : recipient.signing_url,
+    metadata: {
+      docusealSubmitter: matchedProviderRecipient || recipient.metadata?.docusealSubmitter || {},
+      lastSync: new Date().toISOString(),
+    },
+  })
+}
+
 export async function POST(request, { params }) {
   if (!hasDocumentDatabase()) {
     return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })
@@ -123,71 +206,20 @@ export async function POST(request, { params }) {
   }
 
   const providerSubmission = await loadProviderSubmission(requestRecord)
-  const inferredStatus = body?.completedAt
-    ? 'completed'
-    : body?.declinedAt
-      ? 'declined'
-      : body?.status || body?.providerStatus || null
-  const providerStatus = cleanString(
-    providerSubmission?.status || inferredStatus || requestRecord.status,
-  ).toLowerCase()
-  const providerRecipients = normalizeSubmitters(providerSubmission)
-  const nextRequestStatus = determineRequestStatus(providerStatus)
-  const nextRecipientStatus = determineRecipientStatus(
-    providerStatus,
-    body?.completedAt || providerSubmission?.completed_at || null,
-    body?.declinedAt || providerSubmission?.declined_at || null,
+  const { providerStatus, providerRecipients, nextRequestStatus, nextRecipientStatus, overallStatus } =
+    await resolveSyncStatuses(requestRecord, body, providerSubmission, recipient?.id ?? null)
+
+  const finalRequest = await updateRequestFromSync(
+    requestRecord,
+    body,
+    providerSubmission,
+    nextRequestStatus,
+    overallStatus,
   )
 
-  const updatedRequest = await updateSignatureRequestStatus(requestRecord.id, {
-    status: nextRequestStatus,
-    sentAt: requestRecord.sent_at || body?.sentAt || null,
-    providerPayload: {
-      providerSubmission,
-      webhook: body,
-    },
-  })
-
-  const allRecipients = await listDocumentRecipients(requestRecord.id)
-  const overallStatus = determineOverallStatus(
-    allRecipients.map((item) => (item.id === recipient?.id ? nextRecipientStatus : item.status)),
-    providerStatus,
-  )
-
-  const finalRequest =
-    overallStatus === nextRequestStatus
-      ? updatedRequest
-      : await updateSignatureRequestStatus(requestRecord.id, {
-          status: overallStatus,
-          sentAt: requestRecord.sent_at || body?.sentAt || null,
-          providerPayload: {
-            providerSubmission,
-            webhook: body,
-          },
-        })
-
-  let updatedRecipient = recipient
-  if (recipient) {
-    const matchedProviderRecipient =
-      providerRecipients.find((item) => matchesRecipient(recipient, item)) || {}
-    updatedRecipient = await updateDocumentRecipientStatus(recipient.id, {
-      status: nextRecipientStatus,
-      sentAt: recipient.sent_at || body?.sentAt || null,
-      providerSubmitterId:
-        matchedProviderRecipient?.id ||
-        matchedProviderRecipient?.uuid ||
-        matchedProviderRecipient?.submitter_id ||
-        recipient.provider_submitter_id,
-      signingUrl:
-        matchedProviderRecipient?.embed_src || matchedProviderRecipient?.url || matchedProviderRecipient?.slug
-          ? `https://docuseal.com/s/${matchedProviderRecipient.slug}`
-          : recipient.signing_url,
-      metadata: {
-        docusealSubmitter: matchedProviderRecipient || recipient.metadata?.docusealSubmitter || {},
-        lastSync: new Date().toISOString(),
-      },
-    })
-  }
+  const updatedRecipient = recipient
+    ? await updateRecipientFromProvider(recipient, providerRecipients, nextRecipientStatus, body)
+    : null
 
   await createDocumentAuditEvent({
     requestId: requestRecord.id,

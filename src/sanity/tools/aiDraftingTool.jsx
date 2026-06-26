@@ -53,6 +53,14 @@ function Field({ label, children, hint }) {
   )
 }
 
+function getGeminiPluginApiKey() {
+  return (
+    process.env.SANITY_STUDIO_GEMINI_PLUGIN_API_KEY ||
+    process.env.NEXT_PUBLIC_GEMINI_PLUGIN_API_KEY ||
+    undefined
+  )
+}
+
 function buildSuggestedSlug(contentType, title) {
   return normalizeDraftSlugForContentType(contentType, slugifyDraftValue(title))
 }
@@ -80,10 +88,7 @@ export function AiDraftingTool() {
     sources: '',
   })
   const geminiApiEndpoint = `${studioPreviewOrigin}/api/gemini/generate-image`
-  const geminiPluginApiKey =
-    process.env.SANITY_STUDIO_GEMINI_PLUGIN_API_KEY ||
-    process.env.NEXT_PUBLIC_GEMINI_PLUGIN_API_KEY ||
-    undefined
+  const geminiPluginApiKey = getGeminiPluginApiKey()
 
   React.useEffect(() => {
     let active = true
@@ -157,13 +162,14 @@ export function AiDraftingTool() {
   }, [client])
 
   const selectedSite = sites.find((site) => site._id === form.siteId)
+
+  const assetQuery = assetSearch.trim().toLowerCase()
   const filteredAssets = assets.filter((asset) => {
-    const query = assetSearch.trim().toLowerCase()
-    if (!query) return true
+    if (!assetQuery) return true
 
     return String(asset?.originalFilename || '')
       .toLowerCase()
-      .includes(query)
+      .includes(assetQuery)
   })
 
   React.useEffect(() => {
@@ -193,6 +199,55 @@ export function AiDraftingTool() {
     }))
   }
 
+  async function runSanityAgentAction(draftId, schemaType) {
+    if (!SANITY_AGENT_SCHEMA_ID || !client?.agent?.action?.generate) return null
+    try {
+      await client.agent.action.generate({
+        schemaId: SANITY_AGENT_SCHEMA_ID,
+        documentId: draftId,
+        instruction: buildSanityAgentPublishingInstruction({
+          contentType: schemaType,
+          title: form.title,
+          siteName: selectedSite?.name || '',
+        }),
+        instructionParams: {
+          title: { type: 'constant', value: form.title },
+          siteName: { type: 'constant', value: selectedSite?.name || '' },
+          brief: { type: 'constant', value: form.brief },
+          sources: { type: 'constant', value: trimDraftLines(form.sources).join('\n') },
+          neighboringTitles: {
+            type: 'groq',
+            query: '*[_type == $schemaType && site._ref == $siteId][0...12].title',
+            params: { schemaType, siteId: form.siteId },
+          },
+        },
+      })
+      return 'sanity-agent'
+    } catch {
+      return null
+    }
+  }
+
+  function buildAgentWarning(mode) {
+    if (mode === 'sanity-agent') return null
+    if (!SANITY_AGENT_SCHEMA_ID)
+      return 'SANITY_AGENT_SCHEMA_ID is missing, so the tool created a structured starter draft instead of running Sanity Agent.'
+    return 'Sanity Agent actions are not available in this Studio session.'
+  }
+
+  async function syncGuideHeroIfNeeded(draftId, normalizedSlug) {
+    if (normalizedSlug.startsWith('guides/')) {
+      const guideDraft = await client.fetch(
+        '*[_id == $documentId][0]{title,description,"slug":slug.current,sections[]{type,heroImage,heroAsset}}',
+        { documentId: draftId },
+      )
+      await syncGuideHeroToGuideGridItems(client, {
+        ...guideDraft,
+        site: { _ref: form.siteId },
+      })
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
     setSubmitting(true)
@@ -201,76 +256,16 @@ export function AiDraftingTool() {
 
     try {
       const requestedSlug = normalizeDraftSlugForContentType(form.contentType, form.slug || form.title)
-      const input = {
-        ...form,
-        slug: requestedSlug,
-        siteName: selectedSite?.name || '',
-      }
+      const input = { ...form, slug: requestedSlug, siteName: selectedSite?.name || '' }
       const { baseDocumentId, draftId, normalizedSlug, schemaType, skeleton } = buildDraftSkeleton(input)
 
       await client.createOrReplace(skeleton)
 
-      let warning = null
-      let mode = 'fallback'
+      const agentResult = await runSanityAgentAction(draftId, schemaType)
+      const mode = agentResult || 'fallback'
+      const warning = agentResult ? null : buildAgentWarning(mode)
 
-      if (SANITY_AGENT_SCHEMA_ID && client?.agent?.action?.generate) {
-        try {
-          await client.agent.action.generate({
-            schemaId: SANITY_AGENT_SCHEMA_ID,
-            documentId: draftId,
-            instruction: buildSanityAgentPublishingInstruction({
-              contentType: schemaType,
-              title: form.title,
-              siteName: selectedSite?.name || '',
-            }),
-            instructionParams: {
-              title: {
-                type: 'constant',
-                value: form.title,
-              },
-              siteName: {
-                type: 'constant',
-                value: selectedSite?.name || '',
-              },
-              brief: {
-                type: 'constant',
-                value: form.brief,
-              },
-              sources: {
-                type: 'constant',
-                value: trimDraftLines(form.sources).join('\n'),
-              },
-              neighboringTitles: {
-                type: 'groq',
-                query: '*[_type == $schemaType && site._ref == $siteId][0...12].title',
-                params: {
-                  schemaType,
-                  siteId: form.siteId,
-                },
-              },
-            },
-          })
-          mode = 'sanity-agent'
-        } catch (nextError) {
-          warning = nextError instanceof Error ? nextError.message : 'Sanity Agent draft generation failed.'
-        }
-      } else if (!SANITY_AGENT_SCHEMA_ID) {
-        warning =
-          'SANITY_AGENT_SCHEMA_ID is missing, so the tool created a structured starter draft instead of running Sanity Agent.'
-      } else {
-        warning = 'Sanity Agent actions are not available in this Studio session.'
-      }
-
-      if (schemaType === 'post' && normalizedSlug.startsWith('guides/')) {
-        const guideDraft = await client.fetch(
-          '*[_id == $documentId][0]{title,description,"slug":slug.current,sections[]{type,heroImage,heroAsset}}',
-          { documentId: draftId },
-        )
-        await syncGuideHeroToGuideGridItems(client, {
-          ...guideDraft,
-          site: { _ref: form.siteId },
-        })
-      }
+      await syncGuideHeroIfNeeded(draftId, normalizedSlug)
 
       setResult({
         ok: true,

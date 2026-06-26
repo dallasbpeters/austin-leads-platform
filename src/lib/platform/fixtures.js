@@ -405,8 +405,9 @@ export const pages = [
       {
         type: 'story',
         eyebrow: 'Our approach',
-        title: 'Fix what is broken first. Then talk about upgrades.',
-        body: 'Too many companies try to sell solar and roofing as one big package deal. That is not how homes work. If your roof has storm damage, handle that first. If your HVAC is bleeding money, address that. Solar is a smart move for a lot of Texas homes, but only when the timing is right and the roof underneath is solid.',
+        title: 'Start with what your house actually needs.',
+        body: 'Tree branches, water heaters, and shock electric bills. That is where most people start. We help you sort out the rest.',
+        subtitle: 'One step at a time.',
       },
       {
         type: 'calculator',

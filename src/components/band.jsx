@@ -21,6 +21,127 @@ const defaultBandColors = [
   'var(--color-secondary-300)',
 ]
 
+const bands = [
+  { opacity: 0.88 },
+  { opacity: 0.72 },
+  { opacity: 0.56 },
+  { opacity: 0.38 },
+  { opacity: 0.18 },
+  { opacity: 0.06 },
+]
+
+function BandWrapper({ containerRef, className, rotate, style, children, onMouseMove, onMouseLeave }) {
+  return (
+    <div
+      ref={containerRef}
+      className={className}
+      style={{
+        position: 'relative',
+        width: '100%',
+        transform: rotate ? 'rotate(180deg)' : undefined,
+        ...style,
+      }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </div>
+  )
+}
+
+function BandRow({ band, index, bandHeight, bg, customProperties, transitionValue }) {
+  return (
+    <motion.div
+      key={index}
+      style={{
+        position: 'relative',
+        width: '100%',
+        background: bg,
+        height: bandHeight,
+        ...customProperties,
+        ...(transitionValue ? { transition: transitionValue } : {}),
+      }}
+    >
+      <span
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'block',
+          background: band.tint,
+          opacity: band.opacity,
+        }}
+      />
+    </motion.div>
+  )
+}
+
+function SingleColorBand({ containerRef, palette, className, rotate, style, tint, bandHeight }) {
+  const gradientBg = palette.length === 1 ? palette[0] : 'transparent'
+  const bandData = bands.map((band) => ({ ...band, tint }))
+
+  return (
+    <BandWrapper containerRef={containerRef} className={className} rotate={rotate} style={style}>
+      {bandData.map((band, index) => (
+        <BandRow key={index} band={band} index={index} bandHeight={bandHeight} bg={gradientBg} />
+      ))}
+    </BandWrapper>
+  )
+}
+
+function MultiColorBand({
+  containerRef,
+  palette,
+  className,
+  rotate,
+  style,
+  tint,
+  bandHeight,
+  mouseOffset,
+  autoAnimate,
+  time,
+  speed,
+  amplitude,
+  onMouseMove,
+  onMouseLeave,
+}) {
+  const numStops = palette.length
+  const step = 100 / (numStops - 1)
+  const autoOffset = autoAnimate ? Math.sin(time * speed) * amplitude : 0
+  const stopPositions = palette.map((_, index) =>
+    Math.max(0, Math.min(100, index * step + mouseOffset + autoOffset)),
+  )
+  const customProperties = stopPositions.reduce((acc, position, index) => {
+    acc[`--stop${index}`] = `${position}%`
+    return acc
+  }, {})
+  const transitionValue = stopPositions.map((_, index) => `--stop${index} 1s ease-out`).join(', ')
+  const gradientBg = `linear-gradient(90deg, ${palette.map((color, index) => `${color} var(--stop${index})`).join(', ')})`
+  const bandData = bands.map((band) => ({ ...band, tint }))
+
+  return (
+    <BandWrapper
+      containerRef={containerRef}
+      className={className}
+      rotate={rotate}
+      style={style}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      {bandData.map((band, index) => (
+        <BandRow
+          key={index}
+          band={band}
+          index={index}
+          bandHeight={bandHeight}
+          bg={gradientBg}
+          customProperties={customProperties}
+          transitionValue={transitionValue}
+        />
+      ))}
+    </BandWrapper>
+  )
+}
+
 export default function Band({
   colors = defaultBandColors,
   tint = 'var(--color-secondary-950)',
@@ -36,7 +157,7 @@ export default function Band({
   className = '',
   style,
 }) {
-  const ref = useRef(null)
+  const containerRef = useRef(null)
   const rectRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)
   const [time, setTime] = useState(0)
@@ -53,20 +174,11 @@ export default function Band({
   })
 
   const { scrollYProgress } = useScroll({
-    target: isMounted ? ref : undefined,
+    target: isMounted ? containerRef : undefined,
     offset: ['start end', 'end start'],
   })
 
-  const bands = [
-    { opacity: 0.88 },
-    { opacity: 0.72 },
-    { opacity: 0.56 },
-    { opacity: 0.38 },
-    { opacity: 0.18 },
-    { opacity: 0.06 },
-  ]
-
-  const height = useTransform(
+  const bandHeight = useTransform(
     scrollYProgress,
     [scrollStart, scrollEnd],
     reverse ? [minHeight, maxHeight] : [maxHeight, minHeight],
@@ -80,7 +192,6 @@ export default function Band({
     if (!rectRef.current) {
       rectRef.current = event.currentTarget.getBoundingClientRect()
     }
-
     const x = ((event.clientX - rectRef.current.left) / rectRef.current.width) * 100
     offsetSpring.set((x - 50) * 0.5)
   }
@@ -90,99 +201,37 @@ export default function Band({
   }
 
   const palette = colors.length ? colors : defaultBandColors
-  const numStops = palette.length
 
-  if (numStops < 2) {
-    const gradientBg = numStops === 1 ? palette[0] : 'transparent'
-
+  if (palette.length < 2) {
     return (
-      <div
-        ref={ref}
+      <SingleColorBand
+        containerRef={containerRef}
+        palette={palette}
         className={className}
-        style={{
-          position: 'relative',
-          width: '100%',
-          transform: rotate ? 'rotate(180deg)' : undefined,
-          ...style,
-        }}
-      >
-        {bands.map((band, index) => (
-          <motion.div
-            key={index}
-            style={{
-              position: 'relative',
-              width: '100%',
-              background: gradientBg,
-              height,
-            }}
-          >
-            <span
-              style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'block',
-                background: tint,
-                opacity: band.opacity,
-              }}
-            />
-          </motion.div>
-        ))}
-      </div>
+        rotate={rotate}
+        style={style}
+        tint={tint}
+        bandHeight={bandHeight}
+      />
     )
   }
 
-  const step = 100 / (numStops - 1)
-  const autoOffset = autoAnimate ? Math.sin(time * speed) * amplitude : 0
-
-  const stopPositions = palette.map((_, index) =>
-    Math.max(0, Math.min(100, index * step + mouseOffset + autoOffset)),
-  )
-
-  const customProperties = stopPositions.reduce((accumulator, position, index) => {
-    accumulator[`--stop${index}`] = `${position}%`
-    return accumulator
-  }, {})
-
-  const transitionValue = stopPositions.map((_, index) => `--stop${index} 1s ease-out`).join(', ')
-
-  const gradientBg = `linear-gradient(90deg, ${palette.map((color, index) => `${color} var(--stop${index})`).join(', ')})`
-
   return (
-    <div
-      ref={ref}
+    <MultiColorBand
+      containerRef={containerRef}
+      palette={palette}
       className={className}
-      style={{
-        position: 'relative',
-        width: '100%',
-        transform: rotate ? 'rotate(180deg)' : undefined,
-        ...style,
-      }}
+      rotate={rotate}
+      style={style}
+      tint={tint}
+      bandHeight={bandHeight}
+      mouseOffset={mouseOffset}
+      autoAnimate={autoAnimate}
+      time={time}
+      speed={speed}
+      amplitude={amplitude}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-    >
-      {bands.map((band, index) => (
-        <motion.div
-          key={index}
-          style={{
-            position: 'relative',
-            width: '100%',
-            background: gradientBg,
-            height,
-            ...customProperties,
-            transition: transitionValue,
-          }}
-        >
-          <span
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'block',
-              background: tint,
-              opacity: band.opacity,
-            }}
-          />
-        </motion.div>
-      ))}
-    </div>
+    />
   )
 }

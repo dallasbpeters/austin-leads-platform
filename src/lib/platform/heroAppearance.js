@@ -109,42 +109,65 @@ export function parseRgbString(value) {
   }
 }
 
-export function getHeroOverlayAppearance(section) {
-  const defaultOverlayStyle = {
+/* ---- overlay builders ---- */
+
+function numberOrDefault(value, defaultVal) {
+  return typeof value === 'number' ? value : defaultVal
+}
+
+function firstString(...candidates) {
+  for (const c of candidates) {
+    if (c) return c
+  }
+  return undefined
+}
+
+function buildDefaultOverlayStyle() {
+  return {
     backgroundImage: `linear-gradient(${DEFAULT_HERO_OVERLAY_DIRECTION}, ${hexToRgba(DEFAULT_HERO_OVERLAY_COLOR, DEFAULT_HERO_OVERLAY_START_OPACITY)}, ${hexToRgba(DEFAULT_HERO_OVERLAY_COLOR, DEFAULT_HERO_OVERLAY_END_OPACITY)})`,
   }
+}
 
-  if (typeof section?.heroGradient === 'string' && section.heroGradient.trim()) {
-    return {
-      overlayOpacity:
-        typeof section?.heroOverlayOpacity === 'number'
-          ? section.heroOverlayOpacity
-          : DEFAULT_HERO_OVERLAY_END_OPACITY,
-      overlayStartColor:
-        section?.heroOverlayStartColor || section?.heroOverlayColor || DEFAULT_HERO_OVERLAY_COLOR,
-      overlayEndColor:
-        section?.heroOverlayEndColor ||
-        section?.heroOverlayStartColor ||
-        section?.heroOverlayColor ||
-        DEFAULT_HERO_OVERLAY_COLOR,
-      overlayDirection: normalizeHeroOverlayDirection(
-        section?.heroOverlayDirection || DEFAULT_HERO_OVERLAY_DIRECTION,
-      ),
-      overlayStartOpacity:
-        typeof section?.heroOverlayStartOpacity === 'number'
-          ? section.heroOverlayStartOpacity
-          : DEFAULT_HERO_OVERLAY_START_OPACITY,
-      overlayEndOpacity:
-        typeof section?.heroOverlayEndOpacity === 'number'
-          ? section.heroOverlayEndOpacity
-          : DEFAULT_HERO_OVERLAY_END_OPACITY,
-      overlayStyle: {
-        backgroundImage: section.heroGradient.trim(),
-      },
-    }
+function buildOverlayStyle(direction, start, end) {
+  return {
+    backgroundImage: `linear-gradient(${direction}, ${start}, ${end})`,
   }
+}
 
-  const hasExplicitOverlay =
+function hasGradientOverride(section) {
+  return typeof section?.heroGradient === 'string' && section.heroGradient.trim()
+}
+
+function buildGradientOverlayAppearance(section) {
+  return {
+    overlayOpacity: numberOrDefault(section?.heroOverlayOpacity, DEFAULT_HERO_OVERLAY_END_OPACITY),
+    overlayStartColor: firstString(
+      section?.heroOverlayStartColor,
+      section?.heroOverlayColor,
+      DEFAULT_HERO_OVERLAY_COLOR,
+    ),
+    overlayEndColor: firstString(
+      section?.heroOverlayEndColor,
+      section?.heroOverlayStartColor,
+      section?.heroOverlayColor,
+      DEFAULT_HERO_OVERLAY_COLOR,
+    ),
+    overlayDirection: normalizeHeroOverlayDirection(
+      firstString(section?.heroOverlayDirection, DEFAULT_HERO_OVERLAY_DIRECTION),
+    ),
+    overlayStartOpacity: numberOrDefault(
+      section?.heroOverlayStartOpacity,
+      DEFAULT_HERO_OVERLAY_START_OPACITY,
+    ),
+    overlayEndOpacity: numberOrDefault(section?.heroOverlayEndOpacity, DEFAULT_HERO_OVERLAY_END_OPACITY),
+    overlayStyle: {
+      backgroundImage: section.heroGradient.trim(),
+    },
+  }
+}
+
+function hasExplicitOverlaySettings(section) {
+  return (
     typeof section?.heroOverlayOpacity === 'number' ||
     typeof section?.heroOverlayStartOpacity === 'number' ||
     typeof section?.heroOverlayEndOpacity === 'number' ||
@@ -152,30 +175,31 @@ export function getHeroOverlayAppearance(section) {
     typeof section?.heroOverlayStartColor === 'string' ||
     typeof section?.heroOverlayEndColor === 'string' ||
     typeof section?.heroOverlayDirection === 'string'
-  const overlayOpacity =
-    typeof section?.heroOverlayOpacity === 'number'
-      ? section.heroOverlayOpacity
-      : DEFAULT_HERO_OVERLAY_END_OPACITY
-  const overlayStartColor =
-    section?.heroOverlayStartColor || section?.heroOverlayColor || DEFAULT_HERO_OVERLAY_COLOR
-  const overlayEndColor = section?.heroOverlayEndColor || overlayStartColor
+  )
+}
+
+function buildGenericOverlayAppearance(section) {
+  const explicit = hasExplicitOverlaySettings(section)
+  const overlayOpacity = numberOrDefault(section?.heroOverlayOpacity, DEFAULT_HERO_OVERLAY_END_OPACITY)
+  const overlayStartColor = firstString(
+    section?.heroOverlayStartColor,
+    section?.heroOverlayColor,
+    DEFAULT_HERO_OVERLAY_COLOR,
+  )
+  const overlayEndColor = firstString(section?.heroOverlayEndColor, overlayStartColor)
   const overlayDirection = normalizeHeroOverlayDirection(
-    section?.heroOverlayDirection || DEFAULT_HERO_OVERLAY_DIRECTION,
+    firstString(section?.heroOverlayDirection, DEFAULT_HERO_OVERLAY_DIRECTION),
   )
   const hasExplicitStopOpacity =
     typeof section?.heroOverlayStartOpacity === 'number' || typeof section?.heroOverlayEndOpacity === 'number'
-  const overlayStartOpacity =
-    typeof section?.heroOverlayStartOpacity === 'number'
-      ? section.heroOverlayStartOpacity
-      : hasExplicitOverlay
-        ? overlayOpacity
-        : DEFAULT_HERO_OVERLAY_START_OPACITY
-  const overlayEndOpacity =
-    typeof section?.heroOverlayEndOpacity === 'number'
-      ? section.heroOverlayEndOpacity
-      : hasExplicitStopOpacity
-        ? overlayOpacity
-        : DEFAULT_HERO_OVERLAY_END_OPACITY
+  const overlayStartOpacity = numberOrDefault(
+    section?.heroOverlayStartOpacity,
+    explicit ? overlayOpacity : DEFAULT_HERO_OVERLAY_START_OPACITY,
+  )
+  const overlayEndOpacity = numberOrDefault(
+    section?.heroOverlayEndOpacity,
+    hasExplicitStopOpacity ? overlayOpacity : DEFAULT_HERO_OVERLAY_END_OPACITY,
+  )
   const overlayStart = hexToRgba(overlayStartColor, overlayStartOpacity)
   const overlayEnd = hexToRgba(overlayEndColor, overlayEndOpacity)
 
@@ -188,11 +212,17 @@ export function getHeroOverlayAppearance(section) {
     overlayEndOpacity,
     overlayStyle:
       overlayStart && overlayEnd
-        ? {
-            backgroundImage: `linear-gradient(${overlayDirection}, ${overlayStart}, ${overlayEnd})`,
-          }
-        : defaultOverlayStyle,
+        ? buildOverlayStyle(overlayDirection, overlayStart, overlayEnd)
+        : buildDefaultOverlayStyle(),
   }
+}
+
+export function getHeroOverlayAppearance(section) {
+  if (hasGradientOverride(section)) {
+    return buildGradientOverlayAppearance(section)
+  }
+
+  return buildGenericOverlayAppearance(section)
 }
 
 export function buildHeroOverlayGradientValue(section) {

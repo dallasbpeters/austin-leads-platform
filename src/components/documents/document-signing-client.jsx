@@ -23,6 +23,286 @@ function clearCanvas(canvas) {
   context.clearRect(0, 0, canvas.width, canvas.height)
 }
 
+function RequestMetaCard({ client, recipient, request }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-[1rem]">Request</CardTitle>
+        <CardDescription>Stored record.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm leading-6">
+        <div>
+          <div className="text-muted-foreground">Client</div>
+          <div className="font-medium">{client?.name || request.client_name || 'Unknown client'}</div>
+          <div className="text-muted-foreground">{client?.email || request.client_email || 'No email'}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Recipient</div>
+          <div className="font-medium">{recipient.name || recipient.email}</div>
+          <div className="text-muted-foreground">
+            {recipient.email}
+            {recipient.role ? ` · ${recipient.role}` : ''}
+          </div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Sent</div>
+          <div className="font-medium">{formatDate(request.sent_at || request.created_at)}</div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function DocumentLinkCard({ requestLink, linkCopied, copyLink, request }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-[1rem]">Link</CardTitle>
+        <CardDescription>Use this page later if needed.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="bg-muted/40 overflow-x-auto rounded-md border p-3 text-xs break-all">
+          {requestLink || 'Copy after the page loads.'}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={copyLink}>
+            <Copy className="h-4 w-4" />
+            {linkCopied ? 'Copied' : 'Copy link'}
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/documents/${request.id}`}>Open request</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function SigningHeader({ request, client, recipient, completed }) {
+  return (
+    <>
+      <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Sign document</p>
+          <h1 className="text-foreground mt-2 text-3xl tracking-normal">{request.title}</h1>
+          <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-6">
+            Review the document, add your signature, and complete it here without leaving the app.
+          </p>
+          <p className="text-muted-foreground mt-3 text-sm">
+            For {client?.name || request.client_name || 'the client'}
+            {recipient.name || recipient.email ? ` · Recipient ${recipient.name || recipient.email}` : ''}
+          </p>
+        </div>
+        <Badge variant={completed ? 'default' : 'outline'}>{completed ? 'Completed' : 'Ready to sign'}</Badge>
+      </div>
+      {completed ? (
+        <Alert className="mb-6 border-emerald-200 bg-emerald-50 text-emerald-950">
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertTitle>Signed</AlertTitle>
+          <AlertDescription>The request was completed and recorded.</AlertDescription>
+        </Alert>
+      ) : null}
+    </>
+  )
+}
+
+function DocumentPreviewCard({ activePreviewUrl, request }) {
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader className="border-b">
+        <CardTitle className="text-[1rem]">Document</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {activePreviewUrl ? (
+          <div className="h-[74vh] min-h-180 overflow-hidden">
+            <PdfPreviewSurface
+              sourceUrl={activePreviewUrl}
+              title={request.title}
+              emptyLabel="No preview available."
+              maxRenderWidth={560}
+            />
+          </div>
+        ) : (
+          <div className="text-muted-foreground flex min-h-105 items-center justify-center p-6 text-sm">
+            No preview available for this request.
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function SignerCard({
+  signerName,
+  setSignerName,
+  mode,
+  setMode,
+  signatureText,
+  setSignatureText,
+  canvasRef,
+  startDrawing,
+  drawPoint,
+  stopDrawing,
+  resetDrawing,
+  comment,
+  setComment,
+  consentAccepted,
+  setConsentAccepted,
+  error,
+  completed,
+  submitting,
+  completeSigning,
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-[1rem]">Signer</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="text-muted-foreground text-xs tracking-[0.18em] uppercase">Name</div>
+          <Input
+            id="documents-signer-name"
+            value={signerName}
+            onChange={(event) => setSignerName(event.target.value)}
+            placeholder="Type your full name"
+          />
+        </div>
+
+        <SignatureInputPanel
+          mode={mode}
+          setMode={setMode}
+          signatureText={signatureText}
+          setSignatureText={setSignatureText}
+          canvasRef={canvasRef}
+          startDrawing={startDrawing}
+          drawPoint={drawPoint}
+          stopDrawing={stopDrawing}
+          resetDrawing={resetDrawing}
+        />
+
+        <div className="space-y-2">
+          <div className="text-muted-foreground text-xs tracking-[0.18em] uppercase">Note</div>
+          <Textarea
+            id="documents-signing-note"
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            placeholder="Optional note"
+            rows={3}
+          />
+        </div>
+
+        <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
+          <input
+            id="documents-consent"
+            type="checkbox"
+            className="mt-1 h-4 w-4"
+            checked={consentAccepted}
+            onChange={(event) => setConsentAccepted(event.target.checked)}
+          />
+          <span className="leading-6 text-slate-700">
+            I confirm this signature is my legal signature and I agree to sign this document electronically.
+          </span>
+        </label>
+
+        {error ? (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Unable to sign</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : null}
+
+        <Button
+          type="button"
+          className="w-full"
+          disabled={completed || submitting || !consentAccepted || !signerName.trim()}
+          onClick={completeSigning}
+        >
+          {submitting ? 'Signing...' : completed ? 'Signed' : 'Sign and complete'}
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+function SignatureInputPanel({
+  mode,
+  setMode,
+  signatureText,
+  setSignatureText,
+  canvasRef,
+  startDrawing,
+  drawPoint,
+  stopDrawing,
+  resetDrawing,
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="text-muted-foreground text-xs tracking-[0.18em] uppercase">Signature</div>
+        <div className="bg-background inline-flex rounded-md border p-1">
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === 'type' ? 'default' : 'ghost'}
+            className="h-8 gap-2"
+            onClick={() => setMode('type')}
+          >
+            <PenLine className="h-4 w-4" />
+            Type
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={mode === 'draw' ? 'default' : 'ghost'}
+            className="h-8 gap-2"
+            onClick={() => setMode('draw')}
+          >
+            Draw
+          </Button>
+        </div>
+      </div>
+      {mode === 'type' ? (
+        <div className="space-y-2">
+          <Input
+            id="documents-signature-text"
+            value={signatureText}
+            onChange={(event) => setSignatureText(event.target.value)}
+            placeholder="Type your signature"
+          />
+          <div className="rounded-lg border bg-white px-4 py-5">
+            <div className="text-[13px] text-slate-500">Preview</div>
+            <div className="mt-2 text-3xl font-[540] text-slate-950 italic">
+              {signatureText || 'Signature'}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="rounded-lg border bg-white p-2">
+            <canvas
+              ref={canvasRef}
+              role="img"
+              aria-label="Draw your signature here"
+              className="block h-50 w-full touch-none rounded-md bg-white"
+              onPointerDown={startDrawing}
+              onPointerMove={drawPoint}
+              onPointerUp={stopDrawing}
+              onPointerCancel={stopDrawing}
+              onPointerLeave={stopDrawing}
+            />
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={resetDrawing}>
+            <Trash2 className="h-4 w-4" />
+            Clear
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function DocumentSigningClient({ request, recipient, client, previewUrl }) {
   const [completed, setCompleted] = useState(recipient.status === 'completed')
   const [submitting, setSubmitting] = useState(false)
@@ -186,226 +466,40 @@ export default function DocumentSigningClient({ request, recipient, client, prev
   return (
     <div className="bg-background text-foreground min-h-screen">
       <div className="mx-auto max-w-400 px-4 py-6 md:px-6 lg:px-8">
-        <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">Sign document</p>
-            <h1 className="text-foreground mt-2 text-3xl tracking-normal">{request.title}</h1>
-            <p className="text-muted-foreground mt-2 max-w-3xl text-sm leading-6">
-              Review the document, add your signature, and complete it here without leaving the app.
-            </p>
-            <p className="text-muted-foreground mt-3 text-sm">
-              For {client?.name || request.client_name || 'the client'}
-              {recipient.name || recipient.email ? ` · Recipient ${recipient.name || recipient.email}` : ''}
-            </p>
-          </div>
-          <Badge variant={completed ? 'default' : 'outline'}>
-            {completed ? 'Completed' : 'Ready to sign'}
-          </Badge>
-        </div>
-
-        {completed ? (
-          <Alert className="mb-6 border-emerald-200 bg-emerald-50 text-emerald-950">
-            <CheckCircle2 className="h-4 w-4" />
-            <AlertTitle>Signed</AlertTitle>
-            <AlertDescription>The request was completed and recorded.</AlertDescription>
-          </Alert>
-        ) : null}
+        <SigningHeader request={request} client={client} recipient={recipient} completed={completed} />
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.55fr)]">
-          <Card className="overflow-hidden">
-            <CardHeader className="border-b">
-              <CardTitle className="text-[1rem]">Document</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              {activePreviewUrl ? (
-                <div className="h-[74vh] min-h-180 overflow-hidden">
-                  <PdfPreviewSurface
-                    sourceUrl={activePreviewUrl}
-                    title={request.title}
-                    emptyLabel="No preview available."
-                    maxRenderWidth={560}
-                  />
-                </div>
-              ) : (
-                <div className="text-muted-foreground flex min-h-105 items-center justify-center p-6 text-sm">
-                  No preview available for this request.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <DocumentPreviewCard activePreviewUrl={activePreviewUrl} request={request} />
 
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-[1rem]">Signer</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="text-muted-foreground text-xs tracking-[0.18em] uppercase">Name</div>
-                  <Input
-                    id="documents-signer-name"
-                    value={signerName}
-                    onChange={(event) => setSignerName(event.target.value)}
-                    placeholder="Type your full name"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-muted-foreground text-xs tracking-[0.18em] uppercase">Signature</div>
-                    <div className="bg-background inline-flex rounded-md border p-1">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={mode === 'type' ? 'default' : 'ghost'}
-                        className="h-8 gap-2"
-                        onClick={() => setMode('type')}
-                      >
-                        <PenLine className="h-4 w-4" />
-                        Type
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant={mode === 'draw' ? 'default' : 'ghost'}
-                        className="h-8 gap-2"
-                        onClick={() => setMode('draw')}
-                      >
-                        Draw
-                      </Button>
-                    </div>
-                  </div>
-
-                  {mode === 'type' ? (
-                    <div className="space-y-2">
-                      <Input
-                        id="documents-signature-text"
-                        value={signatureText}
-                        onChange={(event) => setSignatureText(event.target.value)}
-                        placeholder="Type your signature"
-                      />
-                      <div className="rounded-lg border bg-white px-4 py-5">
-                        <div className="text-[13px] text-slate-500">Preview</div>
-                        <div className="mt-2 text-3xl font-[540] text-slate-950 italic">
-                          {signatureText || 'Signature'}
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <div className="rounded-lg border bg-white p-2">
-                        <canvas
-                          ref={canvasRef}
-                          role="img"
-                          aria-label="Draw your signature here"
-                          className="block h-50 w-full touch-none rounded-md bg-white"
-                          onPointerDown={startDrawing}
-                          onPointerMove={drawPoint}
-                          onPointerUp={stopDrawing}
-                          onPointerCancel={stopDrawing}
-                          onPointerLeave={stopDrawing}
-                        />
-                      </div>
-                      <Button type="button" variant="outline" size="sm" onClick={resetDrawing}>
-                        <Trash2 className="h-4 w-4" />
-                        Clear
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="text-muted-foreground text-xs tracking-[0.18em] uppercase">Note</div>
-                  <Textarea
-                    id="documents-signing-note"
-                    value={comment}
-                    onChange={(event) => setComment(event.target.value)}
-                    placeholder="Optional note"
-                    rows={3}
-                  />
-                </div>
-
-                <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
-                  <input
-                    id="documents-consent"
-                    type="checkbox"
-                    className="mt-1 h-4 w-4"
-                    checked={consentAccepted}
-                    onChange={(event) => setConsentAccepted(event.target.checked)}
-                  />
-                  <span className="leading-6 text-slate-700">
-                    I confirm this signature is my legal signature and I agree to sign this document
-                    electronically.
-                  </span>
-                </label>
-
-                {error ? (
-                  <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertTitle>Unable to sign</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                ) : null}
-
-                <Button
-                  type="button"
-                  className="w-full"
-                  disabled={completed || submitting || !consentAccepted || !signerName.trim()}
-                  onClick={completeSigning}
-                >
-                  {submitting ? 'Signing...' : completed ? 'Signed' : 'Sign and complete'}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-[1rem]">Request</CardTitle>
-                <CardDescription>Stored record.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm leading-6">
-                <div>
-                  <div className="text-muted-foreground">Client</div>
-                  <div className="font-medium">{client?.name || request.client_name || 'Unknown client'}</div>
-                  <div className="text-muted-foreground">
-                    {client?.email || request.client_email || 'No email'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Recipient</div>
-                  <div className="font-medium">{recipient.name || recipient.email}</div>
-                  <div className="text-muted-foreground">
-                    {recipient.email}
-                    {recipient.role ? ` · ${recipient.role}` : ''}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Sent</div>
-                  <div className="font-medium">{formatDate(request.sent_at || request.created_at)}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-[1rem]">Link</CardTitle>
-                <CardDescription>Use this page later if needed.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="bg-muted/40 overflow-x-auto rounded-md border p-3 text-xs break-all">
-                  {requestLink || 'Copy after the page loads.'}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" onClick={copyLink}>
-                    <Copy className="h-4 w-4" />
-                    {linkCopied ? 'Copied' : 'Copy link'}
-                  </Button>
-                  <Button asChild variant="outline">
-                    <Link href={`/documents/${request.id}`}>Open request</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <SignerCard
+              signerName={signerName}
+              setSignerName={setSignerName}
+              mode={mode}
+              setMode={setMode}
+              signatureText={signatureText}
+              setSignatureText={setSignatureText}
+              canvasRef={canvasRef}
+              startDrawing={startDrawing}
+              drawPoint={drawPoint}
+              stopDrawing={stopDrawing}
+              resetDrawing={resetDrawing}
+              comment={comment}
+              setComment={setComment}
+              consentAccepted={consentAccepted}
+              setConsentAccepted={setConsentAccepted}
+              error={error}
+              completed={completed}
+              submitting={submitting}
+              completeSigning={completeSigning}
+            />
+            <RequestMetaCard client={client} recipient={recipient} request={request} />
+            <DocumentLinkCard
+              requestLink={requestLink}
+              linkCopied={linkCopied}
+              copyLink={copyLink}
+              request={request}
+            />
           </div>
         </div>
       </div>

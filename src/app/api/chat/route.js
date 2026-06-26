@@ -87,57 +87,69 @@ function getAgentContextMcpUrl() {
   return `https://api.sanity.io/v2026-03-03/agent-context/${projectId}/${dataset}`
 }
 
-export async function POST(request) {
+async function validateChatEnvironment(request) {
   const session = await safeAuth()
-  if (!session?.user) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  if (!session?.user) return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
 
   const mcpUrl = getAgentContextMcpUrl()
   const readToken = process.env.SANITY_API_READ_TOKEN?.trim() || process.env.SANITY_API_VIEWER_TOKEN?.trim()
 
   if (!mcpUrl) {
-    return Response.json(
-      {
-        error:
-          'Sanity project/dataset missing. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET, or SANITY_CONTEXT_MCP_URL.',
-      },
-      { status: 500 },
-    )
+    return {
+      error: Response.json(
+        {
+          error:
+            'Sanity project/dataset missing. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET, or SANITY_CONTEXT_MCP_URL.',
+        },
+        { status: 500 },
+      ),
+    }
   }
 
   if (!readToken) {
-    return Response.json(
-      {
-        error: 'SANITY_API_READ_TOKEN (or SANITY_API_VIEWER_TOKEN) is required for Agent Context MCP.',
-      },
-      { status: 500 },
-    )
+    return {
+      error: Response.json(
+        { error: 'SANITY_API_READ_TOKEN (or SANITY_API_VIEWER_TOKEN) is required for Agent Context MCP.' },
+        { status: 500 },
+      ),
+    }
   }
 
   const model = resolveLanguageModel()
   if (!model) {
-    return Response.json(
-      {
-        error:
-          'No LLM configured. Set GROQ_API_KEY and/or ANTHROPIC_API_KEY (optional CHAT_LLM_PROVIDER=groq|anthropic).',
-      },
-      { status: 500 },
-    )
+    return {
+      error: Response.json(
+        {
+          error:
+            'No LLM configured. Set GROQ_API_KEY and/or ANTHROPIC_API_KEY (optional CHAT_LLM_PROVIDER=groq|anthropic).',
+        },
+        { status: 500 },
+      ),
+    }
   }
 
   let body
   try {
     body = await request.json()
   } catch {
-    return Response.json({ error: 'Invalid JSON body.' }, { status: 400 })
+    return { error: Response.json({ error: 'Invalid JSON body.' }, { status: 400 }) }
   }
 
   const { messages, documentFocus, documentContext, systemPromptExtra } = body
-
   if (!Array.isArray(messages) || messages.length === 0) {
-    return Response.json({ error: 'Request must include a non-empty messages array.' }, { status: 400 })
+    return {
+      error: Response.json({ error: 'Request must include a non-empty messages array.' }, { status: 400 }),
+    }
   }
+
+  return { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra }
+}
+
+export async function POST(request) {
+  const validated = await validateChatEnvironment(request)
+  if (validated.error) return validated.error
+
+  const { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra } = validated
 
   let mcpClient = null
 

@@ -8,16 +8,7 @@ import { sanityWriteClient } from '@/sanity/client'
 
 export const runtime = 'nodejs'
 
-export async function PATCH(request, { params }) {
-  const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
-
-  if (!sanityWriteClient) {
-    return NextResponse.json({ error: 'Sanity write credentials are not configured.' }, { status: 503 })
-  }
-
-  const { pageId } = await params
-  const body = await request.json()
+function extractHeroAppearance(body) {
   const heroTextColor = body?.heroTextColor?.trim() || '#ffffff'
   const heroOverlayStartColor =
     body?.heroOverlayStartColor?.trim() || body?.heroOverlayColor?.trim() || '#0f172a'
@@ -30,61 +21,92 @@ export async function PATCH(request, { params }) {
     (heroOverlayStartOpacity + heroOverlayEndOpacity) / 2,
   )
 
-  try {
-    const page = await sanityWriteClient.fetch(
-      groq`*[_id == $pageId][0]{
-        _id,
-        sections[]{
-          _key,
-          type,
-          _type
-        }
-      }`,
-      { pageId },
-    )
+  return {
+    heroTextColor,
+    heroOverlayStartColor,
+    heroOverlayEndColor,
+    heroOverlayDirection,
+    heroOverlayStartOpacity,
+    heroOverlayEndOpacity,
+    heroOverlayOpacity,
+  }
+}
 
-    if (!page) {
-      return NextResponse.json({ error: 'Page not found.' }, { status: 404 })
-    }
+async function saveHeroAppearanceToSanity(pageId, heroAppearance) {
+  const page = await sanityWriteClient.fetch(
+    groq`*[_id == $pageId][0]{
+      _id,
+      sections[]{
+        _key,
+        type,
+        _type
+      }
+    }`,
+    { pageId },
+  )
 
-    const heroSectionIndex = page.sections?.findIndex(isHeroSectionBlock) ?? -1
+  if (!page) {
+    return { error: 'Page not found.', status: 404 }
+  }
 
-    if (heroSectionIndex < 0) {
-      return NextResponse.json({ error: 'Page does not have a hero section.' }, { status: 400 })
-    }
+  const heroSectionIndex = page.sections?.findIndex(isHeroSectionBlock) ?? -1
+  if (heroSectionIndex < 0) {
+    return { error: 'Page does not have a hero section.', status: 400 }
+  }
 
-    const heroSection = page.sections[heroSectionIndex]
-    const sectionPath = (field) =>
-      heroSection?._key
-        ? `sections[_key=="${heroSection._key}"].${field}`
-        : `sections[${heroSectionIndex}].${field}`
+  const heroSection = page.sections[heroSectionIndex]
+  const sectionPath = (field) =>
+    heroSection?._key
+      ? `sections[_key=="${heroSection._key}"].${field}`
+      : `sections[${heroSectionIndex}].${field}`
 
-    await sanityWriteClient
-      .patch(pageId)
-      .set({
-        [sectionPath('heroTextColor')]: heroTextColor,
-        [sectionPath('heroOverlayColor')]: heroOverlayStartColor,
-        [sectionPath('heroOverlayStartColor')]: heroOverlayStartColor,
-        [sectionPath('heroOverlayEndColor')]: heroOverlayEndColor,
-        [sectionPath('heroOverlayDirection')]: heroOverlayDirection,
-        [sectionPath('heroOverlayStartOpacity')]: heroOverlayStartOpacity,
-        [sectionPath('heroOverlayEndOpacity')]: heroOverlayEndOpacity,
-        [sectionPath('heroOverlayOpacity')]: heroOverlayOpacity,
-      })
-      .commit()
+  const {
+    heroTextColor,
+    heroOverlayStartColor,
+    heroOverlayEndColor,
+    heroOverlayDirection,
+    heroOverlayStartOpacity,
+    heroOverlayEndOpacity,
+    heroOverlayOpacity,
+  } = heroAppearance
 
-    return NextResponse.json({
-      heroAppearance: {
-        heroTextColor,
-        heroOverlayColor: heroOverlayStartColor,
-        heroOverlayStartColor,
-        heroOverlayEndColor,
-        heroOverlayDirection,
-        heroOverlayStartOpacity,
-        heroOverlayEndOpacity,
-        heroOverlayOpacity,
-      },
+  await sanityWriteClient
+    .patch(pageId)
+    .set({
+      [sectionPath('heroTextColor')]: heroTextColor,
+      [sectionPath('heroOverlayColor')]: heroOverlayStartColor,
+      [sectionPath('heroOverlayStartColor')]: heroOverlayStartColor,
+      [sectionPath('heroOverlayEndColor')]: heroOverlayEndColor,
+      [sectionPath('heroOverlayDirection')]: heroOverlayDirection,
+      [sectionPath('heroOverlayStartOpacity')]: heroOverlayStartOpacity,
+      [sectionPath('heroOverlayEndOpacity')]: heroOverlayEndOpacity,
+      [sectionPath('heroOverlayOpacity')]: heroOverlayOpacity,
     })
+    .commit()
+
+  return { heroAppearance }
+}
+
+export async function PATCH(request, { params }) {
+  const unauthorized = await requireAdminRequest()
+  if (unauthorized) return unauthorized
+
+  if (!sanityWriteClient) {
+    return NextResponse.json({ error: 'Sanity write credentials are not configured.' }, { status: 503 })
+  }
+
+  const { pageId } = await params
+  const body = await request.json()
+  const heroAppearance = extractHeroAppearance(body)
+
+  try {
+    const result = await saveHeroAppearanceToSanity(pageId, heroAppearance)
+
+    if (result.error) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
+    }
+
+    return NextResponse.json(result)
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to save hero appearance.' },

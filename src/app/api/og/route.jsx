@@ -427,116 +427,159 @@ function titleFromGuidePath(pathname) {
     .join(' ')
 }
 
-export async function GET(request) {
-  const requestUrl = new URL(request.url)
-  const { searchParams } = requestUrl
-  const isGuideParam =
-    getQueryParam(searchParams, 'g') === '1' || getQueryParam(searchParams, 'guide') === '1'
+function getParam(searchParams, shortKey, fullKey, fallback = '') {
+  return getQueryParam(searchParams, shortKey) || getQueryParam(searchParams, fullKey) || fallback
+}
+
+function extractOgParams(searchParams, requestUrl) {
+  const isGuideParam = getParam(searchParams, 'g', 'guide', '') === '1'
   const isChristmasOg = getQueryParam(searchParams, 'theme') === 'txchristmaslights'
-  const site = clampText(
-    getQueryParam(searchParams, 's') || getQueryParam(searchParams, 'site') || 'Texas Solar and Roofing Pros',
-    80,
-  )
-  const titleBase =
-    getQueryParam(searchParams, 't') ||
-    getQueryParam(searchParams, 'title') ||
-    titleFromGuidePath(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path')) ||
-    site
+  const site = clampText(getParam(searchParams, 's', 'site', 'Texas Solar and Roofing Pros'), 80)
+  const path = clampText(getParam(searchParams, 'p', 'path'), 80)
+  const titleBase = getParam(searchParams, 't', 'title') || titleFromGuidePath(path) || site
   const title =
     clampText(
       isChristmasOg ? truncateForShare(titleBase, SHARE_TITLE_MAX) : titleBase,
       isChristmasOg ? SHARE_TITLE_MAX + 4 : 120,
     ) || site
-  const descriptionRaw = getQueryParam(searchParams, 'd') || getQueryParam(searchParams, 'description') || ''
+  const descriptionRaw = getParam(searchParams, 'd', 'description')
   const description = clampText(
     isChristmasOg && descriptionRaw
       ? truncateForShare(descriptionRaw, SHARE_DESCRIPTION_MAX)
       : descriptionRaw,
     isChristmasOg ? SHARE_DESCRIPTION_MAX + 4 : 180,
   )
-  let cta = clampText(getQueryParam(searchParams, 'cta') || '', 44)
-  if (isChristmasOg && !cta) {
-    cta = 'Book your install'
-  }
-  const path = clampText(getQueryParam(searchParams, 'p') || getQueryParam(searchParams, 'path') || '', 80)
-  const category = clampText(
-    getQueryParam(searchParams, 'c') || getQueryParam(searchParams, 'category') || '',
-    80,
-  )
-  const layout = clampText(
-    getQueryParam(searchParams, 'l') || getQueryParam(searchParams, 'layout') || '',
-    20,
-  )
-  const imageParam = getQueryParam(searchParams, 'i') || getQueryParam(searchParams, 'image') || ''
+  const ctaRaw = clampText(getParam(searchParams, 'cta', 'cta'), 44)
+  const cta = isChristmasOg && !ctaRaw ? 'Book your install' : ctaRaw
+  const category = clampText(getParam(searchParams, 'c', 'category'), 80)
+  const layout = clampText(getParam(searchParams, 'l', 'layout'), 20)
+  const imageParam = getParam(searchParams, 'i', 'image')
   const image = imageParam ? new URL(imageParam, requestUrl.origin).toString() : ''
-
-  const primary = safeColor(
-    getQueryParam(searchParams, 'pr') || getQueryParam(searchParams, 'primary'),
-    '#f97316',
+  const primary = safeColor(getParam(searchParams, 'pr', 'primary'), '#f97316')
+  const secondary = safeColor(getParam(searchParams, 'sc', 'secondary'), '#016bb7')
+  const guideBackground = solidHexForOgGuideBackground(
+    getParam(searchParams, 'b', 'bg'),
+    DEFAULT_GUIDE_OG_BACKGROUND_HEX,
   )
-  const secondary = safeColor(
-    getQueryParam(searchParams, 'sc') || getQueryParam(searchParams, 'secondary'),
-    '#016bb7',
-  )
+  const isGuideLayout = isGuideParam || layout === 'guide' || path.startsWith('/guides/')
   const christmasLogoSrc = isChristmasOg
     ? new URL('/images/tx-christmas-logo-full.png', requestUrl.origin).toString()
     : ''
-  const guideBackground = solidHexForOgGuideBackground(
-    getQueryParam(searchParams, 'b') || getQueryParam(searchParams, 'bg'),
-    DEFAULT_GUIDE_OG_BACKGROUND_HEX,
-  )
-  const guideUseLightInk = isLightBackgroundOgColor(guideBackground)
-  const guideInk = guideUseLightInk ? '#020617' : '#ffffff'
-  const guideLabelMuted = guideUseLightInk ? '#0f172a' : 'rgba(255,255,255,0.9)'
-  const guideBodyMuted = guideUseLightInk ? '#0f172a' : 'rgba(255,255,255,0.94)'
-  const guideFooterMuted = guideUseLightInk ? '#020617' : 'rgba(255,255,255,0.94)'
-  const guideCategoryBorder = guideUseLightInk ? 'rgba(15,23,42,0.38)' : 'rgba(255,255,255,0.32)'
-  const guideCategoryBg = guideUseLightInk ? 'rgba(15,23,42,0.1)' : 'rgba(255,255,255,0.12)'
-  const guideCategoryText = guideUseLightInk ? '#020617' : '#ffffff'
-  const secondarySoft = '#FFFFFF'
-  const copyColor = isChristmasOg ? '#fde68a' : '#dbe4ee'
-  const isGuideLayout = isGuideParam || layout === 'guide' || path.startsWith('/guides/')
-  const isTxChristmasPrecomposedOg = isChristmasOg && Boolean(image) && !isGuideLayout
 
-  if (isTxChristmasPrecomposedOg) {
-    const bareImageResponse = new ImageResponse(
-      <div
+  return {
+    isChristmasOg,
+    isGuideLayout,
+    site,
+    path,
+    title,
+    description,
+    cta,
+    category,
+    image,
+    primary,
+    secondary,
+    guideBackground,
+    christmasLogoSrc,
+  }
+}
+
+async function buildChristmasPrecomposedOgResponse(image) {
+  const bareImageResponse = new ImageResponse(
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        margin: 0,
+        padding: 0,
+        position: 'relative',
+        backgroundColor: '#000000',
+      }}
+    >
+      <img
+        alt=""
+        src={image}
+        width={OG_IMAGE_SIZE.width}
+        height={OG_IMAGE_SIZE.height}
         style={{
-          display: 'flex',
           width: '100%',
           height: '100%',
-          margin: 0,
-          padding: 0,
-          position: 'relative',
-          backgroundColor: '#000000',
+          objectFit: 'cover',
+          objectPosition: 'center',
         }}
-      >
-        <img
-          alt=""
-          src={image}
-          width={OG_IMAGE_SIZE.width}
-          height={OG_IMAGE_SIZE.height}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-          }}
-        />
-      </div>,
-      { ...OG_IMAGE_SIZE },
-    )
-    const pngBuffer = await bareImageResponse.arrayBuffer()
-    return new Response(pngBuffer, {
-      status: 200,
-      headers: {
-        'content-type': 'image/png',
-        'content-length': String(pngBuffer.byteLength),
-        'cache-control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
-      },
-    })
-  }
+      />
+    </div>,
+    { ...OG_IMAGE_SIZE },
+  )
+  const pngBuffer = await bareImageResponse.arrayBuffer()
+  return new Response(pngBuffer, {
+    status: 200,
+    headers: {
+      'content-type': 'image/png',
+      'content-length': String(pngBuffer.byteLength),
+      'cache-control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+    },
+  })
+}
 
+async function tryPrecomposedChristmasOg(isChristmasOg, image, isGuideLayout) {
+  if (!isChristmasOg || !image || isGuideLayout) return null
+  return buildChristmasPrecomposedOgResponse(image)
+}
+
+function pickCopyColor(isChristmasOg) {
+  return isChristmasOg ? '#fde68a' : '#dbe4ee'
+}
+
+function buildGuideLayoutTheme(guideBackground) {
+  const guideUseLightInk = isLightBackgroundOgColor(guideBackground)
+  return {
+    guideInk: guideUseLightInk ? '#020617' : '#ffffff',
+    guideLabelMuted: guideUseLightInk ? '#0f172a' : 'rgba(255,255,255,0.9)',
+    guideBodyMuted: guideUseLightInk ? '#0f172a' : 'rgba(255,255,255,0.94)',
+    guideFooterMuted: guideUseLightInk ? '#020617' : 'rgba(255,255,255,0.94)',
+    guideCategoryBorder: guideUseLightInk ? 'rgba(15,23,42,0.38)' : 'rgba(255,255,255,0.32)',
+    guideCategoryBg: guideUseLightInk ? 'rgba(15,23,42,0.1)' : 'rgba(255,255,255,0.12)',
+    guideCategoryText: guideUseLightInk ? '#020617' : '#ffffff',
+  }
+}
+
+export async function GET(request) {
+  const requestUrl = new URL(request.url)
+  const { searchParams } = requestUrl
+
+  const og = extractOgParams(searchParams, requestUrl)
+  const {
+    isChristmasOg,
+    isGuideLayout,
+    image,
+    secondary,
+    guideBackground,
+    site,
+    title,
+    description,
+    cta,
+    category,
+    path,
+    primary,
+    christmasLogoSrc,
+  } = og
+
+  const precomposed = await tryPrecomposedChristmasOg(isChristmasOg, image, isGuideLayout)
+  if (precomposed) return precomposed
+
+  const guideTheme = buildGuideLayoutTheme(guideBackground)
+  const {
+    guideInk,
+    guideLabelMuted,
+    guideBodyMuted,
+    guideFooterMuted,
+    guideCategoryBorder,
+    guideCategoryBg,
+    guideCategoryText,
+  } = guideTheme
+  const secondarySoft = '#FFFFFF'
+  const copyColor = pickCopyColor(isChristmasOg)
   const fontFamily = await getFontFamily(requestUrl)
 
   const imageResponse = new ImageResponse(

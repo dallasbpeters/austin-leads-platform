@@ -13,9 +13,7 @@ function buildGuideItemKey(slug) {
 
 function toPortableTextSimple(value) {
   const text = String(value || '').trim()
-  if (!text) {
-    return []
-  }
+  if (!text) return []
   const blockKey = `pt-${Math.random().toString(36).slice(2, 10)}`
   const spanKey = `sp-${Math.random().toString(36).slice(2, 10)}`
   return [
@@ -37,28 +35,78 @@ function getHeroMediaFromSections(sections) {
   }
 }
 
+function pickImageUrl(existingItem) {
+  return existingItem.imageUrl ? { imageUrl: existingItem.imageUrl } : {}
+}
+
+function buildGuideGridItem({ guideDoc, href, existingItem, currentItems }) {
+  const ex = existingItem || {}
+  const len = currentItems.length
+  const body =
+    Array.isArray(ex.body) && ex.body.length ? ex.body : toPortableTextSimple(guideDoc?.description || '')
+  const { heroImage, heroAsset } = getHeroMediaFromSections(guideDoc?.sections)
+  return {
+    _type: 'pageItem',
+    _key: ex._key || buildGuideItemKey(guideDoc.slug),
+    number: ex.number || String((len || 0) + 1).padStart(2, '0'),
+    title: guideDoc?.title || ex.title || 'Guide',
+    body,
+    href,
+    icon: ex.icon || '',
+    color: ex.color || '',
+    category: ex.category || '',
+    ctaLabel: ex.ctaLabel || '',
+    ...pickImageUrl(ex),
+    ...(heroImage ? { image: heroImage } : {}),
+    ...(heroAsset ? { imageAsset: heroAsset } : {}),
+  }
+}
+
 /**
  * Copy guide post hero image → every guides listing page (draft + published) for this site.
  */
+function resolveGuideSlug(guideDoc) {
+  if (typeof guideDoc?.slug === 'string') return guideDoc.slug.trim()
+  if (guideDoc?.slug?.current != null) return String(guideDoc.slug.current).trim()
+  return ''
+}
+
+function patchGuidePage(client, pageDoc, href, guideDoc, guideSlug) {
+  const sections = Array.isArray(pageDoc?.sections) ? pageDoc.sections : []
+  const guideGridSectionIndex = sections.findIndex((section) => section?.type === 'guideGrid')
+  if (guideGridSectionIndex < 0) return
+
+  const guideGridSection = sections[guideGridSectionIndex]
+  const currentItems = Array.isArray(guideGridSection?.items) ? guideGridSection.items : []
+  const existingIndex = currentItems.findIndex((item) => String(item?.href || '').trim() === href)
+  const existingItem = existingIndex >= 0 ? currentItems[existingIndex] : null
+
+  const nextItem = buildGuideGridItem({
+    guideDoc: { ...guideDoc, slug: guideSlug },
+    href,
+    existingItem,
+    currentItems,
+  })
+
+  const nextItems =
+    existingIndex >= 0
+      ? currentItems.map((item, index) => (index === existingIndex ? nextItem : item))
+      : [nextItem, ...currentItems]
+
+  const nextSections = [...sections]
+  nextSections[guideGridSectionIndex] = { ...guideGridSection, items: nextItems }
+
+  return client.patch(pageDoc._id).set({ sections: nextSections }).commit()
+}
+
 export async function syncGuideHeroToGuideGridItems(client, guideDoc) {
-  const slugRaw =
-    typeof guideDoc?.slug === 'string'
-      ? guideDoc.slug
-      : guideDoc?.slug?.current != null
-        ? String(guideDoc.slug.current)
-        : ''
-  const guideSlug = slugRaw.trim()
-  if (!guideSlug.startsWith('guides/')) {
-    return { ok: false, reason: 'not-a-guide-slug' }
-  }
+  const guideSlug = resolveGuideSlug(guideDoc)
+  if (!guideSlug.startsWith('guides/')) return { ok: false, reason: 'not-a-guide-slug' }
 
   const siteRef = guideDoc?.site?._ref || guideDoc?.site?._id
-  if (!siteRef) {
-    return { ok: false, reason: 'no-site' }
-  }
+  if (!siteRef) return { ok: false, reason: 'no-site' }
 
   const href = `/${guideSlug}`
-  const { heroImage, heroAsset } = getHeroMediaFromSections(guideDoc?.sections)
 
   const guidesPages = await client
     .withConfig({ perspective: 'raw' })
@@ -67,52 +115,7 @@ export async function syncGuideHeroToGuideGridItems(client, guideDoc) {
     })
 
   for (const pageDoc of guidesPages || []) {
-    const sections = Array.isArray(pageDoc?.sections) ? pageDoc.sections : []
-    const guideGridSectionIndex = sections.findIndex((section) => section?.type === 'guideGrid')
-    if (guideGridSectionIndex < 0) {
-      continue
-    }
-
-    const guideGridSection = sections[guideGridSectionIndex]
-    const currentItems = Array.isArray(guideGridSection?.items) ? guideGridSection.items : []
-    const existingIndex = currentItems.findIndex((item) => String(item?.href || '').trim() === href)
-    const existingItem = existingIndex >= 0 ? currentItems[existingIndex] : null
-
-    const nextItem = {
-      _type: 'pageItem',
-      _key: existingItem?._key || buildGuideItemKey(guideSlug),
-      number: existingItem?.number || String((currentItems.length || 0) + 1).padStart(2, '0'),
-      title: guideDoc?.title || existingItem?.title || 'Guide',
-      body:
-        Array.isArray(existingItem?.body) && existingItem.body.length
-          ? existingItem.body
-          : toPortableTextSimple(guideDoc?.description || ''),
-      href,
-      icon: existingItem?.icon || '',
-      color: existingItem?.color || '',
-      category: existingItem?.category || '',
-      ctaLabel: existingItem?.ctaLabel || '',
-      ...(existingItem?.imageUrl ? { imageUrl: existingItem.imageUrl } : {}),
-    }
-    if (heroImage) {
-      nextItem.image = heroImage
-    }
-    if (heroAsset) {
-      nextItem.imageAsset = heroAsset
-    }
-
-    const nextItems =
-      existingIndex >= 0
-        ? currentItems.map((item, index) => (index === existingIndex ? nextItem : item))
-        : [nextItem, ...currentItems]
-
-    const nextSections = [...sections]
-    nextSections[guideGridSectionIndex] = {
-      ...guideGridSection,
-      items: nextItems,
-    }
-
-    await client.patch(pageDoc._id).set({ sections: nextSections }).commit()
+    await patchGuidePage(client, pageDoc, href, guideDoc, guideSlug)
   }
 
   return { ok: true }
@@ -122,9 +125,7 @@ export async function syncGuideHeroToGuideGridItems(client, guideDoc) {
  * Copy each guides listing card image → matching guide post hero (drafts included).
  */
 export async function syncGuideGridCardImagesToHeroes(client, { siteRef, guidesPageDoc }) {
-  if (!siteRef || !guidesPageDoc?.sections) {
-    return { ok: false, reason: 'invalid-input' }
-  }
+  if (!siteRef || !guidesPageDoc?.sections) return { ok: false, reason: 'invalid-input' }
 
   const sections = Array.isArray(guidesPageDoc.sections) ? guidesPageDoc.sections : []
   const guideGrid = sections.find((s) => s?.type === 'guideGrid')
@@ -138,15 +139,11 @@ export async function syncGuideGridCardImagesToHeroes(client, { siteRef, guidesP
     const slugPath = String(item.href || '')
       .trim()
       .replace(/^\/+/, '')
-    if (!slugPath.startsWith('guides/')) {
-      continue
-    }
+    if (!slugPath.startsWith('guides/')) continue
 
     const cardImage = item.image || null
     const cardAsset = item.imageAsset || null
-    if (!cardImage && !cardAsset) {
-      continue
-    }
+    if (!cardImage && !cardAsset) continue
 
     const posts = await client
       .withConfig({ perspective: 'raw' })
@@ -158,17 +155,11 @@ export async function syncGuideGridCardImagesToHeroes(client, { siteRef, guidesP
     for (const post of posts || []) {
       const postSections = Array.isArray(post.sections) ? [...post.sections] : []
       const heroIndex = postSections.findIndex(isHeroSectionBlock)
-      if (heroIndex < 0) {
-        continue
-      }
+      if (heroIndex < 0) continue
 
       const hero = { ...postSections[heroIndex] }
-      if (cardImage) {
-        hero.heroImage = cardImage
-      }
-      if (cardAsset) {
-        hero.heroAsset = cardAsset
-      }
+      if (cardImage) hero.heroImage = cardImage
+      if (cardAsset) hero.heroAsset = cardAsset
       postSections[heroIndex] = hero
       await client.patch(post._id).set({ sections: postSections }).commit()
     }
@@ -181,9 +172,7 @@ export async function syncGuideGridCardImagesToHeroes(client, { siteRef, guidesP
  * Refresh every guides listing card image from each guide post's hero.
  */
 export async function refreshAllGuideGridImagesFromPosts(client, siteRef) {
-  if (!siteRef) {
-    return { ok: false }
-  }
+  if (!siteRef) return { ok: false }
 
   const posts = await client.withConfig({ perspective: 'raw' }).fetch(
     groq`*[_type == "post" && site._ref == $siteId && slug.current match "guides/*"]{

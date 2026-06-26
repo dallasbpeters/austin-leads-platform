@@ -50,18 +50,31 @@ function deriveRequestStatus(recipientStatuses, providerStatus) {
   return providerStatus || 'sent'
 }
 
-function matchesRecipient(recipient, submitter) {
+function matchesByDocusealSlug(recipient, submitter) {
   const recipientSlug = recipient?.metadata?.docusealSubmitter?.slug
-  const recipientSubmitterId = recipient?.provider_submitter_id
   const submitterSlug = submitter?.slug || submitter?.embed_src?.split('/s/').pop() || null
-  const submitterId = submitter?.id || submitter?.uuid || submitter?.submitter_id || null
+  return !!(recipientSlug && submitterSlug && recipientSlug === submitterSlug)
+}
 
+function matchesBySubmitterId(recipient, submitter) {
+  const recipientSubmitterId = recipient?.provider_submitter_id
+  const submitterId = submitter?.id || submitter?.uuid || submitter?.submitter_id || null
+  return !!(recipientSubmitterId && submitterId && String(recipientSubmitterId) === String(submitterId))
+}
+
+function matchesByEmail(recipient, submitter) {
+  return !!(
+    recipient?.email &&
+    submitter?.email &&
+    String(recipient.email).toLowerCase() === String(submitter.email).toLowerCase()
+  )
+}
+
+function matchesRecipient(recipient, submitter) {
   return (
-    (recipientSlug && submitterSlug && recipientSlug === submitterSlug) ||
-    (recipientSubmitterId && submitterId && String(recipientSubmitterId) === String(submitterId)) ||
-    (recipient?.email &&
-      submitter?.email &&
-      String(recipient.email).toLowerCase() === String(submitter.email).toLowerCase())
+    matchesByDocusealSlug(recipient, submitter) ||
+    matchesBySubmitterId(recipient, submitter) ||
+    matchesByEmail(recipient, submitter)
   )
 }
 
@@ -91,6 +104,33 @@ async function verifyWebhookSignature(rawBody, signatureHeader) {
     expected === normalizeProviderStatus(base64) ||
     expected === normalizeProviderStatus(`sha256=${hex}`)
   )
+}
+
+function computeNextRecipientStatus(providerStatus, submitter) {
+  if (providerStatus === 'completed' || submitter?.completed_at) return 'completed'
+  if (providerStatus === 'declined' || submitter?.declined_at) return 'declined'
+  if (providerStatus === 'opened') return 'opened'
+  if (providerStatus === 'started') return 'started'
+  return providerStatus || 'sent'
+}
+
+function buildRecipientUpdatePayload(recipient, submitter, nextStatus, payload) {
+  return {
+    status: nextStatus,
+    sentAt: recipient.sent_at || submitter?.sent_at || null,
+    providerSubmitterId:
+      recipient.provider_submitter_id || submitter?.id || submitter?.uuid || submitter?.submitter_id || null,
+    signingUrl:
+      recipient.signing_url ||
+      submitter?.embed_src ||
+      submitter?.url ||
+      (submitter?.slug ? `https://docuseal.com/s/${submitter.slug}` : null),
+    metadata: {
+      docusealSubmitter: submitter,
+      webhookEvent: payload?.event_type || null,
+      syncedAt: new Date().toISOString(),
+    },
+  }
 }
 
 export async function POST(request) {
@@ -133,39 +173,14 @@ export async function POST(request) {
     if (!matchingRecipient) continue
 
     const providerStatus = extractRecipientStatus(submitter)
-    const nextStatus =
-      providerStatus === 'completed' || submitter?.completed_at
-        ? 'completed'
-        : providerStatus === 'declined' || submitter?.declined_at
-          ? 'declined'
-          : providerStatus === 'opened'
-            ? 'opened'
-            : providerStatus === 'started'
-              ? 'started'
-              : providerStatus || matchingRecipient.status
+    const nextStatus = computeNextRecipientStatus(providerStatus, submitter)
 
     statusMap.set(matchingRecipient.id, nextStatus)
     recipientUpdates.push(
-      updateDocumentRecipientStatus(matchingRecipient.id, {
-        status: nextStatus,
-        sentAt: matchingRecipient.sent_at || submitter?.sent_at || null,
-        providerSubmitterId:
-          matchingRecipient.provider_submitter_id ||
-          submitter?.id ||
-          submitter?.uuid ||
-          submitter?.submitter_id ||
-          null,
-        signingUrl:
-          matchingRecipient.signing_url ||
-          submitter?.embed_src ||
-          submitter?.url ||
-          (submitter?.slug ? `https://docuseal.com/s/${submitter.slug}` : null),
-        metadata: {
-          docusealSubmitter: submitter,
-          webhookEvent: payload?.event_type || null,
-          syncedAt: new Date().toISOString(),
-        },
-      }),
+      updateDocumentRecipientStatus(
+        matchingRecipient.id,
+        buildRecipientUpdatePayload(matchingRecipient, submitter, nextStatus, payload),
+      ),
     )
   }
 

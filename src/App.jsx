@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { Agentation } from 'agentation'
 
 import { sectionRenderers } from '@/components/platform/sections'
@@ -26,6 +27,337 @@ export function CookieConsentWrapper() {
   return <CookieConsent variant="small" />
 }
 
+const BAND1_FALLBACK_PROPS = {
+  colors: ['#2660AE', '#1C447F', '#0C333A', 'var(--color-secondary-alt)', 'var(--color-amber-600)'],
+  maxHeight: 12,
+  tint: 'var(--color-secondary-950)',
+}
+
+const HANDLED_SECTION_TYPES = new Set([
+  'hero',
+  'story',
+  'article',
+  'calculator',
+  'costs',
+  'guides',
+  'guideGrid',
+  'snapshot',
+  'incentives',
+  'testimonials',
+  'quote',
+  'cta',
+  'resourceGrid',
+  'resources',
+  'band',
+])
+
+function resolveSectionType(section) {
+  if (section?.type) {
+    return section.type
+  }
+  if (typeof section?._type === 'string' && section._type.endsWith('Section')) {
+    return section._type.slice(0, -'Section'.length)
+  }
+  return ''
+}
+
+function findSection(homepageSections, type, sanityType = '') {
+  return (
+    homepageSections.find(
+      (section) => resolveSectionType(section) === type || (sanityType && section._type === sanityType),
+    ) || null
+  )
+}
+
+function getSectionEditAttrs(homepage, section, fallbackPath = 'sections') {
+  return section ? getSanitySectionEditAttributes(homepage, section, fallbackPath) : {}
+}
+
+function filterBandSections(homepageSections) {
+  return homepageSections.filter((section) => resolveSectionType(section) === 'band')
+}
+
+function filterExtraSections(homepageSections, ctaSection) {
+  return homepageSections.filter((section) => {
+    const sectionType = resolveSectionType(section)
+    if (!sectionType) {
+      return false
+    }
+    if (sectionType === 'cta') {
+      return section !== ctaSection
+    }
+    return !HANDLED_SECTION_TYPES.has(sectionType)
+  })
+}
+
+const BAND_FIELD_RESOLVERS = [
+  [
+    'colors',
+    (s, f) => {
+      if (Array.isArray(s?.colors) && s.colors.length) {
+        return s.colors
+      }
+      return f?.colors
+    },
+  ],
+  ['tint', (s, f) => s?.tint || f?.tint],
+  [
+    'minHeight',
+    (s, f) => {
+      if (typeof s?.minHeight === 'number') {
+        return s.minHeight
+      }
+      return f?.minHeight
+    },
+  ],
+  [
+    'maxHeight',
+    (s, f) => {
+      if (typeof s?.maxHeight === 'number') {
+        return s.maxHeight
+      }
+      return f?.maxHeight
+    },
+  ],
+  [
+    'rotate',
+    (s, f) => {
+      if (typeof s?.rotate === 'boolean') {
+        return s.rotate
+      }
+      return Boolean(f?.rotate)
+    },
+  ],
+  [
+    'scrollStart',
+    (s, f) => {
+      if (typeof s?.scrollStart === 'number') {
+        return s.scrollStart
+      }
+      return f?.scrollStart
+    },
+  ],
+  [
+    'scrollEnd',
+    (s, f) => {
+      if (typeof s?.scrollEnd === 'number') {
+        return s.scrollEnd
+      }
+      return f?.scrollEnd
+    },
+  ],
+  [
+    'reverse',
+    (s, f) => {
+      if (typeof s?.reverse === 'boolean') {
+        return s.reverse
+      }
+      return Boolean(f?.reverse)
+    },
+  ],
+  [
+    'autoAnimate',
+    (s, f) => {
+      if (typeof s?.autoAnimate === 'boolean') {
+        return s.autoAnimate
+      }
+      return Boolean(f?.autoAnimate)
+    },
+  ],
+  [
+    'speed',
+    (s, f) => {
+      if (typeof s?.speed === 'number') {
+        return s.speed
+      }
+      return f?.speed
+    },
+  ],
+  [
+    'amplitude',
+    (s, f) => {
+      if (typeof s?.amplitude === 'number') {
+        return s.amplitude
+      }
+      return f?.amplitude
+    },
+  ],
+]
+
+function buildBandProps(section, fallbackProps) {
+  const props = {}
+  for (const [key, resolve] of BAND_FIELD_RESOLVERS) {
+    const value = resolve(section, fallbackProps)
+    if (value !== undefined) {
+      props[key] = value
+    }
+  }
+  return props
+}
+
+function getTraceContent(section, homepageSource, fromLabel, fallbackLabel) {
+  return section ? `homepage ${fromLabel} from ${homepageSource}` : `local JSX ${fallbackLabel}`
+}
+
+function renderHeroBlock(heroSection, heroEditAttrs, homepageSource) {
+  if (!heroSection) {
+    return null
+  }
+  return (
+    <Fragment key="hero">
+      <DevTrace
+        markup="src/components/hero.jsx"
+        content={`local JSX hero copy + hero media from homepage record (${homepageSource})`}
+      />
+      <div {...heroEditAttrs}>
+        <Hero heroSection={heroSection} />
+      </div>
+    </Fragment>
+  )
+}
+
+function renderStoryBlock(storySection, storyEditAttrs, homepageSource) {
+  return (
+    <Fragment key="story">
+      <DevTrace
+        markup="src/components/story-section.jsx"
+        content={storySection ? `homepage story from ${homepageSource}` : 'local fallback story copy'}
+      />
+      <div {...storyEditAttrs}>
+        <StorySection section={storySection} />
+      </div>
+    </Fragment>
+  )
+}
+
+function renderArticleBlock(articleSection, articleEditAttrs, homepageSource) {
+  if (!articleSection) {
+    return null
+  }
+  return (
+    <Fragment key="article">
+      <DevTrace
+        markup="src/components/article-section.jsx"
+        content={`homepage article from ${homepageSource}`}
+      />
+      <div {...articleEditAttrs}>
+        <ArticleSection section={articleSection} />
+      </div>
+    </Fragment>
+  )
+}
+
+function renderSectionBlock(
+  section,
+  file,
+  Component,
+  editAttrs,
+  homepageSource,
+  fromLabel,
+  fallbackLabel,
+  extraProps,
+) {
+  return (
+    <Fragment key={file}>
+      <DevTrace
+        markup={`src/components/${file}`}
+        content={getTraceContent(section, homepageSource, fromLabel, fallbackLabel)}
+      />
+      <div {...editAttrs}>
+        <Component section={section} {...extraProps} />
+      </div>
+    </Fragment>
+  )
+}
+
+function renderQuoteBlock(quoteSection, quoteEditAttrs, homepageSource) {
+  if (!quoteSection) {
+    return null
+  }
+  return (
+    <Fragment key="quote">
+      <DevTrace markup="src/components/quote-section.jsx" content={`homepage quote from ${homepageSource}`} />
+      <div {...quoteEditAttrs}>
+        <QuoteSection
+          quoteText={portableTextToPlainText(quoteSection?.body) || ''}
+          eyebrow={quoteSection?.eyebrow}
+          attribution={quoteSection?.title}
+        />
+      </div>
+    </Fragment>
+  )
+}
+
+function renderTestimonialsBlock(testimonialsSection, reviews, homepageSource, testimonialsEditAttrs) {
+  const reviewSource = reviews.length ? 'sanity' : 'local fallback testimonials'
+  const content = testimonialsSection
+    ? `homepage testimonials heading from ${homepageSource} and reviews from ${reviewSource}`
+    : `homepage reviews from ${reviewSource}`
+  return (
+    <Fragment key="testimonials">
+      <DevTrace markup="src/components/testimonials.jsx" content={content} />
+      <div {...testimonialsEditAttrs}>
+        <Testimonails reviews={reviews} section={testimonialsSection} />
+      </div>
+    </Fragment>
+  )
+}
+
+function renderExtraSections(extraHomepageSections, homepage, site) {
+  return extraHomepageSections.map((section, index) => {
+    const sectionType = resolveSectionType(section)
+    const Component = sectionRenderers[sectionType]
+    if (!Component) {
+      return null
+    }
+    return (
+      <div
+        key={`${section._key || sectionType || 'extra-homepage-section'}-${index}`}
+        {...getSanitySectionEditAttributes(homepage, section)}
+      >
+        <Component
+          page={homepage}
+          section={section}
+          site={site}
+          sectionId={`homepage-extra-${sectionType}-${index}`}
+        />
+      </div>
+    )
+  })
+}
+
+function renderExtraBandSections(extraBandSections, homepage) {
+  return extraBandSections.map((section, index) => {
+    const bandProps = buildBandProps(section, null)
+    return (
+      <div key={`homepage-band-extra-${index + 1}`} {...getSanitySectionEditAttributes(homepage, section)}>
+        <Band {...bandProps} sectionId={`homepage-band-extra-${index + 1}`} />
+      </div>
+    )
+  })
+}
+
+function renderBandBlock(section, sectionId, fallbackProps, editAttributes) {
+  const hasSectionConfig = Boolean(section)
+  if (!hasSectionConfig && !fallbackProps) {
+    return null
+  }
+  const bandProps = buildBandProps(section, fallbackProps)
+  return (
+    <div {...editAttributes}>
+      <Band {...bandProps} sectionId={sectionId} />
+    </div>
+  )
+}
+
+function getResourcesContent(resourcesSection, homepageSource) {
+  return `typed homepage resource grid from ${resourcesSection ? homepageSource : 'local fallback cards'}`
+}
+
+function getConsultationContent(ctaSection, homepageSource) {
+  return ctaSection ? `homepage cta from ${homepageSource}` : 'local fallback cta + live lead form'
+}
+
 export default function App({
   homepage = null,
   heroSection = null,
@@ -36,117 +368,36 @@ export default function App({
   homepageSource = 'fixture',
 }) {
   const homepageSections = homepage?.sections || []
-  const resolveSectionType = (section) => {
-    if (section?.type) {
-      return section.type
-    }
+  const storySection = findSection(homepageSections, 'story', 'storySection')
+  const articleSection = findSection(homepageSections, 'article', 'articleSection')
+  const calculatorSection = findSection(homepageSections, 'calculator', 'calculatorSection')
+  const costsSection = findSection(homepageSections, 'costs', 'costsSection')
+  const guidesSection =
+    findSection(homepageSections, 'guides', 'guidesSection') ||
+    findSection(homepageSections, 'guideGrid', 'guideGridSection')
+  const snapshotSection = findSection(homepageSections, 'snapshot', 'snapshotSection')
+  const incentivesSection = findSection(homepageSections, 'incentives', 'incentivesSection')
+  const testimonialsSection = findSection(homepageSections, 'testimonials', 'testimonialsSection')
+  const quoteSection = findSection(homepageSections, 'quote', 'quoteSection')
+  const ctaSection = findSection(homepageSections, 'cta', 'ctaSection')
 
-    if (typeof section?._type === 'string' && section._type.endsWith('Section')) {
-      return section._type.slice(0, -'Section'.length)
-    }
-
-    return ''
-  }
-  const findSection = (type, sanityType = '') =>
-    homepageSections.find(
-      (section) => resolveSectionType(section) === type || (sanityType && section._type === sanityType),
-    ) || null
-  const homepageEditAttrs = getSanityPageEditAttributes(homepage, 'sections')
-  const storySection = findSection('story', 'storySection')
-  const articleSection = findSection('article', 'articleSection')
-  const calculatorSection = findSection('calculator', 'calculatorSection')
-  const costsSection = findSection('costs', 'costsSection')
-  const guidesSection = findSection('guides', 'guidesSection') || findSection('guideGrid', 'guideGridSection')
-  const snapshotSection = findSection('snapshot', 'snapshotSection')
-  const incentivesSection = findSection('incentives', 'incentivesSection')
-  const testimonialsSection = findSection('testimonials', 'testimonialsSection')
-  const quoteSection = findSection('quote', 'quoteSection')
-  const ctaSection = findSection('cta', 'ctaSection')
-  const bandSections = homepageSections.filter((section) => resolveSectionType(section) === 'band')
-  const handledHomepageSectionTypes = new Set([
-    'hero',
-    'story',
-    'article',
-    'calculator',
-    'costs',
-    'guides',
-    'guideGrid',
-    'snapshot',
-    'incentives',
-    'testimonials',
-    'quote',
-    'cta',
-    'resourceGrid',
-    'resources',
-    'band',
-  ])
-  const extraHomepageSections = homepageSections.filter((section) => {
-    const sectionType = resolveSectionType(section)
-
-    if (!sectionType) {
-      return false
-    }
-
-    if (sectionType === 'cta') {
-      return section !== ctaSection
-    }
-
-    return !handledHomepageSectionTypes.has(sectionType)
-  })
+  const bandSections = filterBandSections(homepageSections)
   const firstBandSection = bandSections[0] || null
   const secondBandSection = bandSections[1] || null
   const extraBandSections = bandSections.slice(2)
-  const sectionEditAttrs = (section, fallbackPath = 'sections') =>
-    section ? getSanitySectionEditAttributes(homepage, section, fallbackPath) : {}
-  const heroEditAttrs = getSanitySectionEditAttributes(homepage, heroSection, 'heroTitle')
-  const storyEditAttrs = sectionEditAttrs(storySection)
-  const articleEditAttrs = sectionEditAttrs(articleSection)
-  const calculatorEditAttrs = sectionEditAttrs(calculatorSection)
-  const costsEditAttrs = sectionEditAttrs(costsSection)
-  const guidesEditAttrs = sectionEditAttrs(guidesSection)
-  const snapshotEditAttrs = sectionEditAttrs(snapshotSection)
-  const incentivesEditAttrs = sectionEditAttrs(incentivesSection)
-  const testimonialsEditAttrs = sectionEditAttrs(testimonialsSection)
-  const quoteEditAttrs = sectionEditAttrs(quoteSection)
-  const resourcesEditAttrs = sectionEditAttrs(resourcesSection)
-  const consultationEditAttrs = sectionEditAttrs(ctaSection)
-  const firstBandEditAttrs = sectionEditAttrs(firstBandSection)
-  const secondBandEditAttrs = sectionEditAttrs(secondBandSection)
+  const extraHomepageSections = filterExtraSections(homepageSections, ctaSection)
 
-  const renderBand = (section, sectionId, fallbackProps = null, editAttributes = {}) => {
-    const hasSectionConfig = Boolean(section)
-
-    if (!hasSectionConfig && !fallbackProps) {
-      return null
-    }
-
-    return (
-      <div {...editAttributes}>
-        <Band
-          colors={
-            Array.isArray(section?.colors) && section.colors.length ? section.colors : fallbackProps?.colors
-          }
-          tint={section?.tint || fallbackProps?.tint}
-          minHeight={typeof section?.minHeight === 'number' ? section.minHeight : fallbackProps?.minHeight}
-          maxHeight={typeof section?.maxHeight === 'number' ? section.maxHeight : fallbackProps?.maxHeight}
-          rotate={typeof section?.rotate === 'boolean' ? section.rotate : Boolean(fallbackProps?.rotate)}
-          scrollStart={
-            typeof section?.scrollStart === 'number' ? section.scrollStart : fallbackProps?.scrollStart
-          }
-          scrollEnd={typeof section?.scrollEnd === 'number' ? section.scrollEnd : fallbackProps?.scrollEnd}
-          reverse={typeof section?.reverse === 'boolean' ? section.reverse : Boolean(fallbackProps?.reverse)}
-          autoAnimate={
-            typeof section?.autoAnimate === 'boolean'
-              ? section.autoAnimate
-              : Boolean(fallbackProps?.autoAnimate)
-          }
-          speed={typeof section?.speed === 'number' ? section.speed : fallbackProps?.speed}
-          amplitude={typeof section?.amplitude === 'number' ? section.amplitude : fallbackProps?.amplitude}
-          sectionId={sectionId}
-        />
-      </div>
-    )
-  }
+  const storyEditAttrs = getSectionEditAttrs(homepage, storySection)
+  const articleEditAttrs = getSectionEditAttrs(homepage, articleSection)
+  const calculatorEditAttrs = getSectionEditAttrs(homepage, calculatorSection)
+  const costsEditAttrs = getSectionEditAttrs(homepage, costsSection)
+  const guidesEditAttrs = getSectionEditAttrs(homepage, guidesSection)
+  const snapshotEditAttrs = getSectionEditAttrs(homepage, snapshotSection)
+  const incentivesEditAttrs = getSectionEditAttrs(homepage, incentivesSection)
+  const testimonialsEditAttrs = getSectionEditAttrs(homepage, testimonialsSection)
+  const quoteEditAttrs = getSectionEditAttrs(homepage, quoteSection)
+  const resourcesEditAttrs = getSectionEditAttrs(homepage, resourcesSection)
+  const consultationEditAttrs = getSectionEditAttrs(homepage, ctaSection)
 
   return (
     <>
@@ -158,161 +409,91 @@ export default function App({
       <DevTrace markup="src/components/header.jsx" content="local JSX nav and service catalog links" />
       <Header />
       <main id="main-content" {...getSanityPageEditAttributes(homepage, 'title')}>
-        {heroSection ? (
-          <>
-            <DevTrace
-              markup="src/components/hero.jsx"
-              content={`local JSX hero copy + hero media from homepage record (${homepageSource})`}
-            />
-            <div {...heroEditAttrs}>
-              <Hero heroSection={heroSection} />
-            </div>
-          </>
-        ) : null}
-        {renderBand(
+        {renderHeroBlock(
+          heroSection,
+          getSectionEditAttrs(homepage, heroSection, 'heroTitle'),
+          homepageSource,
+        )}
+        {renderBandBlock(
           firstBandSection,
           'homepage-band-1',
-          {
-            colors: ['#2660AE', '#1C447F', '#0C333A', 'var(--color-secondary-alt)', 'var(--color-amber-600)'],
-            maxHeight: 12,
-            tint: 'var(--color-secondary-950)',
-          },
-          firstBandSection ? firstBandEditAttrs : homepageEditAttrs,
+          BAND1_FALLBACK_PROPS,
+          firstBandSection
+            ? getSectionEditAttrs(homepage, firstBandSection)
+            : getSanityPageEditAttributes(homepage, 'sections'),
         )}
-        <DevTrace
-          markup="src/components/story-section.jsx"
-          content={storySection ? `homepage story from ${homepageSource}` : 'local fallback story copy'}
-        />
-        <div {...storyEditAttrs}>
-          <StorySection section={storySection} />
-        </div>
-        {articleSection ? (
-          <>
-            <DevTrace
-              markup="src/components/article-section.jsx"
-              content={`homepage article from ${homepageSource}`}
-            />
-            <div {...articleEditAttrs}>
-              <ArticleSection section={articleSection} />
-            </div>
-          </>
-        ) : null}
-        <DevTrace
-          markup="src/components/calculator-section.jsx"
-          content={
-            calculatorSection
-              ? `homepage calculator copy from ${homepageSource}`
-              : 'local JSX copy and local calculator logic'
-          }
-        />
-        <div {...calculatorEditAttrs}>
-          <CalculatorSection section={calculatorSection} />
-        </div>
-        <DevTrace
-          markup="src/components/costs-section.jsx"
-          content={costsSection ? `homepage costs copy from ${homepageSource}` : 'local JSX copy'}
-        />
-        <div {...costsEditAttrs}>
-          <CostsSection section={costsSection} />
-        </div>
-        <DevTrace
-          markup="src/components/guides-section.jsx"
-          content={
-            guidesSection
-              ? `homepage guides framing copy from ${homepageSource} + guide cards from guides library`
-              : 'local JSX section + guide cards from guides library'
-          }
-        />
-        <div {...guidesEditAttrs}>
-          <GuidesSection section={guidesSection} page={homepage} />
-        </div>
-        <DevTrace
-          markup="src/components/snapshot-section.jsx"
-          content={snapshotSection ? `homepage snapshot copy from ${homepageSource}` : 'local JSX copy'}
-        />
-        <div {...snapshotEditAttrs}>
-          <SnapshotSection section={snapshotSection} />
-        </div>
-        {renderBand(
+        {renderStoryBlock(storySection, storyEditAttrs, homepageSource)}
+        {renderArticleBlock(articleSection, articleEditAttrs, homepageSource)}
+        {renderSectionBlock(
+          calculatorSection,
+          'calculator-section.jsx',
+          CalculatorSection,
+          calculatorEditAttrs,
+          homepageSource,
+          'calculator copy',
+          'copy and local calculator logic',
+        )}
+        {renderSectionBlock(
+          costsSection,
+          'costs-section.jsx',
+          CostsSection,
+          costsEditAttrs,
+          homepageSource,
+          'costs copy',
+          'copy',
+        )}
+        {renderSectionBlock(
+          guidesSection,
+          'guides-section.jsx',
+          GuidesSection,
+          guidesEditAttrs,
+          homepageSource,
+          'guides framing copy + guide cards from guides library',
+          'section + guide cards from guides library',
+          { page: homepage },
+        )}
+        {renderSectionBlock(
+          snapshotSection,
+          'snapshot-section.jsx',
+          SnapshotSection,
+          snapshotEditAttrs,
+          homepageSource,
+          'snapshot copy',
+          'copy',
+        )}
+        {renderBandBlock(
           secondBandSection,
           'homepage-band-2',
           {},
-          secondBandSection ? secondBandEditAttrs : homepageEditAttrs,
+          secondBandSection
+            ? getSectionEditAttrs(homepage, secondBandSection)
+            : getSanityPageEditAttributes(homepage, 'sections'),
         )}
-        <DevTrace
-          markup="src/components/incentives-section.jsx"
-          content={incentivesSection ? `homepage incentives copy from ${homepageSource}` : 'local JSX copy'}
-        />
-        <div {...incentivesEditAttrs}>
-          <IncentivesSection section={incentivesSection} />
-        </div>
-        <DevTrace
-          markup="src/components/testimonials.jsx"
-          content={
-            testimonialsSection
-              ? `homepage testimonials heading from ${homepageSource} and reviews from ${reviews.length ? 'sanity' : 'local fallback testimonials'}`
-              : `homepage reviews from ${reviews.length ? 'sanity' : 'local fallback testimonials'}`
-          }
-        />
-        <div {...testimonialsEditAttrs}>
-          <Testimonails reviews={reviews} section={testimonialsSection} />
-        </div>
-        {quoteSection ? (
-          <>
-            <DevTrace
-              markup="src/components/quote-section.jsx"
-              content={`homepage quote from ${homepageSource}`}
-            />
-            <div {...quoteEditAttrs}>
-              <QuoteSection
-                quoteText={portableTextToPlainText(quoteSection?.body) || ''}
-                eyebrow={quoteSection?.eyebrow}
-                attribution={quoteSection?.title}
-              />
-            </div>
-          </>
-        ) : null}
+        {renderSectionBlock(
+          incentivesSection,
+          'incentives-section.jsx',
+          IncentivesSection,
+          incentivesEditAttrs,
+          homepageSource,
+          'incentives copy',
+          'copy',
+        )}
+        {renderTestimonialsBlock(testimonialsSection, reviews, homepageSource, testimonialsEditAttrs)}
+        {renderQuoteBlock(quoteSection, quoteEditAttrs, homepageSource)}
         <DevTrace
           markup="src/components/resources-section.jsx"
-          content={`typed homepage resource grid from ${resourcesSection ? homepageSource : 'local fallback cards'}`}
+          content={getResourcesContent(resourcesSection, homepageSource)}
         />
         <div {...resourcesEditAttrs}>
           <ResourcesSection section={resourcesSection} />
         </div>
         <DevTrace
           markup="src/components/consultation-section.jsx"
-          content={ctaSection ? `homepage cta from ${homepageSource}` : 'local fallback cta + live lead form'}
+          content={getConsultationContent(ctaSection, homepageSource)}
         />
-        {extraHomepageSections.map((section, index) => {
-          const sectionType = resolveSectionType(section)
-          const Component = sectionRenderers[sectionType]
-          if (!Component) {
-            return null
-          }
-
-          return (
-            <div
-              key={`${section._key || sectionType || 'extra-homepage-section'}-${index}`}
-              {...getSanitySectionEditAttributes(homepage, section)}
-            >
-              <Component
-                page={homepage}
-                section={section}
-                site={site}
-                sectionId={`homepage-extra-${sectionType}-${index}`}
-              />
-            </div>
-          )
-        })}
+        {renderExtraSections(extraHomepageSections, homepage, site)}
         <ConsultationSection site={site} section={ctaSection} editAttributes={consultationEditAttrs} />
-        {extraBandSections.map((section, index) =>
-          renderBand(
-            section,
-            `homepage-band-extra-${index + 1}`,
-            null,
-            getSanitySectionEditAttributes(homepage, section),
-          ),
-        )}
+        {renderExtraBandSections(extraBandSections, homepage)}
       </main>
       <DevTrace markup="src/components/footer.jsx" content="local JSX footer + service catalog links" />
       <Footer />

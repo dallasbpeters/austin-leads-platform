@@ -8,17 +8,7 @@ const imageBuilder = projectId && dataset ? createImageUrlBuilder({ projectId, d
  * Build a CDN URL that respects Sanity crop + hotspot (uploaded / generated assets).
  * Falls back to stored asset.url when the builder cannot run.
  */
-export function buildSanityImageUrl(imageField, { width = 1920, height } = {}) {
-  if (!imageField?.asset) {
-    return ''
-  }
-
-  const fallbackUrl = imageField.asset?.url || ''
-  const assetRef = imageField.asset?._ref || imageField.asset?._id
-  if (!imageBuilder || !assetRef) {
-    return fallbackUrl
-  }
-
+function buildSanityUrlOrFallback(imageField, assetRef, width, height) {
   try {
     const source = {
       _type: 'image',
@@ -34,10 +24,20 @@ export function buildSanityImageUrl(imageField, { width = 1920, height } = {}) {
     if (height) {
       chain = chain.height(Math.round(height))
     }
-    return chain.url() || fallbackUrl
+    return chain.url()
   } catch {
-    return fallbackUrl
+    return null
   }
+}
+
+export function buildSanityImageUrl(imageField, { width = 1920, height } = {}) {
+  if (!imageField?.asset) return ''
+
+  const fallbackUrl = imageField.asset?.url || ''
+  const assetRef = imageField.asset?._ref || imageField.asset?._id
+  if (!imageBuilder || !assetRef) return fallbackUrl
+
+  return buildSanityUrlOrFallback(imageField, assetRef, width, height) || fallbackUrl
 }
 
 export function getSanityAssetUrl(imageField, options) {
@@ -122,45 +122,63 @@ function inferVideoMimeFromUrl(url) {
  *   height: number|null,
  * } | null}
  */
-export function getHeroVideoSource(videoField, videoAssetField = null, options = {}) {
-  const provider =
-    (typeof videoField?.provider === 'string' && videoField.provider) ||
-    (videoAssetField?.asset ? 'upload' : 'external')
+const VIDEO_SOURCE_RESOLVERS = [
+  {
+    test: (vf, vaf) => vaf?.asset?.url,
+    src: (vf, vaf) => vaf.asset.url,
+    type: (vf, vaf) => vaf.asset?.mimeType || inferVideoMimeFromUrl(vaf.asset.url),
+  },
+  {
+    test: (vf) => vf?.urls?.mp4,
+    src: (vf) => vf.urls.mp4,
+    type: () => 'video/mp4',
+  },
+  {
+    test: (vf) => vf?.urls?.webm,
+    src: (vf) => vf.urls.webm,
+    type: () => 'video/webm',
+  },
+  {
+    test: (vf) => vf?.urls?.hls,
+    src: (vf) => vf.urls.hls,
+    type: () => 'application/x-mpegURL',
+  },
+  {
+    test: (vf) => vf?.url,
+    src: (vf) => vf.url,
+    type: (vf) => inferVideoMimeFromUrl(vf.url),
+  },
+]
 
-  let src = ''
-  let type = null
+function resolveHeroVideoProvider(videoField, videoAssetField) {
+  if (typeof videoField?.provider === 'string' && videoField.provider) return videoField.provider
+  return videoAssetField?.asset ? 'upload' : 'external'
+}
 
-  const uploadedUrl = videoAssetField?.asset?.url || ''
-  if (uploadedUrl) {
-    src = uploadedUrl
-    type = videoAssetField?.asset?.mimeType || inferVideoMimeFromUrl(uploadedUrl)
-  } else if (videoField?.urls?.mp4) {
-    src = videoField.urls.mp4
-    type = 'video/mp4'
-  } else if (videoField?.urls?.webm) {
-    src = videoField.urls.webm
-    type = 'video/webm'
-  } else if (videoField?.urls?.hls) {
-    src = videoField.urls.hls
-    type = 'application/x-mpegURL'
-  } else if (videoField?.url) {
-    src = videoField.url
-    type = inferVideoMimeFromUrl(videoField.url)
-  }
-
-  if (!src) {
-    return null
-  }
-
+function resolveHeroVideoPoster(videoField, options) {
   const posterField = videoField?.posterImage
-  const poster =
+  return (
     buildSanityImageUrl(posterField, { width: options.posterWidth || 1920 }) || videoField?.urls?.poster || ''
+  )
+}
+
+function resolveVideoDimension(value) {
+  return typeof value === 'number' ? value : null
+}
+
+export function getHeroVideoSource(videoField, videoAssetField = null, options = {}) {
+  const provider = resolveHeroVideoProvider(videoField, videoAssetField)
+  const resolver = VIDEO_SOURCE_RESOLVERS.find((r) => r.test(videoField, videoAssetField))
+  const src = resolver ? resolver.src(videoField, videoAssetField) : ''
+  const type = resolver ? resolver.type(videoField, videoAssetField) : null
+
+  if (!src) return null
 
   return {
     provider,
     src,
     type,
-    poster,
+    poster: resolveHeroVideoPoster(videoField, options),
     externalId: videoField?.externalId || '',
     alt: videoField?.alt || '',
     autoplay: videoField?.autoplay !== false,
@@ -168,8 +186,8 @@ export function getHeroVideoSource(videoField, videoAssetField = null, options =
     muted: videoField?.muted !== false,
     controls: Boolean(videoField?.controls),
     playsInline: videoField?.playsInline !== false,
-    width: typeof videoField?.width === 'number' ? videoField.width : null,
-    height: typeof videoField?.height === 'number' ? videoField.height : null,
+    width: resolveVideoDimension(videoField?.width),
+    height: resolveVideoDimension(videoField?.height),
   }
 }
 

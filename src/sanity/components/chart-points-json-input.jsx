@@ -21,15 +21,10 @@ function generateKey(index) {
   return `chart-point-${Date.now()}-${index}`
 }
 
-/** Sanity requires _key on every list item. Ensure all items have a non-empty unique _key. */
 function ensureListKeys(items, prefix = 'item') {
-  if (!Array.isArray(items)) {
-    return items
-  }
+  if (!Array.isArray(items)) return items
   return items.map((item, index) => {
-    if (!item || typeof item !== 'object') {
-      return item
-    }
+    if (!item || typeof item !== 'object') return item
     const existing = item._key != null && String(item._key).trim()
     const key = existing ? String(item._key) : `${prefix}-${index}-${Date.now().toString(36)}`
     return { ...item, _key: key }
@@ -37,103 +32,77 @@ function ensureListKeys(items, prefix = 'item') {
 }
 
 function normalizeAreaValuesArray(raw) {
-  if (!Array.isArray(raw)) {
-    return null
-  }
+  if (!Array.isArray(raw)) return null
   const out = raw.map((v) => coerceNumber(v)).filter((n) => n !== null && n >= 0)
   return out.length ? out : null
 }
 
+function normalizeArrayPoint(value, index) {
+  const label = String(value[0] ?? `Point ${index + 1}`)
+  const barValue = coerceNumber(value[1]) ?? 0
+  const lineValue = coerceNumber(value[2]) ?? 0
+  const areaValues = normalizeAreaValuesArray(value[3])
+  const point = {
+    _type: 'energyChartPoint',
+    _key: generateKey(index),
+    label,
+    barValue,
+    lineValue,
+  }
+  if (areaValues) point.areaValues = areaValues
+  return point
+}
+
+function normalizeNumberPoint(value, index) {
+  return {
+    _type: 'energyChartPoint',
+    _key: generateKey(index),
+    label: `Point ${index + 1}`,
+    barValue: value,
+    lineValue: 0,
+  }
+}
+
+function normalizeObjectPoint(value, index) {
+  const labelCandidate = value.label ?? value.name ?? value.month ?? value.category ?? value.x ?? value.key
+  const barCandidate = value.barValue ?? value.primary ?? value.value ?? value.bar ?? value.y
+  const lineCandidate = value.lineValue ?? value.secondary ?? value.line ?? value.target ?? value.y2
+  const areaValues = normalizeAreaValuesArray(value.areaValues) ?? normalizeAreaValuesArray(value.areas)
+
+  const point = {
+    _type: 'energyChartPoint',
+    _key: value._key || generateKey(index),
+    label: String(labelCandidate ?? `Point ${index + 1}`),
+    barValue: coerceNumber(barCandidate) ?? 0,
+    lineValue: coerceNumber(lineCandidate) ?? 0,
+  }
+  if (areaValues) point.areaValues = areaValues
+  return point
+}
+
 function normalizePoint(value, index) {
-  if (Array.isArray(value)) {
-    const label = String(value[0] ?? `Point ${index + 1}`)
-    const barValue = coerceNumber(value[1]) ?? 0
-    const lineValue = coerceNumber(value[2]) ?? 0
-    const areaValues = normalizeAreaValuesArray(value[3])
-    const point = {
-      _type: 'energyChartPoint',
-      _key: generateKey(index),
-      label,
-      barValue,
-      lineValue,
-    }
-    if (areaValues) {
-      point.areaValues = areaValues
-    }
-    return point
-  }
-
-  if (typeof value === 'number') {
-    return {
-      _type: 'energyChartPoint',
-      _key: generateKey(index),
-      label: `Point ${index + 1}`,
-      barValue: value,
-      lineValue: 0,
-    }
-  }
-
-  if (value && typeof value === 'object') {
-    const labelCandidate = value.label ?? value.name ?? value.month ?? value.category ?? value.x ?? value.key
-    const barCandidate = value.barValue ?? value.primary ?? value.value ?? value.bar ?? value.y
-    const lineCandidate = value.lineValue ?? value.secondary ?? value.line ?? value.target ?? value.y2
-    const areaValues = normalizeAreaValuesArray(value.areaValues) ?? normalizeAreaValuesArray(value.areas)
-
-    const point = {
-      _type: 'energyChartPoint',
-      _key: value._key || generateKey(index),
-      label: String(labelCandidate ?? `Point ${index + 1}`),
-      barValue: coerceNumber(barCandidate) ?? 0,
-      lineValue: coerceNumber(lineCandidate) ?? 0,
-    }
-    if (areaValues) {
-      point.areaValues = areaValues
-    }
-    return point
-  }
-
+  if (Array.isArray(value)) return normalizeArrayPoint(value, index)
+  if (typeof value === 'number') return normalizeNumberPoint(value, index)
+  if (value && typeof value === 'object') return normalizeObjectPoint(value, index)
   return null
 }
 
 function extractPointsCollection(parsed) {
-  if (Array.isArray(parsed)) {
-    return parsed
-  }
-
-  if (!parsed || typeof parsed !== 'object') {
-    return null
-  }
-
-  if (Array.isArray(parsed.chartPoints)) {
-    return parsed.chartPoints
-  }
-
-  if (Array.isArray(parsed.points)) {
-    return parsed.points
-  }
-
-  if (Array.isArray(parsed.data)) {
-    return parsed.data
-  }
-
-  if (parsed.section && Array.isArray(parsed.section.chartPoints)) {
-    return parsed.section.chartPoints
-  }
-
+  if (Array.isArray(parsed)) return parsed
+  if (!parsed || typeof parsed !== 'object') return null
+  if (Array.isArray(parsed.chartPoints)) return parsed.chartPoints
+  if (Array.isArray(parsed.points)) return parsed.points
+  if (Array.isArray(parsed.data)) return parsed.data
+  if (parsed.section && Array.isArray(parsed.section.chartPoints)) return parsed.section.chartPoints
   if (Array.isArray(parsed.sections)) {
     const chartSection = parsed.sections.find((section) => Array.isArray(section?.chartPoints))
-    if (chartSection) {
-      return chartSection.chartPoints
-    }
+    if (chartSection) return chartSection.chartPoints
   }
-
   return null
 }
 
 function extractChartConfig(parsed) {
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return {}
-  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
 
   const sectionFromSections = Array.isArray(parsed.sections)
     ? parsed.sections.find((section) => section && typeof section === 'object')
@@ -165,28 +134,12 @@ function extractChartConfig(parsed) {
   ]
 
   return configKeys.reduce((accumulator, key) => {
-    if (source[key] !== undefined) {
-      accumulator[key] = source[key]
-    }
+    if (source[key] !== undefined) accumulator[key] = source[key]
     return accumulator
   }, {})
 }
 
-function parseChartPointsJson(input) {
-  const parsed = JSON.parse(input)
-  const collection = extractPointsCollection(parsed)
-
-  if (!Array.isArray(collection)) {
-    throw new Error('JSON must be an array, or an object containing chartPoints/points/data.')
-  }
-
-  const points = collection.map((entry, index) => normalizePoint(entry, index)).filter(Boolean)
-
-  if (!points.length) {
-    throw new Error('No valid points found in JSON.')
-  }
-
-  let config = extractChartConfig(parsed)
+function inferAreaSeriesConfig(points, config, parsed) {
   const maxAreaValuesLen = points.reduce(
     (max, point) => Math.max(max, Array.isArray(point?.areaValues) ? point.areaValues.length : 0),
     0,
@@ -194,32 +147,40 @@ function parseChartPointsJson(input) {
   const hasAreaSeries = Array.isArray(config.chartAreaSeries) && config.chartAreaSeries.length > 0
   const isAreaChartImport =
     config.chartType === 'area' || parsed.chartType === 'area' || parsed._type === 'energyChartSection'
-  if (maxAreaValuesLen >= 2 && !hasAreaSeries && isAreaChartImport) {
-    config = {
-      ...config,
-      chartAreaSeries: Array.from({ length: maxAreaValuesLen }, (_, i) => ({
-        title:
-          i === 0
-            ? config.chartPrimaryLabel || 'Primary'
-            : i === 1
-              ? config.chartSecondaryLabel || 'Secondary'
-              : `Series ${i + 1}`,
-        ...(i === 0 && config.chartBarColor ? { color: config.chartBarColor } : {}),
-        ...(i === 1 && config.chartLineColor ? { color: config.chartLineColor } : {}),
-      })),
-    }
-  }
+  if (maxAreaValuesLen < 2 || hasAreaSeries || !isAreaChartImport) return config
 
   return {
-    points,
-    config,
+    ...config,
+    chartAreaSeries: Array.from({ length: maxAreaValuesLen }, (_, i) => ({
+      title:
+        i === 0
+          ? config.chartPrimaryLabel || 'Primary'
+          : i === 1
+            ? config.chartSecondaryLabel || 'Secondary'
+            : `Series ${i + 1}`,
+      ...(i === 0 && config.chartBarColor ? { color: config.chartBarColor } : {}),
+      ...(i === 1 && config.chartLineColor ? { color: config.chartLineColor } : {}),
+    })),
   }
 }
 
-function patchValueForChartConfig(key, fieldValue) {
-  if (key !== 'chartAreaSeries' || !Array.isArray(fieldValue)) {
-    return fieldValue
+function parseChartPointsJson(input) {
+  const parsed = JSON.parse(input)
+  const collection = extractPointsCollection(parsed)
+  if (!Array.isArray(collection)) {
+    throw new Error('JSON must be an array, or an object containing chartPoints/points/data.')
   }
+
+  const points = collection.map((entry, index) => normalizePoint(entry, index)).filter(Boolean)
+  if (!points.length) throw new Error('No valid points found in JSON.')
+
+  const config = inferAreaSeriesConfig(points, extractChartConfig(parsed), parsed)
+
+  return { points, config }
+}
+
+function patchValueForChartConfig(key, fieldValue) {
+  if (key !== 'chartAreaSeries' || !Array.isArray(fieldValue)) return fieldValue
   return fieldValue.map((row, index) => ({
     _type: 'energyChartAreaSeriesItem',
     _key: typeof row?._key === 'string' && row._key ? row._key : generateKey(index),
@@ -234,53 +195,33 @@ function escapeKeyForJsonMatch(key) {
     .replace(/"/g, '\\"')
 }
 
-/**
- * Section _key for this chart. Studio often uses ['sections', 2, 'chartPoints'] (numeric index),
- * which never matched the old {_key}-only check — API save was skipped and points never persisted.
- */
 function resolveChartSectionKey(path, getFormValue) {
-  if (!Array.isArray(path) || path.length < 2) {
-    return null
-  }
+  if (!Array.isArray(path) || path.length < 2) return null
 
   const parent = typeof getFormValue === 'function' ? getFormValue(path.slice(0, -1)) : null
-  if (parent?._key) {
-    return String(parent._key)
-  }
+  if (parent?._key) return String(parent._key)
 
   for (let i = path.length - 1; i >= 2; i -= 1) {
-    if (path[i] !== 'chartPoints' || path[i - 2] !== 'sections') {
-      continue
-    }
+    if (path[i] !== 'chartPoints' || path[i - 2] !== 'sections') continue
     const seg = path[i - 1]
-    if (seg && typeof seg === 'object' && seg._key) {
-      return String(seg._key)
-    }
+    if (seg && typeof seg === 'object' && seg._key) return String(seg._key)
     if (typeof seg === 'number' && typeof getFormValue === 'function') {
       const sections = getFormValue(['sections'])
       const item = Array.isArray(sections) ? sections[seg] : null
-      if (item?._key) {
-        return String(item._key)
-      }
+      if (item?._key) return String(item._key)
     }
   }
   return null
 }
 
 function ensurePortableTextKeys(value) {
-  if (!Array.isArray(value)) {
-    return value
-  }
+  if (!Array.isArray(value)) return value
   return value.map((block, bi) => {
-    if (!block || typeof block !== 'object' || block._type !== 'block') {
-      return block
-    }
+    if (!block || typeof block !== 'object' || block._type !== 'block') return block
     const blockKey = block._key || `pt-${bi}-${Date.now().toString(36)}`
     const children = Array.isArray(block.children)
       ? block.children.map((span, si) => {
-          if (!span || typeof span !== 'object') {
-            return span
-          }
+          if (!span || typeof span !== 'object') return span
           return {
             ...span,
             _key: span._key || `sp-${bi}-${si}-${Math.random().toString(36).slice(2, 9)}`,
@@ -299,9 +240,7 @@ function ensurePortableTextKeys(value) {
 async function persistChartImportToSanity({ client, docId, sectionKey, points, siblingNoBody, config }) {
   const keyedPoints = ensureListKeys(points, 'chart-point')
   const base = `sections[_key=="${escapeKeyForJsonMatch(sectionKey)}"]`
-  const payload = {
-    [`${base}.chartPoints`]: keyedPoints,
-  }
+  const payload = { [`${base}.chartPoints`]: keyedPoints }
   for (const [key, fieldValue] of siblingNoBody) {
     payload[`${base}.${key}`] = patchValueForChartConfig(key, fieldValue)
   }
@@ -335,12 +274,6 @@ async function persistChartImportToSanity({ client, docId, sectionKey, points, s
   return { bodySkipped }
 }
 
-/**
- * Next sections array with this chart block updated.
- * Always reads from Content Lake via getDocument — form state is often still stale
- * immediately after patchDocument(), so using getFormValue([]).sections would re-save
- * old chartPoints and make JSON import / edits appear to do nothing.
- */
 const buildNextSectionsForChartImport = async ({
   client,
   docId,
@@ -352,22 +285,15 @@ const buildNextSectionsForChartImport = async ({
 }) => {
   const doc = await client.getDocument(docId)
   const sections = Array.isArray(doc?.sections) ? [...doc.sections] : null
-  if (!sections?.length) {
-    throw new Error('Could not read sections for this document.')
-  }
+  if (!sections?.length) throw new Error('Could not read sections for this document.')
   const idx = sections.findIndex((s) => s && s._key === sectionKey)
-  if (idx < 0) {
-    throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
-  }
+  if (idx < 0) throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
   const prev = sections[idx]
   const nextSection = { ...prev, chartPoints: ensureListKeys(points, 'chart-point') }
   for (const [key, fieldValue] of siblingNoBody) {
     nextSection[key] = patchValueForChartConfig(key, fieldValue)
   }
-  if (includeBody && config?.body !== undefined) {
-    nextSection.body = config.body
-  }
-  // Sanity requires _key on every list item; ensure chart arrays are keyed before commit
+  if (includeBody && config?.body !== undefined) nextSection.body = config.body
   nextSection.chartPoints = ensureListKeys(nextSection.chartPoints, 'chart-point')
   nextSection.chartAreaSeries = ensureListKeys(nextSection.chartAreaSeries, 'area-series')
   return sections.map((s, i) => (i === idx ? nextSection : s))
@@ -386,13 +312,63 @@ export default function ChartPointsJsonInput(props) {
   const currentCount = useMemo(() => (Array.isArray(value) ? value.length : 0), [value])
   const parentPath = useMemo(() => path.slice(0, -1), [path])
 
+  function scheduleBodyPatch(config) {
+    if (config?.body === undefined) return
+    window.setTimeout(() => {
+      try {
+        patchDocument(PatchEvent.from([set(ensurePortableTextKeys(config.body), [...parentPath, 'body'])]))
+      } catch {
+        setStatus((s) => `${s} Body not updated — fix portable text in Studio.`)
+      }
+    }, 80)
+  }
+
+  async function saveToSanityApi(points, siblingNoBody, config) {
+    const docId = getFormValue([])?._id
+    const sectionKey = resolveChartSectionKey(path, getFormValue)
+    if (!docId || !sectionKey || typeof client?.patch !== 'function') {
+      return { saved: false, docId, sectionKey }
+    }
+    try {
+      const { bodySkipped } = await persistChartImportToSanity({
+        client,
+        docId,
+        sectionKey,
+        points,
+        siblingNoBody,
+        config,
+      })
+      return { saved: true, bodySkipped }
+    } catch (apiErr) {
+      const msg = apiErr?.message || String(apiErr)
+      setError(
+        `Sanity save failed: ${msg} Open the page from Structure (desk) if you are only in Preview, then try again.`,
+      )
+      setStatus('')
+      return { saved: false, error: true }
+    }
+  }
+
+  function reportApiError(docId, sectionKey) {
+    if (!docId) {
+      setError(
+        'Cannot save import: no document id in this view. Open the page from the Structure list, then import again.',
+      )
+      setStatus('Chart fields may have updated locally only — use Structure → open document → import.')
+    } else if (!sectionKey) {
+      setError('Cannot save import: chart must be inside page sections[].')
+      setStatus('')
+    }
+  }
+
   const applyParsedJson = useCallback(
     async ({ points, config }, sourceLabel = 'JSON') => {
-      const configCount = Object.keys(config || {}).length
+      const cfg = config || {}
+      const configCount = Object.keys(cfg).length
       setImporting(true)
       setError('')
 
-      const siblingEntries = Object.entries(config || {}).filter(([key]) => key !== 'chartPoints')
+      const siblingEntries = Object.entries(cfg).filter(([key]) => key !== 'chartPoints')
       const siblingNoBody = siblingEntries.filter(([key]) => key !== 'body')
 
       try {
@@ -400,58 +376,16 @@ export default function ChartPointsJsonInput(props) {
         for (const [key, fieldValue] of siblingNoBody) {
           patches.push(set(patchValueForChartConfig(key, fieldValue), [...parentPath, key]))
         }
-
         patchDocument(PatchEvent.from(patches))
+        scheduleBodyPatch(cfg)
 
-        if (config?.body !== undefined) {
-          window.setTimeout(() => {
-            try {
-              patchDocument(
-                PatchEvent.from([set(ensurePortableTextKeys(config.body), [...parentPath, 'body'])]),
-              )
-            } catch {
-              setStatus((s) => `${s} Body not updated — fix portable text in Studio.`)
-            }
-          }, 80)
-        }
-
-        const docId = getFormValue([])?._id
-        const sectionKey = resolveChartSectionKey(path, getFormValue)
-        let apiSaved = false
-        let bodySkippedNote = ''
-
-        if (docId && sectionKey && typeof client?.patch === 'function') {
-          try {
-            const { bodySkipped } = await persistChartImportToSanity({
-              client,
-              docId,
-              sectionKey,
-              points,
-              siblingNoBody,
-              config,
-            })
-            apiSaved = true
-            if (bodySkipped) {
-              bodySkippedNote = ' Body not saved — edit body in Studio or fix portable text.'
-            }
-          } catch (apiErr) {
-            const msg = apiErr?.message || String(apiErr)
-            setError(
-              `Sanity save failed: ${msg} Open the page from Structure (desk) if you are only in Preview, then try again.`,
-            )
-            setStatus('')
-          }
-        } else if (!docId) {
-          setError(
-            'Cannot save import: no document id in this view. Open the page from the Structure list, then import again.',
-          )
-          setStatus('Chart fields may have updated locally only — use Structure → open document → import.')
-        } else if (!sectionKey) {
-          setError('Cannot save import: chart must be inside page sections[].')
-          setStatus('')
-        }
-
-        if (apiSaved) {
+        const { saved, bodySkipped, docId, sectionKey } = await saveToSanityApi(points, siblingNoBody, cfg)
+        if (!saved && docId != null) {
+          reportApiError(docId, sectionKey)
+        } else if (saved) {
+          const bodySkippedNote = bodySkipped
+            ? ' Body not saved — edit body in Studio or fix portable text.'
+            : ''
           setStatus(
             (configCount > 0
               ? `Imported ${points.length} points + ${configCount} section fields (${sourceLabel}).`
@@ -485,10 +419,8 @@ export default function ChartPointsJsonInput(props) {
   const handleJsonFileChange = async (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-
     setError('')
     setStatus('')
-
     try {
       const text = await file.text()
       setJsonText(text)

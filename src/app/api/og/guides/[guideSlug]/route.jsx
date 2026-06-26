@@ -109,6 +109,35 @@ async function buildHardFallbackPngResponse(includeBody, requestUrl) {
   })
 }
 
+function createBaseOgUrl(requestUrl, guidePath, guideSlug, ogVersion) {
+  const url = new URL('/api/og', requestUrl.origin)
+  url.searchParams.set('g', '1')
+  url.searchParams.set('p', guidePath)
+  url.searchParams.set('t', titleFromGuideSlug(guideSlug) || 'Guide')
+  url.searchParams.set('ogv', ogVersion)
+  return url
+}
+
+function enrichOgUrlFromPage(url, page, site) {
+  if (!page) return
+  url.searchParams.set('t', page?.seo?.title || page?.title || site?.name || 'Guide')
+  if (page?.guideCardColor) url.searchParams.set('b', page.guideCardColor)
+  if (page?.guideCategory) url.searchParams.set('c', page.guideCategory)
+  const versionStamp = page?.guideCardMetaUpdatedAt || page?._updatedAt
+  if (versionStamp) {
+    url.searchParams.set('v', String(new Date(versionStamp).getTime() || versionStamp))
+  }
+}
+
+async function fetchOgPngWithFallback(guideSlug, guidePath, requestUrl, userAgent) {
+  const primaryUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9')
+  const primaryResult = await fetchPng(primaryUrl.toString(), userAgent)
+  if (primaryResult) return primaryResult
+
+  const fallbackUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9-min')
+  return fetchPng(fallbackUrl.toString(), userAgent)
+}
+
 async function buildGuideOgResponse(request, context, includeBody = true) {
   const requestUrl = new URL(request.url)
   try {
@@ -121,37 +150,14 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
 
     const userAgent = request.headers.get('user-agent') || 'guide-og-proxy'
     const guidePath = getGuidePath(guideSlug)
-    const upstreamUrl = new URL('/api/og', requestUrl.origin)
-    upstreamUrl.searchParams.set('g', '1')
-    upstreamUrl.searchParams.set('p', guidePath)
-    upstreamUrl.searchParams.set('t', titleFromGuideSlug(guideSlug) || 'Guide')
-    upstreamUrl.searchParams.set('ogv', 'guide-v9')
-
     const host = getRequestHost(request)
     const site = await resolveSiteByHost(host)
     const page = await getPageForRequest(site, ['guides', guideSlug])
-    if (page) {
-      upstreamUrl.searchParams.set('t', page?.seo?.title || page?.title || site?.name || 'Guide')
-      if (page?.guideCardColor) upstreamUrl.searchParams.set('b', page.guideCardColor)
-      if (page?.guideCategory) upstreamUrl.searchParams.set('c', page.guideCategory)
-      const versionStamp = page?.guideCardMetaUpdatedAt || page?._updatedAt
-      if (versionStamp) {
-        upstreamUrl.searchParams.set('v', String(new Date(versionStamp).getTime() || versionStamp))
-      }
-    }
 
-    let imageResult = await fetchPng(upstreamUrl.toString(), userAgent)
+    const upstreamUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9')
+    enrichOgUrlFromPage(upstreamUrl, page, site)
 
-    // If dynamic data lookup fails for any reason, retry with minimal params.
-    if (!imageResult) {
-      const minimalUrl = new URL('/api/og', requestUrl.origin)
-      minimalUrl.searchParams.set('g', '1')
-      minimalUrl.searchParams.set('p', guidePath)
-      minimalUrl.searchParams.set('t', titleFromGuideSlug(guideSlug) || 'Guide')
-      minimalUrl.searchParams.set('ogv', 'guide-v9-min')
-      imageResult = await fetchPng(minimalUrl.toString(), userAgent)
-    }
-
+    const imageResult = await fetchOgPngWithFallback(guideSlug, guidePath, requestUrl, userAgent)
     if (!imageResult) {
       return buildHardFallbackPngResponse(includeBody, requestUrl)
     }

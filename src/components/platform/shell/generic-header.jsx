@@ -54,16 +54,8 @@ function NavList({ items, onNavigate }) {
   )
 }
 
-export default function GenericHeader({ site, navigation = [] }) {
-  const [openNav, setOpenNav] = React.useState(false)
-  const [, setConsultationInView] = React.useState(false)
-  const mobileMenuId = 'site-mobile-nav'
-
+function buildLogoConfig(site) {
   const isChristmas = site?.slug === 'txchristmaslights'
-  // Prefer the Sanity `brand.logo` (typically an icon mark) for every site,
-  // including Christmas. Fall back to the hardcoded `/images/tx-christmas-logo-full.png`
-  // wordmark only when Sanity has no logo uploaded yet, so a freshly-seeded
-  // Christmas site still renders something.
   const sanityLogoUrl = buildSanityImageUrl(site?.brand?.logo, { width: 200 })
   const usingChristmasWordmarkFallback = isChristmas && !sanityLogoUrl
   const logoUrl = sanityLogoUrl || (isChristmas ? TX_CHRISTMAS_PUBLIC_LOGO_SRC : null)
@@ -72,7 +64,37 @@ export default function GenericHeader({ site, navigation = [] }) {
     : isChristmas
       ? site?.name || 'Texas Christmas Lights'
       : site?.name || ''
+  return { logoUrl, logoAlt, usingChristmasWordmarkFallback, isChristmas }
+}
+
+function SiteLogo({ site, logoUrl, logoAlt, usingChristmasWordmarkFallback }) {
   const siteName = cleanRuntimeString(site?.shortName || site?.name || '')
+  if (logoUrl) {
+    return (
+      <img
+        src={logoUrl}
+        alt={logoAlt}
+        width={70}
+        height={70}
+        className={
+          usingChristmasWordmarkFallback ? 'w-auto max-w-50 object-contain md:h-10' : 'object-contain'
+        }
+      />
+    )
+  }
+  return (
+    <span aria-hidden className="text-primary type-display text-xl leading-none font-medium">
+      {(siteName || 'S').charAt(0)}
+    </span>
+  )
+}
+
+export default function GenericHeader({ site, navigation = [] }) {
+  const [openNav, setOpenNav] = React.useState(false)
+  const [, setConsultationInView] = React.useState(false)
+  const mobileMenuId = 'site-mobile-nav'
+
+  const { logoUrl, logoAlt, usingChristmasWordmarkFallback, isChristmas } = buildLogoConfig(site)
 
   const navItems = React.useMemo(() => {
     const items = navigation.map((item) => ({ ...item, kind: 'page' }))
@@ -94,18 +116,13 @@ export default function GenericHeader({ site, navigation = [] }) {
 
   React.useEffect(() => {
     const section = document.getElementById(CONSULTATION_ANCHOR_ID)
-
-    if (!section || typeof IntersectionObserver === 'undefined') {
-      return
-    }
-
+    if (!section || typeof IntersectionObserver === 'undefined') return
     const observer = new IntersectionObserver(
       (entries) => {
         setConsultationInView(entries.some((entry) => entry.isIntersecting))
       },
       { threshold: 0.1 },
     )
-
     observer.observe(section)
     return () => observer.disconnect()
   }, [])
@@ -134,23 +151,12 @@ export default function GenericHeader({ site, navigation = [] }) {
               aria-label={`${site?.name || 'Site'} - Home`}
               className="grid grid-flow-col items-center gap-2"
             >
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={logoAlt}
-                  width={usingChristmasWordmarkFallback ? 70 : 70}
-                  height={usingChristmasWordmarkFallback ? 70 : 70}
-                  className={
-                    usingChristmasWordmarkFallback
-                      ? 'w-auto max-w-50 object-contain md:h-10'
-                      : 'object-contain'
-                  }
-                />
-              ) : (
-                <span aria-hidden className="text-primary type-display text-xl leading-none font-medium">
-                  {(siteName || 'S').charAt(0)}
-                </span>
-              )}
+              <SiteLogo
+                site={site}
+                logoUrl={logoUrl}
+                logoAlt={logoAlt}
+                usingChristmasWordmarkFallback={usingChristmasWordmarkFallback}
+              />
             </Link>
             <Separator orientation="vertical" className="bg-primary hidden h-5 lg:block" />
             <div className="hidden lg:flex lg:items-center">

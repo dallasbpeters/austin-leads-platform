@@ -225,16 +225,68 @@ export function inferDraftSchemaType(contentType, normalizedSlug) {
   return toDraftSchemaType(contentType)
 }
 
-export function buildFallbackDraftContent(input) {
-  const contentLabel =
-    input.contentType === 'post'
-      ? 'Guide draft'
-      : input.contentType === 'servicePage'
-        ? 'Service page draft'
-        : input.contentType === 'locationPage'
-          ? 'Location page draft'
-          : 'Page draft'
+const DRAFT_CONTENT_LABELS = {
+  post: 'Guide draft',
+  servicePage: 'Service page draft',
+  locationPage: 'Location page draft',
+  page: 'Page draft',
+}
 
+const DRAFT_HERO_BODY_TEMPLATES = {
+  post: (t) =>
+    `This guide should help Texas homeowners understand how ${t || 'this topic'} works in real life before they make a decision.`,
+  servicePage: (t) =>
+    `This page should explain when ${t || 'this service'} makes sense, what a good plan includes, and what the homeowner should do next.`,
+  locationPage: (t) =>
+    `This page should explain what homeowners in this market need to know about ${t || 'the issue'} before they commit to a next step.`,
+}
+
+const DRAFT_HERO_BODY_DEFAULT = (t) =>
+  `This draft should help the reader understand ${t || 'the topic'} clearly and know what to do next.`
+
+const DRAFT_STORY_TITLE_TEMPLATES = {
+  post: (t) => `What Texas homeowners should understand about ${t || 'this topic'}`,
+  servicePage: (t) => `When ${t || 'this service'} is the right next step`,
+  locationPage: () => 'What matters locally before a homeowner decides',
+  page: () => 'What this page should help the reader understand',
+}
+
+const DRAFT_STORY_BODY_POST = () =>
+  'Use this section to explain the process, the decision points, and the common misunderstandings around the topic.'
+
+const DRAFT_STORY_BODY_DEFAULT = () =>
+  'Use this section to explain the homeowner problem, the tradeoffs involved, and how to evaluate the right next step.'
+
+const DRAFT_FAQ_INTRO_TEMPLATES = {
+  post: (t) =>
+    `This guide should answer the practical questions homeowners ask before they move forward with ${t || 'the topic'}.`,
+  page: (t) =>
+    `This page should answer the practical questions a homeowner asks before they commit to ${t || 'the next step'}.`,
+}
+
+function buildHeroBody(contentType, firstSentence, cleanTitle) {
+  const template = DRAFT_HERO_BODY_TEMPLATES[contentType]
+  return firstSentence || (template ? template(cleanTitle) : DRAFT_HERO_BODY_DEFAULT(cleanTitle))
+}
+
+function buildStoryTitle(contentType, cleanTitle) {
+  const template = DRAFT_STORY_TITLE_TEMPLATES[contentType]
+  return template ? template(cleanTitle) : DRAFT_STORY_TITLE_TEMPLATES.page()
+}
+
+function buildStoryBody(contentType, secondSentence, thirdSentence, firstSource) {
+  const resolved = secondSentence || thirdSentence || firstSource
+  if (resolved) return resolved
+  return contentType === 'post' ? DRAFT_STORY_BODY_POST() : DRAFT_STORY_BODY_DEFAULT()
+}
+
+function buildFaqIntro(contentType, cleanTitle) {
+  const template = DRAFT_FAQ_INTRO_TEMPLATES[contentType]
+  return template ? template(cleanTitle) : DRAFT_FAQ_INTRO_TEMPLATES.page(cleanTitle)
+}
+
+export function buildFallbackDraftContent(input) {
+  const contentLabel = DRAFT_CONTENT_LABELS[input.contentType] || DRAFT_CONTENT_LABELS.page
   const sourceLines = trimDraftLines(input.sources)
   const briefSentences = splitDraftSentences(input.brief)
   const cleanTitle = humanizeDraftTitle(input.title)
@@ -251,54 +303,22 @@ export function buildFallbackDraftContent(input) {
     sources: sourceLines,
     contentType: input.contentType,
   })
-
-  const heroBodyByType =
-    input.contentType === 'post'
-      ? firstBriefSentence ||
-        `This guide should help Texas homeowners understand how ${cleanTitle || 'this topic'} works in real life before they make a decision.`
-      : input.contentType === 'servicePage'
-        ? firstBriefSentence ||
-          `This page should explain when ${cleanTitle || 'this service'} makes sense, what a good plan includes, and what the homeowner should do next.`
-        : input.contentType === 'locationPage'
-          ? firstBriefSentence ||
-            `This page should explain what homeowners in this market need to know about ${cleanTitle || 'the issue'} before they commit to a next step.`
-          : firstBriefSentence ||
-            `This draft should help the reader understand ${cleanTitle || 'the topic'} clearly and know what to do next.`
-
-  const storyTitleByType =
-    input.contentType === 'post'
-      ? `What Texas homeowners should understand about ${cleanTitle || 'this topic'}`
-      : input.contentType === 'servicePage'
-        ? `When ${cleanTitle || 'this service'} is the right next step`
-        : input.contentType === 'locationPage'
-          ? `What matters locally before a homeowner decides`
-          : 'What this page should help the reader understand'
-
-  const storyBodyByType =
-    secondBriefSentence ||
-    thirdBriefSentence ||
-    sourceLines[0] ||
-    (input.contentType === 'post'
-      ? `Use this section to explain the process, the decision points, and the common misunderstandings around ${cleanTitle || 'the topic'}.`
-      : `Use this section to explain the homeowner problem, the tradeoffs involved, and how to evaluate the right next step.`)
-
-  const faqIntro =
-    input.contentType === 'post'
-      ? `This guide should answer the practical questions homeowners ask before they move forward with ${cleanTitle || 'the topic'}.`
-      : `This page should answer the practical questions a homeowner asks before they commit to ${cleanTitle || 'the next step'}.`
+  const heroBody = buildHeroBody(input.contentType, firstBriefSentence, cleanTitle)
+  const storyTitle = buildStoryTitle(input.contentType, cleanTitle)
+  const storyBody = buildStoryBody(input.contentType, secondBriefSentence, thirdBriefSentence, sourceLines[0])
 
   return {
     heroEyebrow: contentLabel,
     heroTitle: input.title,
-    heroBody: heroBodyByType,
-    storyTitle: storyTitleByType,
-    storyBody: storyBodyByType,
+    heroBody,
+    storyTitle,
+    storyBody,
     highlights,
     steps,
     faq: [
       {
         question: 'What should this page help the reader decide?',
-        answer: firstBriefSentence || faqIntro,
+        answer: firstBriefSentence || buildFaqIntro(input.contentType, cleanTitle),
       },
       {
         question:
@@ -308,7 +328,7 @@ export function buildFallbackDraftContent(input) {
         answer:
           sourceLines[0] ||
           secondBriefSentence ||
-          `Add specific conditions, examples, and decision criteria so the draft does not stay generic.`,
+          'Add specific conditions, examples, and decision criteria so the draft does not stay generic.',
       },
       {
         question: 'What should happen before this is published?',

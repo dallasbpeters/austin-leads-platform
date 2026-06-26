@@ -6,41 +6,181 @@ import { JobberDialog } from './jobber-dialog'
 import PortableTextContent from './portable-text-content'
 
 const SECTION_VARIANTS = {
+  christmasLights: {
+    buttonLabel: 'Reserve My Install Date',
+    copy: 'Spots fill up fast. A small deposit reserves your install window — we handle the hanging, any mid-season bulb issues, and full takedown after the holidays.',
+    heading: <>Secure your install date</>,
+    metadata: { entryPoint: 'christmas-lights-page' },
+    serviceInterest: 'christmas-lights',
+    sourceSection: 'christmas-lights-deposit',
+  },
   default: {
-    heading: <>Talk with our team</>,
-    copy: 'Tell us what is happening with your home, and we will help you choose the right next step.',
     buttonLabel: 'Reach out to our team',
-    sourceSection: 'homepage-consultation',
+    copy: 'Tell us what is happening with your home, and we will help you choose the right next step.',
+    heading: <>Talk with our team</>,
+    metadata: { entryPoint: 'homepage' },
     serviceInterest: 'solar-roofing',
-    metadata: {
-      entryPoint: 'homepage',
-    },
+    sourceSection: 'homepage-consultation',
   },
   roofingInspection: {
-    heading: <>Request a roof inspection</>,
-    copy: 'We will help you sort out repair, replacement, or storm-related next steps.',
     buttonLabel: 'Request Free Inspection',
-    sourceSection: 'roofing-consultation',
+    copy: 'We will help you sort out repair, replacement, or storm-related next steps.',
+    heading: <>Request a roof inspection</>,
+    metadata: { entryPoint: 'roofing-page' },
     serviceInterest: 'roofing',
-    metadata: {
-      entryPoint: 'roofing-page',
-    },
+    sourceSection: 'roofing-consultation',
   },
-  christmasLights: {
-    heading: <>Secure your install date</>,
-    copy: 'Spots fill up fast. A small deposit reserves your install window — we handle the hanging, any mid-season bulb issues, and full takedown after the holidays.',
-    buttonLabel: 'Reserve My Install Date',
-    sourceSection: 'christmas-lights-deposit',
-    serviceInterest: 'christmas-lights',
-    serviceOptions: [
-      { value: 'roofline', label: 'Roofline' },
-      { value: 'full-front', label: 'Full front' },
-      { value: 'full-property', label: 'Full property' },
-    ],
-    metadata: {
-      entryPoint: 'christmas-lights-page',
-    },
+}
+
+const SECTION_STYLES = {
+  christmasLights: { wrapperBgClass: '' },
+  dark: {
+    wrapperBgClass:
+      'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]',
   },
+  light: { wrapperBgClass: '' },
+}
+
+function getSectionContent(section, variant) {
+  const content = SECTION_VARIANTS[variant] || SECTION_VARIANTS.default
+  return {
+    buttonLabel: section?.ctaLabel || content.buttonLabel,
+    copy: section?.body || content.copy,
+    headline: section?.title || content.heading,
+    metadata: content.metadata,
+    serviceInterest: content.serviceInterest,
+    sourceSection: content.sourceSection,
+  }
+}
+
+function buildSectionStyle(theme, isChristmasTheme) {
+  if (theme === 'light') {
+    return {
+      backgroundImage:
+        'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
+    }
+  }
+  if (isChristmasTheme) {
+    return {
+      backgroundColor: '#090e09',
+      backgroundImage: [
+        'radial-gradient(at 80.5% 40.8%, #14420e 0px, transparent 100%)',
+        'radial-gradient(at 50.8% 17.7%, #16390d 0px, transparent 100%)',
+        'radial-gradient(at 36.3% 72.7%, #0a570f 0px, transparent 50%)',
+        'radial-gradient(at 10% 33%, #213819 0px, transparent 100%)',
+      ].join(', '),
+    }
+  }
+  return
+}
+
+function buildLeadContext(site, content, pagePath, pageTitle) {
+  return {
+    metadata: content.metadata,
+    pagePath,
+    pageTitle,
+    serviceInterest: content.serviceInterest,
+    siteName: site?.name || 'Texas Solar and Roofing Pros',
+    siteSlug: site?.slug || 'texas-solar-and-roofing-pros',
+    sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
+    sourceSection: content.sourceSection,
+    sourceType: 'consultation',
+  }
+}
+
+const AVATAR_TEXT_FIELDS = [
+  ['avatarName', 'avatarName', 'personName'],
+  ['avatarEyebrow', 'avatarEyebrow', 'personLabel'],
+  ['avatarRole', 'avatarRole', 'personRole'],
+  ['avatarBlurb', 'avatarBlurb', 'personBlurb'],
+]
+
+function getAvatarInitials(name) {
+  return String(name || '')
+    .trim()
+    .split(/\s+/u)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('')
+}
+
+function getAvatarImageUrl(section) {
+  return getImageUrl(
+    section?.avatarImageAsset || section?.profileImageAsset,
+    section?.avatarImage || section?.profileImage,
+  )
+}
+
+function getAvatarImageAlt(section, name) {
+  return getImageAlt(
+    section?.avatarImageAsset || section?.profileImageAsset,
+    section?.avatarImage || section?.profileImage,
+    name,
+  )
+}
+
+function getAvatarData(section) {
+  const data = { avatarColor: section?.avatarColor || '' }
+  for (const [key, primary, fallback] of AVATAR_TEXT_FIELDS) {
+    data[key] = section?.[primary] || section?.[fallback] || ''
+  }
+  data.avatarImageUrl = getAvatarImageUrl(section)
+  data.avatarImageAlt = getAvatarImageAlt(section, data.avatarName)
+  data.avatarInitials = getAvatarInitials(data.avatarName) || 'TS'
+  data.avatarStyle = data.avatarColor ? { backgroundColor: data.avatarColor } : undefined
+  return data
+}
+
+function getClassNames(isDarkTheme) {
+  return {
+    avatarClassName: `size-16 ${isDarkTheme ? 'bg-white/10 ring-1 ring-white/20' : 'bg-primary ring-1 ring-black/5'}`,
+    blurbClassName: `mt-3 text-sm leading-6 ${isDarkTheme ? 'text-white/80' : 'text-muted-foreground'}`,
+    copy: `type-accent text-[1rem] font-semibold ${isDarkTheme ? 'text-white/78' : 'text-slate-500'}`,
+    eyebrowClassName: `mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-secondary/70'}`,
+    fallbackClassName: `text-[1rem] font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`,
+    heading: `type-display mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'text-secondary'}`,
+    nameClassName: `text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-foreground'}`,
+    roleClassName: `text-sm ${isDarkTheme ? 'text-white/72' : 'text-muted-foreground'}`,
+  }
+}
+
+function AvatarSection({ section, isDarkTheme }) {
+  const {
+    avatarName,
+    avatarEyebrow,
+    avatarRole,
+    avatarBlurb,
+    avatarImageUrl,
+    avatarImageAlt,
+    avatarInitials,
+    avatarStyle,
+  } = getAvatarData(section)
+  const classes = getClassNames(isDarkTheme)
+
+  if (!avatarName) {
+    return null
+  }
+
+  return (
+    <div className="mt-8 max-w-xl">
+      <div className="flex items-center gap-4">
+        <Avatar size="xl" className={classes.avatarClassName} style={avatarStyle}>
+          {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
+          <AvatarFallback className={classes.fallbackClassName} style={avatarStyle}>
+            {avatarInitials}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          {avatarEyebrow ? <div className={classes.eyebrowClassName}>{avatarEyebrow}</div> : null}
+          <div className={classes.nameClassName}>{avatarName}</div>
+          {avatarRole ? <div className={classes.roleClassName}>{avatarRole}</div> : null}
+          {avatarBlurb ? (
+            <PortableTextContent as="div" value={avatarBlurb} className={classes.blurbClassName} />
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function ConsultationSection({
@@ -54,125 +194,29 @@ export default function ConsultationSection({
 }) {
   const isChristmasTheme = theme === 'christmasLights'
   const isDarkTheme = theme === 'dark' || isChristmasTheme
-  const content = SECTION_VARIANTS[variant] || SECTION_VARIANTS.default
-  const headline = section?.title || content.heading
-  const copy = section?.body || content.copy
-  const buttonLabel = section?.ctaLabel || content.buttonLabel
-  const avatarEyebrow = section?.avatarEyebrow || section?.personLabel || ''
-  const avatarName = section?.avatarName || section?.personName || ''
-  const avatarRole = section?.avatarRole || section?.personRole || ''
-  const avatarBlurb = section?.avatarBlurb || section?.personBlurb || ''
-  const avatarColor = section?.avatarColor || ''
-  const avatarImageUrl = getImageUrl(
-    section?.avatarImageAsset || section?.profileImageAsset,
-    section?.avatarImage || section?.profileImage,
-  )
-  const avatarImageAlt = getImageAlt(
-    section?.avatarImageAsset || section?.profileImageAsset,
-    section?.avatarImage || section?.profileImage,
-    avatarName,
-  )
-  const avatarInitials = String(avatarName || '')
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() || '')
-    .join('')
-  const avatarStyle = avatarColor ? { backgroundColor: avatarColor } : undefined
-  const leadContext = {
-    sourceType: 'consultation',
-    sourceSection: content.sourceSection,
-    serviceInterest: content.serviceInterest,
-    siteSlug: site?.slug || 'texas-solar-and-roofing-pros',
-    siteName: site?.name || 'Texas Solar and Roofing Pros',
-    sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
-    pagePath,
-    pageTitle,
-    metadata: content.metadata,
-  }
+  const content = getSectionContent(section, variant)
+  const wrapperBgClass = SECTION_STYLES[theme]?.wrapperBgClass || ''
+  const sectionStyle = buildSectionStyle(theme, isChristmasTheme)
+  const leadContext = buildLeadContext(site, content, pagePath, pageTitle)
 
   return (
     <section
       id={sectionId}
-      className={`relative scroll-mt-38 overflow-hidden py-10 ${isDarkTheme ? 'text-white' : ''} ${theme === 'dark' ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]' : ''}`}
+      className={`relative scroll-mt-38 overflow-hidden py-10 ${isDarkTheme ? 'text-white' : ''} ${wrapperBgClass}`}
       {...getDevSectionAttributes({
+        content: 'local JSX section + live lead form',
         id: sectionId,
         markup: 'src/components/consultation-section.jsx',
-        content: 'local JSX section + live lead form',
       })}
-      style={{
-        ...(theme === 'light' && {
-          backgroundImage:
-            'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
-        }),
-        ...(isChristmasTheme && {
-          backgroundColor: '#090e09',
-          backgroundImage: [
-            'radial-gradient(at 80.5% 40.8%, #14420e 0px, transparent 100%)',
-            'radial-gradient(at 50.8% 17.7%, #16390d 0px, transparent 100%)',
-            'radial-gradient(at 36.3% 72.7%, #0a570f 0px, transparent 50%)',
-            'radial-gradient(at 10% 33%, #213819 0px, transparent 100%)',
-          ].join(', '),
-        }),
-      }}
+      style={sectionStyle}
     >
-      <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 py-12 sm:px-3 md:grid-cols-[1.1fr_1fr] md:px-6 lg:px-16">
+      <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 py-12 sm:px-3 md:px-6 lg:px-16">
         <div>
-          <h2
-            className={`type-display mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'text-secondary'}`}
-          >
-            {headline}
-          </h2>
-          <PortableTextContent
-            as="div"
-            value={copy}
-            className={`type-accent text-[1rem] font-semibold ${isDarkTheme ? 'text-white/78' : 'text-slate-500'}`}
-          />
-          {avatarName ? (
-            <div className="mt-8 max-w-xl">
-              <div className="flex items-center gap-4">
-                <Avatar
-                  size="xl"
-                  className={`size-16 ${isDarkTheme ? 'bg-white/10 ring-1 ring-white/20' : 'bg-primary ring-1 ring-black/5'}`}
-                  style={avatarStyle}
-                >
-                  {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
-                  <AvatarFallback
-                    className={`text-[1rem] font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`}
-                    style={avatarStyle}
-                  >
-                    {avatarInitials || 'TS'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  {avatarEyebrow ? (
-                    <div
-                      className={`mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-secondary/70'}`}
-                    >
-                      {avatarEyebrow}
-                    </div>
-                  ) : null}
-                  <div className={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-foreground'}`}>
-                    {avatarName}
-                  </div>
-                  {avatarRole ? (
-                    <div className={`text-sm ${isDarkTheme ? 'text-white/72' : 'text-muted-foreground'}`}>
-                      {avatarRole}
-                    </div>
-                  ) : null}
-                  {avatarBlurb ? (
-                    <PortableTextContent
-                      as="div"
-                      value={avatarBlurb}
-                      className={`mt-3 text-sm leading-6 ${isDarkTheme ? 'text-white/80' : 'text-muted-foreground'}`}
-                    />
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          ) : null}
+          <h2 className={getClassNames(isDarkTheme).heading}>{content.headline}</h2>
+          <PortableTextContent as="div" value={content.copy} className={getClassNames(isDarkTheme).copy} />
+          <AvatarSection section={section} isDarkTheme={isDarkTheme} />
           <div className="mt-8">
-            <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
+            <JobberDialog buttonLabel={content.buttonLabel} context={leadContext} />
           </div>
         </div>
       </div>

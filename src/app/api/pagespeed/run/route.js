@@ -57,6 +57,43 @@ function pickAudit(result, key) {
   }
 }
 
+function buildPageSpeedApiUrl(url, strategy) {
+  const apiUrl = new URL(PAGESPEED_ENDPOINT)
+  apiUrl.searchParams.set('url', url)
+  apiUrl.searchParams.set('strategy', strategy)
+  for (const cat of ['performance', 'seo', 'best-practices', 'accessibility']) {
+    apiUrl.searchParams.append('category', cat)
+  }
+  if (PAGESPEED_API_KEY) {
+    apiUrl.searchParams.set('key', PAGESPEED_API_KEY)
+  }
+  return apiUrl
+}
+
+function parsePageSpeedResponse(data, url, strategy) {
+  const lighthouseResult = data?.lighthouseResult || {}
+  const categories = lighthouseResult?.categories || {}
+  return {
+    input: { url, strategy },
+    fetchedAt: new Date().toISOString(),
+    categories: {
+      performance: toPercent(categories.performance?.score),
+      accessibility: toPercent(categories.accessibility?.score),
+      bestPractices: toPercent(categories['best-practices']?.score),
+      seo: toPercent(categories.seo?.score),
+    },
+    coreWebVitals: {
+      lcp: pickAudit(lighthouseResult, 'largest-contentful-paint'),
+      cls: pickAudit(lighthouseResult, 'cumulative-layout-shift'),
+      tbt: pickAudit(lighthouseResult, 'total-blocking-time'),
+      speedIndex: pickAudit(lighthouseResult, 'speed-index'),
+    },
+    loadingExperience: data?.loadingExperience || null,
+    originLoadingExperience: data?.originLoadingExperience || null,
+    screenshot: lighthouseResult?.fullPageScreenshot?.screenshot?.data || null,
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json()
@@ -78,70 +115,26 @@ export async function POST(request) {
       )
     }
 
-    const apiUrl = new URL(PAGESPEED_ENDPOINT)
-    apiUrl.searchParams.set('url', url)
-    apiUrl.searchParams.set('strategy', strategy)
-    apiUrl.searchParams.append('category', 'performance')
-    apiUrl.searchParams.append('category', 'seo')
-    apiUrl.searchParams.append('category', 'best-practices')
-    apiUrl.searchParams.append('category', 'accessibility')
-
-    if (PAGESPEED_API_KEY) {
-      apiUrl.searchParams.set('key', PAGESPEED_API_KEY)
-    }
+    const apiUrl = buildPageSpeedApiUrl(url, strategy)
 
     const response = await fetch(apiUrl.toString(), {
-      headers: {
-        Accept: 'application/json',
-      },
+      headers: { Accept: 'application/json' },
       cache: 'no-store',
     })
 
     if (!response.ok) {
       const text = await response.text()
       return NextResponse.json(
-        {
-          error: `PageSpeed request failed (${response.status}).`,
-          details: text?.slice(0, 400) || null,
-        },
+        { error: `PageSpeed request failed (${response.status}).`, details: text?.slice(0, 400) || null },
         { status: 502, headers: CORS_HEADERS },
       )
     }
 
     const data = await response.json()
-    const lighthouseResult = data?.lighthouseResult || {}
-    const categories = lighthouseResult?.categories || {}
-
-    return NextResponse.json(
-      {
-        input: {
-          url,
-          strategy,
-        },
-        fetchedAt: new Date().toISOString(),
-        categories: {
-          performance: toPercent(categories.performance?.score),
-          accessibility: toPercent(categories.accessibility?.score),
-          bestPractices: toPercent(categories['best-practices']?.score),
-          seo: toPercent(categories.seo?.score),
-        },
-        coreWebVitals: {
-          lcp: pickAudit(lighthouseResult, 'largest-contentful-paint'),
-          cls: pickAudit(lighthouseResult, 'cumulative-layout-shift'),
-          tbt: pickAudit(lighthouseResult, 'total-blocking-time'),
-          speedIndex: pickAudit(lighthouseResult, 'speed-index'),
-        },
-        loadingExperience: data?.loadingExperience || null,
-        originLoadingExperience: data?.originLoadingExperience || null,
-        screenshot: lighthouseResult?.fullPageScreenshot?.screenshot?.data || null,
-      },
-      { headers: CORS_HEADERS },
-    )
+    return NextResponse.json(parsePageSpeedResponse(data, url, strategy), { headers: CORS_HEADERS })
   } catch (error) {
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : 'Unable to run PageSpeed audit.',
-      },
+      { error: error instanceof Error ? error.message : 'Unable to run PageSpeed audit.' },
       { status: 500, headers: CORS_HEADERS },
     )
   }

@@ -15,32 +15,41 @@ function escapePathSegment(value) {
   return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
 }
 
+function buildCardEditAttributes(page, sectionKey, itemKey) {
+  if (!page?.id || !page?._type || !sectionKey || !itemKey) return {}
+  return getSanityEditAttributes({
+    documentId: page.id,
+    documentType: page._type,
+    path: `sections[_key=="${escapePathSegment(sectionKey)}"].items[_key=="${escapePathSegment(itemKey)}"]`,
+  })
+}
+
+function buildCardFromItem(rawItem, index, page, sectionKey) {
+  const item = rawItem || {}
+  const num = String(index + 1).padStart(2, '0')
+  return {
+    number: item.number || num,
+    title: item.title || `Guide ${index + 1}`,
+    copy: portableTextToPlainText(item.body),
+    href: item.href || '/guides',
+    icon: item.icon || '',
+    color: item.color || '',
+    image: getImageUrl(item.imageAsset, item.image),
+    imageAlt: getImageAlt(item.imageAsset, item.image, item.title || ''),
+    category: item.category || '',
+    editAttributes: buildCardEditAttributes(page, sectionKey, item._key),
+  }
+}
+
 export default function GuidesSection({ section = null, page = null, sectionId = 'go-deeper' }) {
   const title = section?.title || 'Go Deeper'
   const body = portableTextToPlainText(section?.body)
   const ctaLabel = section?.ctaLabel || 'See all guides'
   const icon = section?.icon || 'arrow-right'
+  const sectionKey = section?._key
   const sectionCards =
     Array.isArray(section?.items) && section.items.length
-      ? section.items.map((item, index) => ({
-          number: item?.number || String(index + 1).padStart(2, '0'),
-          title: item?.title || `Guide ${index + 1}`,
-          copy: portableTextToPlainText(item?.body),
-          href: item?.href || '/guides',
-          icon: item?.icon || '',
-          color: item?.color || '',
-          image: getImageUrl(item?.imageAsset, item?.image),
-          imageAlt: getImageAlt(item?.imageAsset, item?.image, item?.title || ''),
-          category: item?.category || '',
-          editAttributes:
-            page?.id && page?._type && section?._key && item?._key
-              ? getSanityEditAttributes({
-                  documentId: page.id,
-                  documentType: page._type,
-                  path: `sections[_key=="${escapePathSegment(section._key)}"].items[_key=="${escapePathSegment(item._key)}"]`,
-                })
-              : {},
-        }))
+      ? section.items.map((item, index) => buildCardFromItem(item, index, page, sectionKey))
       : null
   const cards = sectionCards || guides
 

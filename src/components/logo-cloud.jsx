@@ -48,20 +48,28 @@ const defaultLogos = [
   },
 ]
 
+function resolveLogoKey(item, index) {
+  return item?._key || item?.title || `logo-${index + 1}`
+}
+
+function resolveLogoDimensions(imageAsset) {
+  return imageAsset?.asset?.metadata?.dimensions
+}
+
 function normalizeLogoItem(item, index) {
-  const src = getImageUrl(item?.imageAsset, item?.image) || ''
+  const imageAsset = item?.imageAsset
+  const image = item?.image
+  const src = getImageUrl(imageAsset, image)
+  if (!src) return null
 
-  if (!src) {
-    return null
-  }
-
+  const dims = resolveLogoDimensions(imageAsset)
   return {
-    key: item?._key || item?.title || `logo-${index + 1}`,
+    key: resolveLogoKey(item, index),
     src,
-    alt: getImageAlt(item?.imageAsset, item?.image, item?.title || `Logo ${index + 1}`),
+    alt: getImageAlt(imageAsset, image, item?.title || `Logo ${index + 1}`),
     href: item?.href || '',
-    width: item?.imageAsset?.asset?.metadata?.dimensions?.width || 600,
-    height: item?.imageAsset?.asset?.metadata?.dimensions?.height || 300,
+    width: dims?.width || 600,
+    height: dims?.height || 300,
   }
 }
 

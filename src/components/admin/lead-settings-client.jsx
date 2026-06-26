@@ -69,6 +69,48 @@ function StatusCard({ title, value, tone = 'neutral', detail }) {
   )
 }
 
+function SettingsStatusCards({ settings }) {
+  const providerLabel = settings.apiKeyConfigured ? 'Resend ready' : 'API key missing'
+  const providerTone = settings.providerReady ? 'success' : 'warning'
+  const providerDetail = settings.apiKeyConfigured
+    ? 'The Resend API key is configured on the server.'
+    : 'Add RESEND_API_KEY in the runtime env before email notifications can send.'
+  const fromTone = settings.fromEmail ? 'success' : 'warning'
+  const toTone = settings.notificationToEmail ? 'success' : 'warning'
+
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <StatusCard title="Provider" value={providerLabel} tone={providerTone} detail={providerDetail} />
+      <StatusCard
+        title="Sender"
+        value={settings.fromEmail || 'Not configured'}
+        tone={fromTone}
+        detail={settings.fromName || 'Sender name is not set yet.'}
+      />
+      <StatusCard
+        title="Destination"
+        value={settings.notificationToEmail || 'Not configured'}
+        tone={toTone}
+        detail={
+          settings.emailNotificationsEnabled
+            ? 'New form submissions will notify this inbox.'
+            : 'Email notifications are currently disabled.'
+        }
+      />
+      <StatusCard
+        title="Template"
+        value={settings.resendTemplateId || 'Raw HTML email'}
+        tone={settings.resendTemplateId ? 'success' : 'neutral'}
+        detail={
+          settings.resendTemplateId
+            ? 'Lead notifications will use the configured Resend template.'
+            : 'No template configured. The built-in HTML email will be used.'
+        }
+      />
+    </div>
+  )
+}
+
 export default function LeadSettingsClient({ initialSettings }) {
   const router = useRouter()
   const [settings, setSettings] = useState(initialSettings)
@@ -138,7 +180,6 @@ export default function LeadSettingsClient({ initialSettings }) {
   }
 
   const saveDisabled = isSaving || isSyncing || !settings.canSave
-  const providerTone = settings.providerReady ? 'success' : settings.apiKeyConfigured ? 'warning' : 'warning'
 
   return (
     <div className="space-y-6 p-6 lg:p-10">
@@ -152,44 +193,7 @@ export default function LeadSettingsClient({ initialSettings }) {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatusCard
-          title="Provider"
-          value={settings.apiKeyConfigured ? 'Resend ready' : 'API key missing'}
-          tone={providerTone}
-          detail={
-            settings.apiKeyConfigured
-              ? 'The Resend API key is configured on the server.'
-              : 'Add RESEND_API_KEY in the runtime env before email notifications can send.'
-          }
-        />
-        <StatusCard
-          title="Sender"
-          value={settings.fromEmail || 'Not configured'}
-          tone={settings.fromEmail ? 'success' : 'warning'}
-          detail={settings.fromName || 'Sender name is not set yet.'}
-        />
-        <StatusCard
-          title="Destination"
-          value={settings.notificationToEmail || 'Not configured'}
-          tone={settings.notificationToEmail ? 'success' : 'warning'}
-          detail={
-            settings.emailNotificationsEnabled
-              ? 'New form submissions will notify this inbox.'
-              : 'Email notifications are currently disabled.'
-          }
-        />
-        <StatusCard
-          title="Template"
-          value={settings.resendTemplateId || 'Raw HTML email'}
-          tone={settings.resendTemplateId ? 'success' : 'neutral'}
-          detail={
-            settings.resendTemplateId
-              ? 'Lead notifications will use the configured Resend template.'
-              : 'No template configured. The built-in HTML email will be used.'
-          }
-        />
-      </div>
+      <SettingsStatusCards settings={settings} />
 
       <Card className="bg-card/80 border-border overflow-hidden border">
         <CardHeader>

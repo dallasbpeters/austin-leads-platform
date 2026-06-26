@@ -30,32 +30,45 @@ function decodeDataUrl(dataUrl) {
   return Buffer.from(payload, 'base64')
 }
 
-async function loadSourcePdfBytes(requestRecord) {
-  if (requestRecord.document_asset_id) {
-    const asset = await getDocumentLibraryItemById(requestRecord.document_asset_id)
-    if (asset?.file_base64) {
-      return {
-        bytes: Buffer.from(String(asset.file_base64), 'base64'),
-        fileName: asset.file_name || `${requestRecord.title || 'document'}.pdf`,
-        title: asset.title || requestRecord.title || 'Signed document',
-      }
-    }
-  }
+async function loadPdfFromAsset(requestRecord) {
+  if (!requestRecord.document_asset_id) return null
 
-  const sourceUrl =
+  const asset = await getDocumentLibraryItemById(requestRecord.document_asset_id)
+  if (!asset?.file_base64) return null
+
+  return {
+    bytes: Buffer.from(String(asset.file_base64), 'base64'),
+    fileName: asset.file_name || `${requestRecord.title || 'document'}.pdf`,
+    title: asset.title || requestRecord.title || 'Signed document',
+  }
+}
+
+function getProviderDocumentUrl(requestRecord) {
+  return (
     requestRecord.provider_payload?.submission?.documents?.[0]?.url ||
     requestRecord.provider_payload?.documents?.[0]?.url ||
     ''
+  )
+}
 
+async function loadPdfFromUrl(requestRecord) {
+  const sourceUrl = getProviderDocumentUrl(requestRecord)
   if (!sourceUrl) return null
 
   const response = await fetch(sourceUrl)
   if (!response.ok) return null
+
   return {
     bytes: Buffer.from(await response.arrayBuffer()),
     fileName: `${(requestRecord.title || 'document').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.pdf`,
     title: requestRecord.title || 'Signed document',
   }
+}
+
+async function loadSourcePdfBytes(requestRecord) {
+  const fromAsset = await loadPdfFromAsset(requestRecord)
+  if (fromAsset) return fromAsset
+  return loadPdfFromUrl(requestRecord)
 }
 
 function clamp(value, min, max) {
@@ -193,31 +206,68 @@ async function createSignedPdfBytes({
   return Buffer.from(await pdfDoc.save())
 }
 
-export async function POST(request, { params }) {
-  if (!hasDocumentDatabase()) {
-    return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })
+function extractBuilderFields(requestRecord) {
+  return (
+    requestRecord.provider_payload?.builderFields ||
+    requestRecord.provider_payload?.documentFields ||
+    requestRecord.provider_payload?.submission?.documents?.[0]?.fields ||
+    requestRecord.provider_payload?.docuseal?.submission?.documents?.[0]?.fields ||
+    []
+  )
+}
+
+async function createSignedDocument(requestRecord, recipient, body, completedAt) {
+  try {
+    const sourcePdf = await loadSourcePdfBytes(requestRecord)
+    if (!sourcePdf) return { assetId: requestRecord.document_asset_id || null, document: null }
+
+    const signedPdfBytes = await createSignedPdfBytes({
+      sourceBytes: sourcePdf.bytes,
+      signerName: body?.signerName || recipient.name || recipient.email || null,
+      signatureText: body?.signatureText || null,
+      signatureImage: body?.signatureImage || null,
+      completedAt,
+      builderFields: extractBuilderFields(requestRecord),
+    })
+
+    const savedDocument = await createDocumentLibraryItem({
+      clientId: requestRecord.client_id || null,
+      requestId: requestRecord.id,
+      title: `${sourcePdf.title || requestRecord.title || 'Signed document'} (signed)`,
+      fileName: sourcePdf.fileName.replace(/\.pdf$/i, '-signed.pdf'),
+      fileMimeType: 'application/pdf',
+      fileBase64: signedPdfBytes.toString('base64'),
+      sourceType: 'signed',
+      status: 'available',
+      metadata: {
+        signedFromRequestId: requestRecord.id,
+        signedFromRecipientId: recipient.id,
+        signerName: body?.signerName || recipient.name || recipient.email || null,
+        signedAt: completedAt,
+      },
+    })
+
+    return {
+      assetId: savedDocument.id,
+      document: {
+        id: savedDocument.id,
+        title: savedDocument.title,
+        fileName: savedDocument.file_name,
+        fileUrl: `/api/documents/library/${savedDocument.id}/file`,
+      },
+    }
+  } catch (error) {
+    console.error('[documents/signatures] Unable to stamp signed PDF.', {
+      requestId: requestRecord.id,
+      recipientId: recipient.id,
+      error,
+    })
+    return { assetId: requestRecord.document_asset_id || null, document: null }
   }
+}
 
-  await ensureDocumentTables()
-
-  const { requestId } = await params
-  const body = await request.json().catch(() => ({}))
-  const recipientId = String(body?.recipientId || '').trim()
-
-  if (!recipientId) {
-    return NextResponse.json({ error: 'recipientId is required.' }, { status: 400 })
-  }
-
-  const [requestRecord, recipient] = await Promise.all([
-    getSignatureRequestById(requestId),
-    getDocumentRecipientById(recipientId),
-  ])
-
-  if (!requestRecord || !recipient || recipient.request_id !== requestRecord.id) {
-    return NextResponse.json({ error: 'Request or recipient not found.' }, { status: 404 })
-  }
-
-  const updatedRecipient = await updateDocumentRecipientStatus(recipient.id, {
+function buildCompletedRecipientPayload(recipient, body) {
+  return {
     status: 'completed',
     sentAt: recipient.sent_at || body?.completedAt || null,
     metadata: {
@@ -230,76 +280,10 @@ export async function POST(request, { params }) {
       signingMode: body?.signatureImage ? 'draw' : 'type',
       completedOnApp: true,
     },
-  })
-
-  const recipients = await listDocumentRecipients(requestRecord.id)
-  const status = deriveRequestStatus(recipients)
-  const completedAt = body?.completedAt || new Date().toISOString()
-  let signedDocumentAssetId = requestRecord.document_asset_id || null
-  let signedDocument = null
-
-  try {
-    const sourcePdf = await loadSourcePdfBytes(requestRecord)
-    if (sourcePdf) {
-      const signedPdfBytes = await createSignedPdfBytes({
-        sourceBytes: sourcePdf.bytes,
-        signerName: body?.signerName || recipient.name || recipient.email || null,
-        signatureText: body?.signatureText || null,
-        signatureImage: body?.signatureImage || null,
-        completedAt,
-        builderFields:
-          requestRecord.provider_payload?.builderFields ||
-          requestRecord.provider_payload?.documentFields ||
-          requestRecord.provider_payload?.submission?.documents?.[0]?.fields ||
-          requestRecord.provider_payload?.docuseal?.submission?.documents?.[0]?.fields ||
-          [],
-      })
-      const savedSignedDocument = await createDocumentLibraryItem({
-        clientId: requestRecord.client_id || null,
-        requestId: requestRecord.id,
-        title: `${sourcePdf.title || requestRecord.title || 'Signed document'} (signed)`,
-        fileName: sourcePdf.fileName.replace(/\.pdf$/i, '-signed.pdf'),
-        fileMimeType: 'application/pdf',
-        fileBase64: signedPdfBytes.toString('base64'),
-        sourceType: 'signed',
-        status: 'available',
-        metadata: {
-          signedFromRequestId: requestRecord.id,
-          signedFromRecipientId: recipient.id,
-          signerName: body?.signerName || recipient.name || recipient.email || null,
-          signedAt: completedAt,
-        },
-      })
-      signedDocumentAssetId = savedSignedDocument.id
-      signedDocument = {
-        id: savedSignedDocument.id,
-        title: savedSignedDocument.title,
-        fileName: savedSignedDocument.file_name,
-        fileUrl: `/api/documents/library/${savedSignedDocument.id}/file`,
-      }
-    }
-  } catch (error) {
-    console.error('[documents/signatures] Unable to stamp signed PDF.', {
-      requestId: requestRecord.id,
-      recipientId: recipient.id,
-      error,
-    })
   }
+}
 
-  const updatedRequest = await updateSignatureRequestStatus(requestRecord.id, {
-    status,
-    sentAt: requestRecord.sent_at || body?.completedAt || null,
-    documentAssetId: signedDocumentAssetId,
-    providerPayload: {
-      ...requestRecord.provider_payload,
-      appCompletion: {
-        recipientId: recipient.id,
-        completedAt,
-        signedDocumentAssetId,
-      },
-    },
-  })
-
+async function createCompletionAuditEvent(requestRecord, recipient, body, signedDocumentAssetId) {
   await createDocumentAuditEvent({
     requestId: requestRecord.id,
     clientId: requestRecord.client_id,
@@ -313,11 +297,56 @@ export async function POST(request, { params }) {
       signedDocumentAssetId,
     },
   })
+}
 
-  return NextResponse.json({
-    ok: true,
-    request: updatedRequest,
-    recipient: updatedRecipient,
-    signedDocument,
+export async function POST(request, { params }) {
+  if (!hasDocumentDatabase())
+    return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })
+
+  await ensureDocumentTables()
+
+  const { requestId } = await params
+  const body = await request.json().catch(() => ({}))
+  const recipientId = String(body?.recipientId || '').trim()
+
+  if (!recipientId) return NextResponse.json({ error: 'recipientId is required.' }, { status: 400 })
+
+  const [requestRecord, recipient] = await Promise.all([
+    getSignatureRequestById(requestId),
+    getDocumentRecipientById(recipientId),
+  ])
+
+  if (!requestRecord || !recipient || recipient.request_id !== requestRecord.id) {
+    return NextResponse.json({ error: 'Request or recipient not found.' }, { status: 404 })
+  }
+
+  const updatedRecipient = await updateDocumentRecipientStatus(
+    recipient.id,
+    buildCompletedRecipientPayload(recipient, body),
+  )
+
+  const recipients = await listDocumentRecipients(requestRecord.id)
+  const status = deriveRequestStatus(recipients)
+  const completedAt = body?.completedAt || new Date().toISOString()
+
+  const { assetId: signedDocumentAssetId, document: signedDocument } = await createSignedDocument(
+    requestRecord,
+    recipient,
+    body,
+    completedAt,
+  )
+
+  const updatedRequest = await updateSignatureRequestStatus(requestRecord.id, {
+    status,
+    sentAt: requestRecord.sent_at || body?.completedAt || null,
+    documentAssetId: signedDocumentAssetId,
+    providerPayload: {
+      ...requestRecord.provider_payload,
+      appCompletion: { recipientId: recipient.id, completedAt, signedDocumentAssetId },
+    },
   })
+
+  await createCompletionAuditEvent(requestRecord, recipient, body, signedDocumentAssetId)
+
+  return NextResponse.json({ ok: true, request: updatedRequest, recipient: updatedRecipient, signedDocument })
 }

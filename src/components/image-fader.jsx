@@ -6,6 +6,123 @@ import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
+const variants = {
+  initial: { opacity: 0, filter: 'blur(10px)' },
+  animate: { opacity: 1, filter: 'blur(0px)' },
+  exit: { opacity: 0.5, filter: 'blur(10px)' },
+}
+
+function FaderImage({ src, alt, initialPriority, index, className, objectPosition, backgroundColor }) {
+  return (
+    <Image
+      src={src}
+      alt={alt ?? ''}
+      fill
+      sizes="100vw"
+      quality={68}
+      priority={initialPriority && index === 0}
+      fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
+      className={cn('object-cover', className)}
+      draggable={false}
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        objectPosition,
+        pointerEvents: 'none',
+        backgroundColor,
+      }}
+    />
+  )
+}
+
+function AnimatedImageSlide({ index, fadeSec, imageClassName, objectPosition, borderRadius, children }) {
+  return (
+    <AnimatePresence initial={false} mode="wait">
+      <motion.div
+        key={index}
+        variants={variants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        transition={{ type: 'tween', duration: fadeSec }}
+        className={cn(imageClassName)}
+        draggable={false}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition,
+          borderRadius,
+          pointerEvents: 'none',
+          willChange: 'opacity',
+        }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+function StaticImageSlide({ imageClassName, objectPosition, borderRadius, children }) {
+  return (
+    <div
+      className={cn(imageClassName)}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        objectPosition,
+        borderRadius,
+        pointerEvents: 'none',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+function FaderOverlay({ showOverlay, overlayBlur, overlayColor, useGradient, overlayStyle, borderRadius }) {
+  if (!showOverlay) return null
+
+  const hasBlur = overlayBlur > 0
+  const hasColor = overlayColor !== 'rgba(0,0,0,0)'
+  if (!hasBlur && !hasColor && !overlayStyle?.backgroundImage) return null
+
+  const hasOwnBgImage = Boolean(overlayStyle?.backgroundImage)
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        ...overlayStyle,
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        backgroundImage: hasOwnBgImage
+          ? overlayStyle.backgroundImage
+          : useGradient
+            ? `linear-gradient(to bottom, transparent 0%, ${overlayColor} 80%)`
+            : undefined,
+        backgroundColor: hasOwnBgImage
+          ? overlayStyle?.backgroundColor
+          : useGradient
+            ? undefined
+            : overlayColor,
+        backdropFilter: hasBlur ? `blur(${overlayBlur}px)` : undefined,
+        borderRadius,
+        zIndex: 2,
+      }}
+    />
+  )
+}
+
 export default function ImageFader({
   images = [
     {
@@ -48,59 +165,18 @@ export default function ImageFader({
   }, [])
 
   useEffect(() => {
-    if (!isInteractive) {
-      return undefined
-    }
-
-    if (count < 2) {
-      return undefined
-    }
+    if (!isInteractive || count < 2) return undefined
 
     if (timer.current) clearTimeout(timer.current)
     timer.current = window.setTimeout(() => setIndex((i) => (i + 1) % count), interval)
-    return () => timer.current && clearTimeout(timer.current)
+    return () => {
+      if (timer.current) clearTimeout(timer.current)
+    }
   }, [count, index, interval, isInteractive])
 
   if (!count) return null
 
   const cur = images[index]
-
-  const variants = {
-    initial: {
-      opacity: 0,
-      filter: 'blur(10px)',
-    },
-    animate: {
-      opacity: 1,
-      filter: 'blur(0px)',
-    },
-    exit: {
-      opacity: 0.5,
-      filter: 'blur(10px)',
-    },
-  }
-
-  const staticImage = (
-    <Image
-      src={cur.src}
-      alt={cur.alt ?? ''}
-      fill
-      sizes="100vw"
-      quality={68}
-      priority={initialPriority && index === 0}
-      fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
-      className="object-cover"
-      draggable={false}
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        objectPosition,
-        pointerEvents: 'none',
-        backgroundColor: backgroundColor,
-      }}
-    />
-  )
 
   return (
     <div
@@ -118,78 +194,48 @@ export default function ImageFader({
       }}
     >
       {isInteractive ? (
-        <AnimatePresence initial={false} mode="wait">
-          <motion.div
-            key={index}
-            variants={variants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{
-              type: 'tween',
-              duration: fadeSec,
-            }}
-            className={cn(imageClassName)}
-            draggable={false}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition,
-              borderRadius,
-              pointerEvents: 'none',
-              willChange: 'opacity',
-            }}
-          >
-            {staticImage}
-          </motion.div>
-        </AnimatePresence>
-      ) : (
-        <div
-          className={cn(imageClassName)}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition,
-            borderRadius,
-            pointerEvents: 'none',
-          }}
+        <AnimatedImageSlide
+          index={index}
+          fadeSec={fadeSec}
+          imageClassName={imageClassName}
+          objectPosition={objectPosition}
+          borderRadius={borderRadius}
         >
-          {staticImage}
-        </div>
+          <FaderImage
+            src={cur.src}
+            alt={cur.alt}
+            initialPriority={initialPriority}
+            index={index}
+            className={imageClassName}
+            objectPosition={objectPosition}
+            backgroundColor={backgroundColor}
+          />
+        </AnimatedImageSlide>
+      ) : (
+        <StaticImageSlide
+          imageClassName={imageClassName}
+          objectPosition={objectPosition}
+          borderRadius={borderRadius}
+        >
+          <FaderImage
+            src={cur.src}
+            alt={cur.alt}
+            initialPriority={initialPriority}
+            index={0}
+            className={imageClassName}
+            objectPosition={objectPosition}
+            backgroundColor={backgroundColor}
+          />
+        </StaticImageSlide>
       )}
-
-      {showOverlay && (overlayBlur > 0 || overlayColor !== 'rgba(0,0,0,0)') && (
-        <div
-          aria-hidden="true"
-          style={{
-            ...overlayStyle,
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-            backgroundImage: overlayStyle?.backgroundImage
-              ? overlayStyle.backgroundImage
-              : useGradient
-                ? `linear-gradient(to bottom, transparent 0%, ${overlayColor} 80%)`
-                : undefined,
-            backgroundColor: overlayStyle?.backgroundImage
-              ? overlayStyle?.backgroundColor
-              : useGradient
-                ? undefined
-                : overlayColor,
-            backdropFilter: overlayBlur > 0 ? `blur(${overlayBlur}px)` : undefined,
-            borderRadius,
-            zIndex: 2,
-          }}
-        />
-      )}
+      <FaderOverlay
+        showOverlay={showOverlay}
+        overlayBlur={overlayBlur}
+        overlayColor={overlayColor}
+        useGradient={useGradient}
+        overlayStyle={overlayStyle}
+        borderRadius={borderRadius}
+      />
     </div>
   )
 }

@@ -1,37 +1,36 @@
 import ScrollText from '@/components/scroll-text'
 
-export function ScrollTextSection({ section, sectionId }) {
+function resolveNumericProp(value) {
+  return Number.isFinite(value) ? value : undefined
+}
+
+function buildScrollTexts(section) {
   const textItems = Array.isArray(section?.text)
     ? section.text
     : Array.isArray(section?.texts)
       ? section.texts
       : null
-  const hasTextItems = Array.isArray(textItems) && textItems.length > 0
-  const shouldShowIcon = Boolean(section?.showIcon || section?.showFlag || section?.icon)
+  if (!Array.isArray(textItems) || textItems.length === 0) return undefined
   const resolvedIcon = section?.showFlag ? 'TexasFlag' : section?.icon
-  const scrollTexts = hasTextItems
-    ? shouldShowIcon && resolvedIcon
-      ? textItems.map((text) => ({ text, icon: resolvedIcon }))
-      : textItems
-    : undefined
-  const numCopies = Number.isFinite(section?.numCopies) ? section.numCopies : undefined
-  const velocity = Number.isFinite(section?.velocity) ? section.velocity : undefined
-  const startPosition = Number.isFinite(section?.startPosition) ? section.startPosition : undefined
-  const damping = Number.isFinite(section?.damping) ? section.damping : undefined
-  const stiffness = Number.isFinite(section?.stiffness) ? section.stiffness : undefined
-  const fontSize = Number.isFinite(section?.fontSize) ? section.fontSize : undefined
+  if (!section?.showIcon && !section?.showFlag && !section?.icon) return textItems
+  return textItems.map((text) => ({ text, icon: resolvedIcon }))
+}
+
+export function ScrollTextSection({ section, sectionId }) {
+  const scrollTexts = buildScrollTexts(section)
+  const shouldShowIcon = Boolean(section?.showIcon || section?.showFlag || section?.icon)
 
   return (
     <section id={sectionId} className="bg-card border-border/60 border-b">
       <ScrollText
         texts={scrollTexts}
-        numCopies={numCopies}
-        velocity={velocity}
+        numCopies={resolveNumericProp(section?.numCopies)}
+        velocity={resolveNumericProp(section?.velocity)}
         direction={section.direction}
-        startPosition={startPosition}
-        damping={damping}
-        stiffness={stiffness}
-        fontSize={fontSize}
+        startPosition={resolveNumericProp(section?.startPosition)}
+        damping={resolveNumericProp(section?.damping)}
+        stiffness={resolveNumericProp(section?.stiffness)}
+        fontSize={resolveNumericProp(section?.fontSize)}
         textColor={section.textColor}
         showIcon={shouldShowIcon}
         showFlag={section.showFlag}

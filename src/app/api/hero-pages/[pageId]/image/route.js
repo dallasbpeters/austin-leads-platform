@@ -8,28 +8,32 @@ import { sanityWriteClient } from '@/sanity/client'
 
 export const runtime = 'nodejs'
 
+const IMAGE_URL_KEYS = ['raw', 'full', 'regular', 'small', 'thumb']
+
+function pickString(value, fallback) {
+  return value || fallback
+}
+
+function buildImageUrls(urls) {
+  return Object.fromEntries(IMAGE_URL_KEYS.map((key) => [key, pickString(urls?.[key], '')]))
+}
+
 function buildHeroImage(photo) {
   return {
     source: 'unsplash',
     unsplashId: photo.id,
-    alt: photo.alt || 'Unsplash photo',
-    description: photo.description || '',
-    color: photo.color || '',
-    blurHash: photo.blurHash || '',
-    width: photo.width || null,
-    height: photo.height || null,
-    creditName: photo.user?.name || '',
-    creditUsername: photo.user?.username || '',
-    creditUrl: photo.user?.html || '',
-    unsplashUrl: photo.links?.html || '',
-    downloadLocation: photo.links?.downloadLocation || '',
-    urls: {
-      raw: photo.urls?.raw || '',
-      full: photo.urls?.full || '',
-      regular: photo.urls?.regular || '',
-      small: photo.urls?.small || '',
-      thumb: photo.urls?.thumb || '',
-    },
+    alt: pickString(photo.alt, 'Unsplash photo'),
+    description: pickString(photo.description, ''),
+    color: pickString(photo.color, ''),
+    blurHash: pickString(photo.blurHash, ''),
+    width: pickString(photo.width, null),
+    height: pickString(photo.height, null),
+    creditName: pickString(photo.user?.name, ''),
+    creditUsername: pickString(photo.user?.username, ''),
+    creditUrl: pickString(photo.user?.html, ''),
+    unsplashUrl: pickString(photo.links?.html, ''),
+    downloadLocation: pickString(photo.links?.downloadLocation, ''),
+    urls: buildImageUrls(photo.urls),
   }
 }
 

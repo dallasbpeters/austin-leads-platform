@@ -48,13 +48,235 @@ function formatLabel(value) {
 }
 
 function badgeTone(value) {
-  if (value === 'won') return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20'
-  if (value === 'lost' || value === 'closed') return 'bg-slate-500/10 text-slate-700 border-slate-500/20'
-  if (value === 'urgent') return 'bg-red-500/10 text-red-700 border-red-500/20'
-  if (value === 'high') return 'bg-amber-500/10 text-amber-700 border-amber-500/20'
-  if (value === 'inspection' || value === 'quoted') return 'bg-sky-500/10 text-sky-700 border-sky-500/20'
-  if (value === 'qualified') return 'bg-orange-500/10 text-orange-700 border-orange-500/20'
-  return 'bg-muted text-muted-foreground border-border'
+  const tones = {
+    won: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20',
+    lost: 'bg-slate-500/10 text-slate-700 border-slate-500/20',
+    closed: 'bg-slate-500/10 text-slate-700 border-slate-500/20',
+    urgent: 'bg-red-500/10 text-red-700 border-red-500/20',
+    high: 'bg-amber-500/10 text-amber-700 border-amber-500/20',
+    inspection: 'bg-sky-500/10 text-sky-700 border-sky-500/20',
+    quoted: 'bg-sky-500/10 text-sky-700 border-sky-500/20',
+    qualified: 'bg-orange-500/10 text-orange-700 border-orange-500/20',
+  }
+  return tones[value] || 'bg-muted text-muted-foreground border-border'
+}
+
+function CrmUnavailableState({ dbConfigured, dbError }) {
+  if (!dbConfigured) {
+    return (
+      <div className="p-4 md:p-8">
+        <Card className="bg-card/80 border-border">
+          <CardHeader>
+            <CardTitle>CRM</CardTitle>
+          </CardHeader>
+          <CardContent className="text-muted-foreground text-sm leading-7">
+            Add <code>DATABASE_URL</code> or <code>NEON_DATABASE_URL</code>, then run{' '}
+            <code>pnpm db:setup</code> to enable the CRM.
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const errorMessage = dbError?.message || 'Unknown database error.'
+  const errorCode = dbError?.code || null
+  const errorCause = dbError?.cause || null
+  const looksLikeFetchFailure = /fetch failed|ECONNRESET|ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(
+    `${errorMessage} ${errorCause || ''}`,
+  )
+
+  return (
+    <div className="p-4 md:p-8">
+      <Card className="bg-card/80 border-border">
+        <CardHeader>
+          <CardTitle>CRM database unreachable</CardTitle>
+        </CardHeader>
+        <CardContent className="text-muted-foreground space-y-3 text-sm leading-7">
+          <p>
+            <code>DATABASE_URL</code> is configured, but the server failed to reach Neon when loading this
+            page.
+          </p>
+          {looksLikeFetchFailure ? (
+            <p>
+              This usually means the Neon HTTP API (Cloudflare-fronted) is temporarily blocked or down. Check{' '}
+              <a
+                href="https://www.cloudflarestatus.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                cloudflarestatus.com
+              </a>{' '}
+              and{' '}
+              <a href="https://neonstatus.com/" target="_blank" rel="noreferrer" className="underline">
+                neonstatus.com
+              </a>
+              , then reload.
+            </p>
+          ) : null}
+          <pre className="bg-muted text-foreground/80 max-w-full overflow-x-auto rounded border p-3 text-xs">
+            {[
+              errorCode && `code: ${errorCode}`,
+              `message: ${errorMessage}`,
+              errorCause && `cause: ${errorCause}`,
+            ]
+              .filter(Boolean)
+              .join('\n')}
+          </pre>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+function LeadDetailSheetContent({
+  lead,
+  draftNotes,
+  draftAssignedTo,
+  draftFollowUpAt,
+  isSaving,
+  handleSaveDetail,
+  saveLead,
+  setDraftNotes,
+  setDraftAssignedTo,
+  setDraftFollowUpAt,
+}) {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 pb-34">
+      <div className="space-y-5">
+        <div className="bg-muted/20 border-border/70 rounded-xl border p-4">
+          <div className="flex items-start gap-3">
+            <div className="bg-background border-border/70 flex h-12 w-12 items-center justify-center rounded-full border">
+              <UserRound className="h-5 w-5" />
+            </div>
+            <div className="space-y-2">
+              <div className="text-foreground font-medium">{lead.full_name}</div>
+              <div className="text-muted-foreground space-y-1 text-sm">
+                <div className="inline-flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  {lead.email}
+                </div>
+                <div className="inline-flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  {lead.phone || 'No phone provided'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Status">
+            <Select value={lead.status} onValueChange={(value) => saveLead({ status: value })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAD_STATUSES.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {formatLabel(status)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Pipeline stage">
+            <Select value={lead.pipeline_stage} onValueChange={(value) => saveLead({ pipelineStage: value })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAD_PIPELINE_STAGES.map((stage) => (
+                  <SelectItem key={stage} value={stage}>
+                    {formatLabel(stage)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Priority">
+            <Select value={lead.priority} onValueChange={(value) => saveLead({ priority: value })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAD_PRIORITIES.map((priority) => (
+                  <SelectItem key={priority} value={priority}>
+                    {formatLabel(priority)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Owner">
+            <Input
+              value={draftAssignedTo}
+              onChange={(event) => setDraftAssignedTo(event.target.value)}
+              placeholder="Assign owner"
+            />
+          </Field>
+        </div>
+
+        <div className="grid gap-3">
+          <InfoRow
+            icon={ShieldCheck}
+            label="Service interest"
+            value={formatServiceInterest(lead.service_interest)}
+          />
+          <InfoRow icon={CircleDot} label="Lead type" value={formatLabel(lead.source_type)} />
+          <InfoRow icon={UserRound} label="Source" value={`${lead.source_domain} · ${lead.page_path}`} />
+          <InfoRow icon={CalendarClock} label="Created" value={formatDate(lead.created_at)} />
+          <InfoRow icon={CalendarClock} label="Last contacted" value={formatDate(lead.last_contacted_at)} />
+        </div>
+
+        <Field label="Follow-up at">
+          <Input
+            type="datetime-local"
+            value={draftFollowUpAt}
+            onChange={(event) => setDraftFollowUpAt(event.target.value)}
+          />
+        </Field>
+
+        <Field label="Internal notes">
+          <Textarea
+            rows={8}
+            value={draftNotes}
+            onChange={(event) => setDraftNotes(event.target.value)}
+            placeholder="Add call notes, quote context, claim details, or next action."
+          />
+        </Field>
+
+        <div className="bg-muted/20 border-border/70 rounded-xl border p-4 text-sm leading-6">
+          <div>
+            <span className="text-foreground font-medium">Page:</span> {lead.page_title || 'Untitled'}
+          </div>
+          <div>
+            <span className="text-foreground font-medium">Section:</span>{' '}
+            {lead.source_section || 'Not tracked'}
+          </div>
+          <div>
+            <span className="text-foreground font-medium">Notes from form:</span>{' '}
+            {lead.notes || 'None provided'}
+          </div>
+        </div>
+      </div>
+
+      <SheetFooter className="bg-background border-border/70 absolute right-0 bottom-0 left-0 mt-6 border-t px-8 pt-4">
+        <Button onClick={handleSaveDetail} disabled={isSaving}>
+          {isSaving ? 'Saving…' : 'Save changes'}
+        </Button>
+        <Button variant="outline" onClick={() => saveLead({ touch: true })} disabled={isSaving}>
+          Mark contacted
+        </Button>
+      </SheetFooter>
+    </div>
+  )
 }
 
 export default function CrmClient({
@@ -108,78 +330,7 @@ export default function CrmClient({
   }
 
   if (!leadDbReady) {
-    if (dbConfigured) {
-      const errorMessage = dbError?.message || 'Unknown database error.'
-      const errorCode = dbError?.code || null
-      const errorCause = dbError?.cause || null
-      const looksLikeFetchFailure = /fetch failed|ECONNRESET|ENOTFOUND|EAI_AGAIN|getaddrinfo/i.test(
-        `${errorMessage} ${errorCause || ''}`,
-      )
-
-      return (
-        <div className="p-4 md:p-8">
-          <Card className="bg-card/80 border-border">
-            <CardHeader>
-              <CardTitle>CRM database unreachable</CardTitle>
-            </CardHeader>
-            <CardContent className="text-muted-foreground space-y-3 text-sm leading-7">
-              <p>
-                <code>DATABASE_URL</code> is configured, but the server failed to reach Neon when loading this
-                page.
-              </p>
-              {looksLikeFetchFailure ? (
-                <p>
-                  This usually means the Neon HTTP API (Cloudflare-fronted) is temporarily blocked or down.
-                  Check{' '}
-                  <a
-                    href="https://www.cloudflarestatus.com/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline"
-                  >
-                    cloudflarestatus.com
-                  </a>{' '}
-                  and{' '}
-                  <a href="https://neonstatus.com/" target="_blank" rel="noreferrer" className="underline">
-                    neonstatus.com
-                  </a>
-                  , then reload.
-                </p>
-              ) : null}
-              <pre className="bg-muted text-foreground/80 max-w-full overflow-x-auto rounded border p-3 text-xs">
-                {[
-                  errorCode && `code: ${errorCode}`,
-                  `message: ${errorMessage}`,
-                  errorCause && `cause: ${errorCause}`,
-                ]
-                  .filter(Boolean)
-                  .join('\n')}
-              </pre>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => window.location.reload()}>
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Retry
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )
-    }
-
-    return (
-      <div className="p-4 md:p-8">
-        <Card className="bg-card/80 border-border">
-          <CardHeader>
-            <CardTitle>CRM</CardTitle>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm leading-7">
-            Add <code>DATABASE_URL</code> or <code>NEON_DATABASE_URL</code>, then run{' '}
-            <code>pnpm db:setup</code> to enable the CRM.
-          </CardContent>
-        </Card>
-      </div>
-    )
+    return <CrmUnavailableState dbConfigured={dbConfigured} dbError={dbError} />
   }
 
   return (
@@ -347,152 +498,18 @@ export default function CrmClient({
           </SheetHeader>
 
           {selectedLead ? (
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 pb-34">
-              <div className="space-y-5">
-                <div className="bg-muted/20 border-border/70 rounded-xl border p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-background border-border/70 flex h-12 w-12 items-center justify-center rounded-full border">
-                      <UserRound className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="text-foreground font-medium">{selectedLead.full_name}</div>
-                      <div className="text-muted-foreground space-y-1 text-sm">
-                        <div className="inline-flex items-center gap-2">
-                          <Mail className="h-4 w-4" />
-                          {selectedLead.email}
-                        </div>
-                        <div className="inline-flex items-center gap-2">
-                          <Phone className="h-4 w-4" />
-                          {selectedLead.phone || 'No phone provided'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Status">
-                    <Select
-                      value={selectedLead.status}
-                      onValueChange={(value) => saveLead({ status: value })}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LEAD_STATUSES.map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {formatLabel(status)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Pipeline stage">
-                    <Select
-                      value={selectedLead.pipeline_stage}
-                      onValueChange={(value) => saveLead({ pipelineStage: value })}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LEAD_PIPELINE_STAGES.map((stage) => (
-                          <SelectItem key={stage} value={stage}>
-                            {formatLabel(stage)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Priority">
-                    <Select
-                      value={selectedLead.priority}
-                      onValueChange={(value) => saveLead({ priority: value })}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {LEAD_PRIORITIES.map((priority) => (
-                          <SelectItem key={priority} value={priority}>
-                            {formatLabel(priority)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field label="Owner">
-                    <Input
-                      value={draftAssignedTo}
-                      onChange={(event) => setDraftAssignedTo(event.target.value)}
-                      placeholder="Assign owner"
-                    />
-                  </Field>
-                </div>
-
-                <div className="grid gap-3">
-                  <InfoRow
-                    icon={ShieldCheck}
-                    label="Service interest"
-                    value={formatServiceInterest(selectedLead.service_interest)}
-                  />
-                  <InfoRow icon={CircleDot} label="Lead type" value={formatLabel(selectedLead.source_type)} />
-                  <InfoRow
-                    icon={UserRound}
-                    label="Source"
-                    value={`${selectedLead.source_domain} · ${selectedLead.page_path}`}
-                  />
-                  <InfoRow icon={CalendarClock} label="Created" value={formatDate(selectedLead.created_at)} />
-                  <InfoRow
-                    icon={CalendarClock}
-                    label="Last contacted"
-                    value={formatDate(selectedLead.last_contacted_at)}
-                  />
-                </div>
-
-                <Field label="Follow-up at">
-                  <Input
-                    type="datetime-local"
-                    value={draftFollowUpAt}
-                    onChange={(event) => setDraftFollowUpAt(event.target.value)}
-                  />
-                </Field>
-
-                <Field label="Internal notes">
-                  <Textarea
-                    rows={8}
-                    value={draftNotes}
-                    onChange={(event) => setDraftNotes(event.target.value)}
-                    placeholder="Add call notes, quote context, claim details, or next action."
-                  />
-                </Field>
-
-                <div className="bg-muted/20 border-border/70 rounded-xl border p-4 text-sm leading-6">
-                  <div>
-                    <span className="text-foreground font-medium">Page:</span>{' '}
-                    {selectedLead.page_title || 'Untitled'}
-                  </div>
-                  <div>
-                    <span className="text-foreground font-medium">Section:</span>{' '}
-                    {selectedLead.source_section || 'Not tracked'}
-                  </div>
-                  <div>
-                    <span className="text-foreground font-medium">Notes from form:</span>{' '}
-                    {selectedLead.notes || 'None provided'}
-                  </div>
-                </div>
-              </div>
-
-              <SheetFooter className="bg-background border-border/70 absolute right-0 bottom-0 left-0 mt-6 border-t px-8 pt-4">
-                <Button onClick={handleSaveDetail} disabled={isSaving}>
-                  {isSaving ? 'Saving…' : 'Save changes'}
-                </Button>
-                <Button variant="outline" onClick={() => saveLead({ touch: true })} disabled={isSaving}>
-                  Mark contacted
-                </Button>
-              </SheetFooter>
-            </div>
+            <LeadDetailSheetContent
+              lead={selectedLead}
+              draftNotes={draftNotes}
+              draftAssignedTo={draftAssignedTo}
+              draftFollowUpAt={draftFollowUpAt}
+              isSaving={isSaving}
+              handleSaveDetail={handleSaveDetail}
+              saveLead={saveLead}
+              setDraftNotes={setDraftNotes}
+              setDraftAssignedTo={setDraftAssignedTo}
+              setDraftFollowUpAt={setDraftFollowUpAt}
+            />
           ) : null}
         </SheetContent>
       </Sheet>
