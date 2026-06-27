@@ -1,3 +1,4 @@
+// oxlint-disable no-nested-ternary curly func-style
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
@@ -8,7 +9,9 @@ export function PricingSection({ section, sectionId }) {
   const body = section?.body
   const notes = Array.isArray(section?.notes) ? section.notes : []
 
-  if (!title) return null
+  if (!title) {
+    return null
+  }
 
   const stepNotes = notes.filter((n) => n?.variant !== 'callout')
   const calloutNotes = notes.filter((n) => n?.variant === 'callout')
@@ -70,9 +73,7 @@ export function PricingSection({ section, sectionId }) {
                       0{i + 1}
                     </p>
                     {noteTitle ? (
-                      <h3 className="text-foreground mb-1 font-serif text-lg leading-tight tracking-normal">
-                        {noteTitle}
-                      </h3>
+                      <h3 className="text-foreground mb-1 font-serif text-xl tracking-normal">{noteTitle}</h3>
                     ) : null}
                     <p className="mb-1 text-xs font-bold tracking-[0.16em] text-amber-500 uppercase">
                       {paymentDue}

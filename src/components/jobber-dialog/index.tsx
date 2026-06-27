@@ -58,7 +58,7 @@ export function JobberDialog({
       <DialogTrigger asChild>
         <Button variant="default">{buttonLabel}</Button>
       </DialogTrigger>
-      <DialogContent className="grid max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-4 sm:max-w-4xl sm:p-6">
+      <DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-4 sm:max-w-3xl sm:p-6">
         <DialogHeader className="mb-2 pr-8">
           <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
         </DialogHeader>
