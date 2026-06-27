@@ -1,3 +1,4 @@
+// oxlint-disable func-style
 import Image from 'next/image'
 
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
@@ -73,7 +74,7 @@ export function AboutProfileSection({ section, sectionId }) {
         markup="src/components/platform/sections/about-profile-section.jsx"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-3 py-20 md:grid-cols-[.85fr_1.15fr] md:px-6 lg:px-10">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-3 py-20 md:grid-cols-[.85fr_1.15fr] md:px-6 lg:px-10">
         <div className="grid grid-cols-1 content-start gap-6">
           {people.map((person, index) => {
             const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)

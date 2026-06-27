@@ -1,3 +1,4 @@
+// oxlint-disable func-style require-unicode-regexp
 'use client'
 
 import { useEffect, useId, useRef } from 'react'
@@ -11,6 +12,7 @@ const JOBBER_STYLESHEET_URL = 'https://d3ey4dbjkt2f6s.cloudfront.net/assets/exte
 export const JOBBER_FORM_IDS = {
   default: '4904121',
   txchristmaslights: '4905459',
+  customLights: '4925324',
 }
 
 function getJobberFormUrl(formId) {
@@ -20,22 +22,24 @@ function getJobberFormUrl(formId) {
 export default function JobberWorkRequestEmbed({ className = '', formId = JOBBER_FORM_IDS.default }) {
   const containerRef = useRef(null)
   const hasLoadedRef = useRef(false)
-  const uniqueId = useId().replace(/[^a-zA-Z0-9_-]/g, '')
+  const uniqueId = useId().replaceAll(/[^a-zA-Z0-9_-]/g, '')
   const targetId = `${JOBBER_CLIENT_HUB_ID}-${formId}-${uniqueId}`
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container || hasLoadedRef.current) return
+    if (!container || hasLoadedRef.current) {
+      return
+    }
 
     hasLoadedRef.current = true
 
-    if (!document.getElementById(JOBBER_STYLESHEET_ID)) {
+    if (!document.querySelector(`#${JOBBER_STYLESHEET_ID}`)) {
       const link = document.createElement('link')
       link.id = JOBBER_STYLESHEET_ID
       link.rel = 'stylesheet'
       link.href = JOBBER_STYLESHEET_URL
       link.media = 'screen'
-      document.head.appendChild(link)
+      document.head.append(link)
     }
 
     const script = document.createElement('script')
@@ -43,13 +47,13 @@ export default function JobberWorkRequestEmbed({ className = '', formId = JOBBER
     script.async = true
     script.setAttribute('clienthub_id', targetId)
     script.setAttribute('form_url', getJobberFormUrl(formId))
-    document.body.appendChild(script)
+    document.body.append(script)
   }, [formId, targetId])
 
   return (
     <div
       ref={containerRef}
-      className={`jobber-inline-work-request min-h-[720px] w-full overflow-hidden rounded-md bg-white ${className}`}
+      className={`jobber-inline-work-request max-w-4 overflow-hidden rounded-md bg-white ${className}`}
       id={targetId}
     />
   )

@@ -1,3 +1,4 @@
+// oxlint-disable func-style
 'use client'
 
 import { XIcon } from 'lucide-react'

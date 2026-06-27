@@ -1,3 +1,4 @@
+// oxlint-disable unicorn/no-negated-condition
 'use client'
 
 import { useEffect, useRef } from 'react'
@@ -12,10 +13,14 @@ export default function LeadCaptureForm({ context }) {
 
   useEffect(() => {
     const element = formRef.current
-    if (!element || hasTrackedViewRef.current) return
+    if (!element || hasTrackedViewRef.current) {
+      return
+    }
 
     const trackView = () => {
-      if (hasTrackedViewRef.current) return
+      if (hasTrackedViewRef.current) {
+        return
+      }
       hasTrackedViewRef.current = true
 
       trackAnalyticsEvent('lead_form_view', {

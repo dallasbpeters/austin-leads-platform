@@ -1,3 +1,4 @@
+// oxlint-disable func-style sort-keys
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import Footer from '@/components/footer'
 import GuideShareBar from '@/components/guide-share-bar'
@@ -49,7 +50,9 @@ function computePublicSiteFlags(site, page, pathname) {
 
 function renderSectionItem(section, index, flags, page, site, pathname, reviews, shareUrl) {
   const Component = sectionRenderers[section.type]
-  if (!Component) return null
+  if (!Component) {
+    return null
+  }
 
   const sectionId = getSectionDomId(section, index)
   const sectionEditAttrs = getSanitySectionEditAttributes(page, section)

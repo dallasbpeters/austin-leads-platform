@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 import posthog from 'posthog-js'
 
 import JobberWorkRequestEmbed, { JOBBER_FORM_IDS } from '@/components/jobber-work-request-embed'
+import { JobberDialog } from '@components/jobber-dialog'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const JobberCheckoutForm = () => {
@@ -30,7 +31,13 @@ const JobberCheckoutForm = () => {
 
   return (
     <div ref={containerRef} className="grid h-full min-h-180 w-full grid-cols-1 place-items-center bg-white">
-      <JobberWorkRequestEmbed className="h-full rounded-none" formId={JOBBER_FORM_IDS.txchristmaslights} />
+      <JobberWorkRequestEmbed className="rounded-none" formId={JOBBER_FORM_IDS.txchristmaslights} />
+      <div className="bg-background/5 text-foreground/70 grid place-items-center space-y-3 px-8 pb-6 text-center text-sm sm:px-20 lg:px-30">
+        <p className="text-foreground/70 max-w-md text-sm">
+          Don&apos;t see a package you like? Contact us to discuss a custom holiday display.
+        </p>
+        <JobberDialog buttonLabel="Contact Us" title="Contact Us" formId={JOBBER_FORM_IDS.customLights} />
+      </div>
     </div>
   )
 }
@@ -61,7 +68,7 @@ export const SchedulingForm = () => (
           </div>
         </div>
       </div>
-      <div className="bg-background flex h-full flex-col overflow-hidden">
+      <div className="flex h-full flex-col overflow-hidden bg-white">
         <JobberCheckoutForm />
       </div>
     </div>

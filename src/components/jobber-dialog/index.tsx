@@ -1,16 +1,27 @@
+// oxlint-disable no-negated-condition func-style react-hooks/exhaustive-deps
 'use client'
 import { Button } from '@/components/ui/button'
 import { useCallback, useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import LeadCaptureForm from '@/components/lead-capture-form'
+import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
 
 interface JobberDialogProps {
   buttonLabel?: string
+  title?: string
+  // When provided, the dialog opens this specific Jobber work request form
+  // directly instead of the default lead-capture form.
+  formId?: string
   context?: Record<string, string>
 }
 
-export function JobberDialog({ buttonLabel = 'Book a Service', context }: JobberDialogProps) {
+export function JobberDialog({
+  buttonLabel = 'Book a Service',
+  title = 'Book a Service',
+  formId,
+  context,
+}: JobberDialogProps) {
   const [open, setOpen] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
@@ -49,9 +60,12 @@ export function JobberDialog({ buttonLabel = 'Book a Service', context }: Jobber
       </DialogTrigger>
       <DialogContent className="grid max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-4 sm:max-w-4xl sm:p-6">
         <DialogHeader className="mb-2 pr-8">
-          <DialogTitle className="text-lg font-semibold">Book a Service</DialogTitle>
+          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
         </DialogHeader>
-        <div className="min-h-0 overflow-y-auto">{isReady && <LeadCaptureForm context={context} />}</div>
+        <div className="min-h-0 overflow-y-auto">
+          {isReady &&
+            (formId ? <JobberWorkRequestEmbed formId={formId} /> : <LeadCaptureForm context={context} />)}
+        </div>
       </DialogContent>
     </Dialog>
   )
