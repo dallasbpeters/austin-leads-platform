@@ -1,3 +1,4 @@
+// oxlint-disable no-nested-ternary
 import { BlockContentIcon } from '@sanity/icons'
 
 import ChartPointsJsonInput from '../components/chart-points-json-input'
@@ -2055,7 +2056,6 @@ const storySectionType = {
       name: 'subtitle',
       title: 'Subtitle',
       type: 'portableTextSimple',
-      validation: (Rule) => Rule.required(),
       options: canvasPurpose('Subtitle for the story section.'),
     },
   ],
