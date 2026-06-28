@@ -198,7 +198,13 @@ export default function Testimonials({
     >
       {backgroundImage ? (
         <>
-          <Image src={backgroundImage} alt={backgroundImageAlt} fill sizes="100vw" className="object-cover" />
+          <Image
+            src={backgroundImage}
+            alt={backgroundImageAlt}
+            fill
+            sizes="100vw"
+            className="object-cover object-[0_-s100%]"
+          />
           <div className="absolute top-0 bottom-[50%] left-0 w-full bg-linear-to-b from-white to-transparent" />
         </>
       ) : null}
