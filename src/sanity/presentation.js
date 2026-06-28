@@ -29,16 +29,6 @@ function tenantHref(siteSlug, path = '/') {
 }
 
 /**
- * Extract the site slug from a Sanity site reference.
- * Site documents are always created with _id = "site-{slug}".
- */
-function slugFromSiteRef(ref) {
-  if (!ref) return null
-  const id = typeof ref === 'string' ? ref : ref._ref
-  return id?.startsWith('site-') ? id.slice('site-'.length) : null
-}
-
-/**
  * Resolve documents for the current Presentation preview URL.
  *
  * For /_site/:site and /_site/:site/:path* routes, `context.params.site`
@@ -115,7 +105,7 @@ export const presentationLocations = {
     },
   }),
   page: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteRef: 'site' },
+    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) return null
@@ -123,18 +113,18 @@ export const presentationLocations = {
         locations: [
           {
             title: doc.title || 'Untitled page',
-            href: tenantHref(slugFromSiteRef(doc.siteRef), path),
+            href: tenantHref(doc.siteSlug, path),
           },
         ],
       }
     },
   }),
   servicePage: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteRef: 'site' },
+    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) return null
-      const siteSlug = slugFromSiteRef(doc.siteRef)
+      const siteSlug = doc.siteSlug
       return {
         locations: [
           { title: doc.title || 'Untitled service page', href: tenantHref(siteSlug, path) },
@@ -144,7 +134,7 @@ export const presentationLocations = {
     },
   }),
   locationPage: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteRef: 'site' },
+    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) return null
@@ -152,18 +142,18 @@ export const presentationLocations = {
         locations: [
           {
             title: doc.title || 'Untitled location page',
-            href: tenantHref(slugFromSiteRef(doc.siteRef), path),
+            href: tenantHref(doc.siteSlug, path),
           },
         ],
       }
     },
   }),
   post: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteRef: 'site' },
+    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) return null
-      const siteSlug = slugFromSiteRef(doc.siteRef)
+      const siteSlug = doc.siteSlug
       return {
         locations: [
           { title: doc.title || 'Untitled post', href: tenantHref(siteSlug, path) },
