@@ -128,8 +128,8 @@ export const presentationDocuments = defineDocuments([
   { route: '/:path*', resolve: resolveFromAnyPath },
 ])
 
-function hrefForDoc(doc) {
-  if (doc.pageType === 'home' || doc.slug === '/') {
+const hrefForDoc = function (doc) {
+  if (doc?.pageType === 'home' || doc?.slug === '/') {
     return '/'
   }
   if (!doc?.slug) {
