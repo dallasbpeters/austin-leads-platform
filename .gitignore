@@ -11,3 +11,4 @@ public/.DS_Store
 public/unicorn/.DS_Store
 playwright-report/
 test-results/
+.agents/
