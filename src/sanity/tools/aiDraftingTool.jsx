@@ -12,7 +12,7 @@ import {
   buildSanityAgentPublishingInstruction,
   SANITY_AGENT_PUBLISHING_SETUP_NOTES,
 } from '../agent/publishingInstructions'
-import { studioPreviewOrigin, studioUrl } from '../env'
+import { toolApiOrigin, studioUrl } from '../env'
 import { syncGuideHeroToGuideGridItems } from '../lib/syncGuideListingImages'
 
 const SANITY_AGENT_SCHEMA_ID =
@@ -87,7 +87,7 @@ export function AiDraftingTool() {
     brief: '',
     sources: '',
   })
-  const geminiApiEndpoint = `${studioPreviewOrigin}/api/gemini/generate-image`
+  const geminiApiEndpoint = `${toolApiOrigin}/api/gemini/generate-image`
   const geminiPluginApiKey = getGeminiPluginApiKey()
 
   React.useEffect(() => {

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { studioPreviewOrigin } from '../env'
+import { toolApiOrigin } from '../env'
 
 function ToolIcon() {
   return (
@@ -87,7 +87,7 @@ export function PageSpeedTool() {
     setResult(null)
 
     try {
-      const response = await fetch(`${studioPreviewOrigin}/api/pagespeed/run`, {
+      const response = await fetch(`${toolApiOrigin}/api/pagespeed/run`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
