@@ -11,6 +11,7 @@ import { draftMode, headers } from 'next/headers'
 import '../styles/globals.css'
 
 import { PostHogProvider } from '@/app/providers'
+import PresentationLinkBridge from '@/components/sanity/presentation-link-bridge'
 import ViewTransitionWrapper from '@/components/view-transition-wrapper'
 import { getPublicDataSiteAttribute } from '@/components/platform/public-site-utils'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
@@ -135,6 +136,7 @@ export default async function RootLayout({ children }) {
         <PostHogProvider siteSlug={analyticsSiteSlug}>{children}</PostHogProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}
         {isDraftMode ? <SanityLive /> : null}
+        {isDraftMode ? <PresentationLinkBridge /> : null}
         {isDraftMode ? <VisualEditing /> : null}
         <Analytics />
         <SpeedInsights />

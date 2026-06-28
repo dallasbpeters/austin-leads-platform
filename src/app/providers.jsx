@@ -34,6 +34,17 @@ function resolvePostHogKey(siteSlug) {
   return process.env.NEXT_PUBLIC_POSTHOG_KEY || DEFAULT_POSTHOG_KEY
 }
 
+function resolveBrowserPostHogHost() {
+  const configuredHost = process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim()
+  if (!configuredHost) {
+    return DEFAULT_POSTHOG_HOST
+  }
+
+  // Browser events must stay on the local `/ingest` proxy so tenant domains
+  // never receive raw PostHog SDK requests like `/array/<key>/config`.
+  return configuredHost.startsWith('/') ? configuredHost : DEFAULT_POSTHOG_HOST
+}
+
 const TRACKABLE_BUTTON_SELECTOR = [
   'button',
   '[role="button"]',
@@ -103,7 +114,7 @@ function getSafeHrefPath(element) {
 export function PostHogProvider({ children, siteSlug }) {
   useEffect(() => {
     const key = resolvePostHogKey(siteSlug)
-    const host = process.env.NEXT_PUBLIC_POSTHOG_HOST || DEFAULT_POSTHOG_HOST
+    const host = resolveBrowserPostHogHost()
 
     if (!key || !host) {
       return
