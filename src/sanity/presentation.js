@@ -1,3 +1,4 @@
+// oxlint-disable func-style
 import { defineDocuments, defineLocations } from 'sanity/presentation'
 
 const PAGE_DOCUMENT_FILTER = `_type in ["page", "servicePage", "locationPage", "post"]`
@@ -128,7 +129,7 @@ export const presentationDocuments = defineDocuments([
   { route: '/:path*', resolve: resolveFromAnyPath },
 ])
 
-const hrefForDoc = function (doc) {
+function hrefForDoc(doc) {
   if (doc?.pageType === 'home' || doc?.slug === '/') {
     return '/'
   }

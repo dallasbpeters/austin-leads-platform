@@ -50,7 +50,7 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
           <h2 className="type-accent m-0 text-[clamp(2rem,4vw,4.5rem)] leading-[0.94] font-black text-balance text-neutral-950">
             {section?.title || 'The difference — premium products, design, & support'}
           </h2>
-          <PortableTextContent value={body} className="pt-3 text-xl leading-8 text-neutral-300 lg:pt-12" />
+          <PortableTextContent value={body} className="text-neutral-9s00 pt-3 text-xl leading-8 lg:pt-12" />
         </div>
 
         <div className="relative">
