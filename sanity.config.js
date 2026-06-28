@@ -55,10 +55,7 @@ export default defineConfig({
     presentationTool({
       previewUrl: {
         initial: studioPreviewOrigin,
-        preview: '/',
         previewMode: previewModeRoutes,
-        // Keep the legacy key alongside previewMode for hosted Studio compatibility.
-        draftMode: previewModeRoutes,
       },
       resolve: {
         mainDocuments: presentationDocuments,

@@ -28,6 +28,60 @@ function tenantHref(siteSlug, path = '/') {
   return `/_site/${siteSlug}${safePath}`
 }
 
+function normalizeJoinedPath(value) {
+  if (Array.isArray(value)) {
+    return value.filter(Boolean).join('/')
+  }
+
+  if (typeof value === 'string') {
+    return value.split('/').filter(Boolean).join('/')
+  }
+
+  return ''
+}
+
+function parsePreviewContext(context) {
+  const contextPath = typeof context.path === 'string' ? context.path : '/'
+  let siteSlug = context.params?.site ?? context.params?.siteSlug ?? null
+  let pagePath = contextPath
+
+  if (contextPath.startsWith('/_site/')) {
+    const rest = contextPath.slice('/_site/'.length)
+    const slashIndex = rest.indexOf('/')
+    const rawSiteSlug = slashIndex === -1 ? rest : rest.slice(0, slashIndex)
+    if (!siteSlug && rawSiteSlug) {
+      try {
+        siteSlug = decodeURIComponent(rawSiteSlug)
+      } catch {
+        siteSlug = rawSiteSlug
+      }
+    }
+    pagePath = slashIndex === -1 ? '/' : rest.slice(slashIndex) || '/'
+  }
+
+  if (contextPath.startsWith('/preview/')) {
+    const rest = contextPath.slice('/preview/'.length)
+    const slashIndex = rest.indexOf('/')
+    const rawSiteSlug = slashIndex === -1 ? rest : rest.slice(0, slashIndex)
+    if (!siteSlug && rawSiteSlug) {
+      try {
+        siteSlug = decodeURIComponent(rawSiteSlug)
+      } catch {
+        siteSlug = rawSiteSlug
+      }
+    }
+    pagePath = slashIndex === -1 ? '/' : rest.slice(slashIndex) || '/'
+  }
+
+  const slugFromParams = normalizeJoinedPath(context.params?.path)
+  const slugFromPath = pagePath === '/' ? '' : normalizeJoinedPath(pagePath)
+
+  return {
+    siteSlug,
+    slug: slugFromParams || slugFromPath,
+  }
+}
+
 /**
  * Resolve documents for the current Presentation preview URL.
  *
@@ -36,16 +90,7 @@ function tenantHref(siteSlug, path = '/') {
  * required. This allows per-site document filtering in the Presentation panel.
  */
 function resolveFromAnyPath(context) {
-  const siteSlug = context.params?.site ?? null
-
-  // Page path comes from the /:path* wildcard segment
-  const rawPath = context.params?.path
-  let slug = ''
-  if (typeof rawPath === 'string' && rawPath.length) {
-    slug = rawPath.split('/').filter(Boolean).join('/')
-  } else if (Array.isArray(rawPath)) {
-    slug = rawPath.filter(Boolean).join('/')
-  }
+  const { siteSlug, slug } = parsePreviewContext(context)
 
   // Guard against internal routes being resolved as page documents
   const firstSegment = slug.split('/')[0]
@@ -72,6 +117,8 @@ export const presentationDocuments = defineDocuments([
   // The site slug in /_site/:site becomes a route param so the resolver can filter by site.
   { route: '/_site/:site', resolve: resolveFromAnyPath },
   { route: '/_site/:site/:path*', resolve: resolveFromAnyPath },
+  { route: '/preview/:siteSlug', resolve: resolveFromAnyPath },
+  { route: '/preview/:siteSlug/:path*', resolve: resolveFromAnyPath },
   // Direct path routing used when opening a document from Structure.
   { route: '/', resolve: resolveFromAnyPath },
   { route: '/:path*', resolve: resolveFromAnyPath },

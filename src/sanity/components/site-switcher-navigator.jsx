@@ -4,6 +4,26 @@ import { usePresentationNavigate, usePresentationParams } from 'sanity/presentat
 
 import { apiVersion } from '../env'
 
+function normalizeSites(data = []) {
+  const seen = new Set()
+  const uniqueSites = []
+
+  for (const site of data) {
+    const slug = site?.slug?.trim().toLowerCase()
+    const primaryDomain = site?.primaryDomain?.trim().toLowerCase()
+    const key = slug || primaryDomain || site?._id
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    uniqueSites.push({
+      ...site,
+      primaryDomain,
+      slug,
+    })
+  }
+
+  return uniqueSites
+}
+
 /**
  * Custom Presentation navigator that lists all sites and lets you jump directly
  * to any site's homepage preview with a single click.
@@ -12,7 +32,7 @@ import { apiVersion } from '../env'
  */
 export function SiteSwitcherNavigator() {
   const { getClient } = useSource()
-  const client = getClient({ apiVersion })
+  const client = getClient({ apiVersion, perspective: 'published', useCdn: false })
   const navigate = usePresentationNavigate()
   const params = usePresentationParams()
   const [sites, setSites] = useState([])
@@ -36,7 +56,7 @@ export function SiteSwitcherNavigator() {
     setLoading(true)
     client
       .fetch(
-        `*[_type == "site"] | order(name asc) {
+        `*[_type == "site" && !(_id in path("drafts.**"))] | order(name asc) {
           _id,
           "slug": slug.current,
           name,
@@ -46,7 +66,7 @@ export function SiteSwitcherNavigator() {
         }`,
       )
       .then((data) => {
-        setSites(data ?? [])
+        setSites(normalizeSites(data))
         setLoading(false)
       })
       .catch(() => setLoading(false))
