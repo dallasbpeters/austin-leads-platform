@@ -1,6 +1,8 @@
 import { useId } from 'react'
+import Image from 'next/image'
 
 import { Card } from '@/components/ui/card'
+import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -162,6 +164,14 @@ export default function Testimonials({ reviews = [], section = null, sectionId =
       : fallbackReviews
   const title = section?.title || 'What customers are saying'
   const subtitle = portableTextToPlainText(section?.body) || 'about Texas Solar and Roofing Pros'
+  const backgroundImage = getImageUrl(section?.backgroundImageAsset, section?.backgroundImage, {
+    width: 1800,
+  })
+  const backgroundImageAlt = getImageAlt(
+    section?.backgroundImageAsset,
+    section?.backgroundImage,
+    'Customer reviews background',
+  )
   const desktopColumns = [[], [], []]
   const desktopOrder = [0, 1, 2, 1]
 
@@ -172,14 +182,20 @@ export default function Testimonials({ reviews = [], section = null, sectionId =
 
   return (
     <section
-      className="bg-secondary-100 radial-grid-bg py-24"
+      className="bg-secondary-100 radial-grid-bg relative overflow-hidden py-24"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/testimonials.jsx',
         content: reviews.length ? 'homepage reviews from Sanity' : 'local fallback testimonial content',
       })}
     >
-      <div className="mr-auto mb-5 ml-auto max-w-7xl text-center sm:px-3 md:px-6 lg:px-8">
+      {backgroundImage ? (
+        <>
+          <Image src={backgroundImage} alt={backgroundImageAlt} fill sizes="100vw" className="object-cover" />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(255,255,255,0.78)),radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.32),transparent_55%)]" />
+        </>
+      ) : null}
+      <div className="relative z-10 mr-auto mb-5 ml-auto max-w-7xl text-center sm:px-3 md:px-6 lg:px-8">
         <h2 className="text-foreground animate-delay-200 dynamic-zoom-in mb-6 text-3xl font-medium tracking-normal sm:text-4xl">
           {title}
           <span className="bg-primary block bg-clip-text leading-relaxed font-medium tracking-normal text-transparent">
@@ -188,7 +204,7 @@ export default function Testimonials({ reviews = [], section = null, sectionId =
         </h2>
       </div>
 
-      <div className="animate-delay-400 dynamic-slide-in relative mx-auto max-w-7xl px-4 md:px-8">
+      <div className="animate-delay-400 dynamic-slide-in relative z-10 mx-auto max-w-7xl px-4 md:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {desktopColumns.map((columnReviews, columnIndex) => (
             <div key={`column-${columnIndex}`} className="space-y-6">

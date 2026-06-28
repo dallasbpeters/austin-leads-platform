@@ -1,16 +1,7 @@
-import * as IconoirIcons from 'iconoir-react'
-
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
-
-const resolveItemIcon = (iconName) => {
-  if (!iconName || typeof iconName !== 'string') {
-    return null
-  }
-  const Component = IconoirIcons[iconName]
-  return typeof Component === 'function' || typeof Component === 'object' ? Component : null
-}
 
 export function CardGridSection({ section, sectionId }) {
   return (
@@ -46,7 +37,7 @@ export function CardGridSection({ section, sectionId }) {
           {section.items?.map((item, index) => {
             const number = String(index + 1).padStart(2, '0')
             const reverse = index % 2 === 1
-            const Icon = resolveItemIcon(item.icon)
+            const Icon = resolveIconoirIcon(item.icon)
             const eyebrow = item.eyebrow || 'Highlight'
 
             return (

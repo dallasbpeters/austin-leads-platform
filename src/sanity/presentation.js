@@ -129,13 +129,19 @@ export const presentationDocuments = defineDocuments([
 ])
 
 function hrefForDoc(doc) {
-  if (!doc?.slug) {
-    return null
-  }
   if (doc.pageType === 'home' || doc.slug === '/') {
     return '/'
   }
+  if (!doc?.slug) {
+    return null
+  }
   return doc.slug.startsWith('/') ? doc.slug : `/${doc.slug}`
+}
+
+const noLocations = {
+  locations: [],
+  message: 'No frontend locations found for this document.',
+  tone: 'caution',
 }
 
 export const presentationLocations = {
@@ -145,84 +151,112 @@ export const presentationLocations = {
    * filter the panel to documents belonging to that site.
    */
   site: defineLocations({
-    select: { name: 'name', slug: 'slug.current', primaryDomain: 'primaryDomain' },
+    select: {
+      name: 'name',
+      primaryDomain: 'primaryDomain',
+      siteSlug: 'slug.current',
+    },
     resolve: (doc) => {
-      const siteSlug = doc?.slug
-      if (!siteSlug) {
-        return null
+      if (!doc.siteSlug) {
+        return noLocations
       }
+
       return {
         locations: [
           {
-            title: doc.name || doc.primaryDomain || siteSlug,
-            href: tenantHref(siteSlug, '/'),
+            title: doc.name || doc.primaryDomain || doc.siteSlug,
+            href: tenantHref(doc.siteSlug, '/'),
           },
         ],
       }
     },
   }),
   page: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
+    select: {
+      pageType: 'pageType',
+      slug: 'slug.current',
+      title: 'title',
+    },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) {
-        return null
+        return noLocations
       }
+
       return {
         locations: [
           {
             title: doc.title || 'Untitled page',
-            href: tenantHref(doc.siteSlug, path),
+            href: path,
           },
         ],
       }
     },
   }),
   servicePage: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
+    select: {
+      pageType: 'pageType',
+      slug: 'slug.current',
+      title: 'title',
+    },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) {
-        return null
+        return noLocations
       }
-      const { siteSlug } = doc
+
       return {
         locations: [
-          { title: doc.title || 'Untitled service page', href: tenantHref(siteSlug, path) },
-          { title: 'Services', href: tenantHref(siteSlug, '/services') },
+          {
+            title: doc.title || 'Untitled service page',
+            href: path,
+          },
+          { title: 'Services', href: '/services' },
         ],
       }
     },
   }),
   locationPage: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
+    select: {
+      pageType: 'pageType',
+      slug: 'slug.current',
+      title: 'title',
+    },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) {
-        return null
+        return noLocations
       }
+
       return {
         locations: [
           {
             title: doc.title || 'Untitled location page',
-            href: tenantHref(doc.siteSlug, path),
+            href: path,
           },
         ],
       }
     },
   }),
   post: defineLocations({
-    select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
+    select: {
+      pageType: 'pageType',
+      slug: 'slug.current',
+      title: 'title',
+    },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
       if (!path) {
-        return null
+        return noLocations
       }
-      const { siteSlug } = doc
+
       return {
         locations: [
-          { title: doc.title || 'Untitled post', href: tenantHref(siteSlug, path) },
-          { title: 'Guides', href: tenantHref(siteSlug, '/guides') },
+          {
+            title: doc.title || 'Untitled post',
+            href: path,
+          },
+          { title: 'Guides', href: '/guides' },
         ],
       }
     },

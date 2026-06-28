@@ -13,6 +13,7 @@ import { GallerySection } from './gallery-section'
 import { GuideGridSection } from './guide-grid-section'
 import { HailMapSection } from './hail-map-section'
 import { HeroSection } from './hero-section'
+import { InstallProcessSection } from './install-process-section'
 import { PricingSection } from './pricing-section'
 import { QuoteBannerSection } from './quote-banner-section'
 import { RoofingLogoCloudSection } from './roofing-logo-cloud-section'
@@ -33,6 +34,9 @@ const ResourcesSection = dynamic(() => import('@/components/resources-section'),
 const SnapshotSection = dynamic(() => import('@/components/snapshot-section'), { ssr: true })
 const Testimonials = dynamic(() => import('@/components/testimonials'), { ssr: true })
 const ArticleSection = dynamic(() => import('@/components/article-section'), { ssr: true })
+const SolarAdoptionSection = dynamic(() => import('@/components/solar-adoption-section'), { ssr: true })
+const SolarBenefitsSection = dynamic(() => import('@/components/solar-benefits-section'), { ssr: true })
+const SolarDifferenceSection = dynamic(() => import('@/components/solar-difference-section'), { ssr: true })
 
 export const sectionRenderers = {
   aboutProfile: AboutProfileSection,
@@ -50,6 +54,7 @@ export const sectionRenderers = {
   guides: GuidesSection,
   hailMap: HailMapSection,
   hero: HeroSection,
+  installProcess: InstallProcessSection,
   highlights: CardGridSection,
   incentives: IncentivesSection,
   logos: RoofingLogoCloudSection,
@@ -60,6 +65,9 @@ export const sectionRenderers = {
   secondaryCTA: SecondaryCTASection,
   serviceAreaMap: ServiceAreaMapSection,
   serviceGrid: ServiceGridSection,
+  solarAdoption: SolarAdoptionSection,
+  solarBenefits: SolarBenefitsSection,
+  solarDifference: SolarDifferenceSection,
   snapshot: SnapshotSection,
   solarSwitch: SolarSwitchSection,
   steps: StepsSection,

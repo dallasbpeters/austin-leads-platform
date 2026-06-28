@@ -4,18 +4,37 @@ import { usePresentationNavigate, usePresentationParams } from 'sanity/presentat
 
 import { apiVersion } from '../env'
 
+function normalizeDomain(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/\/$/, '')
+}
+
 function normalizeSites(data = []) {
   const seen = new Set()
   const uniqueSites = []
 
   for (const site of data) {
-    const slug = site?.slug?.trim().toLowerCase()
-    const primaryDomain = site?.primaryDomain?.trim().toLowerCase()
-    const key = slug || primaryDomain || site?._id
-    if (!key || seen.has(key)) {
+    const slug = site?.slug?.trim()
+    const primaryDomain = site?.primaryDomain?.trim()
+    const keys = [
+      slug?.toLowerCase(),
+      normalizeDomain(primaryDomain),
+      ...(Array.isArray(site?.aliases) ? site.aliases.map(normalizeDomain) : []),
+      site?._id,
+    ].filter(Boolean)
+
+    if (keys.length === 0 || keys.some((key) => seen.has(key))) {
       continue
     }
-    seen.add(key)
+
+    for (const key of keys) {
+      seen.add(key)
+    }
+
     uniqueSites.push({
       ...site,
       primaryDomain,
@@ -34,7 +53,10 @@ function normalizeSites(data = []) {
  */
 export function SiteSwitcherNavigator() {
   const { getClient } = useSource()
-  const client = getClient({ apiVersion, perspective: 'published', useCdn: false })
+  const client = useMemo(
+    () => getClient({ apiVersion, perspective: 'published', useCdn: false }),
+    [getClient],
+  )
   const navigate = usePresentationNavigate()
   const params = usePresentationParams()
   const [sites, setSites] = useState([])
@@ -57,6 +79,7 @@ export function SiteSwitcherNavigator() {
   }, [params?.preview])
 
   useEffect(() => {
+    let cancelled = false
     setLoading(true)
     client
       .fetch(
@@ -65,15 +88,27 @@ export function SiteSwitcherNavigator() {
           "slug": slug.current,
           name,
           primaryDomain,
+          aliases,
           category,
           tier
         }`,
       )
       .then((data) => {
+        if (cancelled) {
+          return
+        }
         setSites(normalizeSites(data))
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch(() => {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [client])
 
   const handleSiteClick = useCallback(

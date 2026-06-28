@@ -19,6 +19,7 @@ import {
   studioDeploymentAppId,
   studioPreviewOrigin,
   studioUrl,
+  toolApiOrigin,
 } from './src/sanity/env'
 import { guideImageSyncPlugin } from './src/sanity/plugins/guideImageSyncPlugin'
 import { presentationDocuments, presentationLocations } from './src/sanity/presentation'
@@ -50,7 +51,7 @@ export default defineConfig({
     structureTool({ structure: studioStructure }),
     unsplashImageAsset(),
     googleAnalyticsPlugin({
-      apiUrl: `${studioPreviewOrigin.replace(/\/$/, '')}/api/ga-data`,
+      apiUrl: `${toolApiOrigin.replace(/\/$/, '')}/api/ga-data`,
     }),
     presentationTool({
       previewUrl: {

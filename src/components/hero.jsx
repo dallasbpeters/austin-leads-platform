@@ -1,3 +1,4 @@
+// oxlint-disable func-style jsx-a11y/media-has-caption
 import Image from 'next/image'
 
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
@@ -228,15 +229,12 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
 
   return (
     <h1
-      className="type-display mb-10 text-[clamp(3.5rem,8vw,8rem)] leading-none! tracking-[-0.02em] text-black"
+      className="type-display mb-10 text-[clamp(3.5rem,6vw,6rem)] leading-none! tracking-[-0.02em] text-black"
       style={heroTextColor ? { color: heroTextColor } : undefined}
     >
       {titlePrimary}
       <br />
-      <span
-        className="text-transparent [-webkit-text-stroke-width:1px]"
-        style={{ WebkitTextStrokeColor: heroTextColor || 'black' }}
-      >
+      <span className="text-white" style={{ WebkitTextStrokeColor: heroTextColor || 'black' }}>
         {titleAccent}
       </span>
     </h1>

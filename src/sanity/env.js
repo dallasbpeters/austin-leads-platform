@@ -15,6 +15,16 @@ export const localStudioUrl = process.env.NEXT_PUBLIC_LOCAL_SANITY_STUDIO_URL ||
 export const runtimeStudioUrl = process.env.NODE_ENV === 'development' ? localStudioUrl : canonicalStudioUrl
 export const frontendUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://texassolarandroofingpros.com'
 export const localFrontendUrl = process.env.NEXT_PUBLIC_LOCAL_SITE_URL || 'http://localhost:3000'
+const productionFrontendUrl = 'https://www.texassolarandroofingpros.com'
+
+function normalizeStudioFrontendOrigin(value) {
+  const raw = String(value || '').replace(/\/$/, '')
+  if (raw === 'https://texassolarandroofingpros.com') {
+    return productionFrontendUrl
+  }
+  return raw
+}
+
 /**
  * Next.js origin for the Sanity Presentation preview iframe.
  *
@@ -25,17 +35,19 @@ export const localFrontendUrl = process.env.NEXT_PUBLIC_LOCAL_SITE_URL || 'http:
  *
  * Override via SANITY_STUDIO_PREVIEW_ORIGIN for forks or different domain setups.
  */
-export const studioPreviewOrigin =
+export const studioPreviewOrigin = normalizeStudioFrontendOrigin(
   process.env.SANITY_STUDIO_PREVIEW_ORIGIN ||
-  (process.env.NODE_ENV !== 'production' ? localFrontendUrl : 'https://www.texassolarandroofingpros.com')
+    (process.env.NODE_ENV !== 'production' ? localFrontendUrl : productionFrontendUrl),
+)
 /**
  * Separate API origin for tool-level fetch calls (PageSpeed, Gemini drafting, etc.).
  * Needs the `www.` subdomain by default to bypass Vercel's apex→www redirect
  * which breaks CORS preflight from the hosted Studio. Override via env when
  * a different custom-domain setup is in use.
  */
-export const toolApiOrigin =
-  process.env.SANITY_STUDIO_TOOL_API_ORIGIN || 'https://www.texassolarandroofingpros.com'
+export const toolApiOrigin = normalizeStudioFrontendOrigin(
+  process.env.SANITY_STUDIO_TOOL_API_ORIGIN || studioPreviewOrigin || productionFrontendUrl,
+)
 
 export const frontendOriginAllowlist = [
   ...new Set([

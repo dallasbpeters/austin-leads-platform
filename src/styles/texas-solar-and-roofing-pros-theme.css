@@ -107,10 +107,10 @@
   --sidebar-accent-foreground: var(--color-text-strong);
   --sidebar-border: var(--color-border);
   --sidebar-ring: hsl(var(--color-primary-h) var(--color-primary-s) 65%);
-  --font-sans: 'Switzer-Variable', sans-serif;
-  --font-serif: 'BespokeSerif-Variable', serif;
-  --font-display: 'BespokeSerif-Variable', serif;
-  --font-accent: 'Switzer-Variable', sans-serif;
+  --font-sans: google sans flex, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: google sans flex, ui-sans-serif, sans-serif, system-ui;
+  --font-display: google sans flex, ui-sans-serif, sans-serif, system-ui;
+  --font-accent: google sans flex, ui-sans-serif, sans-serif, system-ui;
   --radius: 0.75rem;
   --shadow-color: 0deg 0% 70%;
   --shadow-xs: 0 1px 2px rgb(15 23 42 / 5%);

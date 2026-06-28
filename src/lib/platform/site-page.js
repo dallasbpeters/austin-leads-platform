@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-array-find */
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 

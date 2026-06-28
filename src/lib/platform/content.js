@@ -366,6 +366,57 @@ const sectionProjection = `
       }
     }
   },
+  backgroundImage,
+  backgroundImageAsset{
+    crop,
+    hotspot,
+    altText,
+    alt,
+    asset->{
+      _id,
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  roofImage,
+  roofImageAsset{
+    crop,
+    hotspot,
+    altText,
+    alt,
+    asset->{
+      _id,
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
+  panelImage,
+  panelImageAsset{
+    crop,
+    hotspot,
+    altText,
+    alt,
+    asset->{
+      _id,
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
   metrics,
   actions[]{
     label,
@@ -402,6 +453,7 @@ const sectionProjection = `
     title,
     alt,
     body,
+    imageSide,
     question,
     answer,
     href,
@@ -427,6 +479,12 @@ const sectionProjection = `
         }
       }
     }
+  },
+  reasons[]{
+    _key,
+    title,
+    icon,
+    body
   },
   chartPoints[]{
     _key,
@@ -607,6 +665,8 @@ function sanitizeItem(item) {
     _key: cleanRuntimeString(item._key),
     href: cleanRuntimeString(item.href),
     icon: cleanRuntimeString(item.icon),
+    color: resolveSanityColorValue(item.color),
+    cardColor: resolveSanityColorValue(item.cardColor),
   }
 }
 

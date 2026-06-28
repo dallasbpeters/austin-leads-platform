@@ -1,5 +1,5 @@
 // oxlint-disable no-nested-ternary
-import { BlockContentIcon } from '@sanity/icons'
+import { BlockContentIcon, CircleIcon } from '@sanity/icons'
 
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 
@@ -2396,6 +2396,290 @@ const guidesSectionType = {
   },
 }
 
+const adoptionReasonItemType = {
+  name: 'adoptionReasonItem',
+  title: 'Reason',
+  type: 'object',
+  icon: CircleIcon,
+  fields: [
+    {
+      name: 'title',
+      title: 'Heading',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Short heading for this reason (e.g. "Lower Energy Bills").'),
+    },
+    {
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: {
+        list: publicSiteIconOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Iconoir icon name representing this reason.'),
+      },
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Short supporting copy describing this adoption reason.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      icon: 'icon',
+    },
+    prepare({ title, subtitle, icon }) {
+      return {
+        title: title || 'Reason',
+        subtitle: previewText(subtitle || icon, 'Reason description'),
+      }
+    },
+  },
+}
+
+const solarAdoptionSectionType = {
+  name: 'solarAdoptionSection',
+  title: 'Solar Adoption Section',
+  type: 'object',
+  initialValue: {
+    type: 'solarAdoption',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Small overline above the large solar adoption heading.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose(
+        'Large editorial heading, e.g. “Why nearly 30 million Americans have switched to solar”.',
+      ),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Short supporting copy shown beside the heading.'),
+    },
+    {
+      name: 'roofImage',
+      title: 'Roof image metadata',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'roofImageAsset',
+      title: 'Roof image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Wide roof image shown across the bottom of the section.'),
+    },
+    {
+      name: 'panelImage',
+      title: 'Solar panel image metadata',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'panelImageAsset',
+      title: 'Solar panel image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Transparent or cutout panel image layered over the roof.'),
+    },
+    {
+      name: 'reasons',
+      title: 'Reasons',
+      type: 'array',
+      of: [{ type: 'adoptionReasonItem' }],
+      options: canvasPurpose('Icon cards beneath the hero area — each with heading, icon, and body.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      media: 'panelImageAsset',
+    },
+    prepare({ title, body, media }) {
+      return {
+        title: title || 'Solar adoption section',
+        subtitle: pageSectionListSubtitle('Solar adoption section', body, 'Roof + solar panel visual'),
+        media,
+      }
+    },
+  },
+}
+
+const solarBenefitsSectionType = {
+  name: 'solarBenefitsSection',
+  title: 'Solar Benefits Section',
+  type: 'object',
+  initialValue: {
+    type: 'solarBenefits',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Optional heading above the benefits grid.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional supporting copy above the benefits grid.'),
+    },
+    {
+      name: 'items',
+      title: 'Benefit items',
+      type: 'array',
+      of: [{ type: 'sectionContentItem' }],
+      validation: (Rule) => Rule.min(1).max(6),
+      options: canvasPurpose('Dark icon/copy benefit cards.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      items: 'items',
+    },
+    prepare({ title, body, items }) {
+      const count = arrayCount(items)
+      return {
+        title: title || 'Solar benefits section',
+        subtitle: pageSectionListSubtitle('Solar benefits section', body, `${count || 0} benefits`),
+      }
+    },
+  },
+}
+
+const solarFeatureCardItemType = {
+  name: 'solarFeatureCardItem',
+  title: 'Solar Feature Card',
+  type: 'object',
+  fields: [
+    {
+      name: 'number',
+      title: 'Number',
+      type: 'string',
+      options: canvasPurpose('Small card number such as 01, 02, or 03.'),
+    },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short muted label shown in the top row of the card.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Large card heading.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Supporting card copy.'),
+    },
+    {
+      name: 'color',
+      title: 'Card background color',
+      type: 'string',
+      options: canvasPurpose('CSS color value for this card background, e.g. #171717.'),
+    },
+    {
+      name: 'image',
+      title: 'Image metadata',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'imageAsset',
+      title: 'Image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Optional card image.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      number: 'number',
+      media: 'imageAsset',
+    },
+    prepare({ title, body, number, media }) {
+      return {
+        title: title || 'Solar feature card',
+        subtitle: pageSectionListSubtitle(number ? `Card ${number}` : 'Solar feature card', body),
+        media,
+      }
+    },
+  },
+}
+
+const solarDifferenceSectionType = {
+  name: 'solarDifferenceSection',
+  title: 'Solar Difference Section',
+  type: 'object',
+  initialValue: {
+    type: 'solarDifference',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Large heading above the stacked difference cards.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Short supporting copy beside the section heading.'),
+    },
+    {
+      name: 'items',
+      title: 'Difference cards',
+      type: 'array',
+      of: [{ type: 'solarFeatureCardItem' }],
+      validation: (Rule) => Rule.min(1).max(5),
+      options: canvasPurpose('Stacked dark feature cards with optional images.'),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      body: 'body',
+      items: 'items',
+    },
+    prepare({ title, body, items }) {
+      const count = arrayCount(items)
+      return {
+        title: title || 'Solar difference section',
+        subtitle: pageSectionListSubtitle('Solar difference section', body, `${count || 0} cards`),
+      }
+    },
+  },
+}
+
 const snapshotSectionType = {
   name: 'snapshotSection',
   title: 'Snapshot Section',
@@ -2533,6 +2817,18 @@ const testimonialsSectionType = {
       options: canvasPurpose('Secondary line shown under the testimonials heading.'),
     },
     {
+      name: 'backgroundImage',
+      title: 'Background image metadata',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      name: 'backgroundImageAsset',
+      title: 'Background image',
+      type: 'uploadedImage',
+      options: canvasPurpose('Optional full-section background image behind the review cards.'),
+    },
+    {
       name: 'reviews',
       title: 'Reviews',
       type: 'array',
@@ -2647,6 +2943,134 @@ const stepsSectionType = {
       return {
         title: title || 'Steps section',
         subtitle: pageSectionListSubtitle('Steps section', `${itemCount || 0} items`),
+      }
+    },
+  },
+}
+
+const installProcessStepType = {
+  name: 'installProcessStep',
+  title: 'Process Step',
+  type: 'object',
+  icon: CircleIcon,
+  fieldsets: [{ name: 'image', title: 'Image', options: { collapsible: true, collapsed: false } }],
+  fields: [
+    {
+      name: 'title',
+      title: 'Step Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Heading for this installation step.'),
+    },
+    {
+      name: 'body',
+      title: 'Description',
+      type: 'portableTextSimple',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Supporting copy with details and bullet points for this step.'),
+    },
+    {
+      name: 'image',
+      title: 'Image',
+      type: 'image',
+      fieldset: 'image',
+      options: {
+        hotspot: true,
+        collapsible: false,
+        ...canvasPurpose('Photo or diagram illustrating this installation step.'),
+      },
+      fields: [
+        {
+          name: 'altText',
+          title: 'Alt text',
+          type: 'string',
+          validation: (Rule) => Rule.required(),
+          options: canvasPurpose('Describes the image for accessibility and SEO.'),
+        },
+      ],
+    },
+    {
+      name: 'imageSide',
+      title: 'Image Side',
+      type: 'string',
+      initialValue: 'auto',
+      options: {
+        list: [
+          { title: 'Auto (Alternate)', value: 'auto' },
+          { title: 'Left', value: 'left' },
+          { title: 'Right', value: 'right' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+        ...canvasPurpose('Which side the image appears on. Auto alternates orientation each step.'),
+      },
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+    },
+    prepare({ title, subtitle }) {
+      return {
+        title: title || 'Process step',
+        subtitle: previewText(subtitle, 'Step description'),
+      }
+    },
+  },
+}
+
+const installProcessSectionType = {
+  name: 'installProcessSection',
+  title: 'Install Process',
+  type: 'object',
+  icon: CircleIcon,
+  initialValue: {
+    type: 'installProcess',
+  },
+  fields: [
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Optional prefix label above the section title (e.g. "Our Process").'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Section heading for the installation process.'),
+    },
+    {
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional intro text before the process steps.'),
+    },
+    {
+      name: 'items',
+      title: 'Steps',
+      type: 'array',
+      of: [{ type: 'installProcessStep' }],
+      validation: (Rule) => Rule.required().min(1),
+      options: canvasPurpose(
+        'Ordered steps in the installation process, shown as alternating image/content rows.',
+      ),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      eyebrow: 'eyebrow',
+      items: 'items',
+    },
+    prepare({ title, eyebrow, items }) {
+      const itemCount = arrayCount(items)
+      return {
+        title: title || 'Install process',
+        subtitle: pageSectionListSubtitle(eyebrow || 'Install process', `${itemCount || 0} steps`),
       }
     },
   },
@@ -4235,6 +4659,9 @@ const baseFields = [
       { type: 'calculatorSection' },
       { type: 'costsSection' },
       { type: 'guidesSection' },
+      { type: 'solarAdoptionSection' },
+      { type: 'solarBenefitsSection' },
+      { type: 'solarDifferenceSection' },
       { type: 'snapshotSection' },
       { type: 'incentivesSection' },
       { type: 'testimonialsSection' },
@@ -4260,6 +4687,7 @@ const baseFields = [
       { type: 'resourceGridSection' },
       { type: 'guideGridSection' },
       { type: 'aboutProfileSection' },
+      { type: 'installProcessSection' },
     ],
   },
 ]
@@ -4333,6 +4761,7 @@ export default [
   energyChartPointType,
   energyChartAreaSeriesItemType,
   sectionContentItemType,
+  solarFeatureCardItemType,
   logoMarqueeItemType,
   heroSlideItemType,
   pageFaqItemType,
@@ -4345,6 +4774,10 @@ export default [
   paybackSummaryItemType,
   costsSectionType,
   guidesSectionType,
+  adoptionReasonItemType,
+  solarAdoptionSectionType,
+  solarBenefitsSectionType,
+  solarDifferenceSectionType,
   snapshotSectionType,
   incentivesSectionType,
   testimonialsSectionType,
@@ -4370,6 +4803,8 @@ export default [
   guideGridSectionType,
   aboutProfilePersonType,
   aboutProfileSectionType,
+  installProcessStepType,
+  installProcessSectionType,
   pageSectionType,
   ...pageDocuments,
 ]
