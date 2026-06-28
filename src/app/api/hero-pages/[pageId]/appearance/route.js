@@ -89,7 +89,9 @@ async function saveHeroAppearanceToSanity(pageId, heroAppearance) {
 
 export async function PATCH(request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (!sanityWriteClient) {
     return NextResponse.json({ error: 'Sanity write credentials are not configured.' }, { status: 503 })

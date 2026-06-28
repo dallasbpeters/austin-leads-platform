@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 function formatDate(value) {
-  if (!value) return 'Not set'
+  if (!value) {
+    return 'Not set'
+  }
   return new Date(value).toLocaleString()
 }
 

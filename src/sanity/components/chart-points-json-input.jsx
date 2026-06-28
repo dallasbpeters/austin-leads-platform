@@ -6,10 +6,14 @@ import { PatchEvent, set, useClient, useFormCallbacks, useGetFormValue } from 's
 const ACCEPTED_FILE_TYPES = '.json,application/json'
 
 function coerceNumber(value) {
-  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value
+  }
   if (typeof value === 'string' && value.trim() !== '') {
     const parsed = Number(value)
-    if (Number.isFinite(parsed)) return parsed
+    if (Number.isFinite(parsed)) {
+      return parsed
+    }
   }
   return null
 }
@@ -22,9 +26,13 @@ function generateKey(index) {
 }
 
 function ensureListKeys(items, prefix = 'item') {
-  if (!Array.isArray(items)) return items
+  if (!Array.isArray(items)) {
+    return items
+  }
   return items.map((item, index) => {
-    if (!item || typeof item !== 'object') return item
+    if (!item || typeof item !== 'object') {
+      return item
+    }
     const existing = item._key != null && String(item._key).trim()
     const key = existing ? String(item._key) : `${prefix}-${index}-${Date.now().toString(36)}`
     return { ...item, _key: key }
@@ -32,7 +40,9 @@ function ensureListKeys(items, prefix = 'item') {
 }
 
 function normalizeAreaValuesArray(raw) {
-  if (!Array.isArray(raw)) return null
+  if (!Array.isArray(raw)) {
+    return null
+  }
   const out = raw.map((v) => coerceNumber(v)).filter((n) => n !== null && n >= 0)
   return out.length ? out : null
 }
@@ -49,7 +59,9 @@ function normalizeArrayPoint(value, index) {
     barValue,
     lineValue,
   }
-  if (areaValues) point.areaValues = areaValues
+  if (areaValues) {
+    point.areaValues = areaValues
+  }
   return point
 }
 
@@ -76,33 +88,57 @@ function normalizeObjectPoint(value, index) {
     barValue: coerceNumber(barCandidate) ?? 0,
     lineValue: coerceNumber(lineCandidate) ?? 0,
   }
-  if (areaValues) point.areaValues = areaValues
+  if (areaValues) {
+    point.areaValues = areaValues
+  }
   return point
 }
 
 function normalizePoint(value, index) {
-  if (Array.isArray(value)) return normalizeArrayPoint(value, index)
-  if (typeof value === 'number') return normalizeNumberPoint(value, index)
-  if (value && typeof value === 'object') return normalizeObjectPoint(value, index)
+  if (Array.isArray(value)) {
+    return normalizeArrayPoint(value, index)
+  }
+  if (typeof value === 'number') {
+    return normalizeNumberPoint(value, index)
+  }
+  if (value && typeof value === 'object') {
+    return normalizeObjectPoint(value, index)
+  }
   return null
 }
 
 function extractPointsCollection(parsed) {
-  if (Array.isArray(parsed)) return parsed
-  if (!parsed || typeof parsed !== 'object') return null
-  if (Array.isArray(parsed.chartPoints)) return parsed.chartPoints
-  if (Array.isArray(parsed.points)) return parsed.points
-  if (Array.isArray(parsed.data)) return parsed.data
-  if (parsed.section && Array.isArray(parsed.section.chartPoints)) return parsed.section.chartPoints
+  if (Array.isArray(parsed)) {
+    return parsed
+  }
+  if (!parsed || typeof parsed !== 'object') {
+    return null
+  }
+  if (Array.isArray(parsed.chartPoints)) {
+    return parsed.chartPoints
+  }
+  if (Array.isArray(parsed.points)) {
+    return parsed.points
+  }
+  if (Array.isArray(parsed.data)) {
+    return parsed.data
+  }
+  if (parsed.section && Array.isArray(parsed.section.chartPoints)) {
+    return parsed.section.chartPoints
+  }
   if (Array.isArray(parsed.sections)) {
     const chartSection = parsed.sections.find((section) => Array.isArray(section?.chartPoints))
-    if (chartSection) return chartSection.chartPoints
+    if (chartSection) {
+      return chartSection.chartPoints
+    }
   }
   return null
 }
 
 function extractChartConfig(parsed) {
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return {}
+  }
 
   const sectionFromSections = Array.isArray(parsed.sections)
     ? parsed.sections.find((section) => section && typeof section === 'object')
@@ -134,7 +170,9 @@ function extractChartConfig(parsed) {
   ]
 
   return configKeys.reduce((accumulator, key) => {
-    if (source[key] !== undefined) accumulator[key] = source[key]
+    if (source[key] !== undefined) {
+      accumulator[key] = source[key]
+    }
     return accumulator
   }, {})
 }
@@ -147,7 +185,9 @@ function inferAreaSeriesConfig(points, config, parsed) {
   const hasAreaSeries = Array.isArray(config.chartAreaSeries) && config.chartAreaSeries.length > 0
   const isAreaChartImport =
     config.chartType === 'area' || parsed.chartType === 'area' || parsed._type === 'energyChartSection'
-  if (maxAreaValuesLen < 2 || hasAreaSeries || !isAreaChartImport) return config
+  if (maxAreaValuesLen < 2 || hasAreaSeries || !isAreaChartImport) {
+    return config
+  }
 
   return {
     ...config,
@@ -168,11 +208,13 @@ function parseChartPointsJson(input) {
   const parsed = JSON.parse(input)
   const collection = extractPointsCollection(parsed)
   if (!Array.isArray(collection)) {
-    throw new Error('JSON must be an array, or an object containing chartPoints/points/data.')
+    throw new TypeError('JSON must be an array, or an object containing chartPoints/points/data.')
   }
 
   const points = collection.map((entry, index) => normalizePoint(entry, index)).filter(Boolean)
-  if (!points.length) throw new Error('No valid points found in JSON.')
+  if (!points.length) {
+    throw new Error('No valid points found in JSON.')
+  }
 
   const config = inferAreaSeriesConfig(points, extractChartConfig(parsed), parsed)
 
@@ -180,7 +222,9 @@ function parseChartPointsJson(input) {
 }
 
 function patchValueForChartConfig(key, fieldValue) {
-  if (key !== 'chartAreaSeries' || !Array.isArray(fieldValue)) return fieldValue
+  if (key !== 'chartAreaSeries' || !Array.isArray(fieldValue)) {
+    return fieldValue
+  }
   return fieldValue.map((row, index) => ({
     _type: 'energyChartAreaSeriesItem',
     _key: typeof row?._key === 'string' && row._key ? row._key : generateKey(index),
@@ -191,37 +235,53 @@ function patchValueForChartConfig(key, fieldValue) {
 
 function escapeKeyForJsonMatch(key) {
   return String(key || '')
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
+    .replaceAll('\\', '\\\\')
+    .replaceAll('"', '\\"')
 }
 
 function resolveChartSectionKey(path, getFormValue) {
-  if (!Array.isArray(path) || path.length < 2) return null
+  if (!Array.isArray(path) || path.length < 2) {
+    return null
+  }
 
   const parent = typeof getFormValue === 'function' ? getFormValue(path.slice(0, -1)) : null
-  if (parent?._key) return String(parent._key)
+  if (parent?._key) {
+    return String(parent._key)
+  }
 
   for (let i = path.length - 1; i >= 2; i -= 1) {
-    if (path[i] !== 'chartPoints' || path[i - 2] !== 'sections') continue
+    if (path[i] !== 'chartPoints' || path[i - 2] !== 'sections') {
+      continue
+    }
     const seg = path[i - 1]
-    if (seg && typeof seg === 'object' && seg._key) return String(seg._key)
+    if (seg && typeof seg === 'object' && seg._key) {
+      return String(seg._key)
+    }
     if (typeof seg === 'number' && typeof getFormValue === 'function') {
       const sections = getFormValue(['sections'])
       const item = Array.isArray(sections) ? sections[seg] : null
-      if (item?._key) return String(item._key)
+      if (item?._key) {
+        return String(item._key)
+      }
     }
   }
   return null
 }
 
 function ensurePortableTextKeys(value) {
-  if (!Array.isArray(value)) return value
+  if (!Array.isArray(value)) {
+    return value
+  }
   return value.map((block, bi) => {
-    if (!block || typeof block !== 'object' || block._type !== 'block') return block
+    if (!block || typeof block !== 'object' || block._type !== 'block') {
+      return block
+    }
     const blockKey = block._key || `pt-${bi}-${Date.now().toString(36)}`
     const children = Array.isArray(block.children)
       ? block.children.map((span, si) => {
-          if (!span || typeof span !== 'object') return span
+          if (!span || typeof span !== 'object') {
+            return span
+          }
           return {
             ...span,
             _key: span._key || `sp-${bi}-${si}-${Math.random().toString(36).slice(2, 9)}`,
@@ -285,15 +345,21 @@ const buildNextSectionsForChartImport = async ({
 }) => {
   const doc = await client.getDocument(docId)
   const sections = Array.isArray(doc?.sections) ? [...doc.sections] : null
-  if (!sections?.length) throw new Error('Could not read sections for this document.')
+  if (!sections?.length) {
+    throw new Error('Could not read sections for this document.')
+  }
   const idx = sections.findIndex((s) => s && s._key === sectionKey)
-  if (idx < 0) throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
+  if (idx === -1) {
+    throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
+  }
   const prev = sections[idx]
   const nextSection = { ...prev, chartPoints: ensureListKeys(points, 'chart-point') }
   for (const [key, fieldValue] of siblingNoBody) {
     nextSection[key] = patchValueForChartConfig(key, fieldValue)
   }
-  if (includeBody && config?.body !== undefined) nextSection.body = config.body
+  if (includeBody && config?.body !== undefined) {
+    nextSection.body = config.body
+  }
   nextSection.chartPoints = ensureListKeys(nextSection.chartPoints, 'chart-point')
   nextSection.chartAreaSeries = ensureListKeys(nextSection.chartAreaSeries, 'area-series')
   return sections.map((s, i) => (i === idx ? nextSection : s))
@@ -313,7 +379,9 @@ export default function ChartPointsJsonInput(props) {
   const parentPath = useMemo(() => path.slice(0, -1), [path])
 
   function scheduleBodyPatch(config) {
-    if (config?.body === undefined) return
+    if (config?.body === undefined) {
+      return
+    }
     window.setTimeout(() => {
       try {
         patchDocument(PatchEvent.from([set(ensurePortableTextKeys(config.body), [...parentPath, 'body'])]))
@@ -339,8 +407,8 @@ export default function ChartPointsJsonInput(props) {
         config,
       })
       return { saved: true, bodySkipped }
-    } catch (apiErr) {
-      const msg = apiErr?.message || String(apiErr)
+    } catch (error) {
+      const msg = error?.message || String(error)
       setError(
         `Sanity save failed: ${msg} Open the page from Structure (desk) if you are only in Preview, then try again.`,
       )
@@ -387,15 +455,15 @@ export default function ChartPointsJsonInput(props) {
             ? ' Body not saved — edit body in Studio or fix portable text.'
             : ''
           setStatus(
-            (configCount > 0
-              ? `Imported ${points.length} points + ${configCount} section fields (${sourceLabel}).`
-              : `Imported ${points.length} points (${sourceLabel}).`) +
-              ' Saved to Sanity.' +
-              bodySkippedNote,
+            `${
+              configCount > 0
+                ? `Imported ${points.length} points + ${configCount} section fields (${sourceLabel}).`
+                : `Imported ${points.length} points (${sourceLabel}).`
+            } Saved to Sanity.${bodySkippedNote}`,
           )
         }
-      } catch (err) {
-        const message = err?.message || 'Import failed.'
+      } catch (error) {
+        const message = error?.message || 'Import failed.'
         setError(message)
         setStatus('')
       } finally {
@@ -418,7 +486,9 @@ export default function ChartPointsJsonInput(props) {
 
   const handleJsonFileChange = async (event) => {
     const file = event.target.files?.[0]
-    if (!file) return
+    if (!file) {
+      return
+    }
     setError('')
     setStatus('')
     try {

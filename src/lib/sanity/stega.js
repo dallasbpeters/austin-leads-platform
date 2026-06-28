@@ -21,7 +21,7 @@ export function buildRuntimeKey(...parts) {
 export function toRuntimeToken(value) {
   return String(cleanRuntimeString(value) || '')
     .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replaceAll('&', ' and ')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
 }

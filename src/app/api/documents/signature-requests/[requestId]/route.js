@@ -15,7 +15,9 @@ export const runtime = 'nodejs'
 
 export async function DELETE(request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (!hasDocumentDatabase()) {
     return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })
@@ -57,7 +59,9 @@ export async function DELETE(request, { params }) {
 
 export async function POST(request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (!hasDocumentDatabase()) {
     return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })

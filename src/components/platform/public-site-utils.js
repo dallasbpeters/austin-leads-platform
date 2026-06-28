@@ -20,9 +20,13 @@ const KNOWN_PUBLIC_SITE_ATTRS = new Set(['texas-solar-and-roofing-pros', 'txchri
  * this attribute; see `src/proxy.js` + `src/app/layout.jsx`.
  */
 export function getPublicDataSiteAttribute(site) {
-  if (isTxChristmasLightsSite(site)) return 'txchristmaslights'
+  if (isTxChristmasLightsSite(site)) {
+    return 'txchristmaslights'
+  }
   const explicit = typeof site?.themeSlug === 'string' ? site.themeSlug.trim().replace(/-theme$/, '') : ''
-  if (explicit && KNOWN_PUBLIC_SITE_ATTRS.has(explicit)) return explicit
+  if (explicit && KNOWN_PUBLIC_SITE_ATTRS.has(explicit)) {
+    return explicit
+  }
   return 'texas-solar-and-roofing-pros'
 }
 
@@ -56,7 +60,9 @@ function siteUsesThemeOwnedHslRamp(site) {
  */
 export function brandColorHSLVars(color, prefix) {
   const hsl = color?.hsl
-  if (!hsl || !Number.isFinite(hsl.h)) return {}
+  if (!hsl || !Number.isFinite(hsl.h)) {
+    return {}
+  }
   return {
     [`--color-${prefix}-h`]: String(Math.round(hsl.h)),
     [`--color-${prefix}-s`]: `${Math.round(hsl.s * 100)}%`,
@@ -81,19 +87,19 @@ export function brandColorHSLVars(color, prefix) {
  */
 export function getSiteBrandStyleVars(site) {
   const brand = site?.brand
-  if (!brand) return {}
+  if (!brand) {
+    return {}
+  }
 
   const skipBrandHsl = siteUsesThemeOwnedHslRamp(site)
 
-  const vars = {
-    ...(skipBrandHsl
-      ? {}
-      : {
-          ...brandColorHSLVars(brand.primary, 'primary'),
-          ...brandColorHSLVars(brand.secondary, 'secondary'),
-          ...brandColorHSLVars(brand.accent, 'tertiary'),
-        }),
-  }
+  const vars = skipBrandHsl
+    ? {}
+    : {
+        ...brandColorHSLVars(brand.primary, 'primary'),
+        ...brandColorHSLVars(brand.secondary, 'secondary'),
+        ...brandColorHSLVars(brand.accent, 'tertiary'),
+      }
 
   // Surface chip is optional UI chrome only — do not overwrite `--background`.
   // Theme files for `[data-public-site="txchristmaslights"]` own page background tokens; pushing a
@@ -114,8 +120,12 @@ function slugifySectionToken(value) {
 }
 
 export function getSectionDomId(section, index) {
-  if (section?.anchor) return slugifySectionToken(section.anchor)
-  if (section?.id) return slugifySectionToken(section.id)
+  if (section?.anchor) {
+    return slugifySectionToken(section.anchor)
+  }
+  if (section?.id) {
+    return slugifySectionToken(section.id)
+  }
 
   const token = slugifySectionToken(section?.title || section?.eyebrow || section?.question || '')
   return token ? `${section.type}-${token}` : `${section.type}-${index + 1}`

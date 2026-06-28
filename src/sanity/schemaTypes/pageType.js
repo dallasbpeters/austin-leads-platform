@@ -17,12 +17,18 @@ const hideUnlessHeroMediaMode =
   ({ parent }) =>
     !modes.includes(resolveHeroMediaMode(parent))
 const richTextToPreviewString = (value) => {
-  if (typeof value === 'string') return value
-  if (!Array.isArray(value)) return ''
+  if (typeof value === 'string') {
+    return value
+  }
+  if (!Array.isArray(value)) {
+    return ''
+  }
 
   return value
     .map((block) => {
-      if (typeof block === 'string') return block
+      if (typeof block === 'string') {
+        return block
+      }
       if (Array.isArray(block?.children)) {
         return block.children.map((child) => child?.text || '').join('')
       }
@@ -33,16 +39,22 @@ const richTextToPreviewString = (value) => {
     .join(' ')
 }
 const previewText = (value, fallback) => {
-  const normalized = richTextToPreviewString(value).replace(/\s+/g, ' ').trim()
-  if (!normalized) return fallback
+  const normalized = richTextToPreviewString(value).replaceAll(/\s+/g, ' ').trim()
+  if (!normalized) {
+    return fallback
+  }
   return normalized.length > 120 ? `${normalized.slice(0, 117)}...` : normalized
 }
 /** Keeps the section block type visible in the Sections array list even when body copy exists. */
 const pageSectionListSubtitle = (sectionLabel, ...sources) => {
   for (const source of sources) {
-    if (source == null || source === false) continue
-    const piece = typeof source === 'string' ? source.replace(/\s+/g, ' ').trim() : previewText(source, '')
-    if (piece) return `${sectionLabel} · ${piece}`
+    if (source == null || source === false) {
+      continue
+    }
+    const piece = typeof source === 'string' ? source.replaceAll(/\s+/g, ' ').trim() : previewText(source, '')
+    if (piece) {
+      return `${sectionLabel} · ${piece}`
+    }
   }
   return sectionLabel
 }

@@ -12,11 +12,13 @@ import PortableTextContent from './portable-text-content'
 const guides = getFeaturedSolarGuideCards(3)
 
 function escapePathSegment(value) {
-  return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+  return String(value).replaceAll('\\', '\\\\').replaceAll('"', '\\"')
 }
 
 function buildCardEditAttributes(page, sectionKey, itemKey) {
-  if (!page?.id || !page?._type || !sectionKey || !itemKey) return {}
+  if (!page?.id || !page?._type || !sectionKey || !itemKey) {
+    return {}
+  }
   return getSanityEditAttributes({
     documentId: page.id,
     documentType: page._type,

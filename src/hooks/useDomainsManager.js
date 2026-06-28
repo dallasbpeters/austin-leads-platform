@@ -47,7 +47,9 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
   }, [initialDomains])
 
   useEffect(() => {
-    if (!vercelEnabled) return
+    if (!vercelEnabled) {
+      return
+    }
     refreshDomains()
   }, [vercelEnabled])
 
@@ -57,9 +59,11 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     try {
       const data = await fetchDomains()
       setDomains(data.domains)
-      if (data.syncError) setError(data.syncError)
-    } catch (err) {
-      setError(err.message || 'Unable to refresh domains.')
+      if (data.syncError) {
+        setError(data.syncError)
+      }
+    } catch (error) {
+      setError(error.message || 'Unable to refresh domains.')
     } finally {
       setLoading(false)
     }
@@ -73,8 +77,8 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
       await createDomainRecord(redirectForm)
       setRedirectForm(buildDefaultDomainForm())
       await refreshDomains()
-    } catch (err) {
-      setError(err.message || 'Unable to add redirect domain.')
+    } catch (error) {
+      setError(error.message || 'Unable to add redirect domain.')
     } finally {
       setLoading(false)
     }
@@ -90,8 +94,8 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
       setLastCreatedSite(result)
       setSiteForm(buildDefaultSiteForm())
       await refreshDomains()
-    } catch (err) {
-      setError(err.message || 'Unable to create landing page.')
+    } catch (error) {
+      setError(error.message || 'Unable to create landing page.')
     } finally {
       setLoading(false)
     }
@@ -103,8 +107,8 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     try {
       await verifyDomainRecord(domain)
       await refreshDomains()
-    } catch (err) {
-      setError(err.message || 'Unable to verify domain.')
+    } catch (error) {
+      setError(error.message || 'Unable to verify domain.')
     } finally {
       setLoading(false)
     }
@@ -155,8 +159,8 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
       }
       await refreshDomains()
       cancelEditing()
-    } catch (err) {
-      setError(err.message || 'Unable to save domain.')
+    } catch (error) {
+      setError(error.message || 'Unable to save domain.')
     } finally {
       setLoading(false)
     }
@@ -168,9 +172,11 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     try {
       await deleteDomainRecordRequest(domain)
       await refreshDomains()
-      if (editingDomain === domain) cancelEditing()
-    } catch (err) {
-      setError(err.message || 'Unable to delete domain.')
+      if (editingDomain === domain) {
+        cancelEditing()
+      }
+    } catch (error) {
+      setError(error.message || 'Unable to delete domain.')
     } finally {
       setLoading(false)
     }
@@ -178,7 +184,9 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
 
   function toggleDns(domain) {
     setExpandedDns((current) => (current === domain ? null : domain))
-    if (editingDomain === domain) cancelEditing()
+    if (editingDomain === domain) {
+      cancelEditing()
+    }
   }
 
   return {

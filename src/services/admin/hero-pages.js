@@ -28,7 +28,7 @@ export function buildDefaultHeroQuery(page) {
     return ''
   }
 
-  const domain = page.site?.primaryDomain?.split('.')[0]?.replace(/-/g, ' ')
+  const domain = page.site?.primaryDomain?.split('.')[0]?.replaceAll('-', ' ')
   return `${domain || page.site?.name || page.title} home exterior`
 }
 
@@ -37,7 +37,7 @@ export function buildSiteHeroQuery(site) {
     return ''
   }
 
-  const domain = site.primaryDomain?.split('.')[0]?.replace(/-/g, ' ')
+  const domain = site.primaryDomain?.split('.')[0]?.replaceAll('-', ' ')
   return `${domain || site.name} home exterior`
 }
 

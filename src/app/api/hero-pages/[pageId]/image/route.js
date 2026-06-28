@@ -39,7 +39,9 @@ function buildHeroImage(photo) {
 
 export async function POST(request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (!sanityWriteClient) {
     return NextResponse.json({ error: 'Sanity write credentials are not configured.' }, { status: 503 })

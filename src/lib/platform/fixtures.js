@@ -212,9 +212,9 @@ const redirectTargetByCategory = {
 function fallbackSlug(domain) {
   return domain
     .replace(/\.[^.]+$/, '')
-    .replace(/[^a-z0-9]+/gi, '-')
+    .replaceAll(/[^a-z0-9]+/gi, '-')
     .toLowerCase()
-    .replace(/^-|-$/g, '')
+    .replaceAll(/^-|-$/g, '')
 }
 
 function titleizeDomain(domain) {
@@ -244,13 +244,13 @@ function getSiteSeoDescription(slug, title, categoryLabel) {
 
 const allCatalogServices = [...mainServices, ...roofingServices, ...specialtyServices]
 
-const solarPagePrimaryServiceSlugs = [
+const solarPagePrimaryServiceSlugs = new Set([
   'solar-and-battery-installations',
   'detach-and-reset',
   'electrical-services',
-]
+])
 
-const solarPageRelatedServiceSlugs = ['rodent-deterrent', 'car-chargers']
+const solarPageRelatedServiceSlugs = new Set(['rodent-deterrent', 'car-chargers'])
 
 export const sites = portfolioDomains.map((entry, index) => {
   const tier = tierMap[entry.tier]
@@ -861,14 +861,14 @@ export const pages = [
         title: 'What we help with on the solar side',
         body: 'The install itself, the roof coordination around it, and the electrical work that supports it.',
         items: allCatalogServices
-          .filter((service) => solarPagePrimaryServiceSlugs.includes(service.slug))
+          .filter((service) => solarPagePrimaryServiceSlugs.has(service.slug))
           .map((service) => ({
             ...service,
             href: `/services/${service.slug}`,
           })),
         secondaryTitle: 'Related services',
         secondaryItems: specialtyServices
-          .filter((service) => solarPageRelatedServiceSlugs.includes(service.slug))
+          .filter((service) => solarPageRelatedServiceSlugs.has(service.slug))
           .map((service) => ({
             ...service,
             href: `/services/${service.slug}`,
@@ -1912,7 +1912,7 @@ export const initialAnalyticsSnapshots = [
     paidSessions: 110,
     avgEngagementSeconds: 141,
     topPages: [
-      { path: '/', sessions: 990, conversionRate: 2.0 },
+      { path: '/', sessions: 990, conversionRate: 2 },
       { path: '/venues', sessions: 430, conversionRate: 3.6 },
     ],
     topQueries: ['austin wedding vendors', 'dripping springs venues', 'austin wedding planner'],

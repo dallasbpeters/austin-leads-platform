@@ -35,7 +35,9 @@ function inferTier(record, existing) {
 
 export async function GET() {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (hasDomainDatabase()) {
     await seedInitialDomainRecords()
@@ -96,7 +98,7 @@ export async function GET() {
       }))
 
     return NextResponse.json({
-      domains: [...resolvedSyncedDomains, ...localOnly].sort((a, b) => a.domain.localeCompare(b.domain)),
+      domains: [...resolvedSyncedDomains, ...localOnly].toSorted((a, b) => a.domain.localeCompare(b.domain)),
       source: 'vercel',
     })
   } catch (error) {
@@ -116,7 +118,9 @@ export async function GET() {
 
 export async function POST(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const body = await request.json()
   const result = await addDomainToVercel(body)

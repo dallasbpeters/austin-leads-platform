@@ -14,7 +14,9 @@ function badRequest(message, status = 400) {
 
 export async function GET() {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const settings = await getLeadRoutingSettings()
   return NextResponse.json(
@@ -29,7 +31,9 @@ export async function GET() {
 
 export async function POST(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const payload = await request.json().catch(() => null)
 

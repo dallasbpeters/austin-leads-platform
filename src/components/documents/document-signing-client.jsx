@@ -13,13 +13,17 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
 function formatDate(value) {
-  if (!value) return 'Not sent yet'
+  if (!value) {
+    return 'Not sent yet'
+  }
   return new Date(value).toLocaleString()
 }
 
 function clearCanvas(canvas) {
   const context = canvas?.getContext('2d')
-  if (!context || !canvas) return
+  if (!context || !canvas) {
+    return
+  }
   context.clearRect(0, 0, canvas.width, canvas.height)
 }
 
@@ -333,14 +337,20 @@ export default function DocumentSigningClient({ request, recipient, client, prev
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas || mode !== 'draw') return undefined
+    if (!canvas || mode !== 'draw') {
+      return
+    }
 
     const context = canvas.getContext('2d')
-    if (!context) return undefined
+    if (!context) {
+      return
+    }
 
     const resize = () => {
       const parent = canvas.parentElement
-      if (!parent) return
+      if (!parent) {
+        return
+      }
       const width = parent.clientWidth || 0
       const height = Math.max(160, Math.min(240, Math.round(width * 0.32)))
       const ratio = window.devicePixelRatio || 1
@@ -367,7 +377,9 @@ export default function DocumentSigningClient({ request, recipient, client, prev
 
   function getCanvasPoint(event) {
     const canvas = canvasRef.current
-    if (!canvas) return null
+    if (!canvas) {
+      return null
+    }
     const rect = canvas.getBoundingClientRect()
     return {
       x: event.clientX - rect.left,
@@ -376,11 +388,15 @@ export default function DocumentSigningClient({ request, recipient, client, prev
   }
 
   function startDrawing(event) {
-    if (mode !== 'draw') return
+    if (mode !== 'draw') {
+      return
+    }
     const canvas = canvasRef.current
     const context = canvas?.getContext('2d')
     const point = getCanvasPoint(event)
-    if (!canvas || !context || !point) return
+    if (!canvas || !context || !point) {
+      return
+    }
 
     drawingStateRef.current = { drawing: true, lastPoint: point }
     context.beginPath()
@@ -393,7 +409,9 @@ export default function DocumentSigningClient({ request, recipient, client, prev
     const context = canvas?.getContext('2d')
     const state = drawingStateRef.current
     const point = getCanvasPoint(event)
-    if (!canvas || !context || !state.drawing || !point) return
+    if (!canvas || !context || !state.drawing || !point) {
+      return
+    }
 
     context.lineTo(point.x, point.y)
     context.stroke()
@@ -402,7 +420,9 @@ export default function DocumentSigningClient({ request, recipient, client, prev
 
   function stopDrawing(event) {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      return
+    }
     drawingStateRef.current = { drawing: false }
     try {
       canvas.releasePointerCapture(event.pointerId)
@@ -413,7 +433,9 @@ export default function DocumentSigningClient({ request, recipient, client, prev
 
   function resetDrawing() {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      return
+    }
     clearCanvas(canvas)
   }
 

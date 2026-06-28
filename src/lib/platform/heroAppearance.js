@@ -9,26 +9,20 @@ export const HERO_OVERLAY_DIRECTIONS = [
 
 export function hexToRgba(color, alpha) {
   if (!color || !color.startsWith('#')) {
-    return undefined
+    return
   }
 
   const normalized = color.slice(1)
-  const full =
-    normalized.length === 3
-      ? normalized
-          .split('')
-          .map((part) => `${part}${part}`)
-          .join('')
-      : normalized
+  const full = normalized.length === 3 ? [...normalized].map((part) => `${part}${part}`).join('') : normalized
 
   if (full.length !== 6) {
-    return undefined
+    return
   }
 
   const value = Number.parseInt(full, 16)
 
   if (Number.isNaN(value)) {
-    return undefined
+    return
   }
 
   const r = (value >> 16) & 255
@@ -117,9 +111,11 @@ function numberOrDefault(value, defaultVal) {
 
 function firstString(...candidates) {
   for (const c of candidates) {
-    if (c) return c
+    if (c) {
+      return c
+    }
   }
-  return undefined
+  return
 }
 
 function buildDefaultOverlayStyle() {

@@ -21,8 +21,12 @@ function normalizeProviderStatus(value) {
 }
 
 function normalizeSubmitters(data) {
-  if (Array.isArray(data?.submitters)) return data.submitters
-  if (Array.isArray(data?.submission?.submitters)) return data.submission.submitters
+  if (Array.isArray(data?.submitters)) {
+    return data.submitters
+  }
+  if (Array.isArray(data?.submission?.submitters)) {
+    return data.submission.submitters
+  }
   return []
 }
 
@@ -42,11 +46,21 @@ function deriveRequestStatus(recipientStatuses, providerStatus) {
     ['sent', 'pending', 'opened', 'started', 'awaiting'].includes(status),
   )
 
-  if (providerStatus === 'archived') return 'archived'
-  if (providerStatus === 'completed' || (hasCompleted && !hasDeclined && !hasActive)) return 'completed'
-  if (providerStatus === 'declined' || (hasDeclined && !hasCompleted && !hasActive)) return 'declined'
-  if (hasCompleted && hasDeclined) return 'mixed'
-  if (hasCompleted || hasDeclined || hasActive) return 'sent'
+  if (providerStatus === 'archived') {
+    return 'archived'
+  }
+  if (providerStatus === 'completed' || (hasCompleted && !hasDeclined && !hasActive)) {
+    return 'completed'
+  }
+  if (providerStatus === 'declined' || (hasDeclined && !hasCompleted && !hasActive)) {
+    return 'declined'
+  }
+  if (hasCompleted && hasDeclined) {
+    return 'mixed'
+  }
+  if (hasCompleted || hasDeclined || hasActive) {
+    return 'sent'
+  }
   return providerStatus || 'sent'
 }
 
@@ -80,8 +94,12 @@ function matchesRecipient(recipient, submitter) {
 
 async function verifyWebhookSignature(rawBody, signatureHeader) {
   const secret = process.env.DOCUSEAL_WEBHOOK_SECRET?.trim()
-  if (!secret) return false
-  if (!signatureHeader) return false
+  if (!secret) {
+    return false
+  }
+  if (!signatureHeader) {
+    return false
+  }
 
   const encoder = new TextEncoder()
   const key = await crypto.subtle.importKey(
@@ -93,9 +111,7 @@ async function verifyWebhookSignature(rawBody, signatureHeader) {
   )
   const digest = await crypto.subtle.sign('HMAC', key, encoder.encode(rawBody))
   const bytes = new Uint8Array(digest)
-  const hex = Array.from(bytes)
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('')
+  const hex = [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('')
   const base64 = Buffer.from(bytes).toString('base64')
   const expected = normalizeProviderStatus(signatureHeader)
 
@@ -107,10 +123,18 @@ async function verifyWebhookSignature(rawBody, signatureHeader) {
 }
 
 function computeNextRecipientStatus(providerStatus, submitter) {
-  if (providerStatus === 'completed' || submitter?.completed_at) return 'completed'
-  if (providerStatus === 'declined' || submitter?.declined_at) return 'declined'
-  if (providerStatus === 'opened') return 'opened'
-  if (providerStatus === 'started') return 'started'
+  if (providerStatus === 'completed' || submitter?.completed_at) {
+    return 'completed'
+  }
+  if (providerStatus === 'declined' || submitter?.declined_at) {
+    return 'declined'
+  }
+  if (providerStatus === 'opened') {
+    return 'opened'
+  }
+  if (providerStatus === 'started') {
+    return 'started'
+  }
   return providerStatus || 'sent'
 }
 
@@ -170,7 +194,9 @@ export async function POST(request) {
 
   for (const submitter of providerSubmitters) {
     const matchingRecipient = recipients.find((recipient) => matchesRecipient(recipient, submitter))
-    if (!matchingRecipient) continue
+    if (!matchingRecipient) {
+      continue
+    }
 
     const providerStatus = extractRecipientStatus(submitter)
     const nextStatus = computeNextRecipientStatus(providerStatus, submitter)

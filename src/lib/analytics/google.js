@@ -5,15 +5,19 @@ import { unstable_noStore as noStore } from 'next/cache'
 const DEFAULT_WINDOW_DAYS = 30
 
 function normalizePublicTagId(value) {
-  if (!value) return ''
+  if (!value) {
+    return ''
+  }
 
   return String(value)
     .trim()
-    .replace(/^['"]+|['"]+$/g, '')
+    .replaceAll(/^['"]+|['"]+$/g, '')
 }
 
 function normalizePropertyId(propertyId) {
-  if (!propertyId) return ''
+  if (!propertyId) {
+    return ''
+  }
 
   return String(propertyId)
     .replace(/^properties\//, '')
@@ -21,13 +25,17 @@ function normalizePropertyId(propertyId) {
 }
 
 function normalizePrivateKey(privateKey) {
-  if (!privateKey) return ''
+  if (!privateKey) {
+    return ''
+  }
 
-  return privateKey.replace(/\\n/g, '\n')
+  return privateKey.replaceAll('\\n', '\n')
 }
 
 function parseServiceAccountJson(raw) {
-  if (!raw) return null
+  if (!raw) {
+    return null
+  }
 
   try {
     const parsed = JSON.parse(raw)
@@ -64,7 +72,9 @@ function getInlineServiceAccount() {
  */
 function parseSiteGaIds() {
   const raw = process.env.NEXT_PUBLIC_GA_MEASUREMENT_IDS
-  if (!raw) return {}
+  if (!raw) {
+    return {}
+  }
   try {
     const parsed = JSON.parse(raw)
     return parsed && typeof parsed === 'object' ? parsed : {}

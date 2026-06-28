@@ -25,14 +25,18 @@ const LEGACY_FIELDS = ['heroBody', 'heroEyebrow', 'highlights', 'faq']
 const TARGET_TYPES = ['page', 'post', 'servicePage', 'locationPage']
 
 function hasOwn(value, key) {
-  return Object.prototype.hasOwnProperty.call(value, key)
+  return Object.hasOwn(value, key)
 }
 
 function addLegacyUnsetPaths(paths, target, basePath = '') {
-  if (!target || typeof target !== 'object') return
+  if (!target || typeof target !== 'object') {
+    return
+  }
 
   for (const field of LEGACY_FIELDS) {
-    if (!hasOwn(target, field)) continue
+    if (!hasOwn(target, field)) {
+      continue
+    }
     paths.push(basePath ? `${basePath}.${field}` : field)
   }
 }
@@ -63,7 +67,9 @@ async function main() {
 
     const sections = Array.isArray(doc.sections) ? doc.sections : []
     for (const section of sections) {
-      if (!section?._key) continue
+      if (!section?._key) {
+        continue
+      }
       addLegacyUnsetPaths(unsetPaths, section, toSectionPath(section._key))
     }
 

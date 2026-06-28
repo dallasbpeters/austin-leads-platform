@@ -60,7 +60,9 @@ export default async function CrmPage() {
 }
 
 function serializeCrmError(error) {
-  if (!error) return null
+  if (!error) {
+    return null
+  }
   const message = error?.message || String(error)
   const code = error?.code || error?.name || null
   const cause = error?.cause?.message || error?.cause?.code || null

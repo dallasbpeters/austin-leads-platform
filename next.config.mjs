@@ -1,22 +1,24 @@
 import withVercelToolbar from '@vercel/toolbar/plugins/next'
-import { dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const PROJECT_ROOT = dirname(fileURLToPath(import.meta.url))
+const PROJECT_ROOT = import.meta.dirname
 
 const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'xuhfhjna'
 const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 const sanityApiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-10-21'
 
 function withPathWildcard(destination) {
-  if (!destination) return destination
-  if (destination.includes(':path*')) return destination
+  if (!destination) {
+    return destination
+  }
+  if (destination.includes(':path*')) {
+    return destination
+  }
   const normalized = destination.endsWith('/') ? destination.slice(0, -1) : destination
   return `${normalized}/:path*`
 }
 
 function asExactHostPattern(host) {
-  const escaped = String(host).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const escaped = String(host).replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
   return `^${escaped}$`
 }
 

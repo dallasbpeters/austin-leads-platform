@@ -92,7 +92,7 @@ export const metadata = {
 
 function extractBlock(css, selector) {
   // Allow comma-separated selectors like `:root,\n.some-class {`
-  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const escapedSelector = selector.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const match = css.match(new RegExp(`${escapedSelector}[^{]*\\{([\\s\\S]*?)\\n\\}`, 'm'))
   return match?.[1] ?? ''
 }
@@ -108,8 +108,12 @@ function parseVariables(block) {
 }
 
 function isSwatchFriendly({ token, value }) {
-  if (/(font|shadow|radius|gap|spacing|tracking)/.test(token)) return false
-  if (/-(h|s|l)$/.test(token)) return false
+  if (/(font|shadow|radius|gap|spacing|tracking)/.test(token)) {
+    return false
+  }
+  if (/-(h|s|l)$/.test(token)) {
+    return false
+  }
   return (
     semanticTokenNames.has(token) ||
     token.startsWith('--color-') ||
@@ -126,7 +130,9 @@ function groupPublicTokens(variables) {
       const tokens = remaining.filter(({ token }) => group.match(token))
       tokens.forEach((item) => {
         const index = remaining.indexOf(item)
-        if (index >= 0) remaining.splice(index, 1)
+        if (index !== -1) {
+          remaining.splice(index, 1)
+        }
       })
       return {
         title: group.title,
@@ -149,7 +155,7 @@ function groupPublicTokens(variables) {
 
 async function readStyleFile(relativePath) {
   try {
-    return await readFile(path.join(process.cwd(), relativePath), 'utf8')
+    return await readFile(path.join(process.cwd(), relativePath), 'utf-8')
   } catch {
     return ''
   }
@@ -178,7 +184,7 @@ async function loadStyleGuideData() {
   return {
     publicGroups: groupPublicTokens(publicVariables).map((group) => ({
       ...group,
-      id: group.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      id: group.title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-'),
     })),
     semanticVariables,
     adminVariables,

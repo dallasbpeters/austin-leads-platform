@@ -12,8 +12,8 @@ function slugify(name) {
   return name
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-|-$/g, '')
 }
 
 /** Sanity requires every array item to have a unique _key. */
@@ -100,9 +100,9 @@ function buildHomepageDocument(siteId, name, category) {
 async function attachVercelDomainSafe(domain) {
   try {
     return await addDomainToVercel({ domain })
-  } catch (err) {
-    const alreadyInVercel = err?.status === 409 || /already in use/i.test(err?.message ?? '')
-    console.warn('[sites] Vercel domain attachment:', err.message)
+  } catch (error) {
+    const alreadyInVercel = error?.status === 409 || /already in use/i.test(error?.message ?? '')
+    console.warn('[sites] Vercel domain attachment:', error.message)
     return {
       domain,
       verified: alreadyInVercel,
@@ -133,7 +133,9 @@ async function persistDomainRecord(domainRecord) {
 
 export async function POST(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const body = await request.json()
   const { domain, name, category } = body

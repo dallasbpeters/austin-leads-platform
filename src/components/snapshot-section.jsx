@@ -38,10 +38,18 @@ const iconifyFallbackIconMap = {
 function inferSnapshotIcon(item) {
   const text = `${item?.value || ''} ${item?.copy || ''}`.toLowerCase()
 
-  if (text.includes('payback') || text.includes('savings') || text.includes('$')) return Wallet
-  if (text.includes('year') || text.includes('timeline') || text.includes('window')) return Clock
-  if (text.includes('roof') || text.includes('claim') || text.includes('insurance')) return StatUp
-  if (text.includes('solar') || text.includes('energy')) return Leaf
+  if (text.includes('payback') || text.includes('savings') || text.includes('$')) {
+    return Wallet
+  }
+  if (text.includes('year') || text.includes('timeline') || text.includes('window')) {
+    return Clock
+  }
+  if (text.includes('roof') || text.includes('claim') || text.includes('insurance')) {
+    return StatUp
+  }
+  if (text.includes('solar') || text.includes('energy')) {
+    return Leaf
+  }
 
   return StatUp
 }

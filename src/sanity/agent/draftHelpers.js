@@ -3,19 +3,19 @@ import { withSectionKeys } from '../../lib/sanity/keys'
 export function slugifyDraftValue(value) {
   return String(value || '')
     .toLowerCase()
-    .replace(/[^a-z0-9/]+/g, '-')
-    .replace(/-{2,}/g, '-')
-    .replace(/\/{2,}/g, '/')
-    .replace(/^-+|-+$/g, '')
-    .replace(/^\/+|\/+$/g, '')
+    .replaceAll(/[^a-z0-9/]+/g, '-')
+    .replaceAll(/-{2,}/g, '-')
+    .replaceAll(/\/{2,}/g, '/')
+    .replaceAll(/^-+|-+$/g, '')
+    .replaceAll(/^\/+|\/+$/g, '')
 }
 
 export function sanitizeDraftDocumentIdPart(value) {
   return String(value || '')
     .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, '-')
-    .replace(/-{2,}/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replaceAll(/[^a-z0-9-]+/g, '-')
+    .replaceAll(/-{2,}/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
 }
 
 export function trimDraftLines(value) {
@@ -55,7 +55,9 @@ export function buildDraftHeroImage(input) {
 
 function toPortableTextSimple(value) {
   const text = String(value || '').trim()
-  if (!text) return []
+  if (!text) {
+    return []
+  }
   const blockKey = `pt-${Math.random().toString(36).slice(2, 10)}`
   const spanKey = `sp-${Math.random().toString(36).slice(2, 10)}`
 
@@ -79,7 +81,7 @@ function toPortableTextSimple(value) {
 
 function splitDraftSentences(value) {
   return String(value || '')
-    .replace(/\s+/g, ' ')
+    .replaceAll(/\s+/g, ' ')
     .split(/(?<=[.!?])\s+/)
     .map((item) => item.trim())
     .filter(Boolean)
@@ -87,8 +89,8 @@ function splitDraftSentences(value) {
 
 function humanizeDraftTitle(value) {
   return String(value || '')
-    .replace(/[-/]+/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replaceAll(/[-/]+/g, ' ')
+    .replaceAll(/\s+/g, ' ')
     .trim()
 }
 
@@ -276,7 +278,9 @@ function buildStoryTitle(contentType, cleanTitle) {
 
 function buildStoryBody(contentType, secondSentence, thirdSentence, firstSource) {
   const resolved = secondSentence || thirdSentence || firstSource
-  if (resolved) return resolved
+  if (resolved) {
+    return resolved
+  }
   return contentType === 'post' ? DRAFT_STORY_BODY_POST() : DRAFT_STORY_BODY_DEFAULT()
 }
 

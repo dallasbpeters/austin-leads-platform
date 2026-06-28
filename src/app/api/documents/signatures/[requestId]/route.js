@@ -18,9 +18,15 @@ export const runtime = 'nodejs'
 
 function deriveRequestStatus(recipients) {
   const statuses = recipients.map((recipient) => String(recipient.status || '').toLowerCase())
-  if (statuses.some((status) => status === 'declined')) return 'declined'
-  if (statuses.length && statuses.every((status) => status === 'completed')) return 'completed'
-  if (statuses.some((status) => ['sent', 'pending', 'opened', 'started'].includes(status))) return 'sent'
+  if (statuses.some((status) => status === 'declined')) {
+    return 'declined'
+  }
+  if (statuses.length && statuses.every((status) => status === 'completed')) {
+    return 'completed'
+  }
+  if (statuses.some((status) => ['sent', 'pending', 'opened', 'started'].includes(status))) {
+    return 'sent'
+  }
   return 'completed'
 }
 
@@ -31,10 +37,14 @@ function decodeDataUrl(dataUrl) {
 }
 
 async function loadPdfFromAsset(requestRecord) {
-  if (!requestRecord.document_asset_id) return null
+  if (!requestRecord.document_asset_id) {
+    return null
+  }
 
   const asset = await getDocumentLibraryItemById(requestRecord.document_asset_id)
-  if (!asset?.file_base64) return null
+  if (!asset?.file_base64) {
+    return null
+  }
 
   return {
     bytes: Buffer.from(String(asset.file_base64), 'base64'),
@@ -53,21 +63,27 @@ function getProviderDocumentUrl(requestRecord) {
 
 async function loadPdfFromUrl(requestRecord) {
   const sourceUrl = getProviderDocumentUrl(requestRecord)
-  if (!sourceUrl) return null
+  if (!sourceUrl) {
+    return null
+  }
 
   const response = await fetch(sourceUrl)
-  if (!response.ok) return null
+  if (!response.ok) {
+    return null
+  }
 
   return {
     bytes: Buffer.from(await response.arrayBuffer()),
-    fileName: `${(requestRecord.title || 'document').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.pdf`,
+    fileName: `${(requestRecord.title || 'document').replaceAll(/[^a-z0-9]+/gi, '-').toLowerCase()}.pdf`,
     title: requestRecord.title || 'Signed document',
   }
 }
 
 async function loadSourcePdfBytes(requestRecord) {
   const fromAsset = await loadPdfFromAsset(requestRecord)
-  if (fromAsset) return fromAsset
+  if (fromAsset) {
+    return fromAsset
+  }
   return loadPdfFromUrl(requestRecord)
 }
 
@@ -124,7 +140,9 @@ async function createSignedPdfBytes({
   for (const field of Array.isArray(builderFields) ? builderFields : []) {
     const pageIndex = Math.max(0, (Number(field?.page) || 1) - 1)
     const page = pages[pageIndex]
-    if (!page) continue
+    if (!page) {
+      continue
+    }
 
     const { width, height } = page.getSize()
     const box = getFieldBox(field, width, height)
@@ -191,7 +209,9 @@ async function createSignedPdfBytes({
     }
 
     const value = cleanFieldText(field.defaultValue)
-    if (!value) continue
+    if (!value) {
+      continue
+    }
 
     page.drawText(value, {
       x: box.x,
@@ -219,7 +239,9 @@ function extractBuilderFields(requestRecord) {
 async function createSignedDocument(requestRecord, recipient, body, completedAt) {
   try {
     const sourcePdf = await loadSourcePdfBytes(requestRecord)
-    if (!sourcePdf) return { assetId: requestRecord.document_asset_id || null, document: null }
+    if (!sourcePdf) {
+      return { assetId: requestRecord.document_asset_id || null, document: null }
+    }
 
     const signedPdfBytes = await createSignedPdfBytes({
       sourceBytes: sourcePdf.bytes,
@@ -300,8 +322,9 @@ async function createCompletionAuditEvent(requestRecord, recipient, body, signed
 }
 
 export async function POST(request, { params }) {
-  if (!hasDocumentDatabase())
+  if (!hasDocumentDatabase()) {
     return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })
+  }
 
   await ensureDocumentTables()
 
@@ -309,7 +332,9 @@ export async function POST(request, { params }) {
   const body = await request.json().catch(() => ({}))
   const recipientId = String(body?.recipientId || '').trim()
 
-  if (!recipientId) return NextResponse.json({ error: 'recipientId is required.' }, { status: 400 })
+  if (!recipientId) {
+    return NextResponse.json({ error: 'recipientId is required.' }, { status: 400 })
+  }
 
   const [requestRecord, recipient] = await Promise.all([
     getSignatureRequestById(requestId),

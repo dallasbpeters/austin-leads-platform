@@ -26,7 +26,9 @@ function resolveAnalyticsConfig() {
 
 function getCorsOrigin(request: Request) {
   const origin = request.headers.get('origin') || ''
-  if (origin && allowedOrigins.has(origin)) return origin
+  if (origin && allowedOrigins.has(origin)) {
+    return origin
+  }
   return process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || 'https://austin-leads-platform.sanity.studio'
 }
 

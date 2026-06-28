@@ -89,7 +89,9 @@ function getAgentContextMcpUrl() {
 
 async function validateChatEnvironment(request) {
   const session = await safeAuth()
-  if (!session?.user) return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
+  if (!session?.user) {
+    return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
+  }
 
   const mcpUrl = getAgentContextMcpUrl()
   const readToken = process.env.SANITY_API_READ_TOKEN?.trim() || process.env.SANITY_API_VIEWER_TOKEN?.trim()
@@ -147,7 +149,9 @@ async function validateChatEnvironment(request) {
 
 export async function POST(request) {
   const validated = await validateChatEnvironment(request)
-  if (validated.error) return validated.error
+  if (validated.error) {
+    return validated.error
+  }
 
   const { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra } = validated
 

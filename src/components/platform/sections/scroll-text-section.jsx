@@ -10,9 +10,13 @@ function buildScrollTexts(section) {
     : Array.isArray(section?.texts)
       ? section.texts
       : null
-  if (!Array.isArray(textItems) || textItems.length === 0) return undefined
+  if (!Array.isArray(textItems) || textItems.length === 0) {
+    return
+  }
   const resolvedIcon = section?.showFlag ? 'TexasFlag' : section?.icon
-  if (!section?.showIcon && !section?.showFlag && !section?.icon) return textItems
+  if (!section?.showIcon && !section?.showFlag && !section?.icon) {
+    return textItems
+  }
   return textItems.map((text) => ({ text, icon: resolvedIcon }))
 }
 

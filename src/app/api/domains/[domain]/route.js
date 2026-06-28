@@ -19,7 +19,9 @@ function normalizeRedirectTarget(value) {
 
 export async function PATCH(request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const { domain } = await params
   const existing = hasDomainDatabase() ? await getDomainRecordDb(domain) : getDomainRecord(domain)
@@ -59,7 +61,9 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(_request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const { domain } = await params
   const existing = hasDomainDatabase() ? await getDomainRecordDb(domain) : getDomainRecord(domain)

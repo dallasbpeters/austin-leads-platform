@@ -11,7 +11,9 @@ export const runtime = 'nodejs'
 
 export async function GET() {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const pages = await getHeroPages()
   const sites = await getHeroSitesForAdmin()
@@ -27,13 +29,17 @@ export async function GET() {
 function createSlug(value) {
   return value
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-|-$/g, '')
 }
 
 function resolveDocumentType(pageType) {
-  if (pageType === 'service') return 'servicePage'
-  if (pageType === 'location') return 'locationPage'
+  if (pageType === 'service') {
+    return 'servicePage'
+  }
+  if (pageType === 'location') {
+    return 'locationPage'
+  }
   return 'page'
 }
 
@@ -72,10 +78,14 @@ async function fetchOrCreateSanitySite(sanityWriteClient, siteId) {
     { siteId },
   )
 
-  if (existing) return existing
+  if (existing) {
+    return existing
+  }
 
   const fixtureSite = getSiteById(siteId)
-  if (!fixtureSite || fixtureSite.tier !== 'hero') return null
+  if (!fixtureSite || fixtureSite.tier !== 'hero') {
+    return null
+  }
 
   await sanityWriteClient.createIfNotExists({
     _id: fixtureSite.id,
@@ -148,7 +158,9 @@ function computePageSlug(pageType, body, title) {
 
 export async function POST(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (!sanityWriteClient) {
     return NextResponse.json({ error: 'Sanity write credentials are not configured.' }, { status: 503 })
@@ -156,21 +168,24 @@ export async function POST(request) {
 
   const { body, title, siteId, pageType, description } = await parseHeroPageBody(request)
 
-  if (!title || !siteId)
+  if (!title || !siteId) {
     return NextResponse.json({ error: 'Title and hero site are required.' }, { status: 400 })
+  }
 
   const site = await fetchOrCreateSanitySite(sanityWriteClient, siteId)
-  if (!site)
+  if (!site) {
     return NextResponse.json({ error: 'That hero site does not exist in Sanity yet.' }, { status: 400 })
+  }
 
   const slug = computePageSlug(pageType, body, title)
   const existingPageId = await checkDuplicatePage(sanityWriteClient, siteId, slug)
 
-  if (existingPageId)
+  if (existingPageId) {
     return NextResponse.json(
       { error: 'A page with that slug already exists for this site.' },
       { status: 409 },
     )
+  }
 
   const documentType = resolveDocumentType(pageType)
   const sections = buildHeroPageSections(site, title, description)

@@ -60,7 +60,9 @@ function GalleryHeader({ section }) {
 
 function GalleryTile({ item, index, title, onClick }) {
   const src = buildSanityImageUrl(item, { width: 1200 })
-  if (!src) return null
+  if (!src) {
+    return null
+  }
 
   const alt = resolveImageAlt(item, index, title)
   const heightClass = MASONRY_HEIGHTS[index % MASONRY_HEIGHTS.length]
@@ -200,7 +202,9 @@ export function GallerySection({ section, sectionId }) {
   const imageCount = images.length
 
   const handleOpenChange = useCallback((open) => {
-    if (!open) setLightboxIndex(null)
+    if (!open) {
+      setLightboxIndex(null)
+    }
   }, [])
 
   const handlePrev = useCallback(() => {
@@ -212,7 +216,9 @@ export function GallerySection({ section, sectionId }) {
   }, [imageCount])
 
   useEffect(() => {
-    if (!isOpen) return undefined
+    if (!isOpen) {
+      return
+    }
     const handleKeyDown = (event) => {
       if (event.key === 'ArrowLeft') {
         event.preventDefault()
@@ -227,7 +233,9 @@ export function GallerySection({ section, sectionId }) {
   }, [isOpen, handlePrev, handleNext])
 
   useEffect(() => {
-    if (!isOpen || imageCount < 2) return
+    if (!isOpen || imageCount < 2) {
+      return
+    }
     const neighbours = [(lightboxIndex + 1) % imageCount, (lightboxIndex - 1 + imageCount) % imageCount]
     neighbours.forEach((index) => {
       const src = buildSanityImageUrl(images[index], { width: 2400 })
@@ -238,7 +246,9 @@ export function GallerySection({ section, sectionId }) {
     })
   }, [isOpen, lightboxIndex, images, imageCount])
 
-  if (imageCount === 0) return null
+  if (imageCount === 0) {
+    return null
+  }
 
   return (
     <section

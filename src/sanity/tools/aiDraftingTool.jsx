@@ -165,7 +165,9 @@ export function AiDraftingTool() {
 
   const assetQuery = assetSearch.trim().toLowerCase()
   const filteredAssets = assets.filter((asset) => {
-    if (!assetQuery) return true
+    if (!assetQuery) {
+      return true
+    }
 
     return String(asset?.originalFilename || '')
       .toLowerCase()
@@ -200,7 +202,9 @@ export function AiDraftingTool() {
   }
 
   async function runSanityAgentAction(draftId, schemaType) {
-    if (!SANITY_AGENT_SCHEMA_ID || !client?.agent?.action?.generate) return null
+    if (!SANITY_AGENT_SCHEMA_ID || !client?.agent?.action?.generate) {
+      return null
+    }
     try {
       await client.agent.action.generate({
         schemaId: SANITY_AGENT_SCHEMA_ID,
@@ -229,9 +233,12 @@ export function AiDraftingTool() {
   }
 
   function buildAgentWarning(mode) {
-    if (mode === 'sanity-agent') return null
-    if (!SANITY_AGENT_SCHEMA_ID)
+    if (mode === 'sanity-agent') {
+      return null
+    }
+    if (!SANITY_AGENT_SCHEMA_ID) {
       return 'SANITY_AGENT_SCHEMA_ID is missing, so the tool created a structured starter draft instead of running Sanity Agent.'
+    }
     return 'Sanity Agent actions are not available in this Studio session.'
   }
 
@@ -314,8 +321,8 @@ export function AiDraftingTool() {
 
     const filename = String(asset?.originalFilename || '')
       .replace(/\.[a-z0-9]+$/i, '')
-      .replace(/[-_]+/g, ' ')
-      .replace(/\s+/g, ' ')
+      .replaceAll(/[-_]+/g, ' ')
+      .replaceAll(/\s+/g, ' ')
       .trim()
 
     setGeneratedAssetUrl(assetUrl)

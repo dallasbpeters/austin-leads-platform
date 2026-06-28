@@ -15,8 +15,10 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch(SOURCE_URL, { next: { revalidate: 86400 } })
-    if (!res.ok) throw new Error(`Upstream ${res.status}`)
+    const res = await fetch(SOURCE_URL, { next: { revalidate: 86_400 } })
+    if (!res.ok) {
+      throw new Error(`Upstream ${res.status}`)
+    }
     const all = await res.json()
 
     const features = all.features
@@ -31,8 +33,8 @@ export async function GET() {
     return Response.json(cached, {
       headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800' },
     })
-  } catch (err) {
-    console.error('[/api/counties/texas]', err)
+  } catch (error) {
+    console.error('[/api/counties/texas]', error)
     return Response.json({ error: 'Failed to fetch county data' }, { status: 502 })
   }
 }

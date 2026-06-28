@@ -7,7 +7,7 @@ const PAGE_DOCUMENT_FILTER = `_type in ["page", "servicePage", "locationPage", "
  * `_site` guards against the /:path* catch-all double-matching /_site/ URLs
  * that are already handled by the dedicated /_site/:site/:path* routes.
  */
-const INTERNAL_PATH_PREFIXES = ['api', '_next', 'studio', '_site']
+const INTERNAL_PATH_PREFIXES = new Set(['api', '_next', 'studio', '_site'])
 
 /**
  * Build a Presentation preview path for a tenant page.
@@ -24,7 +24,9 @@ const INTERNAL_PATH_PREFIXES = ['api', '_next', 'studio', '_site']
  */
 function tenantHref(siteSlug, path = '/') {
   const safePath = path.startsWith('/') ? path : `/${path}`
-  if (!siteSlug) return safePath
+  if (!siteSlug) {
+    return safePath
+  }
   return `/_site/${siteSlug}${safePath}`
 }
 
@@ -94,7 +96,9 @@ function resolveFromAnyPath(context) {
 
   // Guard against internal routes being resolved as page documents
   const firstSegment = slug.split('/')[0]
-  if (INTERNAL_PATH_PREFIXES.includes(firstSegment)) return null
+  if (INTERNAL_PATH_PREFIXES.has(firstSegment)) {
+    return null
+  }
 
   const siteFilter = siteSlug ? ` && site->slug.current == $siteSlug` : ''
   const siteParams = siteSlug ? { siteSlug } : {}
@@ -125,8 +129,12 @@ export const presentationDocuments = defineDocuments([
 ])
 
 function hrefForDoc(doc) {
-  if (!doc?.slug) return null
-  if (doc.pageType === 'home' || doc.slug === '/') return '/'
+  if (!doc?.slug) {
+    return null
+  }
+  if (doc.pageType === 'home' || doc.slug === '/') {
+    return '/'
+  }
   return doc.slug.startsWith('/') ? doc.slug : `/${doc.slug}`
 }
 
@@ -140,7 +148,9 @@ export const presentationLocations = {
     select: { name: 'name', slug: 'slug.current', primaryDomain: 'primaryDomain' },
     resolve: (doc) => {
       const siteSlug = doc?.slug
-      if (!siteSlug) return null
+      if (!siteSlug) {
+        return null
+      }
       return {
         locations: [
           {
@@ -155,7 +165,9 @@ export const presentationLocations = {
     select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
-      if (!path) return null
+      if (!path) {
+        return null
+      }
       return {
         locations: [
           {
@@ -170,8 +182,10 @@ export const presentationLocations = {
     select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
-      if (!path) return null
-      const siteSlug = doc.siteSlug
+      if (!path) {
+        return null
+      }
+      const { siteSlug } = doc
       return {
         locations: [
           { title: doc.title || 'Untitled service page', href: tenantHref(siteSlug, path) },
@@ -184,7 +198,9 @@ export const presentationLocations = {
     select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
-      if (!path) return null
+      if (!path) {
+        return null
+      }
       return {
         locations: [
           {
@@ -199,8 +215,10 @@ export const presentationLocations = {
     select: { title: 'title', slug: 'slug.current', pageType: 'pageType', siteSlug: 'site->slug.current' },
     resolve: (doc) => {
       const path = hrefForDoc(doc)
-      if (!path) return null
-      const siteSlug = doc.siteSlug
+      if (!path) {
+        return null
+      }
+      const { siteSlug } = doc
       return {
         locations: [
           { title: doc.title || 'Untitled post', href: tenantHref(siteSlug, path) },

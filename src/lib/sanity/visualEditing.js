@@ -3,7 +3,7 @@ import { createDataAttribute } from 'next-sanity'
 import { canonicalStudioUrl, dataset, projectId } from '@/sanity/env'
 
 function escapePathSegment(value) {
-  return String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+  return String(value).replaceAll('\\', '\\\\').replaceAll('"', '\\"')
 }
 
 export function getSanityEditAttributes({ documentId, documentType, path }) {

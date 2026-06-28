@@ -22,9 +22,15 @@ function ToolIcon() {
 }
 
 function scoreColor(score) {
-  if (typeof score !== 'number') return '#6b7280'
-  if (score >= 90) return '#15803d'
-  if (score >= 50) return '#b45309'
+  if (typeof score !== 'number') {
+    return '#6b7280'
+  }
+  if (score >= 90) {
+    return '#15803d'
+  }
+  if (score >= 50) {
+    return '#b45309'
+  }
   return '#b91c1c'
 }
 

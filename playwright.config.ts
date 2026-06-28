@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './src/e2e',
-  timeout: 90000,
+  timeout: 90_000,
   fullyParallel: false,
   retries: 1,
   workers: 1,
@@ -15,6 +15,6 @@ export default defineConfig({
     command: 'pnpm dev:next',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    timeout: 120_000,
   },
 })

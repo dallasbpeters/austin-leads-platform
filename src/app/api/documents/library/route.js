@@ -25,7 +25,9 @@ function buildDocumentPayload(body, title, fileName, fileBase64) {
 
 export async function POST(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (!hasDocumentDatabase()) {
     return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })
@@ -38,9 +40,12 @@ export async function POST(request) {
   const fileName = cleanString(body?.fileName)
   const fileBase64 = cleanString(body?.fileBase64)
 
-  if (!title) return NextResponse.json({ error: 'Enter a document title.' }, { status: 400 })
-  if (!fileName || !fileBase64)
+  if (!title) {
+    return NextResponse.json({ error: 'Enter a document title.' }, { status: 400 })
+  }
+  if (!fileName || !fileBase64) {
     return NextResponse.json({ error: 'Provide a PDF file before saving.' }, { status: 400 })
+  }
 
   const document = await createDocumentLibraryItem(buildDocumentPayload(body, title, fileName, fileBase64))
 

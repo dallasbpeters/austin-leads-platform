@@ -20,18 +20,28 @@ export const metadata = {
 }
 
 function formatDate(value) {
-  if (!value) return 'Not set'
+  if (!value) {
+    return 'Not set'
+  }
   return new Date(value).toLocaleString()
 }
 
 function getStatusLabel(request, recipients) {
-  if (request?.status === 'deleted') return 'deleted'
+  if (request?.status === 'deleted') {
+    return 'deleted'
+  }
   const statuses = recipients.map((recipient) => recipient.status)
   const completed = statuses.filter((status) => status === 'completed').length
   const declined = statuses.filter((status) => status === 'declined').length
-  if (completed && declined) return 'mixed'
-  if (completed && completed === recipients.length) return 'completed'
-  if (declined && declined === recipients.length) return 'declined'
+  if (completed && declined) {
+    return 'mixed'
+  }
+  if (completed && completed === recipients.length) {
+    return 'completed'
+  }
+  if (declined && declined === recipients.length) {
+    return 'declined'
+  }
   return request?.status || 'sent'
 }
 

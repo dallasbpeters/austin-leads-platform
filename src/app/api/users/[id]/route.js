@@ -17,23 +17,29 @@ async function requireAdmin() {
 
 export async function GET(_req, { params }) {
   const { error } = await requireAdmin()
-  if (error) return error
+  if (error) {
+    return error
+  }
   const { id } = await params
 
   try {
     await ensurePlatformUsersTable()
     const user = await getUserById(id)
-    if (!user) return Response.json({ error: 'User not found.' }, { status: 404 })
+    if (!user) {
+      return Response.json({ error: 'User not found.' }, { status: 404 })
+    }
     return Response.json({ user })
-  } catch (err) {
-    console.error('[api/users/:id GET]', err)
+  } catch (error) {
+    console.error('[api/users/:id GET]', error)
     return Response.json({ error: 'Failed to load user.' }, { status: 500 })
   }
 }
 
 export async function PATCH(req, { params }) {
   const { session, error } = await requireAdmin()
-  if (error) return error
+  if (error) {
+    return error
+  }
   const { id } = await params
 
   let body
@@ -68,15 +74,17 @@ export async function PATCH(req, { params }) {
     }
 
     return Response.json({ user })
-  } catch (err) {
-    console.error('[api/users/:id PATCH]', err)
-    return Response.json({ error: err?.message || 'Failed to update user.' }, { status: 400 })
+  } catch (error) {
+    console.error('[api/users/:id PATCH]', error)
+    return Response.json({ error: error?.message || 'Failed to update user.' }, { status: 400 })
   }
 }
 
 export async function DELETE(_req, { params }) {
   const { session, error } = await requireAdmin()
-  if (error) return error
+  if (error) {
+    return error
+  }
   const { id } = await params
 
   if (session.user.id === id) {
@@ -87,8 +95,8 @@ export async function DELETE(_req, { params }) {
     await ensurePlatformUsersTable()
     await deleteUser(id)
     return Response.json({ deleted: id })
-  } catch (err) {
-    console.error('[api/users/:id DELETE]', err)
-    return Response.json({ error: err?.message || 'Failed to delete user.' }, { status: 400 })
+  } catch (error) {
+    console.error('[api/users/:id DELETE]', error)
+    return Response.json({ error: error?.message || 'Failed to delete user.' }, { status: 400 })
   }
 }

@@ -3,7 +3,9 @@
 import posthog from 'posthog-js'
 
 export function trackAnalyticsEvent(eventName, params = {}) {
-  if (!eventName) return
+  if (!eventName) {
+    return
+  }
 
   try {
     posthog.capture(eventName, params)
@@ -11,7 +13,9 @@ export function trackAnalyticsEvent(eventName, params = {}) {
     // Keep UX resilient even if PostHog is unavailable.
   }
 
-  if (typeof window === 'undefined') return
+  if (typeof window === 'undefined') {
+    return
+  }
 
   const hasGtag = typeof window.gtag === 'function'
   const hasDataLayer = Array.isArray(window.dataLayer)

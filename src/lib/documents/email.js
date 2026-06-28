@@ -9,7 +9,9 @@ function getResendApiKey() {
 
 function parseFromAddress() {
   const rawValue = process.env.RESEND_FROM_EMAIL?.trim()
-  if (!rawValue) return null
+  if (!rawValue) {
+    return null
+  }
 
   const formattedMatch = rawValue.match(/^(.+?)\s*<([^<>@\s]+@[^<>@\s]+)>$/)
   if (formattedMatch) {
@@ -71,7 +73,7 @@ export async function sendDocumentSignatureEmail({ client, request, recipients, 
     }
   }
 
-  const to = Array.from(new Set(recipients.map((recipient) => recipient.email).filter(Boolean)))
+  const to = [...new Set(recipients.map((recipient) => recipient.email).filter(Boolean))]
 
   if (!to.length) {
     console.warn('[documents/email] No recipient email addresses provided; signature email skipped.', {

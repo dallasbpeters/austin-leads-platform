@@ -10,7 +10,9 @@ import { cn } from '@/lib/utils'
 const CONCRETE_COLOR_RE = /^\s*(oklch|hsl|hsla|rgb|rgba|color-mix|#)/i
 
 function resolveSwatchColor(token, value) {
-  if (CONCRETE_COLOR_RE.test(value)) return value
+  if (CONCRETE_COLOR_RE.test(value)) {
+    return value
+  }
   return `var(${token})`
 }
 
@@ -90,13 +92,17 @@ export default function StyleGuideBrowser({
     .map((section) => ({
       ...section,
       tokens: section.tokens.filter(({ token, value }) => {
-        if (!normalizedQuery) return true
+        if (!normalizedQuery) {
+          return true
+        }
         const haystack = `${token} ${value}`.toLowerCase()
         return haystack.includes(normalizedQuery)
       }),
     }))
     .filter((section) => {
-      if (activeSection !== 'all' && section.id !== activeSection) return false
+      if (activeSection !== 'all' && section.id !== activeSection) {
+        return false
+      }
       return section.tokens.length > 0
     })
 

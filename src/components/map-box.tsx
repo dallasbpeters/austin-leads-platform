@@ -8,12 +8,12 @@ import geoJson from './texasCounties.json'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ServiceArea = {
+interface ServiceArea {
   countyKey: string
   displayName: string
 }
 
-export type ServiceAreaMapProps = {
+export interface ServiceAreaMapProps {
   eyebrow?: string
   title?: string
   description?: string
@@ -23,7 +23,7 @@ export type ServiceAreaMapProps = {
   backgroundColor?: string | null
 }
 
-type CountyMeta = {
+interface CountyMeta {
   fips: string
   key: string | null
   name: string
@@ -37,7 +37,9 @@ const FIPS_TO_META = new Map<string, CountyMeta>()
 
 ;(geoJson.counties as CountyMeta[]).forEach((c) => {
   FIPS_TO_META.set(c.fips, c)
-  if (c.key) KEY_TO_FIPS.set(c.key, c.fips)
+  if (c.key) {
+    KEY_TO_FIPS.set(c.key, c.fips)
+  }
 })
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -54,7 +56,7 @@ const DEFAULT_DESCRIPTION =
   'Serving homeowners across Central Texas — from the Austin metro and San Antonio to the Hill Country.'
 
 // Texas center and a zoom that fits the whole state comfortably
-const TX_CENTER: [number, number] = [-99.5, 31.0]
+const TX_CENTER: [number, number] = [-99.5, 31]
 const TX_ZOOM = 5.2
 
 // Tight Texas bounds used for fitBounds when no counties are configured
@@ -65,7 +67,9 @@ const CENTER_OFFSET_PADDING = { top: 48, bottom: 48, left: 48, right: 48 }
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function boundsFromFeatures(features: GeoJSON.Feature[]): mapboxgl.LngLatBounds | null {
-  if (!features.length) return null
+  if (!features.length) {
+    return null
+  }
   const bounds = new mapboxgl.LngLatBounds()
   features.forEach((f) => {
     extractCoords(f.geometry as GeoJSON.Geometry).forEach(([lng, lat]) => bounds.extend([lng, lat]))
@@ -74,14 +78,19 @@ function boundsFromFeatures(features: GeoJSON.Feature[]): mapboxgl.LngLatBounds 
 }
 
 function extractCoords(geometry: GeoJSON.Geometry): [number, number][] {
-  if (geometry.type === 'Polygon') return geometry.coordinates[0] as [number, number][]
-  if (geometry.type === 'MultiPolygon') return geometry.coordinates.flatMap((p) => p[0]) as [number, number][]
+  if (geometry.type === 'Polygon') {
+    return geometry.coordinates[0] as [number, number][]
+  }
+  if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.flatMap((p) => p[0]) as [number, number][]
+  }
   return []
 }
 
 function buildFilter(fipsList: string[]): mapboxgl.FilterSpecification {
-  if (fipsList.length === 0)
+  if (fipsList.length === 0) {
     return ['==', ['literal', false], true] as unknown as mapboxgl.FilterSpecification
+  }
   return ['in', ['get', 'fips'], ['literal', fipsList]] as unknown as mapboxgl.FilterSpecification
 }
 
@@ -106,7 +115,9 @@ export const MapBox = ({
     const list: string[] = []
     areas.forEach((a) => {
       const fips = a?.countyKey ? KEY_TO_FIPS.get(a.countyKey) : undefined
-      if (fips) list.push(fips)
+      if (fips) {
+        list.push(fips)
+      }
     })
     return list
   }, [areas])
@@ -120,7 +131,9 @@ export const MapBox = ({
     const m = new Map<string, ServiceArea>()
     areas.forEach((a) => {
       const fips = a?.countyKey ? KEY_TO_FIPS.get(a.countyKey) : undefined
-      if (fips) m.set(fips, a)
+      if (fips) {
+        m.set(fips, a)
+      }
     })
     return m
   }, [areas])
@@ -128,7 +141,9 @@ export const MapBox = ({
   // ── Map initialisation (mount only) ─────────────────────────────────────────
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container) {
+      return
+    }
 
     const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
     if (!token) {
@@ -166,7 +181,9 @@ export const MapBox = ({
     map.on('load', async () => {
       try {
         const res = await fetch(COUNTIES_URL)
-        if (!res.ok) throw new Error(`/api/counties/texas returned ${res.status}`)
+        if (!res.ok) {
+          throw new Error(`/api/counties/texas returned ${res.status}`)
+        }
         const txGeoJSON = (await res.json()) as GeoJSON.FeatureCollection
         const txFeatures = txGeoJSON.features
 
@@ -209,7 +226,9 @@ export const MapBox = ({
         if (fips.length > 0) {
           const active = txFeatures.filter((f) => fips.includes(String(f.id)))
           const bounds = boundsFromFeatures(active)
-          if (bounds) map.fitBounds(bounds, { padding: CENTER_OFFSET_PADDING, maxZoom: 9, duration: 0 })
+          if (bounds) {
+            map.fitBounds(bounds, { padding: CENTER_OFFSET_PADDING, maxZoom: 9, duration: 0 })
+          }
         } else {
           map.fitBounds(TX_BOUNDS, { padding: CENTER_OFFSET_PADDING, duration: 0 })
         }
@@ -217,7 +236,9 @@ export const MapBox = ({
         // Tooltip
         map.on('mouseenter', 'counties-fill', (e) => {
           map.getCanvas().style.cursor = 'pointer'
-          if (!e.features?.length) return
+          if (!e.features?.length) {
+            return
+          }
           const f = e.features[0].properties?.fips as string
           const area = fipsToArea.get(f)
           const meta = FIPS_TO_META.get(f)
@@ -229,8 +250,8 @@ export const MapBox = ({
           map.getCanvas().style.cursor = ''
           popup.remove()
         })
-      } catch (err) {
-        console.error('[MapBox] Failed to load counties GeoJSON:', err)
+      } catch (error) {
+        console.error('[MapBox] Failed to load counties GeoJSON:', error)
       }
     })
 
@@ -244,7 +265,9 @@ export const MapBox = ({
   // ── Live updates when areas change (Sanity preview) ──────────────────────────
   useEffect(() => {
     const map = mapRef.current
-    if (!map?.getLayer('counties-fill')) return
+    if (!map?.getLayer('counties-fill')) {
+      return
+    }
 
     map.setFilter('counties-fill', buildFilter(configuredFips))
     map.setFilter('counties-line-active', buildFilter(configuredFips))
@@ -252,7 +275,9 @@ export const MapBox = ({
     if (configuredFips.length > 0) {
       const active = txFeaturesRef.current.filter((f) => configuredFips.includes(String(f.id)))
       const bounds = boundsFromFeatures(active)
-      if (bounds) map.fitBounds(bounds, { padding: CENTER_OFFSET_PADDING, maxZoom: 9, duration: 600 })
+      if (bounds) {
+        map.fitBounds(bounds, { padding: CENTER_OFFSET_PADDING, maxZoom: 9, duration: 600 })
+      }
     } else {
       map.fitBounds(TX_BOUNDS, { padding: CENTER_OFFSET_PADDING, duration: 600 })
     }

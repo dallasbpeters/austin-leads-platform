@@ -58,10 +58,16 @@ async function normalizeDraftSections(documentId) {
   }
 
   const normalizeItems = (items, fieldName) => {
-    if (!Array.isArray(items)) return items
+    if (!Array.isArray(items)) {
+      return items
+    }
     return items.map((item) => {
-      if (!item || typeof item !== 'object') return item
-      if (!(fieldName in item)) return item
+      if (!item || typeof item !== 'object') {
+        return item
+      }
+      if (!(fieldName in item)) {
+        return item
+      }
       return {
         ...item,
         [fieldName]: toPortableTextSimple(item[fieldName]),
@@ -71,7 +77,9 @@ async function normalizeDraftSections(documentId) {
 
   const normalizedSections = withSectionKeys(
     draft.sections.map((section) => {
-      if (!section || typeof section !== 'object') return section
+      if (!section || typeof section !== 'object') {
+        return section
+      }
 
       const nextSection = { ...section }
       if ('body' in nextSection) {

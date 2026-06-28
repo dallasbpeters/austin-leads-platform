@@ -34,7 +34,9 @@ function isPng(arrayBuffer) {
 }
 
 function isImagePngContentType(header) {
-  if (!header || typeof header !== 'string') return false
+  if (!header || typeof header !== 'string') {
+    return false
+  }
   const value = header.split(';')[0].trim().toLowerCase()
   return value === 'image/png'
 }
@@ -85,10 +87,16 @@ async function getFallbackPng(requestUrl) {
       cache: 'no-store',
       signal: AbortSignal.timeout(3000),
     })
-    if (!response.ok) return null
-    if (!isImagePngContentType(response.headers.get('content-type'))) return null
+    if (!response.ok) {
+      return null
+    }
+    if (!isImagePngContentType(response.headers.get('content-type'))) {
+      return null
+    }
     const body = await response.arrayBuffer()
-    if (!isPng(body) || body.byteLength < MIN_PNG_BYTES) return null
+    if (!isPng(body) || body.byteLength < MIN_PNG_BYTES) {
+      return null
+    }
     return body
   } catch {
     return null
@@ -119,10 +127,16 @@ function createBaseOgUrl(requestUrl, guidePath, guideSlug, ogVersion) {
 }
 
 function enrichOgUrlFromPage(url, page, site) {
-  if (!page) return
+  if (!page) {
+    return
+  }
   url.searchParams.set('t', page?.seo?.title || page?.title || site?.name || 'Guide')
-  if (page?.guideCardColor) url.searchParams.set('b', page.guideCardColor)
-  if (page?.guideCategory) url.searchParams.set('c', page.guideCategory)
+  if (page?.guideCardColor) {
+    url.searchParams.set('b', page.guideCardColor)
+  }
+  if (page?.guideCategory) {
+    url.searchParams.set('c', page.guideCategory)
+  }
   const versionStamp = page?.guideCardMetaUpdatedAt || page?._updatedAt
   if (versionStamp) {
     url.searchParams.set('v', String(new Date(versionStamp).getTime() || versionStamp))
@@ -132,7 +146,9 @@ function enrichOgUrlFromPage(url, page, site) {
 async function fetchOgPngWithFallback(guideSlug, guidePath, requestUrl, userAgent) {
   const primaryUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9')
   const primaryResult = await fetchPng(primaryUrl.toString(), userAgent)
-  if (primaryResult) return primaryResult
+  if (primaryResult) {
+    return primaryResult
+  }
 
   const fallbackUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9-min')
   return fetchPng(fallbackUrl.toString(), userAgent)

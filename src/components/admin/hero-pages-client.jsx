@@ -17,7 +17,9 @@ import { getImageAlt, getImageUrl, hasImageSource } from '@/lib/platform/imageSo
 import { cn } from '@/lib/utils'
 
 function portableTextToPlain(blocks) {
-  if (!Array.isArray(blocks)) return typeof blocks === 'string' ? blocks : ''
+  if (!Array.isArray(blocks)) {
+    return typeof blocks === 'string' ? blocks : ''
+  }
   return blocks
     .filter((b) => b._type === 'block' && Array.isArray(b.children))
     .map((b) => b.children.map((c) => c.text ?? '').join(''))

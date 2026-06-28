@@ -18,7 +18,7 @@ function getLinkedProjectConfig() {
   }
 
   try {
-    const parsed = JSON.parse(readFileSync(configPath, 'utf8'))
+    const parsed = JSON.parse(readFileSync(configPath, 'utf-8'))
     linkedProjectConfig = {
       projectId: parsed?.projectId || '',
       projectName: parsed?.projectName || '',
@@ -78,7 +78,7 @@ async function vercelRequest(pathname, init = {}) {
     headers: {
       Authorization: `Bearer ${config.token}`,
       'Content-Type': 'application/json',
-      ...(init.headers || {}),
+      ...init.headers,
     },
     cache: 'no-store',
   })

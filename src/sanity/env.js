@@ -19,9 +19,13 @@ export const localFrontendUrl = process.env.NEXT_PUBLIC_LOCAL_SITE_URL || 'http:
 export const studioPreviewOrigin =
   process.env.SANITY_STUDIO_PREVIEW_ORIGIN ||
   (process.env.NODE_ENV !== 'production' ? localFrontendUrl : frontendUrl)
-export const frontendOriginAllowlist = Array.from(
-  new Set([frontendUrl, 'https://texassolarandroofingpros.com', 'https://www.texassolarandroofingpros.com']),
-)
+export const frontendOriginAllowlist = [
+  ...new Set([
+    frontendUrl,
+    'https://texassolarandroofingpros.com',
+    'https://www.texassolarandroofingpros.com',
+  ]),
+]
 export const useCdn = process.env.NODE_ENV === 'production'
 
 export function isSanityConfigured() {

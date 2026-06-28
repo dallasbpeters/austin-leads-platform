@@ -9,7 +9,9 @@ export const runtime = 'nodejs'
 
 export async function POST(_request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const { domain } = await params
   const existing = hasDomainDatabase() ? await getDomainRecordDb(domain) : getDomainRecord(domain)

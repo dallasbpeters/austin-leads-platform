@@ -14,7 +14,9 @@ function escapeHtml(value) {
 }
 
 function fmt(cents) {
-  if (!cents && cents !== 0) return ''
+  if (!cents && cents !== 0) {
+    return ''
+  }
   return (cents / 100).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -24,7 +26,9 @@ function fmt(cents) {
 }
 
 function fmtDate(str) {
-  if (!str) return ''
+  if (!str) {
+    return ''
+  }
   const d = new Date(str)
   return d.toLocaleDateString('en-US', {
     month: 'long',
@@ -38,8 +42,8 @@ function buildInvoiceHtml({ job, amountDueCents, hostedUrl, dueDate }) {
   const customerFirstName = (job.full_name || '').split(' ')[0] || 'there'
   const packageLabel = (job.package_slug || '')
     .replace(/^xmas-/, '')
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replaceAll('-', ' ')
+    .replaceAll(/\b\w/g, (c) => c.toUpperCase())
 
   const dueLine = dueDate
     ? `<p style="margin:0 0 6px;font-size:14px;color:#6b7280;">Due by ${escapeHtml(fmtDate(dueDate))}</p>`
@@ -123,7 +127,7 @@ function buildInvoiceHtml({ job, amountDueCents, hostedUrl, dueDate }) {
 }
 
 function buildInvoiceText({ job, amountDueCents, hostedUrl, dueDate }) {
-  const packageLabel = (job.package_slug || '').replace(/^xmas-/, '').replace(/-/g, ' ')
+  const packageLabel = (job.package_slug || '').replace(/^xmas-/, '').replaceAll('-', ' ')
   const lines = [
     'Your Texas Christmas Lights Balance Invoice',
     '',
@@ -183,11 +187,11 @@ export async function sendInvoiceEmail({ job, amountDueCents, hostedUrl, dueDate
 
     console.info('[christmas/email] Invoice email sent.', { resendId: data?.id, to: job.email })
     return { status: 'sent', id: data?.id }
-  } catch (err) {
+  } catch (error) {
     console.error('[christmas/email] Unexpected error sending invoice email.', {
-      err,
+      error,
       to: job.email,
     })
-    return { status: 'error', reason: err?.message ?? 'Unknown error' }
+    return { status: 'error', reason: error?.message ?? 'Unknown error' }
   }
 }

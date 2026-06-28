@@ -88,7 +88,9 @@ function rgbTripleToHex(r, g, b) {
 
 function linearSrgbChannelToByte(c) {
   const v = Number(c)
-  if (!Number.isFinite(v)) return 0
+  if (!Number.isFinite(v)) {
+    return 0
+  }
   const s = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055
   return Math.round(Math.max(0, Math.min(1, s)) * 255)
 }
@@ -120,28 +122,41 @@ function parseOklchCss(css) {
   const m = String(css || '')
     .trim()
     .match(/^oklch\(\s*([\d.]+%?|none)\s+([\d.]+|none)\s+([\d.]+(?:deg|rad|turn)?|none)\s*(?:\/\s*[^)]+)?\)/i)
-  if (!m) return null
-  if (m[1] === 'none' || m[2] === 'none' || m[3] === 'none') return null
+  if (!m) {
+    return null
+  }
+  if (m[1] === 'none' || m[2] === 'none' || m[3] === 'none') {
+    return null
+  }
 
   let L = Number.parseFloat(m[1])
-  if (m[1].includes('%')) L /= 100
+  if (m[1].includes('%')) {
+    L /= 100
+  }
 
   const C = Number.parseFloat(m[2])
 
   const hPart = m[3]
   const hm = hPart.match(/^([\d.]+)(deg|rad|turn)?$/i)
-  if (!hm) return null
+  if (!hm) {
+    return null
+  }
   let H = Number.parseFloat(hm[1])
   const unit = (hm[2] || 'deg').toLowerCase()
-  if (unit === 'rad') H = (H * 180) / Math.PI
-  else if (unit === 'turn') H *= 360
+  if (unit === 'rad') {
+    H = (H * 180) / Math.PI
+  } else if (unit === 'turn') {
+    H *= 360
+  }
 
   return { L, C, H }
 }
 
 function oklchCssToHex(css) {
   const t = parseOklchCss(css)
-  if (!t) return null
+  if (!t) {
+    return null
+  }
   return oklchTupleToHex(t.L, t.C, t.H)
 }
 
@@ -149,7 +164,9 @@ function parseHslCss(css) {
   const m = String(css || '')
     .trim()
     .match(/^hsla?\(\s*([\d.]+)(deg)?\s+([\d.]+)%\s+([\d.]+)%/i)
-  if (!m) return null
+  if (!m) {
+    return null
+  }
   return {
     h: Number.parseFloat(m[1]),
     s: Number.parseFloat(m[3]),
@@ -158,7 +175,7 @@ function parseHslCss(css) {
 }
 
 function hslTupleToHex(h, s, l) {
-  let hh = ((h % 360) + 360) % 360
+  const hh = ((h % 360) + 360) % 360
   const ss = Math.max(0, Math.min(100, s)) / 100
   const ll = Math.max(0, Math.min(100, l)) / 100
   const c = (1 - Math.abs(2 * ll - 1)) * ss
@@ -191,7 +208,9 @@ function hslTupleToHex(h, s, l) {
 
 function hslCssToHex(css) {
   const t = parseHslCss(css)
-  if (!t) return null
+  if (!t) {
+    return null
+  }
   return hslTupleToHex(t.h, t.s, t.l)
 }
 
@@ -245,9 +264,13 @@ function getFontFamily(requestUrl) {
       for (const candidate of fontCandidates) {
         try {
           const response = await fetch(new URL(candidate, requestUrl.origin))
-          if (!response.ok) continue
+          if (!response.ok) {
+            continue
+          }
           const bytes = await response.arrayBuffer()
-          if (bytes?.byteLength) return bytes
+          if (bytes?.byteLength) {
+            return bytes
+          }
         } catch {
           // Try the next candidate.
         }
@@ -359,10 +382,7 @@ function parseHexToRgb(hex) {
     .replace('#', '')
     .trim()
   if (h.length === 3) {
-    h = h
-      .split('')
-      .map((ch) => ch + ch)
-      .join('')
+    h = [...h].map((ch) => ch + ch).join('')
   }
   if (h.length !== 6) {
     return null
@@ -407,10 +427,14 @@ function isLightBackgroundOgColor(color) {
 
 function getQueryParam(searchParams, name) {
   const direct = searchParams.get(name)
-  if (direct) return direct
+  if (direct) {
+    return direct
+  }
 
   const ampPrefixed = searchParams.get(`amp;${name}`)
-  if (ampPrefixed) return ampPrefixed
+  if (ampPrefixed) {
+    return ampPrefixed
+  }
 
   return ''
 }
@@ -418,7 +442,9 @@ function getQueryParam(searchParams, name) {
 function titleFromGuidePath(pathname) {
   const path = String(pathname || '')
   const segment = path.split('/').filter(Boolean).at(-1)
-  if (!segment) return ''
+  if (!segment) {
+    return ''
+  }
 
   return segment
     .split('-')
@@ -523,7 +549,9 @@ async function buildChristmasPrecomposedOgResponse(image) {
 }
 
 async function tryPrecomposedChristmasOg(isChristmasOg, image, isGuideLayout) {
-  if (!isChristmasOg || !image || isGuideLayout) return null
+  if (!isChristmasOg || !image || isGuideLayout) {
+    return null
+  }
   return buildChristmasPrecomposedOgResponse(image)
 }
 
@@ -566,7 +594,9 @@ export async function GET(request) {
   } = og
 
   const precomposed = await tryPrecomposedChristmasOg(isChristmasOg, image, isGuideLayout)
-  if (precomposed) return precomposed
+  if (precomposed) {
+    return precomposed
+  }
 
   const guideTheme = buildGuideLayoutTheme(guideBackground)
   const {

@@ -10,8 +10,8 @@ export default async function ChristmasJobsPage() {
   try {
     await ensureChristmasTables()
     jobs = await listJobs({ limit: 500 })
-  } catch (err) {
-    console.error('[christmas/page] db error:', err)
+  } catch (error) {
+    console.error('[christmas/page] db error:', error)
   }
 
   return <ChristmasJobsClient jobs={jobs} />

@@ -31,7 +31,9 @@ export const metadata = {
 
 export default async function AdminLayout({ children }) {
   const session = await safeAuth()
-  if (!session?.user) redirect('/sign-in')
+  if (!session?.user) {
+    redirect('/sign-in')
+  }
   const { user } = session
 
   return (

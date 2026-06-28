@@ -13,7 +13,9 @@ export async function generateMetadata() {
 
 export default async function ServiceRequestPage() {
   const site = await resolveCurrentSite().catch(() => null)
-  if (!site) notFound()
+  if (!site) {
+    notFound()
+  }
 
   return (
     <>

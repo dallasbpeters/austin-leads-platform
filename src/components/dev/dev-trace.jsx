@@ -1,9 +1,11 @@
 const isDev = process.env.NODE_ENV === 'development'
 
 function toAttributeValue(value) {
-  if (!value) return undefined
+  if (!value) {
+    return
+  }
 
-  return String(value).replace(/"/g, '&quot;')
+  return String(value).replaceAll('"', '&quot;')
 }
 
 export function getDevTraceAttributes({ markup, content, note } = {}) {
@@ -33,8 +35,12 @@ export default function DevTrace({ markup, content, note = null }) {
 
   const parts = [`markup: ${markup}`]
 
-  if (content) parts.push(`content: ${content}`)
-  if (note) parts.push(`note: ${note}`)
+  if (content) {
+    parts.push(`content: ${content}`)
+  }
+  if (note) {
+    parts.push(`note: ${note}`)
+  }
 
   const comment = `<!-- dev-trace | ${parts.join(' | ')} -->`
 

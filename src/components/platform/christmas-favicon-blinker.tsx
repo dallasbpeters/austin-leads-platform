@@ -73,7 +73,7 @@ function buildSvg(fills: string[]): string {
 }
 
 function toDataUri(svg: string): string {
-  return 'data:image/svg+xml,' + encodeURIComponent(svg)
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
 }
 
 export function ChristmasFaviconBlinker() {
@@ -88,7 +88,7 @@ export function ChristmasFaviconBlinker() {
       link = document.createElement('link')
       link.rel = 'icon'
       link.type = 'image/svg+xml'
-      document.head.appendChild(link)
+      document.head.append(link)
     }
 
     let lit = true

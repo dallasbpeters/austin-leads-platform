@@ -11,21 +11,25 @@ async function requireAdmin() {
 
 export async function GET() {
   const { error } = await requireAdmin()
-  if (error) return error
+  if (error) {
+    return error
+  }
 
   try {
     await ensurePlatformUsersTable()
     const users = await listUsers()
     return Response.json({ users })
-  } catch (err) {
-    console.error('[api/users GET]', err)
+  } catch (error) {
+    console.error('[api/users GET]', error)
     return Response.json({ error: 'Failed to load users.' }, { status: 500 })
   }
 }
 
 export async function POST(req) {
   const { error } = await requireAdmin()
-  if (error) return error
+  if (error) {
+    return error
+  }
 
   let body
   try {
@@ -44,8 +48,8 @@ export async function POST(req) {
       isActive: body?.isActive ?? true,
     })
     return Response.json({ user }, { status: 201 })
-  } catch (err) {
-    console.error('[api/users POST]', err)
-    return Response.json({ error: err?.message || 'Failed to create user.' }, { status: 400 })
+  } catch (error) {
+    console.error('[api/users POST]', error)
+    return Response.json({ error: error?.message || 'Failed to create user.' }, { status: 400 })
   }
 }

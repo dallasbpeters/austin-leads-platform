@@ -21,7 +21,9 @@ const emptyClient = {
 }
 
 function formatDate(value) {
-  if (!value) return 'Never'
+  if (!value) {
+    return 'Never'
+  }
   return new Date(value).toLocaleDateString()
 }
 
@@ -35,7 +37,9 @@ export default function ClientsClient({ initialClients, clientDbReady, dbConfigu
 
   const filteredClients = useMemo(() => {
     const query = search.trim().toLowerCase()
-    if (!query) return clients
+    if (!query) {
+      return clients
+    }
     return clients.filter((client) =>
       [client.name, client.email, client.company, client.phone].some((value) =>
         String(value || '')
@@ -52,7 +56,9 @@ export default function ClientsClient({ initialClients, clientDbReady, dbConfigu
     try {
       const response = await fetch('/api/clients?limit=300')
       const data = await response.json()
-      if (!response.ok) throw new Error(data?.error || 'Unable to load clients.')
+      if (!response.ok) {
+        throw new Error(data?.error || 'Unable to load clients.')
+      }
       setClients(data.clients || [])
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Unable to load clients.')
@@ -73,7 +79,9 @@ export default function ClientsClient({ initialClients, clientDbReady, dbConfigu
         body: JSON.stringify(form),
       })
       const data = await response.json()
-      if (!response.ok) throw new Error(data?.error || 'Unable to save client.')
+      if (!response.ok) {
+        throw new Error(data?.error || 'Unable to save client.')
+      }
       setClients((current) => [data.client, ...current.filter((client) => client.id !== data.client.id)])
       setForm(emptyClient)
     } catch (requestError) {

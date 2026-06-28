@@ -19,10 +19,14 @@ const OBJECT_FIELD_KEYS = new Set([
 ])
 
 export function textToPortableText(value) {
-  if (typeof value !== 'string') return value
+  if (typeof value !== 'string') {
+    return value
+  }
 
   const trimmed = value.trim()
-  if (!trimmed) return []
+  if (!trimmed) {
+    return []
+  }
 
   return [
     {

@@ -180,7 +180,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
             ? {
                 ...page,
                 heroSection: {
-                  ...(page.heroSection || {}),
+                  ...page.heroSection,
                   heroImage: data.heroImage,
                 },
               }
@@ -216,7 +216,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
             ? {
                 ...page,
                 heroSection: {
-                  ...(page.heroSection || {}),
+                  ...page.heroSection,
                   ...data.heroAppearance,
                 },
               }
@@ -243,7 +243,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
 
     const stops = gradientObject.colors || []
     const first = stops[0]
-    const last = stops[stops.length - 1]
+    const last = stops.at(-1)
     const start = parseRgbString(first?.value)
     const end = parseRgbString(last?.value)
 

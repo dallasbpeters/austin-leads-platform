@@ -12,7 +12,7 @@ export function truncateForShare(text, maxLen) {
   if (!text || typeof text !== 'string') {
     return ''
   }
-  const t = text.trim().replace(/\s+/g, ' ')
+  const t = text.trim().replaceAll(/\s+/g, ' ')
   if (t.length <= maxLen) {
     return t
   }

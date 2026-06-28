@@ -9,14 +9,14 @@ export default async function ChristmasSlotsPage() {
 
   try {
     await ensureChristmasTables()
-  } catch (err) {
-    console.error('[christmas/slots] ensureChristmasTables error:', err)
+  } catch (error) {
+    console.error('[christmas/slots] ensureChristmasTables error:', error)
   }
 
   try {
     slots = await listSlots(2026)
-  } catch (err) {
-    console.error('[christmas/slots] listSlots error:', err)
+  } catch (error) {
+    console.error('[christmas/slots] listSlots error:', error)
   }
 
   return <ChristmasSlotsClient slots={slots} />

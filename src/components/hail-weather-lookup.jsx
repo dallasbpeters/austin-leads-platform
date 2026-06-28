@@ -14,29 +14,40 @@ import { useHailWeatherLookup } from '@/hooks/useHailWeatherLookup'
 const HailLayerMap = dynamic(() => import('@/components/hail-layer-map'), { ssr: false })
 
 function riskTone(level) {
-  if (level === 'high') return 'border-red-500/30 bg-red-500/8 text-red-100'
-  if (level === 'elevated') return 'border-amber-400/35 bg-amber-400/10 text-amber-900'
+  if (level === 'high') {
+    return 'border-red-500/30 bg-red-500/8 text-red-100'
+  }
+  if (level === 'elevated') {
+    return 'border-amber-400/35 bg-amber-400/10 text-amber-900'
+  }
   return 'border-cyan-300/25 bg-cyan-300/10 text-cyan-900'
 }
 
 function formatNumber(value, suffix = '') {
-  if (value === null || value === undefined || value === '') return 'N/A'
+  if (value === null || value === undefined || value === '') {
+    return 'N/A'
+  }
   return `${Math.round(Number(value))}${suffix}`
 }
 
 function formatDate(dateString) {
-  if (!dateString) return ''
+  if (!dateString) {
+    return ''
+  }
   return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 function formatDistance(distanceMiles) {
-  if (distanceMiles === null || distanceMiles === undefined || Number.isNaN(Number(distanceMiles)))
+  if (distanceMiles === null || distanceMiles === undefined || Number.isNaN(Number(distanceMiles))) {
     return 'Nearby'
+  }
   return `${Number(distanceMiles).toFixed(1)} mi`
 }
 
 function formatStormDate(dateString) {
-  if (!dateString) return 'Recent storm'
+  if (!dateString) {
+    return 'Recent storm'
+  }
   return new Date(`${dateString}T12:00:00`).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -85,7 +96,9 @@ function MetricCardsRow({ current, daily, alerts }) {
 }
 
 function RiskCard({ risk, location }) {
-  if (!risk) return null
+  if (!risk) {
+    return null
+  }
   return (
     <Card className="bg-card border-border/80">
       <CardContent className="grid gap-4 p-5">
@@ -176,7 +189,9 @@ function AlertsSection({ alerts }) {
 }
 
 function HailLayerStats({ hailLayer }) {
-  if (!hailLayer) return null
+  if (!hailLayer) {
+    return null
+  }
   return (
     <div className="grid gap-2 md:grid-cols-3">
       <StatBox
@@ -301,14 +316,14 @@ function buildWindowLabel(hailLayer) {
 
 export default function HailWeatherLookup({ section }) {
   const hook = useHailWeatherLookup('Austin, TX')
-  const data = hook.data
-  const error = hook.error
-  const isPending = hook.isPending
-  const hasUserSearched = hook.hasUserSearched
-  const query = hook.query
-  const setQuery = hook.setQuery
-  const searchByQuery = hook.searchByQuery
-  const searchByCurrentLocation = hook.searchByCurrentLocation
+  const { data } = hook
+  const { error } = hook
+  const { isPending } = hook
+  const { hasUserSearched } = hook
+  const { query } = hook
+  const { setQuery } = hook
+  const { searchByQuery } = hook
+  const { searchByCurrentLocation } = hook
 
   const { current, daily, alerts, risk, hailLayer, stormEvents, location } = extractWeatherData(data)
   const windowLabel = buildWindowLabel(hailLayer)

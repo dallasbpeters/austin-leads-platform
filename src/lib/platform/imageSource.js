@@ -31,11 +31,15 @@ function buildSanityUrlOrFallback(imageField, assetRef, width, height) {
 }
 
 export function buildSanityImageUrl(imageField, { width = 1920, height } = {}) {
-  if (!imageField?.asset) return ''
+  if (!imageField?.asset) {
+    return ''
+  }
 
   const fallbackUrl = imageField.asset?.url || ''
   const assetRef = imageField.asset?._ref || imageField.asset?._id
-  if (!imageBuilder || !assetRef) return fallbackUrl
+  if (!imageBuilder || !assetRef) {
+    return fallbackUrl
+  }
 
   return buildSanityUrlOrFallback(imageField, assetRef, width, height) || fallbackUrl
 }
@@ -90,7 +94,9 @@ const VIDEO_MIME_BY_EXT = {
 }
 
 function inferVideoMimeFromUrl(url) {
-  if (!url) return null
+  if (!url) {
+    return null
+  }
   const cleaned = String(url).split('?')[0].split('#')[0]
   const ext = cleaned.split('.').pop()?.toLowerCase()
   return ext && VIDEO_MIME_BY_EXT[ext] ? VIDEO_MIME_BY_EXT[ext] : null
@@ -151,7 +157,9 @@ const VIDEO_SOURCE_RESOLVERS = [
 ]
 
 function resolveHeroVideoProvider(videoField, videoAssetField) {
-  if (typeof videoField?.provider === 'string' && videoField.provider) return videoField.provider
+  if (typeof videoField?.provider === 'string' && videoField.provider) {
+    return videoField.provider
+  }
   return videoAssetField?.asset ? 'upload' : 'external'
 }
 
@@ -172,7 +180,9 @@ export function getHeroVideoSource(videoField, videoAssetField = null, options =
   const src = resolver ? resolver.src(videoField, videoAssetField) : ''
   const type = resolver ? resolver.type(videoField, videoAssetField) : null
 
-  if (!src) return null
+  if (!src) {
+    return null
+  }
 
   return {
     provider,

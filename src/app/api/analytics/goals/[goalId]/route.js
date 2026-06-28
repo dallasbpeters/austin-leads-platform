@@ -7,7 +7,9 @@ export const runtime = 'nodejs'
 
 export async function PATCH(request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const { goalId } = await params
   const body = await request.json()

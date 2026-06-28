@@ -122,7 +122,7 @@ export default async function DashboardPage() {
                   <div className="text-muted-foreground col-span-3 hidden md:block">{job.siteSlug}</div>
                   <div className="col-span-4 md:col-span-2">
                     <span className="text-foreground bg-muted rounded-full px-2 py-1 text-sm font-medium">
-                      {job.status.replace(/_/g, ' ')}
+                      {job.status.replaceAll('_', ' ')}
                     </span>
                   </div>
                   <div className="text-muted-foreground col-span-2 hidden text-right text-sm md:block">

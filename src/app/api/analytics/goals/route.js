@@ -7,14 +7,18 @@ export const runtime = 'nodejs'
 
 export async function GET() {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   return NextResponse.json({ goals: listAnalyticsGoals() })
 }
 
 export async function POST(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const body = await request.json()
   const goal = createAnalyticsGoal(body)

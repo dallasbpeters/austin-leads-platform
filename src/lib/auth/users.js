@@ -24,7 +24,9 @@ export function isValidEmail(value) {
 }
 
 export function validatePassword(password) {
-  if (typeof password !== 'string') return 'Password is required.'
+  if (typeof password !== 'string') {
+    return 'Password is required.'
+  }
   if (password.length < MIN_PASSWORD_LENGTH) {
     return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
   }
@@ -37,7 +39,9 @@ function normalizeRole(role) {
 }
 
 function toPublicUser(row) {
-  if (!row) return null
+  if (!row) {
+    return null
+  }
   // Never leak password_hash.
   return {
     id: row.id,
@@ -77,20 +81,23 @@ async function runEnsure() {
       )
     `
     await sql`CREATE UNIQUE INDEX IF NOT EXISTS platform_users_email_lower_idx ON platform_users (LOWER(email))`
-  } catch (err) {
-    const message = String(err?.message ?? '')
+  } catch (error) {
+    const message = String(error?.message ?? '')
     const isPgTypeRace =
-      err?.code === '23505' && (message.includes('pg_type_typname_nsp_index') || message.includes('pg_class'))
-    if (!isPgTypeRace) throw err
+      error?.code === '23505' &&
+      (message.includes('pg_type_typname_nsp_index') || message.includes('pg_class'))
+    if (!isPgTypeRace) {
+      throw error
+    }
   }
 }
 
 export function ensurePlatformUsersTable() {
   if (!ensurePromise) {
-    ensurePromise = runEnsure().catch((err) => {
+    ensurePromise = runEnsure().catch((error) => {
       // Reset on failure so a future call gets a real chance to retry.
       ensurePromise = null
-      throw err
+      throw error
     })
   }
   return ensurePromise
@@ -107,7 +114,9 @@ export async function listUsers() {
 }
 
 export async function getUserById(id) {
-  if (!id) return null
+  if (!id) {
+    return null
+  }
   const sql = getSql()
   const [row] = await sql`
     SELECT id, email, name, role, is_active, created_at, updated_at
@@ -120,7 +129,9 @@ export async function getUserById(id) {
 
 async function getUserRowByEmail(email) {
   const normalized = normalizeEmail(email)
-  if (!normalized) return null
+  if (!normalized) {
+    return null
+  }
   const sql = getSql()
   const [row] = await sql`
     SELECT id, email, password_hash, name, role, is_active, created_at, updated_at
@@ -142,13 +153,19 @@ export async function countActiveAdmins() {
 }
 
 export async function createUser({ email, password, name = null, role = 'admin', isActive = true }) {
-  if (!isValidEmail(email)) throw new Error('A valid email is required.')
+  if (!isValidEmail(email)) {
+    throw new Error('A valid email is required.')
+  }
   const pwError = validatePassword(password)
-  if (pwError) throw new Error(pwError)
+  if (pwError) {
+    throw new Error(pwError)
+  }
 
   const normalizedEmail = normalizeEmail(email)
   const existing = await getUserRowByEmail(normalizedEmail)
-  if (existing) throw new Error('A user with that email already exists.')
+  if (existing) {
+    throw new Error('A user with that email already exists.')
+  }
 
   const sql = getSql()
   const id = crypto.randomUUID()
@@ -164,11 +181,15 @@ export async function createUser({ email, password, name = null, role = 'admin',
 
 export async function updateUserFields(id, updates) {
   const existing = await getUserById(id)
-  if (!existing) throw new Error('User not found.')
+  if (!existing) {
+    throw new Error('User not found.')
+  }
 
   let nextEmail = existing.email
   if (updates.email !== undefined && updates.email !== null) {
-    if (!isValidEmail(updates.email)) throw new Error('A valid email is required.')
+    if (!isValidEmail(updates.email)) {
+      throw new Error('A valid email is required.')
+    }
     const normalized = normalizeEmail(updates.email)
     if (normalized !== existing.email) {
       const collision = await getUserRowByEmail(normalized)
@@ -207,9 +228,13 @@ export async function updateUserFields(id, updates) {
 
 export async function setUserPassword(id, password) {
   const pwError = validatePassword(password)
-  if (pwError) throw new Error(pwError)
+  if (pwError) {
+    throw new Error(pwError)
+  }
   const existing = await getUserById(id)
-  if (!existing) throw new Error('User not found.')
+  if (!existing) {
+    throw new Error('User not found.')
+  }
 
   const sql = getSql()
   const hash = await bcrypt.hash(password, BCRYPT_ROUNDS)
@@ -223,7 +248,9 @@ export async function setUserPassword(id, password) {
 
 export async function deleteUser(id) {
   const existing = await getUserById(id)
-  if (!existing) throw new Error('User not found.')
+  if (!existing) {
+    throw new Error('User not found.')
+  }
 
   if (existing.role === 'admin' && existing.isActive) {
     const activeAdmins = await countActiveAdmins()
@@ -246,12 +273,16 @@ export async function verifyCredentials(email, password) {
   try {
     await ensurePlatformUsersTable()
     const row = await getUserRowByEmail(email)
-    if (!row || !row.is_active) return null
+    if (!row || !row.is_active) {
+      return null
+    }
     const ok = await bcrypt.compare(String(password ?? ''), row.password_hash)
-    if (!ok) return null
+    if (!ok) {
+      return null
+    }
     return toPublicUser(row)
-  } catch (err) {
-    console.error('[auth/users] verifyCredentials error:', err)
+  } catch (error) {
+    console.error('[auth/users] verifyCredentials error:', error)
     return null
   }
 }
@@ -263,10 +294,12 @@ export async function getActivePlatformUserForGoogle(email) {
   try {
     await ensurePlatformUsersTable()
     const row = await getUserRowByEmail(email)
-    if (!row?.is_active) return null
+    if (!row?.is_active) {
+      return null
+    }
     return toPublicUser(row)
-  } catch (err) {
-    console.error('[auth/users] getActivePlatformUserForGoogle error:', err)
+  } catch (error) {
+    console.error('[auth/users] getActivePlatformUserForGoogle error:', error)
     return null
   }
 }

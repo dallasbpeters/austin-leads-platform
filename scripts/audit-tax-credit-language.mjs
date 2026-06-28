@@ -31,7 +31,9 @@ const TERMS = [
 ]
 
 function toPlainText(value) {
-  if (typeof value === 'string') return value
+  if (typeof value === 'string') {
+    return value
+  }
 
   if (Array.isArray(value)) {
     return value.map(toPlainText).filter(Boolean).join(' ')
@@ -49,8 +51,10 @@ function toPlainText(value) {
 }
 
 function hasMatch(value) {
-  const text = toPlainText(value).replace(/\s+/g, ' ').trim()
-  if (!text) return false
+  const text = toPlainText(value).replaceAll(/\s+/g, ' ').trim()
+  if (!text) {
+    return false
+  }
   return TERMS.some((term) => term.test(text))
 }
 
@@ -70,7 +74,7 @@ function walk(value, path, hits) {
   if (hasMatch(value)) {
     hits.push({
       path,
-      value: toPlainText(value).replace(/\s+/g, ' ').trim(),
+      value: toPlainText(value).replaceAll(/\s+/g, ' ').trim(),
     })
   }
 

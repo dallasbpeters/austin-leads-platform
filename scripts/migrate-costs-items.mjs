@@ -37,10 +37,14 @@ const client = createClient({
 const TARGET_TYPES = ['page', 'post', 'servicePage', 'locationPage']
 
 function pickCostStat(item) {
-  if (!item || typeof item !== 'object') return null
+  if (!item || typeof item !== 'object') {
+    return null
+  }
   const number = typeof item.number === 'string' ? item.number : ''
   const title = typeof item.title === 'string' ? item.title : ''
-  if (!number && !title) return null
+  if (!number && !title) {
+    return null
+  }
   return {
     _type: 'costStatItem',
     _key: item._key,
@@ -51,9 +55,13 @@ function pickCostStat(item) {
 }
 
 function pickPaybackSummary(item) {
-  if (!item || typeof item !== 'object') return null
+  if (!item || typeof item !== 'object') {
+    return null
+  }
   const title = typeof item.title === 'string' ? item.title : ''
-  if (!title) return null
+  if (!title) {
+    return null
+  }
   return {
     _type: 'paybackSummaryItem',
     _key: item._key,
@@ -63,7 +71,9 @@ function pickPaybackSummary(item) {
 }
 
 function migrateSection(section) {
-  if (!section || section._type !== 'costsSection') return null
+  if (!section || section._type !== 'costsSection') {
+    return null
+  }
 
   let changed = false
   const next = { ...section }
@@ -71,9 +81,13 @@ function migrateSection(section) {
   if (Array.isArray(section.items)) {
     const migrated = section.items
       .map((item) => {
-        if (item?._type === 'costStatItem') return item
+        if (item?._type === 'costStatItem') {
+          return item
+        }
         const picked = pickCostStat(item)
-        if (picked) changed = true
+        if (picked) {
+          changed = true
+        }
         return picked
       })
       .filter(Boolean)
@@ -88,9 +102,13 @@ function migrateSection(section) {
     let secondaryChanged = false
     const migrated = section.secondaryItems
       .map((item) => {
-        if (item?._type === 'paybackSummaryItem') return item
+        if (item?._type === 'paybackSummaryItem') {
+          return item
+        }
         const picked = pickPaybackSummary(item)
-        if (picked) secondaryChanged = true
+        if (picked) {
+          secondaryChanged = true
+        }
         return picked
       })
       .filter(Boolean)
@@ -117,7 +135,9 @@ const docs = await client.fetch(
 let migrated = 0
 
 for (const doc of docs) {
-  if (!Array.isArray(doc.sections)) continue
+  if (!Array.isArray(doc.sections)) {
+    continue
+  }
 
   let docChanged = false
   const nextSections = doc.sections.map((section) => {
@@ -129,7 +149,9 @@ for (const doc of docs) {
     return section
   })
 
-  if (!docChanged) continue
+  if (!docChanged) {
+    continue
+  }
 
   await client.patch(doc._id).set({ sections: nextSections }).commit()
   migrated += 1

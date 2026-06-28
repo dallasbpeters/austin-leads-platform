@@ -20,7 +20,9 @@ const PUBLIC_HOST = 'https://us.i.posthog.com'
 
 function parsePostHogKeyMap(): Record<string, string> {
   const raw = process.env.NEXT_PUBLIC_POSTHOG_KEYS
-  if (!raw) return {}
+  if (!raw) {
+    return {}
+  }
   try {
     const parsed = JSON.parse(raw)
     return parsed && typeof parsed === 'object' ? (parsed as Record<string, string>) : {}
@@ -32,9 +34,13 @@ function parsePostHogKeyMap(): Record<string, string> {
 const KEY_MAP = parsePostHogKeyMap()
 
 function resolveKey(siteSlug?: string | null): string | null {
-  if (siteSlug && KEY_MAP[siteSlug]) return KEY_MAP[siteSlug]
+  if (siteSlug && KEY_MAP[siteSlug]) {
+    return KEY_MAP[siteSlug]
+  }
   const legacy = process.env.NEXT_PUBLIC_POSTHOG_KEY
-  if (legacy && legacy.trim()) return legacy.trim()
+  if (legacy && legacy.trim()) {
+    return legacy.trim()
+  }
   return null
 }
 

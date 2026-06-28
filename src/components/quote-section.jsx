@@ -61,7 +61,9 @@ export default function QuoteSection({
     const section = sectionRef.current
     const target = section?.querySelector('.quoteReveal')
 
-    if (!section || !target) return
+    if (!section || !target) {
+      return
+    }
 
     const updateWordReveal = () => {
       const rect = target.getBoundingClientRect()

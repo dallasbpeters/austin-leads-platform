@@ -25,15 +25,25 @@ function normalizeBaseUrl(value) {
 }
 
 function normalizeSubmitters(data) {
-  if (Array.isArray(data?.submitters)) return data.submitters
-  if (Array.isArray(data?.submission?.submitters)) return data.submission.submitters
+  if (Array.isArray(data?.submitters)) {
+    return data.submitters
+  }
+  if (Array.isArray(data?.submission?.submitters)) {
+    return data.submission.submitters
+  }
   return []
 }
 
 function determineRequestStatus(providerStatus) {
-  if (providerStatus === 'completed') return 'completed'
-  if (providerStatus === 'declined') return 'declined'
-  if (providerStatus === 'archived') return 'archived'
+  if (providerStatus === 'completed') {
+    return 'completed'
+  }
+  if (providerStatus === 'declined') {
+    return 'declined'
+  }
+  if (providerStatus === 'archived') {
+    return 'archived'
+  }
   return 'sent'
 }
 
@@ -45,21 +55,43 @@ function determineOverallStatus(statuses, providerStatus) {
     ['sent', 'pending', 'opened', 'started', 'awaiting'].includes(status),
   ).length
 
-  if (providerStatus === 'archived') return 'archived'
-  if (completed && declined) return 'mixed'
-  if (completed && !declined && !active) return 'completed'
-  if (declined && !completed && !active) return 'declined'
-  if (completed) return 'signed'
-  if (declined) return 'declined'
-  if (active) return 'sent'
+  if (providerStatus === 'archived') {
+    return 'archived'
+  }
+  if (completed && declined) {
+    return 'mixed'
+  }
+  if (completed && !declined && !active) {
+    return 'completed'
+  }
+  if (declined && !completed && !active) {
+    return 'declined'
+  }
+  if (completed) {
+    return 'signed'
+  }
+  if (declined) {
+    return 'declined'
+  }
+  if (active) {
+    return 'sent'
+  }
   return providerStatus || 'sent'
 }
 
 function determineRecipientStatus(providerStatus, completedAt, declinedAt) {
-  if (providerStatus === 'completed' || completedAt) return 'completed'
-  if (providerStatus === 'declined' || declinedAt) return 'declined'
-  if (providerStatus === 'opened') return 'opened'
-  if (providerStatus === 'started') return 'started'
+  if (providerStatus === 'completed' || completedAt) {
+    return 'completed'
+  }
+  if (providerStatus === 'declined' || declinedAt) {
+    return 'declined'
+  }
+  if (providerStatus === 'opened') {
+    return 'opened'
+  }
+  if (providerStatus === 'started') {
+    return 'started'
+  }
   return 'sent'
 }
 
@@ -93,10 +125,14 @@ function matchesRecipient(recipient, submitter) {
 
 async function loadProviderSubmission(request) {
   const apiKey = process.env.DOCUSEAL_API_KEY
-  if (!apiKey) return null
+  if (!apiKey) {
+    return null
+  }
 
   const submissionId = request?.docuseal_submission_id
-  if (!submissionId) return null
+  if (!submissionId) {
+    return null
+  }
 
   const response = await fetch(
     `${normalizeBaseUrl(process.env.DOCUSEAL_API_BASE_URL)}/submissions/${submissionId}`,
@@ -115,8 +151,12 @@ async function loadProviderSubmission(request) {
 }
 
 function inferWebhookStatus(body) {
-  if (body?.completedAt) return 'completed'
-  if (body?.declinedAt) return 'declined'
+  if (body?.completedAt) {
+    return 'completed'
+  }
+  if (body?.declinedAt) {
+    return 'declined'
+  }
   return body?.status || body?.providerStatus || null
 }
 
@@ -153,7 +193,9 @@ async function updateRequestFromSync(
     providerPayload: { providerSubmission, webhook: body },
   })
 
-  if (overallStatus === nextRequestStatus) return updatedRequest
+  if (overallStatus === nextRequestStatus) {
+    return updatedRequest
+  }
 
   return updateSignatureRequestStatus(requestRecord.id, {
     status: overallStatus,

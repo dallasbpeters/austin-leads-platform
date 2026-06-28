@@ -12,7 +12,9 @@ function normalizeSites(data = []) {
     const slug = site?.slug?.trim().toLowerCase()
     const primaryDomain = site?.primaryDomain?.trim().toLowerCase()
     const key = slug || primaryDomain || site?._id
-    if (!key || seen.has(key)) continue
+    if (!key || seen.has(key)) {
+      continue
+    }
     seen.add(key)
     uniqueSites.push({
       ...site,
@@ -42,7 +44,9 @@ export function SiteSwitcherNavigator() {
   const activeSiteSlug = useMemo(() => {
     const preview = params?.preview ?? ''
     const pathMatch = preview.match(/^\/(?:_site|preview)\/([^/?#]+)/)
-    if (pathMatch) return decodeURIComponent(pathMatch[1])
+    if (pathMatch) {
+      return decodeURIComponent(pathMatch[1])
+    }
 
     try {
       const url = new URL(preview, 'https://preview.local')
@@ -74,7 +78,9 @@ export function SiteSwitcherNavigator() {
 
   const handleSiteClick = useCallback(
     (slug) => {
-      if (!slug) return
+      if (!slug) {
+        return
+      }
       navigate(`/_site/${encodeURIComponent(slug)}/`)
     },
     [navigate],

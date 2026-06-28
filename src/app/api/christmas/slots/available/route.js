@@ -16,7 +16,7 @@ export async function GET() {
 
         return {
           value: dateKey,
-          label: new Date(dateKey + 'T00:00:00Z').toLocaleDateString('en-US', {
+          label: new Date(`${dateKey}T00:00:00Z`).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             timeZone: 'UTC',
@@ -26,15 +26,17 @@ export async function GET() {
         }
       })
       .filter((s) => {
-        if (seen.has(s.value)) return false
+        if (seen.has(s.value)) {
+          return false
+        }
         seen.add(s.value)
         return true
       })
-      .sort((a, b) => a.value.localeCompare(b.value))
+      .toSorted((a, b) => a.value.localeCompare(b.value))
 
     return Response.json(available)
-  } catch (err) {
-    console.error('[api/christmas/slots/available]', err)
+  } catch (error) {
+    console.error('[api/christmas/slots/available]', error)
     return Response.json([], { status: 200 }) // fail open — don't break the booking form
   }
 }

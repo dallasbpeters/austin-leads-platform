@@ -46,7 +46,7 @@ function calculate(rawBill) {
 
   let lifetime = 0
   for (let year = 0; year < 25; year += 1) {
-    lifetime += year1Savings * Math.pow(1.025, year) * Math.pow(0.995, year)
+    lifetime += year1Savings * 1.025 ** year * 0.995 ** year
   }
 
   return {

@@ -94,7 +94,9 @@ export async function upsertSlot({
 }
 
 function normalizeDateRow(row) {
-  if (!row) return row
+  if (!row) {
+    return row
+  }
   return {
     ...row,
     install_date:
@@ -146,7 +148,7 @@ export async function createJob({
   packageSlug = 'unknown',
   stripeSessionId,
   stripePaymentIntentId,
-  depositAmountCents = 15000,
+  depositAmountCents = 15_000,
   siteSlug = 'txchristmaslights',
 }) {
   const sql = getSql()

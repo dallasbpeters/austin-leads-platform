@@ -42,23 +42,35 @@ const LEGACY_IMAGE_TYPE = 'uploadedImage'
 const NEW_IMAGE_TYPE = 'galleryImage'
 
 function migrateImage(item) {
-  if (!item || typeof item !== 'object') return { item, changed: false }
-  if (item._type !== LEGACY_IMAGE_TYPE) return { item, changed: false }
+  if (!item || typeof item !== 'object') {
+    return { item, changed: false }
+  }
+  if (item._type !== LEGACY_IMAGE_TYPE) {
+    return { item, changed: false }
+  }
   return { item: { ...item, _type: NEW_IMAGE_TYPE }, changed: true }
 }
 
 function migrateSection(section) {
-  if (!section || section._type !== 'gallerySection') return null
-  if (!Array.isArray(section.images)) return null
+  if (!section || section._type !== 'gallerySection') {
+    return null
+  }
+  if (!Array.isArray(section.images)) {
+    return null
+  }
 
   let changed = false
   const nextImages = section.images.map((image) => {
     const result = migrateImage(image)
-    if (result.changed) changed = true
+    if (result.changed) {
+      changed = true
+    }
     return result.item
   })
 
-  if (!changed) return null
+  if (!changed) {
+    return null
+  }
   return { ...section, images: nextImages }
 }
 
@@ -77,7 +89,9 @@ console.log(`Found ${docs.length} document(s) with legacy gallery image items.`)
 let migrated = 0
 
 for (const doc of docs) {
-  if (!Array.isArray(doc.sections)) continue
+  if (!Array.isArray(doc.sections)) {
+    continue
+  }
 
   let docChanged = false
   const nextSections = doc.sections.map((section) => {
@@ -89,7 +103,9 @@ for (const doc of docs) {
     return section
   })
 
-  if (!docChanged) continue
+  if (!docChanged) {
+    continue
+  }
 
   await client.patch(doc._id).set({ sections: nextSections }).commit()
   migrated += 1

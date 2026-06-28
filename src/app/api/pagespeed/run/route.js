@@ -8,30 +8,46 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
-function normalizeUrl(value) {
+const normalizeUrl = (value) => {
   const raw = String(value || '').trim()
-  if (!raw) return ''
+  if (!raw) {
+    return ''
+  }
 
-  if (/^https?:\/\//i.test(raw)) return raw
+  if (/^https?:\/\//iu.test(raw)) {
+    return raw
+  }
 
-  if (/^(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?(\/|$)/i.test(raw)) {
+  if (/^(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?(?:\/|$)/iu.test(raw)) {
     return `http://${raw}`
   }
 
   return `https://${raw}`
 }
 
-function isLocalOrPrivateHostname(url) {
+const isLocalOrPrivateHostname = (url) => {
   try {
     const parsed = new URL(url)
     const hostname = parsed.hostname.toLowerCase()
 
-    if (hostname === 'localhost' || hostname === '0.0.0.0') return true
-    if (hostname === '127.0.0.1') return true
-    if (hostname.endsWith('.local')) return true
-    if (hostname.startsWith('10.')) return true
-    if (hostname.startsWith('192.168.')) return true
-    if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)) return true
+    if (hostname === 'localhost' || hostname === '0.0.0.0') {
+      return true
+    }
+    if (hostname === '127.0.0.1') {
+      return true
+    }
+    if (hostname.endsWith('.local')) {
+      return true
+    }
+    if (hostname.startsWith('10.')) {
+      return true
+    }
+    if (hostname.startsWith('192.168.')) {
+      return true
+    }
+    if (/^172\.(?:1[6-9]|2\d|3[0-1])\./u.test(hostname)) {
+      return true
+    }
 
     return false
   } catch {
@@ -39,14 +55,18 @@ function isLocalOrPrivateHostname(url) {
   }
 }
 
-function toPercent(score) {
-  if (typeof score !== 'number') return null
+const toPercent = (score) => {
+  if (typeof score !== 'number') {
+    return null
+  }
   return Math.round(score * 100)
 }
 
-function pickAudit(result, key) {
+const pickAudit = (result, key) => {
   const audit = result?.audits?.[key]
-  if (!audit) return null
+  if (!audit) {
+    return null
+  }
 
   return {
     id: key,
@@ -57,7 +77,7 @@ function pickAudit(result, key) {
   }
 }
 
-function buildPageSpeedApiUrl(url, strategy) {
+const buildPageSpeedApiUrl = (url, strategy) => {
   const apiUrl = new URL(PAGESPEED_ENDPOINT)
   apiUrl.searchParams.set('url', url)
   apiUrl.searchParams.set('strategy', strategy)
@@ -70,7 +90,7 @@ function buildPageSpeedApiUrl(url, strategy) {
   return apiUrl
 }
 
-function parsePageSpeedResponse(data, url, strategy) {
+const parsePageSpeedResponse = (data, url, strategy) => {
   const lighthouseResult = data?.lighthouseResult || {}
   const categories = lighthouseResult?.categories || {}
   return {
@@ -94,7 +114,7 @@ function parsePageSpeedResponse(data, url, strategy) {
   }
 }
 
-export async function POST(request) {
+export const POST = async (request) => {
   try {
     const body = await request.json()
     const strategy = body?.strategy === 'desktop' ? 'desktop' : 'mobile'
@@ -140,9 +160,8 @@ export async function POST(request) {
   }
 }
 
-export function OPTIONS() {
-  return new NextResponse(null, {
+export const OPTIONS = () =>
+  new NextResponse(null, {
     status: 204,
     headers: CORS_HEADERS,
   })
-}

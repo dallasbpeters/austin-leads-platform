@@ -19,7 +19,9 @@ function useElementWidth(ref) {
 
   useLayoutEffect(() => {
     const updateWidth = () => {
-      if (!ref.current) return
+      if (!ref.current) {
+        return
+      }
       setWidth(ref.current.offsetWidth)
     }
 
@@ -38,7 +40,9 @@ function wrap(min, max, value) {
 }
 
 function renderOptionalIcon(iconName, textColor, fontSize) {
-  if (!iconName || typeof iconName !== 'string') return null
+  if (!iconName || typeof iconName !== 'string') {
+    return null
+  }
 
   const iconSize = typeof fontSize === 'number' ? fontSize : Number.parseFloat(fontSize) || 18
   const normalized = iconName.trim()
@@ -49,7 +53,9 @@ function renderOptionalIcon(iconName, textColor, fontSize) {
   }
 
   const IconComponent = IconoirIcons[normalized]
-  if (!IconComponent) return null
+  if (!IconComponent) {
+    return null
+  }
 
   return <IconComponent color={textColor} width={iconSize} height={iconSize} style={{ marginRight: 10 }} />
 }
@@ -83,7 +89,9 @@ function VelocityText({
     clamp: false,
   })
   const x = useTransform(baseX, (value) => {
-    if (copyWidth === 0) return `${startPosition}px`
+    if (copyWidth === 0) {
+      return `${startPosition}px`
+    }
     const wrapped = wrap(-copyWidth, 0, value)
     return `${wrapped + startPosition}px`
   })

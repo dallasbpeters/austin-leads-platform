@@ -108,15 +108,19 @@ export default function GenericHeader({ site, navigation = [] }) {
 
   React.useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) setOpenNav(false)
+      if (window.innerWidth >= 1024) {
+        setOpenNav(false)
+      }
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   React.useEffect(() => {
-    const section = document.getElementById(CONSULTATION_ANCHOR_ID)
-    if (!section || typeof IntersectionObserver === 'undefined') return
+    const section = document.querySelector(`#${CONSULTATION_ANCHOR_ID}`)
+    if (!section || typeof IntersectionObserver === 'undefined') {
+      return
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         setConsultationInView(entries.some((entry) => entry.isIntersecting))

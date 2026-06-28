@@ -82,84 +82,86 @@ export type ButtonProps = Omit<React.ComponentPropsWithoutRef<'button'>, 'size' 
   innerClassName?: string
 }
 
-const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(function Button(
-  {
-    className,
-    variant = 'default',
-    shape = 'default',
-    size = 'default',
-    asChild = false,
-    pill,
-    fullWidth,
-    href,
-    type,
-    innerClassName,
-    children,
-    ...props
-  },
-  ref,
-) {
-  const resolvedShape = pill === true ? 'pill' : shape
-  const classes = cn(
-    buttonVariants({ variant, shape: resolvedShape, size, className }),
-    fullWidth ? 'w-full' : null,
-  )
-
-  const dataAttrs = {
-    'data-slot': 'button',
-    'data-variant': variant,
-    'data-size': size,
-    'data-shape': resolvedShape,
-  } as const
-
-  if (asChild) {
-    return (
-      <Slot.Root ref={ref} className={classes} {...dataAttrs} {...props}>
-        {children}
-      </Slot.Root>
+const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
+  (
+    {
+      className,
+      variant = 'default',
+      shape = 'default',
+      size = 'default',
+      asChild = false,
+      pill,
+      fullWidth,
+      href,
+      type,
+      innerClassName,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const resolvedShape = pill === true ? 'pill' : shape
+    const classes = cn(
+      buttonVariants({ variant, shape: resolvedShape, size, className }),
+      fullWidth ? 'w-full' : null,
     )
-  }
 
-  const inner = (
-    <span
-      data-slot="button-inner"
-      className={cn(
-        'inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]',
-        innerClassName,
-      )}
-    >
-      {children}
-    </span>
-  )
+    const dataAttrs = {
+      'data-slot': 'button',
+      'data-variant': variant,
+      'data-size': size,
+      'data-shape': resolvedShape,
+    } as const
 
-  const hrefString = href != null ? String(href).trim() : ''
-  if (hrefString !== '') {
-    const anchorRest = props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>
+    if (asChild) {
+      return (
+        <Slot.Root ref={ref} className={classes} {...dataAttrs} {...props}>
+          {children}
+        </Slot.Root>
+      )
+    }
+
+    const inner = (
+      <span
+        data-slot="button-inner"
+        className={cn(
+          'inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]',
+          innerClassName,
+        )}
+      >
+        {children}
+      </span>
+    )
+
+    const hrefString = href != null ? String(href).trim() : ''
+    if (hrefString !== '') {
+      const anchorRest = props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>
+      return (
+        <a
+          ref={ref as React.Ref<HTMLAnchorElement>}
+          href={href}
+          className={classes}
+          {...dataAttrs}
+          {...anchorRest}
+        >
+          {inner}
+        </a>
+      )
+    }
+
     return (
-      <a
-        ref={ref as React.Ref<HTMLAnchorElement>}
-        href={href}
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type={type ?? 'button'}
         className={classes}
         {...dataAttrs}
-        {...anchorRest}
+        {...props}
       >
         {inner}
-      </a>
+      </button>
     )
-  }
-
-  return (
-    <button
-      ref={ref as React.Ref<HTMLButtonElement>}
-      type={type ?? 'button'}
-      className={classes}
-      {...dataAttrs}
-      {...props}
-    >
-      {inner}
-    </button>
-  )
-})
+  },
+)
 Button.displayName = 'Button'
 
 export { Button, buttonVariants }

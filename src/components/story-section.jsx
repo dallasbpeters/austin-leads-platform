@@ -48,7 +48,7 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
   useEffect(() => {
     const el = textRef.current
     if (!el) {
-      return undefined
+      return
     }
 
     const observer = new IntersectionObserver(

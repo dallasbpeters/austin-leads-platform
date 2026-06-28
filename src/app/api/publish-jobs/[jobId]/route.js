@@ -12,7 +12,9 @@ function createDraftOutput(job) {
 
 export async function PATCH(request, { params }) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   const { jobId } = await params
   const body = await request.json()

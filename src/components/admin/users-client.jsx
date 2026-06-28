@@ -10,7 +10,9 @@ const inputCls =
   'border-border bg-background text-foreground w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary'
 
 function fmtDate(iso) {
-  if (!iso) return '—'
+  if (!iso) {
+    return '—'
+  }
   try {
     return new Date(iso).toLocaleDateString('en-US', {
       month: 'short',
@@ -29,7 +31,9 @@ async function apiCreateUser(body) {
     body: JSON.stringify(body),
   })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data?.error || 'Failed to create user.')
+  if (!res.ok) {
+    throw new Error(data?.error || 'Failed to create user.')
+  }
   return data
 }
 
@@ -40,14 +44,18 @@ async function apiPatchUser(id, body) {
     body: JSON.stringify(body),
   })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data?.error || 'Failed to update user.')
+  if (!res.ok) {
+    throw new Error(data?.error || 'Failed to update user.')
+  }
   return data
 }
 
 async function apiDeleteUser(id) {
   const res = await fetch(`/api/users/${id}`, { method: 'DELETE' })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data?.error || 'Failed to delete user.')
+  if (!res.ok) {
+    throw new Error(data?.error || 'Failed to delete user.')
+  }
   return data
 }
 
@@ -84,8 +92,8 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
         })
         setUsers((prev) => prev.map((u) => (u.id === saved.id ? saved : u)))
         setEditing(null)
-      } catch (err) {
-        setError(err.message)
+      } catch (error) {
+        setError(error.message)
       }
     })
   }
@@ -111,21 +119,23 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
         await apiPatchUser(user.id, { password: passwordValues.password })
         setResettingPassword(null)
         setPasswordValues({ password: '', confirm: '' })
-      } catch (err) {
-        setError(err.message)
+      } catch (error) {
+        setError(error.message)
       }
     })
   }
 
   const handleDelete = (user) => {
-    if (!confirm(`Delete ${user.email}? This cannot be undone.`)) return
+    if (!confirm(`Delete ${user.email}? This cannot be undone.`)) {
+      return
+    }
     setError(null)
     startTransition(async () => {
       try {
         await apiDeleteUser(user.id)
         setUsers((prev) => prev.filter((u) => u.id !== user.id))
-      } catch (err) {
-        setError(err.message)
+      } catch (error) {
+        setError(error.message)
       }
     })
   }
@@ -136,8 +146,8 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
       try {
         const { user: saved } = await apiPatchUser(user.id, { isActive: nextActive })
         setUsers((prev) => prev.map((u) => (u.id === saved.id ? saved : u)))
-      } catch (err) {
-        setError(err.message)
+      } catch (error) {
+        setError(error.message)
       }
     })
   }
@@ -163,8 +173,8 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
         setUsers((prev) => [...prev, created])
         setNewUser({ email: '', name: '', password: '', isActive: true })
         setAddOpen(false)
-      } catch (err) {
-        setError(err.message)
+      } catch (error) {
+        setError(error.message)
       }
     })
   }
@@ -186,7 +196,9 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
             open={addOpen}
             onOpenChange={(o) => {
               setAddOpen(o)
-              if (!o) setNewUser({ email: '', name: '', password: '', isActive: true })
+              if (!o) {
+                setNewUser({ email: '', name: '', password: '', isActive: true })
+              }
             }}
           >
             <PopoverTrigger asChild>

@@ -7,7 +7,9 @@ export const runtime = 'nodejs'
 
 export async function GET(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return unauthorized
+  if (unauthorized) {
+    return unauthorized
+  }
 
   if (!isUnsplashConfigured()) {
     return NextResponse.json({ error: 'Unsplash is not configured.' }, { status: 503 })

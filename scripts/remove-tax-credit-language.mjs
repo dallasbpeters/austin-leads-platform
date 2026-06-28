@@ -98,7 +98,9 @@ function containsBannedTerm(value) {
 }
 
 function toPlainText(value) {
-  if (typeof value === 'string') return value
+  if (typeof value === 'string') {
+    return value
+  }
 
   if (Array.isArray(value)) {
     return value.map(toPlainText).filter(Boolean).join(' ')
@@ -117,10 +119,10 @@ function toPlainText(value) {
 
 function cleanupWhitespace(value) {
   return value
-    .replace(/\s+\n/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .replace(/\s{2,}/g, ' ')
-    .replace(/\s+([.,!?;:])/g, '$1')
+    .replaceAll(/\s+\n/g, '\n')
+    .replaceAll(/\n{3,}/g, '\n\n')
+    .replaceAll(/\s{2,}/g, ' ')
+    .replaceAll(/\s+([.,!?;:])/g, '$1')
     .trim()
 }
 
@@ -128,7 +130,7 @@ function stripBannedSentences(text) {
   let next = text
 
   for (const term of BANNED_TERMS) {
-    next = next.replace(new RegExp(`[^.!?\\n]*${term.source}[^.!?\\n]*[.!?]?`, 'gi'), ' ')
+    next = next.replaceAll(new RegExp(`[^.!?\\n]*${term.source}[^.!?\\n]*[.!?]?`, 'gi'), ' ')
   }
 
   return cleanupWhitespace(next)
@@ -153,23 +155,33 @@ function isEmptyPortableText(value) {
 }
 
 function isRemovableContentObject(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false
+  }
 
   const textFields = ['title', 'question', 'label', 'value', 'body', 'answer']
   return textFields.some((field) => field in value)
 }
 
 function isEffectivelyEmptyObject(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false
+  }
 
   const meaningfulKeys = Object.entries(value).filter(
     ([key]) => !['_key', '_type', 'icon', 'href', 'image', 'imageAsset'].includes(key),
   )
-  if (!meaningfulKeys.length) return false
+  if (!meaningfulKeys.length) {
+    return false
+  }
 
   return meaningfulKeys.every(([, fieldValue]) => {
-    if (typeof fieldValue === 'string') return !fieldValue.trim()
-    if (Array.isArray(fieldValue)) return fieldValue.length === 0
+    if (typeof fieldValue === 'string') {
+      return !fieldValue.trim()
+    }
+    if (Array.isArray(fieldValue)) {
+      return fieldValue.length === 0
+    }
     return fieldValue == null
   })
 }
@@ -208,9 +220,15 @@ function transformValue(value) {
 
   for (const [key, child] of Object.entries(value)) {
     const transformed = transformValue(child)
-    if (transformed === null || transformed === undefined) continue
-    if (typeof transformed === 'string' && !transformed.trim()) continue
-    if (Array.isArray(transformed) && transformed.length === 0 && key !== 'markDefs') continue
+    if (transformed === null || transformed === undefined) {
+      continue
+    }
+    if (typeof transformed === 'string' && !transformed.trim()) {
+      continue
+    }
+    if (Array.isArray(transformed) && transformed.length === 0 && key !== 'markDefs') {
+      continue
+    }
     next[key] = transformed
   }
 

@@ -12,15 +12,21 @@ try {
   const envFile = readFileSync(envPath, 'utf-8')
   for (const line of envFile.split('\n')) {
     const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
+    if (!trimmed || trimmed.startsWith('#')) {
+      continue
+    }
     const eqIndex = trimmed.indexOf('=')
-    if (eqIndex === -1) continue
+    if (eqIndex === -1) {
+      continue
+    }
     const key = trimmed.slice(0, eqIndex).trim()
     const value = trimmed
       .slice(eqIndex + 1)
       .trim()
-      .replace(/^["']|["']$/g, '')
-    if (!process.env[key]) process.env[key] = value
+      .replaceAll(/^["']|["']$/g, '')
+    if (!process.env[key]) {
+      process.env[key] = value
+    }
   }
 } catch {
   // .env.local not found — rely on existing env vars

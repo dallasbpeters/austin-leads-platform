@@ -53,7 +53,9 @@ const CookieConsent = React.forwardRef(
       }
     }, [demo])
 
-    if (hide) return null
+    if (hide) {
+      return null
+    }
 
     const containerClasses = cn(
       'fixed z-50 transition-all duration-700',

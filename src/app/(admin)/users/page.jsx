@@ -9,7 +9,9 @@ export const metadata = { title: 'Admin — Users' }
 
 export default async function UsersPage() {
   const session = await safeAuth()
-  if (!session?.user) redirect('/sign-in')
+  if (!session?.user) {
+    redirect('/sign-in')
+  }
 
   let users = []
   let loadError = null
@@ -17,8 +19,8 @@ export default async function UsersPage() {
   try {
     await ensurePlatformUsersTable()
     users = await listUsers()
-  } catch (err) {
-    console.error('[admin/users] load error:', err)
+  } catch (error) {
+    console.error('[admin/users] load error:', error)
     loadError = 'Could not load users from the database.'
   }
 

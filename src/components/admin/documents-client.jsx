@@ -111,11 +111,17 @@ function buildFieldDisplayLabel(field) {
     checkbox: { label: '', fixed: false },
   }
   const entry = typeStyleMap[field.type]
-  if (entry?.fixed) return entry.label
+  if (entry?.fixed) {
+    return entry.label
+  }
   const labelText = field.label?.trim() || ''
   const defaultText = field.defaultValue?.trim() || ''
-  if (field.type === 'initials') return labelText || 'Initials'
-  if (field.type === 'checkbox') return labelText
+  if (field.type === 'initials') {
+    return labelText || 'Initials'
+  }
+  if (field.type === 'checkbox') {
+    return labelText
+  }
   return defaultText || labelText
 }
 
@@ -184,10 +190,14 @@ function buildDocusealFields(fields, pageSize = { width: 612, height: 792 }) {
 }
 
 async function getPdfPageSizeFromFile(file) {
-  if (!file) return { width: 612, height: 792 }
+  if (!file) {
+    return { width: 612, height: 792 }
+  }
   const pdfDoc = await PDFDocument.load(await file.arrayBuffer())
   const firstPage = pdfDoc.getPages()[0]
-  if (!firstPage) return { width: 612, height: 792 }
+  if (!firstPage) {
+    return { width: 612, height: 792 }
+  }
   const { width, height } = firstPage.getSize()
   return { width, height }
 }
@@ -198,18 +208,22 @@ async function getPdfPageCountFromBytes(bytes) {
 }
 
 async function getPdfPageCountFromFile(file) {
-  if (!file) return 1
+  if (!file) {
+    return 1
+  }
   return getPdfPageCountFromBytes(await file.arrayBuffer())
 }
 
 async function getPdfPageCountFromBase64(fileBase64) {
-  const clean = String(fileBase64 || '').replace(/\s+/g, '')
-  if (!clean) return 1
+  const clean = String(fileBase64 || '').replaceAll(/\s+/g, '')
+  if (!clean) {
+    return 1
+  }
 
   const binary = atob(clean)
   const bytes = new Uint8Array(binary.length)
   for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index)
+    bytes[index] = binary.codePointAt(index)
   }
 
   return getPdfPageCountFromBytes(bytes)
@@ -446,7 +460,7 @@ async function createGeneratedPdfFile({ title, client, summary, notes }) {
   const bytes = await pdfDoc.save()
   return new File(
     [bytes],
-    `${(title || 'signature-request').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.pdf`,
+    `${(title || 'signature-request').replaceAll(/[^a-z0-9]+/gi, '-').toLowerCase()}.pdf`,
     {
       type: 'application/pdf',
     },
@@ -454,7 +468,9 @@ async function createGeneratedPdfFile({ title, client, summary, notes }) {
 }
 
 function ResultPanel({ result }) {
-  if (!result) return null
+  if (!result) {
+    return null
+  }
 
   const recipients = Array.isArray(result.recipients) ? result.recipients : []
   const emailStatus = result.email?.status || 'unknown'
@@ -603,7 +619,9 @@ export default function DocumentsClient({
   const selectedDocument = documents.find((document) => document.id === documentAssetId)
   const filteredDocuments = useMemo(() => {
     const query = savedDocumentQuery.trim().toLowerCase()
-    if (!query) return documents
+    if (!query) {
+      return documents
+    }
 
     return documents.filter((document) => {
       const haystack = [
@@ -638,7 +656,7 @@ export default function DocumentsClient({
   useEffect(() => {
     if (!file) {
       setFilePreviewUrl('')
-      return undefined
+      return
     }
 
     const nextUrl = URL.createObjectURL(file)
@@ -652,10 +670,12 @@ export default function DocumentsClient({
   useEffect(() => {
     if (sourceMode !== 'generated') {
       setGeneratedPreviewUrl((current) => {
-        if (current) URL.revokeObjectURL(current)
+        if (current) {
+          URL.revokeObjectURL(current)
+        }
         return ''
       })
-      return undefined
+      return
     }
 
     let cancelled = false
@@ -670,17 +690,23 @@ export default function DocumentsClient({
           notes: generatedPdfNotes,
         })
 
-        if (cancelled) return
+        if (cancelled) {
+          return
+        }
 
         nextUrl = URL.createObjectURL(previewFile)
         setGeneratedPreviewUrl((current) => {
-          if (current) URL.revokeObjectURL(current)
+          if (current) {
+            URL.revokeObjectURL(current)
+          }
           return nextUrl
         })
       } catch {
         if (!cancelled) {
           setGeneratedPreviewUrl((current) => {
-            if (current) URL.revokeObjectURL(current)
+            if (current) {
+              URL.revokeObjectURL(current)
+            }
             return ''
           })
         }
@@ -734,33 +760,45 @@ export default function DocumentsClient({
     async function resolvePageCount() {
       try {
         if (sourceMode === 'generated') {
-          if (!cancelled) setBuilderPageCount(1)
+          if (!cancelled) {
+            setBuilderPageCount(1)
+          }
           return
         }
 
         if (sourceMode === 'upload' && file) {
           const nextCount = await getPdfPageCountFromFile(file)
-          if (!cancelled) setBuilderPageCount(nextCount)
+          if (!cancelled) {
+            setBuilderPageCount(nextCount)
+          }
           return
         }
 
         if (sourceMode === 'reuse' && selectedDocument) {
           const metadataPageCount = Number(selectedDocument.metadata?.pageCount)
           if (Number.isFinite(metadataPageCount) && metadataPageCount > 0) {
-            if (!cancelled) setBuilderPageCount(Math.max(1, Math.round(metadataPageCount)))
+            if (!cancelled) {
+              setBuilderPageCount(Math.max(1, Math.round(metadataPageCount)))
+            }
             return
           }
 
           if (selectedDocument.file_base64) {
             const nextCount = await getPdfPageCountFromBase64(selectedDocument.file_base64)
-            if (!cancelled) setBuilderPageCount(nextCount)
+            if (!cancelled) {
+              setBuilderPageCount(nextCount)
+            }
             return
           }
         }
 
-        if (!cancelled) setBuilderPageCount(1)
+        if (!cancelled) {
+          setBuilderPageCount(1)
+        }
       } catch {
-        if (!cancelled) setBuilderPageCount(1)
+        if (!cancelled) {
+          setBuilderPageCount(1)
+        }
       }
     }
 
@@ -794,13 +832,19 @@ export default function DocumentsClient({
 
     function moveDraggingField(event) {
       const dragState = dragStateRef.current
-      if (!dragState || event.pointerId !== dragState.pointerId) return
+      if (!dragState || event.pointerId !== dragState.pointerId) {
+        return
+      }
 
       const field = builderFields.find((item) => item.id === dragState.fieldId)
-      if (!field) return
+      if (!field) {
+        return
+      }
 
       const previewRect = dragState.pageElement?.getBoundingClientRect()
-      if (!previewRect) return
+      if (!previewRect) {
+        return
+      }
       const fieldWidth = clamp(field.w || 0.34, 0.08, 0.8)
       const fieldHeight = clamp(field.h || 0.06, 0.03, 0.18)
       const nextX = clamp(
@@ -900,7 +944,9 @@ export default function DocumentsClient({
       event.dataTransfer.getData('application/x-alp-builder-tool') ||
       event.dataTransfer.getData('text/plain') ||
       builderTool
-    if (!type) return
+    if (!type) {
+      return
+    }
     addBuilderFieldAtPoint(type, event, pageNumber)
   }
 
@@ -954,13 +1000,19 @@ export default function DocumentsClient({
 
   useEffect(() => {
     function handleKeyDown(event) {
-      if (!selectedBuilderFieldId) return
-      if (event.defaultPrevented) return
-      if (event.key !== 'Delete' && event.key !== 'Backspace') return
+      if (!selectedBuilderFieldId) {
+        return
+      }
+      if (event.defaultPrevented) {
+        return
+      }
+      if (event.key !== 'Delete' && event.key !== 'Backspace') {
+        return
+      }
 
-      const target = event.target
+      const { target } = event
       if (target instanceof HTMLElement) {
-        const tagName = target.tagName
+        const { tagName } = target
         if (
           target.isContentEditable ||
           tagName === 'INPUT' ||
@@ -1012,9 +1064,15 @@ export default function DocumentsClient({
       const requestsData = await requestsResponse.json()
       const libraryData = await libraryResponse.json()
 
-      if (!clientsResponse.ok) throw new Error(clientsData?.error || 'Unable to load clients.')
-      if (!requestsResponse.ok) throw new Error(requestsData?.error || 'Unable to load document requests.')
-      if (!libraryResponse.ok) throw new Error(libraryData?.error || 'Unable to load document library.')
+      if (!clientsResponse.ok) {
+        throw new Error(clientsData?.error || 'Unable to load clients.')
+      }
+      if (!requestsResponse.ok) {
+        throw new Error(requestsData?.error || 'Unable to load document requests.')
+      }
+      if (!libraryResponse.ok) {
+        throw new Error(libraryData?.error || 'Unable to load document library.')
+      }
 
       setClients(clientsData.clients || [])
       setRequests(requestsData.requests || [])
@@ -1155,15 +1213,27 @@ export default function DocumentsClient({
 
   function getSendBlockingReasons() {
     const reasons = []
-    if (!documentDbReady) reasons.push('the document database is not ready')
-    if (!docusealConfigured) reasons.push('signing service is not configured')
-    if (!clientId) reasons.push('select or create a client')
-    if (!primaryRecipient) reasons.push('select a client recipient')
+    if (!documentDbReady) {
+      reasons.push('the document database is not ready')
+    }
+    if (!docusealConfigured) {
+      reasons.push('signing service is not configured')
+    }
+    if (!clientId) {
+      reasons.push('select or create a client')
+    }
+    if (!primaryRecipient) {
+      reasons.push('select a client recipient')
+    }
     if (!documentSourceReady) {
       reasons.push(sourceMode === 'reuse' ? 'choose a saved document source' : 'add a PDF source')
     }
-    if (sendEmail && !resendConfigured) reasons.push('configure Resend or disable email delivery')
-    if (!legalDisclosureAccepted) reasons.push('accept the disclosure')
+    if (sendEmail && !resendConfigured) {
+      reasons.push('configure Resend or disable email delivery')
+    }
+    if (!legalDisclosureAccepted) {
+      reasons.push('accept the disclosure')
+    }
     return reasons
   }
 

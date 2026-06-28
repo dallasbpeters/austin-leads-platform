@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import pngToIco from 'png-to-ico'
 import sharp from 'sharp'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = import.meta.dirname
 const rootDir = path.resolve(__dirname, '..')
 const publicDir = path.join(rootDir, 'public')
 

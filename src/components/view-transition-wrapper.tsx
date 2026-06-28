@@ -13,7 +13,9 @@ export default function ViewTransitionWrapper() {
       return
     }
 
-    if (!document.startViewTransition) return
+    if (!document.startViewTransition) {
+      return
+    }
 
     document.startViewTransition()
   }, [pathname])

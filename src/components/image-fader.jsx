@@ -87,11 +87,15 @@ function StaticImageSlide({ imageClassName, objectPosition, borderRadius, childr
 }
 
 function FaderOverlay({ showOverlay, overlayBlur, overlayColor, useGradient, overlayStyle, borderRadius }) {
-  if (!showOverlay) return null
+  if (!showOverlay) {
+    return null
+  }
 
   const hasBlur = overlayBlur > 0
   const hasColor = overlayColor !== 'rgba(0,0,0,0)'
-  if (!hasBlur && !hasColor && !overlayStyle?.backgroundImage) return null
+  if (!hasBlur && !hasColor && !overlayStyle?.backgroundImage) {
+    return null
+  }
 
   const hasOwnBgImage = Boolean(overlayStyle?.backgroundImage)
 
@@ -165,16 +169,24 @@ export default function ImageFader({
   }, [])
 
   useEffect(() => {
-    if (!isInteractive || count < 2) return undefined
+    if (!isInteractive || count < 2) {
+      return
+    }
 
-    if (timer.current) clearTimeout(timer.current)
+    if (timer.current) {
+      clearTimeout(timer.current)
+    }
     timer.current = window.setTimeout(() => setIndex((i) => (i + 1) % count), interval)
     return () => {
-      if (timer.current) clearTimeout(timer.current)
+      if (timer.current) {
+        clearTimeout(timer.current)
+      }
     }
   }, [count, index, interval, isInteractive])
 
-  if (!count) return null
+  if (!count) {
+    return null
+  }
 
   const cur = images[index]
 

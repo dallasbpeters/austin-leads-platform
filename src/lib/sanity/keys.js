@@ -5,8 +5,8 @@ import { isHeroSectionBlock } from '../platform/section-helpers.js'
 function toKeyPart(value) {
   return String(value || '')
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
     .slice(0, 40)
 }
 
@@ -619,7 +619,9 @@ const SECTION_NORMALIZERS = [
 ]
 
 export function normalizeSectionType(section) {
-  if (!section) return section
+  if (!section) {
+    return section
+  }
 
   const normalizedItems = Array.isArray(section.items)
     ? section.items.map((item) => normalizeSectionItemType(section, item))

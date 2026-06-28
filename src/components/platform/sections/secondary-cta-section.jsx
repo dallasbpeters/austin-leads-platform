@@ -4,12 +4,14 @@ import PortableTextContent from '@/components/portable-text-content'
 import { cleanRuntimeHref } from '@/lib/sanity/stega'
 
 function parseColorToRgb(value) {
-  if (typeof value !== 'string') return null
+  if (typeof value !== 'string') {
+    return null
+  }
   const color = value.trim()
 
   const shortHexMatch = color.match(/^#([0-9a-f]{3})$/i)
   if (shortHexMatch) {
-    const [r, g, b] = shortHexMatch[1].split('').map((part) => Number.parseInt(`${part}${part}`, 16))
+    const [r, g, b] = [...shortHexMatch[1]].map((part) => Number.parseInt(`${part}${part}`, 16))
     return { r, g, b }
   }
 
@@ -36,7 +38,9 @@ function parseColorToRgb(value) {
 
 function getContrastTextBase(color) {
   const rgb = parseColorToRgb(color)
-  if (!rgb) return '#111111'
+  if (!rgb) {
+    return '#111111'
+  }
 
   const toLinear = (channel) => {
     const normalized = channel / 255

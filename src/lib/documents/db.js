@@ -5,7 +5,9 @@ export function hasDocumentDatabase() {
 }
 
 function parseJson(value, fallback = {}) {
-  if (!value) return fallback
+  if (!value) {
+    return fallback
+  }
   if (typeof value === 'string') {
     try {
       return JSON.parse(value)
@@ -17,7 +19,9 @@ function parseJson(value, fallback = {}) {
 }
 
 function normalizeClientRow(row) {
-  if (!row) return row
+  if (!row) {
+    return row
+  }
 
   return {
     ...row,
@@ -26,7 +30,9 @@ function normalizeClientRow(row) {
 }
 
 function normalizeRequestRow(row) {
-  if (!row) return row
+  if (!row) {
+    return row
+  }
 
   return {
     ...row,
@@ -36,7 +42,9 @@ function normalizeRequestRow(row) {
 }
 
 function normalizeLibraryRow(row) {
-  if (!row) return row
+  if (!row) {
+    return row
+  }
 
   return {
     ...row,
@@ -45,7 +53,9 @@ function normalizeLibraryRow(row) {
 }
 
 function normalizeRecipientRow(row) {
-  if (!row) return row
+  if (!row) {
+    return row
+  }
 
   return {
     ...row,
@@ -58,7 +68,9 @@ function normalizeRecipientRow(row) {
 }
 
 function normalizeAuditRow(row) {
-  if (!row) return row
+  if (!row) {
+    return row
+  }
 
   return {
     ...row,

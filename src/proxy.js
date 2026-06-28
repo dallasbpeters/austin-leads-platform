@@ -41,13 +41,19 @@ const OPERATOR_SHELL_PREFIXES = [
 ]
 
 function isOperatorShellPath(pathname) {
-  if (!pathname) return false
-  if (pathname.startsWith('/api/')) return true
+  if (!pathname) {
+    return false
+  }
+  if (pathname.startsWith('/api/')) {
+    return true
+  }
   return OPERATOR_SHELL_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`))
 }
 
 function pathRequiresAuth(pathname) {
-  if (!pathname) return false
+  if (!pathname) {
+    return false
+  }
   return (
     protectedPaths.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)) ||
     protectedApiPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
@@ -61,7 +67,9 @@ function pathRequiresAuth(pathname) {
 function allowPublicSiteParamOverride(request) {
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? ''
   const isLocalHost = host.includes('localhost') || host.startsWith('127.0.0.1')
-  if (isLocalHost) return true
+  if (isLocalHost) {
+    return true
+  }
   return request.cookies.has('__prerender_bypass')
 }
 
@@ -70,13 +78,19 @@ function allowPublicSiteParamOverride(request) {
  */
 function parseSitePrefixRewrite(pathname) {
   const SITE_PREFIX = '/_site/'
-  if (!pathname.startsWith(SITE_PREFIX)) return null
+  if (!pathname.startsWith(SITE_PREFIX)) {
+    return null
+  }
   const rest = pathname.slice(SITE_PREFIX.length)
-  if (!rest) return null
+  if (!rest) {
+    return null
+  }
   const slashIdx = rest.indexOf('/')
   const siteSlugRaw = slashIdx === -1 ? rest : rest.slice(0, slashIdx)
   const pagePath = slashIdx === -1 ? '/' : rest.slice(slashIdx) || '/'
-  if (!siteSlugRaw) return null
+  if (!siteSlugRaw) {
+    return null
+  }
   let siteSlug
   try {
     siteSlug = decodeURIComponent(siteSlugRaw)
@@ -94,9 +108,11 @@ function parseSitePrefixRewrite(pathname) {
  * @see `src/sanity/presentation.js`
  */
 function trySitePrefixRewrite(request) {
-  const pathname = request.nextUrl.pathname
+  const { pathname } = request.nextUrl
   const parsed = parseSitePrefixRewrite(pathname)
-  if (!parsed) return null
+  if (!parsed) {
+    return null
+  }
 
   const { siteSlug, pagePath } = parsed
 
@@ -128,7 +144,7 @@ function trySitePrefixRewrite(request) {
 
 function nextWithAlpHeaders(request) {
   const requestHeaders = new Headers(request.headers)
-  const pathname = request.nextUrl.pathname
+  const { pathname } = request.nextUrl
   const url = request.nextUrl
 
   if (isOperatorShellPath(pathname)) {
@@ -147,7 +163,9 @@ function nextWithAlpHeaders(request) {
 
   if (!previewSlug && allowPublicSiteParamOverride(request)) {
     const q = url.searchParams.get('__site')?.trim()
-    if (q) previewSlug = q
+    if (q) {
+      previewSlug = q
+    }
   }
 
   if (previewSlug) {
@@ -176,7 +194,7 @@ function getRedirectSite(host) {
  */
 export async function proxy(request) {
   const { nextUrl } = request
-  const pathname = nextUrl.pathname
+  const { pathname } = nextUrl
 
   const secret = process.env.AUTH_SECRET
   let token = null
@@ -203,7 +221,9 @@ export async function proxy(request) {
   }
 
   const siteRewrite = trySitePrefixRewrite(request)
-  if (siteRewrite) return siteRewrite
+  if (siteRewrite) {
+    return siteRewrite
+  }
 
   const requiresAuth = pathRequiresAuth(pathname)
 

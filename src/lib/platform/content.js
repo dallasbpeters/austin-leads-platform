@@ -657,13 +657,19 @@ function resolveSanityColorValue(value) {
 }
 
 function coerceNumberField(value) {
-  if (typeof value === 'number') return value
-  if (value) return Number(value)
+  if (typeof value === 'number') {
+    return value
+  }
+  if (value) {
+    return Number(value)
+  }
   return value
 }
 
 function sanitizeSection(section) {
-  if (!section) return section
+  if (!section) {
+    return section
+  }
 
   const s = section
   return {
@@ -806,7 +812,9 @@ function sanitizePageRuntimeFields(page) {
 
 function normalizeGuideGridHrefPath(href) {
   const rawHref = cleanRuntimeString(href)
-  if (!rawHref) return ''
+  if (!rawHref) {
+    return ''
+  }
 
   try {
     const parsed = new URL(rawHref, 'https://guide-color.local')
@@ -821,8 +829,12 @@ function normalizeGuideGridHrefPath(href) {
 function guideGridItemMatchesTargetPath(itemHref, targetPath) {
   const itemPath = normalizeGuideGridHrefPath(itemHref)
   const wants = String(targetPath || '').replace(/\/+$/, '')
-  if (!itemPath || !wants) return false
-  if (itemPath === wants) return true
+  if (!itemPath || !wants) {
+    return false
+  }
+  if (itemPath === wants) {
+    return true
+  }
 
   const wantsParts = wants.split('/').filter(Boolean)
   const itemParts = itemPath.split('/').filter(Boolean)
@@ -1007,7 +1019,9 @@ function withPageSource(page, source) {
 async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug }) {
   const buildPortableTextSimple = (value) => {
     const text = cleanRuntimeString(value)
-    if (!text) return []
+    if (!text) {
+      return []
+    }
 
     const blockKey = `pt-${Math.random().toString(36).slice(2, 10)}`
     const spanKey = `sp-${Math.random().toString(36).slice(2, 10)}`
@@ -1102,8 +1116,8 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
     }),
   )
 
-  const guideSlugs = Array.from(
-    new Set(
+  const guideSlugs = [
+    ...new Set(
       page.sections
         .filter((section) => section.type === 'guideGrid')
         .flatMap((section) => section.items || [])
@@ -1111,7 +1125,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
         .filter((href) => isGuidesPrefixedHref(href))
         .map((href) => href.replace(/^\//, '')),
     ),
-  )
+  ]
 
   let sanityGuideMap = new Map()
   let allSanityGuides = []
@@ -1212,8 +1226,8 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
   }
 
   const allGuideCandidates = [
-    ...Array.from(sanityGuideMap.entries()).map(([href, value]) => ({ href, ...value })),
-    ...Array.from(localGuideMap.entries()).map(([href, value]) => ({ href, ...value })),
+    ...[...sanityGuideMap.entries()].map(([href, value]) => ({ href, ...value })),
+    ...[...localGuideMap.entries()].map(([href, value]) => ({ href, ...value })),
     ...(allSanityGuides || []).map((guidePage) => {
       const heroSection = guidePage.sections?.find(isHeroSectionBlock) || null
       const normalizedSlug = cleanRuntimeString(guidePage.slug)?.replace(/^\/+/, '')
@@ -1277,7 +1291,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
                   guidePage.guidePublishedAt || item.guidePublishedAt || item.guideUpdatedAt || null,
               }
             })
-            .sort((left, right) => {
+            .toSorted((left, right) => {
               const leftRaw = left?.guidePublishedAt || left?.guideUpdatedAt || ''
               const rightRaw = right?.guidePublishedAt || right?.guideUpdatedAt || ''
               const leftTime = Date.parse(leftRaw)
@@ -1344,8 +1358,8 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
     }),
   )
 
-  const serviceSlugs = Array.from(
-    new Set(
+  const serviceSlugs = [
+    ...new Set(
       page.sections
         .filter((section) => section.type === 'serviceGrid')
         .flatMap((section) => [
@@ -1356,7 +1370,7 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
         .map((item) => slugFromHref(item?.href))
         .filter(Boolean),
     ),
-  )
+  ]
 
   let sanityServiceMap = new Map()
 
@@ -1965,7 +1979,7 @@ export async function getSitemapEntriesForSite(site) {
         }
       }
 
-      return Array.from(deduped.values())
+      return [...deduped.values()]
     }
   } catch {} // eslint-disable-line no-empty
 
@@ -2274,7 +2288,7 @@ function buildBreadcrumbList(site, pathname, canonicalUrl) {
         items.push({
           '@type': 'ListItem',
           position: items.length + 1,
-          name: segment.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+          name: segment.replaceAll('-', ' ').replaceAll(/\b\w/g, (char) => char.toUpperCase()),
           item: getPrimaryUrl(site, href),
         })
         return items
@@ -2291,9 +2305,11 @@ function buildBreadcrumbList(site, pathname, canonicalUrl) {
 
 function selectFirstTruthy(...candidates) {
   for (const candidate of candidates) {
-    if (candidate) return candidate
+    if (candidate) {
+      return candidate
+    }
   }
-  return undefined
+  return
 }
 
 function buildArticleGraphNode(canonicalUrl, page, site, webpageId, organizationId) {
@@ -2390,8 +2406,8 @@ export async function publishPageToSanity(job) {
 
   const slug = job.title
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-|-$/g, '')
 
   const document = {
     _type: job.contentType === 'post' ? 'post' : 'page',

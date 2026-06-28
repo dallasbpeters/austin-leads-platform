@@ -16,15 +16,17 @@ const STATUS_STYLES = {
 }
 
 const PACKAGES = [
-  { id: 'xmas-roofline', label: 'Roofline', priceCents: 30000 },
-  { id: 'xmas-full-front', label: 'Full Front', priceCents: 50000 },
-  { id: 'xmas-full-property', label: 'Full Property', priceCents: 100000 },
+  { id: 'xmas-roofline', label: 'Roofline', priceCents: 30_000 },
+  { id: 'xmas-full-front', label: 'Full Front', priceCents: 50_000 },
+  { id: 'xmas-full-property', label: 'Full Property', priceCents: 100_000 },
   { id: 'unknown', label: 'Unknown', priceCents: null },
 ]
 
 const calcBalance = (packageSlug, depositCents) => {
   const pkg = PACKAGES.find((p) => p.id === packageSlug)
-  if (!pkg?.priceCents || !depositCents) return ''
+  if (!pkg?.priceCents || !depositCents) {
+    return ''
+  }
   return Math.max(0, pkg.priceCents - depositCents)
 }
 
@@ -33,12 +35,16 @@ const labelCls = 'text-muted-foreground text-xs uppercase tracking-wide block mb
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function fmt(cents) {
-  if (!cents && cents !== 0) return '—'
+  if (!cents && cents !== 0) {
+    return '—'
+  }
   return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 0 })}`
 }
 
 function fmtDate(str) {
-  if (!str) return '—'
+  if (!str) {
+    return '—'
+  }
   const d = str instanceof Date ? str : new Date(str)
   return d.toLocaleDateString('en-US', {
     month: 'short',
@@ -49,7 +55,9 @@ function fmtDate(str) {
 }
 
 function toDateKey(str) {
-  if (!str) return ''
+  if (!str) {
+    return ''
+  }
   const d = str instanceof Date ? str : new Date(str)
   return d.toISOString().split('T')[0]
 }
@@ -62,14 +70,18 @@ async function apiUpdate(id, updates) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updates),
   })
-  if (!res.ok) throw new Error('Update failed')
+  if (!res.ok) {
+    throw new Error('Update failed')
+  }
   const data = await res.json()
   return data.job
 }
 
 async function apiDelete(id) {
   const res = await fetch(`/api/christmas/jobs/${id}`, { method: 'DELETE' })
-  if (!res.ok) throw new Error('Delete failed')
+  if (!res.ok) {
+    throw new Error('Delete failed')
+  }
 }
 
 // ── StatusPipeline ────────────────────────────────────────────────────────────
@@ -86,7 +98,7 @@ function StatusPipeline({ current, onChange, disabled }) {
             type="button"
             disabled={disabled}
             onClick={() => onChange(s)}
-            className={`relative rounded-full px-3 py-1 text-xs font-medium capitalize transition-all ${isActive ? STATUS_STYLES[s] + ' ring-2 ring-current ring-offset-1' : ''} ${!isActive && isPast ? 'bg-gray-100 text-gray-400' : ''} ${!isActive && !isPast ? 'bg-muted text-muted-foreground hover:bg-muted/80' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
+            className={`relative rounded-full px-3 py-1 text-xs font-medium capitalize transition-all ${isActive ? `${STATUS_STYLES[s]} ring-2 ring-current ring-offset-1` : ''} ${!isActive && isPast ? 'bg-gray-100 text-gray-400' : ''} ${!isActive && !isPast ? 'bg-muted text-muted-foreground hover:bg-muted/80' : ''} disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {s}
           </button>
@@ -150,7 +162,9 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
   }
 
   const handleDelete = () => {
-    if (!confirm(`Delete job for ${job.full_name}? This cannot be undone.`)) return
+    if (!confirm(`Delete job for ${job.full_name}? This cannot be undone.`)) {
+      return
+    }
     startTransition(async () => {
       try {
         await apiDelete(job.id)
@@ -283,7 +297,7 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
           <div>
             <label className={labelCls}>Notes</label>
             <textarea
-              className={inputCls + ' min-h-20 resize-y'}
+              className={`${inputCls} min-h-20 resize-y`}
               value={form.notes}
               onChange={(e) => set('notes', e.target.value)}
               placeholder="Gate code, access notes, special requests…"
@@ -334,7 +348,7 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
                 $
               </span>
               <input
-                className={inputCls + ' pl-6'}
+                className={`${inputCls} pl-6`}
                 type="number"
                 min="0"
                 step="0.01"
@@ -398,7 +412,9 @@ function CalendarView({ jobs, onSelectJob }) {
     const map = {}
     for (const job of jobs) {
       const key = toDateKey(job.install_date)
-      if (!map[key]) map[key] = []
+      if (!map[key]) {
+        map[key] = []
+      }
       map[key].push(job)
     }
     return map
@@ -408,13 +424,17 @@ function CalendarView({ jobs, onSelectJob }) {
     if (month === 0) {
       setMonth(11)
       setYear((y) => y - 1)
-    } else setMonth((m) => m - 1)
+    } else {
+      setMonth((m) => m - 1)
+    }
   }
   const nextMonth = () => {
     if (month === 11) {
       setMonth(0)
       setYear((y) => y + 1)
-    } else setMonth((m) => m + 1)
+    } else {
+      setMonth((m) => m + 1)
+    }
   }
 
   const monthLabel = new Date(year, month, 1).toLocaleDateString('en-US', {
@@ -534,7 +554,7 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
           j.address?.toLowerCase().includes(q) ||
           j.crew?.toLowerCase().includes(q),
       )
-      .sort((a, b) => {
+      .toSorted((a, b) => {
         let av = a[sortKey] ?? '',
           bv = b[sortKey] ?? ''
         if (sortKey === 'install_date') {
@@ -546,8 +566,9 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
   }, [jobs, statusFilter, search, sortKey, sortDir])
 
   const toggleSort = (key) => {
-    if (sortKey === key) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
-    else {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
       setSortKey(key)
       setSortDir('asc')
     }
@@ -564,7 +585,9 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
   }
 
   const SortIcon = ({ col }) => {
-    if (sortKey !== col) return <span className="text-muted-foreground/30 ml-1">↕</span>
+    if (sortKey !== col) {
+      return <span className="text-muted-foreground/30 ml-1">↕</span>
+    }
     return <span className="text-primary ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
   }
 
@@ -663,18 +686,18 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
                 <table className="w-full text-sm" aria-label="Job bookings">
                   <thead className="bg-background sticky top-0 z-10">
                     <tr className="border-border border-b">
-                      <th className={thCls + ' cursor-pointer'} onClick={() => toggleSort('full_name')}>
+                      <th className={`${thCls} cursor-pointer`} onClick={() => toggleSort('full_name')}>
                         Customer <SortIcon col="full_name" />
                       </th>
                       <th className={thCls}>Address</th>
-                      <th className={thCls + ' cursor-pointer'} onClick={() => toggleSort('install_date')}>
+                      <th className={`${thCls} cursor-pointer`} onClick={() => toggleSort('install_date')}>
                         Install date <SortIcon col="install_date" />
                       </th>
                       <th className={thCls}>Package</th>
                       <th className={thCls}>Crew</th>
                       <th className={thCls}>Deposit</th>
                       <th className={thCls}>Balance</th>
-                      <th className={thCls + ' cursor-pointer'} onClick={() => toggleSort('status')}>
+                      <th className={`${thCls} cursor-pointer`} onClick={() => toggleSort('status')}>
                         Status <SortIcon col="status" />
                       </th>
                     </tr>
@@ -699,7 +722,7 @@ export default function ChristmasJobsClient({ jobs: initialJobs, overview: _init
                         </td>
                         <td className="px-4 py-3 text-sm whitespace-nowrap">{fmtDate(job.install_date)}</td>
                         <td className="text-muted-foreground px-4 py-3 text-xs capitalize">
-                          {job.package_slug?.replace(/^xmas-/, '').replace(/-/g, ' ') ?? '—'}
+                          {job.package_slug?.replace(/^xmas-/, '').replaceAll('-', ' ') ?? '—'}
                         </td>
                         <td
                           className="text-muted-foreground max-w-30 truncate px-4 py-3 text-xs"

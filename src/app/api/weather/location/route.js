@@ -35,7 +35,7 @@ function buildBoundingBox(latitude, longitude) {
 }
 
 function formatSwdiDate(date) {
-  return date.toISOString().slice(0, 10).replace(/-/g, '')
+  return date.toISOString().slice(0, 10).replaceAll('-', '')
 }
 
 function parseCsv(csvText) {
@@ -147,7 +147,7 @@ function buildStormEvents({ location, hailPoints, reportPoints }) {
         : Math.min(group.nearestDistanceMiles, distanceMiles)
   }
 
-  return Array.from(groups.values())
+  return [...groups.values()]
     .map((group) => {
       const hailSignatureCount = group.hailSignatures.length
       const stormReportCount = group.stormReports.length
@@ -182,7 +182,7 @@ function buildStormEvents({ location, hailPoints, reportPoints }) {
           group.nearestDistanceMiles === null ? null : Number(group.nearestDistanceMiles.toFixed(1)),
       }
     })
-    .sort((a, b) => b.date.localeCompare(a.date))
+    .toSorted((a, b) => b.date.localeCompare(a.date))
 }
 
 function weatherCodeLabel(code) {
@@ -269,7 +269,7 @@ async function fetchJson(url, init) {
     ...init,
     headers: {
       Accept: 'application/json',
-      ...(init?.headers || {}),
+      ...init?.headers,
     },
     cache: 'no-store',
   })
@@ -286,7 +286,7 @@ async function fetchText(url, init) {
     ...init,
     headers: {
       Accept: 'text/csv',
-      ...(init?.headers || {}),
+      ...init?.headers,
     },
     cache: 'no-store',
   })
@@ -409,7 +409,9 @@ function normalizeForecast(forecast) {
 }
 
 function logSettledRejection(result, label, latitude, longitude) {
-  if (result.status === 'fulfilled') return
+  if (result.status === 'fulfilled') {
+    return
+  }
   console.error(`${label} lookup failed`, {
     error: result.reason instanceof Error ? result.reason.message : result.reason,
     latitude,

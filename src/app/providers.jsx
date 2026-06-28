@@ -18,7 +18,9 @@ const DEFAULT_POSTHOG_HOST = '/ingest'
  */
 function parsePostHogKeyMap() {
   const raw = process.env.NEXT_PUBLIC_POSTHOG_KEYS
-  if (!raw) return {}
+  if (!raw) {
+    return {}
+  }
   try {
     const parsed = JSON.parse(raw)
     return parsed && typeof parsed === 'object' ? parsed : {}
@@ -30,7 +32,9 @@ function parsePostHogKeyMap() {
 const POSTHOG_KEY_MAP = parsePostHogKeyMap()
 
 function resolvePostHogKey(siteSlug) {
-  if (siteSlug && POSTHOG_KEY_MAP[siteSlug]) return POSTHOG_KEY_MAP[siteSlug]
+  if (siteSlug && POSTHOG_KEY_MAP[siteSlug]) {
+    return POSTHOG_KEY_MAP[siteSlug]
+  }
   return process.env.NEXT_PUBLIC_POSTHOG_KEY || DEFAULT_POSTHOG_KEY
 }
 
@@ -60,7 +64,7 @@ function getElementLabel(element) {
     return 'unknown'
   }
 
-  const explicitLabel = element.getAttribute('data-analytics-name')
+  const explicitLabel = element.dataset.analyticsName
   if (explicitLabel) {
     return explicitLabel.trim().slice(0, 120)
   }
@@ -85,7 +89,7 @@ function getElementLabel(element) {
     return value.trim().slice(0, 120)
   }
 
-  const textContent = (element.textContent || '').replace(/\s+/g, ' ').trim()
+  const textContent = (element.textContent || '').replaceAll(/\s+/g, ' ').trim()
   if (textContent) {
     return textContent.slice(0, 120)
   }
@@ -95,19 +99,19 @@ function getElementLabel(element) {
 
 function getSafeHrefPath(element) {
   if (!element || element.tagName !== 'A') {
-    return undefined
+    return
   }
 
   const href = element.getAttribute('href')
   if (!href) {
-    return undefined
+    return
   }
 
   try {
     const parsed = new URL(href, window.location.origin)
     return `${parsed.pathname}${parsed.hash || ''}`
   } catch {
-    return undefined
+    return
   }
 }
 
@@ -146,7 +150,9 @@ export function PostHogProvider({ children, siteSlug }) {
   // `popstate` (back/forward) so SPA navigation is captured in both
   // PostHog and GA4.
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') {
+      return
+    }
 
     const trackPageView = () => {
       trackAnalyticsEvent('page_view', {
@@ -165,11 +171,11 @@ export function PostHogProvider({ children, siteSlug }) {
 
   useEffect(() => {
     if (typeof window === 'undefined') {
-      return undefined
+      return
     }
 
     const handleDocumentClick = (event) => {
-      const target = event.target
+      const { target } = event
       if (!(target instanceof Element)) {
         return
       }
@@ -179,7 +185,7 @@ export function PostHogProvider({ children, siteSlug }) {
         return
       }
 
-      if (buttonElement.getAttribute('data-analytics-ignore') === 'true') {
+      if (buttonElement.dataset.analyticsIgnore === 'true') {
         return
       }
 
@@ -206,7 +212,7 @@ export function PostHogProvider({ children, siteSlug }) {
 
   useEffect(() => {
     if (typeof window === 'undefined') {
-      return undefined
+      return
     }
 
     // `<a href="tel:…">`, `mailto:…`, and `sms:…` clicks skip the global
@@ -214,11 +220,15 @@ export function PostHogProvider({ children, siteSlug }) {
     // so capture them separately. Useful on the Christmas site where the
     // hero and footer CTAs phone/text the operator directly.
     const handleContactClick = (event) => {
-      const target = event.target
-      if (!(target instanceof Element)) return
+      const { target } = event
+      if (!(target instanceof Element)) {
+        return
+      }
 
       const anchor = target.closest('a[href]')
-      if (!anchor) return
+      if (!anchor) {
+        return
+      }
 
       const href = anchor.getAttribute('href') || ''
       const lower = href.toLowerCase()
@@ -229,12 +239,14 @@ export function PostHogProvider({ children, siteSlug }) {
           : lower.startsWith('sms:')
             ? 'sms'
             : null
-      if (!linkType) return
+      if (!linkType) {
+        return
+      }
 
       trackAnalyticsEvent('contact_link_clicked', {
         link_type: linkType,
         href,
-        link_text: (anchor.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120),
+        link_text: (anchor.textContent || '').replaceAll(/\s+/g, ' ').trim().slice(0, 120),
         page_path: window.location.pathname,
       })
     }
@@ -248,7 +260,9 @@ export function PostHogProvider({ children, siteSlug }) {
   // Scroll depth tracking — fires once per milestone (25%, 50%, 75%, 100%)
   // so we can measure content engagement without spamming events.
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined
+    if (typeof window === 'undefined') {
+      return
+    }
 
     const milestones = [25, 50, 75, 100]
     const fired = new Set()
@@ -258,7 +272,9 @@ export function PostHogProvider({ children, siteSlug }) {
       const windowHeight = window.innerHeight
       const docHeight = document.documentElement.scrollHeight
       const scrollable = docHeight - windowHeight
-      if (scrollable <= 0) return
+      if (scrollable <= 0) {
+        return
+      }
 
       const scrollPercent = Math.round((scrollTop / scrollable) * 100)
 

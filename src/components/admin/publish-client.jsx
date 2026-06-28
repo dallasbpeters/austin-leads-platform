@@ -29,7 +29,7 @@ function JobStatus({ status }) {
   return (
     <Badge variant={publishStatusTone[status] || 'outline'} className="inline-flex items-center gap-1.5">
       <Icon className="h-3.5 w-3.5" />
-      {status.replace(/_/g, ' ')}
+      {status.replaceAll('_', ' ')}
     </Badge>
   )
 }
@@ -199,7 +199,7 @@ export default function PublishClient({ initialJobs, sites }) {
                           <JobStatus status={job.status} />
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">
-                          {job.reviewStatus.replace(/_/g, ' ')}
+                          {job.reviewStatus.replaceAll('_', ' ')}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">

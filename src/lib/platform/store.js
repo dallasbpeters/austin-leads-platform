@@ -9,7 +9,7 @@ let analyticsGoals = initialAnalyticsGoals.map((goal) => ({ ...goal }))
 const now = () => new Date().toISOString()
 
 export function listPublishJobs() {
-  return [...publishJobs].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+  return [...publishJobs].toSorted((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
 export function createPublishJob(input) {
@@ -59,7 +59,7 @@ export function getPublishJob(jobId) {
 }
 
 export function listDomainRecords() {
-  return [...domainRecords].sort((a, b) => a.domain.localeCompare(b.domain))
+  return [...domainRecords].toSorted((a, b) => a.domain.localeCompare(b.domain))
 }
 
 export function upsertDomainRecord(domainRecord) {
@@ -128,7 +128,7 @@ export function deleteDomainRecord(domain) {
 }
 
 export function listAnalyticsGoals() {
-  return [...analyticsGoals].sort((a, b) => a.name.localeCompare(b.name))
+  return [...analyticsGoals].toSorted((a, b) => a.name.localeCompare(b.name))
 }
 
 export function createAnalyticsGoal(input) {

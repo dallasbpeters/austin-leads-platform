@@ -43,7 +43,9 @@ const defaultPoints = [
 
 function clampNumber(value, min, max) {
   const parsed = Number(value)
-  if (!Number.isFinite(parsed)) return min
+  if (!Number.isFinite(parsed)) {
+    return min
+  }
   return Math.max(min, Math.min(max, parsed))
 }
 
@@ -74,15 +76,21 @@ const chartColorTokenMap = {
 }
 
 function buildYAxisTicks(maxValue) {
-  if (!Number.isFinite(maxValue) || maxValue <= 0) return [0, 1]
+  if (!Number.isFinite(maxValue) || maxValue <= 0) {
+    return [0, 1]
+  }
   const step = maxValue / 4
   return [0, step, step * 2, step * 3, maxValue].map((value) => Math.round(value))
 }
 
 function resolveChartColor(value, fallback) {
-  if (typeof value !== 'string') return fallback
+  if (typeof value !== 'string') {
+    return fallback
+  }
   const trimmed = value.trim()
-  if (!trimmed) return fallback
+  if (!trimmed) {
+    return fallback
+  }
   return chartColorTokenMap[trimmed] || trimmed
 }
 
@@ -100,7 +108,9 @@ function resolveAreaPointValue(point, seriesIndex, seriesCount) {
   const av = point?.areaValues
   if (Array.isArray(av) && av[seriesIndex] !== undefined && av[seriesIndex] !== null) {
     const n = Number(av[seriesIndex])
-    if (Number.isFinite(n)) return Math.max(n, 0)
+    if (Number.isFinite(n)) {
+      return Math.max(n, 0)
+    }
   }
   if (seriesIndex === 0) {
     const n = Number(point?.barValue)
@@ -221,9 +231,12 @@ function ChartTooltipWithLegend({
 }) {
   const handleFormatter = isComposed
     ? (value, name) => {
-        if (name === 'barValue') return [`${value} ${unitLabel}`, `${primaryLabel} (${unitLabel})`]
-        if (name === 'lineValue')
+        if (name === 'barValue') {
+          return [`${value} ${unitLabel}`, `${primaryLabel} (${unitLabel})`]
+        }
+        if (name === 'lineValue') {
           return [`${value}${lineUnitLabel || ''}`, `${secondaryLabel || ''} (${lineUnitLabel || ''})`]
+        }
         return [value, name]
       }
     : formatter || ((value) => [`${value} ${unitLabel}`, primaryLabel])
@@ -578,12 +591,16 @@ function inferAreaSeries(sec, chartType, points, primaryLabel, secondaryLabel) {
     chartType === 'area' && Array.isArray(sec.chartAreaSeries)
       ? sec.chartAreaSeries.filter((item) => item && typeof item === 'object')
       : []
-  if (cms.length > 0) return { areaSeriesDefs: cms, multiAreaCount: cms.length }
+  if (cms.length > 0) {
+    return { areaSeriesDefs: cms, multiAreaCount: cms.length }
+  }
   const maxLen = points.reduce(
     (m, pt) => Math.max(m, Array.isArray(pt?.areaValues) ? pt.areaValues.length : 0),
     0,
   )
-  if (chartType !== 'area' || maxLen < 1) return { areaSeriesDefs: [], multiAreaCount: 0 }
+  if (chartType !== 'area' || maxLen < 1) {
+    return { areaSeriesDefs: [], multiAreaCount: 0 }
+  }
   const defs = Array.from({ length: maxLen }, (_, i) => ({
     _key: `inferred-area-${i}`,
     title: i === 0 ? primaryLabel : i === 1 ? secondaryLabel : `Series ${i + 1}`,
@@ -596,7 +613,7 @@ function buildEnergyChartConfig(section) {
   const sec = section || {}
   const hasSanityPoints = Array.isArray(sec.chartPoints)
   const points = hasSanityPoints ? sec.chartPoints.filter(Boolean) : defaultPoints
-  const configuredYAxisMax = clampNumber(sec.chartYAxisMax || 1000, 1, 10000000)
+  const configuredYAxisMax = clampNumber(sec.chartYAxisMax || 1000, 1, 10_000_000)
   const chartType = sec.chartType || 'composed'
   const showGrid = sec.showGrid !== false
   const showLegend = sec.showLegend !== false

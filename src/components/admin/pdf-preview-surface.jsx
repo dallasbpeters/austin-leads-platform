@@ -34,7 +34,7 @@ export default function PdfPreviewSurface({
         width: container?.clientWidth || 0,
         height: container?.clientHeight || 0,
       })
-      return undefined
+      return
     }
 
     const updateSize = () => {
@@ -77,10 +77,14 @@ export default function PdfPreviewSurface({
 
         loadingTask = pdfjsLib.getDocument({ url: sourceUrl })
         const pdf = await loadingTask.promise
-        if (cancelled) return
+        if (cancelled) {
+          return
+        }
 
         const page = await pdf.getPage(Math.max(1, pageNumber))
-        if (cancelled) return
+        if (cancelled) {
+          return
+        }
 
         const viewport = page.getViewport({ scale: 1 })
         const widthLimit = Number.isFinite(maxRenderWidth) ? maxRenderWidth : Infinity

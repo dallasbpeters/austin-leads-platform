@@ -90,7 +90,7 @@ export function useHailWeatherLookup(initialQuery = DEFAULT_QUERY) {
         setIsLoading(false)
         setError(geolocationErrorMessage(geoError))
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 300000 },
+      { enableHighAccuracy: true, timeout: 15_000, maximumAge: 300_000 },
     )
   }
 

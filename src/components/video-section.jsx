@@ -7,7 +7,9 @@ import PortableTextContent from '@/components/portable-text-content'
 import { getImageUrl } from '@/lib/platform/imageSource'
 
 function formatTime(seconds) {
-  if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
+  if (!Number.isFinite(seconds) || seconds < 0) {
+    return '0:00'
+  }
   const m = Math.floor(seconds / 60)
   const s = Math.floor(seconds % 60)
   return `${m}:${s.toString().padStart(2, '0')}`
@@ -92,7 +94,9 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 
   const togglePlay = useCallback(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video) {
+      return
+    }
     if (video.paused) {
       video.play().catch(() => {})
     } else {
@@ -120,7 +124,9 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
   const handleScrub = useCallback(
     (e) => {
       const video = videoRef.current
-      if (!video || !duration) return
+      if (!video || !duration) {
+        return
+      }
       const rect = e.currentTarget.getBoundingClientRect()
       const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width))
       const seekTime = (x / rect.width) * duration
@@ -131,14 +137,18 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 
   const handleScrubEnd = useCallback(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video) {
+      return
+    }
     video.currentTime = currentTime
     setIsScrubbing(false)
   }, [currentTime])
 
   const toggleMute = useCallback(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video) {
+      return
+    }
     video.muted = !video.muted
     setIsMuted(video.muted)
     if (video.muted) {
@@ -149,9 +159,11 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
   }, [])
 
   const handleVolumeChange = useCallback((e) => {
-    const val = parseFloat(e.target.value)
+    const val = Number.parseFloat(e.target.value)
     const video = videoRef.current
-    if (!video) return
+    if (!video) {
+      return
+    }
     video.volume = val
     video.muted = val === 0
     setIsMuted(val === 0)
@@ -160,7 +172,9 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 
   const toggleFullscreen = useCallback(() => {
     const el = containerRef.current
-    if (!el) return
+    if (!el) {
+      return
+    }
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {})
     } else {
@@ -176,7 +190,9 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 
   useEffect(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video) {
+      return
+    }
     const onPlay = () => setIsPlaying(true)
     const onPause = () => setIsPlaying(false)
     const onEnded = () => setIsPlaying(false)
@@ -248,7 +264,9 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
               tabIndex={0}
               onMouseDown={handleScrubStart}
               onMouseMove={(e) => {
-                if (isScrubbing) handleScrub(e)
+                if (isScrubbing) {
+                  handleScrub(e)
+                }
               }}
               onMouseUp={handleScrubEnd}
               onMouseLeave={handleScrubEnd}
@@ -259,10 +277,16 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
               aria-valuenow={currentTime}
               onKeyDown={(e) => {
                 const video = videoRef.current
-                if (!video || !duration) return
+                if (!video || !duration) {
+                  return
+                }
                 const step = duration * 0.05
-                if (e.key === 'ArrowRight') video.currentTime = Math.min(video.currentTime + step, duration)
-                if (e.key === 'ArrowLeft') video.currentTime = Math.max(video.currentTime - step, 0)
+                if (e.key === 'ArrowRight') {
+                  video.currentTime = Math.min(video.currentTime + step, duration)
+                }
+                if (e.key === 'ArrowLeft') {
+                  video.currentTime = Math.max(video.currentTime - step, 0)
+                }
               }}
             >
               <div className="absolute inset-y-1/2 left-0 h-1 w-full -translate-y-1/2 rounded-full bg-white/30">
@@ -333,7 +357,9 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 }
 
 export function VideoSection({ section, sectionId }) {
-  if (!section) return null
+  if (!section) {
+    return null
+  }
 
   const { eyebrow, title, body, videoUrl, posterImage, caption, autoplay, loop, muted, aspectRatio } = section
 

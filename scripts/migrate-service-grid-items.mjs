@@ -33,7 +33,9 @@ const client = createClient({ projectId, dataset, apiVersion, token, useCdn: fal
 const TARGET_TYPES = ['page', 'post', 'servicePage', 'locationPage']
 
 function pickServiceGridItem(item) {
-  if (!item || typeof item !== 'object') return null
+  if (!item || typeof item !== 'object') {
+    return null
+  }
   return {
     _type: 'serviceGridItem',
     _key: item._key,
@@ -49,11 +51,15 @@ function pickServiceGridItem(item) {
 }
 
 function migrateItemArray(items) {
-  if (!Array.isArray(items) || items.length === 0) return { items, changed: false }
+  if (!Array.isArray(items) || items.length === 0) {
+    return { items, changed: false }
+  }
   let changed = false
   const next = items
     .map((item) => {
-      if (item?._type === 'serviceGridItem') return item
+      if (item?._type === 'serviceGridItem') {
+        return item
+      }
       changed = true
       return pickServiceGridItem(item)
     })
@@ -62,7 +68,9 @@ function migrateItemArray(items) {
 }
 
 function migrateSection(section) {
-  if (!section || section._type !== 'serviceGridSection') return null
+  if (!section || section._type !== 'serviceGridSection') {
+    return null
+  }
 
   let changed = false
   const next = { ...section }
@@ -102,7 +110,9 @@ console.log(`Found ${docs.length} document${docs.length === 1 ? '' : 's'} with s
 let migrated = 0
 
 for (const doc of docs) {
-  if (!Array.isArray(doc.sections)) continue
+  if (!Array.isArray(doc.sections)) {
+    continue
+  }
 
   let docChanged = false
   const nextSections = doc.sections.map((section) => {
@@ -114,7 +124,9 @@ for (const doc of docs) {
     return section
   })
 
-  if (!docChanged) continue
+  if (!docChanged) {
+    continue
+  }
 
   await client.patch(doc._id).set({ sections: nextSections }).commit()
   migrated += 1

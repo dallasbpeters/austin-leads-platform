@@ -5,7 +5,9 @@ import PortableTextContent from '@/components/portable-text-content'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
 
 const resolveItemIcon = (iconName) => {
-  if (!iconName || typeof iconName !== 'string') return null
+  if (!iconName || typeof iconName !== 'string') {
+    return null
+  }
   const Component = IconoirIcons[iconName]
   return typeof Component === 'function' || typeof Component === 'object' ? Component : null
 }

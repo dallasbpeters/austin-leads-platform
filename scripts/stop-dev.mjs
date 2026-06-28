@@ -5,7 +5,7 @@ const ports = [3000, 3334]
 function getPidsForPort(port) {
   try {
     const output = execFileSync('lsof', ['-ti', `tcp:${port}`], {
-      encoding: 'utf8',
+      encoding: 'utf-8',
       stdio: ['ignore', 'pipe', 'ignore'],
     }).trim()
 

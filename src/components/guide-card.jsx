@@ -119,15 +119,33 @@ const serviceIconMap = {
 function inferGuideCardIconFromText(value) {
   const text = String(value || '').toLowerCase()
 
-  if (!text) return null
-  if (text.includes('hail') || text.includes('storm')) return Thunderstorm
-  if (text.includes('roof') || text.includes('insurance') || text.includes('warranty')) return HomeShield
-  if (text.includes('audit') || text.includes('inspect')) return AreaSearch
-  if (text.includes('duct')) return AirConditioner
-  if (text.includes('window')) return WindowTabs
-  if (text.includes('electrical')) return Flash
-  if (text.includes('charger') || text.includes('ev')) return Car
-  if (text.includes('battery') || text.includes('solar')) return BatteryCharging
+  if (!text) {
+    return null
+  }
+  if (text.includes('hail') || text.includes('storm')) {
+    return Thunderstorm
+  }
+  if (text.includes('roof') || text.includes('insurance') || text.includes('warranty')) {
+    return HomeShield
+  }
+  if (text.includes('audit') || text.includes('inspect')) {
+    return AreaSearch
+  }
+  if (text.includes('duct')) {
+    return AirConditioner
+  }
+  if (text.includes('window')) {
+    return WindowTabs
+  }
+  if (text.includes('electrical')) {
+    return Flash
+  }
+  if (text.includes('charger') || text.includes('ev')) {
+    return Car
+  }
+  if (text.includes('battery') || text.includes('solar')) {
+    return BatteryCharging
+  }
 
   return null
 }
@@ -137,7 +155,9 @@ function resolveGuideCardIcon(iconName, fallbackText = '') {
     return inferGuideCardIconFromText(fallbackText)
   }
   const normalizedName = iconName.trim()
-  if (!normalizedName) return inferGuideCardIconFromText(fallbackText)
+  if (!normalizedName) {
+    return inferGuideCardIconFromText(fallbackText)
+  }
 
   if (serviceIconMap[normalizedName]) {
     return serviceIconMap[normalizedName]
@@ -283,15 +303,17 @@ export default function GuideCardGrid({
 
   const availableCategories = useMemo(() => {
     const values = new Set(cards.map((card) => card.category).filter(Boolean))
-    return ['All', ...Array.from(values)]
+    return ['All', ...[...values]]
   }, [cards])
 
-  const filteredCards = useMemo(() => {
-    return cards.filter((card) => {
-      const categoryMatch = selectedCategory === 'All' ? true : card.category === selectedCategory
-      return categoryMatch
-    })
-  }, [cards, selectedCategory])
+  const filteredCards = useMemo(
+    () =>
+      cards.filter((card) => {
+        const categoryMatch = selectedCategory === 'All' ? true : card.category === selectedCategory
+        return categoryMatch
+      }),
+    [cards, selectedCategory],
+  )
 
   const totalPages = Math.max(1, Math.ceil(filteredCards.length / safePageSize))
 
@@ -315,10 +337,14 @@ export default function GuideCardGrid({
   }, [currentPage, totalPages])
 
   function scrollToPaginationTarget() {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') {
+      return
+    }
 
-    const target = scrollTargetId ? document.getElementById(scrollTargetId) : ref.current
-    if (!target) return
+    const target = scrollTargetId ? document.querySelector(`#${scrollTargetId}`) : ref.current
+    if (!target) {
+      return
+    }
 
     window.requestAnimationFrame(() => {
       target.scrollIntoView({
@@ -329,7 +355,9 @@ export default function GuideCardGrid({
   }
 
   function handlePageChange(nextPage) {
-    if (nextPage === currentPage) return
+    if (nextPage === currentPage) {
+      return
+    }
     setCurrentPage(nextPage)
     scrollToPaginationTarget()
   }

@@ -11,13 +11,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 // ── Date helpers ──────────────────────────────────────────────────────────────
 
 function parseDate(str) {
-  if (!str) return undefined
+  if (!str) {
+    return
+  }
   const [y, m, d] = str.split('-').map(Number)
   return new Date(y, m - 1, d)
 }
 
 function toDateStr(date) {
-  if (!date) return ''
+  if (!date) {
+    return ''
+  }
   return [
     date.getFullYear(),
     String(date.getMonth() + 1).padStart(2, '0'),
@@ -26,9 +30,11 @@ function toDateStr(date) {
 }
 
 function fmtDisplay(str) {
-  if (!str) return '—'
+  if (!str) {
+    return '—'
+  }
   const d = str.split('T')[0] ?? str
-  return new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', {
+  return new Date(`${d}T00:00:00Z`).toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
@@ -40,7 +46,7 @@ function fmtDisplay(str) {
 // Neon returning either Date objects or stringified timestamps.
 const getDateKey = (slot) => String(slot?.install_date ?? '').split('T')[0]
 const compareByDateAsc = (a, b) => getDateKey(a).localeCompare(getDateKey(b))
-const sortSlotsAsc = (list) => [...list].sort(compareByDateAsc)
+const sortSlotsAsc = (list) => [...list].toSorted(compareByDateAsc)
 
 // ── Multi-select calendar — inline, used in the Add form ─────────────────────
 
@@ -70,7 +76,9 @@ function CalendarPicker({ selected, onSelect }) {
   const [month, setMonth] = useState(selected ?? new Date(new Date().getFullYear(), new Date().getMonth(), 1))
 
   const handleSelect = (date) => {
-    if (date) setMonth(new Date(date.getFullYear(), date.getMonth(), 1))
+    if (date) {
+      setMonth(new Date(date.getFullYear(), date.getMonth(), 1))
+    }
     onSelect?.(date)
   }
 
@@ -114,7 +122,9 @@ async function deleteSlotApi(installDate) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ installDate }),
   })
-  if (!res.ok) throw new Error('Failed to delete')
+  if (!res.ok) {
+    throw new Error('Failed to delete')
+  }
   return res.json()
 }
 
@@ -124,7 +134,9 @@ async function saveSlot(installDate, capacity, isActive, notes, originalDate = n
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ installDate, capacity, isActive, notes, originalDate }),
   })
-  if (!res.ok) throw new Error('Failed to save')
+  if (!res.ok) {
+    throw new Error('Failed to save')
+  }
   return res.json()
 }
 
@@ -163,7 +175,9 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
   }
 
   const handleDelete = (installDate) => {
-    if (!confirm(`Delete slot for ${fmtDisplay(installDate)}? This cannot be undone.`)) return
+    if (!confirm(`Delete slot for ${fmtDisplay(installDate)}? This cannot be undone.`)) {
+      return
+    }
     startTransition(async () => {
       try {
         await deleteSlotApi(installDate)
@@ -270,7 +284,9 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
               open={addOpen}
               onOpenChange={(o) => {
                 setAddOpen(o)
-                if (!o) setNewDate({ installDates: [], capacity: 6, isActive: true, notes: '' })
+                if (!o) {
+                  setNewDate({ installDates: [], capacity: 6, isActive: true, notes: '' })
+                }
               }}
             >
               <PopoverTrigger asChild>
@@ -295,7 +311,7 @@ export default function ChristmasSlotsClient({ slots: initialSlots }) {
                 {newDate.installDates.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {[...newDate.installDates]
-                      .sort((a, b) => a - b)
+                      .toSorted((a, b) => a - b)
                       .map((d) => {
                         const str = toDateStr(d)
                         return (

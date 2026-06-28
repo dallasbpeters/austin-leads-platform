@@ -11,10 +11,10 @@ import {
   Object3D,
   SphereGeometry,
   Vector3,
-  type BufferGeometry,
 } from 'three'
+import type { BufferGeometry } from 'three'
 
-export type ChristmasLightsProps = {
+export interface ChristmasLightsProps {
   lightCount?: number
   strandCount?: number
   strandSpacing?: number
@@ -190,7 +190,9 @@ function ChristmasLightsInner({
 
         const geometry = cordGeometryRefs.current[strandIndex]
         const posAttr = geometry?.attributes.position
-        if (posAttr) posAttr.needsUpdate = true
+        if (posAttr) {
+          posAttr.needsUpdate = true
+        }
 
         for (let bulbIndex = 0; bulbIndex < count; bulbIndex += 1) {
           const flatIndex = strandIndex * count + bulbIndex
@@ -225,11 +227,15 @@ function ChristmasLightsInner({
       }
 
       coreMesh.instanceMatrix.needsUpdate = true
-      if (coreMesh.instanceColor) coreMesh.instanceColor.needsUpdate = true
+      if (coreMesh.instanceColor) {
+        coreMesh.instanceColor.needsUpdate = true
+      }
 
       if (enableGlowMesh) {
         haloMesh.instanceMatrix.needsUpdate = true
-        if (haloMesh.instanceColor) haloMesh.instanceColor.needsUpdate = true
+        if (haloMesh.instanceColor) {
+          haloMesh.instanceColor.needsUpdate = true
+        }
       }
     },
     [
@@ -255,7 +261,9 @@ function ChristmasLightsInner({
   }, [coreMesh, haloMesh, renderAt, time])
 
   useFrame(({ clock }) => {
-    if (time === undefined) renderAt(clock.getElapsedTime())
+    if (time === undefined) {
+      renderAt(clock.getElapsedTime())
+    }
   })
 
   return (
@@ -264,7 +272,9 @@ function ChristmasLightsInner({
         <line key={strandIndex}>
           <bufferGeometry
             ref={(node) => {
-              if (node) cordGeometryRefs.current[strandIndex] = node as BufferGeometry
+              if (node) {
+                cordGeometryRefs.current[strandIndex] = node as BufferGeometry
+              }
             }}
           >
             <bufferAttribute attach="attributes-position" args={[cordPositions[strandIndex], 3]} />

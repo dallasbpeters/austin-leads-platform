@@ -16,14 +16,22 @@ const FALLBACK_HERO_ACTIONS = [
 ]
 
 function resolveHeroMediaMode(heroVideoSource, explicitHeroMediaMode, hasHeroSlides) {
-  if (heroVideoSource) return 'video'
-  if (explicitHeroMediaMode !== 'slides' && !hasHeroSlides) return 'single'
-  if (explicitHeroMediaMode === 'single') return 'single'
+  if (heroVideoSource) {
+    return 'video'
+  }
+  if (explicitHeroMediaMode !== 'slides' && !hasHeroSlides) {
+    return 'single'
+  }
+  if (explicitHeroMediaMode === 'single') {
+    return 'single'
+  }
   return 'slides'
 }
 
 function buildHeroSlides(heroSection) {
-  if (!Array.isArray(heroSection?.heroSlides)) return []
+  if (!Array.isArray(heroSection?.heroSlides)) {
+    return []
+  }
   return heroSection.heroSlides
     .map((item) => ({
       src: getHeroImageUrl(item?.imageAsset, item?.image),
@@ -60,7 +68,9 @@ function resolveRotatingHeroImages(
   heroSection,
   fallbackBackdropSrc,
 ) {
-  if (heroMediaMode === 'video') return []
+  if (heroMediaMode === 'video') {
+    return []
+  }
   const base =
     heroMediaMode === 'slides' && heroSlides.length > 0
       ? heroSlides
@@ -138,7 +148,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
       <ImageFader
         borderRadius="0"
         images={rotatingHeroImages}
-        interval={10000}
+        interval={10_000}
         fadeDuration={700}
         overlayStyle={overlayStyle}
         showOverlay={Boolean(overlayStyle)}
@@ -317,7 +327,9 @@ function HeroAside({
   cardBorder,
   heroTextColor,
 }) {
-  if (!hasHeroMetrics && !cardCopy) return null
+  if (!hasHeroMetrics && !cardCopy) {
+    return null
+  }
 
   return (
     <div className="solar-fade-up solar-fade-up-delay">
@@ -363,8 +375,8 @@ export default function Hero({
     hasHeroBackdropMedia,
   )
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
-  const cardBackground = getBackdropCardValue(hasHeroBackdropMedia, 'rgba(255, 255, 255, 0.15)', undefined)
-  const cardBorder = getBackdropCardValue(hasHeroBackdropMedia, 'rgba(255, 255, 255, 0.16)', undefined)
+  const cardBackground = getBackdropCardValue(hasHeroBackdropMedia, 'rgba(255, 255, 255, 0.15)')
+  const cardBorder = getBackdropCardValue(hasHeroBackdropMedia, 'rgba(255, 255, 255, 0.16)')
   const { useSingleHeadline, title, titlePrimary, titleAccent } = resolveHeadline(heroSection)
   const heroMetrics = resolveHeroMetrics(heroSection)
   const hasHeroMetrics = heroMetrics.length > 0

@@ -72,7 +72,9 @@ export function buildAvatarSection(section, isDarkTheme) {
   const s = section || {}
   const avatarEyebrow = s.avatarEyebrow || s.personLabel || ''
   const avatarName = s.avatarName || s.personName || ''
-  if (!avatarName) return null
+  if (!avatarName) {
+    return null
+  }
 
   const avatarRole = s.avatarRole || s.personRole || ''
   const avatarBlurb = s.avatarBlurb || s.personBlurb || ''

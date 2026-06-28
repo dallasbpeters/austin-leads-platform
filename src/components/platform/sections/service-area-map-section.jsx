@@ -1,7 +1,9 @@
 import MapBox from '@/components/map-box'
 
 export const ServiceAreaMapSection = ({ section }) => {
-  if (!section) return null
+  if (!section) {
+    return null
+  }
 
   return (
     <MapBox

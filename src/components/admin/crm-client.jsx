@@ -35,7 +35,9 @@ import { cn } from '@/lib/utils'
 const serviceLabelMap = Object.fromEntries(LEAD_SERVICE_OPTIONS.map((option) => [option.value, option.label]))
 
 function formatDate(value) {
-  if (!value) return 'Not set'
+  if (!value) {
+    return 'Not set'
+  }
   return new Date(value).toLocaleString()
 }
 
@@ -44,7 +46,7 @@ function formatServiceInterest(value) {
 }
 
 function formatLabel(value) {
-  return String(value || 'new').replace(/[-_]/g, ' ')
+  return String(value || 'new').replaceAll(/[-_]/g, ' ')
 }
 
 function badgeTone(value) {

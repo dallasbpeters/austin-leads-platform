@@ -54,9 +54,15 @@ function getResourceIcon(iconName) {
 function inferResourceIcon(item) {
   const text = `${item?.title || ''} ${item?.copy || ''} ${item?.href || ''}`.toLowerCase()
 
-  if (text.includes('hail') || text.includes('storm')) return Thunderstorm
-  if (text.includes('roof') || text.includes('insurance') || text.includes('claim')) return HomeShield
-  if (text.includes('solar') || text.includes('savings') || text.includes('incentive')) return SunLight
+  if (text.includes('hail') || text.includes('storm')) {
+    return Thunderstorm
+  }
+  if (text.includes('roof') || text.includes('insurance') || text.includes('claim')) {
+    return HomeShield
+  }
+  if (text.includes('solar') || text.includes('savings') || text.includes('incentive')) {
+    return SunLight
+  }
 
   return HomeShield
 }

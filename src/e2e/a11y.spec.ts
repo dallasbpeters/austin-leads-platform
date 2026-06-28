@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 

@@ -18,7 +18,9 @@ const providers = [
       const email = normalizeEmail(credentials?.email)
       const password = credentials?.password?.toString() ?? ''
 
-      if (!email || !password) return null
+      if (!email || !password) {
+        return null
+      }
 
       // Prefer the platform_users DB record so admins managed through /users
       // can sign in immediately.
@@ -79,16 +81,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider !== 'google') return true
+      if (account?.provider !== 'google') {
+        return true
+      }
       const email = normalizeEmail(user?.email)
-      if (!email) return false
+      if (!email) {
+        return false
+      }
       const dbUser = await getActivePlatformUserForGoogle(email)
-      if (dbUser) return true
+      if (dbUser) {
+        return true
+      }
       const adminEmail = normalizeEmail(process.env.AUTH_ADMIN_EMAIL)
       return Boolean(adminEmail && email === adminEmail)
     },
     async jwt({ token, user, account }) {
-      if (!user) return token
+      if (!user) {
+        return token
+      }
 
       if (account?.provider === 'google') {
         const email = normalizeEmail(user.email)

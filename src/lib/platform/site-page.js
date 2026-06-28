@@ -47,7 +47,9 @@ async function resolveCurrentSite(searchParams) {
   const siteOverride = allowOverride ? (searchParams?.__site ?? null) : null
   if (siteOverride) {
     const overrideSite = await resolveSiteBySlug(siteOverride)
-    if (overrideSite) return overrideSite
+    if (overrideSite) {
+      return overrideSite
+    }
   }
 
   return resolveSiteByHost(host)
@@ -138,21 +140,31 @@ function applyChristmasBrandParams(url, origin) {
 }
 
 function applyStandardBrandParams(url, site) {
-  if (site.brand?.primary) url.searchParams.set('primary', site.brand.primary)
-  if (site.brand?.secondary) url.searchParams.set('secondary', site.brand.secondary)
+  if (site.brand?.primary) {
+    url.searchParams.set('primary', site.brand.primary)
+  }
+  if (site.brand?.secondary) {
+    url.searchParams.set('secondary', site.brand.secondary)
+  }
 }
 
 function applyHeroImageIfSlug(url, site, page) {
-  if (isTxChristmasLightsSite(site)) return
+  if (isTxChristmasLightsSite(site)) {
+    return
+  }
   const heroImage = getPageHeroImage(page)
-  if (heroImage) url.searchParams.set('image', heroImage)
+  if (heroImage) {
+    url.searchParams.set('image', heroImage)
+  }
 }
 
 function buildOgImageUrl(origin, site, page, pathname) {
   const url = new URL('/api/og', origin)
   const isGuidePage = isGuidePath(pathname) || isGuidePageData(page)
 
-  if (isGuidePage) return buildGuideOgImageUrl(origin, pathname)
+  if (isGuidePage) {
+    return buildGuideOgImageUrl(origin, pathname)
+  }
 
   const rawTitle = page.seo?.title || page.title || site.name
   const rawDescription = page.seo?.description || page.description || ''
@@ -165,7 +177,9 @@ function buildOgImageUrl(origin, site, page, pathname) {
   url.searchParams.set('site', site.name)
   url.searchParams.set('title', title)
 
-  if (description) url.searchParams.set('description', description)
+  if (description) {
+    url.searchParams.set('description', description)
+  }
 
   if (isTxChristmasLightsSite(site)) {
     applyChristmasBrandParams(url, origin)
@@ -173,13 +187,17 @@ function buildOgImageUrl(origin, site, page, pathname) {
     applyStandardBrandParams(url, site)
   }
 
-  if (pathname && pathname !== '/') url.searchParams.set('path', pathname)
+  if (pathname && pathname !== '/') {
+    url.searchParams.set('path', pathname)
+  }
 
   if (page?._updatedAt) {
     url.searchParams.set('v', String(new Date(page._updatedAt).getTime() || page._updatedAt))
   }
 
-  if (!isTxChristmasLightsSite(site)) applyHeroImageIfSlug(url, site, page)
+  if (!isTxChristmasLightsSite(site)) {
+    applyHeroImageIfSlug(url, site, page)
+  }
 
   return url.toString()
 }
@@ -203,7 +221,9 @@ function computeIsGuidePage(page, pathname) {
 }
 
 function resolveShareStrings(site, title, description) {
-  if (!isTxChristmasLightsSite(site)) return { shareTitle: title, shareDescription: description || '' }
+  if (!isTxChristmasLightsSite(site)) {
+    return { shareTitle: title, shareDescription: description || '' }
+  }
   return {
     shareTitle: truncateForShare(title, SHARE_TITLE_MAX),
     shareDescription: description ? truncateForShare(description, SHARE_DESCRIPTION_MAX) : '',
@@ -211,7 +231,9 @@ function resolveShareStrings(site, title, description) {
 }
 
 function resolveOgImageUrl(site, page, isGuidePage, computedOgImage) {
-  if (isGuidePage) return computedOgImage
+  if (isGuidePage) {
+    return computedOgImage
+  }
   return page.seo?.ogImage || site.seo?.ogImage || computedOgImage
 }
 
@@ -278,12 +300,16 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
   const site = await resolveCurrentSite(searchParams)
 
-  if (!site) return { title: 'Not found', robots: { index: false, follow: false } }
+  if (!site) {
+    return { title: 'Not found', robots: { index: false, follow: false } }
+  }
 
   const page = await getPageForRequest(site, slugParts)
   const normalizedHost = (host || '').toLowerCase()
 
-  if (!page) return buildNotFoundMetadata(site)
+  if (!page) {
+    return buildNotFoundMetadata(site)
+  }
 
   const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
   const isGuidePage = computeIsGuidePage(page, pathname)
@@ -316,7 +342,9 @@ function findResourcesSection(homepage) {
 }
 
 function resolveHeroSection(homepage, heroHomepage) {
-  if (homepage) return homepage.heroSection ?? homepage.sections?.find(isHeroSectionBlock) ?? null
+  if (homepage) {
+    return homepage.heroSection ?? homepage.sections?.find(isHeroSectionBlock) ?? null
+  }
   return heroHomepage?.heroSection ?? null
 }
 
@@ -354,7 +382,9 @@ function resolvePageReviews(site, page, slugParts) {
 async function renderGenericSitePage(site, slugParts) {
   const page = await getPageForRequest(site, slugParts)
 
-  if (!page) notFound()
+  if (!page) {
+    notFound()
+  }
 
   const { pathname, reviews } = resolvePageReviews(site, page, slugParts)
 
@@ -373,7 +403,9 @@ async function renderGenericSitePage(site, slugParts) {
 export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
   const site = await resolveCurrentSite(searchParams)
 
-  if (!site) notFound()
+  if (!site) {
+    notFound()
+  }
 
   if (isPrimarySiteSlug(site.slug) && slugParts.length === 0) {
     return renderSolarHomepage(site)

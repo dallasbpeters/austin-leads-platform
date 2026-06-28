@@ -29,11 +29,13 @@ const TABLES = [
 ]
 
 function sanitize(url) {
-  if (!url) return url
+  if (!url) {
+    return url
+  }
   return url
-    .replace(/([?&])sslmode=[^&]*/g, '$1')
-    .replace(/([?&])supa=[^&]*/g, '$1')
-    .replace(/([?&])pgbouncer=[^&]*/g, '$1')
+    .replaceAll(/([?&])sslmode=[^&]*/g, '$1')
+    .replaceAll(/([?&])supa=[^&]*/g, '$1')
+    .replaceAll(/([?&])pgbouncer=[^&]*/g, '$1')
     .replace(/\?&/, '?')
     .replace(/[?&]+$/, '')
 }
@@ -52,7 +54,9 @@ function getSupabaseUrl() {
 }
 
 async function connect(label, url) {
-  if (!url) throw new Error(`${label} connection string is not set.`)
+  if (!url) {
+    throw new Error(`${label} connection string is not set.`)
+  }
   const pool = new pg.Pool({
     connectionString: sanitize(url),
     ssl: { rejectUnauthorized: false },
@@ -156,7 +160,11 @@ async function main() {
 
 main().catch((error) => {
   console.error('\nMigration failed:', error.message || error)
-  if (error.code) console.error('  code:', error.code)
-  if (error.detail) console.error('  detail:', error.detail)
+  if (error.code) {
+    console.error('  code:', error.code)
+  }
+  if (error.detail) {
+    console.error('  detail:', error.detail)
+  }
   process.exit(1)
 })

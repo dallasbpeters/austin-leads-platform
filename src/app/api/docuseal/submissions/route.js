@@ -29,7 +29,9 @@ function cleanOptionalString(value) {
 }
 
 function normalizeSubmitters(submitters) {
-  if (!Array.isArray(submitters)) return []
+  if (!Array.isArray(submitters)) {
+    return []
+  }
 
   return submitters
     .map((submitter, index) => ({
@@ -48,9 +50,15 @@ function normalizeBaseUrl(value) {
 }
 
 function getSubmittersFromDocusealResponse(data) {
-  if (Array.isArray(data)) return data
-  if (Array.isArray(data?.submitters)) return data.submitters
-  if (Array.isArray(data?.submission?.submitters)) return data.submission.submitters
+  if (Array.isArray(data)) {
+    return data
+  }
+  if (Array.isArray(data?.submitters)) {
+    return data.submitters
+  }
+  if (Array.isArray(data?.submission?.submitters)) {
+    return data.submission.submitters
+  }
   return []
 }
 
@@ -59,9 +67,15 @@ function getSubmitterId(submitter) {
 }
 
 function submitterLink(submitter) {
-  if (submitter?.embed_src) return submitter.embed_src
-  if (submitter?.slug) return `https://docuseal.com/s/${submitter.slug}`
-  if (submitter?.url) return submitter.url
+  if (submitter?.embed_src) {
+    return submitter.embed_src
+  }
+  if (submitter?.slug) {
+    return `https://docuseal.com/s/${submitter.slug}`
+  }
+  if (submitter?.url) {
+    return submitter.url
+  }
   return ''
 }
 
@@ -70,12 +84,12 @@ function buildAppSigningLink(request, requestId, recipientId) {
 }
 
 async function sha256Hex(value) {
-  if (!value) return null
+  if (!value) {
+    return null
+  }
 
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value))
-  return Array.from(new Uint8Array(digest))
-    .map((byte) => byte.toString(16).padStart(2, '0'))
-    .join('')
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
 async function callDocusealApi(endpoint, payload, apiKey) {
@@ -152,7 +166,9 @@ async function resolveDocumentAsset(
   body,
   actorEmail,
 ) {
-  if (documentAsset || !fileBase64) return documentAsset
+  if (documentAsset || !fileBase64) {
+    return documentAsset
+  }
 
   return createDocumentLibraryItem({
     clientId: client.id,
@@ -212,7 +228,7 @@ async function processDocusealSuccess(
   const sentRequest = await updateSignatureRequestAfterSend(signatureRequest.id, {
     docusealSubmissionId: data?.id || data?.submission_id || data?.submission?.id || null,
     documentAssetId: documentAsset?.id || null,
-    providerPayload: { ...(signatureRequest.provider_payload || {}), docuseal: data || {} },
+    providerPayload: { ...signatureRequest.provider_payload, docuseal: data || {} },
   })
 
   await createDocumentAuditEvent({
@@ -283,10 +299,12 @@ async function handleFailedDocusealCall(
 
 function parseSubmissionBody(body, client) {
   const submitters = normalizeSubmitters(body?.submitters)
-  if (!submitters.length)
+  if (!submitters.length) {
     return { error: NextResponse.json({ error: 'Add at least one recipient email.' }, { status: 400 }) }
-  if (!client)
+  }
+  if (!client) {
     return { error: NextResponse.json({ error: 'Choose a stored client before sending.' }, { status: 400 }) }
+  }
   if (body?.legalDisclosureAccepted !== true) {
     return {
       error: NextResponse.json(
@@ -312,7 +330,9 @@ function parseSubmissionBody(body, client) {
 
 async function prepareEnvironment(request) {
   const unauthorized = await requireAdminRequest()
-  if (unauthorized) return { error: unauthorized }
+  if (unauthorized) {
+    return { error: unauthorized }
+  }
 
   if (!hasDocumentDatabase()) {
     return {
@@ -347,7 +367,9 @@ async function prepareEnvironment(request) {
   const existingAsset = documentAssetId ? await getDocumentLibraryItemById(documentAssetId) : null
 
   const parsed = parseSubmissionBody(body, client)
-  if (parsed.error) return parsed
+  if (parsed.error) {
+    return parsed
+  }
 
   const { submitters, message, sendEmail, order, title, consentText } = parsed
   const { fileName, fileBase64, fileSha256, documentAsset, documentFields } = await resolveSubmissionAssets(
@@ -355,8 +377,9 @@ async function prepareEnvironment(request) {
     existingAsset,
   )
 
-  if (!fileName || !fileBase64)
+  if (!fileName || !fileBase64) {
     return { error: NextResponse.json({ error: 'Upload a PDF before sending.' }, { status: 400 }) }
+  }
 
   return {
     apiKey,
@@ -518,7 +541,7 @@ async function createRequestAndSubmit(request, prepared) {
 
   const { response, data } = await callDocusealApi(endpoint, payload, apiKey)
 
-  if (!response.ok)
+  if (!response.ok) {
     return handleFailedDocusealCall(
       response,
       data,
@@ -529,6 +552,7 @@ async function createRequestAndSubmit(request, prepared) {
       userAgent,
       endpoint,
     )
+  }
 
   return processDocusealSuccess(
     data,
@@ -548,7 +572,9 @@ async function createRequestAndSubmit(request, prepared) {
 
 export async function POST(request) {
   const prepared = await prepareEnvironment(request)
-  if (prepared.error) return prepared.error
+  if (prepared.error) {
+    return prepared.error
+  }
 
   return createRequestAndSubmit(request, prepared)
 }

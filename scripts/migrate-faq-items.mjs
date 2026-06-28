@@ -29,10 +29,14 @@ const client = createClient({ projectId, dataset, apiVersion, token, useCdn: fal
 const TARGET_TYPES = ['page', 'post', 'servicePage', 'locationPage']
 
 function migrateFaqItems(items) {
-  if (!Array.isArray(items) || items.length === 0) return { items, changed: false }
+  if (!Array.isArray(items) || items.length === 0) {
+    return { items, changed: false }
+  }
   let changed = false
   const next = items.map((item) => {
-    if (!item || item._type === 'pageFaqItem') return item
+    if (!item || item._type === 'pageFaqItem') {
+      return item
+    }
     if (item._type === 'faqItem') {
       changed = true
       return { ...item, _type: 'pageFaqItem' }
@@ -55,20 +59,28 @@ console.log(`Found ${docs.length} document${docs.length === 1 ? '' : 's'} with f
 let migrated = 0
 
 for (const doc of docs) {
-  if (!Array.isArray(doc.sections)) continue
+  if (!Array.isArray(doc.sections)) {
+    continue
+  }
 
   let docChanged = false
   const nextSections = doc.sections.map((section) => {
-    if (section?._type !== 'faqSection') return section
+    if (section?._type !== 'faqSection') {
+      return section
+    }
 
     const { items: nextItems, changed } = migrateFaqItems(section.items)
-    if (!changed) return section
+    if (!changed) {
+      return section
+    }
 
     docChanged = true
     return { ...section, items: nextItems }
   })
 
-  if (!docChanged) continue
+  if (!docChanged) {
+    continue
+  }
 
   await client.patch(doc._id).set({ sections: nextSections }).commit()
   migrated += 1

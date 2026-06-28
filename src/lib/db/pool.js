@@ -40,18 +40,24 @@ function isProductionRuntime() {
 function firstNonEmpty(keys) {
   for (const key of keys) {
     const value = process.env[key]
-    if (value && value.trim()) return value
+    if (value && value.trim()) {
+      return value
+    }
   }
   return ''
 }
 
 export function getDatabaseUrl() {
   const explicit = process.env.DATABASE_URL
-  if (explicit && explicit.trim()) return explicit
+  if (explicit && explicit.trim()) {
+    return explicit
+  }
 
   const preferPooled = isProductionRuntime()
   const primary = preferPooled ? firstNonEmpty(POOLED_KEYS) : firstNonEmpty(SESSION_KEYS)
-  if (primary) return primary
+  if (primary) {
+    return primary
+  }
 
   return preferPooled ? firstNonEmpty(SESSION_KEYS) : firstNonEmpty(POOLED_KEYS)
 }
@@ -61,11 +67,13 @@ export function hasDatabaseUrl() {
 }
 
 function sanitizeConnectionString(raw) {
-  if (!raw) return raw
+  if (!raw) {
+    return raw
+  }
   return raw
-    .replace(/([?&])sslmode=[^&]*/g, '$1')
-    .replace(/([?&])supa=[^&]*/g, '$1')
-    .replace(/([?&])pgbouncer=[^&]*/g, '$1')
+    .replaceAll(/([?&])sslmode=[^&]*/g, '$1')
+    .replaceAll(/([?&])supa=[^&]*/g, '$1')
+    .replaceAll(/([?&])pgbouncer=[^&]*/g, '$1')
     .replace(/\?&/, '?')
     .replace(/[?&]+$/, '')
 }
@@ -90,7 +98,7 @@ export function getPool() {
       ssl: { rejectUnauthorized: false },
       max: 5,
       idleTimeoutMillis: 30_000,
-      connectionTimeoutMillis: 8_000,
+      connectionTimeoutMillis: 8000,
     })
   }
 

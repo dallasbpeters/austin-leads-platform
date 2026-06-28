@@ -60,7 +60,9 @@ function normalizeLogoItem(item, index) {
   const imageAsset = item?.imageAsset
   const image = item?.image
   const src = getImageUrl(imageAsset, image)
-  if (!src) return null
+  if (!src) {
+    return null
+  }
 
   const dims = resolveLogoDimensions(imageAsset)
   return {

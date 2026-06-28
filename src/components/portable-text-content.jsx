@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils'
 function slugify(text) {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
 }
 
 function getBlockText(value) {
@@ -62,7 +62,9 @@ const portableTextComponents = {
 }
 
 export default function PortableTextContent({ value, className, as: Tag = 'div', style }) {
-  if (!value) return null
+  if (!value) {
+    return null
+  }
 
   if (Array.isArray(value)) {
     return (
@@ -73,7 +75,9 @@ export default function PortableTextContent({ value, className, as: Tag = 'div',
   }
 
   const text = portableTextToPlainText(value)
-  if (!text) return null
+  if (!text) {
+    return null
+  }
 
   return (
     <Tag className={cn('whitespace-pre-line', className)} style={style}>

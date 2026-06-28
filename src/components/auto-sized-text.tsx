@@ -21,7 +21,7 @@ export function AutoSizedText({ children, className }: Props) {
     const parentElement = childRef.current?.parentElement // This is the parent of `AutoSizedText`
 
     if (!childElement || !parentElement) {
-      return undefined
+      return
     }
 
     if (!window.ResizeObserver) {
@@ -32,7 +32,7 @@ export function AutoSizedText({ children, className }: Props) {
       const parentDimensions = getElementDimensions(parentElement)
 
       adjustFontSize(childDimensions, parentDimensions)
-      return undefined
+      return
     }
 
     // On component first mount, register a `ResizeObserver` on the containing element. The handler fires
@@ -144,7 +144,7 @@ const ITERATION_LIMIT = 20
 // finish in under 5ms.
 const MAXIMUM_DIFFERENCE = 1 // px
 
-type Dimensions = {
+interface Dimensions {
   height: number
   width: number
 }
