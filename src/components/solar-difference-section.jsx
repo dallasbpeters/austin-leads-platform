@@ -35,47 +35,49 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
   const items = Array.isArray(section?.items) && section.items.length ? section.items : defaultItems
   const body =
     section?.body || 'Learn what makes a solar and roofing project feel intentional instead of rushed.'
-
+  const stackTopBase = 132
   return (
     <section
-      className="bg-background py-24 sm:py-32"
+      className="bg-background"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/solar-difference-section.jsx',
         content: 'stacked ION-inspired service difference cards',
       })}
     >
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-24 pb-32 sm:px-6 sm:pt-32 lg:px-8">
         <div className="mb-20 grid gap-8 lg:grid-cols-[minmax(0,0.68fr)_minmax(18rem,0.32fr)]">
-          <h2 className="type-accent m-0 text-[clamp(3rem,7.4vw,6.5rem)] leading-[0.94] font-black tracking-[-0.075em] text-balance text-neutral-950">
+          <h2 className="type-accent m-0 text-[clamp(2rem,4vw,4.5rem)] leading-[0.94] font-black text-balance text-neutral-950">
             {section?.title || 'The difference — premium products, design, & support'}
           </h2>
           <PortableTextContent value={body} className="pt-3 text-xl leading-8 text-neutral-300 lg:pt-12" />
         </div>
 
-        <div className="space-y-[-3rem]">
+        <div className="relative">
           {items.map((item, index) => {
             const image = resolveCardImage(item)
             const imageAlt = getImageAlt(item?.imageAsset, item?.image, item.title || '')
             const itemBody = portableTextToPlainText(item.body)
-            const backgroundColor =
-              item.color || defaultItems[index % defaultItems.length]?.color || '#191919'
+            const colorHex = typeof item.color === 'string' ? item.color : item.color?.hex
+            const backgroundColor = colorHex || defaultItems[index % defaultItems.length]?.color || '#191919'
+            const stackTop = stackTopBase + index * 132
+            const stackZ = index + 1
 
             return (
               <article
                 key={item._key || `${item.title}-${index}`}
-                className="relative overflow-hidden rounded-[2rem] px-6 pt-8 pb-12 text-white shadow-[0_-10px_60px_rgba(0,0,0,0.22)] sm:rounded-[2.5rem] sm:px-12 lg:px-16 lg:pt-10 lg:pb-16"
-                style={{ backgroundColor }}
+                className="overflow-hidden rounded-4xl px-6 pt-8 pb-12 text-white sm:rounded-[2.5rem] sm:px-12 lg:px-16 lg:pt-10 lg:pb-16"
+                style={{ backgroundColor, position: 'sticky', top: stackTop, zIndex: stackZ }}
               >
                 <div className="mb-24 flex items-center gap-7 text-white/42">
-                  <span className="text-xl font-black tracking-[-0.03em]">
+                  <span className="text-xl font-black">
                     {item.number || String(index + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-lg font-black tracking-[-0.03em]">{item.eyebrow || item.title}</span>
+                  <span className="text-lg font-black">{item.eyebrow || item.title}</span>
                 </div>
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] lg:items-end">
                   <div>
-                    <h3 className="m-0 text-[clamp(3rem,6vw,5.6rem)] leading-[0.96] font-black tracking-[-0.07em] text-balance">
+                    <h3 className="m-0 text-[clamp(2rem,4vw,4.6rem)] leading-[0.96] font-black text-balance">
                       {item.title}
                     </h3>
                     {itemBody ? (
@@ -83,7 +85,7 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
                     ) : null}
                   </div>
                   {image ? (
-                    <div className="relative min-h-[22rem] overflow-hidden rounded-[1.5rem] bg-white/8 lg:min-h-[30rem]">
+                    <div className="relative min-h-88 overflow-hidden rounded-3xl bg-white/8 lg:min-h-120">
                       <Image
                         src={image}
                         alt={imageAlt}

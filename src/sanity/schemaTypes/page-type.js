@@ -5,6 +5,28 @@ import ChartPointsJsonInput from '../components/chart-points-json-input'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
+
+/**
+ * Generate an inline image field definition with hotspot/crop enabled.
+ *
+ * Matches the pattern used in reference projects where hotspot works reliably:
+ * bare `type: 'image'` with `options: { hotspot: true }`, NOT a named wrapper type.
+ * Alt text fields are included inline so the Studio treats it as a direct image type.
+ */
+const defineUploadedImage = (name, title, extraOptions = {}) => ({
+  name,
+  title,
+  type: 'image',
+  options: {
+    hotspot: true,
+    collapsible: false,
+    ...extraOptions,
+  },
+  fields: [
+    { name: 'altText', title: 'Alt text', type: 'string' },
+    { name: 'alt', title: 'Legacy alt text', type: 'string', hidden: true },
+  ],
+})
 const isSectionType = (parent, ...types) => types.includes(parent?.type)
 const hideUnlessSectionTypes =
   (...types) =>
@@ -477,10 +499,11 @@ const heroVideoType = {
       options: canvasExclude,
     },
     {
-      name: 'posterImage',
-      title: 'Poster image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Still frame shown before playback and as a fallback for non-video clients.'),
+      ...defineUploadedImage(
+        'posterImage',
+        'Poster image',
+        canvasPurpose('Still frame shown before playback and as a fallback for non-video clients.'),
+      ),
     },
     {
       name: 'alt',
@@ -582,10 +605,11 @@ const uploadedVideoType = {
       options: canvasExclude,
     },
     {
-      name: 'posterImage',
-      title: 'Poster image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Optional still frame shown before playback.'),
+      ...defineUploadedImage(
+        'posterImage',
+        'Poster image',
+        canvasPurpose('Optional still frame shown before playback.'),
+      ),
     },
   ],
 }
@@ -787,10 +811,7 @@ const pageItemType = {
       options: canvasExclude,
     },
     {
-      name: 'imageAsset',
-      title: 'Uploaded image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
     {
       name: 'imageUrl',
@@ -897,10 +918,7 @@ const serviceGridItemType = {
       options: canvasPurpose('Optional URL — makes the entire card a clickable link.'),
     },
     {
-      name: 'imageAsset',
-      title: 'Image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
     {
       name: 'imageUrl',
@@ -1013,10 +1031,7 @@ const guideCardItemType = {
       options: canvasExclude,
     },
     {
-      name: 'imageAsset',
-      title: 'Uploaded image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
     {
       name: 'imageUrl',
@@ -1218,10 +1233,7 @@ const logoMarqueeItemType = {
       options: canvasExclude,
     },
     {
-      name: 'imageAsset',
-      title: 'Uploaded image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
   ],
   preview: {
@@ -1260,10 +1272,7 @@ const heroSlideItemType = {
       options: canvasExclude,
     },
     {
-      name: 'imageAsset',
-      title: 'Uploaded image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
   ],
   preview: {
@@ -1352,10 +1361,7 @@ const resourceCardType = {
       options: canvasPurpose('Destination URL or anchor for the card.'),
     },
     {
-      name: 'imageAsset',
-      title: 'Uploaded image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
     {
       name: 'image',
@@ -1648,10 +1654,7 @@ const aboutProfilePersonType = {
       options: canvasExclude,
     },
     {
-      name: 'profileImageAsset',
-      title: 'Uploaded profile image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('profileImageAsset', 'Uploaded profile image', canvasExclude),
     },
     {
       name: 'certificationLabel',
@@ -1672,10 +1675,7 @@ const aboutProfilePersonType = {
       options: canvasExclude,
     },
     {
-      name: 'badgeImageAsset',
-      title: 'Uploaded certification badge image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('badgeImageAsset', 'Uploaded certification badge image', canvasExclude),
     },
   ],
   preview: {
@@ -1936,10 +1936,7 @@ const heroSpecificFields = [
     hidden: hideUnlessHeroMediaMode('video'),
   },
   {
-    name: 'heroAsset',
-    title: 'Uploaded hero image',
-    type: 'uploadedImage',
-    options: canvasExclude,
+    ...defineUploadedImage('heroAsset', 'Uploaded hero image', canvasExclude),
     hidden: hideUnlessHeroMediaMode('single'),
   },
   {
@@ -2479,10 +2476,11 @@ const solarAdoptionSectionType = {
       options: canvasExclude,
     },
     {
-      name: 'roofImageAsset',
-      title: 'Roof image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Wide roof image shown across the bottom of the section.'),
+      ...defineUploadedImage(
+        'roofImageAsset',
+        'Roof image',
+        canvasPurpose('Wide roof image shown across the bottom of the section.'),
+      ),
     },
     {
       name: 'panelImage',
@@ -2491,10 +2489,11 @@ const solarAdoptionSectionType = {
       options: canvasExclude,
     },
     {
-      name: 'panelImageAsset',
-      title: 'Solar panel image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Transparent or cutout panel image layered over the roof.'),
+      ...defineUploadedImage(
+        'panelImageAsset',
+        'Solar panel image',
+        canvasPurpose('Transparent or cutout panel image layered over the roof.'),
+      ),
     },
     {
       name: 'reasons',
@@ -2600,8 +2599,8 @@ const solarFeatureCardItemType = {
     {
       name: 'color',
       title: 'Card background color',
-      type: 'string',
-      options: canvasPurpose('CSS color value for this card background, e.g. #171717.'),
+      type: 'color',
+      options: canvasPurpose('Choose a dark background color for this card.'),
     },
     {
       name: 'image',
@@ -2610,10 +2609,7 @@ const solarFeatureCardItemType = {
       options: canvasExclude,
     },
     {
-      name: 'imageAsset',
-      title: 'Image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Optional card image.'),
+      ...defineUploadedImage('imageAsset', 'Image', canvasPurpose('Optional card image.')),
     },
   ],
   preview: {
@@ -2756,10 +2752,11 @@ const incentivesSectionType = {
       options: canvasPurpose('Long-form supporting copy (multiple paragraphs allowed).'),
     },
     {
-      name: 'imageAsset',
-      title: 'Uploaded image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Optional image shown beside the roofing and insurance copy.'),
+      ...defineUploadedImage(
+        'imageAsset',
+        'Uploaded image',
+        canvasPurpose('Optional image shown beside the roofing and insurance copy.'),
+      ),
     },
     {
       name: 'image',
@@ -2823,10 +2820,11 @@ const testimonialsSectionType = {
       options: canvasExclude,
     },
     {
-      name: 'backgroundImageAsset',
-      title: 'Background image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Optional full-section background image behind the review cards.'),
+      ...defineUploadedImage(
+        'backgroundImageAsset',
+        'Background image',
+        canvasPurpose('Optional full-section background image behind the review cards.'),
+      ),
     },
     {
       name: 'reviews',
@@ -3482,10 +3480,7 @@ const ctaSectionType = {
       options: canvasPurpose('Color of the avatar image.'),
     },
     {
-      name: 'avatarImageAsset',
-      title: 'Uploaded avatar image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('avatarImageAsset', 'Uploaded avatar image', canvasExclude),
     },
     {
       name: 'serviceOptions',
@@ -3709,10 +3704,7 @@ const ctaBannerSectionType = {
       options: canvasExclude,
     },
     {
-      name: 'avatarImageAsset',
-      title: 'Uploaded avatar image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('avatarImageAsset', 'Uploaded avatar image', canvasExclude),
     },
   ],
   preview: {
@@ -3780,10 +3772,7 @@ const bannerCtaSectionType = {
       options: canvasExclude,
     },
     {
-      name: 'imageAsset',
-      title: 'Uploaded image',
-      type: 'uploadedImage',
-      options: canvasExclude,
+      ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
   ],
   preview: {
@@ -4482,10 +4471,11 @@ const videoSectionType = {
       options: canvasPurpose('Direct URL to an externally hosted video file.'),
     },
     {
-      name: 'posterImage',
-      title: 'Poster image',
-      type: 'uploadedImage',
-      options: canvasPurpose('Still frame shown before playback and as a fallback.'),
+      ...defineUploadedImage(
+        'posterImage',
+        'Poster image',
+        canvasPurpose('Still frame shown before playback and as a fallback.'),
+      ),
     },
     {
       name: 'caption',

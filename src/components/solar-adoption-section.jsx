@@ -25,6 +25,7 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
     y: useTransform(scrollYProgress, [0, 0.72, 1], [-220, -20, 0]),
     scale: useTransform(scrollYProgress, [0, 1], [0.92, 1]),
     opacity: useTransform(scrollYProgress, [0, 0.22, 1], [0.68, 0.9, 1]),
+    transition: { ease: 'easeInOut', duration: 0.4 },
   }
 
   const roofImage = resolveImage(section?.roofImageAsset, section?.roofImage, FALLBACK_ROOF_IMAGE)
@@ -42,7 +43,7 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
         content: 'ION-inspired roof and solar panel adoption section',
       })}
     >
-      <div className="mx-auto w-full max-w-7xl px-4 pt-12 pb-10 sm:px-6 lg:px-8 lg:pt-32">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-4 pb-10 sm:px-6 lg:px-8 lg:pt-12">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.66fr)_minmax(18rem,0.34fr)] lg:items-start">
           <div>
             {section?.eyebrow ? (
@@ -64,12 +65,12 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
         </div>
       </div>
 
-      <div className="relative min-h-115 overflow-hidden sm:min-h-140 lg:min-h-165">
+      <div className="relative min-h-55 sm:min-h-140 lg:min-h-165">
         <div className="absolute inset-x-0 bottom-0 h-[56%]">
           <Image src={roofImage} alt={roofAlt} fill sizes="100vw" className="object-cover object-top" />
         </div>
         <motion.div
-          className="absolute inset-x-0 bottom-[7%] mx-auto w-[min(78rem,96vw)] will-change-transform"
+          className="absolute inset-x-0 bottom-[7%] mx-auto w-[min(110rem,96vw)] will-change-transform"
           style={panelMotion}
         >
           <Image

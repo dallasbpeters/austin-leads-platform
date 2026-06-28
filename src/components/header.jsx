@@ -5,7 +5,6 @@ import Link from 'next/link'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
 import Logo from './logo'
@@ -24,46 +23,44 @@ const LINKS = [
   },
 ]
 
-function NavList({ onNavigate }) {
-  return (
-    <>
-      {LINKS.map(({ label, href, className }) =>
-        href.startsWith('#') ? (
-          <Button
-            variant="primary"
-            key={href}
-            href={href}
-            onClick={onNavigate}
-            className={`font-wght-500 medium text-foreground btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 text-[1rem] hover:text-white hover:brightness-125 ${className}`}
+const NavList = ({ onNavigate }) => (
+  <>
+    {LINKS.map(({ label, href, className }) =>
+      href.startsWith('#') ? (
+        <Button
+          variant="primary"
+          key={href}
+          href={href}
+          onClick={onNavigate}
+          className={`font-wght-500 medium text-foreground btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 text-[1rem] hover:text-white hover:brightness-125 ${className}`}
+        >
+          <span
+            data-slot="button-inner"
+            className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]"
           >
-            <span
-              data-slot="button-inner"
-              className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]"
-            >
-              {label}
-            </span>
-          </Button>
-        ) : (
-          <Link
-            key={href}
-            href={href}
-            onClick={onNavigate}
-            className={`font-wght-450 medium text-foreground hover:text-primary btn text-md flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent ${className}`}
+            {label}
+          </span>
+        </Button>
+      ) : (
+        <Link
+          key={href}
+          href={href}
+          onClick={onNavigate}
+          className={`font-wght-450 medium text-foreground hover:text-primary btn text-md flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent ${className}`}
+        >
+          <span
+            data-slot="button-inner"
+            className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]"
           >
-            <span
-              data-slot="button-inner"
-              className="inline-flex max-w-full min-w-fit items-center justify-center gap-[inherit]"
-            >
-              {label}
-            </span>
-          </Link>
-        ),
-      )}
-    </>
-  )
-}
+            {label}
+          </span>
+        </Link>
+      ),
+    )}
+  </>
+)
 
-export default function Header() {
+const Header = () => {
   const [openNav, setOpenNav] = React.useState(false)
   const [, setConsultationInView] = React.useState(false)
   const mobileMenuId = 'site-mobile-nav'
@@ -103,7 +100,7 @@ export default function Header() {
     <>
       <nav
         id="site-top"
-        className="site-header text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
+        className="site-header text-foreground fixed left-0 z-50 mx-auto w-full px-0 sm:top-0"
         {...getDevSectionAttributes({
           content: 'local JSX nav and service catalog links',
           id: 'site-header',
@@ -111,11 +108,11 @@ export default function Header() {
         })}
       >
         <div
-          className={`mx-auto w-full rounded-none bg-stone-100 px-7 py-4 shadow-md backdrop-blur-sm ${
-            openNav ? 'md:rounded-tl-lg md:rounded-tr-lg' : 'md:rounded-full'
+          className={`mx-auto flex w-full justify-center rounded-none bg-stone-100 px-7 py-4 shadow-md backdrop-blur-sm ${
+            openNav ? 'md:rounded-br-sm md:rounded-bl-sm' : 'md:rounded-br-sm md:rounded-bl-sm'
           }`}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex w-full max-w-310 items-center justify-between">
             <Link
               href="/"
               aria-label="Texas Solar & Roofing Pros - Home"
@@ -124,7 +121,6 @@ export default function Header() {
               <Logo height={60} width={80} />
               <span className="sr-only">Texas Solar & Roofing Pros</span>
             </Link>
-            <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
             <div className="hidden lg:flex lg:items-center">
               <NavList />
             </div>
@@ -164,3 +160,5 @@ export default function Header() {
     </>
   )
 }
+
+export default Header

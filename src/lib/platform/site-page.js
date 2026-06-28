@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/prefer-array-find */
+// oxlint-disable func-style unicorn/prefer-array-find
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
@@ -217,7 +217,7 @@ function buildNotFoundMetadata(site) {
 
 function computeIsGuidePage(page, pathname) {
   const byPath = pathname.startsWith('/guides')
-  const byData = page.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
+  const byData = page?.pageType === 'post' && String(page?.slug || '').startsWith('guides/')
   return byPath || byData
 }
 
@@ -281,7 +281,7 @@ function buildPageMetadataObject({
       siteName: site.name,
       appId: facebookAppId || undefined,
       locale: 'en_US',
-      type: page.pageType === 'post' ? 'article' : 'website',
+      type: page?.pageType === 'post' ? 'article' : 'website',
       images: [
         { url: ogImage, type: 'image/png', width: 1200, height: 630, alt: `${shareTitle} | ${site.name}` },
       ],

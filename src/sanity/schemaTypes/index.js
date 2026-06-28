@@ -1,4 +1,4 @@
-import pageTypes from './pageType'
+import pageTypes from './page-type'
 import siteType from './siteType'
 import supportingTypes from './supportingTypes'
 

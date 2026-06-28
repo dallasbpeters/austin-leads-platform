@@ -41,7 +41,7 @@ function computePublicSiteFlags(site, page, pathname) {
     showFallbackRoofingLogoCloud:
       showRoofingLogoCloud && !sections.some((section) => section.type === 'logos'),
     suppressDefaultLeadCapture: suppressedSlugs.has(pageSlug),
-    isGuidePost: page.pageType === 'post' && pageSlug.startsWith('guides/'),
+    isGuidePost: page?.pageType === 'post' && pageSlug.startsWith('guides/'),
     shareUrl:
       cleanRuntimeString(page?.seo?.canonicalUrl) ||
       (site?.primaryDomain ? `https://${site.primaryDomain}${pathname || '/'}` : ''),

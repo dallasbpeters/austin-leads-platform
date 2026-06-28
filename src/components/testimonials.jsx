@@ -1,3 +1,4 @@
+// oxlint-disable func-style no-nested-ternary unicorn/no-array-for-each
 import { useId } from 'react'
 import Image from 'next/image'
 
@@ -50,7 +51,7 @@ function getReviewPhotoUrl(review) {
 function getInitials(name) {
   return String(name || '')
     .trim()
-    .split(/\s+/)
+    .split(/\s+/u)
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() || '')
     .join('')
@@ -105,10 +106,12 @@ function ReviewerAvatar({ review }) {
 
   if (photoUrl) {
     return (
-      <img
+      <Image
         src={photoUrl}
+        height={40}
+        width={40}
         alt={review?.reviewerPhoto?.alt || review.author}
-        className="h-14 w-14 rounded-full object-cover"
+        className="h-12 w-12 rounded-full object-cover"
       />
     )
   }
@@ -154,7 +157,11 @@ const GoogleLogo = (props) => (
   </svg>
 )
 
-export default function Testimonials({ reviews = [], section = null, sectionId = 'testimonials-homepage' }) {
+export default function Testimonials({
+  reviews = fallbackReviews,
+  section = null,
+  sectionId = 'testimonials-homepage',
+}) {
   const sectionReviews = Array.isArray(section?.reviews) ? section.reviews.filter(Boolean) : []
   const siteReviews = Array.isArray(reviews) ? reviews.filter(Boolean) : []
   const resolvedReviews = sectionReviews.length
@@ -192,7 +199,7 @@ export default function Testimonials({ reviews = [], section = null, sectionId =
       {backgroundImage ? (
         <>
           <Image src={backgroundImage} alt={backgroundImageAlt} fill sizes="100vw" className="object-cover" />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(255,255,255,0.78)),radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.32),transparent_55%)]" />
+          <div className="absolute top-0 bottom-[50%] left-0 w-full bg-linear-to-b from-white to-transparent" />
         </>
       ) : null}
       <div className="relative z-10 mr-auto mb-5 ml-auto max-w-7xl text-center sm:px-3 md:px-6 lg:px-8">
@@ -204,7 +211,7 @@ export default function Testimonials({ reviews = [], section = null, sectionId =
         </h2>
       </div>
 
-      <div className="animate-delay-400 dynamic-slide-in relative z-10 mx-auto max-w-7xl px-4 md:px-8">
+      <div className="animate-delay-400 dynamic-slide-in relative z-10 mx-auto max-w-7xl px-4 pb-48 md:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {desktopColumns.map((columnReviews, columnIndex) => (
             <div key={`column-${columnIndex}`} className="space-y-6">
