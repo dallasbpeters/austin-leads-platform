@@ -159,7 +159,20 @@ const nextConfig = {
   },
   async redirects() {
     try {
-      return await getSanityRedirects()
+      const redirectRules = await getSanityRedirects()
+
+      // CORS preflight (OPTIONS) must NOT be redirected — the browser rejects
+      // redirects on preflight responses. Without this guard, a domain-level
+      // redirect (e.g. apex → www) returns a 308 instead of CORS headers,
+      // and the browser blocks the real request.
+      for (const rule of redirectRules) {
+        if (!rule.missing) {
+          rule.missing = []
+        }
+        rule.missing.push({ type: 'header', key: 'access-control-request-method' })
+      }
+
+      return redirectRules
     } catch {
       return []
     }
