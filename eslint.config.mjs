@@ -10,6 +10,7 @@ export default defineConfig([
   {
     ignores: [
       '.next/**',
+      '.vercel/**',
       'node_modules/**',
       '.sanity/**',
       '.agents/**',

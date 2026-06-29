@@ -135,6 +135,16 @@ const nextConfig = {
       },
     ],
   },
+  webpack: (config, { dev }) => {
+    if (!dev && process.env.VERCEL === '1') {
+      // Vercel is restoring a webpack cache state that crashes inside WasmHash
+      // during production builds. Keep local caching intact and bypass it only
+      // for the remote production builder.
+      config.cache = false
+    }
+
+    return config
+  },
   rewrites() {
     return [
       // Rewrite /_site/:site and /_site/:site/:path* to /?__site=:site so the
