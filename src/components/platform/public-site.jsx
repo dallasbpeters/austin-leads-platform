@@ -31,6 +31,14 @@ function computePublicSiteFlags(site, page, pathname) {
     (topLevelPath === 'roofing' || (topLevelPath === 'services' && roofingServiceSlugs.has(serviceSlug)))
   const suppressedSlugs = new Set(['privacy-policy', 'terms', 'services/detach-and-reset', 'thank-you'])
 
+  // The guide share bar sits at the end of the article content — after the last
+  // non-CTA section, but above any trailing call-to-action section.
+  const ctaSectionTypes = new Set(['cta', 'ctaBanner', 'bannerCta', 'secondaryCTA'])
+  const guideShareAfterIndex = sections.reduce(
+    (last, section, index) => (ctaSectionTypes.has(section.type) ? last : index),
+    -1,
+  )
+
   return {
     useSolarShell,
     sections,
@@ -45,6 +53,7 @@ function computePublicSiteFlags(site, page, pathname) {
       showRoofingLogoCloud && !sections.some((section) => section.type === 'logos'),
     suppressDefaultLeadCapture: suppressedSlugs.has(pageSlug),
     isGuidePost: page?.pageType === 'post' && pageSlug.startsWith('guides/'),
+    guideShareAfterIndex,
     shareUrl:
       cleanRuntimeString(page?.seo?.canonicalUrl) ||
       (site?.primaryDomain ? `https://${site.primaryDomain}${pathname || '/'}` : ''),
@@ -79,6 +88,9 @@ function renderSectionItem(section, index, flags, page, site, pathname, reviews)
           editAttributes={sectionEditAttrs}
         />
       </SectionSurface>
+      {flags.isGuidePost && index === flags.guideShareAfterIndex ? (
+        <GuideShareBar url={flags.shareUrl} title={page.seo?.title || page.title || ''} />
+      ) : null}
     </div>
   )
 }
@@ -128,8 +140,8 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
           renderSectionItem(section, index, flags, page, site, pathname, reviews),
         )}
 
-        {/* Share bar at the bottom of the article */}
-        {flags.isGuidePost ? (
+        {/* Fallback share bar only when there were no content sections to anchor it to */}
+        {flags.isGuidePost && flags.guideShareAfterIndex === -1 ? (
           <GuideShareBar url={flags.shareUrl} title={page.seo?.title || page.title || ''} />
         ) : null}
 
