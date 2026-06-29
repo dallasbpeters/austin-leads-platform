@@ -185,9 +185,6 @@ importers:
       sanity-plugin-asset-source-unsplash:
         specifier: ^7.0.5
         version: 7.0.5(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react-is@19.2.4)(react@19.2.6)(sanity@5.25.0(@emotion/is-prop-valid@1.4.0)(@noble/hashes@2.0.1)(@oclif/core@4.11.2)(@sanity/cli-core@1.3.2(@noble/hashes@2.0.1)(@types/node@12.20.55)(lightningcss@1.31.1)(yaml@2.9.0))(@types/node@12.20.55)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(immer@11.1.4)(jiti@2.7.0)(lightningcss@1.31.1)(prismjs@1.30.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(typescript@6.0.3))(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
-      sanity-plugin-ga-dashboard:
-        specifier: ^1.0.6
-        version: 1.0.6(@sanity/icons@3.7.4(react@19.2.6))(@sanity/ui@3.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react-is@19.2.4)(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6)))(react@19.2.6)(sanity@5.25.0(@emotion/is-prop-valid@1.4.0)(@noble/hashes@2.0.1)(@oclif/core@4.11.2)(@sanity/cli-core@1.3.2(@noble/hashes@2.0.1)(@types/node@12.20.55)(lightningcss@1.31.1)(yaml@2.9.0))(@types/node@12.20.55)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(immer@11.1.4)(jiti@2.7.0)(lightningcss@1.31.1)(prismjs@1.30.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(typescript@6.0.3))
       sanity-plugin-gemini-ai-images:
         specifier: ^1.3.0
         version: 1.3.0(@sanity/ui@3.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react-is@19.2.4)(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6)))(react@19.2.6)(sanity@5.25.0(@emotion/is-prop-valid@1.4.0)(@noble/hashes@2.0.1)(@oclif/core@4.11.2)(@sanity/cli-core@1.3.2(@noble/hashes@2.0.1)(@types/node@12.20.55)(lightningcss@1.31.1)(yaml@2.9.0))(@types/node@12.20.55)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(immer@11.1.4)(jiti@2.7.0)(lightningcss@1.31.1)(prismjs@1.30.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(typescript@6.0.3))
@@ -9442,15 +9439,6 @@ packages:
       react: ^19.2
       sanity: ^5
       styled-components: ^6.1
-
-  sanity-plugin-ga-dashboard@1.0.6:
-    resolution: {integrity: sha512-fHFbqiwjd5e8KFwL4vrsz+UAWerfTVSmAnQkl4CbYVADCzXnHX9Nbd67xMdgUW6Y5RlrN6R8+dyB3Bi0AdZIBg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@sanity/icons': '>=3.0.0'
-      '@sanity/ui': '>=2.0.0'
-      react: '>=18.0.0'
-      sanity: '>=3.0.0'
 
   sanity-plugin-gemini-ai-images-nextjs@1.1.0:
     resolution: {integrity: sha512-RXYrv/Ck4fZcXLtQKcVsH67ZGI2f/kR8qS0CF9vd/xZdTzDhbZ9+KXzvosL6nj+ccNeycBXj2IXxZ4Ry3XGCBw==}
@@ -20594,13 +20582,6 @@ snapshots:
       - '@types/react'
       - react-dom
       - react-is
-
-  sanity-plugin-ga-dashboard@1.0.6(@sanity/icons@3.7.4(react@19.2.6))(@sanity/ui@3.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react-is@19.2.4)(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6)))(react@19.2.6)(sanity@5.25.0(@emotion/is-prop-valid@1.4.0)(@noble/hashes@2.0.1)(@oclif/core@4.11.2)(@sanity/cli-core@1.3.2(@noble/hashes@2.0.1)(@types/node@12.20.55)(lightningcss@1.31.1)(yaml@2.9.0))(@types/node@12.20.55)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(immer@11.1.4)(jiti@2.7.0)(lightningcss@1.31.1)(prismjs@1.30.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(typescript@6.0.3)):
-    dependencies:
-      '@sanity/icons': 3.7.4(react@19.2.6)
-      '@sanity/ui': 3.2.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react-is@19.2.4)(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))
-      react: 19.2.6
-      sanity: 5.25.0(@emotion/is-prop-valid@1.4.0)(@noble/hashes@2.0.1)(@oclif/core@4.11.2)(@sanity/cli-core@1.3.2(@noble/hashes@2.0.1)(@types/node@12.20.55)(lightningcss@1.31.1)(yaml@2.9.0))(@types/node@12.20.55)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(immer@11.1.4)(jiti@2.7.0)(lightningcss@1.31.1)(prismjs@1.30.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(styled-components@6.3.11(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(typescript@6.0.3)
 
   sanity-plugin-gemini-ai-images-nextjs@1.1.0(next@16.2.9(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.61.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)):
     dependencies:
