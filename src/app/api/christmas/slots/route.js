@@ -1,6 +1,6 @@
 import { deleteSlot, upsertSlot } from '@/lib/christmas/db'
 
-export async function DELETE(req) {
+export const DELETE = async (req) => {
   try {
     const { installDate } = await req.json()
     if (!installDate) {
@@ -14,7 +14,7 @@ export async function DELETE(req) {
   }
 }
 
-export async function POST(req) {
+export const POST = async (req) => {
   try {
     const { installDate, originalDate, capacity, isActive, notes } = await req.json()
 

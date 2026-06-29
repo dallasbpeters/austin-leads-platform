@@ -1,4 +1,4 @@
-export async function updateLaunchChecklistTaskStatus(payload) {
+export const updateLaunchChecklistTaskStatus = async (payload) => {
   const response = await fetch('/api/launch-checklist/task-status', {
     method: 'PATCH',
     headers: {

@@ -4,15 +4,15 @@ import { Collapsible as CollapsiblePrimitive } from 'radix-ui'
 
 import { cn } from '@/lib/utils'
 
-function Collapsible({ ...props }) {
+const Collapsible = ({ ...props }) => {
   return <CollapsiblePrimitive.Root data-slot="collapsible" {...props} />
 }
 
-function CollapsibleTrigger({ ...props }) {
+const CollapsibleTrigger = ({ ...props }) => {
   return <CollapsiblePrimitive.CollapsibleTrigger data-slot="collapsible-trigger" {...props} />
 }
 
-function CollapsibleContent({ className, animate = true, ...props }) {
+const CollapsibleContent = ({ className, animate = true, ...props }) => {
   return (
     <CollapsiblePrimitive.CollapsibleContent
       data-slot="collapsible-content"

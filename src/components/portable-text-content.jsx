@@ -3,14 +3,14 @@ import { PortableText } from '@portabletext/react'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { cn } from '@/lib/utils'
 
-function slugify(text) {
+const slugify = (text) => {
   return text
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, '-')
     .replaceAll(/^-+|-+$/g, '')
 }
 
-function getBlockText(value) {
+const getBlockText = (value) => {
   return value?.children?.map((child) => child.text).join('') || ''
 }
 
@@ -61,7 +61,7 @@ const portableTextComponents = {
   },
 }
 
-export default function PortableTextContent({ value, className, as: Tag = 'div', style }) {
+const PortableTextContent = ({ value, className, as: Tag = 'div', style }) => {
   if (!value) {
     return null
   }
@@ -85,3 +85,5 @@ export default function PortableTextContent({ value, className, as: Tag = 'div',
     </Tag>
   )
 }
+
+export default PortableTextContent

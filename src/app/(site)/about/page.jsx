@@ -1,10 +1,12 @@
 import { buildMetadataForCurrentSite, renderCurrentSitePage } from '@/lib/platform/site-page'
 
 /** @returns {Promise<import('next').Metadata>} */
-export async function generateMetadata() {
+export const generateMetadata = async () => {
   return buildMetadataForCurrentSite(['about'])
 }
 
-export default async function AboutPage() {
+const AboutPage = async () => {
   return renderCurrentSitePage(['about'])
 }
+
+export default AboutPage

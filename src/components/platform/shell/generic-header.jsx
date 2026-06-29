@@ -13,61 +13,61 @@ import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/san
 import { CONSULTATION_ANCHOR_ID, TX_CHRISTMAS_PUBLIC_LOGO_SRC } from '../public-site-utils'
 
 const CONTACT_LINK_CLASSES = 'btn--primary text-white px-4 items-center! justify-center! h-11 md:h-9'
+const EMPTY_NAVIGATION = []
 
-function NavList({ items, onNavigate }) {
-  return (
-    <>
-      {items.map((item, index) => {
-        const href = cleanRuntimeHref(item.href)
-        const label = cleanRuntimeString(item.label)
-        const isAnchor = href.startsWith('#')
-        const isAbsolute = /^https?:\/\//i.test(href)
-        const isExternal = Boolean(item.isExternal) || isAbsolute
-        const isContact = item.kind === 'contact'
-        const className = isContact
-          ? `font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 ${CONTACT_LINK_CLASSES}`
-          : 'font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent'
+const NavList = ({ items, onNavigate }) => (
+  <>
+    {items.map((item, index) => {
+      const href = cleanRuntimeHref(item.href)
+      const label = cleanRuntimeString(item.label)
+      const isAnchor = href.startsWith('#')
+      const isAbsolute = /^https?:\/\//iu.test(href)
+      const isExternal = Boolean(item.isExternal) || isAbsolute
+      const isContact = item.kind === 'contact'
+      const className = isContact
+        ? `font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 ${CONTACT_LINK_CLASSES}`
+        : 'font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent'
 
-        const key = buildRuntimeKey('generic-nav-item', href, label, index)
+      const key = buildRuntimeKey('generic-nav-item', href, label, index)
 
-        if (isAnchor || isExternal) {
-          return (
-            <a
-              key={key}
-              href={href}
-              onClick={onNavigate}
-              className={className}
-              {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            >
-              <span data-slot="button-inner">{label}</span>
-            </a>
-          )
-        }
-
+      if (isAnchor || isExternal) {
         return (
-          <Button variant="primary" key={key} href={href} onClick={onNavigate} className={className}>
-            {label}
-          </Button>
+          <a
+            key={key}
+            href={href}
+            onClick={onNavigate}
+            className={className}
+            {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            <span data-slot="button-inner">{label}</span>
+          </a>
         )
-      })}
-    </>
-  )
-}
+      }
 
-function buildLogoConfig(site) {
+      return (
+        <Button variant="primary" key={key} href={href} onClick={onNavigate} className={className}>
+          {label}
+        </Button>
+      )
+    })}
+  </>
+)
+
+const buildLogoConfig = (site) => {
   const isChristmas = site?.slug === 'txchristmaslights'
   const sanityLogoUrl = buildSanityImageUrl(site?.brand?.logo, { width: 200 })
   const usingChristmasWordmarkFallback = isChristmas && !sanityLogoUrl
   const logoUrl = sanityLogoUrl || (isChristmas ? TX_CHRISTMAS_PUBLIC_LOGO_SRC : null)
-  const logoAlt = sanityLogoUrl
-    ? site?.brand?.logo?.alt || site?.name || ''
-    : isChristmas
-      ? site?.name || 'Texas Christmas Lights'
-      : site?.name || ''
+  let logoAlt = site?.name || ''
+  if (sanityLogoUrl) {
+    logoAlt = site?.brand?.logo?.alt || site?.name || ''
+  } else if (isChristmas) {
+    logoAlt = site?.name || 'Texas Christmas Lights'
+  }
   return { logoUrl, logoAlt, usingChristmasWordmarkFallback, isChristmas }
 }
 
-function SiteLogo({ site, logoUrl, logoAlt, usingChristmasWordmarkFallback }) {
+const SiteLogo = ({ site, logoUrl, logoAlt, usingChristmasWordmarkFallback }) => {
   const siteName = cleanRuntimeString(site?.shortName || site?.name || '')
   if (logoUrl) {
     return (
@@ -89,7 +89,7 @@ function SiteLogo({ site, logoUrl, logoAlt, usingChristmasWordmarkFallback }) {
   )
 }
 
-export default function GenericHeader({ site, navigation = [] }) {
+const GenericHeader = ({ site, navigation = EMPTY_NAVIGATION }) => {
   const [openNav, setOpenNav] = React.useState(false)
   const [, setConsultationInView] = React.useState(false)
   const mobileMenuId = 'site-mobile-nav'
@@ -202,3 +202,5 @@ export default function GenericHeader({ site, navigation = [] }) {
     </>
   )
 }
+
+export default GenericHeader

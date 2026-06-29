@@ -31,6 +31,7 @@ export default function App({
   heroSection = null,
   reviews = [],
   site = null,
+  navigation = [],
   jsonLd = null,
   homepageSource = 'fixture',
 }) {
@@ -51,8 +52,8 @@ export default function App({
         content="homepage composition shell (order-driven from Sanity sections array)"
         note="ViewTransition wraps main content only (header/footer excluded)"
       />
-      <DevTrace markup="src/components/header.jsx" content="local JSX nav and service catalog links" />
-      <Header />
+      <DevTrace markup="src/components/header.jsx" content="Sanity site navigation with fallback links" />
+      <Header navigation={navigation} />
       <main id="main-content" {...getSanityPageEditAttributes(homepage, 'title')}>
         {/* Hero: render first ONLY if it is NOT already in the sections array */}
         {!heroAlreadyInSections && heroSection ? (

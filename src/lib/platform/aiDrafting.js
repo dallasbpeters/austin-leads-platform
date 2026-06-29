@@ -14,7 +14,7 @@ import { syncGuideHeroToGuideGridItems } from '@/sanity/lib/syncGuideListingImag
 
 const SANITY_AGENT_SCHEMA_ID = process.env.SANITY_AGENT_SCHEMA_ID || ''
 
-async function syncGuideCardIntoGuidesSection({ siteId, guideDoc }) {
+const syncGuideCardIntoGuidesSection = async ({ siteId, guideDoc }) => {
   await syncGuideHeroToGuideGridItems(sanityWriteClient, {
     ...guideDoc,
     slug: typeof guideDoc?.slug === 'string' ? guideDoc.slug : guideDoc?.slug?.current,
@@ -22,7 +22,7 @@ async function syncGuideCardIntoGuidesSection({ siteId, guideDoc }) {
   })
 }
 
-async function normalizeDraftSections(documentId) {
+const normalizeDraftSections = async (documentId) => {
   const draft = await sanityWriteClient.fetch(groq`*[_id == $documentId][0]{_id,sections}`, {
     documentId,
   })
@@ -106,7 +106,7 @@ async function normalizeDraftSections(documentId) {
   return true
 }
 
-async function runSanityAgentGenerate({ documentId, schemaType, input }) {
+const runSanityAgentGenerate = async ({ documentId, schemaType, input }) => {
   if (!sanityAgentWriteClient?.agent?.action?.generate || !SANITY_AGENT_SCHEMA_ID) {
     throw new Error('Sanity Agent Generate is not configured.')
   }
@@ -153,7 +153,7 @@ async function runSanityAgentGenerate({ documentId, schemaType, input }) {
   }
 }
 
-export async function createAiDraftDocument(input) {
+export const createAiDraftDocument = async (input) => {
   if (!sanityWriteClient) {
     throw new Error('Sanity write credentials are not configured.')
   }

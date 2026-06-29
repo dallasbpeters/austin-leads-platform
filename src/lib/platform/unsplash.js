@@ -1,7 +1,7 @@
 const UNSPLASH_API_BASE = 'https://api.unsplash.com'
 const UNSPLASH_REFERRAL_SOURCE = process.env.UNSPLASH_REFERRAL_SOURCE || 'austin-leads-platform'
 
-function getUnsplashHeaders() {
+const getUnsplashHeaders = () => {
   const accessKey = process.env.UNSPLASH_ACCESS_KEY
 
   if (!accessKey) {
@@ -14,7 +14,7 @@ function getUnsplashHeaders() {
   }
 }
 
-function withReferral(url) {
+const withReferral = (url) => {
   if (!url) {
     return null
   }
@@ -29,7 +29,7 @@ function withReferral(url) {
   }
 }
 
-function normalizePhoto(photo) {
+const normalizePhoto = (photo) => {
   return {
     id: photo.id,
     description: photo.description || '',
@@ -57,7 +57,7 @@ function normalizePhoto(photo) {
   }
 }
 
-async function request(pathname, searchParams) {
+const request = async (pathname, searchParams) => {
   const url = new URL(`${UNSPLASH_API_BASE}${pathname}`)
 
   Object.entries(searchParams || {}).forEach(([key, value]) => {
@@ -79,11 +79,11 @@ async function request(pathname, searchParams) {
   return response.json()
 }
 
-export function isUnsplashConfigured() {
+export const isUnsplashConfigured = () => {
   return Boolean(process.env.UNSPLASH_ACCESS_KEY)
 }
 
-export async function searchUnsplashPhotos(query, page = 1, perPage = 12) {
+export const searchUnsplashPhotos = async (query, page = 1, perPage = 12) => {
   const data = await request('/search/photos', {
     query,
     page,
@@ -99,7 +99,7 @@ export async function searchUnsplashPhotos(query, page = 1, perPage = 12) {
   }
 }
 
-export async function registerUnsplashDownload(downloadLocation) {
+export const registerUnsplashDownload = async (downloadLocation) => {
   if (!downloadLocation) {
     return null
   }

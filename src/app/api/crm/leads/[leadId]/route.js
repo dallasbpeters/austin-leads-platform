@@ -8,7 +8,7 @@ import {
   updateLeadSubmission,
 } from '@/lib/leads/db'
 
-export async function PATCH(request, { params }) {
+export const PATCH = async (request, { params }) => {
   const unauthorized = await requireAdminRequest()
 
   if (unauthorized) {
@@ -32,7 +32,7 @@ export async function PATCH(request, { params }) {
   return NextResponse.json({ lead })
 }
 
-export async function GET(_request, { params }) {
+export const GET = async (_request, { params }) => {
   const unauthorized = await requireAdminRequest()
 
   if (unauthorized) {

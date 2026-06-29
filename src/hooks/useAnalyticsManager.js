@@ -9,7 +9,7 @@ import {
   updateAnalyticsGoal,
 } from '@/services/admin/analytics'
 
-export function useAnalyticsManager({ goals, sites }) {
+export const useAnalyticsManager = ({ goals, sites }) => {
   const [goalList, setGoalList] = useState(goals)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState(buildDefaultAnalyticsGoalForm(sites))
@@ -18,7 +18,7 @@ export function useAnalyticsManager({ goals, sites }) {
     setGoalList(goals)
   }, [goals])
 
-  async function refreshGoals() {
+  const refreshGoals = async () => {
     setLoading(true)
 
     try {
@@ -29,7 +29,7 @@ export function useAnalyticsManager({ goals, sites }) {
     }
   }
 
-  async function submitGoal(event) {
+  const submitGoal = async (event) => {
     event.preventDefault()
     setLoading(true)
 
@@ -42,7 +42,7 @@ export function useAnalyticsManager({ goals, sites }) {
     }
   }
 
-  async function updateGoal(goalId, status) {
+  const updateGoal = async (goalId, status) => {
     setLoading(true)
 
     try {

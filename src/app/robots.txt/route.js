@@ -4,7 +4,7 @@ import { getPrimaryUrl, resolveSiteByHost } from '@/lib/platform/content'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export const GET = async () => {
   const requestHeaders = await headers()
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
   const site = await resolveSiteByHost(host)

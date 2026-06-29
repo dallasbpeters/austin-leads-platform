@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
-function buildInitialForm(settings) {
+const buildInitialForm = (settings) => {
   return {
     emailNotificationsEnabled: settings.emailNotificationsEnabled !== false,
     notificationToEmail: settings.notificationToEmail || '',
@@ -19,7 +19,7 @@ function buildInitialForm(settings) {
   }
 }
 
-async function saveLeadSettings(payload) {
+const saveLeadSettings = async (payload) => {
   const response = await fetch('/api/leads/settings', {
     method: 'POST',
     headers: {
@@ -37,7 +37,7 @@ async function saveLeadSettings(payload) {
   return data.settings
 }
 
-async function fetchLeadSettings() {
+const fetchLeadSettings = async () => {
   const response = await fetch('/api/leads/settings', {
     method: 'GET',
     cache: 'no-store',
@@ -52,7 +52,7 @@ async function fetchLeadSettings() {
   return data.settings
 }
 
-function StatusCard({ title, value, tone = 'neutral', detail }) {
+const StatusCard = ({ title, value, tone = 'neutral', detail }) => {
   const toneClass =
     tone === 'success'
       ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
@@ -69,7 +69,7 @@ function StatusCard({ title, value, tone = 'neutral', detail }) {
   )
 }
 
-function SettingsStatusCards({ settings }) {
+const SettingsStatusCards = ({ settings }) => {
   const providerLabel = settings.apiKeyConfigured ? 'Resend ready' : 'API key missing'
   const providerTone = settings.providerReady ? 'success' : 'warning'
   const providerDetail = settings.apiKeyConfigured
@@ -111,7 +111,7 @@ function SettingsStatusCards({ settings }) {
   )
 }
 
-export default function LeadSettingsClient({ initialSettings }) {
+const LeadSettingsClient = ({ initialSettings }) => {
   const router = useRouter()
   const [settings, setSettings] = useState(initialSettings)
   const [form, setForm] = useState(() => buildInitialForm(initialSettings))
@@ -123,7 +123,7 @@ export default function LeadSettingsClient({ initialSettings }) {
   useEffect(() => {
     let active = true
 
-    async function syncSettings() {
+    const syncSettings = async () => {
       setIsSyncing(true)
 
       try {
@@ -151,16 +151,16 @@ export default function LeadSettingsClient({ initialSettings }) {
     }
   }, [])
 
-  function updateField(name, value) {
+  const updateField = (name, value) => {
     setForm((current) => ({ ...current, [name]: value }))
   }
 
-  function handleSubmit(event) {
+  const handleSubmit = (event) => {
     event.preventDefault()
     setMessage('')
     setError('')
 
-    async function persist() {
+    const persist = async () => {
       setIsSaving(true)
 
       try {
@@ -337,3 +337,5 @@ export default function LeadSettingsClient({ initialSettings }) {
     </div>
   )
 }
+
+export default LeadSettingsClient

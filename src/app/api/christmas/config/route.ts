@@ -1,6 +1,6 @@
 export const revalidate = 3600
 
-export async function GET() {
+export const GET = async () => {
   return Response.json({
     depositAmountCents: 15_000,
     currency: 'usd',

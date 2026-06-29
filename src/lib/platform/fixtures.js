@@ -252,6 +252,16 @@ const solarPagePrimaryServiceSlugs = new Set([
 
 const solarPageRelatedServiceSlugs = new Set(['rodent-deterrent', 'car-chargers'])
 
+const texasSolarNavigation = [
+  { href: '/solar', label: 'Solar' },
+  { href: '/roofing', label: 'Roofing' },
+  { href: '/services', label: 'All Services' },
+  { href: '/hail-damage', label: 'Hail & Storm Damage' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/about', label: 'About Us' },
+  { href: '#consultation', label: 'Contact', variant: 'button' },
+]
+
 export const sites = portfolioDomains.map((entry, index) => {
   const tier = tierMap[entry.tier]
   const brand = brandByCategory[entry.category]
@@ -274,6 +284,7 @@ export const sites = portfolioDomains.map((entry, index) => {
         : [`www.${entry.domain}`],
     redirectTarget: tier === 'redirect' ? redirectTargetByCategory[entry.category] : null,
     leadForm: tier === 'redirect' ? null : buildLeadForm(entry.domain, categories[entry.category], title),
+    navigation: slug === 'texas-solar-and-roofing-pros' ? texasSolarNavigation : [],
     seo: {
       title,
       description: getSiteSeoDescription(slug, title, categories[entry.category]),

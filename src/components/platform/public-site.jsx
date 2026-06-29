@@ -106,7 +106,11 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
       />
 
       {site.slug === 'txchristmaslights' && <ChristmasFaviconBlinker />}
-      {flags.useSolarShell ? <Header /> : <GenericHeader site={site} navigation={navigation} />}
+      {flags.useSolarShell ? (
+        <Header navigation={navigation} />
+      ) : (
+        <GenericHeader site={site} navigation={navigation} />
+      )}
 
       <main
         id="main-content"

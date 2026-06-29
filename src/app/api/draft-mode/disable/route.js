@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 import { frontendOriginAllowlist, localFrontendUrl } from '@/sanity/env'
 
-function resolveRedirectPath(requestUrl) {
+const resolveRedirectPath = (requestUrl) => {
   const allowedOrigins = new Set(
     [new URL(requestUrl).origin, localFrontendUrl, ...frontendOriginAllowlist].filter(Boolean),
   )
@@ -27,7 +27,7 @@ function resolveRedirectPath(requestUrl) {
   return '/'
 }
 
-export async function GET(request) {
+export const GET = async (request) => {
   const redirectTo = resolveRedirectPath(request.url)
   const draft = await draftMode()
 

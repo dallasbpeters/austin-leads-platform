@@ -16,7 +16,7 @@ import {
 
 export const runtime = 'nodejs'
 
-function deriveRequestStatus(recipients) {
+const deriveRequestStatus = (recipients) => {
   const statuses = recipients.map((recipient) => String(recipient.status || '').toLowerCase())
   if (statuses.some((status) => status === 'declined')) {
     return 'declined'
@@ -30,13 +30,13 @@ function deriveRequestStatus(recipients) {
   return 'completed'
 }
 
-function decodeDataUrl(dataUrl) {
+const decodeDataUrl = (dataUrl) => {
   const value = String(dataUrl || '')
   const [, payload = ''] = value.split(',')
   return Buffer.from(payload, 'base64')
 }
 
-async function loadPdfFromAsset(requestRecord) {
+const loadPdfFromAsset = async (requestRecord) => {
   if (!requestRecord.document_asset_id) {
     return null
   }
@@ -53,7 +53,7 @@ async function loadPdfFromAsset(requestRecord) {
   }
 }
 
-function getProviderDocumentUrl(requestRecord) {
+const getProviderDocumentUrl = (requestRecord) => {
   return (
     requestRecord.provider_payload?.submission?.documents?.[0]?.url ||
     requestRecord.provider_payload?.documents?.[0]?.url ||
@@ -61,7 +61,7 @@ function getProviderDocumentUrl(requestRecord) {
   )
 }
 
-async function loadPdfFromUrl(requestRecord) {
+const loadPdfFromUrl = async (requestRecord) => {
   const sourceUrl = getProviderDocumentUrl(requestRecord)
   if (!sourceUrl) {
     return null
@@ -79,7 +79,7 @@ async function loadPdfFromUrl(requestRecord) {
   }
 }
 
-async function loadSourcePdfBytes(requestRecord) {
+const loadSourcePdfBytes = async (requestRecord) => {
   const fromAsset = await loadPdfFromAsset(requestRecord)
   if (fromAsset) {
     return fromAsset
@@ -87,15 +87,15 @@ async function loadSourcePdfBytes(requestRecord) {
   return loadPdfFromUrl(requestRecord)
 }
 
-function clamp(value, min, max) {
+const clamp = (value, min, max) => {
   return Math.min(max, Math.max(min, value))
 }
 
-function cleanFieldText(value) {
+const cleanFieldText = (value) => {
   return String(value || '').trim()
 }
 
-function getFieldBox(field, pageWidth, pageHeight) {
+const getFieldBox = (field, pageWidth, pageHeight) => {
   const x = clamp(Number(field?.x) || 0, 0, 1)
   const y = clamp(Number(field?.y) || 0, 0, 1)
   const w = clamp(Number(field?.w) || 0, 0.02, 1)
@@ -109,7 +109,7 @@ function getFieldBox(field, pageWidth, pageHeight) {
   }
 }
 
-function getSignatureText(field, signerName, signatureText) {
+const getSignatureText = (field, signerName, signatureText) => {
   if (field?.type === 'initials') {
     const source = signatureText || signerName || ''
     return source
@@ -122,14 +122,14 @@ function getSignatureText(field, signerName, signatureText) {
   return signatureText || signerName || ''
 }
 
-async function createSignedPdfBytes({
+const createSignedPdfBytes = async ({
   sourceBytes,
   signerName,
   signatureText,
   signatureImage,
   completedAt,
   builderFields = [],
-}) {
+}) => {
   const pdfDoc = await PDFDocument.load(sourceBytes)
   const pages = pdfDoc.getPages()
   const bodyFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
@@ -226,7 +226,7 @@ async function createSignedPdfBytes({
   return Buffer.from(await pdfDoc.save())
 }
 
-function extractBuilderFields(requestRecord) {
+const extractBuilderFields = (requestRecord) => {
   return (
     requestRecord.provider_payload?.builderFields ||
     requestRecord.provider_payload?.documentFields ||
@@ -236,7 +236,7 @@ function extractBuilderFields(requestRecord) {
   )
 }
 
-async function createSignedDocument(requestRecord, recipient, body, completedAt) {
+const createSignedDocument = async (requestRecord, recipient, body, completedAt) => {
   try {
     const sourcePdf = await loadSourcePdfBytes(requestRecord)
     if (!sourcePdf) {
@@ -288,7 +288,7 @@ async function createSignedDocument(requestRecord, recipient, body, completedAt)
   }
 }
 
-function buildCompletedRecipientPayload(recipient, body) {
+const buildCompletedRecipientPayload = (recipient, body) => {
   return {
     status: 'completed',
     sentAt: recipient.sent_at || body?.completedAt || null,
@@ -305,7 +305,7 @@ function buildCompletedRecipientPayload(recipient, body) {
   }
 }
 
-async function createCompletionAuditEvent(requestRecord, recipient, body, signedDocumentAssetId) {
+const createCompletionAuditEvent = async (requestRecord, recipient, body, signedDocumentAssetId) => {
   await createDocumentAuditEvent({
     requestId: requestRecord.id,
     clientId: requestRecord.client_id,
@@ -321,7 +321,7 @@ async function createCompletionAuditEvent(requestRecord, recipient, body, signed
   })
 }
 
-export async function POST(request, { params }) {
+export const POST = async (request, { params }) => {
   if (!hasDocumentDatabase()) {
     return NextResponse.json({ error: 'Document database is not configured.' }, { status: 503 })
   }

@@ -7,7 +7,7 @@ import { DayPicker, getDefaultClassNames } from 'react-day-picker'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-function Calendar({
+const Calendar = ({
   className,
   classNames,
   showOutsideDays = true,
@@ -16,7 +16,7 @@ function Calendar({
   formatters,
   components,
   ...props
-}) {
+}) => {
   const defaultClassNames = getDefaultClassNames()
 
   return (
@@ -127,7 +127,7 @@ function Calendar({
   )
 }
 
-function CalendarDayButton({ className, day, modifiers, ...props }) {
+const CalendarDayButton = ({ className, day, modifiers, ...props }) => {
   const defaultClassNames = getDefaultClassNames()
 
   const ref = React.useRef(null)

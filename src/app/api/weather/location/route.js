@@ -6,12 +6,12 @@ const NWS_ALERTS_URL = 'https://api.weather.gov/alerts/active'
 const SWDI_BASE_URL = 'https://www.ncdc.noaa.gov/swdiws/csv'
 const WEATHER_USER_AGENT = 'Texas Solar and Roofing Pros (info@texassolarandroofingpros.com)'
 
-function formatLocationName(location) {
+const formatLocationName = (location) => {
   const parts = [location.name, location.admin1, location.country].filter(Boolean)
   return parts.join(', ')
 }
 
-function buildMapEmbedUrl(latitude, longitude) {
+const buildMapEmbedUrl = (latitude, longitude) => {
   const latDelta = 0.18
   const lonDelta = 0.24
   const left = (longitude - lonDelta).toFixed(4)
@@ -22,7 +22,7 @@ function buildMapEmbedUrl(latitude, longitude) {
   return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${latitude}%2C${longitude}`
 }
 
-function buildBoundingBox(latitude, longitude) {
+const buildBoundingBox = (latitude, longitude) => {
   const latDelta = 0.22
   const lonDelta = 0.28
 
@@ -34,11 +34,11 @@ function buildBoundingBox(latitude, longitude) {
   }
 }
 
-function formatSwdiDate(date) {
+const formatSwdiDate = (date) => {
   return date.toISOString().slice(0, 10).replaceAll('-', '')
 }
 
-function parseCsv(csvText) {
+const parseCsv = (csvText) => {
   const rows = csvText.trim().split(/\r?\n/).filter(Boolean)
 
   if (rows.length < 2) {
@@ -56,7 +56,7 @@ function parseCsv(csvText) {
   })
 }
 
-function normalizeSwdiPoint(row, fallbackType) {
+const normalizeSwdiPoint = (row, fallbackType) => {
   const latitude = Number(row.lat || row.latitude)
   const longitude = Number(row.lon || row.longitude)
 
@@ -80,7 +80,7 @@ function normalizeSwdiPoint(row, fallbackType) {
   }
 }
 
-function toDateKey(value) {
+const toDateKey = (value) => {
   const date = new Date(value)
 
   if (Number.isNaN(date.getTime())) {
@@ -90,7 +90,7 @@ function toDateKey(value) {
   return date.toISOString().slice(0, 10)
 }
 
-function milesBetween(latitudeA, longitudeA, latitudeB, longitudeB) {
+const milesBetween = (latitudeA, longitudeA, latitudeB, longitudeB) => {
   const toRadians = (value) => (value * Math.PI) / 180
   const earthRadiusMiles = 3958.8
   const dLat = toRadians(latitudeB - latitudeA)
@@ -105,7 +105,7 @@ function milesBetween(latitudeA, longitudeA, latitudeB, longitudeB) {
   return 2 * earthRadiusMiles * Math.asin(Math.sqrt(a))
 }
 
-function buildStormEvents({ location, hailPoints, reportPoints }) {
+const buildStormEvents = ({ location, hailPoints, reportPoints }) => {
   const groups = new Map()
 
   for (const point of [...hailPoints, ...reportPoints]) {
@@ -185,7 +185,7 @@ function buildStormEvents({ location, hailPoints, reportPoints }) {
     .toSorted((a, b) => b.date.localeCompare(a.date))
 }
 
-function weatherCodeLabel(code) {
+const weatherCodeLabel = (code) => {
   const labels = {
     0: 'Clear',
     1: 'Mostly clear',
@@ -220,7 +220,7 @@ function weatherCodeLabel(code) {
   return labels[code] || 'Weather update'
 }
 
-function deriveRisk({ alerts, current, daily }) {
+const deriveRisk = ({ alerts, current, daily }) => {
   const alertText = alerts.map((alert) => `${alert.event} ${alert.headline} ${alert.severity}`).join(' ')
   const severeAlert = /hail|severe thunderstorm|tornado|destructive wind/i.test(alertText)
   const hailAlert = /hail/i.test(alertText)
@@ -256,7 +256,7 @@ function deriveRisk({ alerts, current, daily }) {
   }
 }
 
-function fallbackRisk(locationName) {
+const fallbackRisk = (locationName) => {
   return {
     level: 'low',
     headline: 'Weather providers are partially unavailable',
@@ -264,7 +264,7 @@ function fallbackRisk(locationName) {
   }
 }
 
-async function fetchJson(url, init) {
+const fetchJson = async (url, init) => {
   const response = await fetch(url, {
     ...init,
     headers: {
@@ -281,7 +281,7 @@ async function fetchJson(url, init) {
   return response.json()
 }
 
-async function fetchText(url, init) {
+const fetchText = async (url, init) => {
   const response = await fetch(url, {
     ...init,
     headers: {
@@ -298,7 +298,7 @@ async function fetchText(url, init) {
   return response.text()
 }
 
-async function geocodeQuery(query) {
+const geocodeQuery = async (query) => {
   const url = new URL(OPEN_METEO_GEOCODE_URL)
   url.searchParams.set('name', query)
   url.searchParams.set('count', '1')
@@ -320,7 +320,7 @@ async function geocodeQuery(query) {
   }
 }
 
-async function fetchForecast(latitude, longitude) {
+const fetchForecast = async (latitude, longitude) => {
   const url = new URL(OPEN_METEO_FORECAST_URL)
   url.searchParams.set('latitude', String(latitude))
   url.searchParams.set('longitude', String(longitude))
@@ -345,7 +345,7 @@ async function fetchForecast(latitude, longitude) {
   return fetchJson(url.toString())
 }
 
-async function fetchAlerts(latitude, longitude) {
+const fetchAlerts = async (latitude, longitude) => {
   const url = new URL(NWS_ALERTS_URL)
   url.searchParams.set('point', `${latitude},${longitude}`)
 
@@ -367,7 +367,7 @@ async function fetchAlerts(latitude, longitude) {
   }))
 }
 
-async function fetchSwdiDataset(dataset, bbox, startDate, endDate) {
+const fetchSwdiDataset = async (dataset, bbox, startDate, endDate) => {
   const dateRange = `${formatSwdiDate(startDate)}:${formatSwdiDate(endDate)}`
   const bboxValue = [bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat].join(',')
   const url = `${SWDI_BASE_URL}/${dataset}/${dateRange}/2500?bbox=${bboxValue}`
@@ -381,7 +381,7 @@ async function fetchSwdiDataset(dataset, bbox, startDate, endDate) {
   return parseCsv(csvText)
 }
 
-function normalizeForecast(forecast) {
+const normalizeForecast = (forecast) => {
   const rawCurrent = forecast?.current
   const current = rawCurrent
     ? {
@@ -408,7 +408,7 @@ function normalizeForecast(forecast) {
   return { current, daily }
 }
 
-function logSettledRejection(result, label, latitude, longitude) {
+const logSettledRejection = (result, label, latitude, longitude) => {
   if (result.status === 'fulfilled') {
     return
   }
@@ -419,11 +419,11 @@ function logSettledRejection(result, label, latitude, longitude) {
   })
 }
 
-function getSettledValue(result, fallback) {
+const getSettledValue = (result, fallback) => {
   return result.status === 'fulfilled' ? result.value : fallback
 }
 
-function computeProviderStatus(...settledResults) {
+const computeProviderStatus = (...settledResults) => {
   const [forecastData, alerts, hailRowsResult, reportRowsResult] = settledResults
   return {
     forecast: forecastData.status === 'fulfilled' ? 'ok' : 'error',
@@ -433,7 +433,7 @@ function computeProviderStatus(...settledResults) {
   }
 }
 
-function normalizeStormPoints(hailRows, reportRows) {
+const normalizeStormPoints = (hailRows, reportRows) => {
   const hailPoints = hailRows
     .map((row) => normalizeSwdiPoint(row, 'hail-signature'))
     .filter(Boolean)
@@ -446,7 +446,7 @@ function normalizeStormPoints(hailRows, reportRows) {
   return { hailPoints, reportPoints }
 }
 
-export async function GET(request) {
+export const GET = async (request) => {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')?.trim()
   const latParam = searchParams.get('lat')

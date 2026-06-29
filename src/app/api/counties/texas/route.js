@@ -7,7 +7,7 @@ const SOURCE_URL = 'https://raw.githubusercontent.com/plotly/datasets/master/geo
 
 let cached = null
 
-export async function GET() {
+export const GET = async () => {
   if (cached) {
     return Response.json(cached, {
       headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800' },

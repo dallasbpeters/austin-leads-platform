@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 
 let pdfjsModulePromise = null
 
-function loadPdfjs() {
+const loadPdfjs = () => {
   if (!pdfjsModulePromise) {
     pdfjsModulePromise = import('pdfjs-dist/build/pdf.mjs')
   }
   return pdfjsModulePromise
 }
 
-export default function PdfPreviewSurface({
+const PdfPreviewSurface = ({
   sourceUrl,
   title,
   emptyLabel,
@@ -19,7 +19,7 @@ export default function PdfPreviewSurface({
   pageNumber = 1,
   maxRenderWidth = null,
   maxRenderHeight = null,
-}) {
+}) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
@@ -56,7 +56,7 @@ export default function PdfPreviewSurface({
     let loadingTask = null
     let renderTask = null
 
-    async function renderPreview() {
+    const renderPreview = async () => {
       const canvas = canvasRef.current
       if (!canvas || !sourceUrl || !containerSize.width) {
         setRenderState(sourceUrl ? 'loading' : 'idle')
@@ -178,3 +178,5 @@ export default function PdfPreviewSurface({
     </div>
   )
 }
+
+export default PdfPreviewSurface

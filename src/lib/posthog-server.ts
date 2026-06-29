@@ -18,7 +18,7 @@ import { PostHog } from 'posthog-node'
 
 const PUBLIC_HOST = 'https://us.i.posthog.com'
 
-function parsePostHogKeyMap(): Record<string, string> {
+const parsePostHogKeyMap = (): Record<string, string> => {
   const raw = process.env.NEXT_PUBLIC_POSTHOG_KEYS
   if (!raw) {
     return {}
@@ -33,7 +33,7 @@ function parsePostHogKeyMap(): Record<string, string> {
 
 const KEY_MAP = parsePostHogKeyMap()
 
-function resolveKey(siteSlug?: string | null): string | null {
+const resolveKey = (siteSlug?: string | null): string | null => {
   if (siteSlug && KEY_MAP[siteSlug]) {
     return KEY_MAP[siteSlug]
   }
@@ -56,7 +56,7 @@ const clientCache = new Map<string, PostHog>()
  * Server-side calls hit PostHog directly (no Next /ingest proxy) so they
  * don't depend on the app being publicly routable.
  */
-export function getPostHogClient(siteSlug?: string | null): PostHog | null {
+export const getPostHogClient = (siteSlug?: string | null): PostHog | null => {
   const key = resolveKey(siteSlug)
   if (!key) {
     // Only warn in actual `pnpm dev` runs. Vitest sets NODE_ENV=test and

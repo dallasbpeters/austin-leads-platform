@@ -1,11 +1,11 @@
 import { getSql, hasDatabaseUrl } from '../db/pool.js'
 import { initialDomainRecords } from './fixtures.js'
 
-export function hasDomainDatabase() {
+export const hasDomainDatabase = () => {
   return hasDatabaseUrl()
 }
 
-function normalizeDomainRow(row) {
+const normalizeDomainRow = (row) => {
   if (!row) {
     return row
   }
@@ -28,7 +28,7 @@ function normalizeDomainRow(row) {
   }
 }
 
-export async function ensureDomainRecordsTable() {
+export const ensureDomainRecordsTable = async () => {
   const sql = getSql()
 
   await sql`
@@ -51,7 +51,7 @@ export async function ensureDomainRecordsTable() {
   `
 }
 
-export async function seedInitialDomainRecords() {
+export const seedInitialDomainRecords = async () => {
   if (!hasDomainDatabase()) {
     return
   }
@@ -63,7 +63,7 @@ export async function seedInitialDomainRecords() {
   }
 }
 
-export async function listDomainRecordsDb() {
+export const listDomainRecordsDb = async () => {
   const sql = getSql()
   await ensureDomainRecordsTable()
 
@@ -76,7 +76,7 @@ export async function listDomainRecordsDb() {
   return rows.map(normalizeDomainRow)
 }
 
-export async function getDomainRecordDb(domain) {
+export const getDomainRecordDb = async (domain) => {
   const sql = getSql()
   await ensureDomainRecordsTable()
 
@@ -90,7 +90,7 @@ export async function getDomainRecordDb(domain) {
   return normalizeDomainRow(row)
 }
 
-export async function upsertDomainRecordDb(domainRecord) {
+export const upsertDomainRecordDb = async (domainRecord) => {
   const sql = getSql()
   await ensureDomainRecordsTable()
 
@@ -141,7 +141,7 @@ export async function upsertDomainRecordDb(domainRecord) {
   return normalizeDomainRow(row)
 }
 
-export async function updateDomainRecordDb(domain, patch) {
+export const updateDomainRecordDb = async (domain, patch) => {
   const existing = await getDomainRecordDb(domain)
 
   if (!existing) {
@@ -155,7 +155,7 @@ export async function updateDomainRecordDb(domain, patch) {
   })
 }
 
-export async function deleteDomainRecordDb(domain) {
+export const deleteDomainRecordDb = async (domain) => {
   const sql = getSql()
   await ensureDomainRecordsTable()
 

@@ -9,7 +9,7 @@ import {
   listLeadSubmissions,
 } from '@/lib/leads/db'
 
-export async function GET(request) {
+export const GET = async (request) => {
   const unauthorized = await requireAdminRequest()
 
   if (unauthorized) {

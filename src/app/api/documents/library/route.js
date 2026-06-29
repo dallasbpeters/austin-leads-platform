@@ -5,11 +5,11 @@ import { createDocumentLibraryItem, ensureDocumentTables, hasDocumentDatabase } 
 
 export const runtime = 'nodejs'
 
-function cleanString(value) {
+const cleanString = (value) => {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function buildDocumentPayload(body, title, fileName, fileBase64) {
+const buildDocumentPayload = (body, title, fileName, fileBase64) => {
   return {
     clientId: cleanString(body?.clientId) || null,
     requestId: cleanString(body?.requestId) || null,
@@ -23,7 +23,7 @@ function buildDocumentPayload(body, title, fileName, fileBase64) {
   }
 }
 
-export async function POST(request) {
+export const POST = async (request) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

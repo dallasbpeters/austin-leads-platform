@@ -1,10 +1,18 @@
-// oxlint-disable no-nested-ternary, func-style
+// oxlint-disable no-nested-ternary, func-style no-eq-null
 import { BlockContentIcon, CircleIcon } from '@sanity/icons'
 
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
+const portableTextParagraph = (key, text) => [
+  {
+    _key: key,
+    _type: 'block',
+    style: 'normal',
+    children: [{ _key: `${key}-span`, _type: 'span', text }],
+  },
+]
 
 /**
  * Generate an inline image field definition with hotspot/crop enabled.
@@ -62,7 +70,7 @@ const richTextToPreviewString = (value) => {
     .join(' ')
 }
 const previewText = (value, fallback) => {
-  const normalized = richTextToPreviewString(value).replaceAll(/\s+/g, ' ').trim()
+  const normalized = richTextToPreviewString(value).replaceAll(/\s+/gu, ' ').trim()
   if (!normalized) {
     return fallback
   }
@@ -71,10 +79,11 @@ const previewText = (value, fallback) => {
 /** Keeps the section block type visible in the Sections array list even when body copy exists. */
 const pageSectionListSubtitle = (sectionLabel, ...sources) => {
   for (const source of sources) {
-    if (source == null || source === false) {
+    if (source === null || source === false) {
       continue
     }
-    const piece = typeof source === 'string' ? source.replaceAll(/\s+/g, ' ').trim() : previewText(source, '')
+    const piece =
+      typeof source === 'string' ? source.replaceAll(/\s+/gu, ' ').trim() : previewText(source, '')
     if (piece) {
       return `${sectionLabel} · ${piece}`
     }
@@ -949,7 +958,7 @@ const serviceGridItemType = {
     prepare({ title, eyebrow, subtitle, price, media, isRecommended }) {
       const line = isRecommended ? 'Recommended' : previewText(eyebrow || subtitle, '')
       const priceLine =
-        price != null && Number.isFinite(Number(price)) ? `$${Number(price).toFixed(2)}` : null
+        price !== null && Number.isFinite(Number(price)) ? `$${Number(price).toFixed(2)}` : null
       const subtitleText = [priceLine, line || null].filter(Boolean).join(' · ') || 'Service card'
       return {
         title: title || 'Service card',
@@ -2441,10 +2450,45 @@ const adoptionReasonItemType = {
 
 const solarAdoptionSectionType = {
   name: 'solarAdoptionSection',
-  title: 'Solar Adoption Section',
+  title: 'Solar Adoption + Reason Cards',
   type: 'object',
+  fieldsets: [
+    { name: 'visualAssets', title: 'Visual assets', options: { collapsible: true, collapsed: false } },
+  ],
   initialValue: {
     type: 'solarAdoption',
+    reasons: [
+      {
+        _key: 'steady-monthly-payment',
+        _type: 'adoptionReasonItem',
+        icon: 'Page',
+        title: 'Pay the same amount every month',
+        body: portableTextParagraph(
+          'steady-monthly-payment-body',
+          'No more fluctuating power bills. Switching to solar can help replace unpredictable utility costs with a steadier monthly plan.',
+        ),
+      },
+      {
+        _key: 'no-upfront-cost',
+        _type: 'adoptionReasonItem',
+        icon: 'Wallet',
+        title: 'No upfront or out-of-pocket cost to switch',
+        body: portableTextParagraph(
+          'no-upfront-cost-body',
+          'Solar financing options can reduce the upfront barrier while the system starts offsetting utility power.',
+        ),
+      },
+      {
+        _key: 'states-we-serve',
+        _type: 'adoptionReasonItem',
+        icon: 'MailOpen',
+        title: 'States We Serve',
+        body: portableTextParagraph(
+          'states-we-serve-body',
+          'Texas, Colorado, Virginia, Ohio, Nevada, Oregon, Illinois, South Carolina, New Mexico, and Connecticut.',
+        ),
+      },
+    ],
   },
   fields: [
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
@@ -2473,34 +2517,39 @@ const solarAdoptionSectionType = {
       name: 'roofImage',
       title: 'Roof image metadata',
       type: 'heroImage',
+      fieldset: 'visualAssets',
       options: canvasExclude,
     },
     {
       ...defineUploadedImage(
         'roofImageAsset',
-        'Roof image',
+        'Upload roof image',
         canvasPurpose('Wide roof image shown across the bottom of the section.'),
       ),
+      fieldset: 'visualAssets',
     },
     {
       name: 'panelImage',
       title: 'Solar panel image metadata',
       type: 'heroImage',
+      fieldset: 'visualAssets',
       options: canvasExclude,
     },
     {
       ...defineUploadedImage(
         'panelImageAsset',
-        'Solar panel image',
+        'Upload solar panel image',
         canvasPurpose('Transparent or cutout panel image layered over the roof.'),
       ),
+      fieldset: 'visualAssets',
     },
     {
       name: 'reasons',
-      title: 'Reasons',
+      title: 'Subsection reason cards',
       type: 'array',
       of: [{ type: 'adoptionReasonItem' }],
-      options: canvasPurpose('Icon cards beneath the hero area — each with heading, icon, and body.'),
+      validation: (Rule) => Rule.min(1).max(6),
+      options: canvasPurpose('Icon cards beneath the roof/panel visual — each with heading, icon, and body.'),
     },
   ],
   preview: {
@@ -4623,7 +4672,16 @@ const baseFields = [
     name: 'templateLevel',
     title: 'Template level',
     type: 'string',
-    options: { list: ['hero', 'landing'], ...canvasExclude },
+    description: 'Select the page template family used by this page.',
+    options: {
+      list: [
+        { title: 'Hero', value: 'hero' },
+        { title: 'Landing', value: 'landing' },
+        { title: 'Install process', value: 'installProcess' },
+      ],
+      layout: 'radio',
+      ...canvasExclude,
+    },
   },
   {
     name: 'slug',

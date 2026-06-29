@@ -1,15 +1,15 @@
 import { getSql, hasDatabaseUrl } from '../db/pool.js'
 import { LEAD_PIPELINE_STAGES } from './constants.js'
 
-export function hasLeadDatabase() {
+export const hasLeadDatabase = () => {
   return hasDatabaseUrl()
 }
 
-function clampLimit(limit, fallback = 10, max = 100) {
+const clampLimit = (limit, fallback = 10, max = 100) => {
   return Number.isFinite(limit) ? Math.max(1, Math.min(limit, max)) : fallback
 }
 
-function normalizeLeadRow(row) {
+const normalizeLeadRow = (row) => {
   if (!row) {
     return row
   }
@@ -20,7 +20,7 @@ function normalizeLeadRow(row) {
   }
 }
 
-export async function ensureLeadSubmissionsTable() {
+export const ensureLeadSubmissionsTable = async () => {
   const sql = getSql()
 
   await sql`
@@ -59,7 +59,7 @@ export async function ensureLeadSubmissionsTable() {
   await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS internal_notes TEXT`
 }
 
-export async function createLeadSubmission(input) {
+export const createLeadSubmission = async (input) => {
   const sql = getSql()
   const id = crypto.randomUUID()
 
@@ -102,7 +102,7 @@ export async function createLeadSubmission(input) {
   return normalizeLeadRow(row)
 }
 
-export async function listRecentLeadSubmissions(limit = 10) {
+export const listRecentLeadSubmissions = async (limit = 10) => {
   const sql = getSql()
   const safeLimit = clampLimit(limit, 10, 50)
 
@@ -116,13 +116,13 @@ export async function listRecentLeadSubmissions(limit = 10) {
   return rows.map(normalizeLeadRow)
 }
 
-export async function listLeadSubmissions({
+export const listLeadSubmissions = async ({
   limit = 50,
   search = '',
   status = 'all',
   pipelineStage = 'all',
   serviceInterest = 'all',
-} = {}) {
+} = {}) => {
   const sql = getSql()
   const safeLimit = clampLimit(limit, 50, 200)
   const hasSearch = Boolean(search?.trim())
@@ -156,7 +156,7 @@ export async function listLeadSubmissions({
   return rows.map(normalizeLeadRow)
 }
 
-export async function getLeadSubmissionById(leadId) {
+export const getLeadSubmissionById = async (leadId) => {
   const sql = getSql()
 
   const [row] = await sql`
@@ -169,7 +169,7 @@ export async function getLeadSubmissionById(leadId) {
   return normalizeLeadRow(row)
 }
 
-export async function updateLeadSubmission(leadId, updates) {
+export const updateLeadSubmission = async (leadId, updates) => {
   const sql = getSql()
   const existing = await getLeadSubmissionById(leadId)
 
@@ -215,7 +215,7 @@ export async function updateLeadSubmission(leadId, updates) {
   return normalizeLeadRow(row)
 }
 
-export async function getLeadSubmissionOverview() {
+export const getLeadSubmissionOverview = async () => {
   const sql = getSql()
 
   const [counts] = await sql`
@@ -243,7 +243,7 @@ export async function getLeadSubmissionOverview() {
   )
 }
 
-export async function getLeadPipelineSummary() {
+export const getLeadPipelineSummary = async () => {
   const sql = getSql()
 
   const rows = await sql`

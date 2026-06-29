@@ -10,15 +10,15 @@ export const runtime = 'nodejs'
 
 const IMAGE_URL_KEYS = ['raw', 'full', 'regular', 'small', 'thumb']
 
-function pickString(value, fallback) {
+const pickString = (value, fallback) => {
   return value || fallback
 }
 
-function buildImageUrls(urls) {
+const buildImageUrls = (urls) => {
   return Object.fromEntries(IMAGE_URL_KEYS.map((key) => [key, pickString(urls?.[key], '')]))
 }
 
-function buildHeroImage(photo) {
+const buildHeroImage = (photo) => {
   return {
     source: 'unsplash',
     unsplashId: photo.id,
@@ -37,7 +37,7 @@ function buildHeroImage(photo) {
   }
 }
 
-export async function POST(request, { params }) {
+export const POST = async (request, { params }) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

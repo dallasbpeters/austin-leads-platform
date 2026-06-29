@@ -1,3 +1,4 @@
+// oxlint-disable no-nested-ternary
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
@@ -12,81 +13,79 @@ const variants = {
   exit: { opacity: 0.5, filter: 'blur(10px)' },
 }
 
-function FaderImage({ src, alt, initialPriority, index, className, objectPosition, backgroundColor }) {
-  return (
-    <Image
-      src={src}
-      alt={alt ?? ''}
-      fill
-      sizes="100vw"
-      quality={68}
-      priority={initialPriority && index === 0}
-      fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
-      className={cn('object-cover', className)}
-      draggable={false}
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        objectPosition,
-        pointerEvents: 'none',
-        backgroundColor,
-      }}
-    />
-  )
-}
+const FaderImage = ({ src, alt, initialPriority, index, className, objectPosition, backgroundColor }) => (
+  <Image
+    src={src}
+    alt={alt ?? ''}
+    fill
+    sizes="100vw"
+    quality={68}
+    priority={initialPriority && index === 0}
+    fetchPriority={initialPriority && index === 0 ? 'high' : 'auto'}
+    className={cn('object-cover', className)}
+    draggable={false}
+    style={{
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      objectPosition,
+      pointerEvents: 'none',
+      backgroundColor,
+    }}
+  />
+)
 
-function AnimatedImageSlide({ index, fadeSec, imageClassName, objectPosition, borderRadius, children }) {
-  return (
-    <AnimatePresence initial={false} mode="wait">
-      <motion.div
-        key={index}
-        variants={variants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={{ type: 'tween', duration: fadeSec }}
-        className={cn(imageClassName)}
-        draggable={false}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition,
-          borderRadius,
-          pointerEvents: 'none',
-          willChange: 'opacity',
-        }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
-  )
-}
+const AnimatedImageSlide = ({ fadeSec, imageClassName, objectPosition, borderRadius, children }) => (
+  <motion.div
+    variants={variants}
+    initial="initial"
+    animate="animate"
+    exit="exit"
+    transition={{ type: 'tween', duration: fadeSec }}
+    className={cn(imageClassName)}
+    draggable={false}
+    style={{
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      objectPosition,
+      borderRadius,
+      pointerEvents: 'none',
+      willChange: 'opacity',
+    }}
+  >
+    {children}
+  </motion.div>
+)
 
-function StaticImageSlide({ imageClassName, objectPosition, borderRadius, children }) {
-  return (
-    <div
-      className={cn(imageClassName)}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        objectPosition,
-        borderRadius,
-        pointerEvents: 'none',
-      }}
-    >
-      {children}
-    </div>
-  )
-}
+const StaticImageSlide = ({ imageClassName, objectPosition, borderRadius, children }) => (
+  <div
+    className={cn(imageClassName)}
+    style={{
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      objectPosition,
+      borderRadius,
+      pointerEvents: 'none',
+    }}
+  >
+    {children}
+  </div>
+)
 
-function FaderOverlay({ showOverlay, overlayBlur, overlayColor, useGradient, overlayStyle, borderRadius }) {
+const FaderOverlay = ({
+  showOverlay,
+  overlayBlur,
+  overlayColor,
+  useGradient,
+  overlayStyle,
+  borderRadius,
+}) => {
   if (!showOverlay) {
     return null
   }
@@ -126,22 +125,23 @@ function FaderOverlay({ showOverlay, overlayBlur, overlayColor, useGradient, ove
     />
   )
 }
+const DEFAULT_IMAGES = [
+  {
+    src: 'https://framerusercontent.com/images/GfGkADagM4KEibNcIiRUWlfrR0.jpg',
+    alt: 'Gradient 1',
+  },
+  {
+    src: 'https://framerusercontent.com/images/aNsAT3jCvt4zglbWCUoFe33Q.jpg',
+    alt: 'Gradient 2',
+  },
+  {
+    src: 'https://framerusercontent.com/images/BYnxEV1zjYb9bhWh1IwBZ1ZoS60.jpg',
+    alt: 'Gradient 3',
+  },
+]
 
 export default function ImageFader({
-  images = [
-    {
-      src: 'https://framerusercontent.com/images/GfGkADagM4KEibNcIiRUWlfrR0.jpg',
-      alt: 'Gradient 1',
-    },
-    {
-      src: 'https://framerusercontent.com/images/aNsAT3jCvt4zglbWCUoFe33Q.jpg',
-      alt: 'Gradient 2',
-    },
-    {
-      src: 'https://framerusercontent.com/images/BYnxEV1zjYb9bhWh1IwBZ1ZoS60.jpg',
-      alt: 'Gradient 3',
-    },
-  ],
+  images = DEFAULT_IMAGES,
   interval = 3500,
   fadeDuration = 600,
   borderRadius = '24px',
@@ -205,41 +205,43 @@ export default function ImageFader({
         backgroundColor,
       }}
     >
-      {isInteractive ? (
-        <AnimatedImageSlide
-          index={index}
-          fadeSec={fadeSec}
-          imageClassName={imageClassName}
-          objectPosition={objectPosition}
-          borderRadius={borderRadius}
-        >
-          <FaderImage
-            src={cur.src}
-            alt={cur.alt}
-            initialPriority={initialPriority}
-            index={index}
-            className={imageClassName}
+      <AnimatePresence initial={false} mode="wait">
+        {isInteractive ? (
+          <AnimatedImageSlide
+            key={index}
+            fadeSec={fadeSec}
+            imageClassName={imageClassName}
             objectPosition={objectPosition}
-            backgroundColor={backgroundColor}
-          />
-        </AnimatedImageSlide>
-      ) : (
-        <StaticImageSlide
-          imageClassName={imageClassName}
-          objectPosition={objectPosition}
-          borderRadius={borderRadius}
-        >
-          <FaderImage
-            src={cur.src}
-            alt={cur.alt}
-            initialPriority={initialPriority}
-            index={0}
-            className={imageClassName}
+            borderRadius={borderRadius}
+          >
+            <FaderImage
+              src={cur.src}
+              alt={cur.alt}
+              initialPriority={initialPriority}
+              index={index}
+              className={imageClassName}
+              objectPosition={objectPosition}
+              backgroundColor={backgroundColor}
+            />
+          </AnimatedImageSlide>
+        ) : (
+          <StaticImageSlide
+            imageClassName={imageClassName}
             objectPosition={objectPosition}
-            backgroundColor={backgroundColor}
-          />
-        </StaticImageSlide>
-      )}
+            borderRadius={borderRadius}
+          >
+            <FaderImage
+              src={cur.src}
+              alt={cur.alt}
+              initialPriority={initialPriority}
+              index={0}
+              className={imageClassName}
+              objectPosition={objectPosition}
+              backgroundColor={backgroundColor}
+            />
+          </StaticImageSlide>
+        )}
+      </AnimatePresence>
       <FaderOverlay
         showOverlay={showOverlay}
         overlayBlur={overlayBlur}

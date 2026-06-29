@@ -13,7 +13,7 @@ import { useHailWeatherLookup } from '@/hooks/useHailWeatherLookup'
 
 const HailLayerMap = dynamic(() => import('@/components/hail-layer-map'), { ssr: false })
 
-function riskTone(level) {
+const riskTone = (level) => {
   if (level === 'high') {
     return 'border-red-500/30 bg-red-500/8 text-red-100'
   }
@@ -23,28 +23,28 @@ function riskTone(level) {
   return 'border-cyan-300/25 bg-cyan-300/10 text-cyan-900'
 }
 
-function formatNumber(value, suffix = '') {
+const formatNumber = (value, suffix = '') => {
   if (value === null || value === undefined || value === '') {
     return 'N/A'
   }
   return `${Math.round(Number(value))}${suffix}`
 }
 
-function formatDate(dateString) {
+const formatDate = (dateString) => {
   if (!dateString) {
     return ''
   }
   return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-function formatDistance(distanceMiles) {
+const formatDistance = (distanceMiles) => {
   if (distanceMiles === null || distanceMiles === undefined || Number.isNaN(Number(distanceMiles))) {
     return 'Nearby'
   }
   return `${Number(distanceMiles).toFixed(1)} mi`
 }
 
-function formatStormDate(dateString) {
+const formatStormDate = (dateString) => {
   if (!dateString) {
     return 'Recent storm'
   }
@@ -55,7 +55,7 @@ function formatStormDate(dateString) {
   })
 }
 
-function MetricCard({ icon: Icon, label, value, sublabel }) {
+const MetricCard = ({ icon: Icon, label, value, sublabel }) => {
   return (
     <Card className="bg-card border-border/80">
       <CardContent className="p-4">
@@ -70,7 +70,7 @@ function MetricCard({ icon: Icon, label, value, sublabel }) {
   )
 }
 
-function MetricCardsRow({ current, daily, alerts }) {
+const MetricCardsRow = ({ current, daily, alerts }) => {
   return (
     <div className="grid gap-3 md:grid-cols-3">
       <MetricCard
@@ -95,7 +95,7 @@ function MetricCardsRow({ current, daily, alerts }) {
   )
 }
 
-function RiskCard({ risk, location }) {
+const RiskCard = ({ risk, location }) => {
   if (!risk) {
     return null
   }
@@ -125,7 +125,7 @@ function RiskCard({ risk, location }) {
   )
 }
 
-function StormEventCard({ storm }) {
+const StormEventCard = ({ storm }) => {
   return (
     <div key={storm.id} className="rounded-xl border border-white/12 bg-white/6 px-4 py-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -148,7 +148,7 @@ function StormEventCard({ storm }) {
   )
 }
 
-function StormEventsList({ stormEvents }) {
+const StormEventsList = ({ stormEvents }) => {
   return (
     <div className="space-y-3">
       <div className="text-sm font-semibold text-white">Storm evidence in the last 30 days</div>
@@ -167,7 +167,7 @@ function StormEventsList({ stormEvents }) {
   )
 }
 
-function AlertsSection({ alerts }) {
+const AlertsSection = ({ alerts }) => {
   if (alerts.length) {
     return (
       <div className="grid gap-2">
@@ -188,7 +188,7 @@ function AlertsSection({ alerts }) {
   )
 }
 
-function HailLayerStats({ hailLayer }) {
+const HailLayerStats = ({ hailLayer }) => {
   if (!hailLayer) {
     return null
   }
@@ -210,7 +210,7 @@ function HailLayerStats({ hailLayer }) {
   )
 }
 
-function StatBox({ label, value }) {
+const StatBox = ({ label, value }) => {
   return (
     <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
       <div className="font-semibold text-white">{label}</div>
@@ -219,7 +219,7 @@ function StatBox({ label, value }) {
   )
 }
 
-function MapInfoGrid({ windowLabel, locationName, stormEvents }) {
+const MapInfoGrid = ({ windowLabel, locationName, stormEvents }) => {
   return (
     <div className="grid gap-2 md:grid-cols-3">
       <StatBox label="Search window" value={windowLabel} />
@@ -236,7 +236,7 @@ function MapInfoGrid({ windowLabel, locationName, stormEvents }) {
   )
 }
 
-function WeatherDescription({ alerts, daily, location, formatDate: fmtDate }) {
+const WeatherDescription = ({ alerts, daily, location, formatDate: fmtDate }) => {
   return (
     <div>
       <div className="text-sm font-semibold">
@@ -253,7 +253,7 @@ function WeatherDescription({ alerts, daily, location, formatDate: fmtDate }) {
   )
 }
 
-function SearchForm({ query, setQuery, isPending, searchByQuery, searchByCurrentLocation }) {
+const SearchForm = ({ query, setQuery, isPending, searchByQuery, searchByCurrentLocation }) => {
   const handleSubmit = (event) => {
     event.preventDefault()
     posthog.capture('hail_damage_lookup', { query, lookup_method: 'text_search' })
@@ -295,7 +295,7 @@ function SearchForm({ query, setQuery, isPending, searchByQuery, searchByCurrent
   )
 }
 
-function extractWeatherData(data) {
+const extractWeatherData = (data) => {
   return {
     current: data?.current,
     daily: data?.daily?.[0],
@@ -307,14 +307,14 @@ function extractWeatherData(data) {
   }
 }
 
-function buildWindowLabel(hailLayer) {
+const buildWindowLabel = (hailLayer) => {
   if (hailLayer?.startDate && hailLayer?.endDate) {
     return `${formatDate(hailLayer.startDate)} - ${formatDate(hailLayer.endDate)}`
   }
   return 'Last 30 days'
 }
 
-export default function HailWeatherLookup({ section }) {
+const HailWeatherLookup = ({ section }) => {
   const hook = useHailWeatherLookup('Austin, TX')
   const { data } = hook
   const { error } = hook
@@ -390,3 +390,5 @@ export default function HailWeatherLookup({ section }) {
     </div>
   )
 }
+
+export default HailWeatherLookup

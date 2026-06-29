@@ -7,7 +7,7 @@ import {
   updateUserFields,
 } from '@/lib/auth/users'
 
-async function requireAdmin() {
+const requireAdmin = async () => {
   const session = await auth().catch(() => null)
   if (!session?.user || session.user.role !== 'admin') {
     return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
@@ -15,7 +15,7 @@ async function requireAdmin() {
   return { session }
 }
 
-export async function GET(_req, { params }) {
+export const GET = async (_req, { params }) => {
   const { error } = await requireAdmin()
   if (error) {
     return error
@@ -35,7 +35,7 @@ export async function GET(_req, { params }) {
   }
 }
 
-export async function PATCH(req, { params }) {
+export const PATCH = async (req, { params }) => {
   const { session, error } = await requireAdmin()
   if (error) {
     return error
@@ -80,7 +80,7 @@ export async function PATCH(req, { params }) {
   }
 }
 
-export async function DELETE(_req, { params }) {
+export const DELETE = async (_req, { params }) => {
   const { session, error } = await requireAdmin()
   if (error) {
     return error

@@ -8,7 +8,7 @@ import { sanityWriteClient } from '@/sanity/client'
 
 export const runtime = 'nodejs'
 
-function extractHeroAppearance(body) {
+const extractHeroAppearance = (body) => {
   const heroTextColor = body?.heroTextColor?.trim() || '#ffffff'
   const heroOverlayStartColor =
     body?.heroOverlayStartColor?.trim() || body?.heroOverlayColor?.trim() || '#0f172a'
@@ -32,7 +32,7 @@ function extractHeroAppearance(body) {
   }
 }
 
-async function saveHeroAppearanceToSanity(pageId, heroAppearance) {
+const saveHeroAppearanceToSanity = async (pageId, heroAppearance) => {
   const page = await sanityWriteClient.fetch(
     groq`*[_id == $pageId][0]{
       _id,
@@ -87,7 +87,7 @@ async function saveHeroAppearanceToSanity(pageId, heroAppearance) {
   return { heroAppearance }
 }
 
-export async function PATCH(request, { params }) {
+export const PATCH = async (request, { params }) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

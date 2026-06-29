@@ -8,7 +8,7 @@ export const SHARE_DESCRIPTION_MAX = 155
  * @param {string} text
  * @param {number} maxLen
  */
-export function truncateForShare(text, maxLen) {
+export const truncateForShare = (text, maxLen) => {
   if (!text || typeof text !== 'string') {
     return ''
   }

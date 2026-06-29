@@ -3,12 +3,12 @@ import { NextResponse } from 'next/server'
 
 import { frontendOriginAllowlist, localFrontendUrl } from '@/sanity/env'
 
-function buildAllowedOrigins(requestUrl) {
+const buildAllowedOrigins = (requestUrl) => {
   const requestOrigin = new URL(requestUrl).origin
   return new Set([requestOrigin, localFrontendUrl, ...frontendOriginAllowlist].filter(Boolean))
 }
 
-function resolveRedirectPath(requestUrl) {
+const resolveRedirectPath = (requestUrl) => {
   const allowedOrigins = buildAllowedOrigins(requestUrl)
   const params = new URL(requestUrl).searchParams
   const candidates = [
@@ -43,7 +43,7 @@ function resolveRedirectPath(requestUrl) {
   return '/'
 }
 
-export async function GET(request) {
+export const GET = async (request) => {
   const draft = await draftMode()
   draft.enable()
 

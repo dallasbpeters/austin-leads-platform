@@ -1,4 +1,4 @@
-function toKeyPart(value) {
+const toKeyPart = (value) => {
   return String(value || '')
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, '-')
@@ -6,7 +6,7 @@ function toKeyPart(value) {
     .slice(0, 40)
 }
 
-function withChecklistKeys(checklist) {
+const withChecklistKeys = (checklist) => {
   return {
     ...checklist,
     sections: (checklist.sections || []).map((section, sectionIndex) => ({

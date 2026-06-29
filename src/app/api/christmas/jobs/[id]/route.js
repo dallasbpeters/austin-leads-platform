@@ -1,6 +1,6 @@
 import { deleteJob, updateJob } from '@/lib/christmas/db'
 
-export async function PATCH(req, { params }) {
+export const PATCH = async (req, { params }) => {
   try {
     const { id } = await params
     const body = await req.json()
@@ -15,7 +15,7 @@ export async function PATCH(req, { params }) {
   }
 }
 
-export async function DELETE(req, { params }) {
+export const DELETE = async (req, { params }) => {
   try {
     const { id } = await params
     await deleteJob(id)

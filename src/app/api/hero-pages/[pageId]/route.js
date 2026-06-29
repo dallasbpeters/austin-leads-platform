@@ -6,7 +6,7 @@ import { sanityWriteClient } from '@/sanity/client'
 
 export const runtime = 'nodejs'
 
-export async function DELETE(_request, context) {
+export const DELETE = async (_request, context) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

@@ -10,11 +10,11 @@ import {
 
 export const runtime = 'nodejs'
 
-function cleanString(value) {
+const cleanString = (value) => {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-export async function GET(request) {
+export const GET = async (request) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized
@@ -35,7 +35,7 @@ export async function GET(request) {
   return NextResponse.json({ clients })
 }
 
-export async function POST(request) {
+export const POST = async (request) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

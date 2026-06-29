@@ -29,7 +29,7 @@ const BASE_SYSTEM_PROMPT = `You are a **Sanity CMS assistant** for the Austin Le
 - Stay concise; use markdown for lists and code blocks for GROQ examples.
 `
 
-function resolveLanguageModel() {
+const resolveLanguageModel = () => {
   const groqKey = process.env.GROQ_API_KEY?.trim()
   const anthropicKey = process.env.ANTHROPIC_API_KEY?.trim()
   const prefer = process.env.CHAT_LLM_PROVIDER?.trim().toLowerCase()
@@ -56,7 +56,7 @@ function resolveLanguageModel() {
 /**
  * @param {{ extra?: string; documentFocus?: Record<string, string>; legacyContext?: Record<string, string> }} props
  */
-function buildSystemPrompt(props) {
+const buildSystemPrompt = (props) => {
   const { extra = '', documentFocus = {}, legacyContext = {} } = props
   const ctx = { ...legacyContext, ...documentFocus }
   const id = ctx.documentId || ctx._id || ''
@@ -76,7 +76,7 @@ ${extra ? `\n## Additional instructions\n${extra}\n` : ''}
 `
 }
 
-function getAgentContextMcpUrl() {
+const getAgentContextMcpUrl = () => {
   const fromEnv = process.env.SANITY_CONTEXT_MCP_URL?.trim()
   if (fromEnv) {
     return fromEnv
@@ -87,7 +87,7 @@ function getAgentContextMcpUrl() {
   return `https://api.sanity.io/v2026-03-03/agent-context/${projectId}/${dataset}`
 }
 
-async function validateChatEnvironment(request) {
+const validateChatEnvironment = async (request) => {
   const session = await safeAuth()
   if (!session?.user) {
     return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
@@ -147,7 +147,7 @@ async function validateChatEnvironment(request) {
   return { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra }
 }
 
-export async function POST(request) {
+export const POST = async (request) => {
   const validated = await validateChatEnvironment(request)
   if (validated.error) {
     return validated.error

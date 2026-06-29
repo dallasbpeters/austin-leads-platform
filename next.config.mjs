@@ -1,4 +1,4 @@
-import withVercelToolbar from '@vercel/toolbar/plugins/next'
+import createVercelToolbarPlugin from '@vercel/toolbar/plugins/next'
 
 const PROJECT_ROOT = import.meta.dirname
 
@@ -6,7 +6,7 @@ const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'xuhfhjna'
 const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 const sanityApiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-10-21'
 
-function withPathWildcard(destination) {
+const withPathWildcard = (destination) => {
   if (!destination) {
     return destination
   }
@@ -17,12 +17,12 @@ function withPathWildcard(destination) {
   return `${normalized}/:path*`
 }
 
-function asExactHostPattern(host) {
-  const escaped = String(host).replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const asExactHostPattern = (host) => {
+  const escaped = String(host).replaceAll(/[.*+?^${}()|[\]\\]/gu, '\\$&')
   return `^${escaped}$`
 }
 
-async function getSanityRedirects() {
+const getSanityRedirects = async () => {
   const query = `*[_type == "redirectRule"]{
     "source": coalesce(source, domain),
     "destination": coalesce(destination, target),
@@ -73,7 +73,7 @@ const nextConfig = {
   },
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
   images: {
-    qualities: [100, 90, 82, 75, 70, 68],
+    qualities: [100, 95, 90, 82, 75, 70, 68],
     // Ensure repeat visits reuse optimized images (improves Lighthouse cache TTL scoring).
     // 30 days is a good balance between freshness and performance.
     minimumCacheTTL: 60 * 60 * 24 * 30,
@@ -86,6 +86,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'photos.unsplash.com',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me',
         port: '',
       },
       {
@@ -130,7 +135,7 @@ const nextConfig = {
       },
     ],
   },
-  async rewrites() {
+  rewrites() {
     return [
       // Rewrite /_site/:site and /_site/:site/:path* to /?__site=:site so the
       // multi-tenant renderer can resolve the correct site. Sanity Presentation
@@ -179,7 +184,7 @@ const nextConfig = {
   },
 }
 
-const withToolbar = withVercelToolbar({
+const withToolbar = createVercelToolbarPlugin({
   enableInProduction: true,
 })
 

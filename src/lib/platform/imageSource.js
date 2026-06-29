@@ -8,7 +8,7 @@ const imageBuilder = projectId && dataset ? createImageUrlBuilder({ projectId, d
  * Build a CDN URL that respects Sanity crop + hotspot (uploaded / generated assets).
  * Falls back to stored asset.url when the builder cannot run.
  */
-function buildSanityUrlOrFallback(imageField, assetRef, width, height) {
+const buildSanityUrlOrFallback = (imageField, assetRef, width, height) => {
   try {
     const source = {
       _type: 'image',
@@ -30,7 +30,7 @@ function buildSanityUrlOrFallback(imageField, assetRef, width, height) {
   }
 }
 
-export function buildSanityImageUrl(imageField, { width = 1920, height } = {}) {
+export const buildSanityImageUrl = (imageField, { width = 1920, height } = {}) => {
   if (!imageField?.asset) {
     return ''
   }
@@ -44,11 +44,11 @@ export function buildSanityImageUrl(imageField, { width = 1920, height } = {}) {
   return buildSanityUrlOrFallback(imageField, assetRef, width, height) || fallbackUrl
 }
 
-export function getSanityAssetUrl(imageField, options) {
+export const getSanityAssetUrl = (imageField, options) => {
   return buildSanityImageUrl(imageField, options)
 }
 
-export function getHeroImageUrl(imageField, fallbackImage = null, options) {
+export const getHeroImageUrl = (imageField, fallbackImage = null, options) => {
   const fromAsset = buildSanityImageUrl(imageField, options)
   if (fromAsset) {
     return fromAsset
@@ -62,7 +62,7 @@ export function getHeroImageUrl(imageField, fallbackImage = null, options) {
   )
 }
 
-export function getImageUrl(imageField, fallbackImage = null, options) {
+export const getImageUrl = (imageField, fallbackImage = null, options) => {
   const fromAsset = buildSanityImageUrl(imageField, options)
   if (fromAsset) {
     return fromAsset
@@ -76,11 +76,11 @@ export function getImageUrl(imageField, fallbackImage = null, options) {
   )
 }
 
-export function getImageAlt(imageField, fallbackImage = null, fallbackText = '') {
+export const getImageAlt = (imageField, fallbackImage = null, fallbackText = '') => {
   return imageField?.altText || imageField?.alt || fallbackImage?.alt || fallbackText || ''
 }
 
-export function hasImageSource(imageField, fallbackImage = null) {
+export const hasImageSource = (imageField, fallbackImage = null) => {
   return Boolean(getImageUrl(imageField, fallbackImage))
 }
 
@@ -93,7 +93,7 @@ const VIDEO_MIME_BY_EXT = {
   m3u8: 'application/x-mpegURL',
 }
 
-function inferVideoMimeFromUrl(url) {
+const inferVideoMimeFromUrl = (url) => {
   if (!url) {
     return null
   }
@@ -156,25 +156,25 @@ const VIDEO_SOURCE_RESOLVERS = [
   },
 ]
 
-function resolveHeroVideoProvider(videoField, videoAssetField) {
+const resolveHeroVideoProvider = (videoField, videoAssetField) => {
   if (typeof videoField?.provider === 'string' && videoField.provider) {
     return videoField.provider
   }
   return videoAssetField?.asset ? 'upload' : 'external'
 }
 
-function resolveHeroVideoPoster(videoField, options) {
+const resolveHeroVideoPoster = (videoField, options) => {
   const posterField = videoField?.posterImage
   return (
     buildSanityImageUrl(posterField, { width: options.posterWidth || 1920 }) || videoField?.urls?.poster || ''
   )
 }
 
-function resolveVideoDimension(value) {
+const resolveVideoDimension = (value) => {
   return typeof value === 'number' ? value : null
 }
 
-export function getHeroVideoSource(videoField, videoAssetField = null, options = {}) {
+export const getHeroVideoSource = (videoField, videoAssetField = null, options = {}) => {
   const provider = resolveHeroVideoProvider(videoField, videoAssetField)
   const resolver = VIDEO_SOURCE_RESOLVERS.find((r) => r.test(videoField, videoAssetField))
   const src = resolver ? resolver.src(videoField, videoAssetField) : ''
@@ -201,6 +201,6 @@ export function getHeroVideoSource(videoField, videoAssetField = null, options =
   }
 }
 
-export function hasHeroVideoSource(videoField, videoAssetField = null) {
+export const hasHeroVideoSource = (videoField, videoAssetField = null) => {
   return Boolean(getHeroVideoSource(videoField, videoAssetField))
 }

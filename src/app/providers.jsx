@@ -16,7 +16,7 @@ const DEFAULT_POSTHOG_HOST = '/ingest'
  * Parse NEXT_PUBLIC_POSTHOG_KEYS once. Expected format:
  * {"txchristmaslights":"phc_xxx","texas-solar-and-roofing-pros":"phc_yyy"}
  */
-function parsePostHogKeyMap() {
+const parsePostHogKeyMap = () => {
   const raw = process.env.NEXT_PUBLIC_POSTHOG_KEYS
   if (!raw) {
     return {}
@@ -31,14 +31,14 @@ function parsePostHogKeyMap() {
 
 const POSTHOG_KEY_MAP = parsePostHogKeyMap()
 
-function resolvePostHogKey(siteSlug) {
+const resolvePostHogKey = (siteSlug) => {
   if (siteSlug && POSTHOG_KEY_MAP[siteSlug]) {
     return POSTHOG_KEY_MAP[siteSlug]
   }
   return process.env.NEXT_PUBLIC_POSTHOG_KEY || DEFAULT_POSTHOG_KEY
 }
 
-function resolveBrowserPostHogHost() {
+const resolveBrowserPostHogHost = () => {
   const configuredHost = process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim()
   if (!configuredHost) {
     return DEFAULT_POSTHOG_HOST
@@ -59,7 +59,7 @@ const TRACKABLE_BUTTON_SELECTOR = [
   'a[data-track-button="true"]',
 ].join(', ')
 
-function getElementLabel(element) {
+const getElementLabel = (element) => {
   if (!element) {
     return 'unknown'
   }
@@ -97,7 +97,7 @@ function getElementLabel(element) {
   return 'unnamed_button'
 }
 
-function getSafeHrefPath(element) {
+const getSafeHrefPath = (element) => {
   if (!element || element.tagName !== 'A') {
     return
   }
@@ -115,7 +115,7 @@ function getSafeHrefPath(element) {
   }
 }
 
-export function PostHogProvider({ children, siteSlug }) {
+export const PostHogProvider = ({ children, siteSlug }) => {
   useEffect(() => {
     const key = resolvePostHogKey(siteSlug)
     const host = resolveBrowserPostHogHost()

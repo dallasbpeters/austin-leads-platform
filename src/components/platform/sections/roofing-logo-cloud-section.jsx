@@ -2,7 +2,7 @@ import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import LogoCloud from '@/components/logo-cloud'
 import PortableTextContent from '@/components/portable-text-content'
 
-export function RoofingLogoCloudSection({ section = {}, sectionId }) {
+export const RoofingLogoCloudSection = ({ section = {}, sectionId }) => {
   return (
     <section
       className="bg-card border-border/60 border-b"

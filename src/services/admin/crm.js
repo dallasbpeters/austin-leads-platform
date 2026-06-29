@@ -1,4 +1,4 @@
-export async function fetchCrmLeads(filters = {}) {
+export const fetchCrmLeads = async (filters = {}) => {
   const params = new URLSearchParams()
 
   Object.entries(filters).forEach(([key, value]) => {
@@ -21,7 +21,7 @@ export async function fetchCrmLeads(filters = {}) {
   return response.json()
 }
 
-export async function updateCrmLead(leadId, updates) {
+export const updateCrmLead = async (leadId, updates) => {
   const response = await fetch(`/api/crm/leads/${leadId}`, {
     method: 'PATCH',
     credentials: 'include',

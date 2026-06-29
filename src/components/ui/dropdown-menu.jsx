@@ -5,19 +5,19 @@ import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui'
 
 import { cn } from '@/lib/utils'
 
-function DropdownMenu({ ...props }) {
+const DropdownMenu = ({ ...props }) => {
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
 }
 
-function DropdownMenuPortal({ ...props }) {
+const DropdownMenuPortal = ({ ...props }) => {
   return <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
 }
 
-function DropdownMenuTrigger({ ...props }) {
+const DropdownMenuTrigger = ({ ...props }) => {
   return <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
 }
 
-function DropdownMenuContent({ className, sideOffset = 4, ...props }) {
+const DropdownMenuContent = ({ className, sideOffset = 4, ...props }) => {
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
@@ -33,11 +33,11 @@ function DropdownMenuContent({ className, sideOffset = 4, ...props }) {
   )
 }
 
-function DropdownMenuGroup({ ...props }) {
+const DropdownMenuGroup = ({ ...props }) => {
   return <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
 }
 
-function DropdownMenuItem({ className, inset, variant = 'default', ...props }) {
+const DropdownMenuItem = ({ className, inset, variant = 'default', ...props }) => {
   return (
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
@@ -52,7 +52,7 @@ function DropdownMenuItem({ className, inset, variant = 'default', ...props }) {
   )
 }
 
-function DropdownMenuCheckboxItem({ className, children, checked, ...props }) {
+const DropdownMenuCheckboxItem = ({ className, children, checked, ...props }) => {
   return (
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
@@ -73,11 +73,11 @@ function DropdownMenuCheckboxItem({ className, children, checked, ...props }) {
   )
 }
 
-function DropdownMenuRadioGroup({ ...props }) {
+const DropdownMenuRadioGroup = ({ ...props }) => {
   return <DropdownMenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />
 }
 
-function DropdownMenuRadioItem({ className, children, ...props }) {
+const DropdownMenuRadioItem = ({ className, children, ...props }) => {
   return (
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
@@ -97,7 +97,7 @@ function DropdownMenuRadioItem({ className, children, ...props }) {
   )
 }
 
-function DropdownMenuLabel({ className, inset, ...props }) {
+const DropdownMenuLabel = ({ className, inset, ...props }) => {
   return (
     <DropdownMenuPrimitive.Label
       data-slot="dropdown-menu-label"
@@ -108,7 +108,7 @@ function DropdownMenuLabel({ className, inset, ...props }) {
   )
 }
 
-function DropdownMenuSeparator({ className, ...props }) {
+const DropdownMenuSeparator = ({ className, ...props }) => {
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
@@ -118,7 +118,7 @@ function DropdownMenuSeparator({ className, ...props }) {
   )
 }
 
-function DropdownMenuShortcut({ className, ...props }) {
+const DropdownMenuShortcut = ({ className, ...props }) => {
   return (
     <span
       data-slot="dropdown-menu-shortcut"
@@ -128,11 +128,11 @@ function DropdownMenuShortcut({ className, ...props }) {
   )
 }
 
-function DropdownMenuSub({ ...props }) {
+const DropdownMenuSub = ({ ...props }) => {
   return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />
 }
 
-function DropdownMenuSubTrigger({ className, inset, children, ...props }) {
+const DropdownMenuSubTrigger = ({ className, inset, children, ...props }) => {
   return (
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
@@ -149,7 +149,7 @@ function DropdownMenuSubTrigger({ className, inset, children, ...props }) {
   )
 }
 
-function DropdownMenuSubContent({ className, ...props }) {
+const DropdownMenuSubContent = ({ className, ...props }) => {
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"

@@ -1,6 +1,6 @@
 import { listSlots } from '@/lib/christmas/db'
 
-export async function GET() {
+export const GET = async () => {
   try {
     const slots = await listSlots(2026)
 

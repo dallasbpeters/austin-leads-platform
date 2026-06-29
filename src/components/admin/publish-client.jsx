@@ -23,7 +23,7 @@ const statusIcon = {
   published: CheckCircle2,
 }
 
-function JobStatus({ status }) {
+const JobStatus = ({ status }) => {
   const Icon = statusIcon[status] || LoaderCircle
 
   return (
@@ -34,7 +34,7 @@ function JobStatus({ status }) {
   )
 }
 
-export default function PublishClient({ initialJobs, sites }) {
+const PublishClient = ({ initialJobs, sites }) => {
   const { form, jobs, loading, changeJob, refreshJobs, setForm, submitJob } = usePublishManager({
     initialJobs,
     sites,
@@ -246,3 +246,5 @@ export default function PublishClient({ initialJobs, sites }) {
     </div>
   )
 }
+
+export default PublishClient

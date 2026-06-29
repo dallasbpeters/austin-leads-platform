@@ -639,11 +639,11 @@ const sectionProjection = `
   }
 `
 
-function cleanRuntimeString(value) {
+const cleanRuntimeString = (value) => {
   return typeof value === 'string' ? stegaClean(value) : value
 }
 
-function sanitizeAction(action) {
+const sanitizeAction = (action) => {
   if (!action) {
     return action
   }
@@ -655,7 +655,7 @@ function sanitizeAction(action) {
   }
 }
 
-function sanitizeItem(item) {
+const sanitizeItem = (item) => {
   if (!item) {
     return item
   }
@@ -670,7 +670,7 @@ function sanitizeItem(item) {
   }
 }
 
-function sanitizePerson(person) {
+const sanitizePerson = (person) => {
   if (!person) {
     return person
   }
@@ -689,7 +689,7 @@ function sanitizePerson(person) {
   }
 }
 
-function resolveSanityColorValue(value) {
+const resolveSanityColorValue = (value) => {
   if (!value) {
     return value
   }
@@ -716,7 +716,7 @@ function resolveSanityColorValue(value) {
   return value
 }
 
-function coerceNumberField(value) {
+const coerceNumberField = (value) => {
   if (typeof value === 'number') {
     return value
   }
@@ -726,7 +726,7 @@ function coerceNumberField(value) {
   return value
 }
 
-function sanitizeSection(section) {
+const sanitizeSection = (section) => {
   if (!section) {
     return section
   }
@@ -841,7 +841,7 @@ function sanitizeSection(section) {
   }
 }
 
-function sanitizePageRuntimeFields(page) {
+const sanitizePageRuntimeFields = (page) => {
   if (!page) {
     return page
   }
@@ -870,7 +870,7 @@ function sanitizePageRuntimeFields(page) {
   }
 }
 
-function normalizeGuideGridHrefPath(href) {
+const normalizeGuideGridHrefPath = (href) => {
   const rawHref = cleanRuntimeString(href)
   if (!rawHref) {
     return ''
@@ -886,7 +886,7 @@ function normalizeGuideGridHrefPath(href) {
   }
 }
 
-function guideGridItemMatchesTargetPath(itemHref, targetPath) {
+const guideGridItemMatchesTargetPath = (itemHref, targetPath) => {
   const itemPath = normalizeGuideGridHrefPath(itemHref)
   const wants = String(targetPath || '').replace(/\/+$/, '')
   if (!itemPath || !wants) {
@@ -918,7 +918,7 @@ function guideGridItemMatchesTargetPath(itemHref, targetPath) {
  * Pick guide card color/category from any Guide Grid section on any page for this site.
  * @param {string} targetPath pathname like `/guides/solar-warranties-texas`
  */
-async function getGuideCardMetaForTargetPath({ client, fetchOptions, siteSlug, targetPath }) {
+const getGuideCardMetaForTargetPath = async ({ client, fetchOptions, siteSlug, targetPath }) => {
   const normalizedTarget = String(targetPath || '').replace(/\/+$/, '')
   const parts = normalizedTarget.split('/').filter(Boolean)
 
@@ -966,7 +966,7 @@ async function getGuideCardMetaForTargetPath({ client, fetchOptions, siteSlug, t
   }
 }
 
-function sanitizeReview(review) {
+const sanitizeReview = (review) => {
   if (!review) {
     return review
   }
@@ -987,7 +987,7 @@ function sanitizeReview(review) {
   }
 }
 
-async function getSanityReadContext({ stega = true } = {}) {
+const getSanityReadContext = async ({ stega = true } = {}) => {
   const { isEnabled } = await draftMode()
   const client = getSanityServerClient({ preview: isEnabled, stega: isEnabled && stega })
 
@@ -998,7 +998,7 @@ async function getSanityReadContext({ stega = true } = {}) {
   }
 }
 
-function pageHasFlatHeroContent(page) {
+const pageHasFlatHeroContent = (page) => {
   return !!(
     page.heroEyebrow ||
     page.heroTitle ||
@@ -1013,11 +1013,11 @@ function pageHasFlatHeroContent(page) {
   )
 }
 
-function resolveNullableField(value) {
+const resolveNullableField = (value) => {
   return value ?? null
 }
 
-function buildHeroSectionFromPage(page) {
+const buildHeroSectionFromPage = (page) => {
   return {
     _type: 'heroSection',
     type: 'hero',
@@ -1047,7 +1047,7 @@ function buildHeroSectionFromPage(page) {
   }
 }
 
-function buildHomepageHeroSection(page) {
+const buildHomepageHeroSection = (page) => {
   if (!page) {
     return null
   }
@@ -1065,7 +1065,7 @@ function buildHomepageHeroSection(page) {
   return buildHeroSectionFromPage(page)
 }
 
-function withPageSource(page, source) {
+const withPageSource = (page, source) => {
   if (!page) {
     return null
   }
@@ -1076,7 +1076,7 @@ function withPageSource(page, source) {
   }
 }
 
-async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug }) {
+const syncGuideGridSectionItems = async ({ client, fetchOptions, page, siteSlug }) => {
   const buildPortableTextSimple = (value) => {
     const text = cleanRuntimeString(value)
     if (!text) {
@@ -1380,7 +1380,7 @@ async function syncGuideGridSectionItems({ client, fetchOptions, page, siteSlug 
   }
 }
 
-function slugFromHref(href) {
+const slugFromHref = (href) => {
   const value = cleanRuntimeString(href)
 
   if (!value) {
@@ -1390,7 +1390,7 @@ function slugFromHref(href) {
   return value.replace(/^https?:\/\/[^/]+/i, '').replace(/^\/+/, '')
 }
 
-async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlug }) {
+const syncServiceGridSectionItems = async ({ client, fetchOptions, page, siteSlug }) => {
   if (!page?.sections?.some((section) => section.type === 'serviceGrid')) {
     return page
   }
@@ -1523,7 +1523,7 @@ async function syncServiceGridSectionItems({ client, fetchOptions, page, siteSlu
   }
 }
 
-function normalizeHost(host) {
+const normalizeHost = (host) => {
   return (host || '')
     .replace(/^https?:\/\//, '')
     .replace(/:\d+$/, '')
@@ -1532,35 +1532,35 @@ function normalizeHost(host) {
 
 const PRIMARY_SITE_SLUGS = ['texas-solar-and-roofing-pros']
 
-export function isPrimarySiteSlug(siteSlug) {
+export const isPrimarySiteSlug = (siteSlug) => {
   return PRIMARY_SITE_SLUGS.includes(siteSlug)
 }
 
-function getEquivalentSiteSlugs(siteSlug) {
+const getEquivalentSiteSlugs = (siteSlug) => {
   return isPrimarySiteSlug(siteSlug) ? PRIMARY_SITE_SLUGS : [siteSlug]
 }
 
-export function getAllSites() {
+export const getAllSites = () => {
   return sites
 }
 
-export function getAllRenderableSites() {
+export const getAllRenderableSites = () => {
   return sites.filter((site) => site.tier !== 'redirect')
 }
 
-export function getHeroSites() {
+export const getHeroSites = () => {
   return sites.filter((site) => site.tier === 'hero')
 }
 
-export function getSiteById(siteId) {
+export const getSiteById = (siteId) => {
   return sites.find((site) => site.id === siteId) ?? null
 }
 
-export function getSiteBySlug(siteSlug) {
+export const getSiteBySlug = (siteSlug) => {
   return sites.find((site) => getEquivalentSiteSlugs(siteSlug).includes(site.slug)) ?? null
 }
 
-export async function resolveSiteBySlug(siteSlug) {
+export const resolveSiteBySlug = async (siteSlug) => {
   const localSite = getSiteBySlug(siteSlug)
 
   // Site documents are always published (never drafted), so always use the
@@ -1602,7 +1602,7 @@ export async function resolveSiteBySlug(siteSlug) {
   }
 }
 
-export function getPageKey(slugParts = []) {
+export const getPageKey = (slugParts = []) => {
   if (!slugParts.length) {
     return ''
   }
@@ -1610,11 +1610,11 @@ export function getPageKey(slugParts = []) {
   return slugParts.join('/')
 }
 
-export function getPagesForSite(siteSlug) {
+export const getPagesForSite = (siteSlug) => {
   return pages.filter((page) => getEquivalentSiteSlugs(siteSlug).includes(page.siteSlug))
 }
 
-export function getPageForSite(siteSlug, slugParts = []) {
+export const getPageForSite = (siteSlug, slugParts = []) => {
   return withPageSource(
     pages.find(
       (page) =>
@@ -1624,7 +1624,7 @@ export function getPageForSite(siteSlug, slugParts = []) {
   )
 }
 
-function toHeroPageRecord(page, site) {
+const toHeroPageRecord = (page, site) => {
   if (!page || !site || site.tier !== 'hero' || page.templateLevel !== 'hero') {
     return null
   }
@@ -1646,7 +1646,7 @@ function toHeroPageRecord(page, site) {
   }
 }
 
-export function getNavigationForSite(siteSlug) {
+export const getNavigationForSite = (siteSlug) => {
   return getPagesForSite(siteSlug)
     .filter((page) => page.slug !== '' && page.pageType !== 'post' && !page.slug.includes('/'))
     .map((page) => ({
@@ -1663,13 +1663,14 @@ export function getNavigationForSite(siteSlug) {
  * on the Sanity `site` document and falling back to the auto-derived list of
  * top-level pages when nothing is set.
  */
-export function resolveNavigationForSite(site) {
+export const resolveNavigationForSite = (site) => {
   const sanityNav = Array.isArray(site?.navigation) ? site.navigation : []
   const curated = sanityNav
     .map((item) => ({
       label: typeof item?.label === 'string' ? item.label : '',
       href: typeof item?.href === 'string' ? item.href : '',
       isExternal: Boolean(item?.isExternal),
+      variant: typeof item?.variant === 'string' ? item.variant : 'link',
     }))
     .filter((item) => item.label && item.href)
 
@@ -1680,7 +1681,7 @@ export function resolveNavigationForSite(site) {
   return getNavigationForSite(site?.slug || '')
 }
 
-function getEquivalentSiteIds(site) {
+const getEquivalentSiteIds = (site) => {
   const equivalentSlugs = getEquivalentSiteSlugs(site.slug)
 
   return sites
@@ -1688,8 +1689,9 @@ function getEquivalentSiteIds(site) {
     .map((candidate) => candidate.id)
 }
 
-export async function resolveSiteByHost(host) {
+export const resolveSiteByHost = async (host) => {
   const normalizedHost = normalizeHost(host)
+  const isLocalHost = normalizedHost === 'localhost' || normalizedHost === '127.0.0.1'
 
   const localSite =
     sites.find(
@@ -1729,20 +1731,47 @@ export async function resolveSiteByHost(host) {
       fetchOptions,
     )
 
+    if (!site && isLocalHost && localSite?.slug) {
+      const localSanitySite = await client.fetch(
+        groq`*[_type == "site" && slug.current == $siteSlug][0]{
+          _id,
+          "id": _id,
+          "slug": slug.current,
+          name,
+          shortName,
+          category,
+          categoryLabel,
+          tier,
+          primaryDomain,
+          aliases,
+          redirectTarget,
+          leadForm,
+          seo,
+          brand,
+          navigation,
+          organization
+        }`,
+        { siteSlug: localSite.slug },
+        fetchOptions,
+      )
+
+      return localSanitySite ?? localSite ?? getSiteBySlug('texas-solar-and-roofing-pros')
+    }
+
     return site ?? localSite ?? getSiteBySlug('texas-solar-and-roofing-pros')
   } catch {
     return localSite ?? getSiteBySlug('texas-solar-and-roofing-pros')
   }
 }
 
-export async function resolveCurrentSite() {
+export const resolveCurrentSite = async () => {
   const requestHeaders = await headers()
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
 
   return resolveSiteByHost(host)
 }
 
-export async function getPageForRequest(site, slugParts = []) {
+export const getPageForRequest = async (site, slugParts = []) => {
   const localPage = getPageForSite(site.slug, slugParts)
 
   const { client, fetchOptions } = await getSanityReadContext()
@@ -1985,7 +2014,7 @@ export async function getPageForRequest(site, slugParts = []) {
   return localPage
 }
 
-export async function getSitemapEntriesForSite(site) {
+export const getSitemapEntriesForSite = async (site) => {
   const localSiteIds = new Set(getEquivalentSiteIds(site))
   const localEntries = pages
     .filter((page) => localSiteIds.has(page.siteId) && page.slug !== '404' && page?.seo?.noIndex !== true)
@@ -2046,7 +2075,7 @@ export async function getSitemapEntriesForSite(site) {
   return localEntries
 }
 
-export async function getHeroPages({ stega = false } = {}) {
+export const getHeroPages = async ({ stega = false } = {}) => {
   const localHeroPages = pages
     .map((page) => toHeroPageRecord(page, getSiteBySlug(page.siteSlug)))
     .filter(Boolean)
@@ -2139,7 +2168,7 @@ export async function getHeroPages({ stega = false } = {}) {
   }
 }
 
-export async function getPageBySlug(siteSlug, slug) {
+export const getPageBySlug = async (siteSlug, slug) => {
   const site = getSiteBySlug(siteSlug)
 
   if (!site) {
@@ -2149,7 +2178,7 @@ export async function getPageBySlug(siteSlug, slug) {
   return getPageForRequest(site, slug === '/' ? [] : slug.split('/').filter(Boolean))
 }
 
-export async function getLaunchChecklist() {
+export const getLaunchChecklist = async () => {
   const { client } = await getSanityReadContext({ stega: false })
 
   if (!client) {
@@ -2186,7 +2215,7 @@ export async function getLaunchChecklist() {
   }
 }
 
-export async function getHeroHomepageForSite(siteSlug) {
+export const getHeroHomepageForSite = async (siteSlug) => {
   const heroPages = await getHeroPages({ stega: true })
   const equivalentSlugs = getEquivalentSiteSlugs(siteSlug)
   const sitePages = heroPages.filter((page) => equivalentSlugs.includes(page.site?.slug))
@@ -2212,7 +2241,7 @@ export async function getHeroHomepageForSite(siteSlug) {
   )
 }
 
-export async function getHomepageForSite(siteSlug) {
+export const getHomepageForSite = async (siteSlug) => {
   const site = getSiteBySlug(siteSlug)
 
   if (!site) {
@@ -2236,7 +2265,7 @@ export async function getHomepageForSite(siteSlug) {
   )
 }
 
-export async function getHomepageReviewsForSite(siteSlug) {
+export const getHomepageReviewsForSite = async (siteSlug) => {
   const site = getSiteBySlug(siteSlug)
 
   if (!site) {
@@ -2285,7 +2314,7 @@ export async function getHomepageReviewsForSite(siteSlug) {
   }
 }
 
-export async function getHeroSitesForAdmin() {
+export const getHeroSitesForAdmin = async () => {
   const localHeroSites = getHeroSites().map((site) => ({
     id: site.id,
     slug: site.slug,
@@ -2326,12 +2355,12 @@ export async function getHeroSitesForAdmin() {
   return localHeroSites
 }
 
-export function getPrimaryUrl(site, pathname = '/') {
+export const getPrimaryUrl = (site, pathname = '/') => {
   const safePath = pathname.startsWith('/') ? pathname : `/${pathname}`
   return `https://${site.primaryDomain}${safePath}`
 }
 
-function buildBreadcrumbList(site, pathname, canonicalUrl) {
+const buildBreadcrumbList = (site, pathname, canonicalUrl) => {
   const homeCrumb = {
     '@type': 'ListItem',
     position: 1,
@@ -2363,7 +2392,7 @@ function buildBreadcrumbList(site, pathname, canonicalUrl) {
   }
 }
 
-function selectFirstTruthy(...candidates) {
+const selectFirstTruthy = (...candidates) => {
   for (const candidate of candidates) {
     if (candidate) {
       return candidate
@@ -2372,7 +2401,7 @@ function selectFirstTruthy(...candidates) {
   return
 }
 
-function buildArticleGraphNode(canonicalUrl, page, site, webpageId, organizationId) {
+const buildArticleGraphNode = (canonicalUrl, page, site, webpageId, organizationId) => {
   return {
     '@type': 'Article',
     '@id': `${canonicalUrl}#article`,
@@ -2387,7 +2416,7 @@ function buildArticleGraphNode(canonicalUrl, page, site, webpageId, organization
   }
 }
 
-function buildFaqGraphNode(canonicalUrl, faqSection) {
+const buildFaqGraphNode = (canonicalUrl, faqSection) => {
   return {
     '@type': 'FAQPage',
     '@id': `${canonicalUrl}#faq`,
@@ -2402,7 +2431,7 @@ function buildFaqGraphNode(canonicalUrl, faqSection) {
   }
 }
 
-function buildOrganizationNode(site, organizationId) {
+const buildOrganizationNode = (site, organizationId) => {
   return {
     '@type': selectFirstTruthy(site.organization?.type, 'LocalBusiness'),
     '@id': organizationId,
@@ -2414,7 +2443,7 @@ function buildOrganizationNode(site, organizationId) {
   }
 }
 
-export function createJsonLd(site, page, pathname = '/') {
+export const createJsonLd = (site, page, pathname = '/') => {
   const canonicalUrl = getPrimaryUrl(site, pathname)
   const organizationId = `${getPrimaryUrl(site, '/')}#organization`
   const websiteId = `${getPrimaryUrl(site, '/')}#website`
@@ -2454,7 +2483,7 @@ export function createJsonLd(site, page, pathname = '/') {
   return { '@context': 'https://schema.org', '@graph': graph }
 }
 
-export async function publishPageToSanity(job) {
+export const publishPageToSanity = async (job) => {
   if (!sanityWriteClient) {
     return {
       ok: false,

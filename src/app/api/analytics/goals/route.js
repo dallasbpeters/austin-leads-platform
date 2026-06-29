@@ -5,7 +5,7 @@ import { createAnalyticsGoal, listAnalyticsGoals } from '@/lib/platform/store'
 
 export const runtime = 'nodejs'
 
-export async function GET() {
+export const GET = async () => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized
@@ -14,7 +14,7 @@ export async function GET() {
   return NextResponse.json({ goals: listAnalyticsGoals() })
 }
 
-export async function POST(request) {
+export const POST = async (request) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

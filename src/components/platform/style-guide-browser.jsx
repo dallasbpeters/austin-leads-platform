@@ -9,14 +9,14 @@ import { cn } from '@/lib/utils'
 
 const CONCRETE_COLOR_RE = /^\s*(oklch|hsl|hsla|rgb|rgba|color-mix|#)/i
 
-function resolveSwatchColor(token, value) {
+const resolveSwatchColor = (token, value) => {
   if (CONCRETE_COLOR_RE.test(value)) {
     return value
   }
   return `var(${token})`
 }
 
-function SwatchTile({ token, value, compact = false }) {
+const SwatchTile = ({ token, value, compact = false }) => {
   const bgColor = resolveSwatchColor(token, value)
   return (
     <div
@@ -37,7 +37,7 @@ function SwatchTile({ token, value, compact = false }) {
   )
 }
 
-function SectionRailButton({ active, children, onClick }) {
+const SectionRailButton = ({ active, children, onClick }) => {
   return (
     <button
       type="button"
@@ -52,12 +52,12 @@ function SectionRailButton({ active, children, onClick }) {
   )
 }
 
-export default function StyleGuideBrowser({
+const StyleGuideBrowser = ({
   publicGroups,
   semanticVariables,
   adminVariables,
   txchristmaslightsVariables,
-}) {
+}) => {
   const allSections = [
     ...(publicGroups || []).map((s) => ({ ...s, tokens: s.tokens || [] })),
     {
@@ -214,3 +214,5 @@ export default function StyleGuideBrowser({
     </div>
   )
 }
+
+export default StyleGuideBrowser

@@ -1,7 +1,7 @@
 import DevTrace from '@/components/dev/dev-trace'
 import { resolveCurrentSite } from '@/lib/platform/content'
 
-export async function generateMetadata() {
+export const generateMetadata = async () => {
   const site = await resolveCurrentSite().catch(() => null)
   if (site?.slug !== 'txchristmaslights') {
     return {}
@@ -14,7 +14,7 @@ export async function generateMetadata() {
   }
 }
 
-export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+const SiteLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <DevTrace markup="src/app/(site)/layout.tsx" content="site route shell" />
@@ -22,3 +22,5 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     </div>
   )
 }
+
+export default SiteLayout

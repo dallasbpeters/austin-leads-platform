@@ -7,7 +7,7 @@ import CanonicalStorySection from '@/components/story-section'
  * reveal stays in one place. Per-tenant theming flows through the active
  * `<slug>-theme` CSS class on the document root, not through duplicated logic.
  */
-export function StorySection({ section, sectionId }) {
+export const StorySection = ({ section, sectionId }) => {
   return <CanonicalStorySection section={section} sectionId={sectionId} />
 }
 

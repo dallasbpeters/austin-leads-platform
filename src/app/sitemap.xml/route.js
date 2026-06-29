@@ -4,7 +4,7 @@ import { getPrimaryUrl, getSitemapEntriesForSite, resolveSiteByHost } from '@/li
 
 export const dynamic = 'force-dynamic'
 
-function escapeXml(value) {
+const escapeXml = (value) => {
   return String(value)
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
@@ -13,7 +13,7 @@ function escapeXml(value) {
     .replaceAll("'", '&apos;')
 }
 
-export async function GET() {
+export const GET = async () => {
   const requestHeaders = await headers()
   const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
   const site = await resolveSiteByHost(host)

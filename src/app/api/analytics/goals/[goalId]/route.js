@@ -5,7 +5,7 @@ import { getAnalyticsGoal, updateAnalyticsGoal } from '@/lib/platform/store'
 
 export const runtime = 'nodejs'
 
-export async function PATCH(request, { params }) {
+export const PATCH = async (request, { params }) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

@@ -1,11 +1,11 @@
-function buildRequestHeaders(headers = {}) {
+const buildRequestHeaders = (headers = {}) => {
   return {
     'Content-Type': 'application/json',
     ...headers,
   }
 }
 
-export async function requestJson(url, init) {
+export const requestJson = async (url, init) => {
   const response = await fetch(url, {
     ...init,
     headers: buildRequestHeaders(init?.headers),
@@ -23,7 +23,7 @@ export async function requestJson(url, init) {
   return response.json()
 }
 
-export function buildDefaultHeroQuery(page) {
+export const buildDefaultHeroQuery = (page) => {
   if (!page) {
     return ''
   }
@@ -32,7 +32,7 @@ export function buildDefaultHeroQuery(page) {
   return `${domain || page.site?.name || page.title} home exterior`
 }
 
-export function buildSiteHeroQuery(site) {
+export const buildSiteHeroQuery = (site) => {
   if (!site) {
     return ''
   }
@@ -41,7 +41,7 @@ export function buildSiteHeroQuery(site) {
   return `${domain || site.name} home exterior`
 }
 
-export function mergeUniquePhotos(existing, incoming) {
+export const mergeUniquePhotos = (existing, incoming) => {
   const seen = new Set()
   const merged = []
 
@@ -57,36 +57,36 @@ export function mergeUniquePhotos(existing, incoming) {
   return merged
 }
 
-export async function fetchHeroPagesAdmin() {
+export const fetchHeroPagesAdmin = async () => {
   return requestJson('/api/hero-pages')
 }
 
-export async function searchUnsplashPhotos(query, page) {
+export const searchUnsplashPhotos = async (query, page) => {
   return requestJson(`/api/unsplash/search?query=${encodeURIComponent(query)}&page=${page}`)
 }
 
-export async function saveHeroPageImage(pageId, photo) {
+export const saveHeroPageImage = async (pageId, photo) => {
   return requestJson(`/api/hero-pages/${pageId}/image`, {
     method: 'POST',
     body: JSON.stringify({ photo }),
   })
 }
 
-export async function saveHeroPageAppearance(pageId, appearance) {
+export const saveHeroPageAppearance = async (pageId, appearance) => {
   return requestJson(`/api/hero-pages/${pageId}/appearance`, {
     method: 'PATCH',
     body: JSON.stringify(appearance),
   })
 }
 
-export async function createHeroPageDocument(payload) {
+export const createHeroPageDocument = async (payload) => {
   return requestJson('/api/hero-pages', {
     method: 'POST',
     body: JSON.stringify(payload),
   })
 }
 
-export async function deleteHeroPageDocument(pageId) {
+export const deleteHeroPageDocument = async (pageId) => {
   return requestJson(`/api/hero-pages/${pageId}`, {
     method: 'DELETE',
   })

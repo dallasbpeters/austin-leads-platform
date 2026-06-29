@@ -13,7 +13,7 @@ import {
 
 export const runtime = 'nodejs'
 
-export async function DELETE(request, { params }) {
+export const DELETE = async (request, { params }) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized
@@ -57,7 +57,7 @@ export async function DELETE(request, { params }) {
   return NextResponse.json({ ok: true, requestId })
 }
 
-export async function POST(request, { params }) {
+export const POST = async (request, { params }) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

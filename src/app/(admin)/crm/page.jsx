@@ -59,7 +59,7 @@ export default async function CrmPage() {
   )
 }
 
-function serializeCrmError(error) {
+const serializeCrmError = (error) => {
   if (!error) {
     return null
   }

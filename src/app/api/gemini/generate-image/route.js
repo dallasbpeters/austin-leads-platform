@@ -8,14 +8,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key',
 }
 
-export async function OPTIONS() {
+export const OPTIONS = async () => {
   return new NextResponse(null, {
     status: 200,
     headers: corsHeaders,
   })
 }
 
-export async function POST(request) {
+export const POST = async (request) => {
   const response = await BasePOST(request)
   const headers = new Headers(response.headers)
 

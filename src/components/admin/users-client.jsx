@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 const inputCls =
   'border-border bg-background text-foreground w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary'
 
-function fmtDate(iso) {
+const fmtDate = (iso) => {
   if (!iso) {
     return '—'
   }
@@ -24,7 +24,7 @@ function fmtDate(iso) {
   }
 }
 
-async function apiCreateUser(body) {
+const apiCreateUser = async (body) => {
   const res = await fetch('/api/users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -37,7 +37,7 @@ async function apiCreateUser(body) {
   return data
 }
 
-async function apiPatchUser(id, body) {
+const apiPatchUser = async (id, body) => {
   const res = await fetch(`/api/users/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -50,7 +50,7 @@ async function apiPatchUser(id, body) {
   return data
 }
 
-async function apiDeleteUser(id) {
+const apiDeleteUser = async (id) => {
   const res = await fetch(`/api/users/${id}`, { method: 'DELETE' })
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
@@ -59,7 +59,7 @@ async function apiDeleteUser(id) {
   return data
 }
 
-export default function UsersClient({ initialUsers = [], currentUser = {}, loadError = null }) {
+const UsersClient = ({ initialUsers = [], currentUser = {}, loadError = null }) => {
   const [users, setUsers] = useState(initialUsers)
   const [editing, setEditing] = useState(null)
   const [editValues, setEditValues] = useState({})
@@ -493,3 +493,5 @@ export default function UsersClient({ initialUsers = [], currentUser = {}, loadE
     </div>
   )
 }
+
+export default UsersClient

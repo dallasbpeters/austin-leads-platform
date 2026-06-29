@@ -1,6 +1,6 @@
 import { requestJson } from '@/services/admin/hero-pages'
 
-export function buildDefaultDomainForm() {
+export const buildDefaultDomainForm = () => {
   return {
     domain: '',
     siteSlug: '',
@@ -8,7 +8,7 @@ export function buildDefaultDomainForm() {
   }
 }
 
-export function buildDefaultSiteForm() {
+export const buildDefaultSiteForm = () => {
   return {
     domain: '',
     name: '',
@@ -17,37 +17,37 @@ export function buildDefaultSiteForm() {
   }
 }
 
-export async function fetchDomains() {
+export const fetchDomains = async () => {
   return requestJson('/api/domains')
 }
 
-export async function createDomainRecord(form) {
+export const createDomainRecord = async (form) => {
   return requestJson('/api/domains', {
     method: 'POST',
     body: JSON.stringify(form),
   })
 }
 
-export async function verifyDomainRecord(domain) {
+export const verifyDomainRecord = async (domain) => {
   return requestJson(`/api/domains/${domain}/verify`, {
     method: 'POST',
   })
 }
 
-export async function updateDomainRecordRequest(domain, form) {
+export const updateDomainRecordRequest = async (domain, form) => {
   return requestJson(`/api/domains/${encodeURIComponent(domain)}`, {
     method: 'PATCH',
     body: JSON.stringify(form),
   })
 }
 
-export async function deleteDomainRecordRequest(domain) {
+export const deleteDomainRecordRequest = async (domain) => {
   return requestJson(`/api/domains/${encodeURIComponent(domain)}`, {
     method: 'DELETE',
   })
 }
 
-export async function createSiteRecord(form) {
+export const createSiteRecord = async (form) => {
   return requestJson('/api/sites', {
     method: 'POST',
     body: JSON.stringify(form),

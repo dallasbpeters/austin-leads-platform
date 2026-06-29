@@ -63,9 +63,29 @@ export default {
               type: 'boolean',
               initialValue: false,
             },
+            {
+              name: 'variant',
+              title: 'Display style',
+              type: 'string',
+              initialValue: 'link',
+              options: {
+                layout: 'radio',
+                list: [
+                  { title: 'Link', value: 'link' },
+                  { title: 'Button', value: 'button' },
+                ],
+              },
+              validation: (Rule) => Rule.required(),
+            },
           ],
           preview: {
-            select: { title: 'label', subtitle: 'href' },
+            select: { title: 'label', href: 'href', variant: 'variant' },
+            prepare({ title, href, variant }) {
+              return {
+                title,
+                subtitle: [variant === 'button' ? 'Button' : 'Link', href].filter(Boolean).join(' - '),
+              }
+            },
           },
         },
       ],

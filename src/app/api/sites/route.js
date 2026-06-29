@@ -97,6 +97,50 @@ function buildHomepageDocument(siteId, name, category) {
   }
 }
 
+function buildGuidesPageDocument(siteId, name, category) {
+  return {
+    _type: 'page',
+    title: `${name} Guides`,
+    description: `Guides and planning resources for ${name}.`,
+    slug: { _type: 'slug', current: 'guides' },
+    pageType: 'page',
+    templateLevel: 'hero',
+    site: { _type: 'reference', _ref: siteId },
+    sections: [
+      {
+        _key: key(),
+        _type: 'heroSection',
+        type: 'hero',
+        eyebrow: 'Guide library',
+        title: `Research ${category || 'your project'} with clearer guidance.`,
+        body: [
+          {
+            _key: key(),
+            _type: 'block',
+            style: 'normal',
+            children: [
+              {
+                _key: key(),
+                _type: 'span',
+                marks: [],
+                text: `Use this library to compare options, understand tradeoffs, and plan the next step with ${name}.`,
+              },
+            ],
+            markDefs: [],
+          },
+        ],
+      },
+      {
+        _key: key(),
+        _type: 'guideGridSection',
+        type: 'guideGrid',
+        title: 'Guides',
+        items: [],
+      },
+    ],
+  }
+}
+
 async function attachVercelDomainSafe(domain) {
   try {
     return await addDomainToVercel({ domain })
@@ -164,9 +208,13 @@ export async function POST(request) {
     buildSiteDocument(siteId, slug, name, domain, category),
   )
   const page = await sanityWriteClient.create(buildHomepageDocument(siteId, name, category))
+  const guidesPage = await sanityWriteClient.create(buildGuidesPageDocument(siteId, name, category))
   const vercelResult = await attachVercelDomainSafe(domain)
   const domainRecord = buildDomainRecord(domain, slug, vercelResult)
   const persisted = await persistDomainRecord(domainRecord)
 
-  return NextResponse.json({ site, page, domain: persisted, vercel: vercelResult }, { status: 201 })
+  return NextResponse.json(
+    { site, page, guidesPage, domain: persisted, vercel: vercelResult },
+    { status: 201 },
+  )
 }

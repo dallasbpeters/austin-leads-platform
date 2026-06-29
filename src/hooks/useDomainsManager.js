@@ -13,7 +13,7 @@ import {
   verifyDomainRecord,
 } from '@/services/admin/domains'
 
-export function useDomainsManager({ initialDomains, vercelEnabled }) {
+export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
   const [domains, setDomains] = useState(initialDomains)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -53,7 +53,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     refreshDomains()
   }, [vercelEnabled])
 
-  async function refreshDomains() {
+  const refreshDomains = async () => {
     setError('')
     setLoading(true)
     try {
@@ -69,7 +69,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     }
   }
 
-  async function addRedirectDomain(event) {
+  const addRedirectDomain = async (event) => {
     event.preventDefault()
     setError('')
     setLoading(true)
@@ -84,7 +84,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     }
   }
 
-  async function addLandingPage(event) {
+  const addLandingPage = async (event) => {
     event.preventDefault()
     setError('')
     setLastCreatedSite(null)
@@ -101,7 +101,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     }
   }
 
-  async function verifyDomain(domain) {
+  const verifyDomain = async (domain) => {
     setError('')
     setLoading(true)
     try {
@@ -114,7 +114,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     }
   }
 
-  function startEditing(domainRecord) {
+  const startEditing = (domainRecord) => {
     setEditingDomain(domainRecord.domain)
     setEditForm({
       siteSlug: domainRecord.siteSlug || '',
@@ -127,7 +127,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     setExpandedDns(null)
   }
 
-  function cancelEditing() {
+  const cancelEditing = () => {
     setEditingDomain(null)
     setEditForm({
       siteSlug: '',
@@ -139,7 +139,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     })
   }
 
-  async function saveDomain(domain) {
+  const saveDomain = async (domain) => {
     setError('')
     setLoading(true)
     try {
@@ -166,7 +166,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     }
   }
 
-  async function removeDomain(domain) {
+  const removeDomain = async (domain) => {
     setError('')
     setLoading(true)
     try {
@@ -182,7 +182,7 @@ export function useDomainsManager({ initialDomains, vercelEnabled }) {
     }
   }
 
-  function toggleDns(domain) {
+  const toggleDns = (domain) => {
     setExpandedDns((current) => (current === domain ? null : domain))
     if (editingDomain === domain) {
       cancelEditing()

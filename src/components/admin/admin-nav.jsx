@@ -51,7 +51,7 @@ const christmasItems = [
   { href: '/christmas/slots', label: 'Slots', icon: Sparkles },
 ]
 
-function NavGroup({ label, items }) {
+const NavGroup = ({ label, items }) => {
   const pathname = usePathname()
 
   return (
@@ -94,7 +94,7 @@ function NavGroup({ label, items }) {
   )
 }
 
-export default function AdminNav() {
+const AdminNav = () => {
   return (
     <>
       <NavGroup label="Overview" items={overviewItems} />
@@ -103,3 +103,5 @@ export default function AdminNav() {
     </>
   )
 }
+
+export default AdminNav

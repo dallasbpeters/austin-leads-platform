@@ -364,6 +364,7 @@ async function renderSolarHomepage(site) {
       resourcesSection={resourcesSection}
       reviews={reviews}
       site={site}
+      navigation={resolveNavigationForSite(site)}
       jsonLd={jsonLd}
       homepageSource={homepage?.source || heroHomepage?.source || 'fixture'}
     />

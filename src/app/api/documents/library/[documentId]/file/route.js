@@ -5,11 +5,11 @@ import { ensureDocumentTables, getDocumentLibraryItemById, hasDocumentDatabase }
 
 export const runtime = 'nodejs'
 
-function decodeBase64(value) {
+const decodeBase64 = (value) => {
   return Uint8Array.from(Buffer.from(String(value || ''), 'base64'))
 }
 
-function safeFileName(value) {
+const safeFileName = (value) => {
   return (
     String(value || 'document.pdf')
       .replaceAll('"', '')
@@ -17,7 +17,7 @@ function safeFileName(value) {
   )
 }
 
-export async function GET(request, { params }) {
+export const GET = async (request, { params }) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

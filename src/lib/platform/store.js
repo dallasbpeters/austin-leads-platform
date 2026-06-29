@@ -8,11 +8,11 @@ let analyticsGoals = initialAnalyticsGoals.map((goal) => ({ ...goal }))
 
 const now = () => new Date().toISOString()
 
-export function listPublishJobs() {
+export const listPublishJobs = () => {
   return [...publishJobs].toSorted((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
-export function createPublishJob(input) {
+export const createPublishJob = (input) => {
   const job = {
     id: `job-${crypto.randomUUID()}`,
     siteSlug: input.siteSlug,
@@ -34,7 +34,7 @@ export function createPublishJob(input) {
   return job
 }
 
-export function updatePublishJob(jobId, patch) {
+export const updatePublishJob = (jobId, patch) => {
   let updated
 
   publishJobs = publishJobs.map((job) => {
@@ -54,15 +54,15 @@ export function updatePublishJob(jobId, patch) {
   return updated ?? null
 }
 
-export function getPublishJob(jobId) {
+export const getPublishJob = (jobId) => {
   return publishJobs.find((job) => job.id === jobId) ?? null
 }
 
-export function listDomainRecords() {
+export const listDomainRecords = () => {
   return [...domainRecords].toSorted((a, b) => a.domain.localeCompare(b.domain))
 }
 
-export function upsertDomainRecord(domainRecord) {
+export const upsertDomainRecord = (domainRecord) => {
   const existing = domainRecords.find((record) => record.domain === domainRecord.domain)
 
   if (existing) {
@@ -92,11 +92,11 @@ export function upsertDomainRecord(domainRecord) {
   return created
 }
 
-export function getDomainRecord(domain) {
+export const getDomainRecord = (domain) => {
   return domainRecords.find((record) => record.domain === domain) ?? null
 }
 
-export function updateDomainRecord(domain, patch) {
+export const updateDomainRecord = (domain, patch) => {
   let updated = null
 
   domainRecords = domainRecords.map((record) => {
@@ -116,7 +116,7 @@ export function updateDomainRecord(domain, patch) {
   return updated
 }
 
-export function deleteDomainRecord(domain) {
+export const deleteDomainRecord = (domain) => {
   const existing = getDomainRecord(domain)
 
   if (!existing) {
@@ -127,11 +127,11 @@ export function deleteDomainRecord(domain) {
   return existing
 }
 
-export function listAnalyticsGoals() {
+export const listAnalyticsGoals = () => {
   return [...analyticsGoals].toSorted((a, b) => a.name.localeCompare(b.name))
 }
 
-export function createAnalyticsGoal(input) {
+export const createAnalyticsGoal = (input) => {
   const goal = {
     id: `goal-${crypto.randomUUID()}`,
     name: input.name,
@@ -150,7 +150,7 @@ export function createAnalyticsGoal(input) {
   return goal
 }
 
-export function updateAnalyticsGoal(goalId, patch) {
+export const updateAnalyticsGoal = (goalId, patch) => {
   let updated
 
   analyticsGoals = analyticsGoals.map((goal) => {
@@ -170,11 +170,11 @@ export function updateAnalyticsGoal(goalId, patch) {
   return updated ?? null
 }
 
-export function getAnalyticsGoal(goalId) {
+export const getAnalyticsGoal = (goalId) => {
   return analyticsGoals.find((goal) => goal.id === goalId) ?? null
 }
 
-export function getAnalyticsOverview() {
+export const getAnalyticsOverview = () => {
   const providers = getAnalyticsProviders()
 
   return {
@@ -185,7 +185,7 @@ export function getAnalyticsOverview() {
   }
 }
 
-export function getAnalyticsProviders() {
+export const getAnalyticsProviders = () => {
   const googleAnalytics = getGoogleAnalyticsConfig()
   const ga4ReportingReady = hasGoogleAnalyticsReportingConfig()
 

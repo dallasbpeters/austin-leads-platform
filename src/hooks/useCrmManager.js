@@ -11,7 +11,7 @@ const defaultFilters = {
   serviceInterest: 'all',
 }
 
-export function useCrmManager({ initialOverview, initialPipeline, initialLeads }) {
+export const useCrmManager = ({ initialOverview, initialPipeline, initialLeads }) => {
   const [overview, setOverview] = useState(initialOverview)
   const [pipeline, setPipeline] = useState(initialPipeline)
   const [leads, setLeads] = useState(initialLeads)
@@ -26,14 +26,14 @@ export function useCrmManager({ initialOverview, initialPipeline, initialLeads }
     [leads, selectedLeadId],
   )
 
-  function applyPayload(payload) {
+  const applyPayload = (payload) => {
     setOverview(payload.overview)
     setPipeline(payload.pipeline)
     setLeads(payload.leads)
     setSelectedLeadId((current) => (payload.leads.some((lead) => lead.id === current) ? current : null))
   }
 
-  function refresh(nextFilters = filters) {
+  const refresh = (nextFilters = filters) => {
     startRefresh(async () => {
       try {
         setError('')
@@ -45,7 +45,7 @@ export function useCrmManager({ initialOverview, initialPipeline, initialLeads }
     })
   }
 
-  function updateFilter(key, value) {
+  const updateFilter = (key, value) => {
     const nextFilters = {
       ...filters,
       [key]: value,
@@ -55,7 +55,7 @@ export function useCrmManager({ initialOverview, initialPipeline, initialLeads }
     refresh(nextFilters)
   }
 
-  function saveLead(updates) {
+  const saveLead = (updates) => {
     if (!selectedLead) {
       return
     }

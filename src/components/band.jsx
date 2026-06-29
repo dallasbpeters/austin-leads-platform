@@ -30,52 +30,48 @@ const bands = [
   { opacity: 0.06 },
 ]
 
-function BandWrapper({ containerRef, className, rotate, style, children, onMouseMove, onMouseLeave }) {
-  return (
-    <div
-      ref={containerRef}
-      className={className}
-      style={{
-        position: 'relative',
-        width: '100%',
-        transform: rotate ? 'rotate(180deg)' : undefined,
-        ...style,
-      }}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
-    >
-      {children}
-    </div>
-  )
-}
+const BandWrapper = ({ containerRef, className, rotate, style, children, onMouseMove, onMouseLeave }) => (
+  <div
+    ref={containerRef}
+    className={className}
+    style={{
+      position: 'relative',
+      width: '100%',
+      transform: rotate ? 'rotate(180deg)' : undefined,
+      ...style,
+    }}
+    onMouseMove={onMouseMove}
+    onMouseLeave={onMouseLeave}
+  >
+    {children}
+  </div>
+)
 
-function BandRow({ band, index, bandHeight, bg, customProperties, transitionValue }) {
-  return (
-    <motion.div
-      key={index}
+const BandRow = ({ band, index, bandHeight, bg, customProperties, transitionValue }) => (
+  <motion.div
+    key={index}
+    style={{
+      position: 'relative',
+      width: '100%',
+      background: bg,
+      height: bandHeight,
+      ...customProperties,
+      ...(transitionValue ? { transition: transitionValue } : {}),
+    }}
+  >
+    <span
       style={{
-        position: 'relative',
-        width: '100%',
-        background: bg,
-        height: bandHeight,
-        ...customProperties,
-        ...(transitionValue ? { transition: transitionValue } : {}),
+        position: 'absolute',
+        inset: 0,
+        display: 'block',
+        background: band.tint,
+        opacity: band.opacity,
       }}
-    >
-      <span
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'block',
-          background: band.tint,
-          opacity: band.opacity,
-        }}
-      />
-    </motion.div>
-  )
-}
+    />
+  </motion.div>
+)
 
-function SingleColorBand({ containerRef, palette, className, rotate, style, tint, bandHeight }) {
+const SingleColorBand = ({ containerRef, palette, className, rotate, style, tint, bandHeight }) => {
   const gradientBg = palette.length === 1 ? palette[0] : 'transparent'
   const bandData = bands.map((band) => ({ ...band, tint }))
 
@@ -88,7 +84,7 @@ function SingleColorBand({ containerRef, palette, className, rotate, style, tint
   )
 }
 
-function MultiColorBand({
+const MultiColorBand = ({
   containerRef,
   palette,
   className,
@@ -103,17 +99,17 @@ function MultiColorBand({
   amplitude,
   onMouseMove,
   onMouseLeave,
-}) {
+}) => {
   const numStops = palette.length
   const step = 100 / (numStops - 1)
   const autoOffset = autoAnimate ? Math.sin(time * speed) * amplitude : 0
   const stopPositions = palette.map((_, index) =>
     Math.max(0, Math.min(100, index * step + mouseOffset + autoOffset)),
   )
-  const customProperties = stopPositions.reduce((acc, position, index) => {
-    acc[`--stop${index}`] = `${position}%`
-    return acc
-  }, {})
+  const customProperties = {}
+  for (const [index, position] of stopPositions.entries()) {
+    customProperties[`--stop${index}`] = `${position}%`
+  }
   const transitionValue = stopPositions.map((_, index) => `--stop${index} 1s ease-out`).join(', ')
   const gradientBg = `linear-gradient(90deg, ${palette.map((color, index) => `${color} var(--stop${index})`).join(', ')})`
   const bandData = bands.map((band) => ({ ...band, tint }))
@@ -142,7 +138,7 @@ function MultiColorBand({
   )
 }
 
-export default function Band({
+const Band = ({
   colors = defaultBandColors,
   tint = 'var(--color-secondary-950)',
   minHeight = 2,
@@ -156,7 +152,7 @@ export default function Band({
   amplitude = 10,
   className = '',
   style,
-}) {
+}) => {
   const containerRef = useRef(null)
   const rectRef = useRef(null)
   const [isMounted, setIsMounted] = useState(false)
@@ -188,7 +184,7 @@ export default function Band({
   const offsetSpring = useSpring(0, { stiffness: 30, damping: 15 })
   useMotionValueEvent(offsetSpring, 'change', setMouseOffset)
 
-  function onMouseMove(event) {
+  const onMouseMove = (event) => {
     if (!rectRef.current) {
       rectRef.current = event.currentTarget.getBoundingClientRect()
     }
@@ -196,7 +192,7 @@ export default function Band({
     offsetSpring.set((x - 50) * 0.5)
   }
 
-  function onMouseLeave() {
+  const onMouseLeave = () => {
     offsetSpring.set(0)
   }
 
@@ -235,3 +231,5 @@ export default function Band({
     />
   )
 }
+
+export default Band

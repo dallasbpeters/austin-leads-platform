@@ -1,10 +1,10 @@
 import { getPool, getSql, hasDatabaseUrl } from '../db/pool.js'
 
-export function hasDocumentDatabase() {
+export const hasDocumentDatabase = () => {
   return hasDatabaseUrl()
 }
 
-function parseJson(value, fallback = {}) {
+const parseJson = (value, fallback = {}) => {
   if (!value) {
     return fallback
   }
@@ -18,7 +18,7 @@ function parseJson(value, fallback = {}) {
   return value
 }
 
-function normalizeClientRow(row) {
+const normalizeClientRow = (row) => {
   if (!row) {
     return row
   }
@@ -29,7 +29,7 @@ function normalizeClientRow(row) {
   }
 }
 
-function normalizeRequestRow(row) {
+const normalizeRequestRow = (row) => {
   if (!row) {
     return row
   }
@@ -41,7 +41,7 @@ function normalizeRequestRow(row) {
   }
 }
 
-function normalizeLibraryRow(row) {
+const normalizeLibraryRow = (row) => {
   if (!row) {
     return row
   }
@@ -52,7 +52,7 @@ function normalizeLibraryRow(row) {
   }
 }
 
-function normalizeRecipientRow(row) {
+const normalizeRecipientRow = (row) => {
   if (!row) {
     return row
   }
@@ -67,7 +67,7 @@ function normalizeRecipientRow(row) {
   }
 }
 
-function normalizeAuditRow(row) {
+const normalizeAuditRow = (row) => {
   if (!row) {
     return row
   }
@@ -78,11 +78,11 @@ function normalizeAuditRow(row) {
   }
 }
 
-function delay(ms) {
+const delay = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export async function ensureDocumentTables() {
+export const ensureDocumentTables = async () => {
   const pool = getPool()
   const client = await pool.connect()
 
@@ -225,7 +225,7 @@ export async function ensureDocumentTables() {
   }
 }
 
-export async function listDocumentClients({ limit = 200, search = '' } = {}) {
+export const listDocumentClients = async ({ limit = 200, search = '' } = {}) => {
   const sql = getSql()
   const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 500)) : 200
   const cleanSearch = search.trim()
@@ -248,7 +248,7 @@ export async function listDocumentClients({ limit = 200, search = '' } = {}) {
   return rows.map(normalizeClientRow)
 }
 
-export async function getDocumentClientById(clientId) {
+export const getDocumentClientById = async (clientId) => {
   const sql = getSql()
   const [row] = await sql`
     SELECT *
@@ -260,7 +260,7 @@ export async function getDocumentClientById(clientId) {
   return normalizeClientRow(row)
 }
 
-export async function upsertDocumentClient(input) {
+export const upsertDocumentClient = async (input) => {
   const sql = getSql()
   const id = input.id || crypto.randomUUID()
   const email = String(input.email || '')
@@ -307,7 +307,7 @@ export async function upsertDocumentClient(input) {
   return normalizeClientRow(row)
 }
 
-export async function createSignatureRequest(input) {
+export const createSignatureRequest = async (input) => {
   const sql = getSql()
   const id = input.id || crypto.randomUUID()
 
@@ -352,7 +352,7 @@ export async function createSignatureRequest(input) {
   return normalizeRequestRow(row)
 }
 
-export async function createDocumentLibraryItem(input) {
+export const createDocumentLibraryItem = async (input) => {
   const sql = getSql()
   const id = input.id || crypto.randomUUID()
 
@@ -389,7 +389,7 @@ export async function createDocumentLibraryItem(input) {
   return normalizeLibraryRow(row)
 }
 
-export async function updateDocumentLibraryItem(itemId, updates) {
+export const updateDocumentLibraryItem = async (itemId, updates) => {
   const sql = getSql()
   const [row] = await sql`
     UPDATE document_library_items
@@ -412,7 +412,7 @@ export async function updateDocumentLibraryItem(itemId, updates) {
   return normalizeLibraryRow(row)
 }
 
-export async function getDocumentLibraryItemById(itemId) {
+export const getDocumentLibraryItemById = async (itemId) => {
   const sql = getSql()
   const [row] = await sql`
     SELECT *
@@ -424,7 +424,7 @@ export async function getDocumentLibraryItemById(itemId) {
   return normalizeLibraryRow(row)
 }
 
-export async function listDocumentLibraryItems({ limit = 100 } = {}) {
+export const listDocumentLibraryItems = async ({ limit = 100 } = {}) => {
   const sql = getSql()
   const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 300)) : 100
   const rows = await sql`
@@ -445,7 +445,7 @@ export async function listDocumentLibraryItems({ limit = 100 } = {}) {
   return rows.map(normalizeLibraryRow)
 }
 
-export async function updateSignatureRequestAfterSend(requestId, updates) {
+export const updateSignatureRequestAfterSend = async (requestId, updates) => {
   const sql = getSql()
   const [row] = await sql`
     UPDATE document_signature_requests
@@ -463,7 +463,7 @@ export async function updateSignatureRequestAfterSend(requestId, updates) {
   return normalizeRequestRow(row)
 }
 
-export async function updateSignatureRequestStatus(requestId, updates) {
+export const updateSignatureRequestStatus = async (requestId, updates) => {
   const sql = getSql()
   const [row] = await sql`
     UPDATE document_signature_requests
@@ -480,7 +480,7 @@ export async function updateSignatureRequestStatus(requestId, updates) {
   return normalizeRequestRow(row)
 }
 
-export async function getSignatureRequestById(requestId) {
+export const getSignatureRequestById = async (requestId) => {
   const sql = getSql()
   const [row] = await sql`
     SELECT
@@ -496,7 +496,7 @@ export async function getSignatureRequestById(requestId) {
   return normalizeRequestRow(row)
 }
 
-export async function getSignatureRequestBySubmissionId(submissionId) {
+export const getSignatureRequestBySubmissionId = async (submissionId) => {
   const sql = getSql()
   const [row] = await sql`
     SELECT
@@ -512,7 +512,7 @@ export async function getSignatureRequestBySubmissionId(submissionId) {
   return normalizeRequestRow(row)
 }
 
-export async function createDocumentRecipient(input) {
+export const createDocumentRecipient = async (input) => {
   const sql = getSql()
   const id = input.id || crypto.randomUUID()
 
@@ -551,7 +551,7 @@ export async function createDocumentRecipient(input) {
   return normalizeRecipientRow(row)
 }
 
-export async function updateDocumentRecipientStatus(recipientId, updates) {
+export const updateDocumentRecipientStatus = async (recipientId, updates) => {
   const sql = getSql()
   const [row] = await sql`
     UPDATE document_recipients
@@ -570,7 +570,7 @@ export async function updateDocumentRecipientStatus(recipientId, updates) {
   return normalizeRecipientRow(row)
 }
 
-export async function getDocumentRecipientById(recipientId) {
+export const getDocumentRecipientById = async (recipientId) => {
   const sql = getSql()
   const [row] = await sql`
     SELECT *
@@ -582,7 +582,7 @@ export async function getDocumentRecipientById(recipientId) {
   return normalizeRecipientRow(row)
 }
 
-export async function listSignatureRequests({ limit = 100 } = {}) {
+export const listSignatureRequests = async ({ limit = 100 } = {}) => {
   const sql = getSql()
   const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(limit, 300)) : 100
   const rows = await sql`
@@ -606,7 +606,7 @@ export async function listSignatureRequests({ limit = 100 } = {}) {
   return rows.map(normalizeRequestRow)
 }
 
-export async function listDocumentRecipients(requestId) {
+export const listDocumentRecipients = async (requestId) => {
   const sql = getSql()
   const rows = await sql`
     SELECT *
@@ -618,7 +618,7 @@ export async function listDocumentRecipients(requestId) {
   return rows.map(normalizeRecipientRow)
 }
 
-export async function createDocumentAuditEvent(input) {
+export const createDocumentAuditEvent = async (input) => {
   const sql = getSql()
   const id = input.id || crypto.randomUUID()
 
@@ -651,7 +651,7 @@ export async function createDocumentAuditEvent(input) {
   return normalizeAuditRow(row)
 }
 
-export async function listDocumentAuditEvents(requestId) {
+export const listDocumentAuditEvents = async (requestId) => {
   const sql = getSql()
   const rows = await sql`
     SELECT *

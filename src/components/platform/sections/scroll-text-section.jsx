@@ -1,10 +1,10 @@
 import ScrollText from '@/components/scroll-text'
 
-function resolveNumericProp(value) {
+const resolveNumericProp = (value) => {
   return Number.isFinite(value) ? value : undefined
 }
 
-function buildScrollTexts(section) {
+const buildScrollTexts = (section) => {
   const textItems = Array.isArray(section?.text)
     ? section.text
     : Array.isArray(section?.texts)
@@ -20,7 +20,7 @@ function buildScrollTexts(section) {
   return textItems.map((text) => ({ text, icon: resolvedIcon }))
 }
 
-export function ScrollTextSection({ section, sectionId }) {
+export const ScrollTextSection = ({ section, sectionId }) => {
   const scrollTexts = buildScrollTexts(section)
   const shouldShowIcon = Boolean(section?.showIcon || section?.showFlag || section?.icon)
 

@@ -1,10 +1,10 @@
 import { getSql, hasDatabaseUrl } from '../db/pool.mjs'
 
-export function hasLeadDatabase() {
+export const hasLeadDatabase = () => {
   return hasDatabaseUrl()
 }
 
-export async function ensureLeadSubmissionsTable() {
+export const ensureLeadSubmissionsTable = async () => {
   const sql = getSql()
 
   await sql`
@@ -43,7 +43,7 @@ export async function ensureLeadSubmissionsTable() {
   await sql`ALTER TABLE lead_submissions ADD COLUMN IF NOT EXISTS internal_notes TEXT`
 }
 
-export async function ensureLeadRoutingSettingsTable() {
+export const ensureLeadRoutingSettingsTable = async () => {
   const sql = getSql()
 
   await sql`
@@ -61,7 +61,7 @@ export async function ensureLeadRoutingSettingsTable() {
   `
 }
 
-function normalizeLeadRoutingSettingsRow(row) {
+const normalizeLeadRoutingSettingsRow = (row) => {
   if (!row) {
     return null
   }
@@ -79,7 +79,7 @@ function normalizeLeadRoutingSettingsRow(row) {
   }
 }
 
-export async function getLeadRoutingSettingsRow(id = 'default') {
+export const getLeadRoutingSettingsRow = async (id = 'default') => {
   const sql = getSql()
   await ensureLeadRoutingSettingsTable()
 
@@ -93,10 +93,10 @@ export async function getLeadRoutingSettingsRow(id = 'default') {
   return normalizeLeadRoutingSettingsRow(row)
 }
 
-export async function upsertLeadRoutingSettingsRow(
+export const upsertLeadRoutingSettingsRow = async (
   { emailNotificationsEnabled, notificationToEmail, fromName, fromEmail, subjectPrefix, resendTemplateId },
   id = 'default',
-) {
+) => {
   const sql = getSql()
   await ensureLeadRoutingSettingsTable()
 
@@ -134,7 +134,7 @@ export async function upsertLeadRoutingSettingsRow(
   return normalizeLeadRoutingSettingsRow(row)
 }
 
-export async function getLeadSubmissionOverview() {
+export const getLeadSubmissionOverview = async () => {
   const sql = getSql()
 
   const [counts] = await sql`

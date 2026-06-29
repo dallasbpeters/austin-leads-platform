@@ -5,7 +5,7 @@ import HailWeatherLookup from '@/components/hail-weather-lookup'
 import Header from '@/components/header'
 import LeadCaptureForm from '@/components/lead-capture-form'
 import { Card, CardContent } from '@/components/ui/card'
-import { resolveCurrentSite } from '@/lib/platform/content'
+import { resolveCurrentSite, resolveNavigationForSite } from '@/lib/platform/content'
 
 export const metadata = {
   title: 'Hail Map | Texas Solar and Roofing Pros',
@@ -13,8 +13,9 @@ export const metadata = {
     'Search recent hail activity near your property and request a roof + claim review from a local team.',
 }
 
-export default async function HailMapPage() {
+const HailMapPage = async () => {
   const site = await resolveCurrentSite()
+  const navigation = resolveNavigationForSite(site)
   const leadContext = {
     sourceType: 'cross-lead',
     sourceSection: 'hail-map-cta-banner',
@@ -36,7 +37,7 @@ export default async function HailMapPage() {
 
   return (
     <main className="bg-background min-h-screen">
-      <Header />
+      <Header navigation={navigation} />
 
       <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(17,30,41,0.98),rgba(17,30,41,0.94))] pt-40">
         <div className="mx-auto max-w-7xl px-3 py-7 md:px-6 lg:px-10">
@@ -91,3 +92,5 @@ export default async function HailMapPage() {
     </main>
   )
 }
+
+export default HailMapPage

@@ -5,7 +5,7 @@ const API_BASE = 'https://api.vercel.com'
 
 let linkedProjectConfig = null
 
-function getLinkedProjectConfig() {
+const getLinkedProjectConfig = () => {
   if (linkedProjectConfig !== null) {
     return linkedProjectConfig
   }
@@ -31,7 +31,7 @@ function getLinkedProjectConfig() {
   return linkedProjectConfig
 }
 
-function getVercelConfig() {
+const getVercelConfig = () => {
   const linkedProject = getLinkedProjectConfig()
   const token = process.env.VERCEL_TOKEN
   const projectIdOrName =
@@ -51,7 +51,7 @@ function getVercelConfig() {
   }
 }
 
-function buildUrl(pathname) {
+const buildUrl = (pathname) => {
   const config = getVercelConfig()
   const url = new URL(pathname, API_BASE)
 
@@ -66,7 +66,7 @@ function buildUrl(pathname) {
   return url
 }
 
-async function vercelRequest(pathname, init = {}) {
+const vercelRequest = async (pathname, init = {}) => {
   const config = getVercelConfig()
 
   if (!config.enabled) {
@@ -95,7 +95,7 @@ async function vercelRequest(pathname, init = {}) {
   return json
 }
 
-function mapVerificationStatus(record) {
+const mapVerificationStatus = (record) => {
   if (record.redirect) {
     return 'redirect-only'
   }
@@ -107,11 +107,11 @@ function mapVerificationStatus(record) {
   return 'pending'
 }
 
-export function isVercelConfigured() {
+export const isVercelConfigured = () => {
   return getVercelConfig().enabled
 }
 
-function mapProjectDomain(payload) {
+const mapProjectDomain = (payload) => {
   return {
     domain: payload.name,
     apexName: payload.apexName,
@@ -127,7 +127,7 @@ function mapProjectDomain(payload) {
   }
 }
 
-export async function listProjectDomainsOnVercel() {
+export const listProjectDomainsOnVercel = async () => {
   const config = getVercelConfig()
 
   if (!config.enabled) {
@@ -144,7 +144,7 @@ export async function listProjectDomainsOnVercel() {
   return Array.isArray(payload?.domains) ? payload.domains.map(mapProjectDomain) : []
 }
 
-export async function addDomainToVercel({ domain, redirectTarget = null }) {
+export const addDomainToVercel = async ({ domain, redirectTarget = null }) => {
   const config = getVercelConfig()
 
   if (!config.enabled) {
@@ -178,7 +178,7 @@ export async function addDomainToVercel({ domain, redirectTarget = null }) {
   return mapProjectDomain(payload)
 }
 
-export async function verifyDomainOnVercel(domain) {
+export const verifyDomainOnVercel = async (domain) => {
   const config = getVercelConfig()
 
   if (!config.enabled) {
@@ -205,7 +205,7 @@ export async function verifyDomainOnVercel(domain) {
   return mapProjectDomain(payload)
 }
 
-export async function getDomainFromVercel(domain) {
+export const getDomainFromVercel = async (domain) => {
   const config = getVercelConfig()
 
   if (!config.enabled) {
@@ -219,7 +219,7 @@ export async function getDomainFromVercel(domain) {
   return mapProjectDomain(payload)
 }
 
-export async function updateDomainOnVercel(domain, { redirectTarget = null } = {}) {
+export const updateDomainOnVercel = async (domain, { redirectTarget = null } = {}) => {
   const config = getVercelConfig()
 
   if (!config.enabled) {
@@ -245,7 +245,7 @@ export async function updateDomainOnVercel(domain, { redirectTarget = null } = {
   return mapProjectDomain(payload)
 }
 
-export async function removeDomainFromVercel(domain) {
+export const removeDomainFromVercel = async (domain) => {
   const config = getVercelConfig()
 
   if (!config.enabled) {

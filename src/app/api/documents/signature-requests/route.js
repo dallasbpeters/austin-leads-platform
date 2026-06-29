@@ -5,7 +5,7 @@ import { ensureDocumentTables, hasDocumentDatabase, listSignatureRequests } from
 
 export const runtime = 'nodejs'
 
-export async function GET(request) {
+export const GET = async (request) => {
   const unauthorized = await requireAdminRequest()
   if (unauthorized) {
     return unauthorized

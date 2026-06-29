@@ -6,7 +6,7 @@ import { fetchLocationWeather } from '@/services/weather'
 
 const DEFAULT_QUERY = 'Austin, TX'
 
-function geolocationErrorMessage(error) {
+const geolocationErrorMessage = (error) => {
   if (!error) {
     return 'We could not access your current location.'
   }
@@ -26,14 +26,14 @@ function geolocationErrorMessage(error) {
   return 'We could not access your current location.'
 }
 
-export function useHailWeatherLookup(initialQuery = DEFAULT_QUERY) {
+export const useHailWeatherLookup = (initialQuery = DEFAULT_QUERY) => {
   const [query, setQuery] = useState(initialQuery)
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [hasUserSearched, setHasUserSearched] = useState(false)
 
-  async function loadWeather(params) {
+  const loadWeather = async (params) => {
     setIsLoading(true)
 
     try {
@@ -56,7 +56,7 @@ export function useHailWeatherLookup(initialQuery = DEFAULT_QUERY) {
     loadWeather({ q: initialQuery })
   }, [initialQuery])
 
-  function searchByQuery(nextQuery = query) {
+  const searchByQuery = (nextQuery = query) => {
     setHasUserSearched(true)
     const trimmedQuery = nextQuery?.trim()
 
@@ -68,7 +68,7 @@ export function useHailWeatherLookup(initialQuery = DEFAULT_QUERY) {
     loadWeather({ q: trimmedQuery })
   }
 
-  function searchByCurrentLocation() {
+  const searchByCurrentLocation = () => {
     setHasUserSearched(true)
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setError('Geolocation is not available in this browser.')

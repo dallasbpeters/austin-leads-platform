@@ -12,7 +12,7 @@ const allowedOrigins = new Set([
   process.env.NEXT_PUBLIC_SITE_URL || 'https://texassolarandroofingpros.com',
 ])
 
-function resolveAnalyticsConfig() {
+const resolveAnalyticsConfig = () => {
   const config = getGoogleAnalyticsConfig()
   const clientEmail = String(config.credentials?.client_email || '').trim()
   const privateKey = String(config.credentials?.private_key || '')
@@ -24,7 +24,7 @@ function resolveAnalyticsConfig() {
   }
 }
 
-function getCorsOrigin(request: Request) {
+const getCorsOrigin = (request: Request) => {
   const origin = request.headers.get('origin') || ''
   if (origin && allowedOrigins.has(origin)) {
     return origin
@@ -32,7 +32,7 @@ function getCorsOrigin(request: Request) {
   return process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || 'https://austin-leads-platform.sanity.studio'
 }
 
-function withCors(response: Response, request: Request) {
+const withCors = (response: Response, request: Request) => {
   const headers = new Headers(response.headers)
   headers.set('Access-Control-Allow-Origin', getCorsOrigin(request))
   headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS')
@@ -46,7 +46,7 @@ function withCors(response: Response, request: Request) {
   })
 }
 
-function createAnalyticsClient(config: ReturnType<typeof resolveAnalyticsConfig>) {
+const createAnalyticsClient = (config: ReturnType<typeof resolveAnalyticsConfig>) => {
   return new BetaAnalyticsDataClient({
     credentials: {
       client_email: config.clientEmail,
@@ -55,11 +55,11 @@ function createAnalyticsClient(config: ReturnType<typeof resolveAnalyticsConfig>
   })
 }
 
-async function runReport(
+const runReport = async (
   client: BetaAnalyticsDataClient,
   propertyId: string,
   request: Record<string, unknown>,
-) {
+) => {
   const [response] = await client.runReport({
     property: `properties/${propertyId}`,
     ...request,
@@ -67,11 +67,11 @@ async function runReport(
   return response
 }
 
-async function runRealtimeReport(
+const runRealtimeReport = async (
   client: BetaAnalyticsDataClient,
   propertyId: string,
   request: Record<string, unknown>,
-) {
+) => {
   const [response] = await client.runRealtimeReport({
     property: `properties/${propertyId}`,
     ...request,
@@ -79,11 +79,11 @@ async function runRealtimeReport(
   return response
 }
 
-export function OPTIONS(request: Request) {
+export const OPTIONS = (request: Request) => {
   return withCors(new Response(null, { status: 204 }), request)
 }
 
-export async function GET(request: Request) {
+export const GET = async (request: Request) => {
   const config = resolveAnalyticsConfig()
 
   if (!config.propertyId) {

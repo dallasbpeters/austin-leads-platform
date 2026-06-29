@@ -47,11 +47,11 @@ const iconMap = {
   sunlight: SunLight,
 }
 
-function getResourceIcon(iconName) {
+const getResourceIcon = (iconName) => {
   return iconMap[iconName] || IconoirIcons[iconName] || null
 }
 
-function inferResourceIcon(item) {
+const inferResourceIcon = (item) => {
   const text = `${item?.title || ''} ${item?.copy || ''} ${item?.href || ''}`.toLowerCase()
 
   if (text.includes('hail') || text.includes('storm')) {
@@ -67,7 +67,7 @@ function inferResourceIcon(item) {
   return HomeShield
 }
 
-function normalizeItems(section) {
+const normalizeItems = (section) => {
   if (!section?.items?.length) {
     return defaultItems
   }

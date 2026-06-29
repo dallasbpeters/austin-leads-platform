@@ -188,7 +188,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
       fill
       priority
       fetchPriority="high"
-      quality={68}
+      quality={90}
       sizes="100vw"
       className="absolute inset-0 object-cover object-top opacity-10"
     />

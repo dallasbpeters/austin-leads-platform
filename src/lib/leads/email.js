@@ -2,11 +2,11 @@ import { Resend } from 'resend'
 
 import { getLeadRoutingSettings } from './settings'
 
-function getResendApiKey() {
+const getResendApiKey = () => {
   return process.env.RESEND_API_KEY?.trim() || ''
 }
 
-function escapeHtml(value) {
+const escapeHtml = (value) => {
   return String(value || '')
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
@@ -15,11 +15,11 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;')
 }
 
-function formatValue(value, fallback = 'Not provided') {
+const formatValue = (value, fallback = 'Not provided') => {
   return value ? String(value).trim() : fallback
 }
 
-function formatSubmittedAt(value) {
+const formatSubmittedAt = (value) => {
   const date = value ? new Date(value) : new Date()
 
   if (Number.isNaN(date.getTime())) {
@@ -33,7 +33,7 @@ function formatSubmittedAt(value) {
   }).format(date)
 }
 
-function buildLeadRows(lead) {
+const buildLeadRows = (lead) => {
   return [
     ['Name', lead.fullName],
     ['Email', lead.email],
@@ -50,7 +50,7 @@ function buildLeadRows(lead) {
   ]
 }
 
-function buildTemplateVariables(lead) {
+const buildTemplateVariables = (lead) => {
   return {
     leadName: formatValue(lead.fullName, ''),
     leadEmail: formatValue(lead.email, ''),
@@ -67,7 +67,7 @@ function buildTemplateVariables(lead) {
   }
 }
 
-function buildHtmlBody(lead) {
+const buildHtmlBody = (lead) => {
   const rows = buildLeadRows(lead)
     .map(
       ([label, value]) => `
@@ -99,17 +99,17 @@ function buildHtmlBody(lead) {
   `
 }
 
-function buildTextBody(lead) {
+const buildTextBody = (lead) => {
   const lines = buildLeadRows(lead).map(([label, value]) => `${label}: ${formatValue(value)}`)
 
   return ['New lead submission', '', ...lines].join('\n')
 }
 
-export function hasLeadEmailProvider() {
+export const hasLeadEmailProvider = () => {
   return Boolean(getResendApiKey())
 }
 
-function formatFromAddress(settings) {
+const formatFromAddress = (settings) => {
   if (!settings.fromEmail) {
     return ''
   }
@@ -117,7 +117,7 @@ function formatFromAddress(settings) {
   return settings.fromName ? `${settings.fromName} <${settings.fromEmail}>` : settings.fromEmail
 }
 
-export async function sendLeadNotificationEmail(lead) {
+export const sendLeadNotificationEmail = async (lead) => {
   const settings = await getLeadRoutingSettings()
   const logContext = {
     leadId: lead.id || null,

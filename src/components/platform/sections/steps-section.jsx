@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
 
-export function StepsSection({ section, sectionId }) {
+export const StepsSection = ({ section, sectionId }) => {
   return (
     <section
       className="bg-secondary-100 border-border/60 radial-grid-bg border-b"

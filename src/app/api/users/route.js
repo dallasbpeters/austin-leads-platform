@@ -1,7 +1,7 @@
 import { auth } from '@/auth'
 import { createUser, ensurePlatformUsersTable, listUsers } from '@/lib/auth/users'
 
-async function requireAdmin() {
+const requireAdmin = async () => {
   const session = await auth().catch(() => null)
   if (!session?.user || session.user.role !== 'admin') {
     return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
@@ -9,7 +9,7 @@ async function requireAdmin() {
   return { session }
 }
 
-export async function GET() {
+export const GET = async () => {
   const { error } = await requireAdmin()
   if (error) {
     return error
@@ -25,7 +25,7 @@ export async function GET() {
   }
 }
 
-export async function POST(req) {
+export const POST = async (req) => {
   const { error } = await requireAdmin()
   if (error) {
     return error

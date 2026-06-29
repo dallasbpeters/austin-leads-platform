@@ -3,7 +3,7 @@ import Link from 'next/link'
 import PortableTextContent from '@/components/portable-text-content'
 import { cleanRuntimeHref } from '@/lib/sanity/stega'
 
-function parseColorToRgb(value) {
+const parseColorToRgb = (value) => {
   if (typeof value !== 'string') {
     return null
   }
@@ -36,7 +36,7 @@ function parseColorToRgb(value) {
   return null
 }
 
-function getContrastTextBase(color) {
+const getContrastTextBase = (color) => {
   const rgb = parseColorToRgb(color)
   if (!rgb) {
     return '#111111'
@@ -51,7 +51,7 @@ function getContrastTextBase(color) {
   return luminance > 0.35 ? '#111111' : '#ffffff'
 }
 
-export function SecondaryCTASection({ section, sectionId }) {
+export const SecondaryCTASection = ({ section, sectionId }) => {
   const ctaLabel = section?.ctaLabel || 'Request a free roofing inspection'
   const ctaHref = section?.ctaHref?.startsWith('/')
     ? cleanRuntimeHref(section.ctaHref)
