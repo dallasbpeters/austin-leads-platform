@@ -158,7 +158,7 @@ const DigitalCard = ({ card }) => {
         background: `linear-gradient(180deg, ${colors.logoBg} 0%, ${colors.logoBg} 12rem, ${colors.mainBg} 12rem, ${colors.mainBg} 100%)`,
       }}
     >
-      <div className="mx-auto w-full max-w-120 overflow-hidden rounded-[2rem] bg-white shadow-[0_30px_90px_rgba(1,6,74,0.22)] ring-1 ring-black/5">
+      <div className="mx-auto w-full max-w-120 overflow-hidden rounded-4xl bg-white shadow-[0_30px_90px_rgba(1,6,74,0.22)] ring-1 ring-black/5">
         <header className="relative isolate h-44 overflow-hidden" style={{ backgroundColor: colors.logoBg }}>
           {coverUrl ? (
             <>

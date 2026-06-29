@@ -1,15 +1,10 @@
 import { notFound } from 'next/navigation'
 
 import DigitalCard from '@/components/cards/digital-card'
-import { getAllCardSlugs, getCardBySlug } from '@/lib/platform/cards'
+import { getCardBySlug } from '@/lib/platform/cards'
 import { getImageUrl } from '@/lib/platform/imageSource'
 
 export const dynamic = 'force-dynamic'
-
-export const generateStaticParams = async () => {
-  const slugs = await getAllCardSlugs()
-  return slugs.filter(Boolean).map((slug) => ({ slug }))
-}
 
 export const generateMetadata = async ({ params }) => {
   const { slug } = await params
