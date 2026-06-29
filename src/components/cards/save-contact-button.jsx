@@ -1,12 +1,91 @@
 'use client'
 
+import { getImageUrl } from '@/lib/platform/imageSource'
+
 const escapeVCard = (value = '') =>
   String(value)
-    .replace(/([,;\\])/g, '\\$1')
-    .replace(/\n/g, '\\n')
+    .replaceAll(/([,;\\])/gu, '\\$1')
+    .replaceAll(`'\n'`, '\\n')
+
+const VCF_LINE_LIMIT = 75
+
+const foldVCardLine = (line) => {
+  if (line.length <= VCF_LINE_LIMIT) {
+    return line
+  }
+
+  const chunks = []
+  for (let start = 0; start < line.length; start += VCF_LINE_LIMIT) {
+    const chunk = line.slice(start, start + VCF_LINE_LIMIT)
+    chunks.push(start === 0 ? chunk : ` ${chunk}`)
+  }
+  return chunks.join('\r\n')
+}
+
+const toBase64 = (bytes) => {
+  let binary = ''
+  for (const byte of bytes) {
+    binary += String.fromCodePoint(byte)
+  }
+  return btoa(binary)
+}
+
+const inferPhotoType = (url, mimeType) => {
+  const resolvedMime = mimeType?.toUpperCase()
+  if (resolvedMime?.startsWith('IMAGE/')) {
+    return resolvedMime.slice('IMAGE/'.length)
+  }
+
+  const cleanedUrl = String(url || '')
+    .split('?')[0]
+    .split('#')[0]
+    .toLowerCase()
+
+  if (cleanedUrl.endsWith('.png')) {
+    return 'PNG'
+  }
+  if (cleanedUrl.endsWith('.gif')) {
+    return 'GIF'
+  }
+  if (cleanedUrl.endsWith('.webp')) {
+    return 'WEBP'
+  }
+  return 'JPEG'
+}
+
+const resolvePhotoField = (card) => {
+  return card.photo || card.logo || card.site?.logo || null
+}
+
+const buildPhotoLine = async (card) => {
+  const photoField = resolvePhotoField(card)
+  const photoUrl = getImageUrl(photoField, null, { width: 480 })
+  if (!photoUrl) {
+    return null
+  }
+
+  try {
+    const response = await fetch(photoUrl)
+    if (!response.ok) {
+      return null
+    }
+
+    const mimeType = response.headers.get('content-type')
+    const bytes = new Uint8Array(await response.arrayBuffer())
+    if (bytes.length === 0) {
+      return null
+    }
+
+    const encodedPhoto = toBase64(bytes)
+    const photoType = inferPhotoType(photoUrl, mimeType)
+    return foldVCardLine(`PHOTO;ENCODING=b;TYPE=${photoType}:${encodedPhoto}`)
+  } catch {
+    return null
+  }
+}
 
 /** Build a VCARD 3.0 string from a card document. */
-const buildVCard = (card) => {
+const buildVCard = async (card) => {
   const [firstName = '', ...rest] = (card.fullName || '').trim().split(/\s+/)
   const lastName = rest.join(' ')
   const lines = [
@@ -15,6 +94,10 @@ const buildVCard = (card) => {
     `N:${escapeVCard(lastName)};${escapeVCard(firstName)};;;`,
     `FN:${escapeVCard(card.fullName)}`,
   ]
+  const photoLine = await buildPhotoLine(card)
+  if (photoLine) {
+    lines.push(photoLine)
+  }
   if (card.business) {
     lines.push(`ORG:${escapeVCard(card.business)}`)
   }
@@ -61,13 +144,13 @@ const UserPlusIcon = () => (
 )
 
 const SaveContactButton = ({ card, buttonBg = '#000033' }) => {
-  const handleSave = () => {
-    const vcard = buildVCard(card)
+  const handleSave = async () => {
+    const vcard = await buildVCard(card)
     const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = `${(card.fullName || 'contact').replace(/\s+/g, '-').toLowerCase()}.vcf`
+    anchor.download = `${(card.fullName || 'contact').replaceAll(/\s+/g, '-').toLowerCase()}.vcf`
     document.body.append(anchor)
     anchor.click()
     anchor.remove()
