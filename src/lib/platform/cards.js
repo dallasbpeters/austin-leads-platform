@@ -13,6 +13,7 @@ const cardProjection = groq`{
   photo,
   logo,
   cover,
+  site->{ name, "slug": slug.current, "logo": brand.logo, "domain": primaryDomain },
   phone,
   email,
   website,

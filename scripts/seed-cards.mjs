@@ -1,5 +1,5 @@
 import { createClient } from 'next-sanity'
-import { createReadStream, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 // Load .env.local without requiring dotenv
@@ -42,6 +42,9 @@ if (!projectId || !dataset || !token) {
 
 const client = createClient({ projectId, dataset, apiVersion, token, useCdn: false })
 
+// The org this card belongs to — its brand logo becomes the card's hero logo.
+const SITE_SLUG = 'texas-solar-and-roofing-pros'
+
 // First card: Kathie Millen, ported from the original static /kathie microsite.
 const kathie = {
   _id: 'card.kathie',
@@ -69,21 +72,17 @@ const kathie = {
 }
 
 async function main() {
-  const existing = await client.getDocument(kathie._id).catch(() => null)
-
-  let photoAssetId = existing?.photo?.asset?._ref ?? null
-  if (!photoAssetId) {
-    const photoPath = resolve(import.meta.dirname, '..', 'public', 'kathie', 'photo.png')
-    console.log('Uploading profile photo…')
-    const asset = await client.assets.upload('image', createReadStream(photoPath), {
-      filename: 'kathie-millen.png',
-    })
-    photoAssetId = asset._id
+  const siteId = await client.fetch('*[_type == "site" && slug.current == $slug][0]._id', {
+    slug: SITE_SLUG,
+  })
+  if (!siteId) {
+    console.error(`Could not find site "${SITE_SLUG}" in Sanity. Seed the site first.`)
+    process.exit(1)
   }
 
   const doc = {
     ...kathie,
-    photo: { _type: 'image', asset: { _type: 'reference', _ref: photoAssetId } },
+    site: { _type: 'reference', _ref: siteId },
   }
 
   await client.createOrReplace(doc)
