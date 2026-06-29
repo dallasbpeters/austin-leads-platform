@@ -36,7 +36,7 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
   return (
     <section
       ref={sectionRef}
-      className="bg-background text-foreground"
+      className="bg-background text-foreground pt-20"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/solar-adoption-section.jsx',

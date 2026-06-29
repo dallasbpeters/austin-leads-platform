@@ -1,3 +1,4 @@
+// oxlint-disable react/no-object-type-as-default-prop
 'use client'
 
 import { KeyRound, Trash2 } from 'lucide-react'
@@ -59,7 +60,14 @@ const apiDeleteUser = async (id) => {
   return data
 }
 
-const UsersClient = ({ initialUsers = [], currentUser = {}, loadError = null }) => {
+const INITIAL_USERS = {}
+const EMPTY_CURRENT_USER = {}
+
+const UsersClient = ({
+  initialUsers = INITIAL_USERS,
+  currentUser = EMPTY_CURRENT_USER,
+  loadError = null,
+}) => {
   const [users, setUsers] = useState(initialUsers)
   const [editing, setEditing] = useState(null)
   const [editValues, setEditValues] = useState({})
@@ -206,7 +214,7 @@ const UsersClient = ({ initialUsers = [], currentUser = {}, loadError = null }) 
                 + Add user
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-[360px] space-y-4 p-4">
+            <PopoverContent align="end" className="w-90 space-y-4 p-4">
               <p className="text-foreground text-sm font-semibold">Add a new admin user</p>
 
               <div className="space-y-3">

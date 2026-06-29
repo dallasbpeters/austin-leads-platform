@@ -1,3 +1,4 @@
+// oxlint-disable func-style
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -71,7 +72,6 @@ function buildSectionStyle(theme, isChristmasTheme) {
       ].join(', '),
     }
   }
-  return
 }
 
 function buildLeadContext(site, content, pagePath, pageTitle) {

@@ -71,8 +71,8 @@
   "options": {
     "name": "Strand (Remix)",
     "fps": 60,
-    "dpi": 1.5,
-    "scale": 1,
+    "dpi": 2.5,
+    "scale": 1.5,
     "includeLogo": false,
     "isProduction": false,
     "flatten": true

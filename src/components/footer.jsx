@@ -17,7 +17,7 @@ const footerServices = [
 export default function Footer() {
   return (
     <footer
-      className="bg-secondary-950 relative w-full overflow-hidden border-t border-white/10 text-white"
+      className="relative w-full overflow-hidden border-t border-white/10 bg-black text-white"
       {...getDevSectionAttributes({
         content: 'local JSX footer + service catalog links',
         id: 'site-footer',
