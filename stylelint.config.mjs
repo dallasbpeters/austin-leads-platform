@@ -1,6 +1,6 @@
 /** @type {import("stylelint").Config} */
 export default {
-  ignoreFiles: ['dist/**', 'coverage/**', 'node_modules/**', '.next/**'],
+  ignoreFiles: ['dist/**', 'coverage/**', 'node_modules/**', '.next/**', 'public/**'],
   extends: ['stylelint-config-standard'],
   rules: {
     'at-rule-no-unknown': [true, { ignoreAtRules: ['theme'] }],

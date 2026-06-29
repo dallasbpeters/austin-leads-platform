@@ -1,0 +1,104 @@
+{
+  "version": 2,
+  "exportedAt": "2026-06-29T17:05:22.364Z",
+  "card": {
+    "genInfo": {
+      "prefix": null,
+      "fname": "Kathie",
+      "lname": "Millen",
+      "pronouns": "",
+      "name": null,
+      "title": "Owner",
+      "biz": "Texas Solar & Roofing Pros",
+      "desc": "Texas Solar and Roofing Pros is a leading provider of roofing and solar solutions in Texas. With a commitment to quality craftsmanship and customer satisfaction, the company specializes in both traditional roofing services and innovative solar panel installations.",
+      "key": null,
+      "fp": null,
+      "tracker": "<!-- Google tag (gtag.js) -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-2D5H4B969C\"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n\n  gtag('config', 'G-2D5H4B969C');\n</script>",
+      "fontLink": null,
+      "fontCss": null,
+      "street": "1700 Pagedale Cove",
+      "city": "Cedar Park",
+      "state": "Texas",
+      "postal": "78613",
+      "country": "USA",
+      "beforeTextLink": null,
+      "linkedText": null,
+      "url": null,
+      "seoTitle": null,
+      "metaDescription": null,
+      "customFavi": null,
+      "shareImg": null,
+      "bookMarkImg": null,
+      "bookMarkTitle": null,
+      "metaName": null,
+      "metaContent": null,
+      "metaURL": null
+    },
+    "colors": {
+      "logoBg": {
+        "color": "#01064A",
+        "openPalette": false
+      },
+      "mainBg": {
+        "color": "#F9FAFB",
+        "openPalette": false
+      },
+      "buttonBg": {
+        "color": "#000033",
+        "openPalette": false
+      },
+      "cardBg": {
+        "color": "#E5E7EB",
+        "openPalette": false
+      }
+    },
+    "hostedURL": null,
+    "footerCredit": true,
+    "footerCreditCustom": false,
+    "logoOrHeader": false,
+    "customFavicon": false,
+    "shareImage": false,
+    "seoOpti": true,
+    "seoOptimization": false,
+    "metaData": false,
+    "simplifyCard": false,
+    "isFeaturedOn": false,
+    "customFavi": true,
+    "bookMarkImg": null,
+    "bookMarkImage": false,
+    "bookMarkTitle": false,
+    "shareImg": null,
+    "images": {
+      "logo": null,
+      "photo": {
+        "file": "photo.png",
+        "ext": "png",
+        "mime": "image/png"
+      },
+      "cover": null,
+      "icon": null
+    },
+    "primaryActions": [
+      {
+        "name": "call",
+        "href": "tel:",
+        "placeholder": "+1XXXXXXXXXX",
+        "value": "5127750561",
+        "label": "Your Phone Number"
+      },
+      {
+        "name": "website",
+        "placeholder": "https://example.com",
+        "value": "https://texassolarandroofingpros.com",
+        "label": "Your Website URL"
+      }
+    ],
+    "secondaryActions": [],
+    "featured": [
+      {
+        "title": "",
+        "content": []
+      }
+    ]
+  }
+}
