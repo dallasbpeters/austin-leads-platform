@@ -2,10 +2,15 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { useCallback, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import LeadCaptureForm from '@/components/lead-capture-form'
 import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
+import { cn } from '@/lib/utils'
+
+// Floating-action-button positioning for the bottom-right corner.
+const FAB_CLASSES = 'fixed right-5 bottom-5 z-50 size-14 rounded-full sm:right-6 sm:bottom-6'
 
 interface JobberDialogProps {
   buttonLabel?: string
@@ -14,6 +19,13 @@ interface JobberDialogProps {
   // directly instead of the default lead-capture form.
   formId?: string
   context?: Record<string, string>
+  // Optional leading icon rendered inside the trigger button.
+  icon?: ReactNode
+  // Render an icon-only trigger; buttonLabel is used as the accessible label.
+  iconOnly?: boolean
+  // Pin the trigger as a floating action button in the bottom-right corner.
+  fixed?: boolean
+  triggerClassName?: string
 }
 
 export function JobberDialog({
@@ -21,6 +33,10 @@ export function JobberDialog({
   title = 'Book a Service',
   formId,
   context,
+  icon,
+  iconOnly = false,
+  fixed = false,
+  triggerClassName,
 }: JobberDialogProps) {
   const [open, setOpen] = useState(false)
   const [isReady, setIsReady] = useState(false)
@@ -56,7 +72,15 @@ export function JobberDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="default">{buttonLabel}</Button>
+        <Button
+          variant="default"
+          size={iconOnly ? 'icon' : 'default'}
+          aria-label={iconOnly ? buttonLabel : undefined}
+          className={cn(fixed && FAB_CLASSES, triggerClassName)}
+        >
+          {icon}
+          {iconOnly ? null : buttonLabel}
+        </Button>
       </DialogTrigger>
       <DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-4 sm:max-w-3xl sm:p-6">
         <DialogHeader className="mb-2 pr-8">

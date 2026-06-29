@@ -39,7 +39,7 @@ export const buildDocumentSignatureEmailText = ({ client, request, recipients, m
     '',
     'Saved and tracked by Texas Solar & Roofing Pros.',
   ]
-    .filter((line) => line != null)
+    .filter((line) => line !== null)
     .join('\n')
 }
 
@@ -54,14 +54,12 @@ export const DocumentSignatureEmail = ({ client, request, recipients, message })
       <Preview>{previewText}</Preview>
       <Tailwind>
         <Body className="bg-[#f7f8fa] px-0 py-8 font-sans text-[#10202b]">
-          <Container className="mx-auto w-full max-w-[680px] overflow-hidden rounded-[12px] border border-[#d8dee5] bg-white">
+          <Container className="mx-auto w-full max-w-170 overflow-hidden rounded-[12px] border border-[#d8dee5] bg-white">
             <Section className="border-b border-[#d8dee5] px-7 py-6">
               <Text className="m-0 text-[12px] font-semibold tracking-[0.14em] text-[#5d6b77] uppercase">
                 Signature request
               </Text>
-              <Heading className="m-0 mt-2 text-[24px] leading-[1.25] text-[#10202b]">
-                {request.title}
-              </Heading>
+              <Heading className="m-0 mt-2 text-[24px] leading-tight text-[#10202b]">{request.title}</Heading>
             </Section>
             <Section className="px-7 py-6">
               <Text className="m-0 text-[15px] leading-[1.6] text-[#10202b]">
@@ -72,11 +70,11 @@ export const DocumentSignatureEmail = ({ client, request, recipients, message })
                 <Section className="mt-6">
                   <Button
                     href={primarySigningUrl}
-                    className="rounded-[8px] bg-[#0f3b54] px-5 py-3 text-[14px] font-bold text-white no-underline"
+                    className="rounded-xl bg-[#0f3b54] px-5 py-3 text-[14px] font-bold text-white no-underline"
                   >
                     Open document
                   </Button>
-                  <Text className="mt-3 text-[13px] leading-[1.5] text-[#5d6b77]">
+                  <Text className="mt-3 text-[13px] leading-normal text-[#5d6b77]">
                     Direct link: <Link href={primarySigningUrl}>{primarySigningUrl}</Link>
                   </Text>
                 </Section>
@@ -84,13 +82,13 @@ export const DocumentSignatureEmail = ({ client, request, recipients, message })
               {recipients.some((recipient) => recipient.signingUrl) ? (
                 <Section className="mt-5">
                   {getRecipientSummary(recipients).map((line) => (
-                    <Text key={line} className="m-0 mb-2 text-[13px] leading-[1.5] text-[#10202b]">
+                    <Text key={line} className="m-0 mb-2 text-[13px] leading-normal text-[#10202b]">
                       {line}
                     </Text>
                   ))}
                 </Section>
               ) : null}
-              <Text className="mt-5 text-[13px] leading-[1.5] text-[#5d6b77]">
+              <Text className="mt-5 text-[13px] leading-normal text-[#5d6b77]">
                 Saved and tracked by Texas Solar & Roofing Pros.
               </Text>
             </Section>
