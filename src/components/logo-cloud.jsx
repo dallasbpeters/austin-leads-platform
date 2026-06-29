@@ -1,3 +1,4 @@
+// oxlint-disable func-style
 import Image from 'next/image'
 
 import { Marquee } from '@/components/magicui/marquee'
@@ -95,7 +96,7 @@ const LogoCloud = ({ items = null }) => {
                 alt={logo.alt}
                 width={logo.width}
                 height={logo.height}
-                className="h-24 w-auto object-contain"
+                className="h-24 w-auto object-contain mix-blend-screen"
                 style={hasCustomItems ? { height: '46px' } : undefined}
               />
             )
