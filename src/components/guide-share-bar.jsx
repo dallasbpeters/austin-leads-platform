@@ -12,7 +12,7 @@ const shareLinks = [
   { id: 'email', label: 'Share by email', Icon: Mail },
 ]
 
-function buildShareHref(type, url, title) {
+const buildShareHref = (type, url, title) => {
   const encodedUrl = encodeURIComponent(url)
   const encodedTitle = encodeURIComponent(title || '')
 
@@ -35,7 +35,7 @@ function buildShareHref(type, url, title) {
   return '#'
 }
 
-export default function GuideShareBar({ url = '', title = '' }) {
+const GuideShareBar = ({ url = '', title = '', background = true, align = 'end' }) => {
   const [copied, setCopied] = useState(false)
   const items = useMemo(
     () =>
@@ -97,7 +97,11 @@ export default function GuideShareBar({ url = '', title = '' }) {
 
   return (
     <section className="relative z-30 w-full">
-      <div className="bg-gradient border-border bg-card grid grid-flow-col place-content-end place-items-center gap-2 border-y px-4 py-3 sm:px-6 lg:px-8">
+      <div
+        className={`grid grid-flow-col place-items-center gap-2 py-3 ${
+          align === 'start' ? 'place-content-start' : 'place-content-end'
+        } ${background ? 'bg-gradient border-border bg-card border-y px-4 sm:px-6 lg:px-8' : ''}`}
+      >
         <p className="text-foreground mr-2 text-sm font-semibold">Share this guide:</p>
         {items.map((item) => (
           <a
@@ -130,3 +134,5 @@ export default function GuideShareBar({ url = '', title = '' }) {
     </section>
   )
 }
+
+export default GuideShareBar

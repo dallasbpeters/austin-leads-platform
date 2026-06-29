@@ -83,7 +83,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'System basics',
         title: 'Solar reduces the power you buy from the grid. It does not make the grid disappear.',
         body: 'Panels produce DC power during daylight hours. The inverter converts that into AC power the house can use, and the home draws from it first. When production exceeds demand — a typical midday scenario in central Texas where solar irradiance averages 5.5 to 6.0 peak sun hours per day — excess power can flow back to the grid depending on your utility arrangement.\n\nAt night, during heavy cloud cover, or when the AC is working harder than the panels can keep up with, the home pulls from the grid as usual. In a typical Austin summer, air conditioning alone can account for 40 to 60 percent of a household electric bill. That means even a well-sized system will not zero out every month — the grid handles the gap between what the panels produce and what the house actually uses in real time.\n\nUnless a battery is part of the system, there is no stored reserve. When the sun goes down, the house returns to full grid dependence. And during a grid outage — which Texas homeowners have increasingly valid reasons to worry about — a standard grid-tied system shuts down entirely as a safety requirement. That is why solar is best understood as a bill-reduction project first, not an off-grid project or a backup power solution.',
@@ -244,7 +244,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'Reading quotes honestly',
         title: 'Compare the full project numbers, not just the monthly pitch.',
         body: 'Most homeowners are shown whichever number makes the quote look easiest to say yes to. One installer emphasizes a low monthly payment, another leans on oversized production assumptions, and another wins on price by thinning scope.\n\nA cleaner comparison is simple: installed price, expected annual production (kWh), export-credit assumptions, loan terms, and total paid over time. In the Austin market, a typical residential system often lands around $2.50 to $3.50 per watt depending on equipment and project complexity. At $3.00 per watt, an 8 kW system is about $24,000 before incentives.\n\nThat still is not enough by itself. The same system can have very different payback depending on utility export credits and actual production. A quote only becomes trustworthy when those assumptions are explicit and testable.',
@@ -417,7 +417,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'How to think about incentives',
         title: 'Incentives should improve a project that already makes sense — not rescue one that does not.',
         body: "If the economics only work when every incentive assumption is maximized and every program stays active, the project is fragile. A strong solar investment should pencil out on the equipment and energy savings alone.\n\nThe math is simpler when you focus on installed cost, utility structure, and the incentives you can verify today. The Texas property-tax exemption still matters, especially in counties where appraisal increases have been aggressive. Local utility programs can still improve the numbers, but only when the rules and timing are current.\n\nThe mistake happens when quotes reference outdated incentives or present local programs as guaranteed when they are actually budget-limited or subject to annual changes. The homeowner's job is to understand which incentives are current, which are conditional, and what the project looks like without them.",
@@ -555,7 +555,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'Why this matters',
         title:
           'A detach and reset done wrong can void warranties, damage equipment, or delay the whole project by weeks.',
@@ -749,7 +749,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'Why urgency matters',
         title: 'Storm damage does not always look obvious — but it gets worse with every season you wait.',
         body: 'Roof damage is often easiest to prove right after the event, when fresh evidence is available. Waiting can make causation harder to document because additional weather, normal wear, and temporary repairs can blur the timeline. Texas Department of Insurance guidance also emphasizes prompt reporting and complete documentation. Acting quickly usually improves clarity for both the homeowner and the carrier.',
@@ -923,7 +923,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'The Texas factor',
         title: 'Texas roofs age faster than the warranty implies.',
         body: "A shingle rated for 25 or 30 years in a manufacturer's controlled test does not always last that long on a house in central Texas. Sustained summer heat that pushes attic temperatures above 140°F, intense UV exposure across 200-plus clear-sky days per year, daily thermal cycling that expands and contracts roofing materials, and periodic hail events that strip granules and crack mat material — all of these accelerate aging well beyond what the warranty timeline suggests.\n\nStandard three-tab asphalt shingles, still found on many older Texas homes, typically deliver 12 to 18 years of reliable service in central Texas conditions. Architectural (dimensional) shingles perform better — 18 to 25 years is a reasonable expectation with decent ventilation. Class 4 impact-resistant shingles can extend that to 25 years or more, while standing-seam metal roofing commonly lasts 40 to 60 years with proper installation.\n\nBut these are averages. A roof that has taken two or three significant hail hits in its first decade may be functionally compromised well before its age would suggest. And a roof that looks acceptable from the curb can still be losing granules, developing soft spots under the shingle mat, or holding moisture in the underlayment. That is why age alone is not the only indicator — condition matters, and condition in Texas changes faster than most homeowners expect.",
@@ -1085,7 +1085,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'The coordination problem',
         title: 'Two good projects done in the wrong order become one expensive mistake.',
         body: 'Here is the scenario that costs Texas homeowners the most money: solar goes on a roof that needed replacement, and a year or two later the panels have to come off for a reroof. The detach-and-reset alone costs $2,000 to $5,000. Add the production downtime during a Texas summer — where a 10 kW system produces $50 to $70 worth of electricity per week — and the scheduling hassle of coordinating two crews, and the total cost of doing it backwards easily reaches $4,000 to $7,000 more than doing it in the right order.\n\nThe reverse problem also happens. A homeowner does the roof first but picks materials or flashing details that complicate the solar install — or uses a roofer who does not account for where panels will go, resulting in vent placements or ridge details that reduce the usable solar area.\n\nWhen both projects are happening within a few years of each other, planning them together — even if the physical work happens in stages — can save real money and eliminate the most common coordination failures. The best outcomes come from homeowners who treat roof and solar as one project with two phases rather than two unrelated decisions.',
@@ -1243,7 +1243,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'What batteries really solve',
         title: 'A battery is about resilience and control — not simple payback.',
         body: 'Most homeowners do not add storage because the return-on-investment math is the fastest path to savings. They add it because they want the lights to stay on when the grid goes down, they want to protect medical equipment, keep food from spoiling during a multi-day outage, or maintain climate control in a Texas summer when losing AC is not just uncomfortable — it can be dangerous.\n\nAfter the February 2021 winter storm that left millions of Texans without power for days, and subsequent grid stress events in the summers that followed, battery interest in Texas surged. ERCOT — the grid operator for most of the state — has acknowledged that peak summer demand continues to push against available generation capacity. For homeowners who have lived through a multi-day outage, the value of backup power is not abstract.\n\nThat said, battery storage typically adds $10,000 to $18,000 to a residential solar project depending on capacity, brand, and installation complexity. A single battery unit — like a Tesla Powerwall (13.5 kWh) or Enphase IQ Battery 5P (5 kWh per unit) — provides limited runtime that depends entirely on which loads are connected and how much power those loads draw. That means the storage decision deserves its own analysis, separate from the base solar economics, so the homeowner knows exactly what they are buying and what it will actually do during an outage.',
@@ -1399,7 +1399,7 @@ export const solarGuides = [
       },
       {
         _type: 'pageSection',
-        type: 'story',
+        type: 'article',
         eyebrow: 'How financing can mislead',
         title: 'A low monthly payment can still hide an expensive project.',
         body: 'Here is how it works in practice. A solar system has a cash price of $24,000. Financed through a solar-specific lender with a 25-year term and embedded dealer fees of 25 percent, the actual loan amount becomes $30,000. At a 5 percent interest rate over 25 years, the monthly payment is roughly $175 — which the installer compares to your $200 electric bill. It sounds like savings.\n\nBut total paid over the life of that loan is approximately $52,500. The same system bought in cash for $24,000 pays for itself in 8 to 11 years through energy savings and then produces free electricity for another 15 to 20 years. The financed version does not break even until year 14 or later, and the total lifetime cost is more than double the cash price.\n\nThis does not mean financing is always wrong. Preserving cash for other priorities has real value, and not every homeowner can or should write a $24,000 check. But the homeowner should know what financing costs them — in real dollars, over real time — and make that choice with full visibility. The same dynamics apply to roofing projects, where financing terms and fee structures can vary just as widely.',
