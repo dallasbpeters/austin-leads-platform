@@ -12,17 +12,15 @@ import {
   Text,
 } from 'react-email'
 
-function getPrimarySigningUrl(recipients) {
-  return recipients.find((recipient) => recipient.signingUrl)?.signingUrl || ''
-}
+const getPrimarySigningUrl = (recipients) =>
+  recipients.find((recipient) => recipient.signingUrl)?.signingUrl || ''
 
-function getRecipientSummary(recipients) {
-  return recipients
+const getRecipientSummary = (recipients) =>
+  recipients
     .filter((recipient) => recipient.signingUrl)
     .map((recipient) => `${recipient.name || recipient.email}: ${recipient.signingUrl}`)
-}
 
-export function buildDocumentSignatureEmailText({ client, request, recipients, message }) {
+export const buildDocumentSignatureEmailText = ({ client, request, recipients, message }) => {
   const body = message?.body?.trim() || 'Please sign the document using the link below.'
   const primarySigningUrl = getPrimarySigningUrl(recipients)
   const links = getRecipientSummary(recipients)
@@ -45,7 +43,7 @@ export function buildDocumentSignatureEmailText({ client, request, recipients, m
     .join('\n')
 }
 
-export function DocumentSignatureEmail({ client, request, recipients, message }) {
+export const DocumentSignatureEmail = ({ client, request, recipients, message }) => {
   const body = message?.body?.trim() || 'Please sign the document using the link below.'
   const primarySigningUrl = getPrimarySigningUrl(recipients)
   const previewText = `Signature request: ${request.title}`
