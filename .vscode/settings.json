@@ -55,5 +55,6 @@
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
-  }
+  },
+  "npm.exclude": ["**/.agents/**", "**/skills/**"]
 }

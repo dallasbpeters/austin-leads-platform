@@ -55,4 +55,18 @@ export default defineConfig({
     'react/no-object-type-as-default-prop': 'off',
     'react/no-unstable-nested-components': 'off',
   },
+  overrides: [
+    {
+      // Vendored shadcn/ui primitives — generated code we don't hand-maintain, so
+      // relax the few rules its patterns trip (shadowing, param reassign, ==, etc.).
+      files: ['src/components/ui/**'],
+      rules: {
+        'no-shadow': 'off',
+        'no-param-reassign': 'off',
+        eqeqeq: 'off',
+        'no-eq-null': 'off',
+        'unicorn/no-document-cookie': 'off',
+      },
+    },
+  ],
 })
