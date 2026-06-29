@@ -299,6 +299,32 @@ function BrandLogo({ color = '#ffffff' }) {
   )
 }
 
+const GuideHeroBackground = ({ image, guideBackground }) => (
+  <>
+    {image ? (
+      <img
+        alt=""
+        src={image}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'center',
+        }}
+      />
+    ) : null}
+    <div
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: `linear-gradient(105deg, ${guideBackground} 0%, ${guideBackground} 44%, transparent 100%)`,
+      }}
+    />
+  </>
+)
+
 function clampText(value, maxLength) {
   if (!value) {
     return ''
@@ -491,6 +517,7 @@ function extractOgParams(searchParams, requestUrl) {
   const christmasLogoSrc = isChristmasOg
     ? new URL('/images/tx-christmas-logo-full.png', requestUrl.origin).toString()
     : ''
+  const logoSrc = new URL('/logo.png', requestUrl.origin).toString()
 
   return {
     isChristmasOg,
@@ -506,6 +533,7 @@ function extractOgParams(searchParams, requestUrl) {
     secondary,
     guideBackground,
     christmasLogoSrc,
+    logoSrc,
   }
 }
 
@@ -591,6 +619,7 @@ export async function GET(request) {
     path,
     primary,
     christmasLogoSrc,
+    logoSrc,
   } = og
 
   const precomposed = await tryPrecomposedChristmasOg(isChristmasOg, image, isGuideLayout)
@@ -637,6 +666,7 @@ export async function GET(request) {
             backgroundColor: guideBackground,
           }}
         >
+          <GuideHeroBackground image={image} guideBackground={guideBackground} />
           <div
             style={{
               display: 'flex',
@@ -689,6 +719,7 @@ export async function GET(request) {
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
+                maxWidth: 760,
                 gap: 24,
               }}
             >
@@ -765,7 +796,18 @@ export async function GET(request) {
                   }}
                 />
               ) : (
-                <BrandLogo color={guideInk} />
+                <img
+                  alt=""
+                  src={logoSrc}
+                  height={56}
+                  width={68}
+                  style={{
+                    height: 56,
+                    width: 'auto',
+                    maxWidth: 200,
+                    objectFit: 'contain',
+                  }}
+                />
               )}
             </div>
           </div>

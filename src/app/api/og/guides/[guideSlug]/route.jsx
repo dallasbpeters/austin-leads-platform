@@ -1,4 +1,5 @@
 import { getPageForRequest, resolveSiteByHost } from '@/lib/platform/content'
+import { buildSanityImageUrl } from '@/lib/platform/imageSource'
 
 export const runtime = 'nodejs'
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
@@ -126,6 +127,37 @@ function createBaseOgUrl(requestUrl, guidePath, guideSlug, ogVersion) {
   return url
 }
 
+// Pull the guide hero image URL out of the resolved page, supporting both fixture
+// pages (heroImage.urls.full) and Sanity-backed pages (heroAsset.asset.url / image ref).
+const getGuideHeroImageUrl = (page) => {
+  const heroSection = (page?.sections || []).find(
+    (section) => section?.type === 'hero' || section?._type === 'heroSection',
+  )
+  const sources = [
+    page?.heroAsset,
+    page?.heroImage,
+    heroSection?.heroAsset,
+    heroSection?.heroImage,
+    page?.image,
+  ]
+
+  for (const source of sources) {
+    if (!source) {
+      continue
+    }
+    const direct = source?.urls?.full || source?.urls?.regular || source?.asset?.url
+    if (direct) {
+      return direct
+    }
+    const built = buildSanityImageUrl(source, { width: 1200 })
+    if (built) {
+      return built
+    }
+  }
+
+  return ''
+}
+
 function enrichOgUrlFromPage(url, page, site) {
   if (!page) {
     return
@@ -137,20 +169,26 @@ function enrichOgUrlFromPage(url, page, site) {
   if (page?.guideCategory) {
     url.searchParams.set('c', page.guideCategory)
   }
+  const heroImageUrl = getGuideHeroImageUrl(page)
+  if (heroImageUrl) {
+    url.searchParams.set('i', heroImageUrl)
+  }
   const versionStamp = page?.guideCardMetaUpdatedAt || page?._updatedAt
   if (versionStamp) {
     url.searchParams.set('v', String(new Date(versionStamp).getTime() || versionStamp))
   }
 }
 
-async function fetchOgPngWithFallback(guideSlug, guidePath, requestUrl, userAgent) {
-  const primaryUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9')
-  const primaryResult = await fetchPng(primaryUrl.toString(), userAgent)
+// Fetch the rendered OG PNG using the fully-enriched URL (title, colour, hero image),
+// falling back to a lighter render variant if the first attempt fails.
+async function fetchEnrichedOgPng(upstreamUrl, userAgent) {
+  const primaryResult = await fetchPng(upstreamUrl.toString(), userAgent)
   if (primaryResult) {
     return primaryResult
   }
 
-  const fallbackUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9-min')
+  const fallbackUrl = new URL(upstreamUrl.toString())
+  fallbackUrl.searchParams.set('ogv', 'guide-v9-min')
   return fetchPng(fallbackUrl.toString(), userAgent)
 }
 
@@ -173,7 +211,7 @@ async function buildGuideOgResponse(request, context, includeBody = true) {
     const upstreamUrl = createBaseOgUrl(requestUrl, guidePath, guideSlug, 'guide-v9')
     enrichOgUrlFromPage(upstreamUrl, page, site)
 
-    const imageResult = await fetchOgPngWithFallback(guideSlug, guidePath, requestUrl, userAgent)
+    const imageResult = await fetchEnrichedOgPng(upstreamUrl, userAgent)
     if (!imageResult) {
       return buildHardFallbackPngResponse(includeBody, requestUrl)
     }
