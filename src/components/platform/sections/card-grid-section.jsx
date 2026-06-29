@@ -1,3 +1,4 @@
+// oxlint-disable func-style
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
@@ -17,7 +18,7 @@ export function CardGridSection({ section, sectionId }) {
         markup="src/components/platform/sections/card-grid-section.jsx"
         content={`highlight cards from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
+      <div className="mx-auto max-w-7xl px-3 py-20 pb-24 md:px-6 lg:px-10">
         <div className="mb-8 grid max-w-3xl gap-2">
           {section.eyebrow ? (
             <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">
@@ -33,9 +34,8 @@ export function CardGridSection({ section, sectionId }) {
             />
           ) : null}
         </div>
-        <div className="grid grid-cols-1 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
           {section.items?.map((item, index) => {
-            const number = String(index + 1).padStart(2, '0')
             const reverse = index % 2 === 1
             const Icon = resolveIconoirIcon(item.icon)
             const eyebrow = item.eyebrow || 'Highlight'
@@ -50,24 +50,19 @@ export function CardGridSection({ section, sectionId }) {
                     reverse ? 'md:grid-cols-[minmax(0,1fr)_auto]' : 'md:grid-cols-[auto_minmax(0,1fr)]'
                   }`}
                 >
-                  <div className={reverse ? 'md:order-2 md:text-right' : 'md:order-1'}>
-                    <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">
-                      {eyebrow}
-                    </p>
-                    <p className="type-display text-primary mt-1 text-4xl leading-none md:text-5xl">
-                      {number}
-                    </p>
-                  </div>
                   <div className={reverse ? 'md:order-1' : 'md:order-2'}>
                     {Icon ? (
                       <div
-                        className={`bg-primary/10 text-primary mb-4 inline-flex size-12 items-center justify-center rounded-full ${
+                        className={`text-primary mb-4 inline-flex size-12 items-center justify-start rounded-full ${
                           reverse ? 'md:ml-auto' : ''
                         }`}
                       >
-                        <Icon className="size-6" strokeWidth={2} />
+                        <Icon className="size-10" strokeWidth={2} />
                       </div>
                     ) : null}
+                    <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">
+                      {eyebrow}
+                    </p>
                     <h3 className="text-foreground text-xl tracking-normal md:text-2xl">
                       {item.title || item.question}
                     </h3>

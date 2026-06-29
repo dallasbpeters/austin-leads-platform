@@ -560,6 +560,23 @@ const sectionProjection = `
   ctaLabel,
   color,
   theme,
+  sectionBackgroundColor,
+  sectionBackgroundImage{
+    crop,
+    hotspot,
+    altText,
+    alt,
+    asset->{
+      _id,
+      url,
+      metadata{
+        dimensions{
+          width,
+          height
+        }
+      }
+    }
+  },
   ctaHref,
   avatarEyebrow,
   avatarName,
@@ -807,6 +824,8 @@ const sanitizeSection = (section) => {
     color: resolveSanityColorValue(s.color),
     accentColor: resolveSanityColorValue(s.accentColor),
     backgroundColor: resolveSanityColorValue(s.backgroundColor),
+    sectionBackgroundColor: resolveSanityColorValue(s.sectionBackgroundColor),
+    sectionBackgroundImage: s.sectionBackgroundImage,
     theme: cleanRuntimeString(s.theme),
     ctaHref: cleanRuntimeString(s.ctaHref),
     avatarEyebrow: s.avatarEyebrow,

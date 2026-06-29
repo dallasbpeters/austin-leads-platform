@@ -11,8 +11,11 @@ import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/l
 
 import { ChristmasFaviconBlinker } from './christmas-favicon-blinker'
 import { getSectionDomId, getSiteBrandStyleVars } from './public-site-utils'
+import SectionSurface from './sections/section-surface'
 import { sectionRenderers, RoofingLogoCloudSection, CtaSection } from './sections'
 import { GenericFooter, GenericHeader } from './shell'
+
+const EMPTY_REVIEWS = []
 
 function computePublicSiteFlags(site, page, pathname) {
   const sections = page.sections || []
@@ -48,7 +51,7 @@ function computePublicSiteFlags(site, page, pathname) {
   }
 }
 
-function renderSectionItem(section, index, flags, page, site, pathname, reviews, shareUrl) {
+function renderSectionItem(section, index, flags, page, site, pathname, reviews) {
   const Component = sectionRenderers[section.type]
   if (!Component) {
     return null
@@ -65,23 +68,22 @@ function renderSectionItem(section, index, flags, page, site, pathname, reviews,
       {flags.showFallbackRoofingLogoCloud && index === flags.firstLeadCaptureSectionIndex ? (
         <RoofingLogoCloudSection sectionId="roofing-certifications" />
       ) : null}
-      <Component
-        page={page}
-        section={section}
-        site={site}
-        pathname={pathname}
-        reviews={reviews}
-        sectionId={sectionId}
-        editAttributes={sectionEditAttrs}
-      />
-      {flags.isGuidePost && index === flags.heroSectionIndex ? (
-        <GuideShareBar url={shareUrl} title={page.seo?.title || page.title || ''} />
-      ) : null}
+      <SectionSurface section={section}>
+        <Component
+          page={page}
+          section={section}
+          site={site}
+          pathname={pathname}
+          reviews={reviews}
+          sectionId={sectionId}
+          editAttributes={sectionEditAttrs}
+        />
+      </SectionSurface>
     </div>
   )
 }
 
-export default function PublicSite({ site, page, pathname, navigation, jsonLd, reviews = [] }) {
+export default function PublicSite({ site, page, pathname, navigation, jsonLd, reviews = EMPTY_REVIEWS }) {
   const flags = computePublicSiteFlags(site, page, pathname)
   const pageEditAttrs = getSanityPageEditAttributes(page, 'title')
   const pageSectionsEditAttrs = getSanityPageEditAttributes(page, 'sections')
@@ -123,10 +125,11 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
         {...pageSectionsEditAttrs}
       >
         {flags.sections.map((section, index) =>
-          renderSectionItem(section, index, flags, page, site, pathname, reviews, flags.shareUrl),
+          renderSectionItem(section, index, flags, page, site, pathname, reviews),
         )}
 
-        {flags.isGuidePost && flags.heroSectionIndex === -1 ? (
+        {/* Share bar at the bottom of the article */}
+        {flags.isGuidePost ? (
           <GuideShareBar url={flags.shareUrl} title={page.seo?.title || page.title || ''} />
         ) : null}
 

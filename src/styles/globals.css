@@ -697,6 +697,11 @@ body.admin-body-locked {
     outline-offset: 3px;
   }
 
+  .section-surface--custom .section-surface__content > * {
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
   .accent-color-primary {
     accent-color: var(--color-primary);
   }

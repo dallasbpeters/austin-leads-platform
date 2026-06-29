@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { Agentation } from 'agentation'
 
 import { sectionRenderers } from '@/components/platform/sections'
+import SectionSurface from '@/components/platform/sections/section-surface'
 import { getSectionDomId } from '@/components/platform/public-site-utils'
 import { CookieConsent } from '@/components/blocks/cookie-consent'
 
@@ -85,14 +86,16 @@ export default function App({
                 markup={`src/components/platform/sections/${sectionType}-section`}
                 content={`homepage section "${sectionType}" at array index ${index} from ${homepageSource}`}
               />
-              <Component
-                page={homepage}
-                section={section}
-                site={site}
-                reviews={reviews}
-                sectionId={sectionId}
-                editAttributes={editAttrs}
-              />
+              <SectionSurface section={section}>
+                <Component
+                  page={homepage}
+                  section={section}
+                  site={site}
+                  reviews={reviews}
+                  sectionId={sectionId}
+                  editAttributes={editAttrs}
+                />
+              </SectionSurface>
             </div>
           )
         })}

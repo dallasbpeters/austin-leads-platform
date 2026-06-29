@@ -35,6 +35,32 @@ const defineUploadedImage = (name, title, extraOptions = {}) => ({
     { name: 'alt', title: 'Legacy alt text', type: 'string', hidden: true },
   ],
 })
+const sectionBackgroundImageField = {
+  name: 'sectionBackgroundImage',
+  title: 'Section background image',
+  type: 'image',
+  options: {
+    hotspot: true,
+    collapsible: false,
+    ...canvasPurpose('Optional shared background image for this section.'),
+  },
+  fields: [
+    { name: 'altText', title: 'Alt text', type: 'string' },
+    { name: 'alt', title: 'Legacy alt text', type: 'string', hidden: true },
+  ],
+}
+
+const sectionBackgroundFields = [
+  {
+    name: 'sectionBackgroundColor',
+    title: 'Section background color',
+    type: 'color',
+    options: canvasPurpose('Optional shared background color for this section.'),
+  },
+  sectionBackgroundImageField,
+]
+
+const withSectionBackgroundFields = (fields) => [...fields, ...sectionBackgroundFields]
 const isSectionType = (parent, ...types) => types.includes(parent?.type)
 const hideUnlessSectionTypes =
   (...types) =>
@@ -102,7 +128,7 @@ const LEGACY_PAGE_SECTION_LABELS = {
   faq: 'FAQ',
   guideGrid: 'Guide grid',
   serviceGrid: 'Service grid',
-  resourceGrid: 'Resource grid',
+  resourceGrid: 'Resources',
   hailMap: 'Hail map',
 }
 const legacyPageSectionTypeLabel = (type) =>
@@ -1396,13 +1422,13 @@ const resourceCardType = {
 
 const resourceGridSectionType = {
   name: 'resourceGridSection',
-  title: 'Resource Grid Section',
+  title: 'Resources Section',
   type: 'object',
   icon: BlockContentIcon,
   initialValue: {
     type: 'resourceGrid',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     {
       name: 'type',
       title: 'Section type',
@@ -1431,7 +1457,7 @@ const resourceGridSectionType = {
       of: [{ type: 'resourceCard' }],
       options: canvasPurpose('Homepage resource cards.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -1441,8 +1467,8 @@ const resourceGridSectionType = {
     prepare({ title, body, items }) {
       const cardCount = arrayCount(items)
       return {
-        title: title || 'Resource grid',
-        subtitle: pageSectionListSubtitle('Resource grid', body, `${cardCount || 0} cards`),
+        title: title || 'Resources section',
+        subtitle: pageSectionListSubtitle('Resources section', body, `${cardCount || 0} cards`),
         media: BlockContentIcon,
       }
     },
@@ -1456,7 +1482,7 @@ const guideGridSectionType = {
   initialValue: {
     type: 'guideGrid',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     {
       name: 'type',
       title: 'Section type',
@@ -1487,7 +1513,7 @@ const guideGridSectionType = {
         'Each card image should match that guide’s hero. The site uses the guide hero as the source of truth; use document actions “Sync hero → guides listing” on a guide post, or on the Guides page “Refresh cards from guide heroes” / “Push card images → guide heroes”.',
       ),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -1512,7 +1538,7 @@ const serviceGridSectionType = {
   initialValue: {
     type: 'serviceGrid',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     {
       name: 'type',
       title: 'Section type',
@@ -1579,7 +1605,7 @@ const serviceGridSectionType = {
       of: [{ type: 'serviceGridItem' }],
       options: canvasPurpose('Optional supporting service cards shown after the primary group.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -1712,7 +1738,7 @@ const aboutProfileSectionType = {
   initialValue: {
     type: 'aboutProfile',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     {
       name: 'type',
       title: 'Section type',
@@ -1747,7 +1773,7 @@ const aboutProfileSectionType = {
       validation: (Rule) => Rule.max(2),
       options: canvasPurpose('Profile cards shown in this section.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -1979,7 +2005,7 @@ const heroSectionType = {
   initialValue: {
     type: 'hero',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     {
       name: 'type',
       title: 'Section type',
@@ -2012,7 +2038,7 @@ const heroSectionType = {
       options: canvasPurpose('Supporting hero copy.'),
     },
     ...heroSpecificFields,
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2037,7 +2063,7 @@ const storySectionType = {
   initialValue: {
     type: 'story',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -2064,7 +2090,7 @@ const storySectionType = {
       type: 'portableTextSimple',
       options: canvasPurpose('Subtitle for the story section.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2088,7 +2114,7 @@ const articleSectionType = {
   initialValue: {
     type: 'article',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -2109,7 +2135,7 @@ const articleSectionType = {
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Main explanatory copy for the article section.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2132,7 +2158,7 @@ const calculatorSectionType = {
   initialValue: {
     type: 'calculator',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -2179,7 +2205,7 @@ const calculatorSectionType = {
       type: 'string',
       options: canvasPurpose('Link target for the calculator call-to-action button.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2269,7 +2295,7 @@ const costsSectionType = {
   initialValue: {
     type: 'costs',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -2327,7 +2353,7 @@ const costsSectionType = {
       validation: (Rule) => Rule.max(1),
       options: canvasPurpose('Single payback summary with headline and supporting copy.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2352,7 +2378,7 @@ const guidesSectionType = {
   initialValue: {
     type: 'guides',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -2381,7 +2407,7 @@ const guidesSectionType = {
       validation: (Rule) => Rule.max(6),
       options: canvasPurpose('Optional guide cards for this section. If empty, app fallback cards are used.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2490,7 +2516,7 @@ const solarAdoptionSectionType = {
       },
     ],
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -2551,7 +2577,7 @@ const solarAdoptionSectionType = {
       validation: (Rule) => Rule.min(1).max(6),
       options: canvasPurpose('Icon cards beneath the roof/panel visual — each with heading, icon, and body.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2575,7 +2601,7 @@ const solarBenefitsSectionType = {
   initialValue: {
     type: 'solarBenefits',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -2597,7 +2623,7 @@ const solarBenefitsSectionType = {
       validation: (Rule) => Rule.min(1).max(6),
       options: canvasPurpose('Dark icon/copy benefit cards.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2685,7 +2711,7 @@ const solarDifferenceSectionType = {
   initialValue: {
     type: 'solarDifference',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -2708,7 +2734,7 @@ const solarDifferenceSectionType = {
       validation: (Rule) => Rule.min(1).max(5),
       options: canvasPurpose('Stacked dark feature cards with optional images.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2732,7 +2758,7 @@ const snapshotSectionType = {
   initialValue: {
     type: 'snapshot',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -2761,7 +2787,7 @@ const snapshotSectionType = {
       validation: (Rule) => Rule.max(4),
       options: canvasPurpose('Metric cards with value/title/body and optional icon.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2785,7 +2811,7 @@ const incentivesSectionType = {
   initialValue: {
     type: 'incentives',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -2825,7 +2851,7 @@ const incentivesSectionType = {
       type: 'string',
       options: canvasPurpose('Destination URL for the incentives/insurance section CTA.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2847,7 +2873,7 @@ const testimonialsSectionType = {
   initialValue: {
     type: 'testimonials',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -2888,7 +2914,7 @@ const testimonialsSectionType = {
       validation: (Rule) => Rule.max(6),
       options: canvasPurpose('Optional review references. If empty, site-level reviews are used.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2911,12 +2937,12 @@ const testimonialsSectionType = {
 
 const highlightsSectionType = {
   name: 'highlightsSection',
-  title: 'Highlights Section',
+  title: 'Card Grid Section',
   type: 'object',
   initialValue: {
     type: 'highlights',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -2938,7 +2964,7 @@ const highlightsSectionType = {
       validation: (Rule) => Rule.required().min(1),
       options: canvasPurpose('Highlight items with title and supporting body copy.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -2948,8 +2974,8 @@ const highlightsSectionType = {
     prepare({ title, subtitle, items }) {
       const itemCount = arrayCount(items)
       return {
-        title: title || 'Highlights section',
-        subtitle: pageSectionListSubtitle('Highlights section', subtitle, `${itemCount || 0} items`),
+        title: title || 'Card grid section',
+        subtitle: pageSectionListSubtitle('Card grid section', subtitle, `${itemCount || 0} items`),
       }
     },
   },
@@ -2962,7 +2988,7 @@ const stepsSectionType = {
   initialValue: {
     type: 'steps',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -2979,7 +3005,7 @@ const stepsSectionType = {
       validation: (Rule) => Rule.required().min(1),
       options: canvasPurpose('Sequential or process-oriented items with title and body.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3069,13 +3095,13 @@ const installProcessStepType = {
 
 const installProcessSectionType = {
   name: 'installProcessSection',
-  title: 'Install Process',
+  title: 'Install Process Section',
   type: 'object',
   icon: CircleIcon,
   initialValue: {
     type: 'installProcess',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -3106,7 +3132,7 @@ const installProcessSectionType = {
         'Ordered steps in the installation process, shown as alternating image/content rows.',
       ),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3116,8 +3142,8 @@ const installProcessSectionType = {
     prepare({ title, eyebrow, items }) {
       const itemCount = arrayCount(items)
       return {
-        title: title || 'Install process',
-        subtitle: pageSectionListSubtitle(eyebrow || 'Install process', `${itemCount || 0} steps`),
+        title: title || 'Install process section',
+        subtitle: pageSectionListSubtitle(eyebrow || 'Install process section', `${itemCount || 0} steps`),
       }
     },
   },
@@ -3188,7 +3214,7 @@ const gallerySectionType = {
   initialValue: {
     type: 'gallery',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -3221,7 +3247,7 @@ const gallerySectionType = {
         'Photos to display in the masonry gallery. Each photo can be tagged with neighborhood, year, and package.',
       ),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3314,7 +3340,7 @@ const pricingSectionType = {
   initialValue: {
     type: 'pricing',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -3347,7 +3373,7 @@ const pricingSectionType = {
         'Supporting notes shown below the lead copy. Use the "Callout" variant for policies that deserve extra attention.',
       ),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3374,7 +3400,7 @@ const faqSectionType = {
   initialValue: {
     type: 'faq',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -3391,7 +3417,7 @@ const faqSectionType = {
       validation: (Rule) => Rule.required().min(1),
       options: canvasPurpose('Frequently asked questions and answers.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3409,12 +3435,12 @@ const faqSectionType = {
 
 const quoteSectionType = {
   name: 'quoteSection',
-  title: 'Quote Section',
+  title: 'Quote Banner Section',
   type: 'object',
   initialValue: {
     type: 'quote',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -3435,7 +3461,7 @@ const quoteSectionType = {
       type: 'string',
       options: canvasPurpose('Name or attribution shown under the quote.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3444,8 +3470,8 @@ const quoteSectionType = {
     },
     prepare({ title, eyebrow, body }) {
       return {
-        title: title || eyebrow || 'Quote section',
-        subtitle: pageSectionListSubtitle('Quote section', body, 'Quote'),
+        title: title || eyebrow || 'Quote banner section',
+        subtitle: pageSectionListSubtitle('Quote banner section', body, 'Quote'),
       }
     },
   },
@@ -3459,7 +3485,7 @@ const ctaSectionType = {
     type: 'cta',
     theme: 'light',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -3563,7 +3589,7 @@ const ctaSectionType = {
         'Override the default service dropdown options shown in the lead capture form. Leave empty to use the site defaults.',
       ),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3585,7 +3611,7 @@ const scrollTextSectionType = {
   initialValue: {
     type: 'scrollText',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'text',
@@ -3660,7 +3686,7 @@ const scrollTextSectionType = {
       type: 'number',
       options: canvasPurpose('Number of copies to show.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3683,7 +3709,7 @@ const ctaBannerSectionType = {
     type: 'ctaBanner',
     theme: 'dark',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -3755,7 +3781,7 @@ const ctaBannerSectionType = {
     {
       ...defineUploadedImage('avatarImageAsset', 'Uploaded avatar image', canvasExclude),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3779,7 +3805,7 @@ const bannerCtaSectionType = {
     type: 'bannerCta',
     ctaHref: '#consultation',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -3823,7 +3849,7 @@ const bannerCtaSectionType = {
     {
       ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3848,7 +3874,7 @@ const secondaryCTASectionType = {
   initialValue: {
     type: 'secondaryCTA',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -3881,7 +3907,7 @@ const secondaryCTASectionType = {
       type: 'color',
       options: canvasPurpose('Color of the secondary CTA.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3904,7 +3930,7 @@ const hailMapSectionType = {
   initialValue: {
     type: 'hailMap',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'title',
@@ -3920,7 +3946,7 @@ const hailMapSectionType = {
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Short explanation of how to use the map and storm evidence list.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -3996,7 +4022,7 @@ const serviceAreaMapSectionType = {
   initialValue: {
     type: 'serviceAreaMap',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -4040,7 +4066,7 @@ const serviceAreaMapSectionType = {
         'One entry per county we serve. countyKey must match the "key" of a feature in texasCounties.json.',
       ),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -4076,7 +4102,7 @@ const bandSectionType = {
     speed: 1,
     amplitude: 10,
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'colors',
@@ -4146,7 +4172,7 @@ const bandSectionType = {
       type: 'number',
       options: canvasPurpose('How far the color stops drift when auto animate is enabled.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       colors: 'colors',
@@ -4169,13 +4195,13 @@ const bandSectionType = {
 
 const logosSectionType = {
   name: 'logosSection',
-  title: 'Logos Marquee Section',
+  title: 'Roofing Logo Cloud Section',
   type: 'object',
   initialValue: {
     type: 'logos',
     internalLabel: 'Certifications marquee',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'internalLabel',
@@ -4202,7 +4228,7 @@ const logosSectionType = {
       of: [{ type: 'logoMarqueeItem' }],
       options: canvasPurpose('Optional custom logos for this marquee. Defaults are used when left empty.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       internalLabel: 'internalLabel',
@@ -4213,8 +4239,8 @@ const logosSectionType = {
       const count = arrayCount(items)
       const tail = `${count || 0} custom logos${title ? ` • ${title}` : ''}`
       return {
-        title: internalLabel || title || 'Logos marquee',
-        subtitle: pageSectionListSubtitle('Logos marquee', tail),
+        title: internalLabel || title || 'Roofing logo cloud section',
+        subtitle: pageSectionListSubtitle('Roofing logo cloud section', tail),
       }
     },
   },
@@ -4230,7 +4256,7 @@ const solarSwitchSectionType = {
     accentWord: 'solar',
     trailingText: 'without sacrificing roof integrity.',
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'leadingWords',
@@ -4251,7 +4277,7 @@ const solarSwitchSectionType = {
       type: 'string',
       options: canvasPurpose('Closing phrase shown after the highlighted word.'),
     },
-  ],
+  ]),
   preview: {
     select: {
       accentWord: 'accentWord',
@@ -4274,7 +4300,7 @@ const solarSwitchSectionType = {
 
 const energyChartSectionType = {
   name: 'energyChartSection',
-  title: 'Chart Section',
+  title: 'Energy Chart Section',
   type: 'object',
   initialValue: {
     type: 'energyChart',
@@ -4308,7 +4334,7 @@ const energyChartSectionType = {
       { _type: 'energyChartPoint', label: 'Jul', barValue: 460, lineValue: 62 },
     ],
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -4464,7 +4490,7 @@ const energyChartSectionType = {
         'Ordered chart data. Label = category, Bar value = primary metric, Line value = secondary metric/x-y coordinate.',
       ),
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -4492,7 +4518,7 @@ const videoSectionType = {
     loop: false,
     muted: false,
   },
-  fields: [
+  fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     {
       name: 'eyebrow',
@@ -4566,7 +4592,7 @@ const videoSectionType = {
         ...canvasPurpose('Width-to-height ratio of the video player.'),
       },
     },
-  ],
+  ]),
   preview: {
     select: {
       title: 'title',
@@ -4677,7 +4703,7 @@ const baseFields = [
       list: [
         { title: 'Hero', value: 'hero' },
         { title: 'Landing', value: 'landing' },
-        { title: 'Install process', value: 'installProcess' },
+        { title: 'Install Process Section', value: 'installProcess' },
       ],
       layout: 'radio',
       ...canvasExclude,

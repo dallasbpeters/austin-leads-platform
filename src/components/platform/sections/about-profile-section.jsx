@@ -123,7 +123,7 @@ export function AboutProfileSection({ section, sectionId }) {
                       <div className="text-xs tracking-[0.2em] text-white uppercase">
                         {person.label || 'Profile'}
                       </div>
-                      <CardTitle className="text-3xl leading-4 tracking-normal text-white">
+                      <CardTitle className="text-3xl leading-10 tracking-normal text-white">
                         {person.name}
                       </CardTitle>
                       {person.role ? (
@@ -132,7 +132,14 @@ export function AboutProfileSection({ section, sectionId }) {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="relative z-10 grid h-30 grid-cols-1 content-end gap-4">
+                <CardContent className="relative z-10 grid grid-cols-1 content-end gap-4">
+                  {person.blurb ? (
+                    <PortableTextContent
+                      as="div"
+                      value={person.blurb}
+                      className="max-w-[34ch] text-sm leading-6 text-white/88"
+                    />
+                  ) : null}
                   {person.certificationTitle ? (
                     <div className="border-border/80 grid gap-3">
                       <div className="flex items-center gap-3">
