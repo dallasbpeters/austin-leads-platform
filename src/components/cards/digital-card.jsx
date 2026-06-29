@@ -71,6 +71,14 @@ const LinkIcon = (props) => (
   </svg>
 )
 
+const buildAction = ({ href, label, icon, external = false, key }) => ({
+  external,
+  href,
+  icon,
+  key,
+  label,
+})
+
 const ActionButton = ({ href, label, icon, buttonBg, external }) => (
   <div className="flex min-w-0 flex-col items-center gap-2">
     <a
@@ -95,61 +103,92 @@ const formatAddress = (address) => {
   return [street, locality, postal, country].filter(Boolean).join(', ')
 }
 
+const resolveHero = ({ business, card, site }) => {
+  const photoUrl = getImageUrl(card.photo, null, { width: 480 })
+  if (photoUrl) {
+    return {
+      alt: getImageAlt(card.photo, null, card.fullName),
+      kind: 'photo',
+      url: photoUrl,
+    }
+  }
+
+  const logoField = card.logo || site?.logo || null
+  const logoUrl = getImageUrl(logoField, null, { width: 480 })
+  if (!logoUrl) {
+    return null
+  }
+
+  return {
+    alt: getImageAlt(logoField, null, site?.name || business || ''),
+    kind: 'logo',
+    url: logoUrl,
+  }
+}
+
+const buildActions = ({ card, links }) => {
+  const actions = []
+
+  if (card.phone) {
+    actions.push(
+      buildAction({
+        href: `tel:${card.phone.replaceAll(/[^\d+]/g, '')}`,
+        icon: <PhoneIcon className="size-6" />,
+        key: 'call',
+        label: 'Call',
+      }),
+    )
+  }
+
+  if (card.website) {
+    actions.push(
+      buildAction({
+        external: true,
+        href: card.website,
+        icon: <GlobeIcon className="size-6" />,
+        key: 'website',
+        label: 'Website',
+      }),
+    )
+  }
+
+  if (card.email) {
+    actions.push(
+      buildAction({
+        href: `mailto:${card.email}`,
+        icon: <MailIcon className="size-6" />,
+        key: 'email',
+        label: 'Email',
+      }),
+    )
+  }
+
+  for (const link of links) {
+    actions.push(
+      buildAction({
+        external: true,
+        href: link.url,
+        icon: <LinkIcon className="size-6" />,
+        key: link.url,
+        label: link.label,
+      }),
+    )
+  }
+
+  return actions
+}
+
 /** Renders a Sanity-backed digital business card, styled after the original microsite. */
 const DigitalCard = ({ card }) => {
+  const business = card.business || ''
   const colors = { ...DEFAULT_COLORS, ...card.colors }
   const site = card.site || null
 
-  // Hero image: a personal photo takes precedence; otherwise fall back to the
-  // org/site logo (a per-card logo override wins over the site logo).
-  const photoUrl = getImageUrl(card.photo, null, { width: 480 })
-  const logoField = card.logo || site?.logo || null
-  const logoUrl = getImageUrl(logoField, null, { width: 480 })
-  const hero = photoUrl
-    ? { url: photoUrl, kind: 'photo', alt: getImageAlt(card.photo, null, card.fullName) }
-    : logoUrl
-      ? { url: logoUrl, kind: 'logo', alt: getImageAlt(logoField, null, site?.name || card.business || '') }
-      : null
-
+  const hero = resolveHero({ business, card, site })
   const coverUrl = getImageUrl(card.cover, null, { width: 960 })
   const address = formatAddress(card.address)
   const links = card.links || []
-
-  const actions = []
-  if (card.phone) {
-    actions.push({
-      key: 'call',
-      href: `tel:${card.phone.replaceAll(/[^\d+]/g, '')}`,
-      label: 'Call',
-      icon: <PhoneIcon className="size-6" />,
-    })
-  }
-  if (card.website) {
-    actions.push({
-      key: 'website',
-      href: card.website,
-      label: 'Website',
-      icon: <GlobeIcon className="size-6" />,
-      external: true,
-    })
-  }
-  if (card.email) {
-    actions.push({
-      key: 'email',
-      href: `mailto:${card.email}`,
-      label: 'Email',
-      icon: <MailIcon className="size-6" />,
-    })
-  }
-  for (const link of links) {
-    actions.push({
-      key: link.url,
-      href: link.url,
-      label: link.label,
-      icon: <LinkIcon className="size-6" />,
-      external: true,
-    })
-  }
+  const actions = buildActions({ card, links })
 
   return (
     <div
@@ -162,6 +201,7 @@ const DigitalCard = ({ card }) => {
         <header className="relative isolate h-44 overflow-hidden" style={{ backgroundColor: colors.logoBg }}>
           {coverUrl ? (
             <>
+              {/* oxlint-disable-next-line next/no-img-element */}
               <img
                 src={coverUrl}
                 alt={getImageAlt(card.cover)}
@@ -190,9 +230,10 @@ const DigitalCard = ({ card }) => {
           <div className="flex flex-col items-center">
             {hero ? (
               <div
-                className="-mt-16 flex size-36 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-lg sm:-mt-20 sm:size-40"
+                className="relative -mt-16 flex size-36 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-lg sm:-mt-20 sm:size-40"
                 style={{ backgroundColor: hero.kind === 'photo' ? colors.cardBg : '#ffffff' }}
               >
+                {/* oxlint-disable-next-line next/no-img-element */}
                 <img
                   src={hero.url}
                   alt={hero.alt}
@@ -215,7 +256,7 @@ const DigitalCard = ({ card }) => {
               {card.jobTitle ? (
                 <p className="mt-2 text-base font-medium text-black/80">{card.jobTitle}</p>
               ) : null}
-              {card.business ? <p className="mt-1 text-base text-black/70">{card.business}</p> : null}
+              {business ? <p className="mt-1 text-base text-black/70">{business}</p> : null}
               {address ? (
                 <p className="mt-4 max-w-sm text-sm leading-relaxed text-black/55">{address}</p>
               ) : null}
@@ -249,7 +290,7 @@ const DigitalCard = ({ card }) => {
         </main>
 
         <footer className="border-t border-black/6 bg-white px-6 py-5 text-center text-xs tracking-[0.16em] text-black/45 uppercase">
-          {card.business || site?.name || card.fullName}
+          {business || site?.name || card.fullName}
         </footer>
       </div>
     </div>
