@@ -72,17 +72,17 @@ const LinkIcon = (props) => (
 )
 
 const ActionButton = ({ href, label, icon, buttonBg, external }) => (
-  <div className="flex w-1/3 flex-col items-center p-2">
+  <div className="flex min-w-0 flex-col items-center gap-2">
     <a
       href={href}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="flex size-12 items-center justify-center rounded-full text-white transition-transform hover:scale-105"
+      className="flex size-14 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
       style={{ backgroundColor: buttonBg }}
       aria-label={label}
     >
       <span className="size-6">{icon}</span>
     </a>
-    <p className="mt-2 text-sm">{label}</p>
+    <p className="max-w-full text-center text-sm leading-tight text-black/75">{label}</p>
   </div>
 )
 
@@ -97,7 +97,7 @@ const formatAddress = (address) => {
 
 /** Renders a Sanity-backed digital business card, styled after the original microsite. */
 const DigitalCard = ({ card }) => {
-  const colors = { ...DEFAULT_COLORS, ...(card.colors || {}) }
+  const colors = { ...DEFAULT_COLORS, ...card.colors }
   const site = card.site || null
 
   // Hero image: a personal photo takes precedence; otherwise fall back to the
@@ -119,7 +119,7 @@ const DigitalCard = ({ card }) => {
   if (card.phone) {
     actions.push({
       key: 'call',
-      href: `tel:${card.phone.replace(/[^\d+]/g, '')}`,
+      href: `tel:${card.phone.replaceAll(/[^\d+]/g, '')}`,
       label: 'Call',
       icon: <PhoneIcon className="size-6" />,
     })
@@ -153,74 +153,105 @@ const DigitalCard = ({ card }) => {
 
   return (
     <div
-      className="relative mx-auto min-h-screen w-full max-w-120 text-black"
-      style={{ backgroundColor: colors.mainBg }}
+      className="min-h-screen px-4 py-8 text-black sm:px-6 sm:py-10"
+      style={{
+        background: `linear-gradient(180deg, ${colors.logoBg} 0%, ${colors.logoBg} 12rem, ${colors.mainBg} 12rem, ${colors.mainBg} 100%)`,
+      }}
     >
-      <header className="relative h-32 overflow-hidden" style={{ backgroundColor: colors.logoBg }}>
-        {coverUrl ? (
-          <img
-            src={coverUrl}
-            alt={getImageAlt(card.cover)}
-            className="absolute inset-0 h-full w-full object-cover opacity-60"
-          />
-        ) : null}
-      </header>
-
-      <main className="px-4 pb-12">
-        <div className="flex flex-col items-center">
-          {hero ? (
-            <div
-              className="-mt-20 flex size-40 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-md"
-              style={{ backgroundColor: hero.kind === 'photo' ? colors.cardBg : '#ffffff' }}
-            >
+      <div className="mx-auto w-full max-w-120 overflow-hidden rounded-[2rem] bg-white shadow-[0_30px_90px_rgba(1,6,74,0.22)] ring-1 ring-black/5">
+        <header className="relative isolate h-44 overflow-hidden" style={{ backgroundColor: colors.logoBg }}>
+          {coverUrl ? (
+            <>
               <img
-                src={hero.url}
-                alt={hero.alt}
-                className={
-                  hero.kind === 'photo'
-                    ? 'h-full w-full object-cover select-none'
-                    : 'h-full w-full object-contain p-3 select-none'
-                }
+                src={coverUrl}
+                alt={getImageAlt(card.cover)}
+                className="absolute inset-0 h-full w-full object-cover"
               />
+              <div className="absolute inset-0 bg-black/35" aria-hidden />
+            </>
+          ) : (
+            <>
+              <div
+                className="absolute inset-x-0 top-0 h-full opacity-90"
+                style={{
+                  background: `radial-gradient(circle at top right, ${colors.cardBg} 0%, transparent 38%), linear-gradient(135deg, ${colors.logoBg} 0%, ${colors.buttonBg} 100%)`,
+                }}
+                aria-hidden
+              />
+              <div
+                className="absolute -top-10 right-0 size-36 rounded-full bg-white/12 blur-2xl"
+                aria-hidden
+              />
+            </>
+          )}
+        </header>
+
+        <main className="relative px-5 pb-10" style={{ backgroundColor: colors.mainBg }}>
+          <div className="flex flex-col items-center">
+            {hero ? (
+              <div
+                className="-mt-16 flex size-36 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-lg sm:-mt-20 sm:size-40"
+                style={{ backgroundColor: hero.kind === 'photo' ? colors.cardBg : '#ffffff' }}
+              >
+                <img
+                  src={hero.url}
+                  alt={hero.alt}
+                  className={
+                    hero.kind === 'photo'
+                      ? 'h-full w-full object-cover select-none'
+                      : 'h-full w-full object-contain p-4 select-none'
+                  }
+                />
+              </div>
+            ) : null}
+
+            <div className="mt-5 flex flex-col items-center text-center leading-tight">
+              {card.pronouns ? (
+                <p className="rounded-full bg-black/5 px-3 py-1 text-xs font-medium tracking-[0.12em] text-black/65 uppercase">
+                  {card.pronouns}
+                </p>
+              ) : null}
+              <p className="mt-3 text-3xl font-bold tracking-tight">{card.fullName}</p>
+              {card.jobTitle ? (
+                <p className="mt-2 text-base font-medium text-black/80">{card.jobTitle}</p>
+              ) : null}
+              {card.business ? <p className="mt-1 text-base text-black/70">{card.business}</p> : null}
+              {address ? (
+                <p className="mt-4 max-w-sm text-sm leading-relaxed text-black/55">{address}</p>
+              ) : null}
+            </div>
+
+            {card.bio ? (
+              <p className="mt-6 max-w-sm text-center text-sm leading-6 whitespace-pre-line text-black/72">
+                {card.bio}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="mt-8 flex justify-center">
+            <SaveContactButton card={card} buttonBg={colors.buttonBg} />
+          </div>
+
+          {actions.length > 0 ? (
+            <div className="mt-7 grid grid-cols-3 gap-x-3 gap-y-5">
+              {actions.map((action) => (
+                <ActionButton
+                  key={action.key}
+                  href={action.href}
+                  label={action.label}
+                  icon={action.icon}
+                  external={action.external}
+                  buttonBg={colors.buttonBg}
+                />
+              ))}
             </div>
           ) : null}
+        </main>
 
-          <div className="mt-4 flex flex-col items-center text-center leading-tight">
-            {card.pronouns ? <p className="mb-1 text-sm font-normal opacity-80">{card.pronouns}</p> : null}
-            <p className="text-xl font-bold">{card.fullName}</p>
-            {card.jobTitle ? <p className="mt-1">{card.jobTitle}</p> : null}
-            {card.business ? <p className="mt-1">{card.business}</p> : null}
-            {address ? <p className="mt-2 text-sm opacity-60">{address}</p> : null}
-          </div>
-
-          {card.bio ? (
-            <p className="mt-6 px-4 text-center text-sm leading-relaxed whitespace-pre-line">{card.bio}</p>
-          ) : null}
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <SaveContactButton card={card} buttonBg={colors.buttonBg} />
-        </div>
-
-        {actions.length > 0 ? (
-          <div className="mt-6 flex flex-wrap justify-center">
-            {actions.map((action) => (
-              <ActionButton
-                key={action.key}
-                href={action.href}
-                label={action.label}
-                icon={action.icon}
-                external={action.external}
-                buttonBg={colors.buttonBg}
-              />
-            ))}
-          </div>
-        ) : null}
-      </main>
-
-      <footer className="px-6 pt-10 pb-8 text-center text-xs opacity-70">
-        {card.business || site?.name || card.fullName}
-      </footer>
+        <footer className="border-t border-black/6 bg-white px-6 py-5 text-center text-xs tracking-[0.16em] text-black/45 uppercase">
+          {card.business || site?.name || card.fullName}
+        </footer>
+      </div>
     </div>
   )
 }

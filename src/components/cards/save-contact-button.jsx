@@ -78,7 +78,7 @@ const SaveContactButton = ({ card, buttonBg = '#000033' }) => {
     <button
       type="button"
       onClick={handleSave}
-      className="flex items-center gap-2 rounded-full px-6 py-3 font-medium text-white transition-transform hover:scale-[1.02]"
+      className="flex w-full max-w-sm items-center justify-center gap-2 rounded-full px-6 py-4 font-medium text-white shadow-sm transition-transform hover:scale-[1.02]"
       style={{ backgroundColor: buttonBg }}
     >
       <UserPlusIcon />
