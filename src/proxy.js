@@ -1,12 +1,16 @@
 import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 
+import { canQuotesRoleAccessPath, defaultAdminHomePath, isQuotesRole } from '@/lib/auth/roles'
 import { getAllSites } from '@/lib/platform/content'
 
 const protectedPaths = [
   '/dashboard',
   '/analytics',
   '/crm',
+  '/quotes',
+  '/clients',
+  '/documents',
   '/publish',
   '/domains',
   '/hero-pages',
@@ -19,6 +23,7 @@ const protectedApiPrefixes = [
   '/api/publish-jobs',
   '/api/analytics',
   '/api/crm',
+  '/api/quotes',
   '/api/hero-pages',
   '/api/unsplash',
   '/api/launch-checklist',
@@ -30,6 +35,9 @@ const OPERATOR_SHELL_PREFIXES = [
   '/dashboard',
   '/analytics',
   '/crm',
+  '/quotes',
+  '/clients',
+  '/documents',
   '/publish',
   '/domains',
   '/hero-pages',
@@ -217,7 +225,7 @@ export async function proxy(request) {
   }
 
   if (pathname === '/sign-in' && isLoggedIn) {
-    return NextResponse.redirect(new URL('/dashboard', nextUrl))
+    return NextResponse.redirect(new URL(defaultAdminHomePath(token?.role), nextUrl))
   }
 
   const siteRewrite = trySitePrefixRewrite(request)
@@ -232,6 +240,12 @@ export async function proxy(request) {
   }
 
   if (isLoggedIn) {
+    if (isQuotesRole(token?.role) && !canQuotesRoleAccessPath(pathname)) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+      return NextResponse.redirect(new URL('/quotes', nextUrl))
+    }
     return nextWithAlpHeaders(request)
   }
 

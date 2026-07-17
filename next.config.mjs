@@ -71,6 +71,14 @@ const nextConfig = {
   experimental: {
     viewTransition: true,
   },
+  // Keep @react-pdf/renderer out of the server bundle — its font/glyph data
+  // files break when webpack tries to bundle them (quote PDF routes 500).
+  serverExternalPackages: ['@react-pdf/renderer'],
+  // Brand assets read from disk by the quote PDF renderer must be traced
+  // into the serverless bundle on Vercel.
+  outputFileTracingIncludes: {
+    '/api/quotes/**': ['./public/images/quote-assets/**', './public/images/tx-solar-logo.png'],
+  },
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
   images: {
     qualities: [100, 95, 90, 82, 75, 70, 68],

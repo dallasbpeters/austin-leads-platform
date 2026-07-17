@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs'
 
+import { normalizePlatformRole, PLATFORM_ROLES } from './roles.js'
 import { getSql } from '../db/pool.js'
+
+export { PLATFORM_ROLES }
 
 /*
  * Platform admin users — persisted in Postgres (Supabase / Neon-compatible).
@@ -12,10 +15,11 @@ import { getSql } from '../db/pool.js'
 
 const BCRYPT_ROUNDS = 10
 const MIN_PASSWORD_LENGTH = 8
-const VALID_ROLES = new Set(['admin'])
 
 export function normalizeEmail(value) {
-  return value?.toString().trim().toLowerCase() ?? ''
+  // Emails cannot contain whitespace — strip all of it (not just the ends)
+  // so pasted values with stray tabs/spaces can never break lookups.
+  return value?.toString().replaceAll(/\s+/gu, '').toLowerCase() ?? ''
 }
 
 export function isValidEmail(value) {
@@ -34,8 +38,7 @@ export function validatePassword(password) {
 }
 
 function normalizeRole(role) {
-  const value = String(role ?? 'admin').toLowerCase()
-  return VALID_ROLES.has(value) ? value : 'admin'
+  return normalizePlatformRole(role)
 }
 
 function toPublicUser(row) {
@@ -136,7 +139,7 @@ async function getUserRowByEmail(email) {
   const [row] = await sql`
     SELECT id, email, password_hash, name, role, is_active, created_at, updated_at
     FROM platform_users
-    WHERE LOWER(email) = ${normalized}
+    WHERE LOWER(TRIM(email)) = ${normalized}
     LIMIT 1
   `
   return row ?? null
@@ -152,7 +155,7 @@ export async function countActiveAdmins() {
   return count
 }
 
-export async function createUser({ email, password, name = null, role = 'admin', isActive = true }) {
+export async function createUser({ email, password, name = null, role = 'quotes', isActive = true }) {
   if (!isValidEmail(email)) {
     throw new Error('A valid email is required.')
   }

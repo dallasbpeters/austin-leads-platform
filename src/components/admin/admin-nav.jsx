@@ -3,6 +3,7 @@
 import {
   Bot,
   FileSignature,
+  FileText,
   Globe2,
   ImagePlus,
   LayoutDashboard,
@@ -26,6 +27,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { isQuotesRole } from '@/lib/auth/roles'
 
 const overviewItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -34,6 +36,7 @@ const overviewItems = [
 
 const workspaceItems = [
   { href: '/crm', label: 'CRM', icon: UsersRound },
+  { href: '/quotes', label: 'Quotes', icon: FileSignature },
   { href: '/clients', label: 'Clients', icon: UsersRound },
   { href: '/hero-pages', label: 'Hero Pages', icon: ImagePlus },
   { href: '/publish', label: 'Publish', icon: PenSquare },
@@ -44,7 +47,16 @@ const workspaceItems = [
   { href: '/studio', label: 'Studio', icon: Bot },
   { href: '/', label: 'Live Site', icon: Globe2 },
 ]
-const nestedItems = [{ href: '/documents/history', label: 'History', icon: PenSquare }]
+
+const quotesWorkspaceItems = [
+  { href: '/crm', label: 'CRM', icon: UsersRound },
+  { href: '/quotes', label: 'Quotes', icon: FileSignature },
+]
+
+const nestedItems = {
+  '/documents': [{ href: '/documents/history', label: 'History', icon: PenSquare }],
+  '/quotes': [{ href: '/quotes/history', label: 'History', icon: FileText }],
+}
 
 const christmasItems = [
   { href: '/christmas', label: 'Jobs', icon: UsersRound },
@@ -62,7 +74,7 @@ const NavGroup = ({ label, items }) => {
         <SidebarMenu>
           {items.map(({ href, label: itemLabel, icon: Icon }) => {
             const active = pathname === href || (href !== '/' && pathname.startsWith(`${href}/`))
-            const subItemsForHref = href === '/documents' ? nestedItems : []
+            const subItemsForHref = nestedItems[href] || []
             return (
               <SidebarMenuItem key={href}>
                 <SidebarMenuButton asChild isActive={active} tooltip={itemLabel}>
@@ -94,7 +106,11 @@ const NavGroup = ({ label, items }) => {
   )
 }
 
-const AdminNav = () => {
+const AdminNav = ({ role = 'admin' }) => {
+  if (isQuotesRole(role)) {
+    return <NavGroup label="Workspace" items={quotesWorkspaceItems} />
+  }
+
   return (
     <>
       <NavGroup label="Overview" items={overviewItems} />

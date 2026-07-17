@@ -47,6 +47,10 @@ async function main() {
     const users = await import('../src/lib/auth/users.js')
     await users.ensurePlatformUsersTable()
     created.push('platform_users')
+
+    const quotes = await import('../src/lib/quotes/db.js')
+    await quotes.ensureQuotesTable()
+    created.push('solar_quotes')
   }
 
   if (hasDomainDatabase()) {

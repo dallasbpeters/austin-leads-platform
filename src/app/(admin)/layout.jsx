@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import AdminBodyScrollLock from '@/components/admin/admin-body-scroll-lock'
 import AdminNav from '@/components/admin/admin-nav'
 import SignOutButton from '@/components/admin/sign-out-button'
+import { isQuotesRole } from '@/lib/auth/roles'
 import {
   Sidebar,
   SidebarContent,
@@ -35,6 +36,7 @@ export default async function AdminLayout({ children }) {
     redirect('/sign-in')
   }
   const { user } = session
+  const quotesOnly = isQuotesRole(user?.role)
 
   return (
     <SidebarProvider>
@@ -57,7 +59,7 @@ export default async function AdminLayout({ children }) {
           </SidebarHeader>
 
           <SidebarContent>
-            <AdminNav />
+            <AdminNav role={user?.role} />
           </SidebarContent>
 
           <SidebarFooter>
@@ -69,7 +71,7 @@ export default async function AdminLayout({ children }) {
                   </div>
                   <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
                     <div className="truncate text-sm font-medium text-white">
-                      {user?.name || 'Platform Admin'}
+                      {user?.name || (quotesOnly ? 'Quotes user' : 'Platform Admin')}
                     </div>
                     <div className="truncate text-xs text-white">{user?.email}</div>
                   </div>
@@ -90,16 +92,18 @@ export default async function AdminLayout({ children }) {
               <div className="text-muted-foreground hidden items-center text-sm font-medium md:flex">
                 <span>Austin Leads</span>
                 <span className="mx-2 text-neutral-300">/</span>
-                <span className="text-foreground">Overview</span>
+                <span className="text-foreground">{quotesOnly ? 'Quotes' : 'Overview'}</span>
               </div>
             </div>
 
-            <Link
-              href="/publish"
-              className="text-primary-foreground bg-primary hover:bg-primary/90 rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
-            >
-              Create Post
-            </Link>
+            {quotesOnly ? null : (
+              <Link
+                href="/publish"
+                className="text-primary-foreground bg-primary hover:bg-primary/90 rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
+              >
+                Create Post
+              </Link>
+            )}
           </header>
 
           <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">{children}</main>

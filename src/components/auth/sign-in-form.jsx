@@ -36,10 +36,24 @@ function GoogleIcon() {
   )
 }
 
-export default function SignInForm({ callbackUrl = '/dashboard', googleAuthEnabled = false }) {
+function ZohoIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="4" fill="#E42527" />
+      <path d="M7.2 8h9.6v1.9l-6.3 6.2h6.3V18H7.2v-1.9l6.3-6.2H7.2V8z" fill="#fff" />
+    </svg>
+  )
+}
+
+export default function SignInForm({
+  callbackUrl = '/dashboard',
+  googleAuthEnabled = false,
+  zohoAuthEnabled = false,
+}) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [isZohoLoading, setIsZohoLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function handleSubmit(event) {
@@ -82,6 +96,17 @@ export default function SignInForm({ callbackUrl = '/dashboard', googleAuthEnabl
     }
   }
 
+  async function handleZohoSignIn() {
+    setError('')
+    setIsZohoLoading(true)
+    try {
+      await signIn('zoho', { callbackUrl })
+    } catch {
+      setError('Could not start Zoho sign-in.')
+      setIsZohoLoading(false)
+    }
+  }
+
   return (
     <Card className="border-border/80 shadow-theme-glass-soft w-full max-w-md">
       <CardHeader className="space-y-4">
@@ -94,18 +119,32 @@ export default function SignInForm({ callbackUrl = '/dashboard', googleAuthEnabl
         </div>
       </CardHeader>
       <CardContent className="grid gap-4">
-        {googleAuthEnabled ? (
+        {googleAuthEnabled || zohoAuthEnabled ? (
           <>
-            <Button
-              className="w-full"
-              disabled={isPending || isGoogleLoading}
-              type="button"
-              variant="outline"
-              onClick={handleGoogleSignIn}
-            >
-              <GoogleIcon />
-              {isGoogleLoading ? 'Redirecting…' : 'Continue with Google'}
-            </Button>
+            {googleAuthEnabled ? (
+              <Button
+                className="w-full"
+                disabled={isPending || isGoogleLoading || isZohoLoading}
+                type="button"
+                variant="outline"
+                onClick={handleGoogleSignIn}
+              >
+                <GoogleIcon />
+                {isGoogleLoading ? 'Redirecting…' : 'Continue with Google'}
+              </Button>
+            ) : null}
+            {zohoAuthEnabled ? (
+              <Button
+                className="w-full"
+                disabled={isPending || isGoogleLoading || isZohoLoading}
+                type="button"
+                variant="outline"
+                onClick={handleZohoSignIn}
+              >
+                <ZohoIcon />
+                {isZohoLoading ? 'Redirecting…' : 'Continue with Zoho'}
+              </Button>
+            ) : null}
             <div className="text-muted-foreground flex items-center gap-3 text-xs">
               <span className="bg-border h-px min-w-0 flex-1" aria-hidden />
               <span className="shrink-0">or use email and password</span>

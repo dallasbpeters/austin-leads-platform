@@ -1,11 +1,24 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
+import Zoho from 'next-auth/providers/zoho'
 
 import { getActivePlatformUserForGoogle, normalizeEmail, verifyCredentials } from '@/lib/auth/users'
+import { refreshZohoUserAccessToken, ZOHO_USER_LOGIN_SCOPES } from '@/lib/zoho/user-auth'
 
 const googleClientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID
 const googleClientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET
+
+// Zoho login. Prefer dedicated AUTH_ZOHO_* vars; fall back to the API
+// client credentials if the same Zoho client is used for both (it must be a
+// "Server-based Applications" client with the /api/auth/callback/zoho
+// redirect URI registered — self clients cannot do browser logins).
+const zohoClientId = process.env.AUTH_ZOHO_ID || process.env.ZOHO_CLIENT_ID
+const zohoClientSecret = process.env.AUTH_ZOHO_SECRET || process.env.ZOHO_CLIENT_SECRET
+const zohoAccountsUrl = (process.env.ZOHO_ACCOUNTS_URL || 'https://accounts.zoho.com').replace(/\/$/, '')
+
+// OAuth providers whose sign-ins are gated by the platform_users table.
+const GATED_OAUTH_PROVIDERS = new Set(['google', 'zoho'])
 
 const providers = [
   Credentials({
@@ -61,10 +74,34 @@ if (googleClientId && googleClientSecret) {
   )
 }
 
+if (zohoClientId && zohoClientSecret) {
+  providers.push(
+    Zoho({
+      clientId: zohoClientId,
+      clientSecret: zohoClientSecret,
+      // Point at the right Zoho data center (accounts.zoho.com/.eu/.in…).
+      // Offline access so we keep a refresh token for CRM contact search.
+      authorization: {
+        url: `${zohoAccountsUrl}/oauth/v2/auth`,
+        params: {
+          scope: ZOHO_USER_LOGIN_SCOPES,
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+      token: `${zohoAccountsUrl}/oauth/v2/token`,
+      userinfo: `${zohoAccountsUrl}/oauth/user/info`,
+    }),
+  )
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   pages: {
     signIn: '/sign-in',
+    // Send OAuth failures (e.g. AccessDenied) back to our sign-in page with
+    // a friendly message instead of NextAuth's bare error page.
+    error: '/sign-in',
   },
   logger: {
     error(error) {
@@ -81,11 +118,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider !== 'google') {
+      if (!GATED_OAUTH_PROVIDERS.has(account?.provider)) {
         return true
       }
       const email = normalizeEmail(user?.email)
       if (!email) {
+        console.warn(`[auth] ${account.provider} sign-in denied: provider returned no email`)
         return false
       }
       const dbUser = await getActivePlatformUserForGoogle(email)
@@ -93,14 +131,49 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return true
       }
       const adminEmail = normalizeEmail(process.env.AUTH_ADMIN_EMAIL)
-      return Boolean(adminEmail && email === adminEmail)
+      if (adminEmail && email === adminEmail) {
+        return true
+      }
+      console.warn(`[auth] ${account.provider} sign-in denied for ${email}: no active platform_users row`)
+      return false
     },
     async jwt({ token, user, account }) {
+      // Capture per-user Zoho tokens for CRM contact typeahead (not Sheet/WorkDrive).
+      if (account?.provider === 'zoho') {
+        token.zohoAccessToken = account.access_token
+        if (account.refresh_token) {
+          token.zohoRefreshToken = account.refresh_token
+        }
+        token.zohoExpiresAt = account.expires_at ? account.expires_at * 1000 : Date.now() + 55 * 60 * 1000
+        if (account.api_domain) {
+          token.zohoApiDomain = String(account.api_domain).replace(/\/$/, '')
+        }
+      }
+
+      // Refresh user Zoho access token when stale.
+      if (token.zohoRefreshToken) {
+        const expiresAt = Number(token.zohoExpiresAt || 0)
+        const stale = !token.zohoAccessToken || expiresAt < Date.now() + 60_000
+        if (stale) {
+          try {
+            const refreshed = await refreshZohoUserAccessToken(token.zohoRefreshToken)
+            token.zohoAccessToken = refreshed.accessToken
+            token.zohoRefreshToken = refreshed.refreshToken
+            token.zohoExpiresAt = refreshed.expiresAt
+            token.zohoApiDomain = refreshed.apiDomain
+          } catch (error) {
+            console.error('[auth] Zoho user token refresh failed', error)
+            token.zohoAccessToken = undefined
+            token.zohoExpiresAt = 0
+          }
+        }
+      }
+
       if (!user) {
         return token
       }
 
-      if (account?.provider === 'google') {
+      if (GATED_OAUTH_PROVIDERS.has(account?.provider)) {
         const email = normalizeEmail(user.email)
         const dbUser = await getActivePlatformUserForGoogle(email)
         if (dbUser) {
@@ -132,6 +205,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.name = token.name
         session.user.email = token.email
         session.user.role = token.role
+        // Flag only — never expose Zoho tokens to the browser.
+        session.user.zohoConnected = Boolean(token.zohoRefreshToken || token.zohoAccessToken)
       }
 
       return session
