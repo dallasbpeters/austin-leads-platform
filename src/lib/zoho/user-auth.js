@@ -60,7 +60,12 @@ export async function getZohoUserAccessFromRequest(request) {
     return null
   }
 
-  const token = await getToken({ req: request, secret }).catch(() => null)
+  const forwarded = request.headers.get('x-forwarded-proto')
+  const secureCookie =
+    request.nextUrl?.protocol === 'https:' ||
+    (typeof request.url === 'string' && request.url.startsWith('https:')) ||
+    forwarded?.split(',')[0]?.trim() === 'https'
+  const token = await getToken({ req: request, secret, secureCookie }).catch(() => null)
   if (!token?.zohoRefreshToken && !token?.zohoAccessToken) {
     return null
   }

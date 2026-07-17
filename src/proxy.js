@@ -196,6 +196,31 @@ function getRedirectSite(host) {
   )
 }
 
+/**
+ * Auth.js names the session cookie `__Secure-authjs.session-token` on HTTPS.
+ * `getToken` defaults `secureCookie` to false (looks for `authjs.session-token`),
+ * so production proxies must pass secureCookie or they always see logged-out.
+ */
+function requestUsesSecureAuthCookie(request) {
+  if (request.nextUrl.protocol === 'https:') {
+    return true
+  }
+  const forwarded = request.headers.get('x-forwarded-proto')
+  if (forwarded) {
+    return forwarded.split(',')[0]?.trim() === 'https'
+  }
+  return false
+}
+
+async function getSessionToken(request) {
+  const secret = process.env.AUTH_SECRET
+  if (!secret) {
+    return null
+  }
+  const secureCookie = requestUsesSecureAuthCookie(request)
+  return getToken({ req: request, secret, secureCookie }).catch(() => null)
+}
+
 /*
  * Next.js proxy (formerly middleware). No `auth()` wrapper — it rebuilds the Response
  * and would drop request-header mutations. Auth uses `getToken` from `next-auth/jwt`.
@@ -204,11 +229,7 @@ export async function proxy(request) {
   const { nextUrl } = request
   const { pathname } = nextUrl
 
-  const secret = process.env.AUTH_SECRET
-  let token = null
-  if (secret) {
-    token = await getToken({ req: request, secret }).catch(() => null)
-  }
+  const token = await getSessionToken(request)
   const isLoggedIn = Boolean(token)
 
   const redirectSite = getRedirectSite(request.headers.get('x-forwarded-host') || request.headers.get('host'))

@@ -1,15 +1,23 @@
 import { redirect } from 'next/navigation'
 
 import SignInForm from '@/components/auth/sign-in-form'
+import { canQuotesRoleAccessPath, defaultAdminHomePath, isQuotesRole } from '@/lib/auth/roles'
 import { safeAuth } from '@/lib/auth/session'
 
 export const metadata = {
   title: 'Sign In | Austin Leads Platform',
 }
 
-const resolveCallbackUrl = (raw) => {
-  const candidate = typeof raw === 'string' ? raw : '/dashboard'
-  return candidate.startsWith('/') && !candidate.startsWith('//') ? candidate : '/dashboard'
+const resolveCallbackUrl = (raw, role) => {
+  const home = defaultAdminHomePath(role)
+  const candidate = typeof raw === 'string' ? raw : home
+  if (!candidate.startsWith('/') || candidate.startsWith('//')) {
+    return home
+  }
+  if (isQuotesRole(role) && !canQuotesRoleAccessPath(candidate)) {
+    return home
+  }
+  return candidate
 }
 
 const resolveOAuthErrorMessage = (authError) => {
@@ -29,13 +37,13 @@ const isOAuthProviderEnabled = (idKey, altIdKey, secretKey, altSecretKey) =>
 
 export default async function SignInPage({ searchParams }) {
   const session = await safeAuth()
+  const role = session?.user?.role
+  const params = await searchParams
+  const callbackUrl = resolveCallbackUrl(params?.callbackUrl, role)
 
   if (session?.user) {
-    redirect('/dashboard')
+    redirect(callbackUrl)
   }
-
-  const params = await searchParams
-  const callbackUrl = resolveCallbackUrl(params?.callbackUrl)
   const googleAuthEnabled = isOAuthProviderEnabled(
     'AUTH_GOOGLE_ID',
     'GOOGLE_CLIENT_ID',
