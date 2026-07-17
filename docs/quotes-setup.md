@@ -38,8 +38,14 @@ Create a **Self Client** at [api-console.zoho.com](https://api-console.zoho.com)
 ### Zoho Sheet
 
 - Create a spreadsheet, name a worksheet `Quotes` (or set `ZOHO_SHEET_WORKSHEET_NAME`).
-- Row 1 must contain these headers exactly:
-  `Quote Number, Date, Status, Customer, Email, Phone, Address, City, Utility, System Size (kW), Annual Production (kWh), System Price, Rebate, Net Price, First Year Savings, 25-Year Savings, Emailed To`
+- Row 1 headers must match the keys in `QUOTE_SHEET_COLUMNS` (`src/lib/zoho/sheet.js`). Zoho only fills columns whose header text matches exactly — add any missing headers to row 1.
+- Full header list (copy into row 1):
+
+```
+Quote Number, Date, Updated At, Status, Quote ID, Emailed To, Customer, Email, Phone, Address, City, State, ZIP, Utility, Solar Panels, Inverter, Battery, Racking, Monitoring, System Price, Annual Production (kWh), Annual Consumption (kWh), Utility Rate ($/kWh), Rate Escalation, Buyback Rate ($/kWh), System Size (kW), Rebate, Net Price, First Year Savings, 25-Year Savings, Net Lifetime Savings, Average Annual Savings, Payback Years, Consumption Offset %, CO2 Offset (tons)
+```
+
+- Equipment columns combine make/model + watts/qty (e.g. `Mission Solar · 435W · Qty 21`).
 - `ZOHO_SHEET_RESOURCE_ID` is the id after `/sheet/open/` in the sheet URL  
   (example: `https://sheet.zoho.com/sheet/open/RESOURCE_ID`).  
   Do **not** use a WorkDrive folder/file id — those look different and cause Zoho 500s.

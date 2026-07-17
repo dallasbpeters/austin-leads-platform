@@ -4,7 +4,11 @@ import Google from 'next-auth/providers/google'
 import Zoho from 'next-auth/providers/zoho'
 
 import { getActivePlatformUserForGoogle, normalizeEmail, verifyCredentials } from '@/lib/auth/users'
-import { refreshZohoUserAccessToken, ZOHO_USER_LOGIN_SCOPES } from '@/lib/zoho/user-auth'
+import {
+  buildZohoAuthorizationUrl,
+  refreshZohoUserAccessToken,
+  zohoScopeAllowsContactSearch,
+} from '@/lib/zoho/user-auth'
 
 const googleClientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID
 const googleClientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET
@@ -79,18 +83,13 @@ if (zohoClientId && zohoClientSecret) {
     Zoho({
       clientId: zohoClientId,
       clientSecret: zohoClientSecret,
-      // Point at the right Zoho data center (accounts.zoho.com/.eu/.in…).
-      // Offline access so we keep a refresh token for CRM contact search.
-      authorization: {
-        url: `${zohoAccountsUrl}/oauth/v2/auth`,
-        params: {
-          scope: ZOHO_USER_LOGIN_SCOPES,
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
+      // Put scopes in the authorize URL string so Auth.js cannot drop them
+      // when merging with the provider default (profile-only scope).
+      authorization: buildZohoAuthorizationUrl(),
       token: `${zohoAccountsUrl}/oauth/v2/token`,
       userinfo: `${zohoAccountsUrl}/oauth/user/info`,
+      // Zoho server apps are happier with state than PKCE.
+      checks: ['state'],
     }),
   )
 }
@@ -145,6 +144,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.zohoRefreshToken = account.refresh_token
         }
         token.zohoExpiresAt = account.expires_at ? account.expires_at * 1000 : Date.now() + 55 * 60 * 1000
+        // Zoho returns granted scopes on the token response (also via account.scope).
+        token.zohoScope = account.scope || token.zohoScope || null
         if (account.api_domain) {
           token.zohoApiDomain = String(account.api_domain).replace(/\/$/, '')
         }
@@ -161,12 +162,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.zohoRefreshToken = refreshed.refreshToken
             token.zohoExpiresAt = refreshed.expiresAt
             token.zohoApiDomain = refreshed.apiDomain
+            if (refreshed.scope) {
+              token.zohoScope = refreshed.scope
+            }
           } catch (error) {
             console.error('[auth] Zoho user token refresh failed', error)
             token.zohoAccessToken = undefined
             token.zohoExpiresAt = 0
           }
         }
+      }
+
+      // Known profile-only consent cannot call Contacts/search — drop tokens so UI
+      // shows Connect Zoho. (OAuth refresh never expands scopes.)
+      if (token.zohoScope != null && !zohoScopeAllowsContactSearch(token.zohoScope)) {
+        token.zohoAccessToken = undefined
+        token.zohoRefreshToken = undefined
+        token.zohoExpiresAt = 0
+        token.zohoScope = null
+        token.zohoNeedsReauth = true
+      } else {
+        token.zohoNeedsReauth = false
       }
 
       if (!user) {
@@ -206,7 +222,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.email = token.email
         session.user.role = token.role
         // Flag only — never expose Zoho tokens to the browser.
-        session.user.zohoConnected = Boolean(token.zohoRefreshToken || token.zohoAccessToken)
+        session.user.zohoConnected =
+          Boolean(token.zohoRefreshToken || token.zohoAccessToken) &&
+          !token.zohoNeedsReauth &&
+          (token.zohoScope == null || zohoScopeAllowsContactSearch(token.zohoScope))
+        session.user.zohoNeedsReauth = Boolean(token.zohoNeedsReauth)
       }
 
       return session

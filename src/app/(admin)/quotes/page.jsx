@@ -39,7 +39,7 @@ export default async function QuotesPage({ searchParams }) {
       editId={editId}
       initialQuotes={quotes}
       zohoAuthEnabled={zohoAuthEnabled}
-      zohoConnected={Boolean(session?.user?.zohoConnected)}
+      zohoConnected={Boolean(session?.user?.zohoConnected) && !session?.user?.zohoNeedsReauth}
     />
   )
 }

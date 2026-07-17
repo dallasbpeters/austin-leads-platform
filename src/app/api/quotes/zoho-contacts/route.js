@@ -26,7 +26,9 @@ export async function GET(request) {
   if (!zoho?.accessToken) {
     return NextResponse.json(
       {
-        error: 'Connect Zoho to search contacts.',
+        error:
+          zoho?.error ||
+          'Connect Zoho and approve Contacts access to search. Sign out/in with Zoho if you connected earlier without CRM scopes.',
         needsZohoAuth: true,
         zohoConnected: false,
         contacts: [],
@@ -45,14 +47,18 @@ export async function GET(request) {
     return NextResponse.json({ contacts, zohoConnected: true })
   } catch (error) {
     console.error('[quotes/zoho-contacts] search failed', error)
-    const status = error.status === 401 ? 401 : 502
+    const message = String(error.message || '')
+    const scopeMismatch =
+      error.status === 401 || /invalid oauth scope|OAUTH_SCOPE_MISMATCH|INVALID_TOKEN/i.test(message)
     return NextResponse.json(
       {
-        error: error.message || 'Zoho contact search failed',
-        needsZohoAuth: status === 401,
+        error: scopeMismatch
+          ? 'Zoho denied Contacts access (missing OAuth scope). Click Connect Zoho and approve CRM Contacts + Search.'
+          : message || 'Zoho contact search failed',
+        needsZohoAuth: scopeMismatch,
         contacts: [],
       },
-      { status },
+      { status: scopeMismatch ? 401 : 502 },
     )
   }
 }

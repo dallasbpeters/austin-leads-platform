@@ -231,7 +231,8 @@ export default function ZohoContactTypeahead({
         </p>
       ) : zohoAuthEnabled ? (
         <p className="text-muted-foreground text-xs">
-          Sign in with Zoho (or Connect Zoho) to search contacts with your account.
+          Connect Zoho and approve Contacts + Search. If you only connected for login before, reconnect so CRM
+          scopes are granted (refresh tokens do not pick up new scopes).
         </p>
       ) : (
         <p className="text-muted-foreground text-xs">Zoho sign-in is not configured on this environment.</p>
