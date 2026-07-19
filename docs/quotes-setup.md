@@ -7,7 +7,8 @@ The quote builder lives at `/quotes` in the admin console. On save it writes to 
 All calculations live in `src/lib/quotes/calc.js` and run server-side (the form preview and the PDF always agree).
 
 - **No federal tax credit.** It expired Dec 31, 2025 and appears nowhere in the math or documents.
-- **Austin Energy customers:** $2,500 rebate deducted from system price; savings modeled as Value of Solar bill credits at 9.91¢/kWh on all production.
+- **Utility rebate:** each provider has a default one-time rebate in `UTILITY_REBATE_DEFAULTS` (`src/lib/quotes/calc.js`). The quote form prefills it when you change provider and lets you edit per quote (including custom “Other” utilities). Only shown on the PDF when > $0.
+- **Austin Energy customers:** default rebate $2,500; savings modeled as Value of Solar bill credits at 9.91¢/kWh on all production.
 - **Other utilities:** savings = self-consumed kWh × retail rate, plus optional buyback rate on exported excess.
 - 25-year projection uses rate escalation (default 4%/yr) and 0.5%/yr panel degradation.
 - If annual production isn't provided, it's estimated at 1,350 kWh per kW DC (Austin-area yield).
@@ -42,8 +43,14 @@ Create a **Self Client** at [api-console.zoho.com](https://api-console.zoho.com)
 - Full header list (copy into row 1):
 
 ```
-Quote Number, Date, Updated At, Status, Quote ID, Emailed To, Customer, Email, Phone, Address, City, State, ZIP, Utility, Solar Panels, Inverter, Battery, Racking, Monitoring, System Price, Annual Production (kWh), Annual Consumption (kWh), Utility Rate ($/kWh), Rate Escalation, Buyback Rate ($/kWh), System Size (kW), Rebate, Net Price, First Year Savings, 25-Year Savings, Net Lifetime Savings, Average Annual Savings, Payback Years, Consumption Offset %, CO2 Offset (tons)
+Quote Number, Date, Updated At, Status, Quote ID, Emailed To, Customer, Email, Phone, Address, City, State, ZIP, Utility, Solar Panels, Inverter, Battery, Racking, Monitoring, System Price, Annual Production (kWh), Annual Consumption (kWh), Utility Rate ($/kWh), Rate Escalation, Buyback Rate ($/kWh), System Size (kW), Rebate, Discount, Net Price, First Year Savings, 25-Year Savings, Net Lifetime Savings, Average Annual Savings, Payback Years, Consumption Offset %, CO2 Offset (tons)
 ```
+
+### System layout map
+
+- Quotes can place panels on **Mapbox Satellite** (requires `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`) or upload a layout image.
+- Click the map to place panels; drag to move; choose size (60/72-cell portrait & landscape, commercial) and angle presets.
+- Click **Use map in PDF** to capture the satellite view into the quote’s System Layout image.
 
 - Equipment columns combine make/model + watts/qty (e.g. `Mission Solar · 435W · Qty 21`).
 - `ZOHO_SHEET_RESOURCE_ID` is the id after `/sheet/open/` in the sheet URL  

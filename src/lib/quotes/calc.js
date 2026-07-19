@@ -5,7 +5,7 @@
  * appear anywhere in these calculations or in generated documents.
  *
  * Incentives currently modeled:
- *  - Austin Energy: $2,500 one-time rebate
+ *  - Per-utility one-time rebate (defaults below; override per quote via utilityRebate)
  *  - Austin Energy Value of Solar (VoS) bill credits at 9.91¢/kWh on all
  *    solar production (customer is billed for full consumption at retail,
  *    credited for all production at the VoS rate)
@@ -22,6 +22,18 @@ export const PANEL_DEGRADATION = 0.005 // 0.5%/yr
 export const SYSTEM_LIFETIME_YEARS = 25
 export const CO2_LBS_PER_KWH = 0.8 // ERCOT grid average displaced emissions
 export const LBS_PER_TON = 2000
+
+/** Known utility providers and their default one-time rebate ($). Edit to update form defaults. */
+export const UTILITY_REBATE_DEFAULTS = {
+  'Austin Energy': AUSTIN_ENERGY_REBATE,
+  Oncor: 0,
+  'Pedernales Electric Cooperative': 0,
+  'Bluebonnet Electric Cooperative': 0,
+  'CenterPoint Energy': 0,
+  Other: 0,
+}
+
+export const UTILITY_PROVIDER_OPTIONS = [...Object.keys(UTILITY_REBATE_DEFAULTS)]
 
 // Monthly share of annual production for Central Texas (sums to 1).
 // Derived from a PVWatts v8 run for the Austin area.
@@ -59,6 +71,37 @@ export function isAustinEnergy(utilityProvider) {
 }
 
 /**
+ * Default rebate ($) for a utility provider name.
+ * Known list values use UTILITY_REBATE_DEFAULTS; Austin Energy variants match by name;
+ * unknown / custom providers default to $0 (set utilityRebate on the quote).
+ */
+export function defaultRebateForUtility(utilityProvider) {
+  const name = String(utilityProvider || '').trim()
+  if (!name) {
+    return 0
+  }
+  if (Object.hasOwn(UTILITY_REBATE_DEFAULTS, name)) {
+    return UTILITY_REBATE_DEFAULTS[name]
+  }
+  if (isAustinEnergy(name)) {
+    return AUSTIN_ENERGY_REBATE
+  }
+  return 0
+}
+
+/**
+ * Resolve rebate from an explicit per-quote amount, else the provider default.
+ * Pass utilityRebate (including 0) to override; omit / null / '' to use the default.
+ */
+export function resolveUtilityRebate(input = {}) {
+  const raw = input.utilityRebate
+  if (raw !== undefined && raw !== null && raw !== '') {
+    return Math.max(0, toNumber(raw))
+  }
+  return defaultRebateForUtility(input.utilityProvider)
+}
+
+/**
  * Compute every derived number a quote needs from raw form inputs.
  *
  * @param {object} input
@@ -67,10 +110,12 @@ export function isAustinEnergy(utilityProvider) {
  * @param {number} [input.annualProductionKwh] Override; estimated from size if omitted
  * @param {number} [input.annualConsumptionKwh] Household usage; used for offset %
  * @param {string} [input.utilityProvider]
+ * @param {number} [input.utilityRebate]  One-time utility rebate ($); defaults per provider
  * @param {number} [input.utilityRate]    Retail $/kWh
  * @param {number} [input.buybackRate]    $/kWh credited for exported excess (non-Austin Energy)
  * @param {number} [input.rateEscalation] Annual energy cost increase (fraction)
  * @param {number} input.systemPrice      Gross system price in dollars
+ * @param {number} [input.discount]       Optional dollar discount (only applied when > 0)
  * @returns {object} computed quote values
  */
 export function computeQuote(input = {}) {
@@ -88,10 +133,12 @@ export function computeQuote(input = {}) {
   const buybackRate = Math.max(0, toNumber(input.buybackRate))
   const rateEscalation = toNumber(input.rateEscalation, DEFAULT_RATE_ESCALATION)
   const systemPrice = Math.max(0, toNumber(input.systemPrice))
+  const discount = Math.max(0, toNumber(input.discount))
 
+  const utilityName = String(input.utilityProvider || '').trim() || 'Utility'
   const austinEnergy = isAustinEnergy(input.utilityProvider)
-  const rebate = austinEnergy ? AUSTIN_ENERGY_REBATE : 0
-  const netSystemPrice = Math.max(0, systemPrice - rebate)
+  const rebate = resolveUtilityRebate(input)
+  const netSystemPrice = Math.max(0, systemPrice - rebate - discount)
 
   const monthlyProductionKwh = MONTHLY_PRODUCTION_FACTORS.map((factor) => round(annualProductionKwh * factor))
 
@@ -140,7 +187,9 @@ export function computeQuote(input = {}) {
     annualProductionKwh: round(annualProductionKwh),
     monthlyProductionKwh,
     isAustinEnergy: austinEnergy,
-    rebate,
+    rebate: round(rebate, 2),
+    rebateLabel: rebate > 0 ? `${utilityName} Rebate` : null,
+    discount: round(discount, 2),
     systemPrice: round(systemPrice, 2),
     netSystemPrice: round(netSystemPrice, 2),
     firstYearSavings: round(firstYearSavings, 2),

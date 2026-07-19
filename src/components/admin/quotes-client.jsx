@@ -1,7 +1,6 @@
 'use client'
 
 import { Children, cloneElement, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -11,7 +10,6 @@ import {
   Eye,
   FileText,
   History,
-  ImagePlus,
   Loader2,
   Mail,
   MailCheck,
@@ -38,19 +36,13 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import SystemLayoutEditor from '@/components/admin/system-layout-editor'
 import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
-import { computeQuote } from '@/lib/quotes/calc'
+import { UTILITY_PROVIDER_OPTIONS, computeQuote, defaultRebateForUtility } from '@/lib/quotes/calc'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const UTILITY_OPTIONS = [
-  'Austin Energy',
-  'Oncor',
-  'Pedernales Electric Cooperative',
-  'Bluebonnet Electric Cooperative',
-  'CenterPoint Energy',
-  'Other',
-]
+const UTILITY_OPTIONS = UTILITY_PROVIDER_OPTIONS
 
 const EMPTY_FORM = {
   customerName: '',
@@ -62,6 +54,7 @@ const EMPTY_FORM = {
   propertyZip: '',
   utilityProvider: 'Austin Energy',
   utilityProviderOther: '',
+  utilityRebate: String(defaultRebateForUtility('Austin Energy')),
   panelMakeModel: '',
   panelWatts: '',
   panelQuantity: '',
@@ -80,6 +73,9 @@ const EMPTY_FORM = {
   rateEscalation: '0.04',
   buybackRate: '0',
   systemPrice: '',
+  discount: '',
+  systemLayoutMode: 'map',
+  systemLayout: null,
   systemLayoutUrl: '',
   repSignature: '',
 }
@@ -150,32 +146,70 @@ const resolveEditPreload = (quotes, editId, dupeId) => {
   return quotes.find((q) => String(q.id) === String(targetId)) ?? null
 }
 
-const formDataToInputs = (form) => ({
-  ...form,
-  utilityProvider: form.utilityProvider === 'Other' ? form.utilityProviderOther : form.utilityProvider,
-  panelWatts: Number(form.panelWatts) || 0,
-  panelQuantity: Number(form.panelQuantity) || 0,
-  inverterQuantity: form.inverterQuantity === '' ? '' : Number(form.inverterQuantity) || 0,
-  batteryQuantity: form.batteryQuantity === '' ? '' : Number(form.batteryQuantity) || 0,
-  annualProductionKwh: Number(form.annualProductionKwh) || 0,
-  annualConsumptionKwh: Number(form.annualConsumptionKwh) || 0,
-  utilityRate: Number(form.utilityRate) || 0.12,
-  rateEscalation: Number(form.rateEscalation) || 0.04,
-  buybackRate: Number(form.buybackRate) || 0,
-  systemPrice: Number(form.systemPrice) || 0,
-})
+const optionalNumber = (value, fallback = 0) => (value === '' ? '' : Number(value) || fallback)
+
+const formDataToInputs = (form) => {
+  const utilityProvider = form.utilityProvider === 'Other' ? form.utilityProviderOther : form.utilityProvider
+  return {
+    ...form,
+    utilityProvider,
+    panelWatts: Number(form.panelWatts) || 0,
+    panelQuantity: Number(form.panelQuantity) || 0,
+    inverterQuantity: optionalNumber(form.inverterQuantity),
+    batteryQuantity: optionalNumber(form.batteryQuantity),
+    annualProductionKwh: Number(form.annualProductionKwh) || 0,
+    annualConsumptionKwh: Number(form.annualConsumptionKwh) || 0,
+    utilityRate: Number(form.utilityRate) || 0.12,
+    rateEscalation: Number(form.rateEscalation) || 0.04,
+    buybackRate: Number(form.buybackRate) || 0,
+    systemPrice: Number(form.systemPrice) || 0,
+    discount: Number(form.discount) || 0,
+    utilityRebate: optionalNumber(form.utilityRebate),
+    systemLayoutMode: form.systemLayoutMode === 'upload' ? 'upload' : 'map',
+    systemLayout: form.systemLayout && typeof form.systemLayout === 'object' ? form.systemLayout : null,
+    systemLayoutUrl: form.systemLayoutUrl || '',
+  }
+}
+
+const assignInputToForm = (next, key, value) => {
+  if (key === 'systemLayout') {
+    next.systemLayout = value && typeof value === 'object' ? value : null
+    return
+  }
+  if (key === 'systemLayoutMode') {
+    next.systemLayoutMode = value === 'upload' ? 'upload' : 'map'
+    return
+  }
+  if (key === 'systemLayoutUrl' || key === 'repSignature') {
+    next[key] = value || ''
+    return
+  }
+  next[key] = value === null || value === undefined ? '' : String(value)
+}
+
+const resolveUtilityFields = (inputs) => {
+  const known = UTILITY_OPTIONS.includes(inputs.utilityProvider)
+  const utilityProvider = known ? inputs.utilityProvider : inputs.utilityProvider ? 'Other' : 'Austin Energy'
+  const utilityProviderOther = known ? '' : inputs.utilityProvider || ''
+  const resolvedName = utilityProvider === 'Other' ? utilityProviderOther || 'Other' : utilityProvider
+  const hasStoredRebate =
+    inputs.utilityRebate !== undefined && inputs.utilityRebate !== null && inputs.utilityRebate !== ''
+  return {
+    utilityProvider,
+    utilityProviderOther,
+    utilityRebate: hasStoredRebate
+      ? String(inputs.utilityRebate)
+      : String(defaultRebateForUtility(resolvedName)),
+  }
+}
 
 const quoteToForm = (quote) => {
   const inputs = quote?.data?.inputs || {}
-  const known = UTILITY_OPTIONS.includes(inputs.utilityProvider)
-  return {
-    ...EMPTY_FORM,
-    ...Object.fromEntries(
-      Object.entries(inputs).map(([key, value]) => [key, value === null ? '' : String(value)]),
-    ),
-    utilityProvider: known ? inputs.utilityProvider : inputs.utilityProvider ? 'Other' : 'Austin Energy',
-    utilityProviderOther: known ? '' : inputs.utilityProvider || '',
+  const next = { ...EMPTY_FORM }
+  for (const [key, value] of Object.entries(inputs)) {
+    assignInputToForm(next, key, value)
   }
+  return { ...next, ...resolveUtilityFields(inputs) }
 }
 
 // ─── API helpers ──────────────────────────────────────────────────────────────
@@ -344,7 +378,14 @@ function PostSaveBanner({ quote, onSend }) {
 
 // ─── Form card sub-components ──────────────────────────────────────────────────
 
-function CustomerPropertyCard({ form, set, onSelectZohoContact, zohoConnected, zohoAuthEnabled }) {
+function CustomerPropertyCard({
+  form,
+  set,
+  onUtilityProviderChange,
+  onSelectZohoContact,
+  zohoConnected,
+  zohoAuthEnabled,
+}) {
   return (
     <Card>
       <CardHeader>
@@ -394,7 +435,7 @@ function CustomerPropertyCard({ form, set, onSelectZohoContact, zohoConnected, z
         </div>
         <FieldRow>
           <Field label="Utility provider">
-            <Select onValueChange={set('utilityProvider')} value={form.utilityProvider}>
+            <Select onValueChange={onUtilityProviderChange} value={form.utilityProvider}>
               <SelectTrigger aria-label="Utility provider">
                 <SelectValue placeholder="Select utility" />
               </SelectTrigger>
@@ -415,13 +456,32 @@ function CustomerPropertyCard({ form, set, onSelectZohoContact, zohoConnected, z
                 value={form.utilityProviderOther}
               />
             </Field>
-          ) : null}
+          ) : (
+            <Field hint="Default for this provider — edit per quote as needed" label="Utility rebate ($)">
+              <Input
+                inputMode="decimal"
+                onChange={set('utilityRebate')}
+                placeholder="0"
+                value={form.utilityRebate}
+              />
+            </Field>
+          )}
         </FieldRow>
+        {form.utilityProvider === 'Other' ? (
+          <Field hint="One-time rebate for this custom utility — leave 0 if none" label="Utility rebate ($)">
+            <Input
+              inputMode="decimal"
+              onChange={set('utilityRebate')}
+              placeholder="0"
+              value={form.utilityRebate}
+            />
+          </Field>
+        ) : null}
         {form.utilityProvider === 'Austin Energy' ? (
           <p className="rounded-md bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-400">
             <Zap className="mr-1 inline size-3.5" />
-            Austin Energy: $2,500 rebate applied automatically, savings use Value of Solar credits at
-            9.91¢/kWh.
+            Austin Energy savings use Value of Solar credits at 9.91¢/kWh. Rebate defaults to $
+            {defaultRebateForUtility('Austin Energy').toLocaleString()} and can be edited above.
           </p>
         ) : null}
       </CardContent>
@@ -447,7 +507,14 @@ function EquipmentLine({ label, description, qty, descriptionField, qtyField, se
   )
 }
 
-function SystemEquipmentCard({ form, set }) {
+function propertyAddressLine(form) {
+  return [form.propertyAddress, form.propertyCity, form.propertyState, form.propertyZip]
+    .map((part) => String(part || '').trim())
+    .filter(Boolean)
+    .join(', ')
+}
+
+function SystemEquipmentCard({ form, set, onLayoutChange }) {
   return (
     <Card>
       <CardHeader>
@@ -526,54 +593,13 @@ function SystemEquipmentCard({ form, set }) {
           label="Warranty"
           set={set}
         />
-        <div className="space-y-1.5">
-          <Label className="text-muted-foreground text-xs font-medium">System layout image (optional)</Label>
-          {form.systemLayoutUrl ? (
-            <div className="relative inline-block">
-              <Image
-                alt="System layout preview"
-                className="max-h-40 w-auto rounded-md border object-contain"
-                height={160}
-                src={form.systemLayoutUrl}
-                unoptimized
-                width={320}
-              />
-              <Button
-                className="absolute top-1 right-1 size-6 rounded-full"
-                onClick={() => set('systemLayoutUrl')('')}
-                size="icon"
-                type="button"
-                variant="destructive"
-              >
-                ×
-              </Button>
-            </div>
-          ) : (
-            <label className="border-border hover:bg-muted/50 flex cursor-pointer items-center gap-2 rounded-md border border-dashed px-3 py-3 text-sm transition-colors">
-              <ImagePlus aria-hidden="true" className="text-muted-foreground size-4 shrink-0" />
-              <span className="text-muted-foreground">Click to upload layout image (PNG, JPG)</span>
-              <input
-                accept="image/*"
-                className="sr-only"
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  if (!file) {
-                    return
-                  }
-                  const reader = new FileReader()
-                  reader.addEventListener('load', (loadEvent) => {
-                    set('systemLayoutUrl')(loadEvent.target?.result || '')
-                  })
-                  reader.readAsDataURL(file)
-                }}
-                type="file"
-              />
-            </label>
-          )}
-          <p className="text-muted-foreground/70 text-[11px]">
-            Shown as the System Layout section in the PDF. Export from Aurora, PVWatts, or any design tool.
-          </p>
-        </div>
+        <SystemLayoutEditor
+          address={propertyAddressLine(form)}
+          imageUrl={form.systemLayoutUrl}
+          layout={form.systemLayout}
+          mode={form.systemLayoutMode === 'upload' ? 'upload' : 'map'}
+          onChange={onLayoutChange}
+        />
       </CardContent>
     </Card>
   )
@@ -596,6 +622,14 @@ function EnergyPricingCard({ form, set }) {
             onChange={set('systemPrice')}
             placeholder="32130"
             value={form.systemPrice}
+          />
+        </Field>
+        <Field hint="Optional — only shown on the quote when entered" label="Discount ($)">
+          <Input
+            inputMode="decimal"
+            onChange={set('discount')}
+            placeholder="Leave blank for none"
+            value={form.discount}
           />
         </Field>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -776,10 +810,16 @@ function LiveSummaryCard({ computed, canCompute }) {
             <span className="text-muted-foreground">System price</span>
             <span className="font-semibold">{money(computed.systemPrice)}</span>
           </div>
-          {computed.rebate ? (
+          {computed.rebate > 0 ? (
             <div className="flex justify-between text-amber-700 dark:text-amber-400">
-              <span>Austin Energy rebate</span>
+              <span>{computed.rebateLabel || 'Utility rebate'}</span>
               <span className="font-semibold">−{money(computed.rebate)}</span>
+            </div>
+          ) : null}
+          {computed.discount > 0 ? (
+            <div className="flex justify-between text-emerald-700 dark:text-emerald-400">
+              <span>Discount</span>
+              <span className="font-semibold">−{money(computed.discount)}</span>
             </div>
           ) : null}
           <div className="flex justify-between border-t pt-2">
@@ -1055,6 +1095,26 @@ export default function QuotesClient({
 
   const set = (key) => (event) => setForm((prev) => ({ ...prev, [key]: getFieldValue(event) }))
 
+  const handleLayoutChange = useCallback((next) => {
+    setForm((prev) => ({
+      ...prev,
+      systemLayoutMode: next.mode === 'upload' ? 'upload' : 'map',
+      systemLayout: next.layout ?? prev.systemLayout,
+      systemLayoutUrl: next.imageUrl ?? '',
+    }))
+  }, [])
+
+  const handleUtilityProviderChange = useCallback((value) => {
+    setForm((prev) => {
+      const resolvedName = value === 'Other' ? prev.utilityProviderOther || 'Other' : value
+      return {
+        ...prev,
+        utilityProvider: value,
+        utilityRebate: String(defaultRebateForUtility(resolvedName)),
+      }
+    })
+  }, [])
+
   const handleSelectZohoContact = (contact) => {
     setForm((prev) => ({
       ...prev,
@@ -1227,11 +1287,12 @@ export default function QuotesClient({
           <CustomerPropertyCard
             form={form}
             onSelectZohoContact={handleSelectZohoContact}
+            onUtilityProviderChange={handleUtilityProviderChange}
             set={set}
             zohoAuthEnabled={zohoAuthEnabled}
             zohoConnected={zohoConnected}
           />
-          <SystemEquipmentCard form={form} set={set} />
+          <SystemEquipmentCard form={form} onLayoutChange={handleLayoutChange} set={set} />
           <EnergyPricingCard form={form} set={set} />
           <RepSignaturePad onChange={set('repSignature')} value={form.repSignature} />
         </div>

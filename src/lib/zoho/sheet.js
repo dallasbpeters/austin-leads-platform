@@ -49,6 +49,7 @@ export const QUOTE_SHEET_COLUMNS = [
   // Computed
   'System Size (kW)',
   'Rebate',
+  'Discount',
   'Net Price',
   'First Year Savings',
   '25-Year Savings',
@@ -139,6 +140,7 @@ export function quoteToSheetRecord(quote) {
 
     'System Size (kW)': computed.systemSizeKw ?? '',
     Rebate: computed.rebate ?? 0,
+    Discount: computed.discount > 0 ? computed.discount : '',
     'Net Price': computed.netSystemPrice ?? '',
     'First Year Savings': computed.firstYearSavings ?? '',
     '25-Year Savings': computed.lifetimeSavings ?? '',

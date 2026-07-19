@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   AUSTIN_ENERGY_REBATE,
   computeQuote,
+  defaultRebateForUtility,
   isAustinEnergy,
   MONTHLY_PRODUCTION_FACTORS,
   VALUE_OF_SOLAR_RATE,
@@ -46,8 +47,48 @@ describe('computeQuote', () => {
   it('applies the Austin Energy rebate and Value of Solar savings', () => {
     const result = computeQuote({ ...ZIMMERMAN, utilityProvider: 'Austin Energy' })
     expect(result.rebate).toBe(AUSTIN_ENERGY_REBATE)
+    expect(result.rebateLabel).toBe('Austin Energy Rebate')
     expect(result.netSystemPrice).toBe(ZIMMERMAN.systemPrice - AUSTIN_ENERGY_REBATE)
     expect(result.firstYearSavings).toBeCloseTo(11_707 * VALUE_OF_SOLAR_RATE, 0)
+  })
+
+  it('applies a per-provider or custom utility rebate', () => {
+    expect(defaultRebateForUtility('Austin Energy')).toBe(AUSTIN_ENERGY_REBATE)
+    expect(defaultRebateForUtility('Oncor')).toBe(0)
+
+    const custom = computeQuote({
+      ...ZIMMERMAN,
+      utilityProvider: 'Custom Energy Co',
+      utilityRebate: 1200,
+    })
+    expect(custom.rebate).toBe(1200)
+    expect(custom.rebateLabel).toBe('Custom Energy Co Rebate')
+    expect(custom.netSystemPrice).toBe(ZIMMERMAN.systemPrice - 1200)
+
+    const overridden = computeQuote({
+      ...ZIMMERMAN,
+      utilityProvider: 'Austin Energy',
+      utilityRebate: 0,
+    })
+    expect(overridden.rebate).toBe(0)
+    expect(overridden.netSystemPrice).toBe(ZIMMERMAN.systemPrice)
+  })
+
+  it('applies an optional discount only when entered', () => {
+    const without = computeQuote(ZIMMERMAN)
+    expect(without.discount).toBe(0)
+    expect(without.netSystemPrice).toBe(ZIMMERMAN.systemPrice)
+
+    const withDiscount = computeQuote({ ...ZIMMERMAN, discount: 1500 })
+    expect(withDiscount.discount).toBe(1500)
+    expect(withDiscount.netSystemPrice).toBe(ZIMMERMAN.systemPrice - 1500)
+
+    const withBoth = computeQuote({
+      ...ZIMMERMAN,
+      utilityProvider: 'Austin Energy',
+      discount: 1000,
+    })
+    expect(withBoth.netSystemPrice).toBe(ZIMMERMAN.systemPrice - AUSTIN_ENERGY_REBATE - 1000)
   })
 
   it('estimates production from system size when not provided', () => {
@@ -91,5 +132,25 @@ describe('isAustinEnergy', () => {
     expect(isAustinEnergy('austin  energy')).toBe(true)
     expect(isAustinEnergy('Oncor')).toBe(false)
     expect(isAustinEnergy('')).toBe(false)
+  })
+})
+
+describe('panel geometry', () => {
+  it('builds a closed ring for rotated panels', async () => {
+    const { panelCornerRing, PANEL_SIZES } = await import('@/lib/quotes/panel-geometry')
+    const size = PANEL_SIZES['72-portrait']
+    const ring = panelCornerRing(-97.74, 30.27, size.widthM, size.heightM, 45)
+    expect(ring).toHaveLength(5)
+    expect(ring[0]).toEqual(ring[4])
+  })
+
+  it('scales panel footprints', async () => {
+    const { panelSizeMeta, clampPanelScale, PANEL_SCALE_DEFAULT } =
+      await import('@/lib/quotes/panel-geometry')
+    const base = panelSizeMeta('72-portrait', 1)
+    const scaled = panelSizeMeta('72-portrait', 2)
+    expect(scaled.widthM).toBeCloseTo(base.widthM * 2)
+    expect(scaled.heightM).toBeCloseTo(base.heightM * 2)
+    expect(clampPanelScale(undefined)).toBe(PANEL_SCALE_DEFAULT)
   })
 })

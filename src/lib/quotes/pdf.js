@@ -659,6 +659,8 @@ function buildInvestmentRow(computed) {
       h(Text, { style: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: INK } }, value),
     )
 
+  const rebateLineLabel = computed.rebateLabel || 'Utility Rebate'
+
   return h(
     View,
     { style: [s.row, { marginBottom: 8, alignItems: 'stretch' }] },
@@ -677,8 +679,16 @@ function buildInvestmentRow(computed) {
         ? h(
             View,
             { style: s.investLine },
-            h(Text, { style: s.investLabel }, 'Austin Energy Rebate'),
+            h(Text, { style: s.investLabel }, rebateLineLabel),
             h(Text, { style: s.investValue }, `- ${money(computed.rebate)}`),
+          )
+        : null,
+      Number(computed.discount) > 0
+        ? h(
+            View,
+            { style: s.investLine },
+            h(Text, { style: s.investLabel }, 'Discount'),
+            h(Text, { style: s.investValue }, `- ${money(computed.discount)}`),
           )
         : null,
       h(View, { style: s.investDivider }),
@@ -689,7 +699,7 @@ function buildInvestmentRow(computed) {
         h(Text, { style: s.investTotalValue }, money(computed.netSystemPrice)),
       ),
       computed.rebate
-        ? h(Text, { style: s.investNote }, 'Rebate subject to Austin Energy program terms and availability.')
+        ? h(Text, { style: s.investNote }, 'Rebate subject to utility program terms and availability.')
         : null,
     ),
     // Payment Options — green header bar, cash only (no financed column)
