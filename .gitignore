@@ -12,3 +12,4 @@ public/unicorn/.DS_Store
 playwright-report/
 test-results/
 .agents/
+.env*

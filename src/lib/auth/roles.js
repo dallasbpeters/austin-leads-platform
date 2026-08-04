@@ -2,10 +2,16 @@
 export const PLATFORM_ROLES = ['admin', 'quotes']
 
 /** Paths a `quotes` user may open in the admin console. */
-export const QUOTES_ALLOWED_PATH_PREFIXES = ['/crm', '/quotes']
+export const QUOTES_ALLOWED_PATH_PREFIXES = ['/crm', '/quotes', '/christmas/invoices']
 
 /** API prefixes a `quotes` user may call. */
-export const QUOTES_ALLOWED_API_PREFIXES = ['/api/crm', '/api/quotes', '/api/auth']
+export const QUOTES_ALLOWED_API_PREFIXES = [
+  '/api/crm',
+  '/api/quotes',
+  '/api/auth',
+  '/api/christmas/invoices',
+  '/api/christmas/invoice-settings',
+]
 
 export function normalizePlatformRole(role) {
   const value = String(role ?? 'admin').toLowerCase()

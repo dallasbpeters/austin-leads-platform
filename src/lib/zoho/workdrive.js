@@ -198,3 +198,69 @@ export async function syncQuotePdfToWorkdrive({ clientName, fileName, buffer }) 
     return { ok: false, error: error.message }
   }
 }
+
+// ─── Christmas invoices ──────────────────────────────────────────────────────
+
+/**
+ * Ensure {parent}/{Customer Name}/Invoices exists and return the Invoices
+ * folder. `parentOverride` lets the Christmas flow use its own parent folder
+ * (from CHRISTMAS_WORKDRIVE_PARENT_FOLDER_ID or invoice settings); it falls
+ * back to ZOHO_WORKDRIVE_PARENT_FOLDER_ID.
+ */
+export async function findOrCreateClientInvoicesFolder(clientName, parentOverride) {
+  const root =
+    (parentOverride || process.env.CHRISTMAS_WORKDRIVE_PARENT_FOLDER_ID || '').trim() ||
+    process.env.ZOHO_WORKDRIVE_PARENT_FOLDER_ID?.trim()
+
+  if (!root) {
+    throw new Error('Zoho WorkDrive is not configured. Set ZOHO_WORKDRIVE_PARENT_FOLDER_ID.')
+  }
+
+  const token = await getZohoAccessToken()
+  const customerFolder = await findOrCreateChildFolder(token, root, clientName)
+  const invoicesFolder = await findOrCreateChildFolder(token, customerFolder.id, 'Invoices')
+  return {
+    customerFolderId: customerFolder.id,
+    customerFolderName: customerFolder.name,
+    folderId: invoicesFolder.id,
+    folderName: `${customerFolder.name}/Invoices`,
+    createdCustomer: customerFolder.created,
+    createdInvoices: invoicesFolder.created,
+  }
+}
+
+/**
+ * Save a Christmas invoice PDF to WorkDrive under {Customer Name}/Invoices/.
+ */
+export async function saveInvoicePdfToWorkdrive({ clientName, fileName, buffer, parentFolderId }) {
+  const folder = await findOrCreateClientInvoicesFolder(clientName, parentFolderId)
+  const upload = await uploadPdfToFolder({ folderId: folder.folderId, fileName, buffer })
+  return {
+    folderId: folder.folderId,
+    folderName: folder.folderName,
+    customerFolderId: folder.customerFolderId,
+    fileId: upload.fileId,
+  }
+}
+
+/**
+ * Best-effort Christmas invoice WorkDrive sync — never throws.
+ */
+export async function syncInvoicePdfToWorkdrive({ clientName, fileName, buffer, parentFolderId }) {
+  const status = getZohoWorkdriveConfigStatus()
+  if (!status.ok && !parentFolderId?.trim()) {
+    return { skipped: true, reason: status.reason }
+  }
+  try {
+    const saved = await saveInvoicePdfToWorkdrive({ clientName, fileName, buffer, parentFolderId })
+    return {
+      ok: true,
+      folder: saved.folderName,
+      folderId: saved.folderId,
+      fileId: saved.fileId,
+    }
+  } catch (error) {
+    console.error('[christmas/invoices] workdrive upload failed', error)
+    return { ok: false, error: error.message }
+  }
+}

@@ -224,7 +224,7 @@ function JobDetailPanel({ job, onClose, onSave, onDelete }) {
                 className={inputCls}
                 value={form.phone}
                 onChange={(e) => set('phone', e.target.value)}
-                placeholder="(512) 555-0100"
+                placeholder="(512) 775-0561"
               />
             </div>
           </div>

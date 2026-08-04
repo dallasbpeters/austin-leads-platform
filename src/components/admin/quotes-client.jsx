@@ -412,7 +412,7 @@ function CustomerPropertyCard({
         </FieldRow>
         <FieldRow>
           <Field label="Phone">
-            <Input onChange={set('customerPhone')} placeholder="(512) 555-0100" value={form.customerPhone} />
+            <Input onChange={set('customerPhone')} placeholder="(512) 775-0561" value={form.customerPhone} />
           </Field>
           <Field label="Street address">
             <Input

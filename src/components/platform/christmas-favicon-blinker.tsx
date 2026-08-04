@@ -1,3 +1,4 @@
+// oxlint-disable typescript/no-non-null-assertion
 'use client'
 
 import { useEffect } from 'react'

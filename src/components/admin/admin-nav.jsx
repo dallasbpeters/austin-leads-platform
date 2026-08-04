@@ -53,13 +53,19 @@ const quotesWorkspaceItems = [
   { href: '/quotes', label: 'Quotes', icon: FileSignature },
 ]
 
+const quotesChristmasItems = [{ href: '/christmas/invoices', label: 'Invoices', icon: FileText }]
+
 const nestedItems = {
   '/documents': [{ href: '/documents/history', label: 'History', icon: PenSquare }],
   '/quotes': [{ href: '/quotes/history', label: 'History', icon: FileText }],
+  '/christmas/invoices': [
+    { href: '/christmas/invoices/settings', label: 'Template settings', icon: Settings2 },
+  ],
 }
 
 const christmasItems = [
   { href: '/christmas', label: 'Jobs', icon: UsersRound },
+  { href: '/christmas/invoices', label: 'Invoices', icon: FileText },
   { href: '/christmas/slots', label: 'Slots', icon: Sparkles },
 ]
 
@@ -108,7 +114,12 @@ const NavGroup = ({ label, items }) => {
 
 const AdminNav = ({ role = 'admin' }) => {
   if (isQuotesRole(role)) {
-    return <NavGroup label="Workspace" items={quotesWorkspaceItems} />
+    return (
+      <>
+        <NavGroup label="Workspace" items={quotesWorkspaceItems} />
+        <NavGroup label="Christmas Lights" items={quotesChristmasItems} />
+      </>
+    )
   }
 
   return (
