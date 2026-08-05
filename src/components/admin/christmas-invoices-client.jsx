@@ -1,12 +1,14 @@
+// oxlint-disable react-hooks/exhaustive-deps
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 import {
   Download,
   Eye,
-  FileText,
+  History,
   Loader2,
   Mail,
   Maximize2,
@@ -14,8 +16,8 @@ import {
   Plus,
   Save,
   Settings2,
-  Trash2,
   TriangleAlert,
+  Upload,
   X,
 } from 'lucide-react'
 
@@ -33,7 +35,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
 import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
 
@@ -48,13 +49,6 @@ const moneyCents = (cents) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(Number(cents || 0) / 100)
-
-const shortDate = (value) =>
-  value
-    ? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(
-        new Date(value),
-      )
-    : '—'
 
 const todayISO = () => new Date().toISOString().split('T')[0]
 
@@ -73,12 +67,73 @@ const centsToInput = (cents) => (Number(cents || 0) / 100).toString()
 
 const inputToCents = (value) => Math.round((Number(value) || 0) * 100)
 
+const blankLineItem = () => ({
+  key: newKey(),
+  category: '',
+  description: '',
+  location: '',
+  color: '',
+  nr: '',
+  quantity: '1',
+  unitPrice: '',
+})
+
+const presetItemToFormLineItem = (item) => ({
+  key: newKey(),
+  category: item.category || '',
+  description: item.description,
+  location: item.location || '',
+  color: item.color || '',
+  nr: item.nr || '',
+  quantity: String(item.quantity),
+  unitPrice: centsToInput(item.unitPriceCents),
+})
+
+const blankPaymentMilestone = () => ({ key: newKey(), label: '', percent: '', date: '' })
+
+const inputMilestoneToFormMilestone = (milestone) => ({
+  key: milestone.key || newKey(),
+  label: milestone.label || '',
+  percent: String(milestone.percent ?? ''),
+  date: milestone.date || '',
+})
+
+const inputLineItemToFormLineItem = (item) => ({
+  key: item.key || newKey(),
+  category: item.category || '',
+  description: item.description || '',
+  location: item.location || '',
+  color: item.color || '',
+  nr: item.nr || '',
+  quantity: String(item.quantity ?? 1),
+  unitPrice: centsToInput(item.unitPriceCents),
+})
+
+/** Best-effort split for invoices saved before the first/last name fields existed. */
+const splitLegacyName = (fullName) => {
+  const trimmed = String(fullName || '').trim()
+  const spaceIndex = trimmed.indexOf(' ')
+  if (spaceIndex === -1) {
+    return { firstName: trimmed, lastName: '' }
+  }
+  return { firstName: trimmed.slice(0, spaceIndex), lastName: trimmed.slice(spaceIndex + 1) }
+}
+
+/** Falls back to splitting the old combined name only when neither new field is present. */
+const resolveLegacyName = (inputs) => {
+  if (inputs.customerFirstName || inputs.customerLastName || !inputs.customerName) {
+    return { firstName: '', lastName: '' }
+  }
+  return splitLegacyName(inputs.customerName)
+}
+
 const emptyForm = (settings, presets) => {
   const firstPreset = presets?.[0]
   const items = presetLineItems(firstPreset?.id || 'custom')
   return {
     templateKey: settings?.templateKey || 'christmas-classic',
-    customerName: '',
+    customerFirstName: '',
+    customerLastName: '',
     customerEmail: '',
     customerPhone: '',
     propertyAddress: '',
@@ -90,22 +145,21 @@ const emptyForm = (settings, presets) => {
     installDate: '',
     packageId: firstPreset?.id || 'custom',
     packageLabel: firstPreset?.label || 'Custom Package',
-    lineItems: items.length
-      ? items.map((item) => ({
-          key: newKey(),
-          description: item.description,
-          quantity: String(item.quantity),
-          unitPrice: centsToInput(item.unitPriceCents),
-        }))
-      : [{ key: newKey(), description: '', quantity: '1', unitPrice: '' }],
+    lineItems: items.length ? items.map(presetItemToFormLineItem) : [blankLineItem()],
     deposit: '',
     notes: '',
+    projectNumber: '',
+    quoteCreatedBy: '',
+    colorLights: '',
+    quoteValidDays: '30',
+    paymentMilestones: [],
   }
 }
 
 const formToInputs = (form) => ({
   templateKey: form.templateKey,
-  customerName: form.customerName,
+  customerFirstName: form.customerFirstName,
+  customerLastName: form.customerLastName,
   customerEmail: form.customerEmail,
   customerPhone: form.customerPhone,
   propertyAddress: form.propertyAddress,
@@ -119,37 +173,63 @@ const formToInputs = (form) => ({
   packageLabel: form.packageLabel,
   lineItems: form.lineItems.map((item) => ({
     key: item.key,
+    category: item.category,
     description: item.description,
+    location: item.location,
+    color: item.color,
+    nr: item.nr,
     quantity: Number(item.quantity) || 0,
     unitPriceCents: inputToCents(item.unitPrice),
   })),
   depositCents: inputToCents(form.deposit),
   notes: form.notes,
+  projectNumber: form.projectNumber,
+  quoteCreatedBy: form.quoteCreatedBy,
+  colorLights: form.colorLights,
+  quoteValidDays: Number(form.quoteValidDays) || 30,
+  paymentMilestones: form.paymentMilestones.map((milestone) => ({
+    key: milestone.key,
+    label: milestone.label,
+    percent: Number(milestone.percent) || 0,
+    date: milestone.date,
+  })),
 })
 
-const inputsToForm = (inputs, settings) => ({
-  templateKey: inputs.templateKey || settings?.templateKey || 'christmas-classic',
-  customerName: inputs.customerName || '',
-  customerEmail: inputs.customerEmail || '',
-  customerPhone: inputs.customerPhone || '',
-  propertyAddress: inputs.propertyAddress || '',
-  propertyCity: inputs.propertyCity || '',
-  propertyState: inputs.propertyState || 'TX',
-  propertyZip: inputs.propertyZip || '',
-  invoiceDate: inputs.invoiceDate || todayISO(),
-  dueDate: inputs.dueDate || addDays(30),
-  installDate: inputs.installDate || '',
-  packageId: inputs.packageId || 'custom',
-  packageLabel: inputs.packageLabel || 'Custom Package',
-  lineItems: (inputs.lineItems || []).map((item) => ({
-    key: item.key || newKey(),
-    description: item.description || '',
-    quantity: String(item.quantity ?? 1),
-    unitPrice: centsToInput(item.unitPriceCents),
-  })),
-  deposit: centsToInput(inputs.depositCents),
-  notes: inputs.notes || '',
-})
+const orDefault = (value, fallback) => value || fallback
+
+const inputsToForm = (inputs, settings) => {
+  const legacy = resolveLegacyName(inputs)
+
+  return {
+    templateKey: orDefault(inputs.templateKey, orDefault(settings?.templateKey, 'christmas-classic')),
+    customerFirstName: orDefault(inputs.customerFirstName, legacy.firstName),
+    customerLastName: orDefault(inputs.customerLastName, legacy.lastName),
+    customerEmail: orDefault(inputs.customerEmail, ''),
+    customerPhone: orDefault(inputs.customerPhone, ''),
+    propertyAddress: orDefault(inputs.propertyAddress, ''),
+    propertyCity: orDefault(inputs.propertyCity, ''),
+    propertyState: orDefault(inputs.propertyState, 'TX'),
+    propertyZip: orDefault(inputs.propertyZip, ''),
+    invoiceDate: orDefault(inputs.invoiceDate, todayISO()),
+    dueDate: orDefault(inputs.dueDate, addDays(30)),
+    installDate: orDefault(inputs.installDate, ''),
+    packageId: orDefault(inputs.packageId, 'custom'),
+    packageLabel: orDefault(inputs.packageLabel, 'Custom Package'),
+    lineItems: orDefault(inputs.lineItems, []).map(inputLineItemToFormLineItem),
+    deposit: centsToInput(inputs.depositCents),
+    notes: orDefault(inputs.notes, ''),
+    projectNumber: orDefault(inputs.projectNumber, ''),
+    quoteCreatedBy: orDefault(inputs.quoteCreatedBy, ''),
+    colorLights: orDefault(inputs.colorLights, ''),
+    quoteValidDays: String(orDefault(inputs.quoteValidDays, 30)),
+    paymentMilestones: orDefault(inputs.paymentMilestones, []).map(inputMilestoneToFormMilestone),
+  }
+}
+
+const resolveEditPreload = (invoices, editId, dupeId) => {
+  const targetId = editId ?? dupeId
+  return invoices.find((item) => String(item.id) === String(targetId)) ?? null
+}
 
 // ─── Small presentational pieces ─────────────────────────────────────────────
 
@@ -189,6 +269,246 @@ function IntegrationResultsCard({ results }) {
   )
 }
 
+/**
+ * Jobber is opt-in per invoice — pushed only when this button is clicked, not
+ * automatically on every save. That way, if the Jobber trial expires and the
+ * business doesn't subscribe, saving/emailing invoices keeps working exactly
+ * as before; nothing depends on Jobber staying connected.
+ */
+function JobberPushCard({ invoice, onPush, pushing, result }) {
+  const alreadySynced = Boolean(invoice?.jobberInvoiceId)
+  const statusText = result
+    ? result.ok
+      ? 'Pushed to Jobber.'
+      : result.skipped
+        ? `Skipped — ${result.reason}`
+        : result.error || 'Push failed.'
+    : alreadySynced
+      ? `Synced to Jobber${invoice.jobberSyncedAt ? ` — ${new Date(invoice.jobberSyncedAt).toLocaleString()}` : ''}`
+      : 'Not pushed to Jobber yet.'
+  const statusClass = (result ? result.ok : alreadySynced)
+    ? 'text-emerald-700'
+    : result?.skipped
+      ? 'text-muted-foreground'
+      : result && !result.ok
+        ? 'text-destructive'
+        : 'text-muted-foreground'
+
+  return (
+    <Card>
+      <CardContent className="space-y-2 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Jobber</p>
+            <p className={`text-xs ${statusClass}`}>{statusText}</p>
+            {result?.note ? <p className="text-muted-foreground text-xs">{result.note}</p> : null}
+          </div>
+          <Button
+            disabled={!invoice || pushing}
+            onClick={onPush}
+            size="sm"
+            title={!invoice ? 'Save the invoice first' : undefined}
+            variant="outline"
+          >
+            {pushing ? (
+              <Loader2 className="mr-1.5 size-4 animate-spin" />
+            ) : (
+              <Upload className="mr-1.5 size-4" />
+            )}
+            {alreadySynced ? 'Re-push to Jobber' : 'Push to Jobber'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function LineItemRow({ item, index, onChange, onRemove }) {
+  const itemAmountCents = inputToCents(item.unitPrice) * (Number(item.quantity) || 0)
+  return (
+    <div className="border-border bg-muted/20 space-y-2 rounded-xl border p-3">
+      <div className="grid gap-1">
+        <Label className="text-muted-foreground text-xs" htmlFor={`li-desc-${index}`}>
+          Description
+        </Label>
+        <Input
+          id={`li-desc-${index}`}
+          onChange={(event) => onChange('description', event.target.value)}
+          placeholder={`Line item ${index + 1}`}
+          value={item.description}
+        />
+      </div>
+      <div className="flex flex-wrap items-end gap-2">
+        <div className="grid min-w-28 flex-1 gap-1">
+          <Label className="text-muted-foreground text-xs" htmlFor={`li-category-${index}`}>
+            Category
+          </Label>
+          <Input
+            id={`li-category-${index}`}
+            onChange={(event) => onChange('category', event.target.value)}
+            placeholder="Roofline lights"
+            value={item.category}
+          />
+        </div>
+        <div className="grid min-w-28 flex-1 gap-1">
+          <Label className="text-muted-foreground text-xs" htmlFor={`li-location-${index}`}>
+            Location
+          </Label>
+          <Input
+            id={`li-location-${index}`}
+            onChange={(event) => onChange('location', event.target.value)}
+            placeholder="Front yard"
+            value={item.location}
+          />
+        </div>
+        <div className="grid min-w-24 flex-1 gap-1">
+          <Label className="text-muted-foreground text-xs" htmlFor={`li-color-${index}`}>
+            Color
+          </Label>
+          <Input
+            id={`li-color-${index}`}
+            onChange={(event) => onChange('color', event.target.value)}
+            placeholder="Warm white"
+            value={item.color}
+          />
+        </div>
+        <div className="grid w-20 gap-1">
+          <Label className="text-muted-foreground text-xs" htmlFor={`li-nr-${index}`}>
+            N/R
+          </Label>
+          <Select onValueChange={(value) => onChange('nr', value)} value={item.nr}>
+            <SelectTrigger id={`li-nr-${index}`}>
+              <SelectValue placeholder="—" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="N">N</SelectItem>
+              <SelectItem value="R">R</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid w-16 gap-1">
+          <Label className="text-muted-foreground text-xs" htmlFor={`li-qty-${index}`}>
+            Qty
+          </Label>
+          <Input
+            id={`li-qty-${index}`}
+            onChange={(event) => onChange('quantity', event.target.value)}
+            value={item.quantity}
+          />
+        </div>
+        <div className="grid w-24 gap-1">
+          <Label className="text-muted-foreground text-xs" htmlFor={`li-price-${index}`}>
+            Unit $
+          </Label>
+          <Input
+            id={`li-price-${index}`}
+            onChange={(event) => onChange('unitPrice', event.target.value)}
+            value={item.unitPrice}
+          />
+        </div>
+        <div className="grid w-20 gap-1">
+          <span className="text-muted-foreground text-xs">Amount</span>
+          <div className="text-foreground h-9 truncate pt-1.5 text-sm font-semibold">
+            {moneyCents(itemAmountCents)}
+          </div>
+        </div>
+        <Button className="mb-0" onClick={onRemove} size="icon" title="Remove line item" variant="ghost">
+          <X className="size-4" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function PaymentMilestoneRow({ milestone, index, onChange, onRemove }) {
+  return (
+    <div className="border-border bg-muted/20 flex flex-wrap items-end gap-2 rounded-xl border p-3">
+      <div className="grid min-w-32 flex-1 gap-1">
+        <Label className="text-muted-foreground text-xs" htmlFor={`pm-label-${index}`}>
+          Label
+        </Label>
+        <Input
+          id={`pm-label-${index}`}
+          onChange={(event) => onChange('label', event.target.value)}
+          placeholder={index === 0 ? 'Deposit' : 'Payment'}
+          value={milestone.label}
+        />
+      </div>
+      <div className="grid w-24 gap-1">
+        <Label className="text-muted-foreground text-xs" htmlFor={`pm-percent-${index}`}>
+          Percent
+        </Label>
+        <Input
+          id={`pm-percent-${index}`}
+          inputMode="decimal"
+          onChange={(event) => onChange('percent', event.target.value)}
+          placeholder="25"
+          value={milestone.percent}
+        />
+      </div>
+      <div className="grid w-40 gap-1">
+        <Label className="text-muted-foreground text-xs" htmlFor={`pm-date-${index}`}>
+          Due date
+        </Label>
+        <Input
+          id={`pm-date-${index}`}
+          onChange={(event) => onChange('date', event.target.value)}
+          type="date"
+          value={milestone.date}
+        />
+      </div>
+      <Button
+        className="mb-0"
+        onClick={onRemove}
+        size="icon"
+        title="Remove payment milestone"
+        variant="ghost"
+      >
+        <X className="size-4" />
+      </Button>
+    </div>
+  )
+}
+
+function QuotePricingSummaryCard({ computed }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Quote pricing</CardTitle>
+        <CardDescription>Regular price vs. paying early (per the settings discount %).</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3 p-5 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Materials total</span>
+          <span className="font-medium">{moneyCents(computed.materialsTotalCents)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Sales tax ({computed.salesTaxRatePercent}%)</span>
+          <span className="font-medium">{moneyCents(computed.salesTaxCents)}</span>
+        </div>
+        <div className="border-border flex justify-between border-t pt-3">
+          <span className="text-muted-foreground">Early price materials</span>
+          <span className="font-medium">{moneyCents(computed.earlyMaterialsTotalCents)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Early price sales tax</span>
+          <span className="font-medium">{moneyCents(computed.earlySalesTaxCents)}</span>
+        </div>
+        <div className="bg-primary/10 text-primary flex items-center justify-between rounded-xl px-4 py-3">
+          <span className="font-semibold">Total contract cost</span>
+          <span className="text-lg font-bold">{moneyCents(computed.totalContractCostCents)}</span>
+        </div>
+        <div className="text-muted-foreground flex justify-between text-xs">
+          <span>Save {computed.payInFullDiscountPercent}% paying in full today</span>
+          <span>
+            -{moneyCents(computed.payInFullSavingsCents)} → {moneyCents(computed.payInFullAmountCents)}
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 function TemplatePreviewCard({ url, loading, error, onExpand }) {
   return (
     <Card className="border-primary/30">
@@ -214,7 +534,7 @@ function TemplatePreviewCard({ url, loading, error, onExpand }) {
           </div>
           {url ? (
             <iframe
-              className="h-[72vh] w-full rounded-md border bg-white"
+              className="aspect-8/10.5 w-full rounded-md border bg-white"
               src={`${url}#toolbar=0&navpanes=0`}
               title="Invoice template preview"
             />
@@ -236,7 +556,7 @@ function TemplatePreviewCard({ url, loading, error, onExpand }) {
 function ExpandedPreviewDialog({ open, url, onClose }) {
   return (
     <Dialog onOpenChange={(next) => (next ? null : onClose())} open={open}>
-      <DialogContent className="h-[92vh] max-w-4xl">
+      <DialogContent className="h-[92vh] w-[90vw] sm:max-w-[90vw]">
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between border-b pb-3">
             <DialogTitle>Invoice template preview</DialogTitle>
@@ -258,7 +578,7 @@ function ExpandedPreviewDialog({ open, url, onClose }) {
 function SavedInvoicePreviewDialog({ invoice, onClose, onEdit, onDuplicate }) {
   return (
     <Dialog onOpenChange={(next) => (next ? null : onClose())} open={Boolean(invoice)}>
-      <DialogContent className="h-[92vh] max-w-4xl">
+      <DialogContent className="h-[92vh] w-[90vw] overflow-hidden sm:max-w-[90vw]">
         {invoice ? (
           <div className="flex h-full flex-col">
             <div className="flex items-center justify-between gap-3 border-b pb-3">
@@ -277,9 +597,6 @@ function SavedInvoicePreviewDialog({ invoice, onClose, onEdit, onDuplicate }) {
                     <Download className="mr-1.5 size-4" /> Download
                   </a>
                 </Button>
-                <Button onClick={onClose} size="icon" variant="ghost" title="Close">
-                  <X className="size-4" />
-                </Button>
               </div>
             </div>
             <iframe
@@ -289,32 +606,6 @@ function SavedInvoicePreviewDialog({ invoice, onClose, onEdit, onDuplicate }) {
             />
           </div>
         ) : null}
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-function DeleteConfirmDialog({ invoice, busy, onCancel, onConfirm }) {
-  return (
-    <Dialog onOpenChange={(next) => (next ? null : onCancel())} open={Boolean(invoice)}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Delete invoice?</DialogTitle>
-          <DialogDescription>
-            {invoice
-              ? `This permanently removes invoice ${invoice.invoiceNumber} for ${invoice.customerName}. The PDF already uploaded to Zoho WorkDrive is not deleted.`
-              : ''}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button disabled={busy} onClick={onCancel} variant="outline">
-            Cancel
-          </Button>
-          <Button disabled={busy} onClick={onConfirm} variant="destructive">
-            {busy ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Trash2 className="mr-2 size-4" />}
-            Delete invoice
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
@@ -388,6 +679,40 @@ function SendDialog({
   )
 }
 
+function SavedInvoicesSummaryBar({ invoices, onPreviewLatest }) {
+  if (invoices.length === 0) {
+    return null
+  }
+  const latest = invoices[0]
+  return (
+    <div className="flex items-center justify-between rounded-md border px-4 py-3">
+      <div className="flex items-center gap-3">
+        <span className="text-muted-foreground text-sm">
+          {invoices.length} saved invoice{invoices.length === 1 ? '' : 's'}
+        </span>
+        <Badge variant={latest.status === 'sent' ? 'outline' : 'secondary'}>
+          {latest.status === 'sent' ? 'Sent' : 'Draft'}
+        </Badge>
+      </div>
+      <div className="flex items-center gap-2">
+        <Button onClick={onPreviewLatest} size="sm" variant="ghost">
+          <Eye className="mr-1.5 size-4" /> Latest
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <a href={`/api/christmas/invoices/${latest.id}/pdf`} rel="noreferrer" target="_blank">
+            <Download className="mr-1.5 size-4" /> Download latest
+          </a>
+        </Button>
+        <Button asChild size="sm">
+          <Link href="/christmas/invoices/history">
+            <History className="mr-1.5 size-4" /> View all
+          </Link>
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main component ──────────────────────────────────────────────────────────
 
 const ChristmasInvoicesClient = ({
@@ -395,19 +720,22 @@ const ChristmasInvoicesClient = ({
   presets = [],
   settings,
   templates = [],
+  editId = null,
+  dupeId = null,
   zohoConnected = false,
   zohoAuthEnabled = false,
 }) => {
+  const router = useRouter()
   const [invoices, setInvoices] = useState(initialInvoices)
   const [form, setForm] = useState(() => emptyForm(settings, presets))
   const [editingId, setEditingId] = useState(null)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [integrationResults, setIntegrationResults] = useState(null)
+  const [jobberPushing, setJobberPushing] = useState(false)
+  const [jobberResult, setJobberResult] = useState(null)
   const [message, setMessage] = useState('')
   const [viewing, setViewing] = useState(null)
-  const [deleting, setDeleting] = useState(null)
-  const [deleteBusy, setDeleteBusy] = useState(false)
   const [previewExpanded, setPreviewExpanded] = useState(false)
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null)
   const [pdfPreviewLoading, setPdfPreviewLoading] = useState(false)
@@ -421,7 +749,16 @@ const ChristmasInvoicesClient = ({
   const previewTimerRef = useRef(null)
   const previewUrlRef = useRef(null)
 
-  const computed = useMemo(() => computeChristmasInvoice(formToInputs(form)), [form])
+  const computed = useMemo(
+    () =>
+      computeChristmasInvoice({
+        ...formToInputs(form),
+        salesTaxRatePercent: settings?.salesTaxRatePercent,
+        earlyPaymentDiscountPercent: settings?.earlyPaymentDiscountPercent,
+        payInFullDiscountPercent: settings?.payInFullDiscountPercent,
+      }),
+    [form, settings],
+  )
 
   useEffect(() => {
     if (previewTimerRef.current) {
@@ -470,7 +807,8 @@ const ChristmasInvoicesClient = ({
   const handleSelectZohoContact = (contact) =>
     setForm((current) => ({
       ...current,
-      customerName: contact.name || current.customerName,
+      customerFirstName: contact.firstName || current.customerFirstName,
+      customerLastName: contact.lastName || current.customerLastName,
       customerEmail: contact.email || current.customerEmail,
       customerPhone: contact.phone || current.customerPhone,
       propertyAddress: contact.propertyAddress || current.propertyAddress,
@@ -488,13 +826,33 @@ const ChristmasInvoicesClient = ({
   const addLineItem = () =>
     setForm((current) => ({
       ...current,
-      lineItems: [...current.lineItems, { key: newKey(), description: '', quantity: '1', unitPrice: '' }],
+      lineItems: [...current.lineItems, blankLineItem()],
     }))
 
   const removeLineItem = (key) =>
     setForm((current) => ({
       ...current,
       lineItems: current.lineItems.filter((item) => item.key !== key),
+    }))
+
+  const setPaymentMilestone = (key, field, value) =>
+    setForm((current) => ({
+      ...current,
+      paymentMilestones: current.paymentMilestones.map((milestone) =>
+        milestone.key === key ? { ...milestone, [field]: value } : milestone,
+      ),
+    }))
+
+  const addPaymentMilestone = () =>
+    setForm((current) => ({
+      ...current,
+      paymentMilestones: [...current.paymentMilestones, blankPaymentMilestone()],
+    }))
+
+  const removePaymentMilestone = (key) =>
+    setForm((current) => ({
+      ...current,
+      paymentMilestones: current.paymentMilestones.filter((milestone) => milestone.key !== key),
     }))
 
   const applyPreset = (presetId) => {
@@ -504,14 +862,7 @@ const ChristmasInvoicesClient = ({
       ...current,
       packageId: preset.id,
       packageLabel: preset.label,
-      lineItems: items.length
-        ? items.map((item) => ({
-            key: newKey(),
-            description: item.description,
-            quantity: String(item.quantity),
-            unitPrice: centsToInput(item.unitPriceCents),
-          }))
-        : [{ key: newKey(), description: '', quantity: '1', unitPrice: '' }],
+      lineItems: items.length ? items.map(presetItemToFormLineItem) : [blankLineItem()],
     }))
   }
 
@@ -520,6 +871,7 @@ const ChristmasInvoicesClient = ({
     setEditingId(null)
     setSaveError('')
     setIntegrationResults(null)
+    setJobberResult(null)
     setMessage('')
   }
 
@@ -533,6 +885,7 @@ const ChristmasInvoicesClient = ({
     setEditingId(invoice.id)
     setSaveError('')
     setIntegrationResults(null)
+    setJobberResult(null)
     setMessage('')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -542,13 +895,27 @@ const ChristmasInvoicesClient = ({
     setEditingId(null)
     setSaveError('')
     setIntegrationResults(null)
+    setJobberResult(null)
     setMessage(`Loaded ${invoice.invoiceNumber} as a template — saving creates a new invoice.`)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  useEffect(() => {
+    const found = resolveEditPreload(initialInvoices, editId, dupeId)
+    if (!found) {
+      return
+    }
+    if (editId) {
+      openEdit(found)
+    } else {
+      openDuplicate(found)
+    }
+    router.replace('/christmas/invoices', { scroll: false })
+  }, [editId, dupeId, initialInvoices, router])
+
   const persistInvoice = async () => {
-    if (!form.customerName.trim()) {
-      throw new Error('Customer name is required')
+    if (!form.customerFirstName.trim()) {
+      throw new Error('Customer first name is required')
     }
     if (computed.lineItems.length === 0) {
       throw new Error('Add at least one line item to save')
@@ -582,6 +949,27 @@ const ChristmasInvoicesClient = ({
       setSaveError(error.message || 'Unable to save invoice.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handlePushToJobber = async () => {
+    if (!editingId) {
+      return
+    }
+    setJobberPushing(true)
+    setJobberResult(null)
+    try {
+      const response = await fetch(`/api/christmas/invoices/${editingId}/jobber`, { method: 'POST' })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(data.error || `Push failed (HTTP ${response.status})`)
+      }
+      setJobberResult(data.result)
+      setInvoices((list) => list.map((item) => (item.id === data.invoice.id ? data.invoice : item)))
+    } catch (error) {
+      setJobberResult({ ok: false, error: error.message })
+    } finally {
+      setJobberPushing(false)
     }
   }
 
@@ -633,28 +1021,8 @@ const ChristmasInvoicesClient = ({
     }
   }
 
-  const handleDelete = async () => {
-    if (!deleting) {
-      return
-    }
-    setDeleteBusy(true)
-    setMessage('')
-    try {
-      const response = await fetch(`/api/christmas/invoices/${deleting.id}`, { method: 'DELETE' })
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}))
-        throw new Error(data.error || 'Delete failed')
-      }
-      setInvoices((list) => list.filter((item) => item.id !== deleting.id))
-      setDeleting(null)
-    } catch (error) {
-      setMessage(error.message || 'Unable to delete invoice.')
-    } finally {
-      setDeleteBusy(false)
-    }
-  }
-
-  const canSave = Boolean(form.customerName.trim()) && computed.lineItems.length > 0
+  const canSave = Boolean(form.customerFirstName.trim()) && computed.lineItems.length > 0
+  const currentInvoice = editingId ? invoices.find((item) => item.id === editingId) : null
 
   return (
     <div className="space-y-6 p-6 lg:p-10">
@@ -669,6 +1037,11 @@ const ChristmasInvoicesClient = ({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button asChild variant="ghost">
+            <Link href="/christmas/invoices/history">
+              <History className="mr-2 size-4" /> History
+            </Link>
+          </Button>
           <Button asChild variant="outline">
             <Link href="/christmas/invoices/settings">
               <Settings2 className="mr-2 size-4" /> Template settings
@@ -715,20 +1088,81 @@ const ChristmasInvoicesClient = ({
 
           <Card>
             <CardHeader>
+              <CardTitle className="text-base">Quote details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="projectNumber">Project #</Label>
+                  <Input
+                    id="projectNumber"
+                    onChange={(event) => update('projectNumber', event.target.value)}
+                    placeholder="7/2/2026 - 1047a"
+                    value={form.projectNumber}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="quoteCreatedBy">Quote created by</Label>
+                  <Input
+                    id="quoteCreatedBy"
+                    onChange={(event) => update('quoteCreatedBy', event.target.value)}
+                    placeholder="Kathie Millen"
+                    value={form.quoteCreatedBy}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="colorLights">Color lights</Label>
+                  <Input
+                    id="colorLights"
+                    onChange={(event) => update('colorLights', event.target.value)}
+                    placeholder="Multi Colored"
+                    value={form.colorLights}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="quoteValidDays">Quote good for (days)</Label>
+                  <Input
+                    id="quoteValidDays"
+                    inputMode="numeric"
+                    onChange={(event) => update('quoteValidDays', event.target.value)}
+                    placeholder="30"
+                    value={form.quoteValidDays}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle className="text-base">Customer & property</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
                   <ZohoContactTypeahead
-                    onChange={(name) => update('customerName', name)}
+                    label="First name *"
+                    onChange={(name) => update('customerFirstName', name)}
                     onSelect={handleSelectZohoContact}
-                    placeholder="Search Zoho contacts…"
-                    value={form.customerName}
+                    placeholder="Search Zoho contacts or type a name…"
+                    value={form.customerFirstName}
                     zohoAuthEnabled={zohoAuthEnabled}
                     zohoConnected={zohoConnected}
                   />
                 </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="customerLastName">Last name</Label>
+                  <Input
+                    id="customerLastName"
+                    onChange={(event) => update('customerLastName', event.target.value)}
+                    placeholder="Doe"
+                    value={form.customerLastName}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
                   <Label htmlFor="customerPhone">Phone</Label>
                   <Input
@@ -738,16 +1172,16 @@ const ChristmasInvoicesClient = ({
                     value={form.customerPhone}
                   />
                 </div>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="customerEmail">Email</Label>
-                <Input
-                  id="customerEmail"
-                  onChange={(event) => update('customerEmail', event.target.value)}
-                  placeholder="jane@example.com"
-                  type="email"
-                  value={form.customerEmail}
-                />
+                <div className="grid gap-2">
+                  <Label htmlFor="customerEmail">Email</Label>
+                  <Input
+                    id="customerEmail"
+                    onChange={(event) => update('customerEmail', event.target.value)}
+                    placeholder="jane@example.com"
+                    type="email"
+                    value={form.customerEmail}
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="propertyAddress">Property address</Label>
@@ -859,62 +1293,15 @@ const ChristmasInvoicesClient = ({
               </div>
 
               <div className="space-y-2">
-                {form.lineItems.map((item, index) => {
-                  const itemAmountCents = inputToCents(item.unitPrice) * (Number(item.quantity) || 0)
-                  return (
-                    <div
-                      key={item.key}
-                      className="border-border bg-muted/20 flex items-end gap-2 rounded-xl border p-3"
-                    >
-                      <div className="grid min-w-0 flex-1 gap-1">
-                        <Label className="text-muted-foreground text-xs" htmlFor={`li-desc-${index}`}>
-                          Description
-                        </Label>
-                        <Input
-                          id={`li-desc-${index}`}
-                          onChange={(event) => setLineItem(item.key, 'description', event.target.value)}
-                          placeholder={`Line item ${index + 1}`}
-                          value={item.description}
-                        />
-                      </div>
-                      <div className="grid w-16 gap-1">
-                        <Label className="text-muted-foreground text-xs" htmlFor={`li-qty-${index}`}>
-                          Qty
-                        </Label>
-                        <Input
-                          id={`li-qty-${index}`}
-                          onChange={(event) => setLineItem(item.key, 'quantity', event.target.value)}
-                          value={item.quantity}
-                        />
-                      </div>
-                      <div className="grid w-24 gap-1">
-                        <Label className="text-muted-foreground text-xs" htmlFor={`li-price-${index}`}>
-                          Unit $
-                        </Label>
-                        <Input
-                          id={`li-price-${index}`}
-                          onChange={(event) => setLineItem(item.key, 'unitPrice', event.target.value)}
-                          value={item.unitPrice}
-                        />
-                      </div>
-                      <div className="grid w-20 gap-1">
-                        <span className="text-muted-foreground text-xs">Amount</span>
-                        <div className="text-foreground h-9 truncate pt-1.5 text-sm font-semibold">
-                          {moneyCents(itemAmountCents)}
-                        </div>
-                      </div>
-                      <Button
-                        className="mb-0"
-                        onClick={() => removeLineItem(item.key)}
-                        size="icon"
-                        title="Remove line item"
-                        variant="ghost"
-                      >
-                        <X className="size-4" />
-                      </Button>
-                    </div>
-                  )
-                })}
+                {form.lineItems.map((item, index) => (
+                  <LineItemRow
+                    index={index}
+                    item={item}
+                    key={item.key}
+                    onChange={(field, value) => setLineItem(item.key, field, value)}
+                    onRemove={() => removeLineItem(item.key)}
+                  />
+                ))}
                 <Button onClick={addLineItem} size="sm" variant="outline">
                   <Plus className="mr-1.5 size-4" /> Add line item
                 </Button>
@@ -944,33 +1331,34 @@ const ChristmasInvoicesClient = ({
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Payment terms</CardTitle>
+              <CardDescription>
+                Custom milestones (e.g. 25% deposit, 40% by a date, 35% final) as a % of the total contract
+                cost.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {form.paymentMilestones.map((milestone, index) => (
+                <PaymentMilestoneRow
+                  index={index}
+                  key={milestone.key}
+                  milestone={milestone}
+                  onChange={(field, value) => setPaymentMilestone(milestone.key, field, value)}
+                  onRemove={() => removePaymentMilestone(milestone.key)}
+                />
+              ))}
+              <Button onClick={addPaymentMilestone} size="sm" variant="outline">
+                <Plus className="mr-1.5 size-4" /> Add payment milestone
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-4 xl:sticky xl:top-6 xl:self-start">
-          <Card>
-            <CardContent className="space-y-3 p-5">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Package</span>
-                <span className="font-medium">{form.packageLabel}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Line items</span>
-                <span className="font-medium">{computed.lineItems.length}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-medium">{moneyCents(computed.subtotalCents)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Deposit applied</span>
-                <span className="font-medium">- {moneyCents(computed.depositCents)}</span>
-              </div>
-              <div className="bg-primary/10 text-primary flex items-center justify-between rounded-xl px-4 py-3">
-                <span className="font-semibold">Balance due</span>
-                <span className="text-lg font-bold">{moneyCents(computed.balanceDueCents)}</span>
-              </div>
-            </CardContent>
-          </Card>
+          <QuotePricingSummaryCard computed={computed} />
 
           <TemplatePreviewCard
             error={pdfPreviewError}
@@ -980,6 +1368,12 @@ const ChristmasInvoicesClient = ({
           />
 
           {integrationResults ? <IntegrationResultsCard results={integrationResults} /> : null}
+          <JobberPushCard
+            invoice={currentInvoice}
+            onPush={handlePushToJobber}
+            pushing={jobberPushing}
+            result={jobberResult}
+          />
           {saveError ? (
             <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">
               <TriangleAlert className="size-4 shrink-0" />
@@ -989,7 +1383,7 @@ const ChristmasInvoicesClient = ({
 
           <div className="flex items-center gap-2">
             {editingId ? (
-              <Button onClick={openNew} variant="outline">
+              <Button onClick={openNew} size="lg" variant="outline">
                 <Plus className="mr-1.5 size-4" /> New
               </Button>
             ) : null}
@@ -1004,133 +1398,13 @@ const ChristmasInvoicesClient = ({
           </div>
           {!canSave ? (
             <p className="text-muted-foreground text-xs">
-              Required to save/email: customer name and at least one line item.
+              Required to save/email: customer first name and at least one line item.
             </p>
           ) : null}
         </div>
       </div>
 
-      {invoices.length === 0 ? (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <FileText className="text-muted-foreground size-10" />
-            <CardDescription>No Christmas invoices yet.</CardDescription>
-            <Button onClick={openNew}>
-              <Plus className="mr-2 size-4" /> Create the first invoice
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Invoice</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Date / Due</TableHead>
-                  <TableHead>Balance due</TableHead>
-                  <TableHead>Template</TableHead>
-                  <TableHead>Zoho</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((invoice) => (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-medium">
-                      <div>{invoice.invoiceNumber}</div>
-                      <Badge className="mt-1" variant={invoice.status === 'sent' ? 'outline' : 'secondary'}>
-                        {invoice.status === 'sent' ? 'Sent' : 'Draft'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium">{invoice.customerName}</div>
-                      <div className="text-muted-foreground text-xs">
-                        {[invoice.propertyCity, invoice.propertyState].filter(Boolean).join(', ') || '—'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>{shortDate(invoice.invoiceDate)}</div>
-                      <div className="text-muted-foreground text-xs">Due {shortDate(invoice.dueDate)}</div>
-                    </TableCell>
-                    <TableCell className="font-semibold">{moneyCents(invoice.balanceDueCents)}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {templates.find((template) => template.key === invoice.templateKey)?.label ||
-                          invoice.templateKey}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-1 text-xs">
-                        <span
-                          className={invoice.workdriveFileId ? 'text-emerald-600' : 'text-muted-foreground'}
-                        >
-                          {invoice.workdriveFileId ? 'WorkDrive ✓' : 'WorkDrive —'}
-                        </span>
-                        <span
-                          className={invoice.zohoSheetSyncedAt ? 'text-emerald-600' : 'text-muted-foreground'}
-                        >
-                          {invoice.zohoSheetSyncedAt ? 'Sheet ✓' : 'Sheet —'}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          onClick={() => setViewing(invoice)}
-                          size="icon"
-                          title="Preview"
-                          variant="ghost"
-                        >
-                          <Eye className="size-4" />
-                        </Button>
-                        <Button asChild size="icon" title="Download PDF" variant="ghost">
-                          <a
-                            href={`/api/christmas/invoices/${invoice.id}/pdf`}
-                            rel="noreferrer"
-                            target="_blank"
-                          >
-                            <Download className="size-4" />
-                          </a>
-                        </Button>
-                        <Button
-                          onClick={() => openSendDialog(invoice)}
-                          size="icon"
-                          title="Email invoice"
-                          variant="ghost"
-                        >
-                          <Mail className="size-4" />
-                        </Button>
-                        <Button onClick={() => openEdit(invoice)} size="icon" title="Edit" variant="ghost">
-                          <Pencil className="size-4" />
-                        </Button>
-                        <Button
-                          onClick={() => openDuplicate(invoice)}
-                          size="icon"
-                          title="Duplicate"
-                          variant="ghost"
-                        >
-                          <Plus className="size-4" />
-                        </Button>
-                        <Button
-                          onClick={() => setDeleting(invoice)}
-                          className="text-destructive"
-                          size="icon"
-                          title="Delete"
-                          variant="ghost"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+      <SavedInvoicesSummaryBar invoices={invoices} onPreviewLatest={() => setViewing(invoices[0] ?? null)} />
 
       <ExpandedPreviewDialog
         onClose={() => setPreviewExpanded(false)}
@@ -1142,12 +1416,6 @@ const ChristmasInvoicesClient = ({
         onClose={() => setViewing(null)}
         onDuplicate={openDuplicate}
         onEdit={openEdit}
-      />
-      <DeleteConfirmDialog
-        busy={deleteBusy}
-        invoice={deleting}
-        onCancel={() => setDeleting(null)}
-        onConfirm={handleDelete}
       />
       <SendDialog
         email={sendEmail}

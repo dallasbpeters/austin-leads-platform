@@ -23,8 +23,8 @@ async function requireSession() {
 }
 
 function validateInputs(inputs) {
-  if (!inputs.customerName?.trim()) {
-    return 'Customer name is required'
+  if (!inputs.customerFirstName?.trim()) {
+    return 'Customer first name is required'
   }
   const items = Array.isArray(inputs.lineItems)
     ? inputs.lineItems.filter((item) => item.description?.trim())
@@ -84,6 +84,9 @@ export async function POST(request) {
       ...inputs,
       templateKey,
       invoiceNumberPrefix: inputs.invoiceNumberPrefix || settings.invoiceNumberPrefix,
+      salesTaxRatePercent: settings.salesTaxRatePercent,
+      earlyPaymentDiscountPercent: settings.earlyPaymentDiscountPercent,
+      payInFullDiscountPercent: settings.payInFullDiscountPercent,
     }
     // Always compute server-side so stored math is authoritative.
     const computed = computeChristmasInvoice(payloadInputs)

@@ -24,6 +24,9 @@ const buildInitialForm = (settings) => ({
   sheetResourceId: settings?.sheetResourceId || '',
   sheetWorksheetName: settings?.sheetWorksheetName || 'Christmas Invoices',
   terms: settings?.terms || '',
+  salesTaxRatePercent: String(settings?.salesTaxRatePercent ?? 8.25),
+  earlyPaymentDiscountPercent: String(settings?.earlyPaymentDiscountPercent ?? 20),
+  payInFullDiscountPercent: String(settings?.payInFullDiscountPercent ?? 5),
 })
 
 const fetchSettings = async () => {
@@ -51,6 +54,79 @@ const saveSettings = async (payload) => {
   return data.settings
 }
 
+const jobberStatusDetail = (jobber) => {
+  if (!jobber?.hasCredentials) {
+    return 'Set JOBBER_CLIENT_ID + JOBBER_CLIENT_SECRET to enable.'
+  }
+  if (jobber?.connected) {
+    return `New invoices push a Client + Invoice to ${jobber.accountName || 'your Jobber account'}.`
+  }
+  return 'Connect below to start pushing invoices to Jobber.'
+}
+
+const jobberConnectionDescription = (jobber) => {
+  if (!jobber?.connected) {
+    return 'Not connected yet. You’ll be sent to Jobber to approve access, then back here.'
+  }
+  return `Connected to ${jobber.accountName || 'Jobber'}. Saving an invoice creates a matching Client + Invoice there (create-only — edits made here after the first push don't re-sync yet).`
+}
+
+const JobberConnectionCard = ({ jobber, isDisconnecting, onDisconnect }) => {
+  if (!jobber?.hasCredentials) {
+    return null
+  }
+  return (
+    <Card className="bg-card/80 border-border overflow-hidden border">
+      <CardHeader>
+        <CardTitle>Jobber connection</CardTitle>
+      </CardHeader>
+      <CardContent className="flex items-center justify-between gap-4">
+        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+          {jobberConnectionDescription(jobber)}
+        </p>
+        {jobber.connected ? (
+          <Button disabled={isDisconnecting} onClick={onDisconnect} variant="outline">
+            {isDisconnecting ? 'Disconnecting…' : 'Disconnect'}
+          </Button>
+        ) : (
+          <Button asChild>
+            {/* Full page nav to an API route that redirects off-site — not an internal Next page. */}
+            {/* oxlint-disable-next-line next/no-html-link-for-pages */}
+            <a href="/api/jobber/oauth/start">Connect to Jobber</a>
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+const useJobberDisconnect = (router) => {
+  const [isDisconnecting, setIsDisconnecting] = useState(false)
+
+  const disconnect = async () => {
+    if (!window.confirm('Disconnect Jobber? New invoices will stop pushing to Jobber until reconnected.')) {
+      return
+    }
+    setIsDisconnecting(true)
+    try {
+      await fetch('/api/jobber/oauth/disconnect', { method: 'POST' })
+      router.refresh()
+    } finally {
+      setIsDisconnecting(false)
+    }
+  }
+
+  return { isDisconnecting, disconnect }
+}
+
+const useClearJobberRedirectParams = (router, { jobberJustConnected, jobberConnectError }) => {
+  useEffect(() => {
+    if (jobberJustConnected || jobberConnectError) {
+      router.replace('/christmas/invoices/settings', { scroll: false })
+    }
+  }, [])
+}
+
 const StatusCard = ({ title, value, tone = 'neutral', detail }) => {
   const toneClass =
     tone === 'success'
@@ -67,14 +143,23 @@ const StatusCard = ({ title, value, tone = 'neutral', detail }) => {
   )
 }
 
-const ChristmasInvoiceSettingsClient = ({ initialSettings, templates = [] }) => {
+const ChristmasInvoiceSettingsClient = ({
+  initialSettings,
+  templates = [],
+  jobber = null,
+  jobberConnectError = null,
+  jobberJustConnected = false,
+}) => {
   const router = useRouter()
   const [settings, setSettings] = useState(initialSettings)
   const [form, setForm] = useState(() => buildInitialForm(initialSettings))
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
+  const [message, setMessage] = useState(jobberJustConnected ? 'Jobber connected.' : '')
+  const [error, setError] = useState(jobberConnectError || '')
   const [isSaving, setIsSaving] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
+  const { isDisconnecting: isDisconnectingJobber, disconnect: handleDisconnectJobber } =
+    useJobberDisconnect(router)
+  useClearJobberRedirectParams(router, { jobberJustConnected, jobberConnectError })
 
   useEffect(() => {
     let active = true
@@ -143,7 +228,7 @@ const ChristmasInvoiceSettingsClient = ({ initialSettings, templates = [] }) => 
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatusCard
           detail={
             templates.find((template) => template.key === settings?.templateKey)?.description ||
@@ -177,7 +262,19 @@ const ChristmasInvoiceSettingsClient = ({ initialSettings, templates = [] }) => 
           tone={settings?.workdriveReady ? 'success' : 'warning'}
           value={settings?.workdriveReady ? 'Ready' : 'Not configured'}
         />
+        <StatusCard
+          detail={jobberStatusDetail(jobber)}
+          title="Jobber"
+          tone={jobber?.connected ? 'success' : 'warning'}
+          value={jobber?.connected ? 'Connected' : 'Not connected'}
+        />
       </div>
+
+      <JobberConnectionCard
+        isDisconnecting={isDisconnectingJobber}
+        jobber={jobber}
+        onDisconnect={handleDisconnectJobber}
+      />
 
       <Card className="bg-card/80 border-border overflow-hidden border">
         <CardHeader>
@@ -311,6 +408,43 @@ const ChristmasInvoiceSettingsClient = ({ initialSettings, templates = [] }) => 
                   placeholder="From the sheet URL after /sheet/open/"
                   value={form.sheetResourceId}
                 />
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-2">
+                <Label htmlFor="salesTaxRatePercent">Sales tax rate (%)</Label>
+                <Input
+                  id="salesTaxRatePercent"
+                  inputMode="decimal"
+                  onChange={(event) => updateField('salesTaxRatePercent', event.target.value)}
+                  placeholder="8.25"
+                  value={form.salesTaxRatePercent}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="earlyPaymentDiscountPercent">Early payment discount (%)</Label>
+                <Input
+                  id="earlyPaymentDiscountPercent"
+                  inputMode="decimal"
+                  onChange={(event) => updateField('earlyPaymentDiscountPercent', event.target.value)}
+                  placeholder="20"
+                  value={form.earlyPaymentDiscountPercent}
+                />
+                <div className="text-muted-foreground text-sm leading-6">Applied per line item.</div>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="payInFullDiscountPercent">Pay-in-full discount (%)</Label>
+                <Input
+                  id="payInFullDiscountPercent"
+                  inputMode="decimal"
+                  onChange={(event) => updateField('payInFullDiscountPercent', event.target.value)}
+                  placeholder="5"
+                  value={form.payInFullDiscountPercent}
+                />
+                <div className="text-muted-foreground text-sm leading-6">
+                  Applied to the total contract cost.
+                </div>
               </div>
             </div>
 

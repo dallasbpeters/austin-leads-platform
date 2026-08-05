@@ -21,6 +21,8 @@ export async function ensureChristmasInvoiceTables() {
 
       -- Customer & property
       customer_name        TEXT NOT NULL,
+      customer_first_name  TEXT,
+      customer_last_name   TEXT,
       customer_email       TEXT,
       customer_phone       TEXT,
       property_address     TEXT,
@@ -51,6 +53,12 @@ export async function ensureChristmasInvoiceTables() {
     )
   `
 
+  // customer_name stays as a derived "First Last" display/index column — the
+  // form now collects first/last separately; these ADD COLUMNs cover
+  // databases created before the split.
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS customer_first_name TEXT`
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS customer_last_name TEXT`
+
   await sql`CREATE INDEX IF NOT EXISTS christmas_invoices_created_at_idx ON christmas_invoices (created_at DESC)`
   await sql`CREATE INDEX IF NOT EXISTS christmas_invoices_customer_name_idx ON christmas_invoices (customer_name)`
 
@@ -70,9 +78,17 @@ export async function ensureChristmasInvoiceTables() {
       workdrive_parent_folder_id TEXT,
       sheet_resource_id         TEXT,
       sheet_worksheet_name      TEXT,
-      terms                     TEXT
+      terms                     TEXT,
+      sales_tax_rate_percent       NUMERIC DEFAULT 8.25,
+      early_payment_discount_percent NUMERIC DEFAULT 20,
+      pay_in_full_discount_percent   NUMERIC DEFAULT 5
     )
   `
+
+  // Covers databases created before the quote pricing fields existed.
+  await sql`ALTER TABLE christmas_invoice_settings ADD COLUMN IF NOT EXISTS sales_tax_rate_percent NUMERIC DEFAULT 8.25`
+  await sql`ALTER TABLE christmas_invoice_settings ADD COLUMN IF NOT EXISTS early_payment_discount_percent NUMERIC DEFAULT 20`
+  await sql`ALTER TABLE christmas_invoice_settings ADD COLUMN IF NOT EXISTS pay_in_full_discount_percent NUMERIC DEFAULT 5`
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -87,6 +103,34 @@ export function newInvoiceNumber(prefix = 'TCL') {
 
 const toCents = (value) => Math.max(0, Math.round(Number(value || 0)))
 
+const isNullish = (value) => value === null || value === undefined
+
+const normalizePercent = (value, fallback) => (isNullish(value) || value === '' ? fallback : Number(value))
+
+/**
+ * Postgres DATE columns come back from `pg` as native JS `Date` objects, not
+ * strings — `String(dateObject)` produces `Date.prototype.toString()`'s
+ * verbose non-ISO text (e.g. "Wed Aug 05 2026 00:00:00 GMT+0000 (UTC)"), and
+ * `.split('T')[0]` is a no-op on that since it has no literal 'T'. Convert
+ * real Date instances via `toISOString()` first so we always get 'YYYY-MM-DD'.
+ */
+const toDateOnly = (value) => {
+  if (isNullish(value)) {
+    return null
+  }
+  if (value instanceof Date) {
+    return value.toISOString().split('T')[0]
+  }
+  return String(value).split('T')[0]
+}
+
+/** Derives the denormalized "First Last" display/index column from the split name fields. */
+const fullCustomerName = (inputs) =>
+  [inputs.customerFirstName, inputs.customerLastName]
+    .map((part) => String(part || '').trim())
+    .filter(Boolean)
+    .join(' ') || 'Unknown'
+
 const rowToInvoice = (row) => {
   if (!row) {
     return null
@@ -98,15 +142,17 @@ const rowToInvoice = (row) => {
     updatedAt: row.updated_at,
     status: row.status,
     customerName: row.customer_name,
+    customerFirstName: row.customer_first_name || '',
+    customerLastName: row.customer_last_name || '',
     customerEmail: row.customer_email,
     customerPhone: row.customer_phone,
     propertyAddress: row.property_address,
     propertyCity: row.property_city,
     propertyState: row.property_state,
     propertyZip: row.property_zip,
-    invoiceDate: row.invoice_date === null ? null : String(row.invoice_date).split('T')[0],
-    dueDate: row.due_date === null ? null : String(row.due_date).split('T')[0],
-    installDate: row.install_date === null ? null : String(row.install_date).split('T')[0],
+    invoiceDate: toDateOnly(row.invoice_date),
+    dueDate: toDateOnly(row.due_date),
+    installDate: toDateOnly(row.install_date),
     templateKey: row.template_key,
     subtotalCents: Number(row.subtotal_cents || 0),
     depositCents: Number(row.deposit_cents || 0),
@@ -117,6 +163,9 @@ const rowToInvoice = (row) => {
     zohoSheetSyncedAt: row.zoho_sheet_synced_at,
     workdriveFileId: row.workdrive_file_id,
     workdriveFolderId: row.workdrive_folder_id,
+    jobberClientId: row.jobber_client_id || null,
+    jobberInvoiceId: row.jobber_invoice_id || null,
+    jobberSyncedAt: row.jobber_synced_at || null,
   }
 }
 
@@ -130,12 +179,14 @@ export async function insertInvoice({ inputs, computed, templateKey }) {
 
   const rows = await sql`
     INSERT INTO christmas_invoices (
-      id, invoice_number, customer_name, customer_email, customer_phone,
+      id, invoice_number, customer_name, customer_first_name, customer_last_name,
+      customer_email, customer_phone,
       property_address, property_city, property_state, property_zip,
       invoice_date, due_date, install_date, template_key,
       subtotal_cents, deposit_cents, balance_due_cents, data
     ) VALUES (
-      ${id}, ${invoiceNumber}, ${inputs.customerName || 'Unknown'},
+      ${id}, ${invoiceNumber}, ${fullCustomerName(inputs)},
+      ${inputs.customerFirstName || null}, ${inputs.customerLastName || null},
       ${inputs.customerEmail || null}, ${inputs.customerPhone || null},
       ${inputs.propertyAddress || null}, ${inputs.propertyCity || null},
       ${inputs.propertyState || 'TX'}, ${inputs.propertyZip || null},
@@ -154,7 +205,9 @@ export async function updateInvoice(id, { inputs, computed, templateKey }) {
   const data = { inputs, computed }
   const rows = await sql`
     UPDATE christmas_invoices SET
-      customer_name        = ${inputs.customerName || 'Unknown'},
+      customer_name        = ${fullCustomerName(inputs)},
+      customer_first_name  = ${inputs.customerFirstName || null},
+      customer_last_name   = ${inputs.customerLastName || null},
       customer_email       = ${inputs.customerEmail || null},
       customer_phone       = ${inputs.customerPhone || null},
       property_address     = ${inputs.propertyAddress || null},
@@ -247,6 +300,9 @@ const normalizeSettingsRow = (row) => {
     sheetResourceId: row.sheet_resource_id,
     sheetWorksheetName: row.sheet_worksheet_name,
     terms: row.terms,
+    salesTaxRatePercent: normalizePercent(row.sales_tax_rate_percent, 8.25),
+    earlyPaymentDiscountPercent: normalizePercent(row.early_payment_discount_percent, 20),
+    payInFullDiscountPercent: normalizePercent(row.pay_in_full_discount_percent, 5),
   }
 }
 
@@ -268,7 +324,8 @@ export const upsertChristmasInvoiceSettingsRow = async (values, id = 'default') 
     INSERT INTO christmas_invoice_settings (
       id, template_key, company_name, company_tagline, company_phone,
       company_email, company_website, logo_url, invoice_number_prefix,
-      workdrive_parent_folder_id, sheet_resource_id, sheet_worksheet_name, terms
+      workdrive_parent_folder_id, sheet_resource_id, sheet_worksheet_name, terms,
+      sales_tax_rate_percent, early_payment_discount_percent, pay_in_full_discount_percent
     ) VALUES (
       ${id},
       ${values.templateKey || 'christmas-classic'},
@@ -282,7 +339,10 @@ export const upsertChristmasInvoiceSettingsRow = async (values, id = 'default') 
       ${values.workdriveParentFolderId || null},
       ${values.sheetResourceId || null},
       ${values.sheetWorksheetName || null},
-      ${values.terms || null}
+      ${values.terms || null},
+      ${normalizePercent(values.salesTaxRatePercent, 8.25)},
+      ${normalizePercent(values.earlyPaymentDiscountPercent, 20)},
+      ${normalizePercent(values.payInFullDiscountPercent, 5)}
     )
     ON CONFLICT (id)
     DO UPDATE SET
@@ -298,7 +358,10 @@ export const upsertChristmasInvoiceSettingsRow = async (values, id = 'default') 
       workdrive_parent_folder_id = EXCLUDED.workdrive_parent_folder_id,
       sheet_resource_id = EXCLUDED.sheet_resource_id,
       sheet_worksheet_name = EXCLUDED.sheet_worksheet_name,
-      terms = EXCLUDED.terms
+      terms = EXCLUDED.terms,
+      sales_tax_rate_percent = EXCLUDED.sales_tax_rate_percent,
+      early_payment_discount_percent = EXCLUDED.early_payment_discount_percent,
+      pay_in_full_discount_percent = EXCLUDED.pay_in_full_discount_percent
     RETURNING *
   `
   return normalizeSettingsRow(row)

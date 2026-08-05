@@ -59,6 +59,7 @@ const nestedItems = {
   '/documents': [{ href: '/documents/history', label: 'History', icon: PenSquare }],
   '/quotes': [{ href: '/quotes/history', label: 'History', icon: FileText }],
   '/christmas/invoices': [
+    { href: '/christmas/invoices/history', label: 'History', icon: FileText },
     { href: '/christmas/invoices/settings', label: 'Template settings', icon: Settings2 },
   ],
 }

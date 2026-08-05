@@ -57,8 +57,8 @@ export async function PUT(request, { params }) {
   }
 
   const inputs = body?.inputs || {}
-  if (!inputs.customerName?.trim()) {
-    return NextResponse.json({ error: 'Customer name is required' }, { status: 400 })
+  if (!inputs.customerFirstName?.trim()) {
+    return NextResponse.json({ error: 'Customer first name is required' }, { status: 400 })
   }
   const items = Array.isArray(inputs.lineItems)
     ? inputs.lineItems.filter((item) => item.description?.trim())
@@ -77,7 +77,13 @@ export async function PUT(request, { params }) {
     const settings = await getChristmasInvoiceSettings()
     const templateKey =
       body?.templateKey || inputs.templateKey || existing.templateKey || settings.templateKey
-    const payloadInputs = { ...inputs, templateKey }
+    const payloadInputs = {
+      ...inputs,
+      templateKey,
+      salesTaxRatePercent: settings.salesTaxRatePercent,
+      earlyPaymentDiscountPercent: settings.earlyPaymentDiscountPercent,
+      payInFullDiscountPercent: settings.payInFullDiscountPercent,
+    }
     const computed = computeChristmasInvoice(payloadInputs)
     const invoice = await updateInvoice(id, { inputs: payloadInputs, computed, templateKey })
     const results = await syncChristmasInvoiceIntegrations(invoice, settings)

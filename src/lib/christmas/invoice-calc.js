@@ -79,25 +79,92 @@ export function presetLineItems(id) {
 
 const toCents = (value) => Math.max(0, Math.round(Number(value) || 0))
 
+/** Normalizes to 'N', 'R', or '' — anything else is treated as unset. */
+const toNrFlag = (value) => {
+  const upper = String(value || '')
+    .trim()
+    .toUpperCase()
+  return upper === 'N' || upper === 'R' ? upper : ''
+}
+
+const percentOf = (cents, percent) => Math.round((Number(cents) || 0) * ((Number(percent) || 0) / 100))
+
+function computeLineItemPricing(item, index, earlyPaymentDiscountPercent) {
+  const quantity = Math.max(0, Number(item.quantity) || 0)
+  const unitPriceCents = toCents(item.unitPriceCents)
+  const amountCents = Math.round(quantity * unitPriceCents)
+  const earlyPriceCents = Math.max(0, amountCents - percentOf(amountCents, earlyPaymentDiscountPercent))
+
+  return {
+    key: String(item.key || `line-${index}`),
+    category: String(item.category || '').trim(),
+    description: String(item.description || '').trim(),
+    location: String(item.location || '').trim(),
+    color: String(item.color || '').trim(),
+    nr: toNrFlag(item.nr),
+    quantity,
+    unitPriceCents,
+    amountCents,
+    priceCents: amountCents,
+    earlyPriceCents,
+  }
+}
+
+/** Fully custom per-invoice schedule (e.g. 25% deposit, 40% by a date, 35% final) — % of the total contract cost. */
+function computePaymentMilestones(inputs, totalContractCostCents) {
+  const rawMilestones = Array.isArray(inputs.paymentMilestones) ? inputs.paymentMilestones : []
+  return rawMilestones
+    .map((milestone, index) => ({
+      key: String(milestone.key || `milestone-${index}`),
+      label: String(milestone.label || '').trim(),
+      percent: Number(milestone.percent) || 0,
+      date: milestone.date || '',
+      amountCents: percentOf(totalContractCostCents, milestone.percent),
+    }))
+    .filter((milestone) => milestone.label || milestone.percent > 0)
+}
+
 export function computeChristmasInvoice(inputs = {}) {
   const rawItems = Array.isArray(inputs.lineItems) ? inputs.lineItems : []
+  const earlyPaymentDiscountPercent = Number(inputs.earlyPaymentDiscountPercent) || 0
   const lineItems = rawItems
-    .map((item, index) => {
-      const quantity = Math.max(0, Number(item.quantity) || 0)
-      const unitPriceCents = toCents(item.unitPriceCents)
-      return {
-        key: String(item.key || `line-${index}`),
-        description: String(item.description || '').trim(),
-        quantity,
-        unitPriceCents,
-        amountCents: Math.round(quantity * unitPriceCents),
-      }
-    })
+    .map((item, index) => computeLineItemPricing(item, index, earlyPaymentDiscountPercent))
     .filter((item) => item.description || item.amountCents > 0)
 
   const subtotalCents = lineItems.reduce((sum, item) => sum + item.amountCents, 0)
   const depositCents = toCents(inputs.depositCents)
   const balanceDueCents = Math.max(0, subtotalCents - depositCents)
 
-  return { lineItems, subtotalCents, depositCents, balanceDueCents }
+  // Quote pricing breakdown — regular price and the early-pay price, each with tax.
+  const materialsTotalCents = subtotalCents
+  const salesTaxRatePercent = Number(inputs.salesTaxRatePercent) || 0
+  const salesTaxCents = percentOf(materialsTotalCents, salesTaxRatePercent)
+
+  const earlyMaterialsTotalCents = lineItems.reduce((sum, item) => sum + item.earlyPriceCents, 0)
+  const earlySalesTaxCents = percentOf(earlyMaterialsTotalCents, salesTaxRatePercent)
+  const totalContractCostCents = earlyMaterialsTotalCents + earlySalesTaxCents
+
+  const payInFullDiscountPercent = Number(inputs.payInFullDiscountPercent) || 0
+  const payInFullSavingsCents = percentOf(totalContractCostCents, payInFullDiscountPercent)
+  const payInFullAmountCents = totalContractCostCents - payInFullSavingsCents
+
+  const paymentMilestones = computePaymentMilestones(inputs, totalContractCostCents)
+
+  return {
+    lineItems,
+    subtotalCents,
+    depositCents,
+    balanceDueCents,
+    materialsTotalCents,
+    salesTaxRatePercent,
+    salesTaxCents,
+    earlyMaterialsTotalCents,
+    earlyPaymentDiscountPercent,
+    earlySalesTaxCents,
+    totalContractCostCents,
+    payInFullDiscountPercent,
+    payInFullSavingsCents,
+    payInFullAmountCents,
+    paymentMilestones,
+  }
 }

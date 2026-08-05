@@ -9,6 +9,7 @@ export default function SignOutButton() {
   return (
     <Button
       variant="outline"
+      className="text-white"
       onClick={() =>
         signOut({
           callbackUrl: '/sign-in',

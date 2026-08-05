@@ -29,6 +29,8 @@ function mapContactRecord(record) {
   return {
     id: String(record.id || ''),
     name: fullName,
+    firstName: first,
+    lastName: last,
     email: pickString(record.Email, record.Secondary_Email),
     phone: pickString(record.Phone, record.Mobile, record.Home_Phone),
     propertyAddress: street,

@@ -8,7 +8,10 @@ import { INVOICE_TEMPLATES } from '@/lib/christmas/invoice-templates'
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Christmas Lights — Invoices' }
 
-export default async function ChristmasInvoicesPage() {
+export default async function ChristmasInvoicesPage({ searchParams }) {
+  const params = await searchParams
+  const editId = typeof params?.edit === 'string' ? params.edit : null
+  const dupeId = typeof params?.dupe === 'string' ? params.dupe : null
   const session = await safeAuth()
 
   let invoices = []
@@ -29,6 +32,8 @@ export default async function ChristmasInvoicesPage() {
 
   return (
     <ChristmasInvoicesClient
+      dupeId={dupeId}
+      editId={editId}
       invoices={invoices}
       presets={CHRISTMAS_PACKAGE_PRESETS}
       settings={settings}

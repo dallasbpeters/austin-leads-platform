@@ -3,6 +3,12 @@
  * PDF upload (folder {Customer Name}/Invoices). Each integration is
  * best-effort and reported independently so a Zoho failure never blocks the
  * invoice save.
+ *
+ * Jobber is deliberately NOT included here — it's pushed on-demand only, via
+ * the "Push to Jobber" button (POST /api/christmas/invoices/[id]/jobber →
+ * src/lib/jobber/sync.js). It's a 14-day trial the business may not keep, so
+ * nothing about routine save/update/send should depend on Jobber staying
+ * connected or working.
  */
 
 import { markInvoiceSheetSynced, markInvoiceUploaded } from './invoice-db.js'
@@ -12,47 +18,44 @@ import { syncChristmasInvoiceToSheet } from '@/lib/zoho/christmas-sheet'
 import { syncInvoicePdfToWorkdrive } from '@/lib/zoho/workdrive'
 
 /**
- * @param {object} invoice
+ * @param {object} invoice The saved invoice record to sync out to Zoho
  * @param {object} [settings] Resolved invoice settings (fetched if omitted)
- * @param {{ includeWorkdrive?: boolean }} [options]
+ * @param {{ includeWorkdrive?: boolean }} [options] Set includeWorkdrive false to skip the PDF upload
  */
 export async function syncChristmasInvoiceIntegrations(invoice, settings = null, options = {}) {
   const includeWorkdrive = options.includeWorkdrive !== false
   const config = settings || (await getChristmasInvoiceSettings())
-  const results = { sheet: null, workdrive: null }
 
-  results.sheet = await syncChristmasInvoiceToSheet({
+  const sheet = await syncChristmasInvoiceToSheet({
     invoice,
     resourceId: config.sheetResource || config.sheetResourceId,
     worksheetName: config.sheetWorksheetName,
   })
-  if (results.sheet.ok) {
+  if (sheet.ok) {
     await markInvoiceSheetSynced(invoice.id)
   }
 
+  let workdrive
   if (includeWorkdrive) {
     try {
       const buffer = await renderChristmasInvoicePdf(invoice, { company: config })
       const fileName = christmasInvoiceFileName(invoice)
-      results.workdrive = await syncInvoicePdfToWorkdrive({
+      workdrive = await syncInvoicePdfToWorkdrive({
         clientName: invoice.customerName,
         fileName,
         buffer,
         parentFolderId: config.workdriveFolder,
       })
-      if (results.workdrive.ok) {
-        await markInvoiceUploaded(invoice.id, {
-          fileId: results.workdrive.fileId,
-          folderId: results.workdrive.folderId,
-        })
+      if (workdrive.ok) {
+        await markInvoiceUploaded(invoice.id, { fileId: workdrive.fileId, folderId: workdrive.folderId })
       }
     } catch (error) {
       console.error('[christmas/invoices] workdrive sync failed', error)
-      results.workdrive = { ok: false, error: error.message }
+      workdrive = { ok: false, error: error.message }
     }
   } else {
-    results.workdrive = { skipped: true, reason: 'WorkDrive not requested' }
+    workdrive = { skipped: true, reason: 'WorkDrive not requested' }
   }
 
-  return results
+  return { sheet, workdrive }
 }

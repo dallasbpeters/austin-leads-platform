@@ -25,7 +25,7 @@ const getHeroActionClassName = (rawVariant) => {
 
 const getHeroActionStyle = (rawVariant, textColor) => {
   if (rawVariant !== 'outline' || !textColor) {
-    return undefined
+    return null
   }
 
   return {

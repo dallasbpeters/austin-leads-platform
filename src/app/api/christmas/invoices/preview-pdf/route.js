@@ -28,13 +28,21 @@ export async function POST(request) {
   const inputs = body?.inputs || {}
   const settings = await getChristmasInvoiceSettings()
   const templateKey = body?.templateKey || inputs.templateKey || settings.templateKey
-  const payloadInputs = { ...inputs, templateKey }
+  const payloadInputs = {
+    ...inputs,
+    templateKey,
+    salesTaxRatePercent: settings.salesTaxRatePercent,
+    earlyPaymentDiscountPercent: settings.earlyPaymentDiscountPercent,
+    payInFullDiscountPercent: settings.payInFullDiscountPercent,
+  }
   const computed = computeChristmasInvoice(payloadInputs)
   const invoice = {
     invoiceNumber: body?.invoiceNumber || 'PREVIEW',
     invoiceDate: payloadInputs.invoiceDate,
     dueDate: payloadInputs.dueDate,
-    customerName: payloadInputs.customerName || 'Customer',
+    customerName:
+      [payloadInputs.customerFirstName, payloadInputs.customerLastName].filter(Boolean).join(' ') ||
+      'Customer',
     data: { inputs: payloadInputs, computed },
   }
 

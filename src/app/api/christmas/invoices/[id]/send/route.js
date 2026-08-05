@@ -17,7 +17,8 @@ export const maxDuration = 60
  *   3. Re-sync Zoho Sheet + WorkDrive so the emailed status is logged
  *
  * Each integration reports success/failure independently so a Zoho hiccup
- * never blocks the customer email.
+ * never blocks the customer email. Jobber is intentionally excluded — see
+ * src/lib/christmas/invoice-integrations.js.
  */
 export async function POST(request, { params }) {
   const session = await safeAuth()

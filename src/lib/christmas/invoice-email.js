@@ -78,10 +78,7 @@ function fmtDate(str) {
 
 function buildInvoiceEmailHtml({ invoice, company, message }) {
   const { inputs = {}, computed = {} } = invoice.data || {}
-  const firstName =
-    String(invoice.customerName || inputs.customerName || '')
-      .trim()
-      .split(/\s+/)[0] || 'there'
+  const firstName = String(invoice.customerFirstName || inputs.customerFirstName || '').trim() || 'there'
 
   const balanceDueCents = Number(invoice.balanceDueCents ?? computed.balanceDueCents ?? 0)
   const installDate = fmtDate(inputs.installDate)

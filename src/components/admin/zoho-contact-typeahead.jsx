@@ -22,6 +22,7 @@ export default function ZohoContactTypeahead({
   zohoConnected = false,
   zohoAuthEnabled = false,
   placeholder = 'Search Zoho contacts…',
+  label = 'Customer name *',
 }) {
   const listId = useId()
   const wrapRef = useRef(null)
@@ -136,7 +137,7 @@ export default function ZohoContactTypeahead({
   return (
     <div className="space-y-1.5" ref={wrapRef}>
       <div className="flex items-center justify-between gap-2">
-        <Label htmlFor={listId}>Customer name *</Label>
+        <Label htmlFor={listId}>{label}</Label>
         {needsAuth && zohoAuthEnabled ? (
           <Button
             className="h-7 px-2 text-xs"

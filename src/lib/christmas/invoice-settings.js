@@ -31,6 +31,9 @@ function getEnvDefaults() {
     sheetWorksheetName:
       normalizeString(process.env.CHRISTMAS_SHEET_WORKSHEET_NAME) || DEFAULT_SHEET_WORKSHEET,
     terms: process.env.CHRISTMAS_INVOICE_TERMS || '',
+    salesTaxRatePercent: Number(process.env.CHRISTMAS_SALES_TAX_RATE_PERCENT) || 8.25,
+    earlyPaymentDiscountPercent: Number(process.env.CHRISTMAS_EARLY_PAYMENT_DISCOUNT_PERCENT) || 20,
+    payInFullDiscountPercent: Number(process.env.CHRISTMAS_PAY_IN_FULL_DISCOUNT_PERCENT) || 5,
   }
 }
 
@@ -39,26 +42,30 @@ function getEnvDefaults() {
  * defaults, mirroring the lead routing settings pattern. Also returns an
  * integration-readiness envelope so the admin UI can show real status.
  */
+const mergeSettingsRecord = (record, envDefaults) => ({
+  title: 'Christmas Invoice Settings',
+  templateKey: normalizeString(record?.templateKey) || envDefaults.templateKey,
+  companyName: normalizeString(record?.companyName) || envDefaults.companyName,
+  companyTagline: normalizeString(record?.companyTagline) || envDefaults.companyTagline,
+  companyPhone: normalizeString(record?.companyPhone) || envDefaults.companyPhone,
+  companyEmail: normalizeString(record?.companyEmail) || envDefaults.companyEmail,
+  companyWebsite: normalizeString(record?.companyWebsite) || envDefaults.companyWebsite,
+  logoUrl: normalizeString(record?.logoUrl) || envDefaults.logoUrl,
+  invoiceNumberPrefix: normalizeString(record?.invoiceNumberPrefix) || envDefaults.invoiceNumberPrefix,
+  workdriveParentFolderId:
+    normalizeString(record?.workdriveParentFolderId) || envDefaults.workdriveParentFolderId,
+  sheetResourceId: normalizeString(record?.sheetResourceId) || envDefaults.sheetResourceId,
+  sheetWorksheetName: normalizeString(record?.sheetWorksheetName) || envDefaults.sheetWorksheetName,
+  terms: record?.terms === null || record?.terms === undefined ? envDefaults.terms : String(record.terms),
+  salesTaxRatePercent: record?.salesTaxRatePercent ?? envDefaults.salesTaxRatePercent,
+  earlyPaymentDiscountPercent: record?.earlyPaymentDiscountPercent ?? envDefaults.earlyPaymentDiscountPercent,
+  payInFullDiscountPercent: record?.payInFullDiscountPercent ?? envDefaults.payInFullDiscountPercent,
+})
+
 export async function getChristmasInvoiceSettings() {
   const envDefaults = getEnvDefaults()
   const record = hasInvoiceDatabase() ? await getChristmasInvoiceSettingsRow().catch(() => null) : null
-
-  const settings = {
-    title: 'Christmas Invoice Settings',
-    templateKey: normalizeString(record?.templateKey) || envDefaults.templateKey,
-    companyName: normalizeString(record?.companyName) || envDefaults.companyName,
-    companyTagline: normalizeString(record?.companyTagline) || envDefaults.companyTagline,
-    companyPhone: normalizeString(record?.companyPhone) || envDefaults.companyPhone,
-    companyEmail: normalizeString(record?.companyEmail) || envDefaults.companyEmail,
-    companyWebsite: normalizeString(record?.companyWebsite) || envDefaults.companyWebsite,
-    logoUrl: normalizeString(record?.logoUrl) || envDefaults.logoUrl,
-    invoiceNumberPrefix: normalizeString(record?.invoiceNumberPrefix) || envDefaults.invoiceNumberPrefix,
-    workdriveParentFolderId:
-      normalizeString(record?.workdriveParentFolderId) || envDefaults.workdriveParentFolderId,
-    sheetResourceId: normalizeString(record?.sheetResourceId) || envDefaults.sheetResourceId,
-    sheetWorksheetName: normalizeString(record?.sheetWorksheetName) || envDefaults.sheetWorksheetName,
-    terms: record?.terms != null ? String(record.terms) : envDefaults.terms,
-  }
+  const settings = mergeSettingsRecord(record, envDefaults)
 
   const zohoConfigured = hasZohoCredentials()
   const workdriveFolder =
@@ -95,6 +102,9 @@ export async function saveChristmasInvoiceSettings(input) {
     sheetResourceId: normalizeString(input.sheetResourceId),
     sheetWorksheetName: normalizeString(input.sheetWorksheetName) || DEFAULT_SHEET_WORKSHEET,
     terms: typeof input.terms === 'string' ? input.terms.trim() : '',
+    salesTaxRatePercent: input.salesTaxRatePercent,
+    earlyPaymentDiscountPercent: input.earlyPaymentDiscountPercent,
+    payInFullDiscountPercent: input.payInFullDiscountPercent,
   }
 
   if (!record.companyName) {

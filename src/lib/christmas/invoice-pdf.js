@@ -24,6 +24,7 @@ import { createElement as h } from 'react'
 import {
   Circle,
   Document,
+  Font,
   G,
   Image,
   Line,
@@ -40,11 +41,27 @@ import {
 
 import { computeChristmasInvoice } from './invoice-calc.js'
 
+// Registered as two families (rather than weight variants on one family) to
+// mirror the previous Helvetica / Helvetica-Bold split — fontkit's weight
+// matching inside @react-pdf/renderer is unreliable, so a dedicated "Bold"
+// family sidesteps it entirely.
+const GOOGLE_SANS_DIR = path.join(process.cwd(), 'public', 'fonts', 'Google_Sans', 'static')
+
+Font.register({
+  family: 'Google Sans',
+  src: path.join(GOOGLE_SANS_DIR, 'GoogleSans-Regular.ttf'),
+})
+
+Font.register({
+  family: 'Google Sans Bold',
+  src: path.join(GOOGLE_SANS_DIR, 'GoogleSans-Bold.ttf'),
+})
+
 // ─── Brand palette (from the tx-christmaslights theme) ────────────────────────
 
 const SPRUCE = '#0d3b1c' // deep pine header
 const PINE = '#14532d' // secondary deep pine green
-const ORANGE = '#ea580c' // primary orange-red
+const ORANGE = '#DB2626' // primary orange-red
 const RED = '#dc2626' // christmas red
 const GOLD = '#e3a90d' // gold
 const BLUE = '#2563eb' // accent blue
@@ -73,7 +90,7 @@ export function getChristmasCompanyInfo() {
 // `logoUrl` (from invoice settings) is a path relative to /public, e.g.
 // "/images/tx-christmas-logo-full.png" — resolve it to a real file on disk.
 function resolveLogoPath(logoUrl) {
-  const relative = String(logoUrl || '/christmas-logo.svg').trim() || '/christmas-logo.svg'
+  const relative = String(logoUrl || '/christmas-logo-reversed.svg').trim() || '/christmas-logo-reversed.svg'
   const candidate = path.join(process.cwd(), 'public', relative.replace(/^\/+/, ''))
   return existsSync(candidate) ? candidate : null
 }
@@ -90,10 +107,13 @@ const money = (value) =>
 
 const num = (value) => new Intl.NumberFormat('en-US').format(Number(value || 0))
 
-const formatDate = (value) =>
-  new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(
-    value ? new Date(value) : new Date(),
+const formatDate = (value) => {
+  const date = value ? new Date(value) : new Date()
+  const safeDate = Number.isNaN(date.getTime()) ? new Date() : date
+  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(
+    safeDate,
   )
+}
 
 const ph = (value, placeholder) => {
   const text = value === null || value === undefined ? '' : String(value).trim()
@@ -144,8 +164,8 @@ function Snowflake({ size = 10, color = MUTED_CREAM }) {
 /**
  * A strand of holiday bulbs with a sagging cord, drawn across a strip.
  */
-function StringLights({ width = 300, height = 30 }) {
-  const bulbs = [RED, GREEN, GOLD, BLUE, ORANGE]
+function StringLights({ width = 500, height = 30 }) {
+  const bulbs = [RED, GREEN, GOLD, BLUE, RED, GREEN, GOLD, BLUE, ORANGE, GREEN, GOLD]
   const spacing = width / (bulbs.length + 1)
   const cordY = 8
   const bulbY = cordY + 7
@@ -169,7 +189,7 @@ function StringLights({ width = 300, height = 30 }) {
         { key: index },
         h(Circle, { cx: x, cy: bulbY, r: 5, fill: color }),
         h(Circle, { cx: x - 1.7, cy: bulbY - 1.9, r: 1.5, fill: '#ffffff', opacity: 0.55 }),
-        h(Rect, { x: x - 2, y: cordY - 1, width: 4, height: 5, rx: 1, fill: '#2a2a2a' }),
+        h(Rect, { x: x - 2, y: cordY - 1, width: 4, height: 5, rx: 1, fill: '#A6A6A6' }),
       )
     }),
   )
@@ -187,7 +207,7 @@ const OrnamentRow = ({ size = 12, marginRight = 8 }) =>
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  page: { fontSize: 9, color: INK, backgroundColor: CREAM, fontFamily: 'Helvetica' },
+  page: { fontSize: 9, color: INK, backgroundColor: CREAM, fontFamily: 'Google Sans' },
   headerBand: {
     backgroundColor: SPRUCE,
     paddingHorizontal: 20,
@@ -198,39 +218,38 @@ const s = StyleSheet.create({
   headerRow: { flexDirection: 'row', alignItems: 'stretch', justifyContent: 'space-between' },
   brandBlock: { flex: 1, paddingRight: 12, flexDirection: 'row', alignItems: 'center' },
   logoChip: {
-    backgroundColor: CREAM,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
     marginRight: 12,
     maxWidth: 230,
   },
-  logo: { width: 200, height: 44, objectFit: 'contain' },
+  logo: { width: 84, height: 84, objectFit: 'contain' },
   brandMeta: { flex: 1 },
-  brandName: { color: CREAM_TEXT, fontSize: 16, fontFamily: 'Helvetica-Bold' },
-  brandTagline: { color: MUTED_CREAM, fontSize: 7.5, marginTop: 3, lineHeight: 1.5 },
+  brandName: { color: CREAM_TEXT, fontSize: 18, fontFamily: 'Google Sans Bold' },
+  brandTagline: { color: MUTED_CREAM, fontSize: 10.5, marginTop: 3, lineHeight: 1.5 },
   contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   contactIcon: { width: 12, alignItems: 'center' },
   contactText: { color: MUTED_CREAM, fontSize: 8, marginLeft: 5 },
   invoiceBox: {
     width: 200,
-    backgroundColor: CREAM,
-    borderRadius: 4,
-    borderTopWidth: 4,
-    borderTopColor: ORANGE,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
-  invoiceTitle: { fontSize: 17, fontFamily: 'Helvetica-Bold', color: PINE, letterSpacing: 2 },
+  invoiceTitle: {
+    fontSize: 18,
+    fontWeight: 800,
+    fontFamily: 'Google Sans Bold',
+    color: CREAM,
+    letterSpacing: 1.5,
+  },
   invoiceMetaRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
-  metaLabel: { fontSize: 7, color: MUTED, letterSpacing: 0.5 },
-  metaValue: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: INK, marginTop: 1 },
+  metaLabel: { fontSize: 7, color: CREAM, letterSpacing: 0.5 },
+  metaValue: { fontSize: 8, fontFamily: 'Google Sans Bold', color: CREAM, marginTop: 1 },
+  quoteValidText: { fontSize: 7, color: MUTED_CREAM, marginTop: 6 },
 
   body: { paddingHorizontal: 20, paddingTop: 14, flexGrow: 1 },
   billToRow: { flexDirection: 'row', justifyContent: 'space-between' },
   billToBlock: { flex: 1, paddingRight: 16 },
-  label: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: ORANGE, letterSpacing: 1.5 },
-  customerName: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: INK, marginTop: 4 },
+  label: { fontSize: 8, fontFamily: 'Google Sans Bold', color: ORANGE, letterSpacing: 1.5 },
+  customerName: { fontSize: 13, fontFamily: 'Google Sans Bold', color: INK, marginTop: 4 },
   customerDetail: { fontSize: 9, color: MUTED, marginTop: 2, lineHeight: 1.6 },
   metaBlock: { width: 210 },
   metaRow: {
@@ -241,8 +260,8 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: LINE,
   },
-  metaBlockLabel: { fontSize: 7.5, color: MUTED, letterSpacing: 0.5 },
-  metaBlockValue: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: INK },
+  metaBlockLabel: { fontSize: 8.5, color: MUTED, letterSpacing: 0.5 },
+  metaBlockValue: { fontSize: 8.5, fontFamily: 'Google Sans Bold', color: INK },
 
   table: {
     marginTop: 14,
@@ -258,11 +277,13 @@ const s = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 10,
   },
-  th: { color: '#ffffff', fontSize: 7.5, fontFamily: 'Helvetica-Bold', letterSpacing: 1 },
-  thDesc: { flex: 1 },
-  thQty: { width: 46, textAlign: 'right' },
-  thUnit: { width: 78, textAlign: 'right' },
-  thAmount: { width: 88, textAlign: 'right' },
+  th: { color: '#ffffff', fontSize: 8, fontFamily: 'Google Sans Bold', letterSpacing: 0.5 },
+  thDesc: { flex: 1, paddingRight: 8 },
+  thFeet: { width: 48, textAlign: 'right', paddingRight: 8 },
+  thUnit: { width: 60, textAlign: 'right', paddingRight: 8 },
+  thPrice: { width: 62, textAlign: 'right', paddingRight: 8 },
+  thEarlyPrice: { width: 62, textAlign: 'right', paddingRight: 8 },
+  thNotes: { width: 100 },
   tableRow: {
     flexDirection: 'row',
     paddingVertical: 7,
@@ -272,17 +293,80 @@ const s = StyleSheet.create({
   },
   tableRowAlt: { backgroundColor: PANEL },
   tdDesc: { flex: 1, fontSize: 8.5, paddingRight: 8 },
-  tdQty: { width: 46, textAlign: 'right', fontSize: 8.5 },
-  tdUnit: { width: 78, textAlign: 'right', fontSize: 8.5 },
-  tdAmount: { width: 88, textAlign: 'right', fontSize: 8.5, fontFamily: 'Helvetica-Bold' },
+  tdFeet: { width: 48, textAlign: 'right', fontSize: 8.5, paddingRight: 8 },
+  tdUnit: { width: 60, textAlign: 'right', fontSize: 8.5, paddingRight: 8 },
+  tdPrice: { width: 62, textAlign: 'right', fontSize: 8.5, fontFamily: 'Google Sans Bold', paddingRight: 8 },
+  tdEarlyPrice: {
+    width: 62,
+    textAlign: 'right',
+    fontSize: 8.5,
+    fontFamily: 'Google Sans Bold',
+    color: PINE,
+    paddingRight: 8,
+  },
+  tdNotes: { width: 100, fontSize: 7.5, color: MUTED },
   emptyTable: { padding: 14, alignItems: 'center' },
-  emptyTableText: { fontSize: 8, color: MUTED },
+  emptyTableText: { fontSize: 9.5, color: MUTED },
+
+  pricingSection: { marginTop: 10 },
+  pricingLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
+  pricingLabel: { fontSize: 8.5, color: MUTED },
+  pricingValue: { fontSize: 8.5, fontFamily: 'Google Sans Bold', color: INK },
+  contractCostBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: PINE,
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    marginTop: 8,
+  },
+  contractCostLabel: { color: '#ffffff', fontSize: 9, fontFamily: 'Google Sans Bold', letterSpacing: 1 },
+  contractCostValue: { color: '#ffffff', fontSize: 14, fontFamily: 'Google Sans Bold' },
+  saveBanner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: GOLD,
+    borderRadius: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    marginTop: 6,
+  },
+  saveBannerText: { fontSize: 8, fontFamily: 'Google Sans Bold', color: INK },
+
+  paymentTermsBlock: { marginTop: 10 },
+  paymentTermsTable: {
+    marginTop: 6,
+    borderWidth: 1,
+    borderColor: LINE,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  paymentTermsRow: {
+    flexDirection: 'row',
+    backgroundColor: '#fff6b8',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#e8d97a',
+  },
+  paymentTermsRowFirst: { borderTopWidth: 0 },
+  paymentTermsLabel: { flex: 1, fontSize: 8.5, color: INK },
+  paymentTermsAmount: {
+    width: 90,
+    fontSize: 8.5,
+    fontFamily: 'Google Sans Bold',
+    color: INK,
+    textAlign: 'right',
+  },
 
   totalsRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 },
   totalsCard: { width: 240 },
   totalLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
-  totalLabel: { fontSize: 8.5, color: MUTED },
-  totalValue: { fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: INK },
+  totalLabel: { fontSize: 9.5, color: MUTED },
+  totalValue: { fontSize: 9.5, fontFamily: 'Google Sans Bold', color: INK },
   balanceLine: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -293,45 +377,44 @@ const s = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 5,
   },
-  balanceLabel: { color: '#ffffff', fontSize: 9, fontFamily: 'Helvetica-Bold', letterSpacing: 1 },
-  balanceValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Helvetica-Bold' },
+  balanceLabel: { color: '#ffffff', fontSize: 10, fontFamily: 'Google Sans Bold', letterSpacing: 1 },
+  balanceValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Google Sans Bold' },
 
-  notesBlock: { marginTop: 14 },
+  notesBlock: { marginTop: 10 },
   sectionTitleRow: { flexDirection: 'row', alignItems: 'center' },
   sectionTitle: {
     fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Google Sans Bold',
     color: PINE,
     letterSpacing: 1.5,
     marginLeft: 6,
   },
-  includedRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 7 },
-  includedChip: {
-    backgroundColor: PAPER,
+  termsText: { fontSize: 8.5, color: MUTED, lineHeight: 1.4, marginTop: 5 },
+  notesText: { fontSize: 8.5, color: INK, lineHeight: 1.4, marginTop: 5 },
+
+  noticeSection: { marginTop: 10 },
+  noticeBox: {
     borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 10,
-    paddingHorizontal: 9,
-    paddingVertical: 3,
-    marginRight: 6,
-    marginBottom: 6,
+    borderColor: INK,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
   },
-  includedText: { fontSize: 7.5, color: PINE },
-  termsText: { fontSize: 8, color: MUTED, lineHeight: 1.6, marginTop: 7 },
-  notesText: { fontSize: 8, color: INK, lineHeight: 1.6, marginTop: 7 },
+  noticeBoxNoBorderTop: { borderTopWidth: 0 },
+  noticeHeading: { fontSize: 8.5, fontFamily: 'Google Sans Bold', color: INK, lineHeight: 1.3 },
+  noticeBody: { fontSize: 8, color: INK, lineHeight: 1.35, marginTop: 3 },
 
   footerBand: {
     backgroundColor: SPRUCE,
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 16,
+    marginTop: 10,
   },
   footerLeft: { flexDirection: 'row', alignItems: 'center' },
-  footerText: { color: MUTED_CREAM, fontSize: 7.5 },
-  footerRight: { color: GOLD, fontSize: 8, fontFamily: 'Helvetica-Bold', letterSpacing: 0.5 },
+  footerText: { color: MUTED_CREAM, fontSize: 9.5 },
+  footerRight: { color: GOLD, fontSize: 10, fontFamily: 'Google Sans Bold', letterSpacing: 0.5 },
 })
 
 // ─── Small building blocks ───────────────────────────────────────────────────
@@ -354,7 +437,7 @@ const labelValue = (label, value) =>
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function buildHeader(invoice, company, logo) {
+function buildHeader(invoice, company, logo, inputs) {
   return h(
     View,
     { style: s.headerBand },
@@ -369,7 +452,7 @@ function buildHeader(invoice, company, logo) {
         h(
           View,
           { style: s.brandMeta },
-          h(Text, { style: s.brandName }, company.name),
+          h(Text, { style: s.brandName }, 'Texas Christmas Lights'),
           h(
             Text,
             { style: s.brandTagline },
@@ -411,12 +494,31 @@ function buildHeader(invoice, company, logo) {
             h(Text, { style: s.metaValue }, formatDate(invoice.dueDate)),
           ),
         ),
+        h(
+          View,
+          { style: s.invoiceMetaRow },
+          h(
+            View,
+            null,
+            h(Text, { style: s.metaLabel }, 'PROJECT #'),
+            h(Text, { style: s.metaValue }, ph(inputs.projectNumber, '—')),
+          ),
+          h(
+            View,
+            null,
+            h(Text, { style: s.metaLabel }, 'CREATED BY'),
+            h(Text, { style: s.metaValue }, ph(inputs.quoteCreatedBy, '—')),
+          ),
+        ),
+        inputs.quoteValidDays
+          ? h(Text, { style: s.quoteValidText }, `This quote is good for ${inputs.quoteValidDays} days`)
+          : null,
       ),
     ),
   )
 }
 
-function buildBillTo(inputs) {
+function buildBillTo(inputs, customerName) {
   const addressParts = [
     inputs.propertyAddress,
     [inputs.propertyCity, inputs.propertyState, inputs.propertyZip].filter(Boolean).join(', '),
@@ -429,7 +531,7 @@ function buildBillTo(inputs) {
       View,
       { style: s.billToBlock },
       h(Text, { style: s.label }, 'BILL TO'),
-      h(Text, { style: s.customerName }, ph(inputs.customerName, '[CUSTOMER NAME]')),
+      h(Text, { style: s.customerName }, ph(customerName, '[CUSTOMER NAME]')),
       h(Text, { style: s.customerDetail }, ph(addressParts.join('\n') || ' ', '[PROPERTY ADDRESS]')),
       h(Text, { style: s.customerDetail }, ph(inputs.customerPhone, '[PHONE]')),
       h(Text, { style: s.customerDetail }, ph(inputs.customerEmail, '[EMAIL]')),
@@ -437,11 +539,18 @@ function buildBillTo(inputs) {
     h(
       View,
       { style: s.metaBlock },
+      labelValue('Color lights', ph(inputs.colorLights, '—')),
       labelValue('Install date', ph(inputs.installDate, '—')),
       labelValue('Package', ph(inputs.packageLabel, '—')),
       labelValue('Template', ph(getTemplateLabel(inputs.templateKey), '—')),
     ),
   )
+}
+
+/** Compact "Category · Location · Color · N" annotation line under the description. */
+const lineItemMeta = (item) => {
+  const nrLabel = item.nr === 'N' ? 'New' : item.nr === 'R' ? 'Reuse' : ''
+  return [item.category, item.location, item.color, nrLabel].filter(Boolean).join(' · ')
 }
 
 function buildLineItemsTable(computed) {
@@ -450,10 +559,12 @@ function buildLineItemsTable(computed) {
     h(
       View,
       { style: s.tableHeader },
+      h(Text, { style: [s.th, s.thFeet] }, 'FEET/QTY'),
       h(Text, { style: [s.th, s.thDesc] }, 'DESCRIPTION'),
-      h(Text, { style: [s.th, s.thQty] }, 'QTY'),
       h(Text, { style: [s.th, s.thUnit] }, 'UNIT PRICE'),
-      h(Text, { style: [s.th, s.thAmount] }, 'AMOUNT'),
+      h(Text, { style: [s.th, s.thPrice] }, 'PRICE'),
+      h(Text, { style: [s.th, s.thEarlyPrice] }, 'EARLY PRICE'),
+      h(Text, { style: [s.th, s.thNotes] }, 'DETAILS/NOTES'),
     )
 
   return h(
@@ -465,10 +576,12 @@ function buildLineItemsTable(computed) {
           h(
             View,
             { key: item.key || index, style: [s.tableRow, index % 2 === 1 ? s.tableRowAlt : null] },
+            h(Text, { style: s.tdFeet }, num(item.quantity)),
             h(Text, { style: s.tdDesc }, item.description),
-            h(Text, { style: s.tdQty }, num(item.quantity)),
             h(Text, { style: s.tdUnit }, money(item.unitPriceCents)),
-            h(Text, { style: s.tdAmount }, money(item.amountCents)),
+            h(Text, { style: s.tdPrice }, money(item.priceCents)),
+            h(Text, { style: s.tdEarlyPrice }, money(item.earlyPriceCents)),
+            h(Text, { style: s.tdNotes }, lineItemMeta(item) || '—'),
           ),
         )
       : h(
@@ -479,7 +592,97 @@ function buildLineItemsTable(computed) {
   )
 }
 
+/**
+ * Materials + sales tax, leading into the Total Contract Cost. Per-line
+ * regular/early pricing already lives in the line items table (PRICE / EARLY
+ * PRICE columns), so this only needs the one aggregate MATERIALS figure
+ * rather than repeating a full regular-vs-early breakdown.
+ */
+function buildPricingBreakdown(computed) {
+  return h(
+    View,
+    { style: s.pricingSection },
+    h(
+      View,
+      { style: s.pricingLine },
+      h(Text, { style: s.pricingLabel }, 'MATERIALS'),
+      h(Text, { style: s.pricingValue }, money(computed.materialsTotalCents)),
+    ),
+    h(
+      View,
+      { style: s.pricingLine },
+      h(Text, { style: s.pricingLabel }, `SALES TAX (${computed.salesTaxRatePercent}%)`),
+      h(Text, { style: s.pricingValue }, money(computed.salesTaxCents)),
+    ),
+    h(
+      View,
+      { style: s.contractCostBar },
+      h(Text, { style: s.contractCostLabel }, 'TOTAL CONTRACT COST'),
+      h(Text, { style: s.contractCostValue }, money(computed.totalContractCostCents)),
+    ),
+    computed.payInFullDiscountPercent > 0
+      ? h(
+          View,
+          { style: s.saveBanner },
+          h(
+            Text,
+            { style: s.saveBannerText },
+            `SAVE ${computed.payInFullDiscountPercent}% (${money(computed.payInFullSavingsCents)}) BY PAYING IN FULL TODAY`,
+          ),
+          h(Text, { style: s.saveBannerText }, money(computed.payInFullAmountCents)),
+        )
+      : null,
+  )
+}
+
+function buildPaymentTermsTable(computed) {
+  const milestones = computed.paymentMilestones || []
+  if (!milestones.length) {
+    return null
+  }
+  return h(
+    View,
+    { style: s.paymentTermsBlock },
+    h(
+      View,
+      { style: s.sectionTitleRow },
+      Star({ size: 10 }),
+      h(Text, { style: s.sectionTitle }, 'PAYMENT TERMS'),
+    ),
+    h(
+      View,
+      { style: s.paymentTermsTable },
+      ...milestones.map((milestone, index) => {
+        const dueText = milestone.date ? ` — due ${formatDate(milestone.date)}` : ''
+        return h(
+          View,
+          {
+            key: milestone.key || index,
+            style: [s.paymentTermsRow, index === 0 ? s.paymentTermsRowFirst : null],
+          },
+          h(
+            Text,
+            { style: s.paymentTermsLabel },
+            `${ph(milestone.label, 'Payment')} (${milestone.percent}%)${dueText}`,
+          ),
+          h(Text, { style: s.paymentTermsAmount }, money(milestone.amountCents)),
+        )
+      }),
+    ),
+  )
+}
+
+/**
+ * Legacy subtotal/deposit/balance block — only shown when this quote has no
+ * payment milestones, since Total Contract Cost + the Payment Terms table
+ * already cover "what's owed and when" and showing both would read as two
+ * conflicting totals on the same page.
+ */
 function buildTotals(computed) {
+  if ((computed.paymentMilestones || []).length > 0) {
+    return null
+  }
+
   const totalLine = (label, value) =>
     h(
       View,
@@ -511,24 +714,11 @@ function buildTotals(computed) {
   )
 }
 
-function buildNotes(preset) {
-  const included = preset?.included || []
+function buildNotes() {
   return h(
     View,
     { style: s.notesBlock },
-    h(
-      View,
-      { style: s.sectionTitleRow },
-      Star({ size: 10 }),
-      h(Text, { style: s.sectionTitle }, 'INCLUDED WITH EVERY PACKAGE'),
-    ),
-    h(
-      View,
-      { style: s.includedRow },
-      ...included.map((item) =>
-        h(View, { key: item, style: s.includedChip }, h(Text, { style: s.includedText }, item)),
-      ),
-    ),
+
     h(
       Text,
       { style: s.termsText },
@@ -539,7 +729,48 @@ function buildNotes(preset) {
   )
 }
 
-function buildFooter(company) {
+/** Standard guarantee + scheduling/approval notice, boxed like the printed order form. */
+function buildGuaranteeAndApprovalNotice() {
+  return h(
+    View,
+    { style: s.noticeSection, wrap: false },
+    h(
+      View,
+      { style: s.noticeBox },
+      h(
+        Text,
+        { style: s.noticeHeading },
+        'Texas Christmas Lights guarantees that your display will be fully functional and looking its best upon completion of installation.',
+      ),
+      h(
+        Text,
+        { style: s.noticeBody },
+        'If you notice any issues between our proactive service visits, please contact us immediately. There is no additional charge for service required to keep your display working properly, except in cases of vandalism, damage caused by individuals or animals, or extreme weather conditions.',
+      ),
+    ),
+    h(
+      View,
+      { style: [s.noticeBox, s.noticeBoxNoBorderTop] },
+      h(
+        Text,
+        { style: s.noticeHeading },
+        'Regarding the scheduling, incentives, and approvals for your project, please note that our schedule fills very quickly.',
+      ),
+      h(
+        Text,
+        { style: s.noticeBody },
+        'To ensure timely scheduling and to secure any early incentives, please initial the checkboxes for the approved items and sign the attached document.',
+      ),
+      h(
+        Text,
+        { style: s.noticeBody },
+        'Once completed, please return your order via phone, mail, email, or fax as soon as possible.',
+      ),
+    ),
+  )
+}
+
+function buildFooter() {
   return h(
     View,
     { style: s.footerBand },
@@ -550,7 +781,7 @@ function buildFooter(company) {
       h(
         Text,
         { style: s.footerText },
-        `${company.name} · Austin, TX · Thank you for choosing us this holiday season.`,
+        `Texas Christmas Lights · Austin, TX · Thank you for choosing us this holiday season.`,
       ),
     ),
     h(Text, { style: s.footerRight }, 'MERRY & BRIGHT'),
@@ -590,19 +821,22 @@ export function ChristmasInvoiceDocument(invoice, options = {}) {
 
   return h(
     Document,
-    { title: `Invoice ${invoice.invoiceNumber} — ${inputs.customerName || ''}` },
+    { title: `Invoice ${invoice.invoiceNumber} — ${invoice.customerName || ''}` },
     h(
       Page,
       { size: 'LETTER', style: s.page },
-      buildHeader(invoice, company, logo),
+      buildHeader(invoice, company, logo, inputs),
       h(
         View,
         { style: s.body },
-        buildBillTo(inputs),
+        buildBillTo(inputs, invoice.customerName),
         buildLineItemsTable(computed),
+        buildPricingBreakdown(computed),
         buildTotals(computed),
+        buildPaymentTermsTable(computed),
         buildNotes(preset),
-        h(Text, { style: s.notesText }, ph(inputs.notes, '')),
+        inputs.notes?.trim() ? h(Text, { style: s.notesText }, inputs.notes.trim()) : null,
+        buildGuaranteeAndApprovalNotice(),
       ),
       buildFooter(company),
     ),
