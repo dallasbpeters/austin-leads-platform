@@ -10,6 +10,7 @@ export default function SignOutButton() {
     <Button
       variant="outline"
       className="text-white"
+      style={{ color: '#FFFFFF' }}
       onClick={() =>
         signOut({
           callbackUrl: '/sign-in',
