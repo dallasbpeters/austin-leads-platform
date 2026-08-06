@@ -119,7 +119,7 @@ const toDateOnly = (value) => {
     return null
   }
   if (value instanceof Date) {
-    return value.toISOString().split('T')[0]
+    return Number.isNaN(value.getTime()) ? null : value.toISOString().split('T')[0]
   }
   return String(value).split('T')[0]
 }
