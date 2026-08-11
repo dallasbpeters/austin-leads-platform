@@ -84,6 +84,22 @@ export default defineConfig({
   ],
   schema: {
     types: schemaTypes,
+    // Lets the Presentation navigator create a case study with its `site` already
+    // set. `site` is required, and a case study without one is invisible on every
+    // page — the same trap that hid reviews.
+    templates: (prev) => [
+      ...prev,
+      {
+        id: 'caseStudy-by-site',
+        title: 'Case study for a site',
+        schemaType: 'caseStudy',
+        parameters: [{ name: 'siteId', type: 'string' }],
+        value: ({ siteId }) => ({
+          site: { _type: 'reference', _ref: siteId },
+          publishedAt: new Date().toISOString(),
+        }),
+      },
+    ],
   },
   tools: (prev) => [...prev, aiDraftingTool(), pageSpeedTool()],
   studio: {

@@ -1,6 +1,6 @@
-import Image from 'next/image'
 import { Fragment } from 'react'
 
+import CaseStudyGallery from '@/components/case-study-gallery'
 import { getImageUrl } from '@/lib/platform/imageSource'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 import { summarizeBilling } from '@/sanity/lib/caseStudies'
@@ -135,30 +135,6 @@ const ArticleHeader = ({ title, dek, location, publishedAt, crew, keyStats, edit
       <Byline crew={crew} edit={edit} publishedAt={publishedAt} />
       <KeyStats edit={edit} stats={keyStats} />
     </header>
-  )
-}
-
-const HeroFigure = ({ heroImage, edit }) => {
-  const heroUrl = getImageUrl(heroImage, null, { width: 1600 })
-  if (!heroUrl) {
-    return null
-  }
-  return (
-    <figure className={`${SHELL} py-8`} {...edit('heroImage')}>
-      <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
-        <Image
-          alt={heroImage?.altText ?? ''}
-          src={heroUrl}
-          fill
-          priority
-          sizes="(min-width: 1024px) 64rem, 100vw"
-          className="object-cover"
-        />
-      </div>
-      {heroImage?.caption ? (
-        <figcaption className="text-muted-foreground mt-3 text-sm">{heroImage.caption}</figcaption>
-      ) : null}
-    </figure>
   )
 }
 
@@ -299,7 +275,7 @@ const SpecTable = ({ groups, codeEditions, edit }) => {
               <th className={TH} scope="col">
                 Specification
               </th>
-              <th className={TH} scope="col">
+              <th className={`${TH} w-50`} scope="col">
                 Code or standard
               </th>
               <th className={TH} scope="col">
@@ -503,12 +479,23 @@ const RelatedProjects = ({ projects, edit }) => {
  */
 const asArray = (value) => (Array.isArray(value) ? value : [])
 
+/** Flatten gallery images to the plain shape the client slideshow expects. */
+const toGalleryPhotos = (gallery) =>
+  asArray(gallery)
+    .map((photo, position) => ({
+      key: photo?._key || `photo-${position}`,
+      src: getImageUrl(photo, null, { width: 1600 }),
+      alt: photo?.altText || '',
+      caption: photo?.caption || '',
+    }))
+    .filter((photo) => photo.src)
+
 /**
  * Case study article. Every block maps to one named field, so a new job
  * produces the same rhythm without a designer in the loop.
  */
 const CaseStudyArticle = ({ caseStudy }) => {
-  const { title, dek, location, publishedAt, heroImage, codeEditions, billingNote } = caseStudy
+  const { title, dek, location, publishedAt, codeEditions, billingNote } = caseStudy
   // Every section receives this so its blocks are click-to-edit targets in
   // Presentation. Returns `{}` when there is no document id, so the spread is a
   // no-op rather than a crash.
@@ -525,7 +512,10 @@ const CaseStudyArticle = ({ caseStudy }) => {
         publishedAt={publishedAt}
         title={title}
       />
-      <HeroFigure edit={edit} heroImage={heroImage} />
+      {/* Gallery position 1 is the lead image, the projects card, and the social
+          share image. URLs resolve here so the client bundle carries no Sanity
+          image config. */}
+      <CaseStudyGallery editAttributes={edit('gallery')} images={toGalleryPhotos(caseStudy.gallery)} />
       <DrivewayNotes edit={edit} notes={asArray(caseStudy.drivewayNotes)} />
       <FieldNotes edit={edit} notes={asArray(caseStudy.fieldNotes)} />
       <SpecTable codeEditions={codeEditions} edit={edit} groups={asArray(caseStudy.specGroups)} />

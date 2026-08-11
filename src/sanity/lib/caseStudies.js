@@ -3,7 +3,13 @@ import { groq } from 'next-sanity'
 import { fetchWithPublishedFallback, getSanityReadContext, sectionProjection } from '@/lib/platform/content'
 import { withSectionKeys } from '@/lib/sanity/keys'
 
-/** Everything the projects index needs for one card. Deliberately small. */
+/**
+ * Everything the projects index needs for one card. Deliberately small.
+ *
+ * `cover` is the first gallery photo. There is no separate hero field: one photo
+ * set, and position 1 is what appears on the card, in social previews, and as the
+ * article's lead image. Reordering the gallery changes the cover.
+ */
 const caseStudyCardProjection = groq`{
   _id,
   title,
@@ -11,7 +17,7 @@ const caseStudyCardProjection = groq`{
   publishedAt,
   location,
   dek,
-  heroImage,
+  "cover": gallery[0],
   "keyStat": keyStats[0]
 }`
 
@@ -23,7 +29,7 @@ const caseStudyProjection = groq`{
   publishedAt,
   location,
   dek,
-  heroImage,
+  gallery[]{ _key, altText, caption, asset, hotspot, crop },
   site->{ name, "slug": slug.current, "domain": primaryDomain },
   crew[]{ _key, name, initials, role },
   keyStats[]{ _key, value, label },

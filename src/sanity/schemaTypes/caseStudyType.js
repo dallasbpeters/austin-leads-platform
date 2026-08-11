@@ -20,6 +20,7 @@ export default {
     { name: 'notes', title: 'Driveway & field notes' },
     { name: 'specs', title: 'Equipment & code' },
     { name: 'numbers', title: 'Timeline & bill' },
+    { name: 'photos', title: 'Photos' },
     { name: 'related', title: 'Related' },
     { name: 'sections', title: 'Extra sections' },
   ],
@@ -103,27 +104,6 @@ export default {
       rows: 3,
       group: 'overview',
       description: 'The paragraph under the headline. Lead with the situation, not the service.',
-    },
-    {
-      name: 'heroImage',
-      title: 'Hero image',
-      type: 'image',
-      group: 'overview',
-      options: { hotspot: true, collapsible: false },
-      description: 'Documentary, shot on the job. No renders, no staged handshakes.',
-      fields: [
-        {
-          name: 'altText',
-          title: 'Alt text',
-          type: 'string',
-        },
-        {
-          name: 'caption',
-          title: 'Caption',
-          type: 'string',
-          description: 'Carry a real date, time or place, e.g. "February 26, 2026, 3:10 p.m. Falcon Pointe".',
-        },
-      ],
     },
     {
       name: 'keyStats',
@@ -398,6 +378,44 @@ export default {
       ],
     },
     {
+      name: 'gallery',
+      title: 'Project photos',
+      type: 'array',
+      group: 'photos',
+      description:
+        'Shown as a slideshow below the hero. Documentary shots from the job, in the order a reader should see them. Two or more photos turn on the arrows and dots; a single photo renders on its own.',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            {
+              name: 'altText',
+              title: 'Alt text',
+              type: 'string',
+              description: 'What the photo shows, for screen readers and image search.',
+              validation: (Rule) => Rule.required().error('Every project photo needs alt text.'),
+            },
+            {
+              name: 'caption',
+              title: 'Caption',
+              type: 'string',
+              description:
+                'Carry a real date, time or place, e.g. "February 26, 2026, 3:10 p.m. Falcon Pointe".',
+            },
+          ],
+          preview: {
+            select: { title: 'caption', subtitle: 'altText', media: 'asset' },
+            prepare: ({ title, subtitle, media }) => ({
+              title: title || subtitle || 'Project photo',
+              subtitle: title ? subtitle : '',
+              media,
+            }),
+          },
+        },
+      ],
+    },
+    {
       name: 'relatedProjects',
       title: 'Related projects',
       type: 'array',
@@ -419,7 +437,7 @@ export default {
       title: 'title',
       city: 'location.city',
       neighborhood: 'location.neighborhood',
-      media: 'heroImage',
+      media: 'gallery.0',
       publishedAt: 'publishedAt',
     },
     prepare: ({ title, city, neighborhood, media, publishedAt }) => ({

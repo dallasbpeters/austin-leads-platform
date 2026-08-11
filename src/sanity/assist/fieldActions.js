@@ -8,14 +8,12 @@ import {
 import { useMemo } from 'react'
 import { useClient } from 'sanity'
 
+import { AUDIENCE, buildVoiceRules } from '../agent/voice'
+
 const AI_CONTEXT_DOC_ID = 'aiContext'
 
-const PLATFORM_COPY_RULES = `
-Platform rules (always apply):
-- Do not mention a federal solar tax credit, ITC, or similar federal incentive; it is not available (expired Dec 31, 2025).
-- Do not invent utility rebates, specific incentive dollar amounts, or payback periods unless they already appear in the source.
-- Prefer clear, trustworthy language for Texas homeowners; avoid hype and unverifiable claims.
-`.trim()
+// Shared with the Generate path so the two cannot drift apart again.
+const PLATFORM_COPY_RULES = [AUDIENCE, buildVoiceRules()].join('\n\n')
 
 const loadAssistContext = async (client) => {
   const row = await client.fetch(
@@ -53,20 +51,39 @@ const loadAssistContext = async (client) => {
   return parts.join('\n\n').trim()
 }
 
+/*
+ * Rewrite prompts are deliberately narrow. Three failure modes they guard against,
+ * in the order they actually bite:
+ *   - inventing facts the source never claimed
+ *   - "improving" a product name, model number or code reference into something wrong
+ *   - changing text that was already correct, because the model feels obliged to act
+ */
+const REWRITE_CONTRACT = `Copy these across untouched, character for character:
+- numbers, measurements, dates, dollar amounts, percentages
+- product and model names (for example "REC Alpha Pure-R", "Powerwall 2", "IQ8M")
+- code and standard references (for example "NEC 690.12", "UL 2218 Class 4", "IRC 2021")
+- proper nouns, place names, utility names, people's names
+- URLs and link text
+
+Add nothing. You are rewriting wording, not researching. If the source does not state a fact, it does not appear in your output.
+
+If the text already follows the rules above, return it exactly as it is. An unnecessary rewrite is a worse outcome than no rewrite.`
+
 const buildFieldInstruction = (goal) =>
   `
-Rewrite the targeted field using the editorial context below as the highest-priority guide.
+Rewrite one field. The editorial rules below outrank the rewrite goal: if the goal would require breaking them, follow the rules and change less.
 
-Editorial context:
+Editorial rules:
 $brandContext
 
 Rewrite goal:
 ${goal}
 
-Rules:
-- Preserve factual meaning and any claims already supported by the source field.
-- Keep proper nouns, product names, and links intact unless a change clearly improves clarity.
-- Return only the rewritten field in the same language as the source.
+${REWRITE_CONTRACT}
+
+Length: stay within roughly the same length as the source. Short fields such as titles, labels and eyebrows must stay short — do not turn a label into a sentence.
+
+Output: the rewritten field value only, in the source language. No preamble, no quotation marks around it, no explanation of what you changed.
 
 Current field value:
 $field
@@ -74,18 +91,21 @@ $field
 
 const buildDocumentInstruction = (goal) =>
   `
-Rewrite the targeted document using the editorial context below as the highest-priority guide.
+Rewrite the text in this document. The editorial rules below outrank the rewrite goal: if the goal would require breaking them, follow the rules and change less.
 
-Editorial context:
+Editorial rules:
 $brandContext
 
 Rewrite goal:
 ${goal}
 
-Rules:
-- Preserve the factual meaning of the source content.
-- If the target includes multiple fields, rewrite only the text-bearing parts and leave structural data intact.
-- Do not invent metrics, service areas, or promises not already supported by the document.
+${REWRITE_CONTRACT}
+
+Structure: rewrite only text-bearing fields. Leave every other part of the document alone — do not add, remove or reorder array items, do not change section types, slugs, references, images, or any field ending in Id.
+
+Roles: each section must keep doing its own job. Do not let the hero, story, highlights and FAQ converge on the same paragraph reworded four times.
+
+Headlines: sentence case, describing what sits below them.
 `.trim()
 
 const isPortableTextField = (schemaType) => {

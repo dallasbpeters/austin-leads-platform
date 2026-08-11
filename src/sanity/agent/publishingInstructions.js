@@ -1,14 +1,10 @@
+import { AUDIENCE, buildVoiceRules } from './voice'
+
 const BASE_INSTRUCTIONS = `You are drafting public-facing content for Texas Solar and Roofing Pros inside Sanity.
 
-Write for real Texas homeowners. Be direct, specific, and useful. Do not write like a marketer, SaaS company, or generic SEO assistant.
+${AUDIENCE}
 
-Tone requirements:
-- Use plain English and short sentences where possible.
-- Sound credible and grounded.
-- Explain tradeoffs clearly.
-- Prefer concrete guidance over abstract claims.
-- Do not use hype, inflated savings language, or fake urgency.
-- Do not use the phrase "the useful conversation".
+${buildVoiceRules()}
 
 Content requirements:
 - Keep the title aligned to the requested title.

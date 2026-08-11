@@ -1,10 +1,15 @@
 /**
  * Loaded only by Sanity Studio (sanity.config.js) — not the Next.js app stylesheet.
- * The image hotspot/crop dialog is part of Studio, so fixes belong here; globals.css
- * never applies to the Studio shell or its portaled dialogs.
+ * Image dialogs are part of Studio, so fixes belong here; globals.css never applies
+ * to the Studio shell or its portaled dialogs.
  *
  * In Presentation mode, nested flex panes can leave [role="dialog"] descendants with
  * min-height 0 so the crop stack never gains height (header visible, body collapsed).
+ * The rules below give that dialog its height back.
+ *
+ * Note the selector is `[role="dialog"]:has(img)`, which matches ANY dialog holding
+ * an image — including the array-item dialog for a Project Photo. So these rules
+ * must stay safe for a plain image-plus-fields form, not just the crop tool.
  */
 [role='dialog']:has(img) {
   display: flex;
@@ -12,12 +17,11 @@
   max-height: 92dvh;
 }
 
-[role='dialog']:has(img) [data-ui='Stack'] {
-  flex: 1 1 auto;
-}
-
-[role='dialog']:has(img) [data-ui='Flex'] {
+/* Let the dialog body take the leftover height and scroll inside itself, rather
+   than growing past the viewport. */
+[role='dialog']:has(img) > [data-ui='Card'] {
   min-height: 0;
+  overflow: auto;
 }
 
 [role='dialog']:has(img) img {
@@ -25,4 +29,23 @@
   max-width: 100%;
   width: auto;
   height: auto;
+
+  /* Without a ceiling, a tall photo renders at natural height. Combined with a
+     wrapper that has collapsed to zero height, it overflows and paints over the
+     fields beneath it — which is what hid Alt text and Caption on a Project Photo.
+     Capping the preview keeps the image inside the flow no matter how tall it is. */
+  max-height: 55dvh;
+  object-fit: contain;
 }
+
+/*
+ * Deliberately NOT set globally:
+ *
+ *   [data-ui='Flex'] { min-height: 0 }
+ *
+ * That was the direct cause of the overlap. Zeroing min-height on every Flex in the
+ * dialog let the image wrapper collapse while the image still painted at full size,
+ * so the form fields laid out underneath it. The crop tool needs its own stack to
+ * grow, which the `> [data-ui='Card']` rule above covers, so the blanket override
+ * is not required.
+ */

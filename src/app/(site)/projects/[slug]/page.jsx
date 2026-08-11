@@ -25,7 +25,9 @@ export const generateMetadata = async ({ params }) => {
   }
 
   const place = [caseStudy.location?.city, caseStudy.location?.neighborhood].filter(Boolean).join(', ')
-  const image = getImageUrl(caseStudy.heroImage, null, { width: 1200 })
+  // The cover is gallery position 1 — the same photo used on the projects card.
+  const cover = Array.isArray(caseStudy.gallery) ? caseStudy.gallery[0] : null
+  const image = getImageUrl(cover, null, { width: 1200 })
 
   return {
     title: caseStudy.title,
@@ -36,7 +38,7 @@ export const generateMetadata = async ({ params }) => {
       description: caseStudy.dek,
       publishedTime: caseStudy.publishedAt,
       ...(place ? { locale: place } : {}),
-      ...(image ? { images: [{ url: image, alt: caseStudy.heroImage?.altText ?? caseStudy.title }] } : {}),
+      ...(image ? { images: [{ url: image, alt: cover?.altText ?? caseStudy.title }] } : {}),
     },
   }
 }

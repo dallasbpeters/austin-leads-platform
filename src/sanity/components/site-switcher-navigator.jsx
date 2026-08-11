@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSource } from 'sanity'
 import { usePresentationNavigate, usePresentationParams } from 'sanity/presentation'
+import { useRouter } from 'sanity/router'
 
 import { apiVersion } from '../env'
 
@@ -58,6 +59,7 @@ export function SiteSwitcherNavigator() {
     [getClient],
   )
   const navigate = usePresentationNavigate()
+  const router = useRouter()
   const params = usePresentationParams()
   const [sites, setSites] = useState([])
   const [loading, setLoading] = useState(true)
@@ -121,6 +123,26 @@ export function SiteSwitcherNavigator() {
     [navigate],
   )
 
+  /*
+   * Presentation cannot create documents on its own — its document pane only opens
+   * things already referenced by the page being previewed. A create intent is the
+   * supported way in, and the `caseStudy-by-site` template (see sanity.config.js)
+   * pre-fills the site so a new project cannot end up filed under the wrong tenant.
+   */
+  const handleNewCaseStudy = useCallback(
+    (siteId) => {
+      if (!siteId) {
+        return
+      }
+      router.navigateIntent('create', {
+        type: 'caseStudy',
+        template: 'caseStudy-by-site',
+        siteId,
+      })
+    },
+    [router],
+  )
+
   return (
     <div style={{ height: '100%', overflowY: 'auto', padding: '12px' }}>
       <div
@@ -155,31 +177,50 @@ export function SiteSwitcherNavigator() {
         sites.map((site) => {
           const isActive = activeSiteSlug === site.slug
           return (
-            <button
-              key={site._id}
-              onClick={() => handleSiteClick(site.slug)}
-              style={{
-                background: isActive ? 'var(--card-focus-ring-color, rgba(37,99,235,0.12))' : 'transparent',
-                border: isActive
-                  ? '1px solid var(--card-focus-ring-color, rgba(37,99,235,0.3))'
-                  : '1px solid transparent',
-                borderRadius: 6,
-                color: 'inherit',
-                cursor: 'pointer',
-                display: 'block',
-                marginBottom: 2,
-                padding: '8px 10px',
-                textAlign: 'left',
-                width: '100%',
-              }}
-            >
-              <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.3 }}>{site.name}</div>
-              {site.primaryDomain && (
-                <div style={{ color: 'var(--card-muted-fg-color)', fontSize: 11, marginTop: 2 }}>
-                  {site.primaryDomain}
-                </div>
-              )}
-            </button>
+            <div key={site._id} style={{ marginBottom: 6 }}>
+              <button
+                onClick={() => handleSiteClick(site.slug)}
+                style={{
+                  background: isActive ? 'var(--card-focus-ring-color, rgba(37,99,235,0.12))' : 'transparent',
+                  border: isActive
+                    ? '1px solid var(--card-focus-ring-color, rgba(37,99,235,0.3))'
+                    : '1px solid transparent',
+                  borderRadius: 6,
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  display: 'block',
+                  padding: '8px 10px',
+                  textAlign: 'left',
+                  width: '100%',
+                }}
+              >
+                <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.3 }}>{site.name}</div>
+                {site.primaryDomain && (
+                  <div style={{ color: 'var(--card-muted-fg-color)', fontSize: 11, marginTop: 2 }}>
+                    {site.primaryDomain}
+                  </div>
+                )}
+              </button>
+              <button
+                onClick={() => handleNewCaseStudy(site._id)}
+                title={`Create a case study already assigned to ${site.name}`}
+                style={{
+                  background: 'transparent',
+                  border: '1px dashed var(--card-border-color, rgba(255,255,255,0.2))',
+                  borderRadius: 6,
+                  color: 'var(--card-muted-fg-color)',
+                  cursor: 'pointer',
+                  display: 'block',
+                  fontSize: 11,
+                  marginTop: 4,
+                  padding: '5px 10px',
+                  textAlign: 'left',
+                  width: '100%',
+                }}
+              >
+                + New case study
+              </button>
+            </div>
           )
         })
       )}

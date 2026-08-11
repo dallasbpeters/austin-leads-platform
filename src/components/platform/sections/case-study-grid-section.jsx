@@ -61,8 +61,8 @@ function toGuideCard(caseStudy, { featured = false } = {}) {
     eyebrow: [place, published].filter(Boolean).join(' · '),
     copy: caseStudy.dek,
     href: `/projects/${caseStudy.slug}`,
-    image: getImageUrl(caseStudy.heroImage, null, { width: featured ? 1400 : 700 }),
-    imageAlt: getImageAlt(caseStudy.heroImage, null, caseStudy.title),
+    image: getImageUrl(caseStudy.cover, null, { width: featured ? 1400 : 700 }),
+    imageAlt: getImageAlt(caseStudy.cover, null, caseStudy.title),
     // Renders as the pill under the headline — the proof point for this job.
     category: caseStudy.keyStat?.value || undefined,
     ctaLabel: 'Read the write-up',
