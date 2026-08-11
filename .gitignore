@@ -13,3 +13,7 @@ playwright-report/
 test-results/
 .agents/
 .env*
+
+# Google OAuth client downloads — these contain a live client_secret.
+client_secret*.json
+*.apps.googleusercontent.com.json

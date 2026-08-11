@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { Fragment } from 'react'
 
 import { getImageUrl } from '@/lib/platform/imageSource'
+import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 import { summarizeBilling } from '@/sanity/lib/caseStudies'
 
 /* ── shared class recipes ─────────────────────────────────────────────────────
@@ -18,6 +19,18 @@ const SUBKEY = 'text-muted-foreground mb-2 block text-[11px] font-semibold track
 const TH = 'text-muted-foreground px-3 py-3 text-[11px] font-semibold tracking-[0.12em] uppercase'
 const TD = 'text-foreground px-3 py-3 align-top'
 const NUM_COL = 'text-right tabular-nums'
+
+/* ── visual editing ───────────────────────────────────────────────────────────
+   This site drives click-to-edit with `data-sanity` attributes rather than stega,
+   so every editable block has to opt in explicitly. `edit(path)` is threaded down
+   to each section instead of using context, which React server components cannot
+   consume.                                                                     */
+
+const makeEdit = (documentId) => (path) =>
+  getSanityEditAttributes({ documentId, documentType: 'caseStudy', path })
+
+/** Address one row of a Sanity array by its stable `_key`. */
+const itemPath = (field, key) => `${field}[_key=="${String(key).replaceAll('"', '\\"')}"]`
 
 /* ── formatters ──────────────────────────────────────────────────────────── */
 
@@ -65,24 +78,32 @@ const creditFor = (person) => [person.name, roleLabel(person.role)].filter(Boole
    component composes them with no branching of its own. This is what keeps
    every function under the complexity ceiling.                              */
 
-const Byline = ({ crew, publishedAt }) => {
+const Byline = ({ crew, publishedAt, edit }) => {
   const credits = crew.map(creditFor).join(' · ')
   const stamp = longDate(publishedAt)
   const line = [credits, stamp].filter(Boolean).join(' · ')
   if (!line) {
     return null
   }
-  return <p className={`${META} mt-6`}>{line}</p>
+  return (
+    <p className={`${META} mt-6`} {...edit('crew')}>
+      {line}
+    </p>
+  )
 }
 
-const KeyStats = ({ stats }) => {
+const KeyStats = ({ stats, edit }) => {
   if (!stats.length) {
     return null
   }
   return (
     <div className="mt-10 grid gap-4 sm:grid-cols-3">
       {stats.map((stat) => (
-        <div className="border-border bg-card rounded-xl border p-5" key={stat._key}>
+        <div
+          className="border-border bg-card rounded-xl border p-5"
+          key={stat._key}
+          {...edit(itemPath('keyStats', stat._key))}
+        >
           <div className="text-foreground text-2xl font-semibold tabular-nums">{stat.value}</div>
           <div className={`${META} mt-1`}>{stat.label}</div>
         </div>
@@ -91,28 +112,39 @@ const KeyStats = ({ stats }) => {
   )
 }
 
-const ArticleHeader = ({ title, dek, location, publishedAt, crew, keyStats }) => {
+const ArticleHeader = ({ title, dek, location, publishedAt, crew, keyStats, edit }) => {
   const place = placeLine(location)
   return (
     <header className={`${SHELL} pt-40 pb-6`}>
-      {place ? <p className={META}>{place}</p> : null}
-      <h1 className="text-foreground mt-4 text-4xl leading-tight font-medium tracking-tight md:text-5xl">
+      {place ? (
+        <p className={META} {...edit('location')}>
+          {place}
+        </p>
+      ) : null}
+      <h1
+        className="text-foreground mt-4 text-4xl leading-tight font-medium tracking-tight md:text-5xl"
+        {...edit('title')}
+      >
         {title}
       </h1>
-      {dek ? <p className="text-muted-foreground mt-5 max-w-3xl text-lg leading-relaxed">{dek}</p> : null}
-      <Byline crew={crew} publishedAt={publishedAt} />
-      <KeyStats stats={keyStats} />
+      {dek ? (
+        <p className="text-muted-foreground mt-5 max-w-3xl text-lg leading-relaxed" {...edit('dek')}>
+          {dek}
+        </p>
+      ) : null}
+      <Byline crew={crew} edit={edit} publishedAt={publishedAt} />
+      <KeyStats edit={edit} stats={keyStats} />
     </header>
   )
 }
 
-const HeroFigure = ({ heroImage }) => {
+const HeroFigure = ({ heroImage, edit }) => {
   const heroUrl = getImageUrl(heroImage, null, { width: 1600 })
   if (!heroUrl) {
     return null
   }
   return (
-    <figure className={`${SHELL} py-8`}>
+    <figure className={`${SHELL} py-8`} {...edit('heroImage')}>
       <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
         <Image
           alt={heroImage?.altText ?? ''}
@@ -130,7 +162,7 @@ const HeroFigure = ({ heroImage }) => {
   )
 }
 
-const DrivewayNotes = ({ notes }) => {
+const DrivewayNotes = ({ notes, edit }) => {
   if (!notes.length) {
     return null
   }
@@ -139,7 +171,11 @@ const DrivewayNotes = ({ notes }) => {
       <h2 className={H2}>What you can see from the ground, and what we found once we were up there</h2>
       <div className="grid gap-8">
         {notes.map((note) => (
-          <div className="border-border grid gap-6 border-t pt-6 md:grid-cols-2" key={note._key}>
+          <div
+            className="border-border grid gap-6 border-t pt-6 md:grid-cols-2"
+            key={note._key}
+            {...edit(itemPath('drivewayNotes', note._key))}
+          >
             <div>
               <span className={SUBKEY}>From the driveway</span>
               <p className="text-muted-foreground leading-relaxed">{note.seenFromGround}</p>
@@ -169,8 +205,11 @@ const FieldNoteAuthor = ({ author }) => {
   )
 }
 
-const FieldNote = ({ note }) => (
-  <article className="border-border grid gap-4 border-t pt-6 md:grid-cols-[10rem_minmax(0,1fr)]">
+const FieldNote = ({ note, edit }) => (
+  <article
+    className="border-border grid gap-4 border-t pt-6 md:grid-cols-[10rem_minmax(0,1fr)]"
+    {...edit(itemPath('fieldNotes', note._key))}
+  >
     <div className={`${META} tabular-nums`}>
       {note.day}
       {note.time ? <span className="text-foreground mt-1 block normal-case">{note.time}</span> : null}
@@ -185,7 +224,7 @@ const FieldNote = ({ note }) => (
   </article>
 )
 
-const FieldNotes = ({ notes }) => {
+const FieldNotes = ({ notes, edit }) => {
   if (!notes.length) {
     return null
   }
@@ -194,7 +233,7 @@ const FieldNotes = ({ notes }) => {
       <h2 className={H2}>What the crew wrote down while the work was happening</h2>
       <div className="grid gap-8">
         {notes.map((note) => (
-          <FieldNote key={note._key} note={note} />
+          <FieldNote edit={edit} key={note._key} note={note} />
         ))}
       </div>
     </section>
@@ -218,15 +257,17 @@ const SpecRow = ({ row }) => (
   </tr>
 )
 
-const SpecGroup = ({ group }) => (
+const SpecGroup = ({ group, edit }) => (
   // Keyed fragment: the group header and its rows are siblings in one <tbody>,
-  // so they cannot share a wrapper element.
+  // so they cannot share a wrapper element. The group's edit target therefore sits
+  // on its header cell rather than on a row wrapper.
   <Fragment>
     <tr>
       <th
         className="bg-secondary-100 text-foreground px-3 py-2 text-left text-sm font-semibold"
         colSpan={4}
         scope="colgroup"
+        {...edit(itemPath('specGroups', group._key))}
       >
         {group.group}
         {group.summary ? (
@@ -240,7 +281,7 @@ const SpecGroup = ({ group }) => (
   </Fragment>
 )
 
-const SpecTable = ({ groups, codeEditions }) => {
+const SpecTable = ({ groups, codeEditions, edit }) => {
   if (!groups.length) {
     return null
   }
@@ -268,17 +309,21 @@ const SpecTable = ({ groups, codeEditions }) => {
           </thead>
           <tbody>
             {groups.map((group) => (
-              <SpecGroup group={group} key={group._key} />
+              <SpecGroup edit={edit} group={group} key={group._key} />
             ))}
           </tbody>
         </table>
       </div>
-      {editions ? <p className={`${META} mt-3`}>{editions}.</p> : null}
+      {editions ? (
+        <p className={`${META} mt-3`} {...edit('codeEditions')}>
+          {editions}.
+        </p>
+      ) : null}
     </section>
   )
 }
 
-const Timeline = ({ steps }) => {
+const Timeline = ({ steps, edit }) => {
   if (!steps.length) {
     return null
   }
@@ -290,6 +335,7 @@ const Timeline = ({ steps }) => {
           <div
             className="border-border grid gap-2 border-t pt-5 md:grid-cols-[10rem_minmax(0,1fr)]"
             key={step._key}
+            {...edit(itemPath('timeline', step._key))}
           >
             <span className={`${META} tabular-nums`}>{step.date}</span>
             <div>
@@ -305,8 +351,8 @@ const Timeline = ({ steps }) => {
   )
 }
 
-const BillingRow = ({ row }) => (
-  <tr className="border-border/60 border-t">
+const BillingRow = ({ row, edit }) => (
+  <tr className="border-border/60 border-t" {...edit(itemPath('billing', row._key))}>
     <td className={TD}>{row.month}</td>
     <td className={`${TD} ${NUM_COL}`}>{kwh(row.kWhUsed)}</td>
     <td className={`${TD} ${NUM_COL}`}>{kwh(row.kWhProduced)}</td>
@@ -340,7 +386,7 @@ const BillingTotals = ({ totals }) => {
   )
 }
 
-const BillingTable = ({ rows, note }) => {
+const BillingTable = ({ rows, note, edit }) => {
   if (!rows.length) {
     return null
   }
@@ -370,18 +416,22 @@ const BillingTable = ({ rows, note }) => {
           </thead>
           <tbody>
             {rows.map((row) => (
-              <BillingRow key={row._key} row={row} />
+              <BillingRow edit={edit} key={row._key} row={row} />
             ))}
             <BillingTotals totals={summarizeBilling(rows)} />
           </tbody>
         </table>
       </div>
-      {note ? <p className={`${META} mt-3`}>{note}</p> : null}
+      {note ? (
+        <p className={`${META} mt-3`} {...edit('billingNote')}>
+          {note}
+        </p>
+      ) : null}
     </section>
   )
 }
 
-const Limits = ({ limits }) => {
+const Limits = ({ limits, edit }) => {
   if (!limits.length) {
     return null
   }
@@ -391,7 +441,11 @@ const Limits = ({ limits }) => {
         <h2 className={H2}>What they asked, and what we told them</h2>
         <div className="grid gap-8">
           {limits.map((limit) => (
-            <div className="border-border grid gap-6 border-t pt-6 md:grid-cols-2" key={limit._key}>
+            <div
+              className="border-border grid gap-6 border-t pt-6 md:grid-cols-2"
+              key={limit._key}
+              {...edit(itemPath('limits', limit._key))}
+            >
               <div>
                 <span className={SUBKEY}>What they asked</span>
                 <p className="text-muted-foreground leading-relaxed">{limit.claim}</p>
@@ -424,14 +478,14 @@ const RelatedCard = ({ project }) => (
   </a>
 )
 
-const RelatedProjects = ({ projects }) => {
+const RelatedProjects = ({ projects, edit }) => {
   if (!projects.length) {
     return null
   }
   return (
     <section className={`${SHELL} ${SECTION}`} data-od-id="case-related">
       <h2 className={H2}>Other jobs nearby</h2>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-3" {...edit('relatedProjects')}>
         {projects.map((project) => (
           <RelatedCard key={project._id} project={project} />
         ))}
@@ -455,25 +509,30 @@ const asArray = (value) => (Array.isArray(value) ? value : [])
  */
 const CaseStudyArticle = ({ caseStudy }) => {
   const { title, dek, location, publishedAt, heroImage, codeEditions, billingNote } = caseStudy
+  // Every section receives this so its blocks are click-to-edit targets in
+  // Presentation. Returns `{}` when there is no document id, so the spread is a
+  // no-op rather than a crash.
+  const edit = makeEdit(caseStudy._id)
 
   return (
     <article className="text-foreground">
       <ArticleHeader
         crew={asArray(caseStudy.crew)}
         dek={dek}
+        edit={edit}
         keyStats={asArray(caseStudy.keyStats)}
         location={location}
         publishedAt={publishedAt}
         title={title}
       />
-      <HeroFigure heroImage={heroImage} />
-      <DrivewayNotes notes={asArray(caseStudy.drivewayNotes)} />
-      <FieldNotes notes={asArray(caseStudy.fieldNotes)} />
-      <SpecTable codeEditions={codeEditions} groups={asArray(caseStudy.specGroups)} />
-      <Timeline steps={asArray(caseStudy.timeline)} />
-      <BillingTable note={billingNote} rows={asArray(caseStudy.billing)} />
-      <Limits limits={asArray(caseStudy.limits)} />
-      <RelatedProjects projects={asArray(caseStudy.relatedProjects)} />
+      <HeroFigure edit={edit} heroImage={heroImage} />
+      <DrivewayNotes edit={edit} notes={asArray(caseStudy.drivewayNotes)} />
+      <FieldNotes edit={edit} notes={asArray(caseStudy.fieldNotes)} />
+      <SpecTable codeEditions={codeEditions} edit={edit} groups={asArray(caseStudy.specGroups)} />
+      <Timeline edit={edit} steps={asArray(caseStudy.timeline)} />
+      <BillingTable edit={edit} note={billingNote} rows={asArray(caseStudy.billing)} />
+      <Limits edit={edit} limits={asArray(caseStudy.limits)} />
+      <RelatedProjects edit={edit} projects={asArray(caseStudy.relatedProjects)} />
     </article>
   )
 }

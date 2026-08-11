@@ -68,6 +68,7 @@ export const sectionProjection = `
   type,
   layout,
   maxItems,
+  "featuredIds": featured[]._ref,
   heroMediaMode,
   eyebrow,
   title,

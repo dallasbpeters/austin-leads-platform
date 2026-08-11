@@ -2940,6 +2940,19 @@ const caseStudyGridSectionType = {
       validation: (Rule) => Rule.min(1).max(48),
       options: canvasExclude,
     },
+    {
+      name: 'featured',
+      title: 'Pin to the front (optional)',
+      description:
+        'Case studies listed here show first, in this order. Everything else still shows after them, so nothing is hidden. Use "Add item" then "Create new" to start a new case study without leaving this page.',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'caseStudy' }] }],
+      // Pinning the same job twice would render it twice.
+      validation: (Rule) => Rule.unique().error('That case study is already pinned.'),
+      options: canvasPurpose(
+        'Optional ordering. References listed here are moved to the front; the rest still render behind them.',
+      ),
+    },
   ]),
   preview: {
     select: {

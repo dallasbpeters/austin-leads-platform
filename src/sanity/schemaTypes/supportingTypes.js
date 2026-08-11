@@ -1,5 +1,7 @@
 import aiContextType from './aiContextType'
 
+const canvasExclude = { canvasApp: { exclude: true } }
+
 export default [
   aiContextType,
   {
@@ -207,6 +209,25 @@ export default [
       },
       { name: 'body', title: 'Review body', type: 'text', validation: (Rule) => Rule.required() },
       { name: 'site', title: 'Site', type: 'reference', to: [{ type: 'site' }] },
+      {
+        name: 'source',
+        title: 'Where this came from',
+        type: 'string',
+        readOnly: true,
+        description:
+          'Set to "google" on reviews pulled in by the Business Profile sync. Those are overwritten on the next sync, so edit them in Google rather than here. Blank means someone typed it in Studio.',
+        options: canvasExclude,
+      },
+      // Google's review id, and the timestamp of the version last synced. Used to
+      // skip unchanged reviews and to avoid clobbering hand-written ones.
+      { name: 'sourceId', title: 'Source id', type: 'string', hidden: true, options: canvasExclude },
+      {
+        name: 'sourceUpdatedAt',
+        title: 'Source updated at',
+        type: 'string',
+        hidden: true,
+        options: canvasExclude,
+      },
     ],
     preview: {
       select: {

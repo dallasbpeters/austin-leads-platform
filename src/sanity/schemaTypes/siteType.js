@@ -34,6 +34,28 @@ export default {
     { name: 'aliases', title: 'Aliases', type: 'array', of: [{ type: 'string' }] },
     { name: 'redirectTarget', title: 'Redirect target', type: 'string' },
     {
+      name: 'googleBusiness',
+      title: 'Google Business Profile',
+      type: 'object',
+      description:
+        'Identifies which Google profile the review sync pulls from for this tenant. Without both ids the sync skips this site rather than filing its reviews under the wrong one.',
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        {
+          name: 'accountId',
+          title: 'Account id',
+          type: 'string',
+          description: 'The digits from "accounts/123456789". Same for every location you own.',
+        },
+        {
+          name: 'locationId',
+          title: 'Location id',
+          type: 'string',
+          description: 'The digits from "locations/987654321". Different per storefront.',
+        },
+      ],
+    },
+    {
       name: 'projectsIndex',
       title: 'Projects page header',
       type: 'object',
