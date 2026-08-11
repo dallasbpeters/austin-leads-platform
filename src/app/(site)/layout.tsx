@@ -1,10 +1,11 @@
 import { Mail } from 'iconoir-react'
+import type { Metadata } from 'next'
 
 import DevTrace from '@/components/dev/dev-trace'
 import { JobberDialog } from '@/components/jobber-dialog'
 import { resolveCurrentSite } from '@/lib/platform/content'
 
-export const generateMetadata = async () => {
+export const generateMetadata = async (): Promise<Metadata> => {
   const site = await resolveCurrentSite().catch(() => null)
   if (site?.slug !== 'txchristmaslights') {
     return {}

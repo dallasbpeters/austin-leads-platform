@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import { Button } from '@/components/ui/button'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
 
@@ -46,6 +47,20 @@ const fallbackReviews = [
 
 function getReviewPhotoUrl(review) {
   return review?.reviewerPhoto?.asset?.url || ''
+}
+
+/** First occurrence wins, so the editor's ordering is preserved. */
+function dedupeReviews(list) {
+  const seen = new Set()
+
+  return list.filter((review, index) => {
+    const key = review?.id || review?._id || `${review?.author || 'review'}-${index}`
+    if (seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
+  })
 }
 
 function getInitials(name) {
@@ -123,13 +138,12 @@ function ReviewerAvatar({ review }) {
   )
 }
 
-const GoogleLogo = (props) => (
+const GoogleLogo = ({ className, ...props }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 1556 1587"
-    width="1.5em"
-    height="1.5em"
     aria-hidden="true"
+    className={className}
     {...props}
   >
     <g id="Layer">
@@ -164,11 +178,17 @@ export default function Testimonials({
 }) {
   const sectionReviews = Array.isArray(section?.reviews) ? section.reviews.filter(Boolean) : []
   const siteReviews = Array.isArray(reviews) ? reviews.filter(Boolean) : []
-  const resolvedReviews = sectionReviews.length
-    ? sectionReviews.slice(0, 6)
+  // A section may hand-pick reviews to feature. When it doesn't, show every review
+  // for the site so newly added ones appear without editing the page.
+  const pickedReviews = sectionReviews.length
+    ? sectionReviews
     : siteReviews.length
-      ? siteReviews.slice(0, 3)
+      ? siteReviews
       : fallbackReviews
+  // The same review referenced twice in a section renders two cards keyed alike,
+  // which React rejects. Schema validation now blocks new duplicates, but existing
+  // documents can still carry them, so drop repeats here too.
+  const resolvedReviews = dedupeReviews(pickedReviews)
   const title = section?.title || 'What customers are saying'
   const subtitle = portableTextToPlainText(section?.body) || 'about Texas Solar and Roofing Pros'
   const backgroundImage = getImageUrl(section?.backgroundImageAsset, section?.backgroundImage, {
@@ -180,11 +200,10 @@ export default function Testimonials({
     'Customer reviews background',
   )
   const desktopColumns = [[], [], []]
-  const desktopOrder = [0, 1, 2, 1]
 
+  // Round-robin across the three columns so they stay balanced at any review count.
   resolvedReviews.forEach((review, index) => {
-    const targetColumn = desktopOrder[index % desktopOrder.length]
-    desktopColumns[targetColumn].push(review)
+    desktopColumns[index % desktopColumns.length].push(review)
   })
 
   return (
@@ -215,15 +234,28 @@ export default function Testimonials({
             {subtitle}
           </span>
         </h2>
+        <p className="text-foreground animate-delay-300 dynamic-slide-in text-lg leading-relaxed sm:text-xl">
+          We take pride in our work and the satisfaction of our customers. Here are some of their experiences
+          with us.
+        </p>
+        <Button
+          href="https://g.page/r/CZpZEcZDwxjzEBM/review"
+          variant="default"
+          size="lg"
+          className="mt-6 justify-self-center"
+        >
+          <GoogleLogo className="m-2 size-6" />
+          Review Us on Google
+        </Button>
       </div>
 
       <div className="animate-delay-400 dynamic-slide-in relative z-10 mx-auto max-w-7xl px-4 pb-48 md:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {desktopColumns.map((columnReviews, columnIndex) => (
             <div key={`column-${columnIndex}`} className="space-y-6">
-              {columnReviews.map((review) => (
+              {columnReviews.map((review, rowIndex) => (
                 <Card
-                  key={review.id || `${review.author}-${columnIndex}`}
+                  key={review.id || review._id || `${review.author}-${columnIndex}-${rowIndex}`}
                   className="card--dark-glass relative p-8 backdrop-blur-sm"
                 >
                   <div className="flex items-center gap-1">
@@ -231,7 +263,7 @@ export default function Testimonials({
                     <span className="ml-2 grow text-sm text-gray-400">
                       {Number(review.stars || 5).toFixed(1)}
                     </span>
-                    <GoogleLogo />
+                    <GoogleLogo className="size-8" />
                   </div>
                   <p className="border-border text-foreground mb-1 border-b pb-3 leading-relaxed">
                     "{review.body}"

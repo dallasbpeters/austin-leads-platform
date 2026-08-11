@@ -31,6 +31,7 @@ export default function App({
   homepage = null,
   heroSection = null,
   reviews = [],
+  caseStudies = [],
   site = null,
   navigation = [],
   jsonLd = null,
@@ -92,6 +93,7 @@ export default function App({
                   section={section}
                   site={site}
                   reviews={reviews}
+                  caseStudies={caseStudies}
                   sectionId={sectionId}
                   editAttributes={editAttrs}
                 />

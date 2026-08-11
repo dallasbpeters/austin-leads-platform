@@ -12,7 +12,7 @@ import {
   buildSanityAgentPublishingInstruction,
   SANITY_AGENT_PUBLISHING_SETUP_NOTES,
 } from '../agent/publishingInstructions'
-import { toolApiOrigin, studioUrl } from '../env'
+import { geminiImageApiEndpoint, geminiPluginApiKey, studioUrl } from '../env'
 import { syncGuideHeroToGuideGridItems } from '../lib/syncGuideListingImages'
 
 const SANITY_AGENT_SCHEMA_ID =
@@ -53,14 +53,6 @@ function Field({ label, children, hint }) {
   )
 }
 
-function getGeminiPluginApiKey() {
-  return (
-    process.env.SANITY_STUDIO_GEMINI_PLUGIN_API_KEY ||
-    process.env.NEXT_PUBLIC_GEMINI_PLUGIN_API_KEY ||
-    undefined
-  )
-}
-
 function buildSuggestedSlug(contentType, title) {
   return normalizeDraftSlugForContentType(contentType, slugifyDraftValue(title))
 }
@@ -87,9 +79,6 @@ export function AiDraftingTool() {
     brief: '',
     sources: '',
   })
-  const geminiApiEndpoint = `${toolApiOrigin}/api/gemini/generate-image`
-  const geminiPluginApiKey = getGeminiPluginApiKey()
-
   React.useEffect(() => {
     let active = true
 
@@ -579,7 +568,7 @@ export function AiDraftingTool() {
               }}
             >
               <ImageGeneratorContent
-                apiEndpoint={geminiApiEndpoint}
+                apiEndpoint={geminiImageApiEndpoint}
                 apiKey={geminiPluginApiKey}
                 onImageGenerated={handleImageGenerated}
               />
@@ -592,7 +581,7 @@ export function AiDraftingTool() {
                 wordBreak: 'break-all',
               }}
             >
-              Endpoint: {geminiApiEndpoint}
+              Endpoint: {geminiImageApiEndpoint}
             </div>
             {generatedAssetUrl ? (
               <div style={{ marginTop: '0.6rem', color: '#166534', fontSize: '0.85rem' }}>

@@ -10,6 +10,11 @@ import PortableTextContent from '@/components/portable-text-content'
 import { buildSanityImageUrl } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 
+// Shared fallback so `images` keeps a stable identity when the section has none.
+// A fresh `[]` per render would change the neighbour-preload effect's dependencies
+// on every render and re-run it forever.
+const EMPTY_IMAGES = []
+
 // Cycled heights produce the masonry rhythm. The order is intentionally
 // non-monotonic so neighbouring tiles never sit at matching heights and the
 // columns end up offset from each other.
@@ -147,10 +152,12 @@ function GalleryLightbox({
             </Dialog.Close>
           </div>
           {activeSrc ? (
-            <img
+            <Image
               key={activeSrc}
               src={activeSrc}
               alt={activeAlt}
+              height={400}
+              width={400}
               className="data-[state=open]:animate-in data-[state=open]:fade-in-0 max-h-[82vh] max-w-[92vw] object-contain shadow-2xl"
               draggable={false}
             />
@@ -194,7 +201,7 @@ function GalleryLightbox({
 }
 
 export function GallerySection({ section, sectionId }) {
-  const images = Array.isArray(section?.images) ? section.images : []
+  const images = Array.isArray(section?.images) ? section.images : EMPTY_IMAGES
   const title = cleanRuntimeString(section?.title || '')
 
   const [lightboxIndex, setLightboxIndex] = useState(null)

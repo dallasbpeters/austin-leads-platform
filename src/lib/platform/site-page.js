@@ -22,6 +22,7 @@ import {
 } from '@/lib/platform/content'
 import { getHeroImageUrl } from '@/lib/platform/imageSource'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+import { getCaseStudiesForSite } from '@/sanity/lib/caseStudies'
 import { SHARE_DESCRIPTION_MAX, SHARE_TITLE_MAX, truncateForShare } from '@/lib/platform/social-share-text'
 
 /**
@@ -355,6 +356,8 @@ async function renderSolarHomepage(site) {
   const heroSection = resolveHeroSection(homepage, heroHomepage)
   const resourcesSection = findResourcesSection(homepage)
   const reviews = await getHomepageReviewsForSite(site.slug)
+  const caseStudyLimit = resolveCaseStudyLimit(homepage?.sections || [])
+  const caseStudies = caseStudyLimit ? await getCaseStudiesForSite(site.slug, { limit: caseStudyLimit }) : []
   const jsonLd = createJsonLd(site, homepage || heroHomepage, '/')
 
   return (
@@ -363,6 +366,7 @@ async function renderSolarHomepage(site) {
       heroSection={heroSection}
       resourcesSection={resourcesSection}
       reviews={reviews}
+      caseStudies={caseStudies}
       site={site}
       navigation={resolveNavigationForSite(site)}
       jsonLd={jsonLd}
@@ -371,14 +375,45 @@ async function renderSolarHomepage(site) {
   )
 }
 
-function resolvePageReviews(site, page, slugParts) {
-  const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
-  const hasTestimonialsSection = Array.isArray(page.sections)
-    ? page.sections.some((section) => section.type === 'testimonials')
-    : false
-  const reviews = hasTestimonialsSection ? getHomepageReviewsForSite(site.slug) : []
+/**
+ * Upper bound when a case studies section has no "Maximum shown" set, i.e. asks for
+ * every published case study. Keeps an uncapped section from turning into an
+ * unbounded query while staying far above any realistic project count.
+ */
+const CASE_STUDY_SHOWCASE_MAX = 96
 
-  return { pathname, reviews }
+/**
+ * How many case studies this page needs, or 0 when it has no showcase section.
+ * A page may hold several sections with different caps, so fetch the largest once
+ * and let each section slice down from it.
+ */
+function resolveCaseStudyLimit(sections) {
+  const showcases = sections.filter((section) => section.type === 'caseStudyGrid')
+
+  if (showcases.length === 0) {
+    return 0
+  }
+
+  return Math.max(
+    ...showcases.map((section) => {
+      const max = Number(section.maxItems)
+      return Number.isFinite(max) && max > 0 ? max : CASE_STUDY_SHOWCASE_MAX
+    }),
+  )
+}
+
+async function resolvePageSectionData(site, page, slugParts) {
+  const pathname = slugParts.length ? `/${slugParts.join('/')}` : '/'
+  const sections = Array.isArray(page.sections) ? page.sections : []
+  const hasTestimonialsSection = sections.some((section) => section.type === 'testimonials')
+  const caseStudyLimit = resolveCaseStudyLimit(sections)
+
+  const [reviews, caseStudies] = await Promise.all([
+    hasTestimonialsSection ? getHomepageReviewsForSite(site.slug) : [],
+    caseStudyLimit ? getCaseStudiesForSite(site.slug, { limit: caseStudyLimit }) : [],
+  ])
+
+  return { pathname, reviews, caseStudies }
 }
 
 async function renderGenericSitePage(site, slugParts) {
@@ -388,7 +423,7 @@ async function renderGenericSitePage(site, slugParts) {
     notFound()
   }
 
-  const { pathname, reviews } = resolvePageReviews(site, page, slugParts)
+  const { pathname, reviews, caseStudies } = await resolvePageSectionData(site, page, slugParts)
 
   return (
     <PublicSite
@@ -398,6 +433,7 @@ async function renderGenericSitePage(site, slugParts) {
       navigation={resolveNavigationForSite(site)}
       jsonLd={createJsonLd(site, page, pathname)}
       reviews={reviews}
+      caseStudies={caseStudies}
     />
   )
 }

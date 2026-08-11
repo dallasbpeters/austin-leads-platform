@@ -95,7 +95,7 @@ const NavList = ({ items, onNavigate }) => (
           key={key}
           href={href}
           onClick={onNavigate}
-          className={`font-wght-450 medium text-foreground hover:text-primary btn text-md flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent ${itemClassName}`}
+          className={`font-wght-450 medium text-foreground btn text-md flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent hover:text-blue-900 ${itemClassName}`}
         >
           <span
             data-slot="button-inner"

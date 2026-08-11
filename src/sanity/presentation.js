@@ -117,7 +117,34 @@ function resolveFromAnyPath(context) {
   }
 }
 
+/**
+ * Case studies are their own document type served from a dedicated route, so they
+ * never match {@link PAGE_DOCUMENT_FILTER}. Without this resolver Presentation reports
+ * "Missing a main document" on every /projects/<slug> preview.
+ *
+ * Uses the `:slug` route param rather than the parsed path, since the path here
+ * still carries the "projects/" prefix that is not part of the document's slug.
+ */
+function resolveCaseStudy(context) {
+  const { siteSlug } = parsePreviewContext(context)
+  const slug = context.params?.slug
+
+  if (!slug) {
+    return null
+  }
+
+  return {
+    filter: `_type == "caseStudy" && slug.current == $slug${siteSlug ? ' && site->slug.current == $siteSlug' : ''}`,
+    params: { slug, ...(siteSlug ? { siteSlug } : {}) },
+  }
+}
+
 export const presentationDocuments = defineDocuments([
+  // Case study detail routes come first: the `:path*` catch-alls below would
+  // otherwise swallow them and search for a page whose slug is "projects/<slug>".
+  { route: '/_site/:site/projects/:slug', resolve: resolveCaseStudy },
+  { route: '/preview/:siteSlug/projects/:slug', resolve: resolveCaseStudy },
+  { route: '/projects/:slug', resolve: resolveCaseStudy },
   // Path-based site routing used by the site switcher navigator.
   // The site slug in /_site/:site becomes a route param so the resolver can filter by site.
   { route: '/_site/:site', resolve: resolveFromAnyPath },
@@ -258,6 +285,54 @@ export const presentationLocations = {
             href: path,
           },
           { title: 'Guides', href: '/guides' },
+        ],
+      }
+    },
+  }),
+  /**
+   * Reviews have no page of their own. They surface inside any testimonials section —
+   * either hand-picked, or implicitly because the section lists every review for the
+   * site — so there is no single canonical URL to compute.
+   *
+   * Deliberately resolved from plain document fields only. A back-reference subquery
+   * (`*[references(^._id)]`) in `select` leaves the locations banner stuck on
+   * "Resolving locations…", because the Studio evaluates `select` through its own
+   * resolver rather than as a free-form GROQ projection.
+   */
+  review: defineLocations({
+    select: {
+      author: 'author',
+    },
+    resolve: (doc) => ({
+      locations: [{ title: 'Home', href: '/' }],
+      message: doc?.author
+        ? `Reviews from ${doc.author} appear in any testimonials section on this site.`
+        : 'Reviews appear in any testimonials section on this site.',
+    }),
+  }),
+  /* Crew credits are inline objects on the case study, not documents, so they need
+     no location resolver — editing one happens inside the case study's own form. */
+  /**
+   * Case studies live at /projects/<slug>, with the projects index as the second
+   * location so an editor can jump from one job to the list it appears in.
+   */
+  caseStudy: defineLocations({
+    select: {
+      slug: 'slug.current',
+      title: 'title',
+    },
+    resolve: (doc) => {
+      if (!doc.slug) {
+        return noLocations
+      }
+
+      return {
+        locations: [
+          {
+            title: doc.title || 'Untitled case study',
+            href: `/projects/${doc.slug}`,
+          },
+          { title: 'Projects', href: '/projects' },
         ],
       }
     },

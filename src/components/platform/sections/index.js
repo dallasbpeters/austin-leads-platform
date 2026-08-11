@@ -6,6 +6,7 @@ import { AboutProfileSection } from './about-profile-section'
 import { BandSection } from './band-section'
 import { BannerCtaSection } from './banner-cta-section'
 import { CardGridSection } from './card-grid-section'
+import { CaseStudyGridSection } from './case-study-grid-section'
 import { CtaBannerSection } from './cta-banner-section'
 import { CtaSection } from './cta-section'
 import { FaqSection } from './faq-section'
@@ -44,6 +45,7 @@ export const sectionRenderers = {
   band: BandSection,
   bannerCta: BannerCtaSection,
   calculator: CalculatorSection,
+  caseStudyGrid: CaseStudyGridSection,
   costs: CostsSection,
   cta: CtaSection,
   ctaBanner: CtaBannerSection,

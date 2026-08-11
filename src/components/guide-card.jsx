@@ -444,7 +444,7 @@ export default function GuideCardGrid({
   )
 }
 
-function GuideCard(props) {
+export function GuideCard(props) {
   const card = normalizeCardProps(props)
   const href = cleanRuntimeHref(card.href)
 
@@ -458,8 +458,6 @@ function GuideCard(props) {
     </Link>
   )
 }
-
-export { GuideCard }
 
 function ArrowIcon() {
   return (

@@ -15,7 +15,11 @@ export const GET = async () => {
   }
 
   try {
-    const res = await fetch(SOURCE_URL, { next: { revalidate: 86_400 } })
+    // `cache: 'no-store'`, not `next: { revalidate }`: the upstream file is ~4.3MB and
+    // Next's data cache rejects anything over 2MB, so asking it to cache only produced a
+    // "Failed to set Next.js data cache" error on every cold fetch. Caching is already
+    // handled by the module-level `cached` memo below plus the Cache-Control header.
+    const res = await fetch(SOURCE_URL, { cache: 'no-store' })
     if (!res.ok) {
       throw new Error(`Upstream ${res.status}`)
     }

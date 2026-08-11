@@ -34,6 +34,46 @@ export default {
     { name: 'aliases', title: 'Aliases', type: 'array', of: [{ type: 'string' }] },
     { name: 'redirectTarget', title: 'Redirect target', type: 'string' },
     {
+      name: 'projectsIndex',
+      title: 'Projects page header',
+      type: 'object',
+      description:
+        'The heading block at the top of /projects, above the case study cards. Edit the copy here — it is not set in code.',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        {
+          name: 'eyebrow',
+          title: 'Eyebrow',
+          type: 'string',
+          description: 'Small overline above the heading.',
+          initialValue: 'Our work',
+        },
+        {
+          name: 'title',
+          title: 'Heading',
+          type: 'string',
+          initialValue: 'Every job, written up the same way.',
+        },
+        {
+          name: 'intro',
+          title: 'Intro paragraph',
+          type: 'text',
+          rows: 3,
+          initialValue:
+            'What we saw from the driveway, what the crew found once they were on the roof, what went on it, and what the electric bill did afterward.',
+        },
+        {
+          name: 'emptyMessage',
+          title: 'Message when no case studies are published',
+          type: 'text',
+          rows: 2,
+          description: 'Shown in place of the cards while this site has no published case studies.',
+          initialValue:
+            'Write-ups from recent roofing and solar jobs are on the way. In the meantime, reach out and we will walk you through comparable work in your area.',
+        },
+      ],
+    },
+    {
       name: 'navigation',
       title: 'Navigation',
       type: 'array',

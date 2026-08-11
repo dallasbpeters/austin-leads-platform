@@ -58,7 +58,7 @@ export const metadata = {
     ],
     shortcut: ['/favicon.ico'],
   },
-  title: 'Austin Leads Platform',
+  title: 'Texas Solar & Roofing Pros.',
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
     other: {

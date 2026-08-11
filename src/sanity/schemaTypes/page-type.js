@@ -1900,13 +1900,17 @@ const heroSpecificFields = [
   },
   {
     name: 'titlePrimary',
-    title: 'Split headline part 1',
+    title: 'Split headline part 1 (solid)',
+    description:
+      'First line of a two-line headline, in solid text. Ignored if "Headline — single line" above has any value.',
     type: 'string',
     options: canvasPurpose('Primary homepage hero word or phrase shown in the solid style.'),
   },
   {
     name: 'titleAccent',
-    title: 'Split headline part 2',
+    title: 'Split headline part 2 (outlined)',
+    description:
+      'Second line of the headline, in outlined text. Ignored if "Headline — single line" above has any value.',
     type: 'string',
     options: canvasPurpose('Secondary homepage hero word or phrase shown in the outlined style.'),
   },
@@ -1934,19 +1938,28 @@ const heroSpecificFields = [
   {
     name: 'heroOverlayStartOpacity',
     title: 'Hero overlay start opacity',
+    description:
+      'How dark the overlay is where the gradient begins. 0 = fully transparent, 1 = fully solid. Leave empty for the default (0.8).',
     type: 'number',
+    validation: (Rule) => Rule.min(0).max(1),
     options: canvasExclude,
   },
   {
     name: 'heroOverlayEndOpacity',
     title: 'Hero overlay end opacity',
+    description:
+      'How dark the overlay is where the gradient ends. 0 = fully transparent, 1 = fully solid. Leave empty for the default (0.12).',
     type: 'number',
+    validation: (Rule) => Rule.min(0).max(1),
     options: canvasExclude,
   },
   {
     name: 'heroOverlayOpacity',
-    title: 'Hero overlay opacity',
+    title: 'Hero overlay opacity (flat)',
+    description:
+      'Single overlay strength used instead of a gradient, from 0 (transparent) to 1 (solid). Only set this if you are not using the start/end values above.',
     type: 'number',
+    validation: (Rule) => Rule.min(0).max(1),
     options: canvasExclude,
   },
   {
@@ -2021,13 +2034,19 @@ const heroSectionType = {
     },
     {
       name: 'title',
-      title: 'Title',
+      title: 'Headline — single line',
+      description:
+        'A one-piece headline. If you put anything here it WINS: the two "Split headline" fields below are ignored completely. Leave this empty to use the split headline instead.',
       type: 'string',
-      options: canvasPurpose('Hero title used on generic pages and guides.'),
+      options: canvasPurpose(
+        'Single-line hero headline. Takes precedence over titlePrimary/titleAccent when set.',
+      ),
     },
     {
       name: 'cardCopy',
       title: 'Card copy',
+      description:
+        'Shown in the card beside the headline — but only when "Metrics" below is empty. Add any metrics and they replace this card copy.',
       type: 'portableTextSimple',
       options: canvasPurpose('Supporting copy shown in the hero card.'),
     },
@@ -2866,6 +2885,80 @@ const incentivesSectionType = {
   },
 }
 
+/**
+ * Showcases the `caseStudy` documents belonging to this page's site.
+ *
+ * Deliberately has no hand-picked list of case studies: a curation array silently
+ * hides everything an editor forgets to add to it, which is exactly how reviews
+ * went missing from the homepage. Every published case study for the site shows,
+ * newest first, and "Maximum shown" is the only limiter.
+ */
+const caseStudyGridSectionType = {
+  name: 'caseStudyGridSection',
+  title: 'Case Studies Section',
+  type: 'object',
+  initialValue: {
+    type: 'caseStudyGrid',
+    layout: 'featured',
+  },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Heading above the case study showcase.'),
+    },
+    {
+      name: 'body',
+      title: 'Subtitle',
+      type: 'portableTextSimple',
+      options: canvasPurpose('Optional intro copy under the case studies heading.'),
+    },
+    {
+      name: 'layout',
+      title: 'Layout',
+      type: 'string',
+      initialValue: 'featured',
+      description:
+        'Featured lead puts the newest case study in a large card with the rest below it. Even grid gives every case study the same size card.',
+      options: {
+        list: [
+          { title: 'Featured lead + grid', value: 'featured' },
+          { title: 'Even grid', value: 'grid' },
+        ],
+        layout: 'radio',
+        ...canvasPurpose('Choose whether the newest case study gets a larger featured card.'),
+      },
+    },
+    {
+      name: 'maxItems',
+      title: 'Maximum shown',
+      type: 'number',
+      description:
+        'Leave empty to show every published case study for this site. Set a number to cap it, e.g. 3 when featuring recent work on the homepage.',
+      validation: (Rule) => Rule.min(1).max(48),
+      options: canvasExclude,
+    },
+  ]),
+  preview: {
+    select: {
+      title: 'title',
+      subtitle: 'body',
+      layout: 'layout',
+      maxItems: 'maxItems',
+    },
+    prepare({ title, subtitle, layout, maxItems }) {
+      const shown = maxItems ? `newest ${maxItems}` : 'all case studies'
+      const shape = layout === 'grid' ? 'even grid' : 'featured lead'
+      return {
+        title: title || 'Case studies section',
+        subtitle: pageSectionListSubtitle('Case studies section', subtitle, `${shown} · ${shape}`),
+      }
+    },
+  },
+}
+
 const testimonialsSectionType = {
   name: 'testimonialsSection',
   title: 'Testimonials Section',
@@ -2903,7 +2996,9 @@ const testimonialsSectionType = {
     },
     {
       name: 'reviews',
-      title: 'Reviews',
+      title: 'Featured reviews (optional)',
+      description:
+        'Leave this empty to show every review for this site automatically — new reviews then appear here without editing the page. Only add reviews here if this page should feature a specific subset; anything not listed will be hidden.',
       type: 'array',
       of: [
         {
@@ -2911,8 +3006,12 @@ const testimonialsSectionType = {
           to: [{ type: 'review' }],
         },
       ],
-      validation: (Rule) => Rule.max(6),
-      options: canvasPurpose('Optional review references. If empty, site-level reviews are used.'),
+      // Listing the same review twice renders two cards with the same React key,
+      // which React refuses to keep stable across updates.
+      validation: (Rule) => Rule.unique().error('That review is already in this list.'),
+      options: canvasPurpose(
+        'Optional review references. Leave empty to show all reviews for the site; any reviews listed here replace that full list.',
+      ),
     },
   ]),
   preview: {
@@ -2928,7 +3027,9 @@ const testimonialsSectionType = {
         subtitle: pageSectionListSubtitle(
           'Testimonials section',
           subtitle,
-          reviewCount ? `${reviewCount} selected reviews` : 'Customer proof',
+          reviewCount
+            ? `Only ${reviewCount} featured review${reviewCount === 1 ? '' : 's'} — others hidden`
+            : 'Showing all site reviews',
         ),
       }
     },
@@ -4398,6 +4499,8 @@ const energyChartSectionType = {
     {
       name: 'chartAreaFillOpacity',
       title: 'Area fill opacity',
+      description:
+        'Only applies when the chart type is Area. 0 = transparent fill, 1 = solid fill. Default is 0.24.',
       type: 'number',
       initialValue: 0.24,
       validation: (Rule) => Rule.min(0).max(1),
@@ -4630,6 +4733,50 @@ const pageSectionType = {
   },
 }
 
+/**
+ * Every section type a page can hold. Exported so other documents can offer the same
+ * page-builder blocks — `caseStudy` appends them beneath its structured article —
+ * without a second list that silently drifts out of sync with this one.
+ */
+export const pageSectionTypes = [
+  { type: 'heroSection' },
+  { type: 'storySection' },
+  { type: 'articleSection' },
+  { type: 'calculatorSection' },
+  { type: 'costsSection' },
+  { type: 'guidesSection' },
+  { type: 'solarAdoptionSection' },
+  { type: 'solarBenefitsSection' },
+  { type: 'solarDifferenceSection' },
+  { type: 'snapshotSection' },
+  { type: 'incentivesSection' },
+  { type: 'testimonialsSection' },
+  { type: 'caseStudyGridSection' },
+  { type: 'highlightsSection' },
+  { type: 'stepsSection' },
+  { type: 'faqSection' },
+  { type: 'gallerySection' },
+  { type: 'pricingSection' },
+  { type: 'quoteSection' },
+  { type: 'ctaSection' },
+  { type: 'ctaBannerSection' },
+  { type: 'bannerCtaSection' },
+  { type: 'secondaryCTASection' },
+  { type: 'scrollTextSection' },
+  { type: 'hailMapSection' },
+  { type: 'serviceAreaMapSection' },
+  { type: 'bandSection' },
+  { type: 'logosSection' },
+  { type: 'solarSwitchSection' },
+  { type: 'energyChartSection' },
+  { type: 'videoSection' },
+  { type: 'serviceGridSection' },
+  { type: 'resourceGridSection' },
+  { type: 'guideGridSection' },
+  { type: 'aboutProfileSection' },
+  { type: 'installProcessSection' },
+]
+
 const baseFields = [
   {
     name: 'title',
@@ -4726,43 +4873,7 @@ const baseFields = [
     options: canvasPurpose(
       'Structured page sections. Map headings, body copy, calls to action, proof points, and FAQ items into the relevant section.',
     ),
-    of: [
-      { type: 'heroSection' },
-      { type: 'storySection' },
-      { type: 'articleSection' },
-      { type: 'calculatorSection' },
-      { type: 'costsSection' },
-      { type: 'guidesSection' },
-      { type: 'solarAdoptionSection' },
-      { type: 'solarBenefitsSection' },
-      { type: 'solarDifferenceSection' },
-      { type: 'snapshotSection' },
-      { type: 'incentivesSection' },
-      { type: 'testimonialsSection' },
-      { type: 'highlightsSection' },
-      { type: 'stepsSection' },
-      { type: 'faqSection' },
-      { type: 'gallerySection' },
-      { type: 'pricingSection' },
-      { type: 'quoteSection' },
-      { type: 'ctaSection' },
-      { type: 'ctaBannerSection' },
-      { type: 'bannerCtaSection' },
-      { type: 'secondaryCTASection' },
-      { type: 'scrollTextSection' },
-      { type: 'hailMapSection' },
-      { type: 'serviceAreaMapSection' },
-      { type: 'bandSection' },
-      { type: 'logosSection' },
-      { type: 'solarSwitchSection' },
-      { type: 'energyChartSection' },
-      { type: 'videoSection' },
-      { type: 'serviceGridSection' },
-      { type: 'resourceGridSection' },
-      { type: 'guideGridSection' },
-      { type: 'aboutProfileSection' },
-      { type: 'installProcessSection' },
-    ],
+    of: [...pageSectionTypes],
   },
 ]
 
@@ -4855,6 +4966,7 @@ export default [
   snapshotSectionType,
   incentivesSectionType,
   testimonialsSectionType,
+  caseStudyGridSectionType,
   scrollTextSectionType,
   highlightsSectionType,
   stepsSectionType,

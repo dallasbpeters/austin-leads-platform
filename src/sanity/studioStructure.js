@@ -11,6 +11,17 @@ const SITE_SETTINGS_ITEMS = [
   },
 ]
 
+const buildSiteCaseStudiesItem = (S, site) =>
+  S.listItem()
+    .title(site.title)
+    .child(
+      S.documentList()
+        .title(`${site.title} Case Studies`)
+        .filter('_type == "caseStudy" && site->slug.current == $siteSlug')
+        .params({ siteSlug: site.slug })
+        .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }]),
+    )
+
 const buildSiteSettingsItem = (S, site) =>
   S.listItem()
     .title(site.title)
@@ -66,6 +77,14 @@ export const studioStructure = (S) =>
             .title('Pages')
             .items(SITE_SETTINGS_ITEMS.map((site) => buildSitePagesItem(S, site))),
         ),
+      S.listItem()
+        .title('Case studies')
+        .child(
+          S.list()
+            .title('Case Studies')
+            .items(SITE_SETTINGS_ITEMS.map((site) => buildSiteCaseStudiesItem(S, site))),
+        ),
+
       S.listItem()
         .title('Posts')
         .child(

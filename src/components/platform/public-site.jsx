@@ -60,7 +60,7 @@ function computePublicSiteFlags(site, page, pathname) {
   }
 }
 
-function renderSectionItem(section, index, flags, page, site, pathname, reviews) {
+function renderSectionItem(section, index, flags, page, site, pathname, reviews, caseStudies) {
   const Component = sectionRenderers[section.type]
   if (!Component) {
     return null
@@ -84,6 +84,7 @@ function renderSectionItem(section, index, flags, page, site, pathname, reviews)
           site={site}
           pathname={pathname}
           reviews={reviews}
+          caseStudies={caseStudies}
           sectionId={sectionId}
           editAttributes={sectionEditAttrs}
         />
@@ -95,7 +96,17 @@ function renderSectionItem(section, index, flags, page, site, pathname, reviews)
   )
 }
 
-export default function PublicSite({ site, page, pathname, navigation, jsonLd, reviews = EMPTY_REVIEWS }) {
+export default function PublicSite({
+  site,
+  page,
+  pathname,
+  navigation,
+  jsonLd,
+  reviews = EMPTY_REVIEWS,
+  // No default: CaseStudyGridSection already falls back to an empty list, and an
+  // extra default parameter here trips the complexity ceiling on this component.
+  caseStudies,
+}) {
   const flags = computePublicSiteFlags(site, page, pathname)
   const pageEditAttrs = getSanityPageEditAttributes(page, 'title')
   const pageSectionsEditAttrs = getSanityPageEditAttributes(page, 'sections')
@@ -137,7 +148,7 @@ export default function PublicSite({ site, page, pathname, navigation, jsonLd, r
         {...pageSectionsEditAttrs}
       >
         {flags.sections.map((section, index) =>
-          renderSectionItem(section, index, flags, page, site, pathname, reviews),
+          renderSectionItem(section, index, flags, page, site, pathname, reviews, caseStudies),
         )}
 
         {/* Fallback share bar only when there were no content sections to anchor it to */}

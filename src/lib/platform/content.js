@@ -58,10 +58,16 @@ const heroVideoProjection = `
     }
   },`
 
-const sectionProjection = `
+/**
+ * Field set every page section can carry. Exported so documents outside the page
+ * family (`caseStudy`) can project their own `sections` array identically.
+ */
+export const sectionProjection = `
   _type,
   _key,
   type,
+  layout,
+  maxItems,
   heroMediaMode,
   eyebrow,
   title,
@@ -1006,7 +1012,12 @@ const sanitizeReview = (review) => {
   }
 }
 
-const getSanityReadContext = async ({ stega = true } = {}) => {
+/**
+ * Draft-aware read context. Exported so queries living outside this module
+ * (`sanity/lib/caseStudies`) resolve drafts in Presentation the same way pages do,
+ * instead of quietly reading published content only.
+ */
+export const getSanityReadContext = async ({ stega = true } = {}) => {
   const { isEnabled } = await draftMode()
   const client = getSanityServerClient({ preview: isEnabled, stega: isEnabled && stega })
 
@@ -1605,6 +1616,7 @@ export const resolveSiteBySlug = async (siteSlug) => {
         primaryDomain,
         aliases,
         redirectTarget,
+        projectsIndex,
         leadForm,
         seo,
         brand,
@@ -1740,6 +1752,7 @@ export const resolveSiteByHost = async (host) => {
         primaryDomain,
         aliases,
         redirectTarget,
+        projectsIndex,
         leadForm,
         seo,
         brand,
@@ -1764,6 +1777,7 @@ export const resolveSiteByHost = async (host) => {
           primaryDomain,
           aliases,
           redirectTarget,
+          projectsIndex,
           leadForm,
           seo,
           brand,
@@ -1790,10 +1804,65 @@ export const resolveCurrentSite = async () => {
   return resolveSiteByHost(host)
 }
 
+const describePageRequest = (site, slugParts) => `site "${site.slug}" (${getPageKey(slugParts) || '/'})`
+
+/**
+ * Fetch a page document, retrying against the published perspective in draft mode.
+ *
+ * Draft-mode reads use the `drafts` perspective, which requires SANITY_API_READ_TOKEN.
+ * Without a valid token, any document that *has* a draft drops out of the result set
+ * entirely — the query succeeds but returns nothing. Retrying with the published
+ * perspective keeps Presentation previewing real Sanity content instead of silently
+ * falling through to the hardcoded fixtures in `./fixtures`.
+ */
+/** An empty array is truthy, so list queries need their own emptiness test. */
+const foundNothing = (value) =>
+  value === null || value === undefined || (Array.isArray(value) && value.length === 0)
+
+export const fetchWithPublishedFallback = async ({ client, isDraft, query, params, fetchOptions }) => {
+  const draftResult = await client.fetch(query, params, fetchOptions)
+
+  if (!isDraft || !foundNothing(draftResult)) {
+    return draftResult
+  }
+
+  const publishedClient = getSanityServerClient({ preview: false, stega: true })
+
+  if (!publishedClient) {
+    return draftResult
+  }
+
+  const publishedResult = await publishedClient.fetch(query, params, { cache: 'no-store' })
+
+  if (!foundNothing(publishedResult)) {
+    console.warn(
+      '[content] Draft-mode query returned nothing; using published content instead. Set SANITY_API_READ_TOKEN to preview unpublished drafts.',
+    )
+  }
+
+  return publishedResult
+}
+
+/**
+ * In draft mode (Presentation preview) a fixture fallback is almost always a
+ * misconfiguration rather than intent: reading the "drafts" perspective requires
+ * SANITY_API_READ_TOKEN, and without it documents that have drafts drop out of the
+ * query entirely, so the editor silently previews fixture content instead of theirs.
+ */
+const warnOnDraftFixtureFallback = (isDraft, localPage, site, slugParts) => {
+  if (!isDraft || !localPage) {
+    return
+  }
+
+  console.warn(
+    `[content] Draft-mode preview found no Sanity page for ${describePageRequest(site, slugParts)} — serving fixture content. Check that SANITY_API_READ_TOKEN is set and has draft read access.`,
+  )
+}
+
 export const getPageForRequest = async (site, slugParts = []) => {
   const localPage = getPageForSite(site.slug, slugParts)
 
-  const { client, fetchOptions } = await getSanityReadContext()
+  const { client, fetchOptions, isDraft } = await getSanityReadContext()
 
   if (!client) {
     return localPage
@@ -1804,9 +1873,8 @@ export const getPageForRequest = async (site, slugParts = []) => {
     const requestedSlug = getPageKey(slugParts)
     const isHomepageRequest = requestedSlug === ''
     const homepageFetchOptions = isHomepageRequest ? { cache: 'no-store' } : fetchOptions
-    const rawPage = await client.fetch(
-      isHomepageRequest
-        ? groq`*[
+    const pageQuery = isHomepageRequest
+      ? groq`*[
           _type in ["page", "servicePage", "locationPage", "post"] &&
           site->slug.current in $siteSlugs &&
           (
@@ -1890,7 +1958,7 @@ export const getPageForRequest = async (site, slugParts = []) => {
           ${sectionProjection}
         }
       }`
-        : groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
+      : groq`*[_type in ["page", "servicePage", "locationPage", "post"] && site->slug.current in $siteSlugs && slug.current == $slug][0]{
         _id,
         _type,
         _createdAt,
@@ -1966,10 +2034,15 @@ export const getPageForRequest = async (site, slugParts = []) => {
         sections[]{
           ${sectionProjection}
         }
-      }`,
-      { siteSlugs, slug: requestedSlug || '/' },
-      homepageFetchOptions,
-    )
+      }`
+
+    const rawPage = await fetchWithPublishedFallback({
+      client,
+      isDraft,
+      query: pageQuery,
+      params: { siteSlugs, slug: requestedSlug || '/' },
+      fetchOptions: homepageFetchOptions,
+    })
 
     if (rawPage) {
       const page = sanitizePageRuntimeFields(rawPage)
@@ -2028,7 +2101,16 @@ export const getPageForRequest = async (site, slugParts = []) => {
 
       return withPageSource(pageWithGuideMeta, 'sanity')
     }
-  } catch {} // eslint-disable-line no-empty
+  } catch (error) {
+    // Falling through to `localPage` means serving hardcoded fixture content instead
+    // of Sanity. That is nearly invisible in the browser, so make it loud in the logs.
+    console.warn(
+      `[content] Sanity page fetch failed for ${describePageRequest(site, slugParts)} — serving fixture content instead.`,
+      error,
+    )
+  }
+
+  warnOnDraftFixtureFallback(isDraft, localPage, site, slugParts)
 
   return localPage
 }

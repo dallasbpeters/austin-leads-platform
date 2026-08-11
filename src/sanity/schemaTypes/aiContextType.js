@@ -9,6 +9,8 @@ export default {
   fields: [
     {
       name: 'title',
+      title: 'Document label',
+      description: 'Fixed label for this settings document. Not shown on the website.',
       type: 'string',
       initialValue: 'AI Context',
       readOnly: true,

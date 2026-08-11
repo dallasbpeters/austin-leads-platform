@@ -49,6 +49,25 @@ export const toolApiOrigin = normalizeStudioFrontendOrigin(
   process.env.SANITY_STUDIO_TOOL_API_ORIGIN || studioPreviewOrigin || productionFrontendUrl,
 )
 
+/**
+ * Absolute endpoint for Gemini image generation.
+ *
+ * Must be absolute, not the plugin's relative `/api/gemini/generate-image` default:
+ * the deployed Studio runs on a different origin (*.sanity.studio) than the Next.js
+ * app, so a relative path would resolve against the Studio host and 404. The route
+ * sends permissive CORS headers so the Studio origin can call it.
+ */
+export const geminiImageApiEndpoint = `${toolApiOrigin}/api/gemini/generate-image`
+
+/**
+ * Optional shared secret for the Gemini image route. Only needed when the server
+ * sets GEMINI_PLUGIN_API_KEY — without a match the route answers 401.
+ */
+export const geminiPluginApiKey =
+  process.env.SANITY_STUDIO_GEMINI_PLUGIN_API_KEY ||
+  process.env.NEXT_PUBLIC_GEMINI_PLUGIN_API_KEY ||
+  undefined
+
 export const frontendOriginAllowlist = [
   ...new Set([
     frontendUrl,

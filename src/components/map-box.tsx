@@ -169,9 +169,15 @@ export const MapBox = ({
 
     const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 12 })
 
-    // The Studio style references terrain source "mapbox-dem" but doesn't define it,
-    // which throws "Couldn't find terrain source 'mapbox-dem'". This is a flat
-    // choropleth — disable terrain unconditionally.
+    // This is a flat choropleth, so terrain is pure overhead — turn it off.
+    //
+    // Note: the console message `Couldn't find terrain source "mapbox-dem"` is a
+    // non-fatal mapbox-gl *warning* and is NOT caused by a missing source. The style
+    // does define `mapbox-dem`, but it also imports mapbox://styles/mapbox/standard,
+    // and GL v3 resolves terrain sources per import scope — a root-level `terrain`
+    // block gets looked up in the basemap scope, misses, and warns. Rendering is
+    // unaffected. To silence it for good, delete the terrain block from the style in
+    // Mapbox Studio; then this handler can go away too.
     map.once('style.load', () => {
       try {
         map.setTerrain(null)
