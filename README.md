@@ -15,7 +15,7 @@ This repo is not a generic brochure site. It is one engine serving multiple doma
 ### Public site
 
 - `/` renders the preserved Austin Solar homepage from [`src/App.jsx`](./src/App.jsx)
-- the generic tenant renderer lives in [`src/components/platform/PublicSite.jsx`](./src/components/platform/PublicSite.jsx)
+- the generic tenant renderer lives in [`src/components/platform/public-site.jsx`](./src/components/platform/public-site.jsx)
 - catch-all public routing lives in [`src/app/(site)/[[...slug]]/page.jsx`](<./src/app/(site)/[[...slug]]/page.jsx>)
 - tenant/content resolution lives in [`src/lib/platform/content.js`](./src/lib/platform/content.js)
 
@@ -41,7 +41,7 @@ Protected admin routes currently include:
 - `/settings`
 - `/studio`
 
-Admin navigation is defined in [`src/components/admin/AdminNav.jsx`](./src/components/admin/AdminNav.jsx).
+Admin navigation is defined in [`src/components/admin/admin-nav.jsx`](./src/components/admin/admin-nav.jsx).
 
 What the admin currently does:
 
@@ -115,6 +115,36 @@ Lead notifications support:
 - configurable sender
 - configurable subject prefix
 - configurable Resend template ID
+
+### Google reviews sync (built, awaiting API approval)
+
+Pulls reviews from a Google Business Profile into Sanity `review` documents, so
+testimonials sections render real Google reviews without retyping them.
+
+**Blocked on one thing:** Google must grant the Cloud project Business Profile API
+quota (free, but manually reviewed, ~14 days). Until then the endpoint reports why it
+did nothing instead of failing.
+
+Full setup: [`docs/google-reviews-sync.md`](./docs/google-reviews-sync.md)
+
+- `GET /api/google-reviews/sync` — lists your account and location ids
+- `POST /api/google-reviews/sync` — runs the sync
+- per-tenant ids live on the `site` document under **Google Business Profile**
+
+Two things worth knowing before touching it:
+
+- **Business Profile, not Places.** Places API content may not be stored — only
+  `place_id` is exempt — so writing Places reviews into Sanity would breach the Maps
+  Platform terms. Business Profile returns your own reviews, all of them, free.
+- **An API key will not work.** Reviews are private per-account data, so Google
+  requires OAuth with `business.manage`.
+
+Key files:
+
+- OAuth: [`src/lib/googleBusiness/auth.js`](./src/lib/googleBusiness/auth.js)
+- API client: [`src/lib/googleBusiness/reviews.js`](./src/lib/googleBusiness/reviews.js)
+- upsert: [`src/lib/googleBusiness/syncReviews.js`](./src/lib/googleBusiness/syncReviews.js)
+- route: [`src/app/api/google-reviews/sync/route.js`](./src/app/api/google-reviews/sync/route.js)
 
 ### Analytics and performance
 
@@ -223,6 +253,16 @@ Important groups:
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID`
 - `GOOGLE_ANALYTICS_PROPERTY_ID`
 - `GOOGLE_SITE_VERIFICATION`
+
+### Google Business Profile (reviews sync)
+
+OAuth, not an API key — reviews are private per-account data and Google rejects keys.
+See [`docs/google-reviews-sync.md`](./docs/google-reviews-sync.md).
+
+- `GOOGLE_BUSINESS_CLIENT_ID`
+- `GOOGLE_BUSINESS_CLIENT_SECRET`
+- `GOOGLE_BUSINESS_REFRESH_TOKEN`
+- `CRON_SECRET` (guards the sync route in production; Vercel Cron sends it automatically)
 
 ### Vercel
 

@@ -91,7 +91,7 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
           <>
             <button
               aria-label="Previous photo"
-              className="border-border/60 bg-background/80 text-foreground hover:bg-background absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-colors"
+              className="border-border/60 bg-primary/80 text-primary-foreground hover:bg-primary absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-colors"
               onClick={goPrev}
               type="button"
             >
@@ -99,7 +99,7 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
             </button>
             <button
               aria-label="Next photo"
-              className="border-border/60 bg-background/80 text-foreground hover:bg-background absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-colors"
+              className="border-border/60 bg-primary/80 text-primary-foreground hover:bg-primary absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-colors"
               onClick={goNext}
               type="button"
             >
@@ -122,13 +122,13 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
       </div>
 
       {hasControls ? (
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <div className="absolute -bottom-5 left-[50%] mt-4 flex -translate-x-1/2 items-center justify-center gap-2">
           {photos.map((photo, position) => (
             <button
               aria-current={position === index ? 'true' : undefined}
               aria-label={`Go to photo ${position + 1}`}
               className={`h-2 rounded-full transition-all ${
-                position === index ? 'bg-primary w-6' : 'bg-border hover:bg-muted-foreground w-2'
+                position === index ? 'w-6 bg-blue-500' : 'bg-border hover:bg-muted-foreground w-2'
               }`}
               key={photo.key}
               onClick={() => go(position)}
