@@ -209,6 +209,240 @@ body.admin-body-locked {
   overflow: hidden;
 }
 
+@keyframes cloud-background-breathe {
+  from {
+    transform: scale(0.94);
+  }
+
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes cloud-background-drift {
+  from {
+    transform: translate3d(-30%, 2%, 0) rotate(-1deg);
+  }
+
+  to {
+    transform: translate3d(4%, -3%, 0) rotate(1deg);
+  }
+}
+
+@keyframes cloud-background-scroll-scale {
+  0% {
+    transform: scale(0.82);
+  }
+
+  55% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(0.94);
+  }
+}
+
+.cloud-background {
+  --cloud-opacity: 0.16;
+
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cloud-background--regular {
+  --cloud-opacity: 0.24;
+}
+
+.cloud-background--thick {
+  --cloud-opacity: 0.44;
+}
+
+.cloud-background--day {
+  --cloud-opacity: 0.2;
+
+  background: linear-gradient(
+    to bottom,
+    oklab(63.768% -0.0185 -0.182) 0%,
+    oklab(75.741% -0.0031 -0.117) 100%
+  );
+  background-size: 100% 100%;
+}
+
+.cloud-background--night {
+  --cloud-opacity: 0.2;
+
+  background: linear-gradient(to bottom, oklab(17.949% -0.0022 -0.03) 0%, oklab(20.768% -0.002 -0.039) 100%);
+  background-size: 100% 100%;
+}
+
+.cloud-background--dusk {
+  --cloud-opacity: 0.2;
+
+  background: linear-gradient(
+    to top,
+    oklab(29.738% -0.0082 -0.0947 / 46%) 0%,
+    oklab(41.757% -0.0171 -0.198 / 76%) 100%
+  );
+}
+
+.cloud-background--night.cloud-background--regular {
+  --cloud-opacity: 0.3;
+}
+
+.cloud-background__cloud {
+  position: absolute;
+  width: clamp(11rem, 23vw, 24rem);
+  opacity: var(--cloud-opacity);
+  filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
+}
+
+.cloud-background--dusk .cloud-background__cloud {
+  filter: sepia(0.24) saturate(1.15) drop-shadow(0 0.8rem 1.3rem rgb(120 53 15 / 22%));
+}
+
+.cloud-background--night .cloud-background__cloud {
+  filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 38%));
+}
+
+.cloud-theme-section {
+  --cloud-section-background: #8bbfd6;
+  --cloud-section-foreground: #082f43;
+  --cloud-section-muted: #16485d;
+  --cloud-section-eyebrow: #80300f;
+
+  background-color: var(--cloud-section-background);
+  color: var(--cloud-section-foreground);
+  transition:
+    background-color 700ms ease,
+    color 500ms ease;
+}
+
+.cloud-theme-section[data-cloud-tone='dusk'] {
+  --cloud-section-background: #51326d;
+  --cloud-section-foreground: #fff8ef;
+  --cloud-section-muted: #f0deec;
+  --cloud-section-eyebrow: #ffd46f;
+}
+
+.cloud-theme-section[data-cloud-tone='night'] {
+  --cloud-section-background: #102638;
+  --cloud-section-foreground: #effcff;
+  --cloud-section-muted: #c5e4ea;
+  --cloud-section-eyebrow: #ffd06b;
+}
+
+.cloud-theme-section__heading {
+  color: var(--cloud-section-foreground);
+}
+
+.cloud-theme-section__body {
+  color: var(--cloud-section-muted);
+}
+
+.cloud-theme-section__eyebrow {
+  color: var(--cloud-section-eyebrow);
+}
+
+.cloud-background__scroll,
+.cloud-background__breathe,
+.cloud-background__motion {
+  display: block;
+  transform-origin: center;
+}
+
+.cloud-background__breathe {
+  animation: cloud-background-breathe var(--cloud-breathe-duration) ease-in-out var(--cloud-delay) infinite
+    alternate;
+}
+
+.cloud-background__motion {
+  animation: cloud-background-drift var(--cloud-drift-duration) ease-in-out var(--cloud-delay) infinite
+    alternate;
+}
+
+.cloud-background__motion img {
+  width: 100%;
+  height: auto;
+}
+
+.cloud-background__cloud--one {
+  --cloud-breathe-duration: 9s;
+  --cloud-delay: -3s;
+  --cloud-drift-duration: 23s;
+
+  top: -11%;
+  left: -8%;
+}
+
+.cloud-background__cloud--two {
+  --cloud-breathe-duration: 11s;
+  --cloud-delay: -7s;
+  --cloud-drift-duration: 28s;
+
+  top: 5%;
+  right: 5%;
+  width: clamp(9rem, 19vw, 20rem);
+}
+
+.cloud-background__cloud--three {
+  --cloud-breathe-duration: 8s;
+  --cloud-delay: -4s;
+  --cloud-drift-duration: 20s;
+
+  top: 42%;
+  left: 13%;
+  width: clamp(8rem, 15vw, 17rem);
+}
+
+.cloud-background__cloud--four {
+  --cloud-breathe-duration: 12s;
+  --cloud-delay: -10s;
+  --cloud-drift-duration: 31s;
+
+  right: -6%;
+  bottom: -12%;
+}
+
+.cloud-background__cloud--five {
+  --cloud-breathe-duration: 10s;
+  --cloud-delay: -6s;
+  --cloud-drift-duration: 26s;
+
+  bottom: 2%;
+  left: -3%;
+  width: clamp(8rem, 17vw, 19rem);
+}
+
+.cloud-background__cloud--six {
+  --cloud-breathe-duration: 13s;
+  --cloud-delay: -9s;
+  --cloud-drift-duration: 34s;
+
+  top: 34%;
+  right: 31%;
+  width: clamp(7rem, 12vw, 14rem);
+}
+
+@supports (animation-timeline: scroll()) {
+  .cloud-background__scroll {
+    animation: cloud-background-scroll-scale linear both;
+    animation-timeline: scroll(root block);
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-background__scroll,
+  .cloud-background__breathe,
+  .cloud-background__motion {
+    animation: none;
+  }
+}
+
 @layer components {
   .type-display {
     font-family: var(--font-display);

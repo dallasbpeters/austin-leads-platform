@@ -2,6 +2,7 @@ import * as IconoirIcons from 'iconoir-react'
 import { Wallet, StatUp, Leaf, Clock } from 'iconoir-react'
 
 import Card from './card'
+import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import PortableTextContent from './portable-text-content'
 
@@ -67,6 +68,7 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
         copy: item.body || items[index]?.copy || '',
       }))
     : items
+  const showClouds = section?.cloudVisibility !== 'hide'
 
   const renderIcon = (item) => {
     const iconName = item?.icon
@@ -87,8 +89,10 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
   }
 
   return (
-    <section
-      className="relative overflow-hidden bg-cyan-950 py-24 text-white"
+    <CloudSectionBackground
+      className="cloud-theme-section--metrics relative isolate overflow-hidden py-24"
+      density="regular"
+      showClouds={showClouds}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/snapshot-section.jsx',
@@ -116,14 +120,14 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
 
       <div className="relative z-1 mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
-          <p className="text-primary type-accent mb-4 text-sm font-semibold tracking-[0.2em] uppercase">
+          <p className="cloud-theme-section__eyebrow type-accent mb-4 text-sm font-semibold tracking-[0.2em] uppercase">
             {eyebrow}
           </p>
-          <h2 className="mb-4 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
+          <h2 className="cloud-theme-section__heading mb-4 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
           <PortableTextContent
             as="div"
             value={body}
-            className="type-accent m-0 text-[1rem] font-semibold text-white/70"
+            className="cloud-theme-section__body type-accent m-0 text-[1rem] font-semibold"
           />
         </div>
 
@@ -143,6 +147,6 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
           ))}
         </div>
       </div>
-    </section>
+    </CloudSectionBackground>
   )
 }

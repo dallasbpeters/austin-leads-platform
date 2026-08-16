@@ -106,6 +106,7 @@ function normalizeResourceGridSection(section, items) {
     type: 'resourceGrid',
     title: section.title,
     body: section.body,
+    cloudVisibility: section.cloudVisibility,
     items,
   })
 }
@@ -205,6 +206,7 @@ function normalizeGuidesSection(section, items) {
     title: section.title,
     body: section.body,
     ctaLabel: section.ctaLabel,
+    cloudVisibility: section.cloudVisibility,
     items,
   })
 }
@@ -217,6 +219,7 @@ function normalizeSnapshotSection(section, items) {
     eyebrow: section.eyebrow,
     title: section.title,
     body: section.body,
+    cloudVisibility: section.cloudVisibility,
     items,
   })
 }

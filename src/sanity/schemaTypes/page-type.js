@@ -60,6 +60,21 @@ const sectionBackgroundFields = [
   sectionBackgroundImageField,
 ]
 
+const cloudVisibilityField = {
+  name: 'cloudVisibility',
+  title: 'Cloud background',
+  type: 'string',
+  initialValue: 'show',
+  options: {
+    list: [
+      { title: 'Show clouds', value: 'show' },
+      { title: 'Hide clouds', value: 'hide' },
+    ],
+    layout: 'dropdown',
+    ...canvasPurpose('Show or hide the animated cloud background behind this section.'),
+  },
+}
+
 const withSectionBackgroundFields = (fields) => [...fields, ...sectionBackgroundFields]
 const isSectionType = (parent, ...types) => types.includes(parent?.type)
 const hideUnlessSectionTypes =
@@ -1457,6 +1472,7 @@ const resourceGridSectionType = {
       of: [{ type: 'resourceCard' }],
       options: canvasPurpose('Homepage resource cards.'),
     },
+    cloudVisibilityField,
   ]),
   preview: {
     select: {
@@ -2426,6 +2442,7 @@ const guidesSectionType = {
       validation: (Rule) => Rule.max(6),
       options: canvasPurpose('Optional guide cards for this section. If empty, app fallback cards are used.'),
     },
+    cloudVisibilityField,
   ]),
   preview: {
     select: {
@@ -2806,6 +2823,7 @@ const snapshotSectionType = {
       validation: (Rule) => Rule.max(4),
       options: canvasPurpose('Metric cards with value/title/body and optional icon.'),
     },
+    cloudVisibilityField,
   ]),
   preview: {
     select: {

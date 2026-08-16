@@ -6,6 +6,7 @@ import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
+import CloudSectionBackground from './cloud-section-background'
 import GuideCardGrid from './guide-card'
 import PortableTextContent from './portable-text-content'
 
@@ -54,10 +55,12 @@ export default function GuidesSection({ section = null, page = null, sectionId =
       ? section.items.map((item, index) => buildCardFromItem(item, index, page, sectionKey))
       : null
   const cards = sectionCards || guides
+  const showClouds = section?.cloudVisibility !== 'hide'
 
   return (
-    <section
-      className="bg-warm py-24"
+    <CloudSectionBackground
+      className="cloud-theme-section--editorial relative isolate overflow-hidden py-24"
+      showClouds={showClouds}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/guides-section.jsx',
@@ -69,14 +72,16 @@ export default function GuidesSection({ section = null, page = null, sectionId =
         backgroundSize: '24px 24px',
       }}
     >
-      <div className="mx-auto w-full max-w-7xl px-4">
+      <div className="relative z-1 mx-auto w-full max-w-7xl px-4">
         <div className="mb-8">
-          <h2 className="text-secondary type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
+          <h2 className="cloud-theme-section__heading type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">
+            {title}
+          </h2>
           {body ? (
             <PortableTextContent
               as="div"
               value={body}
-              className="mt-3 max-w-3xl text-[1rem] leading-7 text-slate-600"
+              className="cloud-theme-section__body mt-3 max-w-3xl text-[1rem] leading-7"
             />
           ) : null}
         </div>
@@ -90,6 +95,6 @@ export default function GuidesSection({ section = null, page = null, sectionId =
           </Link>
         </div>
       </div>
-    </section>
+    </CloudSectionBackground>
   )
 }

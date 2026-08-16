@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 
 import Card from './card'
+import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import PortableTextContent from './portable-text-content'
 
@@ -89,10 +90,13 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
   const body =
     section?.body ||
     'The most common solar and roofing questions, organized by category so you can find what you need faster.'
+  const showClouds = section?.cloudVisibility !== 'hide'
 
   return (
-    <section
-      className="bg-warm py-24"
+    <CloudSectionBackground
+      className="cloud-theme-section--editorial relative isolate overflow-hidden py-24"
+      density="thick"
+      showClouds={showClouds}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/resources-section.jsx',
@@ -100,19 +104,16 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
           ? 'typed homepage resource grid from homepage record'
           : 'local fallback resource cards',
       })}
-      style={{
-        backgroundImage:
-          'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
-        backgroundSize: '24px 24px',
-      }}
     >
-      <div className="mx-auto w-[min(80rem,calc(100%-3rem))]">
+      <div className="relative z-1 mx-auto w-[min(80rem,calc(100%-3rem))]">
         <div className="mx-auto mb-16 max-w-3xl text-center">
-          <h2 className="text-secondary type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
+          <h2 className="cloud-theme-section__heading type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">
+            {title}
+          </h2>
           <PortableTextContent
             as="div"
             value={body}
-            className="text-foreground type-accent m-0 text-[clamp(1rem,4vw,1.25rem)]"
+            className="cloud-theme-section__body type-accent m-0 text-[clamp(1rem,4vw,1.25rem)]"
           />
         </div>
 
@@ -148,6 +149,6 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
           })}
         </div>
       </div>
-    </section>
+    </CloudSectionBackground>
   )
 }

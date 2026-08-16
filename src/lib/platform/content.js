@@ -70,6 +70,7 @@ export const sectionProjection = `
   maxItems,
   "featuredIds": featured[]._ref,
   heroMediaMode,
+  cloudVisibility,
   eyebrow,
   title,
   titlePrimary,
