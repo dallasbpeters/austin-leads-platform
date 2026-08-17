@@ -229,20 +229,6 @@ body.admin-body-locked {
   }
 }
 
-@keyframes cloud-background-scroll-scale {
-  0% {
-    transform: scale(0.82);
-  }
-
-  55% {
-    transform: scale(1.08);
-  }
-
-  100% {
-    transform: scale(0.94);
-  }
-}
-
 .cloud-background {
   --cloud-opacity: 0.16;
 
@@ -335,6 +321,20 @@ body.admin-body-locked {
   --cloud-section-eyebrow: #ffd06b;
 }
 
+.cloud-theme-section--clouds-hidden {
+  --cloud-section-background: var(--color-warm-bg);
+  --cloud-section-foreground: var(--color-text-strong);
+  --cloud-section-muted: var(--color-text-muted);
+  --cloud-section-eyebrow: var(--color-primary);
+}
+
+.cloud-theme-section--metrics.cloud-theme-section--clouds-hidden {
+  --cloud-section-background: #083344;
+  --cloud-section-foreground: #fff;
+  --cloud-section-muted: rgb(255 255 255 / 70%);
+  --cloud-section-eyebrow: var(--color-primary);
+}
+
 .cloud-theme-section__heading {
   color: var(--cloud-section-foreground);
 }
@@ -347,11 +347,20 @@ body.admin-body-locked {
   color: var(--cloud-section-eyebrow);
 }
 
+.cloud-theme-section__image-overlay {
+  background-color: color-mix(in srgb, var(--cloud-section-background) 55%, transparent);
+}
+
 .cloud-background__scroll,
 .cloud-background__breathe,
 .cloud-background__motion {
   display: block;
   transform-origin: center;
+}
+
+.cloud-background__scroll {
+  transform: scale(var(--cloud-scroll-scale, 0.86));
+  will-change: transform;
 }
 
 .cloud-background__breathe {
@@ -427,12 +436,64 @@ body.admin-body-locked {
   width: clamp(7rem, 12vw, 14rem);
 }
 
-@supports (animation-timeline: scroll()) {
-  .cloud-background__scroll {
-    animation: cloud-background-scroll-scale linear both;
-    animation-timeline: scroll(root block);
-    animation-range: entry 0% exit 100%;
-  }
+.cloud-background__cloud--seven {
+  --cloud-breathe-duration: 10s;
+  --cloud-delay: -8s;
+  --cloud-drift-duration: 25s;
+
+  top: 23%;
+  left: 45%;
+  width: clamp(7rem, 13vw, 15rem);
+}
+
+.cloud-background__cloud--eight {
+  --cloud-breathe-duration: 11s;
+  --cloud-delay: -5s;
+  --cloud-drift-duration: 29s;
+
+  right: 17%;
+  bottom: 8%;
+  width: clamp(9rem, 18vw, 20rem);
+}
+
+.cloud-background__cloud--nine {
+  --cloud-breathe-duration: 8s;
+  --cloud-delay: -2s;
+  --cloud-drift-duration: 21s;
+
+  top: -8%;
+  right: 32%;
+  width: clamp(6rem, 11vw, 13rem);
+}
+
+.cloud-background__cloud--ten {
+  --cloud-breathe-duration: 12s;
+  --cloud-delay: -11s;
+  --cloud-drift-duration: 32s;
+
+  bottom: -3%;
+  left: 38%;
+  width: clamp(7rem, 14vw, 16rem);
+}
+
+.cloud-background__cloud--eleven {
+  --cloud-breathe-duration: 9s;
+  --cloud-delay: -6s;
+  --cloud-drift-duration: 24s;
+
+  top: 56%;
+  left: 59%;
+  width: clamp(6rem, 10vw, 12rem);
+}
+
+.cloud-background__cloud--twelve {
+  --cloud-breathe-duration: 13s;
+  --cloud-delay: -12s;
+  --cloud-drift-duration: 35s;
+
+  right: -4%;
+  bottom: 29%;
+  width: clamp(7rem, 13vw, 15rem);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -440,6 +501,10 @@ body.admin-body-locked {
   .cloud-background__breathe,
   .cloud-background__motion {
     animation: none;
+  }
+
+  .cloud-background__scroll {
+    transform: scale(1);
   }
 }
 

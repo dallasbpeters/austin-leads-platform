@@ -44,18 +44,41 @@ function buildCardFromItem(rawItem, index, page, sectionKey) {
   }
 }
 
-export default function GuidesSection({ section = null, page = null, sectionId = 'go-deeper' }) {
-  const title = section?.title || 'Go Deeper'
-  const body = portableTextToPlainText(section?.body)
-  const ctaLabel = section?.ctaLabel || 'See all guides'
-  const icon = section?.icon || 'arrow-right'
+function getGuideCards(section, page, sectionKey) {
+  if (!Array.isArray(section?.items) || section.items.length === 0) {
+    return guides
+  }
+
+  return section.items.map((item, index) => buildCardFromItem(item, index, page, sectionKey))
+}
+
+function shouldShowClouds(cloudVisibility) {
+  return !['hide', 'off', false].includes(cloudVisibility)
+}
+
+/**
+ * Resolves Sanity-provided guide content while retaining the local card
+ * fallback used by legacy and incomplete homepage sections.
+ *
+ * @param {object | null} section - The configured Guides section.
+ * @param {object | null} page - The parent page for visual editing metadata.
+ * @returns {{ body: string, cards: Array<object>, ctaLabel: string, icon: string, showClouds: boolean, title: string }} Render-ready Guides section values.
+ */
+function resolveGuidesSection(section, page) {
   const sectionKey = section?._key
-  const sectionCards =
-    Array.isArray(section?.items) && section.items.length
-      ? section.items.map((item, index) => buildCardFromItem(item, index, page, sectionKey))
-      : null
-  const cards = sectionCards || guides
-  const showClouds = section?.cloudVisibility !== 'hide'
+
+  return {
+    title: section?.title || 'Go Deeper',
+    body: portableTextToPlainText(section?.body),
+    ctaLabel: section?.ctaLabel || 'See all guides',
+    icon: section?.icon || 'arrow-right',
+    cards: getGuideCards(section, page, sectionKey),
+    showClouds: shouldShowClouds(section?.cloudVisibility),
+  }
+}
+
+export default function GuidesSection({ section = null, page = null, sectionId = 'go-deeper' }) {
+  const { body, cards, ctaLabel, icon, showClouds, title } = resolveGuidesSection(section, page)
 
   return (
     <CloudSectionBackground

@@ -3913,6 +3913,7 @@ const ctaBannerSectionType = {
     {
       ...defineUploadedImage('avatarImageAsset', 'Uploaded avatar image', canvasExclude),
     },
+    cloudVisibilityField,
   ]),
   preview: {
     select: {
@@ -3981,6 +3982,7 @@ const bannerCtaSectionType = {
     {
       ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
+    cloudVisibilityField,
   ]),
   preview: {
     select: {

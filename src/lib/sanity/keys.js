@@ -320,6 +320,7 @@ function normalizeCtaBannerSection(section) {
     body: section.body,
     ctaLabel: section.ctaLabel,
     theme: section.theme,
+    cloudVisibility: section.cloudVisibility,
     avatarEyebrow: section.avatarEyebrow || section.personLabel,
     avatarName: section.avatarName || section.personName,
     avatarRole: section.avatarRole || section.personRole,
@@ -341,6 +342,7 @@ function normalizeBannerCtaSection(section) {
     ctaHref: section.ctaHref,
     image: section.image,
     imageAsset: section.imageAsset,
+    cloudVisibility: section.cloudVisibility,
   })
 }
 

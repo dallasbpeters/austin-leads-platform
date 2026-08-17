@@ -1,4 +1,5 @@
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
+import CloudSectionBackground from '@/components/cloud-section-background'
 // import LeadCaptureForm from '@/components/lead-capture-form'
 import PortableTextContent from '@/components/portable-text-content'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -12,16 +13,23 @@ function avatarCx(isDarkTheme, lightClass, darkClass) {
   return isDarkTheme ? darkClass : lightClass
 }
 
-function AvatarVisual({ avatarImageUrl, avatarImageAlt, avatarInitials, avatarStyle, isDarkTheme }) {
+function AvatarVisual({
+  avatarImageUrl,
+  avatarImageAlt,
+  avatarInitials,
+  avatarStyle,
+  isCloudTheme,
+  isDarkTheme,
+}) {
   return (
     <Avatar
       size="xl"
-      className={`size-16 ${avatarCx(isDarkTheme, 'bg-primary ring-1 ring-black/5', 'bg-white/10 ring-1 ring-white/20')}`}
+      className={`size-16 ${isCloudTheme ? 'bg-primary ring-1 ring-black/10' : avatarCx(isDarkTheme, 'bg-primary ring-1 ring-black/5', 'bg-white/10 ring-1 ring-white/20')}`}
       style={avatarStyle}
     >
       {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
       <AvatarFallback
-        className={`text-[1rem] font-semibold ${avatarCx(isDarkTheme, 'text-secondary-foreground bg-secondary', 'bg-white/12 text-white')}`}
+        className={`text-[1rem] font-semibold ${isCloudTheme ? 'text-secondary-foreground bg-secondary' : avatarCx(isDarkTheme, 'text-secondary-foreground bg-secondary', 'bg-white/12 text-white')}`}
         style={avatarStyle}
       >
         {avatarInitials || 'TS'}
@@ -30,21 +38,25 @@ function AvatarVisual({ avatarImageUrl, avatarImageAlt, avatarInitials, avatarSt
   )
 }
 
-function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isDarkTheme }) {
+function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isCloudTheme, isDarkTheme }) {
   return (
     <div className="min-w-0">
       {avatarEyebrow ? (
         <div
-          className={`mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/58')}`}
+          className={`mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isCloudTheme ? 'cloud-theme-section__eyebrow' : avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/58')}`}
         >
           {avatarEyebrow}
         </div>
       ) : null}
-      <div className={`text-lg font-semibold ${avatarCx(isDarkTheme, 'text-foreground', 'text-white')}`}>
+      <div
+        className={`text-lg font-semibold ${isCloudTheme ? 'cloud-theme-section__heading' : avatarCx(isDarkTheme, 'text-foreground', 'text-white')}`}
+      >
         {avatarName}
       </div>
       {avatarRole ? (
-        <div className={`text-sm ${avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/72')}`}>
+        <div
+          className={`text-sm ${isCloudTheme ? 'cloud-theme-section__body' : avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/72')}`}
+        >
           {avatarRole}
         </div>
       ) : null}
@@ -52,7 +64,7 @@ function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isDark
         <PortableTextContent
           as="div"
           value={avatarBlurb}
-          className={`mt-3 text-sm leading-6 ${avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/80')}`}
+          className={`mt-3 text-sm leading-6 ${isCloudTheme ? 'cloud-theme-section__body' : avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/80')}`}
         />
       ) : null}
     </div>
@@ -68,7 +80,15 @@ function computeInitials(name) {
     .join('')
 }
 
-export function buildAvatarSection(section, isDarkTheme) {
+/**
+ * Builds the optional contact-person block used by the cross-lead CTA banner.
+ *
+ * @param {object | null} section - CTA banner content from Sanity.
+ * @param {boolean} isDarkTheme - Whether the banner's fallback theme is dark.
+ * @param {boolean} isCloudTheme - Whether local-time cloud colors are active.
+ * @returns {JSX.Element | null} The avatar block when a person is configured.
+ */
+export function buildAvatarSection(section, isDarkTheme, isCloudTheme) {
   const s = section || {}
   const avatarEyebrow = s.avatarEyebrow || s.personLabel || ''
   const avatarName = s.avatarName || s.personName || ''
@@ -90,6 +110,7 @@ export function buildAvatarSection(section, isDarkTheme) {
           avatarImageAlt={getImageAlt(imageAsset, image, avatarName)}
           avatarInitials={computeInitials(avatarName)}
           avatarStyle={avatarColor ? { backgroundColor: avatarColor } : undefined}
+          isCloudTheme={isCloudTheme}
           isDarkTheme={isDarkTheme}
         />
         <AvatarInfo
@@ -97,6 +118,7 @@ export function buildAvatarSection(section, isDarkTheme) {
           avatarName={avatarName}
           avatarRole={avatarRole}
           avatarBlurb={avatarBlurb}
+          isCloudTheme={isCloudTheme}
           isDarkTheme={isDarkTheme}
         />
       </div>
@@ -121,13 +143,19 @@ function buildLeadContext(page, section, site) {
 
 export function CtaBannerSection({ page, section, site }) {
   const isDarkTheme = section?.theme !== 'light'
+  const showClouds =
+    section?.cloudVisibility !== 'hide' &&
+    section?.cloudVisibility !== 'off' &&
+    section?.cloudVisibility !== false
   const buttonLabel = section?.ctaLabel || 'Request an Install'
   const leadContext = buildLeadContext(page, section, site)
 
   return (
-    <section
+    <CloudSectionBackground
       id={CONSULTATION_ANCHOR_ID}
-      className={`py-20 ${isDarkTheme ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] text-white' : 'bg-card text-foreground border-border/60 border-b'}`}
+      className={`relative isolate overflow-hidden py-20 ${showClouds ? 'cloud-theme-section--cta' : isDarkTheme ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] text-white' : 'bg-card text-foreground border-border/60 border-b'}`}
+      preserveSurfaceWhenCloudsHidden
+      showClouds={showClouds}
       {...getDevSectionAttributes({
         id: CONSULTATION_ANCHOR_ID,
         markup: 'src/components/platform/sections/cta-banner-section.jsx',
@@ -138,25 +166,29 @@ export function CtaBannerSection({ page, section, site }) {
         markup="src/components/platform/sections/cta-banner-section.jsx"
         content={`cross-lead banner from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-7xl grid-cols-1 place-items-center gap-12 px-3 md:px-6 lg:grid-cols-2 lg:px-10">
+      <div className="relative z-2 mx-auto grid max-w-7xl grid-cols-1 place-items-center gap-12 px-3 md:px-6 lg:grid-cols-2 lg:px-10">
         <div className="space-y-4">
           {section.eyebrow ? (
             <p
-              className={`text-sm tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}
+              className={`text-sm tracking-[0.22em] uppercase ${showClouds ? 'cloud-theme-section__eyebrow' : isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}
             >
               {section.eyebrow}
             </p>
           ) : null}
-          <h2 className="max-w-6xl text-3xl tracking-normal md:text-4xl">{section.title}</h2>
+          <h2
+            className={`max-w-6xl text-3xl tracking-normal md:text-4xl ${showClouds ? 'cloud-theme-section__heading' : ''}`}
+          >
+            {section.title}
+          </h2>
           <PortableTextContent
             as="div"
             value={section.body}
-            className={`max-w-2xl text-[1rem] leading-8 ${isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`}
+            className={`max-w-2xl text-[1rem] leading-8 ${showClouds ? 'cloud-theme-section__body' : isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`}
           />
-          {buildAvatarSection(section, isDarkTheme)}
+          {buildAvatarSection(section, isDarkTheme, showClouds)}
           <JobberDialog buttonLabel={buttonLabel} context={leadContext} />
         </div>
       </div>
-    </section>
+    </CloudSectionBackground>
   )
 }

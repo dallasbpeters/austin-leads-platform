@@ -68,7 +68,10 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
         copy: item.body || items[index]?.copy || '',
       }))
     : items
-  const showClouds = section?.cloudVisibility !== 'hide'
+  const showClouds =
+    section?.cloudVisibility !== 'hide' &&
+    section?.cloudVisibility !== 'off' &&
+    section?.cloudVisibility !== false
 
   const renderIcon = (item) => {
     const iconName = item?.icon

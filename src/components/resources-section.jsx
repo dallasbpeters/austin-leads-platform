@@ -90,7 +90,10 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
   const body =
     section?.body ||
     'The most common solar and roofing questions, organized by category so you can find what you need faster.'
-  const showClouds = section?.cloudVisibility !== 'hide'
+  const showClouds =
+    section?.cloudVisibility !== 'hide' &&
+    section?.cloudVisibility !== 'off' &&
+    section?.cloudVisibility !== false
 
   return (
     <CloudSectionBackground
