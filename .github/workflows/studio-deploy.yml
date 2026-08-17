@@ -1,0 +1,102 @@
+# Builds and deploys the Sanity Studio to Sanity hosting on every push to main
+# that touches Studio code. Keeps the hosted Studio in step with the repo so its
+# asset hashes never drift from what the browser cached (the usual cause of
+# "Failed to fetch dynamically imported module: .../static/<chunk>.js").
+#
+# Required repo secret:
+#   SANITY_AUTH_TOKEN — sanity.io/manage → project → API → Tokens → "Deploy Studio"
+#                       (or an Editor/Deploy Studio token). Add with:
+#                       gh secret set SANITY_AUTH_TOKEN
+#
+# Optional repo variables (each falls back to the defaults in src/sanity/env.js):
+#   SANITY_STUDIO_APP_ID, SANITY_STUDIO_PREVIEW_ORIGIN, SANITY_STUDIO_TOOL_API_ORIGIN,
+#   NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET, NEXT_PUBLIC_SANITY_API_VERSION
+# Optional repo secrets:
+#   SANITY_STUDIO_GEMINI_PLUGIN_API_KEY, SANITY_STUDIO_AGENT_SCHEMA_ID
+
+name: Deploy Sanity Studio
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sanity.config.js'
+      - 'sanity.cli.js'
+      - 'src/sanity/**'
+      # Studio schema/tools import from these (section-helpers, sanity/keys).
+      - 'src/lib/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/studio-deploy.yml'
+  # Manual redeploy — use this to flush a stale Studio bundle without a code change.
+  workflow_dispatch:
+
+# Never cancel a deploy in flight: a half-uploaded bundle is what leaves the
+# hosted Studio serving an index that points at chunks which no longer exist.
+concurrency:
+  group: studio-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # JavaScript actions (checkout, pnpm/setup, etc.) — Node 20 is deprecated on runners.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Verify deploy token is present
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        run: |
+          if [ -z "$SANITY_AUTH_TOKEN" ]; then
+            echo "::error::SANITY_AUTH_TOKEN is not set. Create a Deploy Studio token at sanity.io/manage and run: gh secret set SANITY_AUTH_TOKEN"
+            exit 1
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+        # Pin is only in package.json "packageManager"; duplicate version here causes ERR_PNPM_BAD_PM_VERSION.
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy Studio
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+          # Empty values fall through to the defaults in src/sanity/env.js.
+          NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          NEXT_PUBLIC_SANITY_DATASET: ${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
+          NEXT_PUBLIC_SANITY_API_VERSION: ${{ vars.NEXT_PUBLIC_SANITY_API_VERSION }}
+          SANITY_STUDIO_APP_ID: ${{ vars.SANITY_STUDIO_APP_ID }}
+          # Set explicitly rather than relying on NODE_ENV during the build. Must be the
+          # www. host — Vercel 301s apex → www, which breaks the Presentation preview cookie.
+          SANITY_STUDIO_PREVIEW_ORIGIN: ${{ vars.SANITY_STUDIO_PREVIEW_ORIGIN || 'https://www.texassolarandroofingpros.com' }}
+          SANITY_STUDIO_TOOL_API_ORIGIN: ${{ vars.SANITY_STUDIO_TOOL_API_ORIGIN }}
+          SANITY_STUDIO_GEMINI_PLUGIN_API_KEY: ${{ secrets.SANITY_STUDIO_GEMINI_PLUGIN_API_KEY }}
+          SANITY_STUDIO_AGENT_SCHEMA_ID: ${{ secrets.SANITY_STUDIO_AGENT_SCHEMA_ID }}
+        # -y: unattended. --schema-required: fail the run if the schema store step
+        # fails, so a green check always means the deployed schema matches the code.
+        run: pnpm exec sanity deploy --yes --schema-required
+
+      - name: Summary
+        if: success()
+        run: |
+          {
+            echo "### Sanity Studio deployed"
+            echo ""
+            echo "- Commit: \`${GITHUB_SHA:0:7}\`"
+            echo "- Studio: https://austin-leads-platform.sanity.studio"
+            echo ""
+            echo "If the Studio still throws \`Failed to fetch dynamically imported module\`, hard-reload the tab (Cmd+Shift+R) to drop the cached index."
+          } >> "$GITHUB_STEP_SUMMARY"
