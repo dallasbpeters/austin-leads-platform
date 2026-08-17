@@ -88,6 +88,23 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
         </div>
 
         {hasControls ? (
+          <div className="absolute -bottom-5 left-[50%] mt-4 flex -translate-x-1/2 items-center justify-center gap-2">
+            {photos.map((photo, position) => (
+              <button
+                aria-current={position === index ? 'true' : undefined}
+                aria-label={`Go to photo ${position + 1}`}
+                className={`h-2 rounded-full transition-all ${
+                  position === index ? 'w-6 bg-blue-500' : 'bg-border hover:bg-muted-foreground w-2'
+                }`}
+                key={photo.key}
+                onClick={() => go(position)}
+                type="button"
+              />
+            ))}
+          </div>
+        ) : null}
+
+        {hasControls ? (
           <>
             <button
               aria-label="Previous photo"
@@ -120,23 +137,6 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
           </p>
         ) : null}
       </div>
-
-      {hasControls ? (
-        <div className="absolute -bottom-5 left-[50%] mt-4 flex -translate-x-1/2 items-center justify-center gap-2">
-          {photos.map((photo, position) => (
-            <button
-              aria-current={position === index ? 'true' : undefined}
-              aria-label={`Go to photo ${position + 1}`}
-              className={`h-2 rounded-full transition-all ${
-                position === index ? 'w-6 bg-blue-500' : 'bg-border hover:bg-muted-foreground w-2'
-              }`}
-              key={photo.key}
-              onClick={() => go(position)}
-              type="button"
-            />
-          ))}
-        </div>
-      ) : null}
     </section>
   )
 }
