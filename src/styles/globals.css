@@ -252,8 +252,8 @@ body.admin-body-locked {
 
   background: linear-gradient(
     to bottom,
-    oklab(63.768% -0.0185 -0.182) 0%,
-    oklab(75.741% -0.0031 -0.117) 100%
+    oklab(74.703% -0.0086 -0.116) 0%,
+    oklab(79.39% -0.0015 -0.0861) 100%
   );
   background-size: 100% 100%;
 }
