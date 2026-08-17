@@ -295,10 +295,10 @@ body.admin-body-locked {
 }
 
 .cloud-theme-section {
-  --cloud-section-background: #8bbfd6;
+  --cloud-section-background: oklch(84.036% 0.0643 226deg);
   --cloud-section-foreground: #082f43;
   --cloud-section-muted: #16485d;
-  --cloud-section-eyebrow: #80300f;
+  --cloud-section-eyebrow: #f0f0ef;
 
   background-color: var(--cloud-section-background);
   color: var(--cloud-section-foreground);

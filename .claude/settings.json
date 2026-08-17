@@ -1,14 +1,30 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(git config *)",
+      "Bash(curl -s -o /dev/null -w \"/projects: %{http_code}\\\\n\" https://www.texassolarandroofingpros.com/projects)",
+      "Bash(curl -s -o /dev/null -w \"/: %{http_code}\\\\n\" https://www.texassolarandroofingpros.com/)",
+      "Bash(curl -s https://www.texassolarandroofingpros.com/projects)",
+      "Bash(grep -oE '<title>[^<]*</title>|<h1[^>]*>.{0,120}')",
+      "Bash(pnpm exec *)",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "Bash(curl -s -o /dev/null -w \"status: %{http_code}\\\\n\" https://www.texassolarandroofingpros.com/projects)",
+      "Bash(curl -s https://leads-platform-2mtu8xejk-dallaspeters.vercel.app/projects)",
+      "Bash(curl -s -o /dev/null -w \"status: %{http_code}\\\\n\" https://leads-platform-2mtu8xejk-dallaspeters.vercel.app/projects)",
+      "Bash(curl -sI https://www.texassolarandroofingpros.com/projects)",
+      "mcp__claude_ai_Vercel__list_projects"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
+        "matcher": "Write|Edit",
         "hooks": [
           {
-            "command": "pnpm run fix",
-            "type": "command"
+            "type": "command",
+            "command": "pnpm run fix"
           }
-        ],
-        "matcher": "Write|Edit"
+        ]
       }
     ]
   }
