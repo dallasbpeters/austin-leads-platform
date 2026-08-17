@@ -29,7 +29,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link
               href="/"
-              className="flex items-center gap-2 rounded-md text-xl font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="flex items-center gap-2 rounded-md text-xl font-bold hover:text-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
               <Logo className="size-18 w-auto rounded-sm bg-white p-2" />
               Texas Solar & Roofing Pros
@@ -42,7 +42,7 @@ export default function Footer() {
               <h3 className="text-sm">Contact</h3>
               <ul className="mt-3 space-y-2 text-sm text-gray-300">
                 <li>
-                  <a href="mailto:info@texassolarandroofingpros.com" className="hover:text-gray-200">
+                  <a href="mailto:info@texassolarandroofingpros.com" className="hover:text-blue-500">
                     info@texassolarandroofingpros.com
                   </a>
                 </li>
@@ -68,21 +68,21 @@ export default function Footer() {
             <span id="year"> 2026</span>
           </p>
           <div className="flex items-center gap-4 text-sm text-gray-500 md:col-span-1">
-            <Link href="/services" className="text-gray-300 hover:text-gray-300">
+            <Link href="/services" className="text-gray-300 hover:text-blue-500">
               Services
             </Link>
-            <Link href="/guides" className="text-gray-300 hover:text-gray-300">
+            <Link href="/guides" className="text-gray-300 hover:text-blue-500">
               Guides
             </Link>
-            <Link href="/terms" className="text-gray-300 hover:text-gray-300">
+            <Link href="/terms" className="text-gray-300 hover:text-blue-500">
               Terms
             </Link>
-            <Link href="/privacy-policy" className="text-gray-300 hover:text-gray-300">
+            <Link href="/privacy-policy" className="text-gray-300 hover:text-blue-500">
               Privacy
             </Link>
             <Link
               href="#site-top"
-              className="inline-flex items-center gap-1 text-gray-300 hover:text-gray-300"
+              className="inline-flex items-center gap-1 text-gray-300 hover:text-blue-500"
             >
               Back to top
               <DotArrowUp className="h-3 w-3" aria-hidden="true" />
