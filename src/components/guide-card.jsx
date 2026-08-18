@@ -305,7 +305,7 @@ export default function GuideCardGrid({
 
   const availableCategories = useMemo(() => {
     const values = new Set(cards.map((card) => card.category).filter(Boolean))
-    return ['All', ...[...values]]
+    return ['All', ...values]
   }, [cards])
 
   const filteredCards = useMemo(
