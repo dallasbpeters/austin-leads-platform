@@ -14,19 +14,21 @@ import { GallerySection } from './gallery-section'
 import { GuideGridSection } from './guide-grid-section'
 import { HailMapSection } from './hail-map-section'
 import { HeroSection } from './hero-section'
-import InstallProcessSection from './install-process-section'
 import { PricingSection } from './pricing-section'
 import { QuoteBannerSection } from './quote-banner-section'
 import { RoofingLogoCloudSection } from './roofing-logo-cloud-section'
 import { ScrollTextSection } from './scroll-text-section'
 import { SecondaryCTASection } from './secondary-cta-section'
-import { ServiceAreaMapSection } from './service-area-map-section'
 import { ServiceGridSection } from './service-grid-section'
 import { SolarSwitchSection } from './solar-switch-section'
 import { StepsSection } from './steps-section'
 import { StorySection } from './story-section'
 import { VideoSection } from './video-section'
 
+/* mapbox-gl is ~1.8 MB and only reachable through this one section. */
+const ServiceAreaMapSection = dynamic(() => import('./service-area-map-section'), { ssr: true })
+/* Pulls in lottie-web (~298 KB) through <InstallProcess>. */
+const InstallProcessSection = dynamic(() => import('./install-process-section'), { ssr: true })
 const EnergyChartSection = dynamic(() => import('@/components/energy-chart-section'), { ssr: true })
 const CalculatorSection = dynamic(() => import('@/components/calculator-section'), { ssr: true })
 const CostsSection = dynamic(() => import('@/components/costs-section'), { ssr: true })

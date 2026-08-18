@@ -234,7 +234,12 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
     >
       {titlePrimary}
       <br />
-      <span className="text-white" style={{ WebkitTextStrokeColor: heroTextColor || 'black' }}>
+      <span
+        style={{
+          color: 'var(--color-amber-400)',
+          paintOrder: 'stroke fill',
+        }}
+      >
         {titleAccent}
       </span>
     </h1>

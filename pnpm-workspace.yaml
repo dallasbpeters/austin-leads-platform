@@ -1,5 +1,8 @@
 allowBuilds:
+  '@google/genai': false
   core-js: true
   esbuild: true
   protobufjs: true
   sharp: false
+patchedDependencies:
+  next-sanity@13.3.3: patches/next-sanity@13.3.3.patch

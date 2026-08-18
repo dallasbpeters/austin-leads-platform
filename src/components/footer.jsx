@@ -17,7 +17,7 @@ const footerServices = [
 export default function Footer() {
   return (
     <footer
-      className="relative w-full overflow-hidden border-t border-white/10 bg-black text-white"
+      className="bg-primary relative w-full overflow-hidden border-t border-white/10 text-white"
       {...getDevSectionAttributes({
         content: 'local JSX footer + service catalog links',
         id: 'site-footer',
@@ -29,9 +29,9 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link
               href="/"
-              className="flex items-center gap-2 rounded-md text-xl font-bold hover:text-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="flex items-center gap-2 rounded-md text-xl font-bold hover:text-blue-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
-              <Logo className="size-18 w-auto rounded-sm bg-white p-2" />
+              <Logo className="size-18 w-auto p-2" />
               Texas Solar & Roofing Pros
             </Link>
             <p className="mt-3 max-w-md text-sm text-gray-300">

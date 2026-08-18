@@ -1,7 +1,6 @@
 'use client'
 
 import { AnimatePresence, motion, useInView } from 'framer-motion'
-import * as IconoirIcons from 'iconoir-react'
 import {
   AirConditioner,
   AreaSearch,
@@ -13,6 +12,8 @@ import {
   WindowTabs,
   Wrench,
 } from 'iconoir-react'
+import { iconoirRegistry } from './iconoir-registry'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -163,8 +164,8 @@ function resolveGuideCardIcon(iconName, fallbackText = '') {
     return serviceIconMap[normalizedName]
   }
 
-  if (IconoirIcons[normalizedName]) {
-    return IconoirIcons[normalizedName]
+  if (iconoirRegistry[normalizedName]) {
+    return iconoirRegistry[normalizedName]
   }
 
   return inferGuideCardIconFromText(fallbackText)
@@ -269,6 +270,7 @@ function GuideCardBody({ card }) {
               src={card.image}
               alt={card.imageAlt || card.title}
               fill
+              quality={95}
               sizes="(max-width: 900px) 100vw, (max-width: 1280px) 50vw, 33vw"
               loading="lazy"
               className="object-cover"
@@ -362,6 +364,8 @@ export default function GuideCardGrid({
     scrollToPaginationTarget()
   }
 
+  const minWidth = '250px'
+
   return (
     <div>
       {enableFiltering ? (
@@ -401,7 +405,12 @@ export default function GuideCardGrid({
         <motion.div
           ref={ref}
           animate={isInView ? 'visible' : 'hidden'}
-          className={cn('grid gap-5 max-[900px]:grid-cols-1', columnsClassName, className)}
+          className={cn(columnsClassName, className)}
+          style={{
+            display: 'grid',
+            gap: 12,
+            gridTemplateColumns: `repeat(auto-fit, minmax(${minWidth}, 1fr))`,
+          }}
           initial="hidden"
           variants={containerVariants}
         >

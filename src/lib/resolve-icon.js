@@ -1,4 +1,4 @@
-import * as IconoirIcons from 'iconoir-react'
+import { iconoirRegistry } from '../components/iconoir-registry'
 
 /**
  * Resolve an iconoir icon component from a string name.
@@ -9,6 +9,6 @@ export function resolveIconoirIcon(iconName) {
   if (!iconName || typeof iconName !== 'string') {
     return null
   }
-  const Component = IconoirIcons[iconName]
+  const Component = iconoirRegistry[iconName]
   return typeof Component === 'function' || typeof Component === 'object' ? Component : null
 }

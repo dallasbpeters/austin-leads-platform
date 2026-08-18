@@ -131,16 +131,23 @@ function getAvatarData(section) {
   return data
 }
 
+/*
+ * The light variant sits over the tone-tinted gradient, so its text takes the
+ * same `--cloud-section-*` tokens the cloud sections use rather than fixed
+ * colours. Without this the copy stays dark navy after the sky turns to night
+ * and becomes unreadable. The dark variant has its own opaque background and
+ * no gradient, so it keeps its fixed palette.
+ */
 function getClassNames(isDarkTheme) {
   return {
     avatarClassName: `size-16 ${isDarkTheme ? 'bg-white/10 ring-1 ring-white/20' : 'bg-primary ring-1 ring-black/5'}`,
-    blurbClassName: `mt-3 text-sm leading-6 ${isDarkTheme ? 'text-white/80' : 'text-muted-foreground'}`,
-    copy: `type-accent text-[1rem] font-semibold ${isDarkTheme ? 'text-white/78' : 'text-slate-500'}`,
-    eyebrowClassName: `mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'text-secondary/70'}`,
+    blurbClassName: `mt-3 text-sm leading-6 ${isDarkTheme ? 'text-white/80' : 'cloud-theme-section__body'}`,
+    copy: `type-accent text-[1rem] font-semibold ${isDarkTheme ? 'text-white/78' : 'cloud-theme-section__body'}`,
+    eyebrowClassName: `mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'cloud-theme-section__eyebrow'}`,
     fallbackClassName: `text-[1rem] font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`,
-    heading: `type-display mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'text-secondary'}`,
-    nameClassName: `text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-foreground'}`,
-    roleClassName: `text-sm ${isDarkTheme ? 'text-white/72' : 'text-muted-foreground'}`,
+    heading: `type- mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'cloud-theme-section__heading'}`,
+    nameClassName: `text-lg font-semibold ${isDarkTheme ? 'text-white' : 'cloud-theme-section__heading'}`,
+    roleClassName: `text-sm ${isDarkTheme ? 'text-white/72' : 'cloud-theme-section__body'}`,
   }
 }
 

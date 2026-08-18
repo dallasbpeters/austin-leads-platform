@@ -3,7 +3,6 @@
 import { cn } from '@/lib/utils'
 
 import CloudBackground from './cloud-background'
-import { useCloudTone } from './use-cloud-tone'
 
 /**
  * Provides a locally-timed, accessible color treatment for an entire section.
@@ -16,14 +15,12 @@ import { useCloudTone } from './use-cloud-tone'
 export default function CloudSectionBackground({
   children,
   className,
-  density = 'subtle',
+  density = 'thick',
   preserveSurfaceWhenCloudsHidden = false,
   showClouds = true,
   tone = 'auto',
   ...sectionProps
 }) {
-  const resolvedTone = useCloudTone(tone)
-
   return (
     <section
       {...sectionProps}
@@ -32,9 +29,9 @@ export default function CloudSectionBackground({
         !showClouds && !preserveSurfaceWhenCloudsHidden && 'cloud-theme-section--clouds-hidden',
         className,
       )}
-      data-cloud-tone={showClouds ? resolvedTone : undefined}
+      data-cloud-tone={showClouds && tone !== 'auto' ? tone : undefined}
     >
-      {showClouds ? <CloudBackground density={density} tone={resolvedTone} /> : null}
+      {showClouds ? <CloudBackground density={density} tone={tone} /> : null}
       {children}
     </section>
   )

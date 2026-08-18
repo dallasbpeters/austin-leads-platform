@@ -31,3 +31,11 @@ export const getMillisecondsUntilNextHour = (date) => {
 
   return nextHour.getTime() - date.getTime()
 }
+
+/**
+ * Inline script that stamps the visitor's local sky phase onto `<html>` before
+ * the first paint, so cloud sections render their final colors immediately
+ * instead of starting on the day palette and transitioning once React mounts.
+ * The body is derived from `getLocalCloudTone` so the two can never drift.
+ */
+export const cloudToneBootstrapScript = `document.documentElement.dataset.cloudTone=(${getLocalCloudTone})(new Date())`

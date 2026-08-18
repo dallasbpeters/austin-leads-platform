@@ -1,4 +1,4 @@
-import { DocumentTextIcon } from '@sanity/icons'
+import { DocumentTextIcon } from '@sanity/icons/DocumentText'
 
 import { pageSectionTypes } from './page-type'
 

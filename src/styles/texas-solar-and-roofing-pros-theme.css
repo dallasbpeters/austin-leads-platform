@@ -22,7 +22,7 @@
   --color-primary: hsl(var(--color-primary-h) var(--color-primary-s) var(--color-primary-l));
   --color-secondary: hsl(var(--color-secondary-h) var(--color-secondary-s) var(--color-secondary-l));
   --color-tertiary: hsl(var(--color-tertiary-h) var(--color-tertiary-s) var(--color-tertiary-l));
-  --color-primary-900: hsl(var(--color-primary-h) var(--color-primary-s) 48%);
+  --color-primary-900: hsl(var(--color-primary-h) var(--color-primary-s) 28%);
   --color-primary-800: hsl(var(--color-primary-h) var(--color-primary-s) 44%);
   --color-primary-700: hsl(var(--color-primary-h) var(--color-primary-s) 52%);
   --color-primary-600: hsl(var(--color-primary-h) var(--color-primary-s) 58%);
@@ -107,10 +107,10 @@
   --sidebar-accent-foreground: var(--color-text-strong);
   --sidebar-border: var(--color-border);
   --sidebar-ring: hsl(var(--color-primary-h) var(--color-primary-s) 65%);
-  --font-sans: google sans flex, ui-sans-serif, sans-serif, system-ui;
-  --font-serif: google sans flex, ui-sans-serif, sans-serif, system-ui;
-  --font-display: google sans flex, ui-sans-serif, sans-serif, system-ui;
-  --font-accent: google sans flex, ui-sans-serif, sans-serif, system-ui;
+  --font-sans: 'Switzer-Variable', ui-sans-serif, sans-serif, system-ui;
+  --font-serif: 'Switzer-Variable', ui-sans-serif, sans-serif, system-ui;
+  --font-display: 'Switzer-Variable', ui-sans-serif, sans-serif, system-ui;
+  --font-accent: 'Switzer-Variable', ui-sans-serif, sans-serif, system-ui;
   --radius: 0.75rem;
   --shadow-color: 0deg 0% 70%;
   --shadow-xs: 0 1px 2px rgb(15 23 42 / 5%);

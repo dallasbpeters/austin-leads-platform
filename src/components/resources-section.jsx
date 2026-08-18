@@ -1,5 +1,5 @@
 import { HomeShield, SunLight, Thunderstorm } from 'iconoir-react'
-import * as IconoirIcons from 'iconoir-react'
+import { iconoirRegistry } from './iconoir-registry'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -49,7 +49,7 @@ const iconMap = {
 }
 
 const getResourceIcon = (iconName) => {
-  return iconMap[iconName] || IconoirIcons[iconName] || null
+  return iconMap[iconName] || iconoirRegistry[iconName] || null
 }
 
 const inferResourceIcon = (item) => {
