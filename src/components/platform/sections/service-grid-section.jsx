@@ -12,7 +12,7 @@ import {
   WindowTabs,
   Wrench,
 } from 'iconoir-react'
-import * as IconoirIcons from 'iconoir-react'
+import { iconoirRegistry } from '../../iconoir-registry'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -132,8 +132,8 @@ const getServiceIcon = (item) => {
   if (item.icon && serviceIconMap[item.icon]) {
     return serviceIconMap[item.icon]
   }
-  if (item.icon && IconoirIcons[item.icon]) {
-    return IconoirIcons[item.icon]
+  if (item.icon && iconoirRegistry[item.icon]) {
+    return iconoirRegistry[item.icon]
   }
 
   const title =

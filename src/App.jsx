@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Agentation } from 'agentation'
+import dynamic from 'next/dynamic'
 
 import { sectionRenderers } from '@/components/platform/sections'
 import SectionSurface from '@/components/platform/sections/section-surface'
@@ -26,6 +26,13 @@ function resolveSectionType(section) {
   }
   return ''
 }
+
+/* Development-only: a static import bundles ~414 KB into production builds
+ * even though the NODE_ENV guard removes the element. */
+const Agentation =
+  process.env.NODE_ENV === 'development'
+    ? dynamic(() => import('agentation').then((mod) => mod.Agentation))
+    : () => null
 
 export default function App({
   homepage = null,

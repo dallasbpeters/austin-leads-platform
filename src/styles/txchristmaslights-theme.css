@@ -59,8 +59,8 @@
   --shadow-glass-soft: 0px 4px 10px 0px hsl(0deg 0% 0% / 5%);
   --shadow-brand: 0 10px 24px color-mix(in oklch, var(--primary) 22%, transparent);
   --shadow-brand-hover: 1px 1px 0 0 color-mix(in oklch, var(--primary) 28%, transparent);
-  --font-sans: google sans flex, ui-sans-serif, sans-serif, system-ui;
-  --font-accent: google sans flex, ui-sans-serif, sans-serif, system-ui;
+  --font-sans: 'Switzer-Variable', ui-sans-serif, sans-serif, system-ui;
+  --font-accent: 'Switzer-Variable', ui-sans-serif, sans-serif, system-ui;
   --font-serif: gloock, ui-serif, serif;
   --font-mono: jetbrains mono, monospace;
   --font-display: gloock, ui-sans-serif, sans-serif, system-ui;

@@ -1,5 +1,6 @@
 'use client'
 
+import type { Feature, FeatureCollection, Geometry } from 'geojson'
 import mapboxgl from 'mapbox-gl'
 import { useEffect, useMemo, useRef } from 'react'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -66,18 +67,18 @@ const CENTER_OFFSET_PADDING = { top: 48, bottom: 48, left: 48, right: 48 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function boundsFromFeatures(features: GeoJSON.Feature[]): mapboxgl.LngLatBounds | null {
+function boundsFromFeatures(features: Feature[]): mapboxgl.LngLatBounds | null {
   if (!features.length) {
     return null
   }
   const bounds = new mapboxgl.LngLatBounds()
   features.forEach((f) => {
-    extractCoords(f.geometry as GeoJSON.Geometry).forEach(([lng, lat]) => bounds.extend([lng, lat]))
+    extractCoords(f.geometry as Geometry).forEach(([lng, lat]) => bounds.extend([lng, lat]))
   })
   return bounds
 }
 
-function extractCoords(geometry: GeoJSON.Geometry): [number, number][] {
+function extractCoords(geometry: Geometry): [number, number][] {
   if (geometry.type === 'Polygon') {
     return geometry.coordinates[0] as [number, number][]
   }
@@ -105,7 +106,7 @@ export const MapBox = ({
 }: ServiceAreaMapProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
-  const txFeaturesRef = useRef<GeoJSON.Feature[]>([])
+  const txFeaturesRef = useRef<Feature[]>([])
 
   // Keep a ref so the map.on('load') closure always sees the latest FIPS list
   // even if areas arrive after mount but before the style finishes loading.
@@ -190,7 +191,7 @@ export const MapBox = ({
         if (!res.ok) {
           throw new Error(`/api/counties/texas returned ${res.status}`)
         }
-        const txGeoJSON = (await res.json()) as GeoJSON.FeatureCollection
+        const txGeoJSON = (await res.json()) as FeatureCollection
         const txFeatures = txGeoJSON.features
 
         // Use the ref so we always have the latest county list here, even if
@@ -245,7 +246,7 @@ export const MapBox = ({
           if (!e.features?.length) {
             return
           }
-          const f = e.features[0].properties?.fips as string
+          const f = (e.features[0] as unknown as Feature).properties?.fips as string
           const area = fipsToArea.get(f)
           const meta = FIPS_TO_META.get(f)
           const name = area?.displayName ?? meta?.city ?? meta?.name ?? 'County'
@@ -291,7 +292,7 @@ export const MapBox = ({
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <section id="service-area" className="scroll-m-16 overflow-hidden bg-mist-800">
+    <section id="service-area" className="bg-primary scroll-m-16 overflow-hidden">
       <div
         className="grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-[.9fr_1.1fr]"
         style={{ minHeight: '480px' }}

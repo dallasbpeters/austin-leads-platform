@@ -6,11 +6,18 @@ import Image from 'next/image'
 
 import { cn } from '@/lib/utils'
 
+import { getCloudPuffs } from './cloud-puffs'
+
 const cloudPositionsByDensity = {
   subtle: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
   regular: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
   thick: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
 }
+
+/* Puffs per cloud. The source technique uses 5-15 for a single hero cloud;
+ * these sections carry 8-12 clouds at once, so the count is trimmed to keep
+ * the composited layer total in range. */
+const puffCountByDensity = { subtle: 6, regular: 5, thick: 4 }
 
 const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum)
 
@@ -52,6 +59,7 @@ const getScrollScale = (scrollProgress) => 0.46 + Math.sin(scrollProgress * Math
 export default function CloudBackground({ className, density = 'subtle', tone = 'auto' }) {
   const cloudLayerRef = useRef(null)
   const cloudPositions = cloudPositionsByDensity[density] || cloudPositionsByDensity.subtle
+  const puffCount = puffCountByDensity[density] || puffCountByDensity.subtle
 
   useEffect(() => {
     const cloudLayer = cloudLayerRef.current
@@ -109,7 +117,13 @@ export default function CloudBackground({ className, density = 'subtle', tone = 
           <span className="cloud-background__scroll">
             <span className="cloud-background__breathe">
               <span className="cloud-background__motion">
-                <Image alt="" src="/clouds/cloud-sprite.png" width={256} height={256} sizes="30vw" />
+                <span className="cloud-background__puffs">
+                  {getCloudPuffs(position, puffCount).map((puff) => (
+                    <span key={puff.key} className="cloud-background__puff" style={puff.style}>
+                      <Image alt="" src="/clouds/cloud-sprite.png" width={256} height={256} sizes="30vw" />
+                    </span>
+                  ))}
+                </span>
               </span>
             </span>
           </span>

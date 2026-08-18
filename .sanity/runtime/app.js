@@ -3,4 +3,4 @@
 import { renderStudio } from 'sanity'
 import studioConfig from '../../sanity.config.js'
 
-renderStudio(document.querySelector('#sanity'), studioConfig, { reactStrictMode: false, basePath: '/' })
+renderStudio(document.getElementById('sanity'), studioConfig, { reactStrictMode: false, basePath: '/' })

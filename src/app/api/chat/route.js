@@ -1,15 +1,22 @@
+// oxlint-disable unicorn/no-useless-undefined
+import { sanityInsightsIntegration } from '@sanity/context/ai-sdk'
+
 import { anthropic } from '@ai-sdk/anthropic'
 import { createGroq } from '@ai-sdk/groq'
 import { createMCPClient } from '@ai-sdk/mcp'
 import { convertToModelMessages, stepCountIs, streamText } from 'ai'
 
 import { safeAuth } from '@/lib/auth/session'
+import { sanityWriteClient } from '@/sanity/client'
 import { dataset, projectId } from '@/sanity/env'
 
 export const runtime = 'nodejs'
 
 const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-5'
 const DEFAULT_GROQ_MODEL = 'llama-3.3-70b-versatile'
+/* Groups this agent's conversations in the Sanity Insights dashboard. */
+const INSIGHTS_AGENT_ID = 'austin-leads-studio-agent'
+
 const MAX_STEPS = 20
 
 const BASE_SYSTEM_PROMPT = `You are a **Sanity CMS assistant** for the Austin Leads Platform (Texas Solar and Roofing Pros). You help **editors and operators** work with **documents and structure** in the dataset—not end-site visitors.
@@ -137,14 +144,52 @@ const validateChatEnvironment = async (request) => {
     return { error: Response.json({ error: 'Invalid JSON body.' }, { status: 400 }) }
   }
 
-  const { messages, documentFocus, documentContext, systemPromptExtra } = body
+  const { messages, documentFocus, documentContext, systemPromptExtra, threadId } = body
   if (!Array.isArray(messages) || messages.length === 0) {
     return {
       error: Response.json({ error: 'Request must include a non-empty messages array.' }, { status: 400 }),
     }
   }
 
-  return { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra }
+  return { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra, threadId }
+}
+
+/**
+ * Builds Sanity Insights telemetry for this agent, or returns undefined when it
+ * cannot run.
+ *
+ * The integration writes conversations back to the dataset, so it needs a token
+ * with write access. Without `SANITY_API_WRITE_TOKEN` the write client is null
+ * and telemetry is skipped rather than failing the request.
+ *
+ * @param {string | undefined} threadId - Conversation id supplied by the caller, if any.
+ * @param {Array<{ id?: string }>} messages - UI messages for this turn.
+ * @returns {object | undefined} An `experimental_telemetry` config, when enabled.
+ */
+function buildInsightsTelemetry(threadId, messages) {
+  if (!sanityWriteClient) {
+    return undefined
+  }
+
+  /* Fall back to the first message's id: it stays stable for the life of a
+   * conversation, so turns still group into one thread even when the caller
+   * sends no explicit `threadId`. */
+  const resolvedThreadId = threadId || messages[0]?.id
+
+  if (!resolvedThreadId) {
+    return undefined
+  }
+
+  return {
+    isEnabled: true,
+    integrations: [
+      sanityInsightsIntegration({
+        agentId: INSIGHTS_AGENT_ID,
+        client: sanityWriteClient,
+        threadId: resolvedThreadId,
+      }),
+    ],
+  }
 }
 
 export const POST = async (request) => {
@@ -153,7 +198,8 @@ export const POST = async (request) => {
     return validated.error
   }
 
-  const { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra } = validated
+  const { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra, threadId } =
+    validated
 
   let mcpClient = null
 
@@ -187,6 +233,7 @@ export const POST = async (request) => {
       messages: await convertToModelMessages(messages),
       tools: mcpTools,
       stopWhen: stepCountIs(MAX_STEPS),
+      experimental_telemetry: buildInsightsTelemetry(threadId, messages),
       onFinish: async () => {
         await mcpClient?.close()
       },

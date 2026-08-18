@@ -1,0 +1,19 @@
+diff --git a/dist/index.js b/dist/index.js
+index e42c049663ecf90cbae677a8deb47581a2f23c77..ab996f8ee002ce99c78d562d398704d6edda330e 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,5 +1,5 @@
+ import { t as isCorsOriginError } from "./isCorsOriginError.js";
+-import { createClient, unstable__adapter, unstable__environment } from "@sanity/client";
++import { createClient } from "@sanity/client";
+ import { stegaBrand, stegaClean } from "@sanity/client/stega";
+ import { createDataAttribute } from "@sanity/visual-editing/create-data-attribute";
+ import groq, { defineQuery } from "groq";
+@@ -11,6 +11,6 @@ export * from "@portabletext/react";
+ * @public
+ */
+ const variantsApiVersion = "X";
+-export { createClient, createDataAttribute, defineQuery, groq, isCorsOriginError, stegaBrand, stegaClean, unstable__adapter, unstable__environment, variantsApiVersion };
++export { createClient, createDataAttribute, defineQuery, groq, isCorsOriginError, stegaBrand, stegaClean, variantsApiVersion };
+ 
+ //# sourceMappingURL=index.js.map

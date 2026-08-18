@@ -1,5 +1,6 @@
-import * as IconoirIcons from 'iconoir-react'
 import { Wallet, StatUp, Leaf, Clock } from 'iconoir-react'
+
+import { iconoirRegistry } from './iconoir-registry'
 
 import Card from './card'
 import CloudSectionBackground from './cloud-section-background'
@@ -87,7 +88,7 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
       return <Icon className="size-6" strokeWidth={2} />
     }
 
-    const Icon = IconoirIcons[iconName] || inferSnapshotIcon(item)
+    const Icon = iconoirRegistry[iconName] || inferSnapshotIcon(item)
     return <Icon className="size-6" strokeWidth={2} />
   }
 

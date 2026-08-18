@@ -1,3 +1,4 @@
+import createBundleAnalyzerPlugin from '@next/bundle-analyzer'
 import createVercelToolbarPlugin from '@vercel/toolbar/plugins/next'
 
 const PROJECT_ROOT = import.meta.dirname
@@ -69,6 +70,9 @@ const nextConfig = {
     root: PROJECT_ROOT,
   },
   experimental: {
+    /* Rewrites `import { X } from 'pkg'` to the deep path, so barrel files do
+     * not drag their whole package into the bundle. */
+    optimizePackageImports: ['iconoir-react', 'lucide-react', '@sanity/icons'],
     viewTransition: true,
   },
   // Keep @react-pdf/renderer out of the server bundle — its font/glyph data
@@ -206,4 +210,14 @@ const withToolbar = createVercelToolbarPlugin({
   enableInProduction: true,
 })
 
-export default withToolbar(nextConfig)
+/*
+ * Opt-in, so ordinary builds are unaffected: `pnpm analyze` sets ANALYZE=true.
+ * Wrapped outermost so it sees the config after the toolbar plugin has applied
+ * its own webpack changes, and note this is a webpack-based plugin -- the
+ * analyze script has to keep the `--webpack` flag or it produces nothing.
+ */
+const withBundleAnalyzer = createBundleAnalyzerPlugin({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+export default withBundleAnalyzer(withToolbar(nextConfig))

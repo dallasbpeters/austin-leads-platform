@@ -2,10 +2,8 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { VercelToolbar } from '@vercel/toolbar/next'
-import { Agentation } from 'agentation'
-import { VisualEditing } from 'next-sanity/visual-editing'
 import { Gloock, JetBrains_Mono } from 'next/font/google'
-import localFont from 'next/font/local'
+import dynamic from 'next/dynamic'
 import { draftMode, headers } from 'next/headers'
 
 import '../styles/globals.css'
@@ -17,19 +15,6 @@ import { cloudToneBootstrapScript } from '@/components/cloud-tone'
 import { getPublicDataSiteAttribute } from '@/components/platform/public-site-utils'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
-import { SanityLive } from '@/sanity/live'
-
-const googleSansFlex = localFont({
-  adjustFontFallback: false,
-  display: 'swap',
-  src: [
-    {
-      path: '../../public/fonts/GoogleSansFlex.ttf',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-sans',
-})
 
 const fontSerif = Gloock({
   subsets: ['latin'],
@@ -69,6 +54,25 @@ export const metadata = {
     },
   },
 }
+
+/*
+ * Editor and development tooling, split out of the shared bundle.
+ *
+ * `isDraftMode` is only known at request time, so a static import cannot be
+ * eliminated and shipped ~450 KB of visual editing to every public visitor.
+ * `Agentation` was ~414 KB of development tooling in the production build --
+ * the NODE_ENV guard removed the element but not the module.
+ *
+ * `ssr: false` is unavailable here (this is a Server Component), but the
+ * default still code-splits: the chunk is only fetched when the component
+ * actually renders.
+ */
+const SanityLive = dynamic(() => import('@/sanity/live').then((mod) => mod.SanityLive))
+const VisualEditing = dynamic(() => import('next-sanity/visual-editing').then((mod) => mod.VisualEditing))
+const Agentation =
+  process.env.NODE_ENV === 'development'
+    ? dynamic(() => import('agentation').then((mod) => mod.Agentation))
+    : () => null
 
 export default async function RootLayout({ children }) {
   // oxlint-disable-next-line unicorn/no-await-expression-member
@@ -129,7 +133,7 @@ export default async function RootLayout({ children }) {
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
       <body
-        className={`${googleSansFlex.variable} ${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
+        className={`${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >
         <a
           href="#main-content"

@@ -3,6 +3,7 @@ import GuideCardGrid from '@/components/guide-card'
 import PortableTextContent from '@/components/portable-text-content'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
+import { AutoFillGrid } from '@/components/ui/grid-container'
 
 /**
  * Pinned case studies first, in the order the editor pinned them, then everything
@@ -134,10 +135,9 @@ export function CaseStudyGridSection({ section = null, sectionId = 'case-studies
             ) : null}
           </div>
         ) : null}
-
-        {leadCards.length ? (
-          <GuideCardGrid cards={leadCards} className="mb-6" columnsClassName="md:grid-cols-1" />
-        ) : null}
+        <AutoFillGrid>
+          {leadCards.length ? <GuideCardGrid cards={leadCards} className="mb-6" /> : null}
+        </AutoFillGrid>
         {/* Skipped entirely when the featured lead is the only case study, so the
             grid does not render an empty animated container below it. */}
         {gridCards.length ? <GuideCardGrid cards={gridCards} columnsClassName="md:grid-cols-3" /> : null}

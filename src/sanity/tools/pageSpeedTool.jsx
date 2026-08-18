@@ -38,7 +38,7 @@ function ScoreCard({ label, score }) {
   return (
     <div
       style={{
-        border: '1px solid #e5e7eb',
+        border: '1px solid var(--pt-plugin-table-boundary-dot)',
         borderRadius: '0.75rem',
         padding: '0.9rem',
         display: 'grid',
@@ -141,10 +141,10 @@ export function PageSpeedTool() {
         style={{
           display: 'grid',
           gap: '0.9rem',
-          border: '1px solid #e5e7eb',
+          border: '1px solid var(--pt-plugin-table-boundary-dot)',
           borderRadius: '1rem',
           padding: '1rem',
-          background: 'white',
+          background: 'var(--pt-plugin-table-trash-bg)',
         }}
       >
         <label style={{ display: 'grid', gap: '0.4rem' }}>
@@ -156,7 +156,7 @@ export function PageSpeedTool() {
             style={{
               padding: '0.75rem 0.8rem',
               borderRadius: '0.6rem',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--pt-plugin-table-boundary-dot)',
             }}
           />
         </label>
@@ -169,7 +169,7 @@ export function PageSpeedTool() {
             style={{
               padding: '0.75rem 0.8rem',
               borderRadius: '0.6rem',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--pt-plugin-table-boundary-dot)',
               width: '220px',
             }}
           >
@@ -228,7 +228,7 @@ export function PageSpeedTool() {
 
           <div
             style={{
-              border: '1px solid #e5e7eb',
+              border: '1px solid var(--pt-plugin-table-boundary-dot)',
               borderRadius: '0.9rem',
               padding: '1rem',
               background: 'white',

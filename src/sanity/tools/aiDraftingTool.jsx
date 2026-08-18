@@ -1,6 +1,9 @@
+/* oxlint-disable next/no-img-element -- this tool renders inside the Sanity
+ * Studio (Vite), not Next.js. `next/image` resolves to a module object there
+ * and React throws "Element type is invalid"; asset previews are 72px thumbs. */
 import React from 'react'
 import { useClient } from 'sanity'
-import { ImageGeneratorContent } from 'sanity-plugin-gemini-ai-images'
+import { ImageGeneratorContent } from '../plugins/gemini-images'
 
 import {
   buildDraftSkeleton,
@@ -353,8 +356,8 @@ export function AiDraftingTool() {
 
       <div
         style={{
-          border: '1px solid #e5e7eb',
-          background: '#f9fafb',
+          border: '1px solid var(--pt-plugin-table-boundary-dot)',
+          background: 'var(--card-backdrop-color)',
           borderRadius: '0.9rem',
           padding: '1rem 1.1rem',
           display: 'grid',
@@ -376,8 +379,8 @@ export function AiDraftingTool() {
       {!SANITY_AGENT_SCHEMA_ID ? (
         <div
           style={{
-            border: '1px solid #f59e0b',
-            background: '#fff7ed',
+            border: '1px solid var(--pt-plugin-table-boundary-dot)',
+            background: 'var(--card-backdrop-color)',
             color: '#9a3412',
             borderRadius: '0.75rem',
             padding: '0.9rem 1rem',
@@ -408,7 +411,7 @@ export function AiDraftingTool() {
         <div
           style={{
             border: '1px solid #86efac',
-            background: '#f0fdf4',
+            background: 'var(--card-backdrop-color)',
             color: '#166534',
             borderRadius: '0.75rem',
             padding: '1rem',
@@ -428,7 +431,7 @@ export function AiDraftingTool() {
               style={{
                 border: 'none',
                 background: '#111827',
-                color: 'white',
+                color: 'var(--card-backdrop-color)',
                 padding: '0.7rem 1rem',
                 borderRadius: '0.6rem',
                 cursor: 'pointer',
@@ -447,9 +450,9 @@ export function AiDraftingTool() {
           display: 'grid',
           gap: '1rem',
           padding: '1.25rem',
-          border: '1px solid #e5e7eb',
+          border: '1px solid var(--pt-plugin-table-boundary-dot)',
           borderRadius: '1rem',
-          background: 'white',
+          background: 'var(--card-backdrop-color)',
         }}
       >
         <div
@@ -467,7 +470,7 @@ export function AiDraftingTool() {
               style={{
                 padding: '0.7rem 0.8rem',
                 borderRadius: '0.6rem',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(--pt-plugin-table-boundary-dot)',
               }}
             >
               {sites.map((site) => (
@@ -485,7 +488,7 @@ export function AiDraftingTool() {
               style={{
                 padding: '0.7rem 0.8rem',
                 borderRadius: '0.6rem',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(--pt-plugin-table-boundary-dot)',
               }}
             >
               {CONTENT_TYPE_OPTIONS.map((option) => (
@@ -505,7 +508,7 @@ export function AiDraftingTool() {
             style={{
               padding: '0.75rem 0.8rem',
               borderRadius: '0.6rem',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--pt-plugin-table-boundary-dot)',
             }}
           />
         </Field>
@@ -525,7 +528,7 @@ export function AiDraftingTool() {
               style={{
                 padding: '0.75rem 0.8rem',
                 borderRadius: '0.6rem',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(--pt-plugin-table-boundary-dot)',
               }}
             />
             <button
@@ -533,8 +536,8 @@ export function AiDraftingTool() {
               onClick={regenerateSlug}
               disabled={!form.title}
               style={{
-                border: '1px solid #d1d5db',
-                background: '#f9fafb',
+                border: '1px solid var(--pt-plugin-table-boundary-dot)',
+                background: 'var(--card-backdrop-color)',
                 color: '#111827',
                 padding: '0.75rem 0.9rem',
                 borderRadius: '0.6rem',
@@ -561,10 +564,10 @@ export function AiDraftingTool() {
           >
             <div
               style={{
-                border: '1px solid #d1d5db',
+                border: '1px solid var(--pt-plugin-table-boundary-dot)',
                 borderRadius: '0.75rem',
                 padding: '0.6rem',
-                background: '#fff',
+                background: 'var(--card-backdrop-color)',
               }}
             >
               <ImageGeneratorContent
@@ -577,7 +580,7 @@ export function AiDraftingTool() {
               style={{
                 marginTop: '0.35rem',
                 fontSize: '0.78rem',
-                color: '#9ca3af',
+                color: '#FFFFFF',
                 wordBreak: 'break-all',
               }}
             >
@@ -602,14 +605,14 @@ export function AiDraftingTool() {
                 style={{
                   padding: '0.75rem 0.8rem',
                   borderRadius: '0.6rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(',
                 }}
               />
               <div
                 style={{
                   maxHeight: '240px',
                   overflow: 'auto',
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid var(--pt-plugin-table-boundary-dot)',
                   borderRadius: '0.6rem',
                   padding: '0.45rem',
                   display: 'grid',
@@ -633,8 +636,8 @@ export function AiDraftingTool() {
                         type="button"
                         onClick={() => handleSelectAsset(asset)}
                         style={{
-                          border: '1px solid #e5e7eb',
-                          background: '#fff',
+                          border: '1px solid var(--pt-plugin-table-boundary-dot)',
+                          background: 'var(--card-backdrop-color)',
                           borderRadius: '0.55rem',
                           padding: '0.45rem',
                           cursor: 'pointer',
@@ -645,21 +648,20 @@ export function AiDraftingTool() {
                           alignItems: 'center',
                         }}
                       >
+                        {/* Not `next/image`: this tool renders inside the Sanity Studio (Vite),
+                            where that import resolves to a module object and React throws
+                            "Element type is invalid". Asset previews here are 72px thumbnails. */}
                         <img
-                          src={`${asset.url}?w=144&h=96&fit=crop&auto=format`}
+                          src={asset.url}
                           alt={asset.originalFilename || 'Asset preview'}
-                          style={{
-                            width: '72px',
-                            height: '48px',
-                            objectFit: 'cover',
-                            borderRadius: '0.4rem',
-                            border: '1px solid #e5e7eb',
-                          }}
+                          height={72}
+                          width={72}
+                          style={{ borderRadius: '0.4rem', objectFit: 'cover' }}
                         />
                         <div style={{ minWidth: 0 }}>
                           <div
                             style={{
-                              color: '#111827',
+                              color: '#FFFFFF',
                               fontSize: '0.82rem',
                               fontWeight: 600,
                               overflow: 'hidden',
@@ -692,7 +694,7 @@ export function AiDraftingTool() {
               style={{
                 padding: '0.75rem 0.8rem',
                 borderRadius: '0.6rem',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(',
               }}
             />
           </Field>
@@ -708,7 +710,7 @@ export function AiDraftingTool() {
               style={{
                 padding: '0.75rem 0.8rem',
                 borderRadius: '0.6rem',
-                border: '1px solid #d1d5db',
+                border: '1px solid var(',
               }}
             />
           </Field>
@@ -723,7 +725,7 @@ export function AiDraftingTool() {
             style={{
               padding: '0.8rem',
               borderRadius: '0.6rem',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(',
               resize: 'vertical',
             }}
           />
@@ -738,7 +740,7 @@ export function AiDraftingTool() {
             style={{
               padding: '0.8rem',
               borderRadius: '0.6rem',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(',
               resize: 'vertical',
             }}
           />
@@ -754,7 +756,7 @@ export function AiDraftingTool() {
               gap: '0.5rem',
               border: 'none',
               background: '#111827',
-              color: 'white',
+              color: 'var(--card-avatar-magenta-bg-color)',
               padding: '0.8rem 1rem',
               borderRadius: '0.7rem',
               cursor: 'pointer',

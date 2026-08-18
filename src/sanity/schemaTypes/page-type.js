@@ -1,5 +1,6 @@
 // oxlint-disable no-nested-ternary, func-style no-eq-null
-import { BlockContentIcon, CircleIcon } from '@sanity/icons'
+import { BlockContentIcon } from '@sanity/icons/BlockContent'
+import { CircleIcon } from '@sanity/icons/Circle'
 
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 

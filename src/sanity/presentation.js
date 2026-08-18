@@ -5,8 +5,8 @@ const PAGE_DOCUMENT_FILTER = `_type in ["page", "servicePage", "locationPage", "
 
 /**
  * Path prefixes that should never be matched against Sanity documents.
- * `_site` guards against the /:path* catch-all double-matching /_site/ URLs
- * that are already handled by the dedicated /_site/:site/:path* routes.
+ * `_site` guards against the /*path catch-all double-matching /_site/ URLs
+ * that are already handled by the dedicated /_site/:site/*path routes.
  */
 const INTERNAL_PATH_PREFIXES = new Set(['api', '_next', 'studio', '_site'])
 
@@ -88,7 +88,7 @@ function parsePreviewContext(context) {
 /**
  * Resolve documents for the current Presentation preview URL.
  *
- * For /_site/:site and /_site/:site/:path* routes, `context.params.site`
+ * For /_site/:site and /_site/:site/*path routes, `context.params.site`
  * carries the site slug as a proper route param — no query-string parsing
  * required. This allows per-site document filtering in the Presentation panel.
  */
@@ -140,7 +140,7 @@ function resolveCaseStudy(context) {
 }
 
 export const presentationDocuments = defineDocuments([
-  // Case study detail routes come first: the `:path*` catch-alls below would
+  // Case study detail routes come first: the `*path` catch-alls below would
   // otherwise swallow them and search for a page whose slug is "projects/<slug>".
   { route: '/_site/:site/projects/:slug', resolve: resolveCaseStudy },
   { route: '/preview/:siteSlug/projects/:slug', resolve: resolveCaseStudy },
@@ -148,12 +148,12 @@ export const presentationDocuments = defineDocuments([
   // Path-based site routing used by the site switcher navigator.
   // The site slug in /_site/:site becomes a route param so the resolver can filter by site.
   { route: '/_site/:site', resolve: resolveFromAnyPath },
-  { route: '/_site/:site/:path*', resolve: resolveFromAnyPath },
+  { route: '/_site/:site/*path', resolve: resolveFromAnyPath },
   { route: '/preview/:siteSlug', resolve: resolveFromAnyPath },
-  { route: '/preview/:siteSlug/:path*', resolve: resolveFromAnyPath },
+  { route: '/preview/:siteSlug/*path', resolve: resolveFromAnyPath },
   // Direct path routing used when opening a document from Structure.
   { route: '/', resolve: resolveFromAnyPath },
-  { route: '/:path*', resolve: resolveFromAnyPath },
+  { route: '/*path', resolve: resolveFromAnyPath },
 ])
 
 function hrefForDoc(doc) {
