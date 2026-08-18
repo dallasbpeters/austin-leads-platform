@@ -257,11 +257,11 @@ body.admin-body-locked {
  */
 html:not([data-cloud-tone]),
 [data-cloud-tone='day'] {
-  --cloud-tone-opacity: 0.2;
+  --cloud-tone-opacity: 0.5;
   --cloud-tone-layer: linear-gradient(
     to bottom,
-    oklab(85.107% -0.0037 -0.0562) 0%,
-    oklab(79.39% -0.0015 -0.0861) 100%
+    oklab(71.053% -0.01367 -0.13638) 0%,
+    oklab(66.129% -0.00721 -0.14826) 100%
   );
   --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
   --cloud-section-background: oklab(62.12% -0.01006 -0.16663);
