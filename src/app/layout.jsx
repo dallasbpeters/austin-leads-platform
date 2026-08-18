@@ -12,6 +12,8 @@ import '../styles/globals.css'
 
 import { PostHogProvider } from '@/app/providers'
 import ViewTransitionWrapper from '@/components/view-transition-wrapper'
+import CloudToneSync from '@/components/cloud-tone-sync'
+import { cloudToneBootstrapScript } from '@/components/cloud-tone'
 import { getPublicDataSiteAttribute } from '@/components/platform/public-site-utils'
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
 import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
@@ -104,9 +106,12 @@ export default async function RootLayout({ children }) {
   const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
+  /* `suppressHydrationWarning` covers `data-cloud-tone`, which the tone
+   * bootstrap stamps onto `<html>` before React hydrates. */
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
       {...(publicSiteAttr ? { 'data-public-site': publicSiteAttr } : {})}
     >
@@ -119,6 +124,7 @@ export default async function RootLayout({ children }) {
           crossOrigin="anonymous"
         />
         {facebookAppId ? <meta property="fb:app_id" content={facebookAppId} /> : null}
+        <script dangerouslySetInnerHTML={{ __html: cloudToneBootstrapScript }} />
       </head>
       {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
@@ -131,6 +137,7 @@ export default async function RootLayout({ children }) {
         >
           Skip to main content
         </a>
+        <CloudToneSync />
         <ViewTransitionWrapper />
         <PostHogProvider siteSlug={analyticsSiteSlug}>{children}</PostHogProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}

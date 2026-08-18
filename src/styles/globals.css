@@ -1,3 +1,7 @@
+/* stylelint-disable number-max-precision */
+/* stylelint-disable alpha-value-notation */
+/* stylelint-disable hue-degree-notation */
+
 /* eslint-disable css/no-invalid-at-rules */
 @import 'tailwindcss';
 @import './switzer.css';
@@ -229,53 +233,71 @@ body.admin-body-locked {
   }
 }
 
+/*
+ * Sky tone resolves through inherited custom properties, from the nearest
+ * ancestor carrying `data-cloud-tone`. `cloudToneBootstrapScript` stamps the
+ * visitor's local phase onto `<html>` before the first paint, so cloud
+ * sections render their final colors immediately rather than starting on the
+ * day palette and transitioning once React mounts. A section may still set the
+ * attribute itself to override the tone for its own subtree — because these
+ * are inherited properties, the nearest declaration wins with no specificity
+ * juggling required.
+ */
+html:not([data-cloud-tone]),
+[data-cloud-tone='day'] {
+  --cloud-tone-opacity: 0.2;
+  --cloud-tone-layer: linear-gradient(
+    to bottom,
+    oklab(85.107% -0.0037 -0.0562) 0%,
+    oklab(79.39% -0.0015 -0.0861) 100%
+  );
+  --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
+  --cloud-section-background: oklch(84.036% 0.0643 226deg);
+  --cloud-section-foreground: #082f43;
+  --cloud-section-muted: #16485d;
+  --cloud-section-eyebrow: #f0f0ef;
+}
+
+[data-cloud-tone='dusk'] {
+  --cloud-tone-layer: linear-gradient(
+    to top,
+    oklch(33.783% 0.14055 293.573 / 0.7) 0%,
+    oklch(55.579% 0.165 275.669 / 0.5) 100%
+  );
+  --cloud-tone-sprite-filter: sepia(0.04) saturate(0.15) drop-shadow(0 0.8rem 1.3rem rgb(120 53 15 / 22%));
+  --cloud-section-background: oklch(32.749% 0.0651 271.79 / 0.7);
+  --cloud-section-foreground: #fff8ef;
+  --cloud-section-muted: #f0deec;
+  --cloud-section-eyebrow: #ffd46f;
+}
+
+[data-cloud-tone='night'] {
+  --cloud-tone-layer: linear-gradient(
+    to bottom,
+    oklab(17.949% -0.0022 -0.03) 0%,
+    oklab(20.768% -0.002 -0.039) 100%
+  );
+  --cloud-tone-sprite-filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 38%));
+  --cloud-section-background: #102638;
+  --cloud-section-foreground: #effcff;
+  --cloud-section-muted: #c5e4ea;
+  --cloud-section-eyebrow: #ffd06b;
+}
+
 .cloud-background {
-  --cloud-opacity: 0.16;
+  --cloud-opacity: var(--cloud-tone-opacity);
+  --cloud-scroll-progress: 0.5;
 
   position: absolute;
   z-index: 1;
   inset: 0;
   overflow: hidden;
+  background: var(--cloud-tone-layer);
+  background-size: 100% 100%;
   pointer-events: none;
 }
 
-.cloud-background--regular {
-  --cloud-opacity: 0.24;
-}
-
-.cloud-background--thick {
-  --cloud-opacity: 0.44;
-}
-
-.cloud-background--day {
-  --cloud-opacity: 0.2;
-
-  background: linear-gradient(
-    to bottom,
-    oklab(85.107% -0.0037 -0.0562) 0%,
-    oklab(79.39% -0.0015 -0.0861) 100%
-  );
-  background-size: 100% 100%;
-}
-
-.cloud-background--night {
-  --cloud-opacity: 0.2;
-
-  background: linear-gradient(to bottom, oklab(17.949% -0.0022 -0.03) 0%, oklab(20.768% -0.002 -0.039) 100%);
-  background-size: 100% 100%;
-}
-
-.cloud-background--dusk {
-  --cloud-opacity: 0.2;
-
-  background: linear-gradient(
-    to top,
-    oklab(29.738% -0.0082 -0.0947 / 46%) 0%,
-    oklab(41.757% -0.0171 -0.198 / 76%) 100%
-  );
-}
-
-.cloud-background--night.cloud-background--regular {
+[data-cloud-tone='night'] .cloud-background--regular {
   --cloud-opacity: 0.3;
 }
 
@@ -283,42 +305,15 @@ body.admin-body-locked {
   position: absolute;
   width: clamp(11rem, 23vw, 24rem);
   opacity: var(--cloud-opacity);
-  filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
-}
-
-.cloud-background--dusk .cloud-background__cloud {
-  filter: sepia(0.24) saturate(1.15) drop-shadow(0 0.8rem 1.3rem rgb(120 53 15 / 22%));
-}
-
-.cloud-background--night .cloud-background__cloud {
-  filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 38%));
+  filter: var(--cloud-tone-sprite-filter);
 }
 
 .cloud-theme-section {
-  --cloud-section-background: oklch(84.036% 0.0643 226deg);
-  --cloud-section-foreground: #082f43;
-  --cloud-section-muted: #16485d;
-  --cloud-section-eyebrow: #f0f0ef;
-
   background-color: var(--cloud-section-background);
   color: var(--cloud-section-foreground);
   transition:
     background-color 700ms ease,
     color 500ms ease;
-}
-
-.cloud-theme-section[data-cloud-tone='dusk'] {
-  --cloud-section-background: #51326d;
-  --cloud-section-foreground: #fff8ef;
-  --cloud-section-muted: #f0deec;
-  --cloud-section-eyebrow: #ffd46f;
-}
-
-.cloud-theme-section[data-cloud-tone='night'] {
-  --cloud-section-background: #102638;
-  --cloud-section-foreground: #effcff;
-  --cloud-section-muted: #c5e4ea;
-  --cloud-section-eyebrow: #ffd06b;
 }
 
 .cloud-theme-section--clouds-hidden {
@@ -359,7 +354,8 @@ body.admin-body-locked {
 }
 
 .cloud-background__scroll {
-  transform: scale(var(--cloud-scroll-scale, 0.86));
+  transform: translate3d(0, calc((var(--cloud-scroll-progress) - 0.5) * var(--cloud-parallax, 90) * 1px), 0)
+    scale(var(--cloud-scroll-scale, 0.86));
   will-change: transform;
 }
 
@@ -379,6 +375,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--one {
+  --cloud-parallax: 200;
   --cloud-breathe-duration: 9s;
   --cloud-delay: -3s;
   --cloud-drift-duration: 23s;
@@ -388,6 +385,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--two {
+  --cloud-parallax: 120;
   --cloud-breathe-duration: 11s;
   --cloud-delay: -7s;
   --cloud-drift-duration: 28s;
@@ -398,6 +396,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--three {
+  --cloud-parallax: 78;
   --cloud-breathe-duration: 8s;
   --cloud-delay: -4s;
   --cloud-drift-duration: 20s;
@@ -408,6 +407,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--four {
+  --cloud-parallax: 230;
   --cloud-breathe-duration: 12s;
   --cloud-delay: -10s;
   --cloud-drift-duration: 31s;
@@ -417,6 +417,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--five {
+  --cloud-parallax: 165;
   --cloud-breathe-duration: 10s;
   --cloud-delay: -6s;
   --cloud-drift-duration: 26s;
@@ -427,6 +428,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--six {
+  --cloud-parallax: 58;
   --cloud-breathe-duration: 13s;
   --cloud-delay: -9s;
   --cloud-drift-duration: 34s;
@@ -437,6 +439,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--seven {
+  --cloud-parallax: 96;
   --cloud-breathe-duration: 10s;
   --cloud-delay: -8s;
   --cloud-drift-duration: 25s;
@@ -447,6 +450,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--eight {
+  --cloud-parallax: 185;
   --cloud-breathe-duration: 11s;
   --cloud-delay: -5s;
   --cloud-drift-duration: 29s;
@@ -457,6 +461,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--nine {
+  --cloud-parallax: 50;
   --cloud-breathe-duration: 8s;
   --cloud-delay: -2s;
   --cloud-drift-duration: 21s;
@@ -467,6 +472,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--ten {
+  --cloud-parallax: 140;
   --cloud-breathe-duration: 12s;
   --cloud-delay: -11s;
   --cloud-drift-duration: 32s;
@@ -477,6 +483,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--eleven {
+  --cloud-parallax: 66;
   --cloud-breathe-duration: 9s;
   --cloud-delay: -6s;
   --cloud-drift-duration: 24s;
@@ -487,6 +494,7 @@ body.admin-body-locked {
 }
 
 .cloud-background__cloud--twelve {
+  --cloud-parallax: 110;
   --cloud-breathe-duration: 13s;
   --cloud-delay: -12s;
   --cloud-drift-duration: 35s;
@@ -504,7 +512,7 @@ body.admin-body-locked {
   }
 
   .cloud-background__scroll {
-    transform: scale(1);
+    transform: none;
   }
 }
 
