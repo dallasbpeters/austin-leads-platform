@@ -212,7 +212,7 @@ function GuideCardBody({ card }) {
     <motion.article
       animate="rest"
       className={cn(
-        'grid-columns-1 shadow-theme-sm grid h-full min-h-[380px] grid-rows-[auto_auto_auto_1fr_auto] items-start justify-start overflow-hidden rounded-xl border-0 p-6',
+        'grid-columns-1 shadow-theme-sm grid h-full min-h-95 grid-rows-[auto_auto_auto_1fr_auto] items-start justify-start overflow-hidden rounded-xl border-0 p-6',
         card.toneClassName,
         card.className,
       )}
@@ -364,7 +364,7 @@ export default function GuideCardGrid({
     scrollToPaginationTarget()
   }
 
-  const minWidth = '250px'
+  const minWidth = '350px'
 
   return (
     <div>
