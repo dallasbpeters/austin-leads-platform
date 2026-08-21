@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 import { SHARE_DESCRIPTION_MAX, SHARE_TITLE_MAX, truncateForShare } from '@/lib/platform/social-share-text'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 const OG_IMAGE_SIZE = {
   width: 1200,
