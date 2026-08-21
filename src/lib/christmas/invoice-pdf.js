@@ -45,16 +45,16 @@ import { computeChristmasInvoice } from './invoice-calc.js'
 // mirror the previous Helvetica / Helvetica-Bold split — fontkit's weight
 // matching inside @react-pdf/renderer is unreliable, so a dedicated "Bold"
 // family sidesteps it entirely.
-const GOOGLE_SANS_DIR = path.join(process.cwd(), 'public', 'fonts', 'Google_Sans', 'static')
+const SWITZER_DIR = path.join(process.cwd(), 'public', 'fonts')
 
 Font.register({
-  family: 'Google Sans',
-  src: path.join(GOOGLE_SANS_DIR, 'GoogleSans-Regular.ttf'),
+  family: 'Switzer',
+  src: path.join(SWITZER_DIR, 'Switzer-Variable.ttf'),
 })
 
 Font.register({
-  family: 'Google Sans Bold',
-  src: path.join(GOOGLE_SANS_DIR, 'GoogleSans-Bold.ttf'),
+  family: 'Switzer Bold',
+  src: path.join(SWITZER_DIR, 'Switzer-Variable.ttf'),
 })
 
 // ─── Brand palette (from the tx-christmaslights theme) ────────────────────────
@@ -207,7 +207,7 @@ const OrnamentRow = ({ size = 12, marginRight = 8 }) =>
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const s = StyleSheet.create({
-  page: { fontSize: 9, color: INK, backgroundColor: CREAM, fontFamily: 'Google Sans' },
+  page: { fontSize: 9, color: INK, backgroundColor: CREAM, fontFamily: 'Switzer' },
   headerBand: {
     backgroundColor: SPRUCE,
     paddingHorizontal: 20,
@@ -223,7 +223,7 @@ const s = StyleSheet.create({
   },
   logo: { width: 84, height: 84, objectFit: 'contain' },
   brandMeta: { flex: 1 },
-  brandName: { color: CREAM_TEXT, fontSize: 18, fontFamily: 'Google Sans Bold' },
+  brandName: { color: CREAM_TEXT, fontSize: 18, fontFamily: 'Switzer Bold' },
   brandTagline: { color: MUTED_CREAM, fontSize: 10.5, marginTop: 3, lineHeight: 1.5 },
   contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   contactIcon: { width: 12, alignItems: 'center' },
@@ -236,20 +236,20 @@ const s = StyleSheet.create({
   invoiceTitle: {
     fontSize: 18,
     fontWeight: 800,
-    fontFamily: 'Google Sans Bold',
+    fontFamily: 'Switzer Bold',
     color: CREAM,
     letterSpacing: 1.5,
   },
   invoiceMetaRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
   metaLabel: { fontSize: 7, color: CREAM, letterSpacing: 0.5 },
-  metaValue: { fontSize: 8, fontFamily: 'Google Sans Bold', color: CREAM, marginTop: 1 },
+  metaValue: { fontSize: 8, fontFamily: 'Switzer Bold', color: CREAM, marginTop: 1 },
   quoteValidText: { fontSize: 7, color: MUTED_CREAM, marginTop: 6 },
 
   body: { paddingHorizontal: 20, paddingTop: 14, flexGrow: 1 },
   billToRow: { flexDirection: 'row', justifyContent: 'space-between' },
   billToBlock: { flex: 1, paddingRight: 16 },
-  label: { fontSize: 8, fontFamily: 'Google Sans Bold', color: ORANGE, letterSpacing: 1.5 },
-  customerName: { fontSize: 13, fontFamily: 'Google Sans Bold', color: INK, marginTop: 4 },
+  label: { fontSize: 8, fontFamily: 'Switzer Bold', color: ORANGE, letterSpacing: 1.5 },
+  customerName: { fontSize: 13, fontFamily: 'Switzer Bold', color: INK, marginTop: 4 },
   customerDetail: { fontSize: 9, color: MUTED, marginTop: 2, lineHeight: 1.6 },
   metaBlock: { width: 210 },
   metaRow: {
@@ -261,7 +261,7 @@ const s = StyleSheet.create({
     borderBottomColor: LINE,
   },
   metaBlockLabel: { fontSize: 8.5, color: MUTED, letterSpacing: 0.5 },
-  metaBlockValue: { fontSize: 8.5, fontFamily: 'Google Sans Bold', color: INK },
+  metaBlockValue: { fontSize: 8.5, fontFamily: 'Switzer Bold', color: INK },
 
   table: {
     marginTop: 14,
@@ -277,7 +277,7 @@ const s = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 10,
   },
-  th: { color: '#ffffff', fontSize: 8, fontFamily: 'Google Sans Bold', letterSpacing: 0.5 },
+  th: { color: '#ffffff', fontSize: 8, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
   thDesc: { flex: 1, paddingRight: 8 },
   thFeet: { width: 48, textAlign: 'right', paddingRight: 8 },
   thUnit: { width: 60, textAlign: 'right', paddingRight: 8 },
@@ -295,12 +295,12 @@ const s = StyleSheet.create({
   tdDesc: { flex: 1, fontSize: 8.5, paddingRight: 8 },
   tdFeet: { width: 48, textAlign: 'right', fontSize: 8.5, paddingRight: 8 },
   tdUnit: { width: 60, textAlign: 'right', fontSize: 8.5, paddingRight: 8 },
-  tdPrice: { width: 62, textAlign: 'right', fontSize: 8.5, fontFamily: 'Google Sans Bold', paddingRight: 8 },
+  tdPrice: { width: 62, textAlign: 'right', fontSize: 8.5, fontFamily: 'Switzer Bold', paddingRight: 8 },
   tdEarlyPrice: {
     width: 62,
     textAlign: 'right',
     fontSize: 8.5,
-    fontFamily: 'Google Sans Bold',
+    fontFamily: 'Switzer Bold',
     color: PINE,
     paddingRight: 8,
   },
@@ -311,7 +311,7 @@ const s = StyleSheet.create({
   pricingSection: { marginTop: 10 },
   pricingLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
   pricingLabel: { fontSize: 8.5, color: MUTED },
-  pricingValue: { fontSize: 8.5, fontFamily: 'Google Sans Bold', color: INK },
+  pricingValue: { fontSize: 8.5, fontFamily: 'Switzer Bold', color: INK },
   contractCostBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -322,8 +322,8 @@ const s = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 8,
   },
-  contractCostLabel: { color: '#ffffff', fontSize: 9, fontFamily: 'Google Sans Bold', letterSpacing: 1 },
-  contractCostValue: { color: '#ffffff', fontSize: 14, fontFamily: 'Google Sans Bold' },
+  contractCostLabel: { color: '#ffffff', fontSize: 9, fontFamily: 'Switzer Bold', letterSpacing: 1 },
+  contractCostValue: { color: '#ffffff', fontSize: 14, fontFamily: 'Switzer Bold' },
   saveBanner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -334,7 +334,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 6,
   },
-  saveBannerText: { fontSize: 8, fontFamily: 'Google Sans Bold', color: INK },
+  saveBannerText: { fontSize: 8, fontFamily: 'Switzer Bold', color: INK },
 
   paymentTermsBlock: { marginTop: 10 },
   paymentTermsTable: {
@@ -357,7 +357,7 @@ const s = StyleSheet.create({
   paymentTermsAmount: {
     width: 90,
     fontSize: 8.5,
-    fontFamily: 'Google Sans Bold',
+    fontFamily: 'Switzer Bold',
     color: INK,
     textAlign: 'right',
   },
@@ -366,7 +366,7 @@ const s = StyleSheet.create({
   totalsCard: { width: 240 },
   totalLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
   totalLabel: { fontSize: 9.5, color: MUTED },
-  totalValue: { fontSize: 9.5, fontFamily: 'Google Sans Bold', color: INK },
+  totalValue: { fontSize: 9.5, fontFamily: 'Switzer Bold', color: INK },
   balanceLine: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -377,14 +377,14 @@ const s = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 5,
   },
-  balanceLabel: { color: '#ffffff', fontSize: 10, fontFamily: 'Google Sans Bold', letterSpacing: 1 },
-  balanceValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Google Sans Bold' },
+  balanceLabel: { color: '#ffffff', fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 1 },
+  balanceValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Switzer Bold' },
 
   notesBlock: { marginTop: 10 },
   sectionTitleRow: { flexDirection: 'row', alignItems: 'center' },
   sectionTitle: {
     fontSize: 8,
-    fontFamily: 'Google Sans Bold',
+    fontFamily: 'Switzer Bold',
     color: PINE,
     letterSpacing: 1.5,
     marginLeft: 6,
@@ -400,7 +400,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 8,
   },
   noticeBoxNoBorderTop: { borderTopWidth: 0 },
-  noticeHeading: { fontSize: 8.5, fontFamily: 'Google Sans Bold', color: INK, lineHeight: 1.3 },
+  noticeHeading: { fontSize: 8.5, fontFamily: 'Switzer Bold', color: INK, lineHeight: 1.3 },
   noticeBody: { fontSize: 8, color: INK, lineHeight: 1.35, marginTop: 3 },
 
   footerBand: {
@@ -414,7 +414,7 @@ const s = StyleSheet.create({
   },
   footerLeft: { flexDirection: 'row', alignItems: 'center' },
   footerText: { color: MUTED_CREAM, fontSize: 9.5 },
-  footerRight: { color: GOLD, fontSize: 10, fontFamily: 'Google Sans Bold', letterSpacing: 0.5 },
+  footerRight: { color: GOLD, fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
 })
 
 // ─── Small building blocks ───────────────────────────────────────────────────

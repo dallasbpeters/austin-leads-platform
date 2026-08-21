@@ -19,9 +19,33 @@ import path from 'node:path'
 
 import { createElement as h } from 'react'
 
-import { Document, Image, Page, Path, Polygon, StyleSheet, Svg, Text, View, pdf } from '@react-pdf/renderer'
+import {
+  Document,
+  Font,
+  Image,
+  Page,
+  Path,
+  Polygon,
+  StyleSheet,
+  Svg,
+  Text,
+  View,
+  pdf,
+} from '@react-pdf/renderer'
 
 import { MONTH_LABELS } from './calc.js'
+
+const SWITZER_DIR = path.join(process.cwd(), 'public', 'fonts')
+
+Font.register({
+  family: 'Switzer',
+  src: path.join(SWITZER_DIR, 'Switzer-Variable.ttf'),
+})
+
+Font.register({
+  family: 'Switzer Bold',
+  src: path.join(SWITZER_DIR, 'Switzer-Variable.ttf'),
+})
 
 // ─── Brand ───────────────────────────────────────────────────────────────────
 
@@ -39,7 +63,7 @@ export function getCompanyInfo() {
     name: process.env.QUOTE_COMPANY_NAME || 'Texas Solar and Roofing Pros',
     tagline: process.env.QUOTE_COMPANY_TAGLINE || 'Local. Trusted. Texas Proud.',
     phone: process.env.QUOTE_COMPANY_PHONE || '',
-    email: process.env.QUOTE_COMPANY_EMAIL || '',
+    email: 'service@texassolarpros.com',
     website: process.env.QUOTE_COMPANY_WEBSITE || '',
   }
 }
@@ -78,6 +102,14 @@ const ph = (value, placeholder) => {
   const text = value === null || value === undefined ? '' : String(value).trim()
   return text || placeholder
 }
+
+const filled = (value) => String(value ?? '').trim() !== ''
+const entered = (...values) => values.some(filled)
+
+// No hasBattery flag comes off the quote form — storage is part of the quote
+// when battery details were actually entered.
+const hasBattery = (inputs) =>
+  Boolean(inputs.hasBattery) || entered(inputs.batteryMakeModel, inputs.batteryQuantity)
 
 // ─── Icons (lucide outlines drawn as SVG paths) ──────────────────────────────
 
@@ -155,6 +187,7 @@ const s = StyleSheet.create({
     alignItems: 'stretch',
     marginBottom: 8,
     borderWidth: 0,
+    fontFamily: 'Switzer',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -163,13 +196,14 @@ const s = StyleSheet.create({
     paddingLeft: 14,
     paddingVertical: 10,
     borderWidth: 0,
+    fontFamily: 'Switzer',
   },
   logo: { width: 96, marginRight: 14, borderWidth: 0 },
-  brandName: { fontSize: 15, fontFamily: 'Helvetica-Bold', color: NAVY, marginBottom: 4 },
-  tagline: { fontSize: 8.5, color: AMBER, marginTop: 4, fontFamily: 'Helvetica-Oblique' },
+  brandName: { fontSize: 15, fontFamily: 'Switzer', color: NAVY, marginBottom: 4 },
+  tagline: { fontSize: 8.5, color: AMBER, marginTop: 4, fontFamily: 'Switzer' },
   contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 3 },
-  contactIcon: { width: 14, marginRight: 5 },
-  contactText: { fontSize: 8.5, color: INK },
+  contactIcon: { width: 14, marginRight: 5, fontFamily: 'Switzer' },
+  contactText: { fontSize: 8.5, color: INK, fontFamily: 'Switzer' },
   quoteBox: {
     backgroundColor: NAVY,
     color: PAPER,
@@ -182,9 +216,10 @@ const s = StyleSheet.create({
     position: 'relative',
     borderWidth: 0,
     overflow: 'hidden',
+    fontFamily: 'Switzer',
   },
-  quoteMask: { position: 'absolute', left: 0, top: 0, borderWidth: 0 },
-  quoteTitle: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: PAPER },
+  quoteMask: { position: 'absolute', left: 0, top: 0, borderWidth: 0, fontFamily: 'Switzer' },
+  quoteTitle: { fontSize: 18, fontFamily: 'Switzer', color: PAPER },
   quoteRule: { borderBottomWidth: 2.5, borderBottomColor: AMBER, width: 74, marginVertical: 4 },
   quoteMeta: { fontSize: 8.5, color: PAPER, marginTop: 2.5 },
 
@@ -195,6 +230,7 @@ const s = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 0,
     backgroundColor: PAPER,
+    fontFamily: 'Switzer',
   },
   photoMaskLeft: { position: 'absolute', left: 0, top: 0, borderWidth: 0 },
   photoMaskRight: { position: 'absolute', right: 0, top: 0, borderWidth: 0 },
@@ -216,7 +252,7 @@ const s = StyleSheet.create({
   },
   barText: {
     fontSize: 9,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Switzer',
     color: PAPER,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
@@ -226,6 +262,7 @@ const s = StyleSheet.create({
     padding: 10,
     borderBottomLeftRadius: 3,
     borderBottomRightRadius: 3,
+    fontFamily: 'Switzer',
   },
 
   // Top band
@@ -234,9 +271,9 @@ const s = StyleSheet.create({
     color: MUTED,
     textTransform: 'uppercase',
     letterSpacing: 0.4,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Switzer',
   },
-  value: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: INK, marginTop: 1.5 },
+  value: { fontSize: 9, fontFamily: 'Switzer', color: INK, marginTop: 1.5 },
   heroImage: {
     width: '100%',
     height: 168,
@@ -247,7 +284,7 @@ const s = StyleSheet.create({
   summaryRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5.5 },
   summaryIcon: { width: 16, alignItems: 'center', marginRight: 6 },
   summaryLabel: { fontSize: 7, color: MUTED },
-  summaryValue: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: NAVY },
+  summaryValue: { fontSize: 9, fontFamily: 'Switzer', color: NAVY },
 
   // System overview
   overviewIntro: { fontSize: 8, color: INK, lineHeight: 1.5, marginBottom: 8 },
@@ -262,7 +299,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 6,
   },
-  benefitTitle: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: INK },
+  benefitTitle: { fontSize: 8, fontFamily: 'Switzer', color: INK },
   benefitText: { fontSize: 7, color: MUTED, marginTop: 1, lineHeight: 1.4 },
 
   // Equipment table
@@ -279,10 +316,10 @@ const s = StyleSheet.create({
     borderBottomColor: LINE,
     paddingVertical: 3.5,
   },
-  thEquip: { width: '28%', fontSize: 7, fontFamily: 'Helvetica-Bold', color: NAVY },
-  thDesc: { width: '60%', fontSize: 7, fontFamily: 'Helvetica-Bold', color: NAVY },
-  thQty: { width: '12%', fontSize: 7, fontFamily: 'Helvetica-Bold', color: NAVY, textAlign: 'right' },
-  tdEquip: { width: '28%', fontSize: 8, fontFamily: 'Helvetica-Bold' },
+  thEquip: { width: '28%', fontSize: 7, fontFamily: 'Switzer', color: NAVY },
+  thDesc: { width: '60%', fontSize: 7, fontFamily: 'Switzer', color: NAVY },
+  thQty: { width: '12%', fontSize: 7, fontFamily: 'Switzer', color: NAVY, textAlign: 'right' },
+  tdEquip: { width: '28%', fontSize: 8, fontFamily: 'Switzer' },
   tdDesc: { width: '60%', fontSize: 8 },
   tdQty: { width: '12%', fontSize: 8, textAlign: 'right' },
 
@@ -291,22 +328,33 @@ const s = StyleSheet.create({
   chartCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', height: '100%' },
   chartBar: { width: '58%', backgroundColor: GREEN, borderTopLeftRadius: 1, borderTopRightRadius: 1 },
   chartLabel: { fontSize: 6, color: MUTED, marginTop: 2 },
-  chartNote: { fontSize: 6.5, color: MUTED, marginTop: 5, fontFamily: 'Helvetica-Oblique' },
+  chartNote: { fontSize: 6.5, color: MUTED, marginTop: 5, fontFamily: 'Switzer' },
 
   // Investment summary
   investLine: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
   investLabel: { fontSize: 8, color: '#c9d4de' },
-  investValue: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: PAPER },
+  investValue: { fontSize: 8, fontFamily: 'Switzer', color: PAPER },
   investDivider: { borderBottomWidth: 1, borderBottomColor: '#3d5a76', marginVertical: 4 },
-  investTotalLabel: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: PAPER },
-  investTotalValue: { fontSize: 11, fontFamily: 'Helvetica-Bold', color: AMBER },
-  investNote: { fontSize: 6.5, color: '#9fb2c2', marginTop: 5, fontFamily: 'Helvetica-Oblique' },
+  investTotalLabel: { fontSize: 9, fontFamily: 'Switzer', color: PAPER },
+  investTotalValue: { fontSize: 11, fontFamily: 'Switzer', color: AMBER },
+  investNote: { fontSize: 6.5, color: '#9fb2c2', marginTop: 5, fontFamily: 'Switzer' },
+  rebateBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 4,
+    padding: 8,
+    backgroundColor: INK,
+    marginTop: 2,
+  },
+  rebateIcon: { width: 14, marginRight: 6 },
+  rebateAmount: { fontSize: 11, color: AMBER, fontFamily: 'Switzer' },
+  rebateNote: { flex: 1, fontSize: 9.5, color: PAPER, fontFamily: 'Switzer' },
 
   paper: { backgroundColor: PAPER, borderWidth: 0, padding: 10 },
   panel: { backgroundColor: PANEL, padding: 10, borderRadius: 3, borderWidth: 0 },
   panelTitle: {
     fontSize: 9,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Switzer',
     color: NAVY,
     marginBottom: 6,
     textTransform: 'uppercase',
@@ -315,12 +363,12 @@ const s = StyleSheet.create({
   cashLabel: { fontSize: 8, color: MUTED, textAlign: 'center' },
   cashValue: {
     fontSize: 16,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: 'Switzer',
     color: GREEN,
     textAlign: 'center',
     marginTop: 3,
   },
-  benefitValue: { fontSize: 12, fontFamily: 'Helvetica-Bold', color: AMBER },
+  benefitValue: { fontSize: 12, fontFamily: 'Switzer', color: AMBER },
   mutedSmall: { fontSize: 8, color: MUTED },
 
   footer: {
@@ -334,9 +382,9 @@ const s = StyleSheet.create({
     alignItems: 'flex-start',
   },
   builtIcon: { width: 26, marginRight: 8, marginTop: 2 },
-  builtTitle: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: NAVY, letterSpacing: 0.5 },
+  builtTitle: { fontSize: 9, fontFamily: 'Switzer', color: NAVY, letterSpacing: 0.5 },
   builtLine: { fontSize: 7.5, color: INK, marginTop: 1.5 },
-  thanks: { fontSize: 8, fontFamily: 'Helvetica-Oblique', color: INK, lineHeight: 1.5 },
+  thanks: { fontSize: 8, fontFamily: 'Switzer', color: INK, lineHeight: 1.5 },
   signRule: { borderBottomWidth: 1, borderBottomColor: INK, width: 150, marginBottom: 3, marginTop: 16 },
   signLabel: { fontSize: 7, color: MUTED },
 })
@@ -402,34 +450,46 @@ const EquipmentRow = (equipment, description, qty) =>
  *                  sent through the e-sign flow.
  */
 function buildEquipmentRows(inputs) {
-  const qty = (value) => (value === null || value === undefined || value === '' ? '[QTY]' : String(value))
+  const qty = (value) => (filled(value) ? String(value).trim() : '[QTY]')
   return [
-    EquipmentRow(
-      'Solar Panels',
-      ph(
-        [inputs.panelMakeModel, inputs.panelWatts ? `${inputs.panelWatts}W` : ''].filter(Boolean).join(' — '),
-        '[PANEL MAKE & MODEL]',
-      ),
-      qty(inputs.panelQuantity),
-    ),
-    EquipmentRow(
-      'Inverter',
-      ph(inputs.inverterMakeModel, '[INVERTER MAKE & MODEL]'),
-      qty(inputs.inverterQuantity),
-    ),
-    EquipmentRow(
-      'Battery(ies)',
-      ph(inputs.batteryMakeModel, '[BATTERY MAKE & MODEL]'),
-      qty(inputs.batteryQuantity),
-    ),
-    EquipmentRow('Racking', ph(inputs.rackingSystem, '[RACKING SYSTEM]'), qty(inputs.rackingQuantity)),
-    EquipmentRow(
-      'Monitoring',
-      ph(inputs.monitoringSystem, '[MONITORING SYSTEM]'),
-      qty(inputs.monitoringQuantity),
-    ),
-    EquipmentRow('Warranty', ph(inputs.warrantyDetails, '[WARRANTY DETAILS]'), ''),
-  ]
+    entered(inputs.panelMakeModel, inputs.panelWatts, inputs.panelQuantity)
+      ? EquipmentRow(
+          'Solar Panels',
+          ph(
+            [inputs.panelMakeModel, inputs.panelWatts ? `${inputs.panelWatts}W` : '']
+              .filter(Boolean)
+              .join(' — '),
+            '[PANEL MAKE & MODEL]',
+          ),
+          qty(inputs.panelQuantity),
+        )
+      : null,
+    entered(inputs.inverterMakeModel, inputs.inverterQuantity)
+      ? EquipmentRow(
+          'Inverter',
+          ph(inputs.inverterMakeModel, '[INVERTER MAKE & MODEL]'),
+          qty(inputs.inverterQuantity),
+        )
+      : null,
+    hasBattery(inputs)
+      ? EquipmentRow(
+          'Battery(ies)',
+          ph(inputs.batteryMakeModel, '[BATTERY MAKE & MODEL]'),
+          qty(inputs.batteryQuantity),
+        )
+      : null,
+    entered(inputs.rackingSystem, inputs.rackingQuantity)
+      ? EquipmentRow('Racking', ph(inputs.rackingSystem, '[RACKING SYSTEM]'), qty(inputs.rackingQuantity))
+      : null,
+    entered(inputs.monitoringSystem, inputs.monitoringQuantity)
+      ? EquipmentRow(
+          'Monitoring',
+          ph(inputs.monitoringSystem, '[MONITORING SYSTEM]'),
+          qty(inputs.monitoringQuantity),
+        )
+      : null,
+    filled(inputs.warrantyDetails) ? EquipmentRow('Warranty', inputs.warrantyDetails, '') : null,
+  ].filter(Boolean)
 }
 
 const ContactRow = (icon, text) =>
@@ -500,6 +560,7 @@ function buildTopBand(inputs, computed, hero) {
       View,
       { style: [s.paper, { flex: 0.95, marginRight: 8 }] },
       Field('Prepared For', ph(inputs.customerName, '[CUSTOMER NAME]')),
+      Field('Phone', ph(inputs.customerPhone, '[PHONE]')),
       Field('Property', `${addressLine1}${addressLine2 ? `\n${addressLine2}` : ''}`),
       Field('Utility Provider', ph(inputs.utilityProvider, '[UTILITY COMPANY]')),
     ),
@@ -558,7 +619,9 @@ function buildOverviewAndEquipment(inputs) {
           View,
           { style: [s.row, { flexWrap: 'wrap' }] },
           Benefit('dollar', 'Lower Electric Bills', 'Lock in lower energy costs for the future.'),
-          Benefit('battery', 'Backup Power', 'Keep your home running when the grid goes down.'),
+          hasBattery(inputs)
+            ? Benefit('battery', 'Backup Power', 'Keep your home running when the grid goes down.')
+            : null,
           Benefit('home', 'Energy Independence', 'Produce and store your own clean energy.'),
           Benefit('trendUp', 'Increase Home Value', 'Solar + storage is a smart investment.'),
         ),
@@ -613,7 +676,7 @@ function buildSystemLayoutAndChart(inputs, computed, layoutPath) {
     // ── Right: Monthly Production Chart ──────────────────────────────
     h(
       View,
-      { style: { flex: 1.15 } },
+      { style: { flex: 1 } },
       SectionBar('Estimated Monthly Energy Production (kWh)', 'green'),
       h(
         View,
@@ -656,7 +719,7 @@ function buildInvestmentRow(computed) {
       },
       h(View, { style: { width: 18, marginRight: 8 } }, Icon(icon, { size: 14, color: AMBER })),
       h(Text, { style: { flex: 1, fontSize: 8, color: MUTED } }, label),
-      h(Text, { style: { fontSize: 13, fontFamily: 'Helvetica-Bold', color: INK } }, value),
+      h(Text, { style: { fontSize: 13, fontFamily: 'Switzer', color: INK } }, value),
     )
 
   const rebateLineLabel = computed.rebateLabel || 'Utility Rebate'
@@ -723,15 +786,14 @@ function buildInvestmentRow(computed) {
         },
         h(
           Text,
-          { style: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: NAVY, marginBottom: 4 } },
+          { style: { fontSize: 9, fontFamily: 'Switzer', color: NAVY, marginBottom: 4 } },
           'CASH PRICE',
         ),
         h(
           Text,
-          { style: { fontSize: 18, fontFamily: 'Helvetica-Bold', color: GREEN } },
+          { style: { fontSize: 18, fontFamily: 'Switzer', color: GREEN } },
           money(computed.netSystemPrice),
         ),
-        h(View, { style: { marginTop: 8 } }, Icon('dollar', { size: 16, color: GREEN })),
       ),
     ),
     // 25-Year Benefits — amber border + icon rows
@@ -750,6 +812,24 @@ function buildInvestmentRow(computed) {
       h(Text, { style: [s.panelTitle, { color: AMBER, marginBottom: 4 }] }, '25-Year Benefits'),
       benefitRow('award', 'Total Savings', money(computed.lifetimeSavings), true),
       benefitRow('wallet', 'Average Annual Savings', money(computed.averageAnnualSavings), false),
+    ),
+  )
+}
+
+function buildRebateRow(computed = {}, icon = 'wallet') {
+  const rebate = Number(computed.rebate) || 0
+  if (rebate <= 0) {
+    return null
+  }
+  return h(
+    View,
+    { style: s.rebateBox },
+    h(View, { style: s.rebateIcon }, Icon(icon, { size: 12, color: AMBER, strokeWidth: 2 })),
+    h(
+      Text,
+      { style: s.rebateNote },
+      h(Text, { style: s.rebateAmount }, money(rebate)),
+      ' — your Austin Energy rebate will be sent to you directly about 6 weeks after your system is installed and inspected.',
     ),
   )
 }
@@ -811,6 +891,7 @@ export function QuoteDocument(quote, options = {}) {
         buildOverviewAndEquipment(inputs),
         buildSystemLayoutAndChart(inputs, computed, layoutPath),
         buildInvestmentRow(computed),
+        buildRebateRow(computed),
         buildFooter(company, inputs),
       ),
     ),
