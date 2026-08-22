@@ -10,8 +10,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'btn--primary bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
-        dark: 'bg-mist-900 text-white hover:bg-mist-900/90 shadow-[0_4px_10px_0_hsl(0_0%_0%_/_0.10)]',
+          'btn--primary bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_10px_0_oklch(0%_0_0deg_/_0.1)]',
+        dark: 'bg-mist-900 text-white hover:bg-mist-900/90 shadow-[0_4px_10px_0_oklch(0%_0_0deg_/_0.1)]',
         secondary: 'btn--secondary',
         tertiary: 'btn--tertiary',
         destructive:

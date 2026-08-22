@@ -37,7 +37,7 @@ const SECTION_STYLES = {
   christmasLights: { wrapperBgClass: '' },
   dark: {
     wrapperBgClass:
-      'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))]',
+      'bg-[linear-gradient(135deg,oklch(from_var(--color-secondary)_15%_calc(c_*_0.56)_h),oklch(from_var(--color-secondary)_12%_calc(c_*_0.46)_h))]',
   },
   light: { wrapperBgClass: '' },
 }
@@ -58,7 +58,7 @@ function buildSectionStyle(theme, isChristmasTheme) {
   if (theme === 'light') {
     return {
       backgroundImage:
-        'linear-gradient(to right, hsl(var(--color-secondary-h) 22% 78% / 0.12), hsl(var(--color-secondary-h) 40% 70% / 0), hsl(calc(var(--color-primary-h) + 10) 72% 72% / 0.12))',
+        'linear-gradient(to right, oklch(from var(--color-secondary) 78% calc(c * 0.36) h / 0.12), oklch(from var(--color-secondary) 70% calc(c * 0.66) h / 0), oklch(from var(--color-primary) 72% calc(c * 0.73) calc(h + 10) / 0.12))',
     }
   }
   if (isChristmasTheme) {

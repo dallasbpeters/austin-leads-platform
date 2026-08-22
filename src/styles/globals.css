@@ -260,8 +260,8 @@ html:not([data-cloud-tone]),
   --cloud-tone-opacity: 0.5;
   --cloud-tone-layer: linear-gradient(
     to bottom,
-    oklab(71.053% -0.01367 -0.13638) 0%,
-    oklab(66.129% -0.00721 -0.14826) 100%
+    oklab(76.461% -0.01704 -0.10761) 0%,
+    oklab(68.309% -0.01491 -0.13193) 100%
   );
   --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
   --cloud-section-background: oklab(62.12% -0.01006 -0.16663);
@@ -318,9 +318,9 @@ html:not([data-cloud-tone]),
   --gradient-sky-b: #0a1626;
   --gradient-sky-from: #14293f;
   --gradient-sky-to: #6b86b8;
-  --gradient-sun-a: #cfe3ff;
-  --gradient-sun-b: #7f9ac4;
-  --gradient-sun-highlight: #eaf3ff;
+  --gradient-sun-a: #6584b0;
+  --gradient-sun-b: #4668a1;
+  --gradient-sun-highlight: #49668d;
   --cloud-image-overlay-strength: 86%;
   --cloud-image-saturation: 0.45;
 }
@@ -361,10 +361,10 @@ html:not([data-cloud-tone]),
 }
 
 .cloud-theme-section--metrics.cloud-theme-section--clouds-hidden {
-  --cloud-section-background: #083344;
+  --cloud-section-background: #040a17;
   --cloud-section-foreground: #fff;
   --cloud-section-muted: rgb(255 255 255 / 70%);
-  --cloud-section-eyebrow: var(--color-primary);
+  --cloud-section-eyebrow: #ffd06b;
 }
 
 .cloud-theme-section__heading {
@@ -649,7 +649,7 @@ html:not([data-cloud-tone]),
   }
 
   .btn:focus-visible {
-    outline: 2px solid hsl(var(--color-primary-h) var(--color-primary-s) 65% / 65%);
+    outline: 2px solid oklch(from var(--color-primary) 65% c h / 65%);
     outline-offset: 3px;
   }
 
@@ -833,7 +833,7 @@ html:not([data-cloud-tone]),
   }
 
   .text-secondary {
-    color: var(--color-secondary) !important;
+    color: var(--color-secondary-900) !important;
   }
 
   .text-strong {
@@ -970,7 +970,7 @@ html:not([data-cloud-tone]),
   }
 
   .bg-secondary-100 {
-    background-color: var(--color-secondary-100);
+    background-color: var(--color-warm-bg);
   }
 
   .bg-secondary-300 {
@@ -1074,11 +1074,11 @@ html:not([data-cloud-tone]),
   }
 
   .border-color-button-secondary {
-    border-color: hsl(var(--color-primary-h) var(--color-primary-s) 70% / 22%);
+    border-color: oklch(from var(--color-primary) 70% c h / 22%);
   }
 
   .outline-color-focus:focus-visible {
-    outline: 2px solid hsl(var(--color-primary-h) var(--color-primary-s) 65% / 65%);
+    outline: 2px solid oklch(from var(--color-primary) 65% c h / 65%);
     outline-offset: 3px;
   }
 
@@ -1148,7 +1148,7 @@ html:not([data-cloud-tone]),
     border: 0;
     border-radius: 999px;
     background: var(--color-primary);
-    box-shadow: 0 0 0 4px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 18%);
+    box-shadow: 0 0 0 4px oklch(from var(--color-primary) 65% c h / 18%);
     cursor: pointer;
   }
 
@@ -1158,20 +1158,20 @@ html:not([data-cloud-tone]),
     border: 0;
     border-radius: 999px;
     background: var(--color-primary);
-    box-shadow: 0 0 0 4px hsl(var(--color-primary-h) var(--color-primary-s) 65% / 18%);
+    box-shadow: 0 0 0 4px oklch(from var(--color-primary) 65% c h / 18%);
     cursor: pointer;
   }
 
   .solar-range::-webkit-slider-runnable-track {
     height: 0.35rem;
     border-radius: 999px;
-    background: hsl(var(--color-secondary-h) 55% 88% / 24%);
+    background: oklch(from var(--color-secondary) 88% calc(c * 0.9) h / 24%);
   }
 
   .solar-range::-moz-range-track {
     height: 0.35rem;
     border-radius: 999px;
-    background: hsl(var(--color-secondary-h) 55% 88% / 24%);
+    background: oklch(from var(--color-secondary) 88% calc(c * 0.9) h / 24%);
   }
 }
 
@@ -1290,37 +1290,37 @@ html:not([data-cloud-tone]),
  * overridable in one place rather than buried in 71 path attributes.
  */
 :root {
-  --logo-navy-950: hsl(var(--color-primary-h) var(--color-primary-s) 10%);
-  --logo-navy-900: hsl(var(--color-primary-h) var(--color-primary-s) 12%);
+  --logo-navy-950: oklch(from var(--color-primary) 10% c h);
+  --logo-navy-900: oklch(from var(--color-primary) 12% c h);
   --logo-navy-800: var(--color-primary);
-  --logo-navy-700: hsl(var(--color-primary-h) var(--color-primary-s) 24%);
-  --logo-steel: hsl(var(--color-primary-h) 23% 41%);
-  --logo-grey-400: hsl(var(--color-primary-h) 4% 63%);
-  --logo-grey-300: hsl(var(--color-primary-h) 4% 76%);
+  --logo-navy-700: oklch(from var(--color-primary) 24% c h);
+  --logo-steel: oklch(from var(--color-primary) 41% calc(c * 0.23) h);
+  --logo-grey-400: oklch(from var(--color-primary) 63% calc(c * 0.04) h);
+  --logo-grey-300: oklch(from var(--color-primary) 76% calc(c * 0.04) h);
   --logo-sun: var(--color-amber-400);
-  --logo-sun-deep: hsl(40deg 98% 49%);
+  --logo-sun-deep: oklch(78.52% 0.1663 73.7deg);
   --logo-surface: var(--background);
   --logo-flag-red: #de1017;
   --logo-tan: #dbbda4;
-  --sidebar: hsl(0deg 0% 98%);
-  --sidebar-foreground: hsl(240deg 5.3% 26.1%);
-  --sidebar-primary: hsl(240deg 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0deg 0% 98%);
-  --sidebar-accent: hsl(240deg 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240deg 5.9% 10%);
-  --sidebar-border: hsl(220deg 13% 91%);
-  --sidebar-ring: hsl(217.2deg 91.2% 59.8%);
+  --sidebar: oklch(98.48% 0 0deg);
+  --sidebar-foreground: oklch(37.05% 0.012 285.8deg);
+  --sidebar-primary: oklch(21.03% 0.0059 285.88deg);
+  --sidebar-primary-foreground: oklch(98.48% 0 0deg);
+  --sidebar-accent: oklch(96.76% 0.0013 286.38deg);
+  --sidebar-accent-foreground: oklch(21.03% 0.0059 285.88deg);
+  --sidebar-border: oklch(92.78% 0.0058 264.53deg);
+  --sidebar-ring: oklch(62.32% 0.1879 259.8deg);
 }
 
 .dark {
-  --sidebar: hsl(240deg 5.9% 10%);
-  --sidebar-foreground: hsl(240deg 4.8% 95.9%);
-  --sidebar-primary: hsl(224.3deg 76.3% 48%);
-  --sidebar-primary-foreground: hsl(0deg 0% 100%);
-  --sidebar-accent: hsl(240deg 3.7% 15.9%);
-  --sidebar-accent-foreground: hsl(240deg 4.8% 95.9%);
-  --sidebar-border: hsl(240deg 1% 82%);
-  --sidebar-ring: hsl(217.2deg 91.2% 59.8%);
+  --sidebar: oklch(21.03% 0.0059 285.88deg);
+  --sidebar-foreground: oklch(96.76% 0.0013 286.38deg);
+  --sidebar-primary: oklch(48.78% 0.217 264.39deg);
+  --sidebar-primary-foreground: oklch(100% 0 0deg);
+  --sidebar-accent: oklch(27.41% 0.0055 286.03deg);
+  --sidebar-accent-foreground: oklch(96.76% 0.0013 286.38deg);
+  --sidebar-border: oklch(85.99% 0.0013 286.37deg);
+  --sidebar-ring: oklch(62.32% 0.1879 259.8deg);
 }
 
 @theme inline {
@@ -1343,7 +1343,7 @@ footer .logo {
   --logo-grey-400: #fff;
   --logo-grey-300: #fff;
   --logo-sun: var(--color-amber-400);
-  --logo-sun-deep: hsl(40deg 98% 49%);
+  --logo-sun-deep: oklch(78.52% 0.1663 73.7deg);
   --logo-surface: var(--primary);
   --logo-flag-red: #de1017;
   --logo-tan: #dbbda4;

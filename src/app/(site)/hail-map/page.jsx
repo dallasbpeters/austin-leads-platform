@@ -61,7 +61,7 @@ const HailMapPage = async () => {
         </div>
       </section>
 
-      <section className="bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] py-20 text-white">
+      <section className="bg-[linear-gradient(135deg,oklch(from_var(--color-secondary)_15%_calc(c_*_0.56)_h),oklch(from_var(--color-secondary)_12%_calc(c_*_0.46)_h))] py-20 text-white">
         <div className="mx-auto grid max-w-7xl place-items-center gap-12 px-3 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
           <div className="space-y-4">
             <p className="text-sm tracking-[0.22em] text-white/58 uppercase">Roofing consultation</p>

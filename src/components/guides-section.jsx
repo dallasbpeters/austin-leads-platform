@@ -111,7 +111,7 @@ export default function GuidesSection({ section = null, page = null, sectionId =
         <GuideCardGrid cards={cards} icon={icon} />
         <div className="mt-8 flex justify-end">
           <Link
-            className="btn bg-primary text-primary-foreground type-accent rounded-full px-4 py-2 text-sm font-semibold tracking-[0.18em] uppercase"
+            className="btn bg-background text-primary type-accent border-primary hover:bg-primary hover:text-primary-foreground h-10 rounded-full border px-12 text-sm font-semibold tracking-[0.18em] uppercase"
             href="/guides"
           >
             {ctaLabel}

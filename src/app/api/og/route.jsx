@@ -10,12 +10,12 @@ const OG_IMAGE_SIZE = {
 }
 let fontFamilyPromise
 const OG_COLOR_TOKEN_MAP = {
-  primary: 'hsl(205 99% 36%)',
-  secondary: 'hsl(190 61% 15%)',
-  tertiary: 'hsl(34 94% 54%)',
-  primaryAlt: 'hsl(221 86% 67%)',
-  secondaryAlt: 'hsl(206 56% 67%)',
-  tertiaryAlt: 'hsl(50 56% 67%)',
+  primary: 'oklch(51.82% 0.1441 249.42deg)',
+  secondary: 'oklch(30.88% 0.0448 213.39deg)',
+  tertiary: 'oklch(76.28% 0.1649 65.03deg)',
+  primaryAlt: 'oklch(66.76% 0.1555 263.93deg)',
+  secondaryAlt: 'oklch(73.88% 0.0818 242.13deg)',
+  tertiaryAlt: 'oklch(83.56% 0.1007 98.29deg)',
   sweetcorn: 'oklch(93.57% 0.13 101.75deg)',
   voodoo: 'oklch(32.87% 0.06 332.81deg)',
   tidal: 'oklch(95.49% 0.11 118.86deg)',

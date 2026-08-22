@@ -25,7 +25,7 @@ export function HailMapSection({ section, sectionId }) {
       <div className="mx-auto max-w-7xl px-3 py-10 md:px-6 lg:px-10">
         <Link
           href={ctaHref}
-          className="block rounded-2xl border border-white/12 bg-[linear-gradient(90deg,hsl(var(--color-secondary-h)_35%_14%),hsl(var(--color-secondary-h)_30%_11%))] p-10 text-white transition-transform hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_10px_30px_rgba(0,0,0,0.22)] md:p-12"
+          className="block rounded-2xl border border-white/12 bg-[linear-gradient(90deg,oklch(from_var(--color-secondary)_14%_calc(c_*_0.57)_h),oklch(from_var(--color-secondary)_11%_calc(c_*_0.49)_h))] p-10 text-white transition-transform hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_10px_30px_rgba(0,0,0,0.22)] md:p-12"
         >
           <div className="grid content-end items-center justify-end gap-6 md:grid-cols-1">
             <div className="space-y-3">

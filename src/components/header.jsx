@@ -158,7 +158,7 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
         })}
       >
         <div
-          className={`mx-auto flex w-full justify-center rounded-none bg-stone-100 px-7 py-4 shadow-md backdrop-blur-sm ${
+          className={`mx-auto flex w-full justify-center rounded-none bg-(--color-warm-bg) px-7 py-4 shadow-md backdrop-blur-sm ${
             openNav ? 'md:rounded-br-sm md:rounded-bl-sm' : 'md:rounded-br-sm md:rounded-bl-sm'
           }`}
         >

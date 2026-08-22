@@ -70,14 +70,24 @@
   --shadow-spread: 0px;
   --shadow-opacity: 0.17;
   --shadow-color: #000;
-  --shadow-2xs: 0px 1px 3px 0px hsl(0deg 0% 0% / 9%);
-  --shadow-xs: 0px 1px 3px 0px hsl(0deg 0% 0% / 9%);
-  --shadow-sm: 0px 1px 3px 0px hsl(0deg 0% 0% / 17%), 0px 1px 2px -1px hsl(0deg 0% 0% / 17%);
-  --shadow: 0px 1px 3px 0px hsl(0deg 0% 0% / 17%), 0px 1px 2px -1px hsl(0deg 0% 0% / 17%);
-  --shadow-md: 0px 1px 3px 0px hsl(0deg 0% 0% / 17%), 0px 2px 4px -1px hsl(0deg 0% 0% / 17%);
-  --shadow-lg: 0px 1px 3px 0px hsl(0deg 0% 0% / 17%), 0px 4px 6px -1px hsl(0deg 0% 0% / 17%);
-  --shadow-xl: 0px 1px 3px 0px hsl(0deg 0% 0% / 17%), 0px 8px 10px -1px hsl(0deg 0% 0% / 17%);
-  --shadow-2xl: 0px 1px 3px 0px hsl(0deg 0% 0% / 43%);
+  --shadow-2xs: 0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 9%);
+  --shadow-xs: 0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 9%);
+  --shadow-sm:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 1px 2px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 1px 2px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-md:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 2px 4px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-lg:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 4px 6px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-xl:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 8px 10px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-2xl: 0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 43%);
   --tracking-normal: 0.025em;
   --spacing: 0.25rem;
 }

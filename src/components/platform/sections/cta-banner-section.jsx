@@ -153,7 +153,7 @@ export function CtaBannerSection({ page, section, site }) {
   return (
     <CloudSectionBackground
       id={CONSULTATION_ANCHOR_ID}
-      className={`relative isolate overflow-hidden py-20 ${showClouds ? 'cloud-theme-section--cta' : isDarkTheme ? 'bg-[linear-gradient(135deg,hsl(var(--color-secondary-h)_34%_15%),hsl(var(--color-secondary-h)_28%_12%))] text-white' : 'bg-card text-foreground border-border/60 border-b'}`}
+      className={`relative isolate overflow-hidden py-20 ${showClouds ? 'cloud-theme-section--cta' : isDarkTheme ? 'bg-[linear-gradient(135deg,oklch(from_var(--color-secondary)_15%_calc(c_*_0.56)_h),oklch(from_var(--color-secondary)_12%_calc(c_*_0.46)_h))] text-white' : 'bg-card text-foreground border-border/60 border-b'}`}
       preserveSurfaceWhenCloudsHidden
       showClouds={showClouds}
       {...getDevSectionAttributes({

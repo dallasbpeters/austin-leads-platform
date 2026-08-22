@@ -40,34 +40,31 @@ export function isTxChristmasLightsSite(site) {
 }
 
 /**
- * Sites whose theme file fully defines the hsl() pieces (`--color-primary-h`, …)
- * used by globals + legacy sections. Sanity `brand.primary` HSL must not be
- * inlined on the wrapper — it would override scoped theme tokens (e.g. solar hue
- * stuck in CMS replacing Christmas tokens).
+ * Sites whose theme file owns its own base color tokens (`--color-primary`, …).
+ * Sanity `brand.primary` must not be inlined on the wrapper for these — it would
+ * override scoped theme tokens (e.g. solar hue stuck in CMS replacing Christmas
+ * tokens).
  */
-function siteUsesThemeOwnedHslRamp(site) {
+function siteUsesThemeOwnedColorRamp(site) {
   return isTxChristmasLightsSite(site)
 }
 
 /**
- * Convert a Sanity color object (from @sanity/color-input) into CSS variable
- * overrides for the three H/S/L root components that drive the full color
- * cascade. Theme files derive every numbered shade and shadcn slot
- * (--color-primary, --color-primary-700, --primary, ...) from these three
- * components, so overriding H/S/L re-tints the whole palette in one shot.
+ * Convert a Sanity color object (from @sanity/color-input) into a CSS variable
+ * override for the one base token that drives the whole color cascade. Theme
+ * files derive every numbered shade and shadcn slot (--color-primary-700,
+ * --primary, --ring, ...) from that base with `oklch(from var(--color-primary)
+ * …)`, so overriding the base re-tints the palette in one shot.
  *
- * Sanity stores s/l as 0–1 fractions; CSS expects percentages.
+ * The hex is handed to CSS as-is; relative color syntax converts it to OKLCH at
+ * use time, which is why no color math is needed here.
  */
-export function brandColorHSLVars(color, prefix) {
-  const hsl = color?.hsl
-  if (!hsl || !Number.isFinite(hsl.h)) {
+export function brandColorVars(color, prefix) {
+  const hex = typeof color?.hex === 'string' ? color.hex.trim() : ''
+  if (!hex) {
     return {}
   }
-  return {
-    [`--color-${prefix}-h`]: String(Math.round(hsl.h)),
-    [`--color-${prefix}-s`]: `${Math.round(hsl.s * 100)}%`,
-    [`--color-${prefix}-l`]: `${Math.round(hsl.l * 100)}%`,
-  }
+  return { [`--color-${prefix}`]: hex }
 }
 
 /**
@@ -77,8 +74,8 @@ export function brandColorHSLVars(color, prefix) {
  * Cascade contract:
  *   1. `src/styles/*-theme.css` defines defaults for `[data-public-site="…"]` —
  *      these are the source of truth for `--background`, `--foreground`, etc.
- *   2. This helper returns only the keys Sanity actually has a value for (e.g. HSL brand ramps),
- *      except on `txchristmaslights` where the theme file owns `--color-*-h/s/l` (see `siteUsesThemeOwnedHslRamp`).
+ *   2. This helper returns only the keys Sanity actually has a value for (e.g. base brand colors),
+ *      except on `txchristmaslights` where the theme file owns `--color-primary`/`-secondary`/`-tertiary` (see `siteUsesThemeOwnedColorRamp`).
  *   3. Optional `brand.surface.hex` sets `--site-surface` only (never replaces `--background`)
  *      so page backgrounds stay on the curated theme tokens unless a component reads `--site-surface`.
  *
@@ -91,14 +88,14 @@ export function getSiteBrandStyleVars(site) {
     return {}
   }
 
-  const skipBrandHsl = siteUsesThemeOwnedHslRamp(site)
+  const skipBrandColors = siteUsesThemeOwnedColorRamp(site)
 
-  const vars = skipBrandHsl
+  const vars = skipBrandColors
     ? {}
     : {
-        ...brandColorHSLVars(brand.primary, 'primary'),
-        ...brandColorHSLVars(brand.secondary, 'secondary'),
-        ...brandColorHSLVars(brand.accent, 'tertiary'),
+        ...brandColorVars(brand.primary, 'primary'),
+        ...brandColorVars(brand.secondary, 'secondary'),
+        ...brandColorVars(brand.accent, 'tertiary'),
       }
 
   // Surface chip is optional UI chrome only — do not overwrite `--background`.

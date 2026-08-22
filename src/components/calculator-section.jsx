@@ -114,11 +114,11 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
     >
       <div
         className="absolute top-0 right-0 h-240 w-lg translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]"
-        style={{ background: 'hsl(var(--color-primary-h) var(--color-primary-s) 72% / 0.1)' }}
+        style={{ background: 'oklch(from var(--color-primary) 99% c h)' }}
       ></div>
       <div
         className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]"
-        style={{ background: 'hsl(calc(var(--color-primary-h) + 16) 80% 70% / 0.14)' }}
+        style={{ background: 'oklch(from var(--color-primary) 97% c h / 0.14)' }}
       ></div>
       <div className="relative z-1 mx-auto w-[min(72rem,calc(100%-3rem))]">
         <div className="mb-14 text-center">
