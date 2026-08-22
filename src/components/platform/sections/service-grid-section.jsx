@@ -8,11 +8,9 @@ import {
   HomeShield,
   Star,
   Thunderstorm,
-  WarningTriangle,
   WindowTabs,
-  Wrench,
 } from 'iconoir-react'
-import { iconoirRegistry } from '../../iconoir-registry'
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -23,24 +21,6 @@ import { Card } from '@/components/ui/card'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
-
-const serviceIconMap = {
-  audit: AreaSearch,
-  commercialroofing: HomeShield,
-  detachreset: Wrench,
-  ducts: AirConditioner,
-  electrical: Flash,
-  evcharger: Car,
-  hailinspection: AreaSearch,
-  heatpump: AirConditioner,
-  insulation: HomeShield,
-  metalroofing: HomeShield,
-  rodent: WarningTriangle,
-  shingles: HomeShield,
-  solarbattery: BatteryCharging,
-  stormdamage: Thunderstorm,
-  windows: WindowTabs,
-}
 
 const serviceImageMap = {
   audit: {
@@ -129,11 +109,9 @@ const matchIconByKeyword = (title) => {
 }
 
 const getServiceIcon = (item) => {
-  if (item.icon && serviceIconMap[item.icon]) {
-    return serviceIconMap[item.icon]
-  }
-  if (item.icon && iconoirRegistry[item.icon]) {
-    return iconoirRegistry[item.icon]
+  const namedIcon = resolveIconoirIcon(item.icon)
+  if (namedIcon) {
+    return namedIcon
   }
 
   const title =

@@ -51,7 +51,7 @@
   --color-grid-line: oklch(from var(--color-tertiary) 95% 0 h);
   --color-border: oklch(from var(--color-tertiary) 92% 0 h);
   --color-border-strong: oklch(from var(--color-tertiary) 87% c h);
-  --color-text-strong: oklch(from var(--color-tertiary) 22% c h);
+  --color-text-strong: oklch(from var(--color-tertiary) 12% c h);
   --color-text: oklch(from var(--color-tertiary) 18% c h);
   --color-text-muted: oklch(from var(--color-tertiary) 18% c h);
   --color-slate-900: var(--color-text-strong);
@@ -63,7 +63,7 @@
   --color-gray-800: oklch(from var(--color-tertiary) 84% c h);
   --color-gray-500: var(--color-text-muted);
   --color-neutral-900: var(--color-text-strong);
-  --color-neutral-800: oklch(from var(--color-tertiary) 42% c h);
+  --color-neutral-800: oklch(from var(--color-tertiary) 22% c h);
   --color-neutral-400: oklch(from var(--color-tertiary) 18% c h);
   --color-cyan-900: oklch(from var(--color-secondary) 18% c h);
   --color-cyan-800: var(--color-secondary-700);

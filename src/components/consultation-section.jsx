@@ -217,7 +217,7 @@ export default function ConsultationSection({
       })}
       style={sectionStyle}
     >
-      <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 py-12 sm:px-3 md:px-6 lg:px-16">
+      <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 py-12 sm:px-3 md:px-6 lg:px-8">
         <div>
           <h2 className={getClassNames(isDarkTheme).heading}>{content.headline}</h2>
           <PortableTextContent as="div" value={content.copy} className={getClassNames(isDarkTheme).copy} />

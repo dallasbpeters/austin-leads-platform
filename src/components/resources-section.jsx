@@ -1,5 +1,5 @@
 import { HomeShield, SunLight, Thunderstorm } from 'iconoir-react'
-import { iconoirRegistry } from './iconoir-registry'
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -37,19 +37,8 @@ const defaultItems = [
   },
 ]
 
-const iconMap = {
-  'solar:map-point-linear': Thunderstorm,
-  'solar:home-linear': HomeShield,
-  'solar:wad-of-money-linear': SunLight,
-  thunderstorm: Thunderstorm,
-  hail: Thunderstorm,
-  roofing: HomeShield,
-  solar: SunLight,
-  sunlight: SunLight,
-}
-
 const getResourceIcon = (iconName) => {
-  return iconMap[iconName] || iconoirRegistry[iconName] || null
+  return resolveIconoirIcon(iconName)
 }
 
 const inferResourceIcon = (item) => {

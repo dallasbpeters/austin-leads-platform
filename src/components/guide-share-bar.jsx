@@ -100,7 +100,7 @@ const GuideShareBar = ({ url = '', title = '', background = true, align = 'end' 
       <div
         className={`grid grid-flow-col place-items-center gap-2 py-3 ${
           align === 'start' ? 'place-content-start' : 'place-content-end'
-        } ${background ? 'bg-gradient border-border bg-card border-y px-4 sm:px-6 lg:px-8' : ''}`}
+        } ${background ? 'bg-gradient bg-card px-4 sm:px-6 lg:px-8' : ''}`}
       >
         <p className="text-foreground mr-2 text-sm font-semibold">Share this guide:</p>
         {items.map((item) => (

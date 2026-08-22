@@ -268,13 +268,13 @@ html:not([data-cloud-tone]),
   --cloud-section-foreground: #082f43;
   --cloud-section-muted: #16485d;
   --cloud-section-eyebrow: #f0f0ef;
-  --gradient-sky-a: #4e7fd9;
-  --gradient-sky-b: #9095ef;
-  --gradient-sky-from: #7ea3ed;
+  --gradient-sky-a: oklch(88.282% 0.04208 263.03);
+  --gradient-sky-b: oklch(83.981% 0.07972 275.157);
+  --gradient-sky-from: oklch(91.99% 0.03404 263.604);
   --gradient-sky-to: oklch(79.42% 0.09 268.49);
-  --gradient-sun-a: #fad041;
-  --gradient-sun-b: #fa722a;
-  --gradient-sun-highlight: #ffe01a;
+  --gradient-sun-a: oklch(90.199% 0.13949 92.626);
+  --gradient-sun-b: oklch(76.431% 0.16187 64.269);
+  --gradient-sun-highlight: oklch(90.508% 0.18375 98.807);
   --cloud-image-overlay-strength: 55%;
   --cloud-image-saturation: 1;
 }

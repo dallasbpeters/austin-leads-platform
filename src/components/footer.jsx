@@ -1,6 +1,6 @@
 'use client'
 
-import { DotArrowUp } from 'iconoir-react'
+import { DotArrowUp, Facebook, Mail } from 'iconoir-react'
 import Link from 'next/link'
 
 import { AutoSizedText } from '@/components/auto-sized-text'
@@ -43,7 +43,18 @@ export default function Footer() {
               <ul className="text-md mt-3 space-y-2 text-inherit">
                 <li>
                   <a href="mailto:info@texassolarandroofingpros.com" className="hover:text-blue-500">
+                    <Mail className="mr-2 inline-block h-4 w-4" aria-hidden="true" />
                     info@texassolarandroofingpros.com
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.facebook.com/profile.php?id=61591392153401"
+                    className="hover:text-blue-500"
+                    target="_blank"
+                  >
+                    <Facebook className="mr-2 inline-block h-4 w-4" aria-hidden="true" />
+                    Follow us on Facebook
                   </a>
                 </li>
               </ul>

@@ -398,7 +398,7 @@ export default function Hero({
 
   return (
     <section
-      className="text-body type-accent relative top-0 min-h-[80vh] overflow-x-hidden"
+      className="text-body type-accent relative top-0 min-h-[50vh] overflow-x-hidden"
       style={{
         backgroundImage: 'radial-gradient(var(--color-grid) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
@@ -415,7 +415,7 @@ export default function Hero({
         rotatingHeroImages={rotatingHeroImages}
         overlayStyle={overlayStyle}
       />
-      <div className="relative z-20 mx-auto flex min-h-[80vh] w-[min(80rem,calc(100%-3rem))] items-center px-2 py-30 md:px-4">
+      <div className="relative z-20 mx-auto flex min-h-[60vh] w-[min(80rem,calc(100%-3rem))] items-center px-2 pt-40 md:px-4">
         <div
           className={`grid w-full items-end gap-12 pb-12 ${hasHeroAside ? 'lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]' : 'lg:grid-cols-1'}`}
         >

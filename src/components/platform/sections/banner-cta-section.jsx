@@ -74,7 +74,7 @@ export function BannerCtaSection({ section, sectionId }) {
         markup="src/components/platform/sections/banner-cta-section.jsx"
         content={`banner CTA from ${section?._type || 'page section'}`}
       />
-      <div className="relative z-2 mx-auto grid min-h-66 max-w-7xl overflow-hidden rounded-lg">
+      <div className="relative z-2 mx-auto grid min-h-66 max-w-304 overflow-hidden rounded-lg">
         <Image
           src={imageUrl}
           alt={imageAlt}

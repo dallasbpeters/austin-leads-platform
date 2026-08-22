@@ -1396,6 +1396,7 @@ import {
   YSquare,
   ZoomIn,
   ZoomOut,
+  ZSquare,
 } from 'iconoir-react'
 
 export const iconoirRegistry = {
@@ -2781,4 +2782,5 @@ export const iconoirRegistry = {
   YSquare,
   ZoomIn,
   ZoomOut,
+  ZSquare,
 }

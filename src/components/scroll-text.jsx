@@ -9,7 +9,7 @@ import {
   useTransform,
   useVelocity,
 } from 'framer-motion'
-import { iconoirRegistry } from './iconoir-registry'
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import { useLayoutEffect, useRef, useState } from 'react'
 
 import TexasFlag from '@/components/texas-flag'
@@ -52,7 +52,7 @@ function renderOptionalIcon(iconName, textColor, fontSize) {
     return <TexasFlag width={iconSize} height={iconSize} style={{ marginRight: 10, flexShrink: 0 }} />
   }
 
-  const IconComponent = iconoirRegistry[normalized]
+  const IconComponent = resolveIconoirIcon(normalized)
   if (!IconComponent) {
     return null
   }

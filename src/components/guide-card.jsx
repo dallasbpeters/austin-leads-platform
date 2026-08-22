@@ -10,9 +10,8 @@ import {
   HomeShield,
   Thunderstorm,
   WindowTabs,
-  Wrench,
 } from 'iconoir-react'
-import { iconoirRegistry } from './iconoir-registry'
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -99,24 +98,6 @@ const itemVariants = {
   },
 }
 
-const serviceIconMap = {
-  audit: AreaSearch,
-  insulation: HomeShield,
-  ducts: AirConditioner,
-  windows: WindowTabs,
-  heatpump: AirConditioner,
-  solarbattery: BatteryCharging,
-  detachreset: Wrench,
-  shingles: HomeShield,
-  metalroofing: HomeShield,
-  stormdamage: Thunderstorm,
-  commercialroofing: HomeShield,
-  hailinspection: Thunderstorm,
-  rodent: HomeShield,
-  electrical: Flash,
-  evcharger: Car,
-}
-
 function inferGuideCardIconFromText(value) {
   const text = String(value || '').toLowerCase()
 
@@ -160,12 +141,9 @@ function resolveGuideCardIcon(iconName, fallbackText = '') {
     return inferGuideCardIconFromText(fallbackText)
   }
 
-  if (serviceIconMap[normalizedName]) {
-    return serviceIconMap[normalizedName]
-  }
-
-  if (iconoirRegistry[normalizedName]) {
-    return iconoirRegistry[normalizedName]
+  const namedIcon = resolveIconoirIcon(normalizedName)
+  if (namedIcon) {
+    return namedIcon
   }
 
   return inferGuideCardIconFromText(fallbackText)

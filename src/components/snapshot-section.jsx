@@ -1,6 +1,6 @@
 import { Wallet, StatUp, Leaf, Clock } from 'iconoir-react'
 
-import { iconoirRegistry } from './iconoir-registry'
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 
 import Card from './card'
 import CloudSectionBackground from './cloud-section-background'
@@ -29,13 +29,6 @@ const items = [
     copy: 'Typical solar payback range once the roof plan is already solid',
   },
 ]
-
-const iconifyFallbackIconMap = {
-  'solar:wallet-money-linear': Wallet,
-  'solar:chart-square-linear': StatUp,
-  'solar:leaf-linear': Leaf,
-  'solar:history-linear': Clock,
-}
 
 function inferSnapshotIcon(item) {
   const text = `${item?.value || ''} ${item?.copy || ''}`.toLowerCase()
@@ -82,13 +75,8 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
       return <InferredIcon className="size-6" strokeWidth={2} />
     }
 
-    // Support legacy iconify ids and Iconoir PascalCase names from Sanity.
-    if (iconName.includes(':')) {
-      const Icon = iconifyFallbackIconMap[iconName] || inferSnapshotIcon(item)
-      return <Icon className="size-6" strokeWidth={2} />
-    }
-
-    const Icon = iconoirRegistry[iconName] || inferSnapshotIcon(item)
+    // Handles Iconoir names, service slugs, and legacy iconify ids alike.
+    const Icon = resolveIconoirIcon(iconName) || inferSnapshotIcon(item)
     return <Icon className="size-6" strokeWidth={2} />
   }
 
