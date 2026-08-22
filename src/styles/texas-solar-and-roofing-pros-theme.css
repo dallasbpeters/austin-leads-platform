@@ -1,3 +1,5 @@
+/* stylelint-disable hue-degree-notation */
+
 /**
  * Texas Solar and Roofing Pros theme.
  *
@@ -9,11 +11,12 @@
  * Operator shells omit `data-public-site`; `:root` neutrals in `variables.css`
  * apply instead.
  */
+
 [data-public-site='texas-solar-and-roofing-pros'] {
-  --color-primary: oklch(28.08% 0.06 273.77deg);
-  --color-tertiary: oklch(48.73% 0.03 260.31deg);
-  --color-secondary: oklch(87.4% 0.06 257.1deg);
-  --color-secondary-alt: oklch(74.333% 0.066 256deg);
+  --color-primary: oklch(28.08% 0.06 273.77);
+  --color-tertiary: oklch(48.73% 0.03 260.31);
+  --color-secondary: oklch(87.4% 0.06 257.1);
+  --color-secondary-alt: oklch(74.333% 0.066 256);
   --color-primary-50: oklch(from var(--color-primary) 97% c h);
   --color-primary-100: oklch(from var(--color-primary) 92% c h);
   --color-primary-200: oklch(from var(--color-primary) 84% c h);
@@ -44,9 +47,9 @@
   --color-tertiary-700: oklch(from var(--color-tertiary) 42% c h);
   --color-tertiary-800: oklch(from var(--color-tertiary) 32% c h);
   --color-tertiary-900: oklch(from var(--color-tertiary) 18% c h);
-  --color-warm-bg: oklch(99.12% 0.01 87.86deg);
-  --color-surface: oklch(98.146% 0.01 95.21deg);
-  --color-surface-elevated: oklch(100% 0 0deg);
+  --color-warm-bg: oklch(99.12% 0.01 87.86);
+  --color-surface: oklch(98.146% 0.01 95.21);
+  --color-surface-elevated: oklch(100% 0 0);
   --color-grid: oklch(from var(--color-tertiary) 95% 0 h);
   --color-grid-line: oklch(from var(--color-tertiary) 95% 0 h);
   --color-border: oklch(from var(--color-tertiary) 92% 0 h);
@@ -69,13 +72,13 @@
   --color-cyan-800: var(--color-secondary-700);
   --color-cyan-300: var(--color-secondary-300);
   --color-sky-900: var(--color-secondary-700);
-  --color-orange-600: oklch(78.26% 0.17 73.38deg);
-  --color-orange-500: oklch(78.26% 0.2 73.38deg);
-  --color-orange-400: oklch(78.26% 0.23 73.38deg);
+  --color-orange-600: oklch(78.26% 0.17 73.38);
+  --color-orange-500: oklch(78.26% 0.2 73.38);
+  --color-orange-400: oklch(78.26% 0.23 73.38);
   --color-yellow-500: oklch(83% 0.17 86.85deg);
   --background: var(--color-warm-bg);
   --foreground: var(--color-text-strong);
-  --card: oklch(99.12% 0.01 87.86%);
+  --card: oklch(99.12% 0.01 87.86);
   --card-foreground: var(--color-text-strong);
   --popover: var(--color-surface-elevated);
   --popover-foreground: var(--color-text-strong);
@@ -87,7 +90,7 @@
   --muted-foreground: var(--color-text-muted);
   --accent: var(--color-primary-100);
   --accent-foreground: var(--color-text-strong);
-  --destructive: oklch(63.56% 0.2082 25.38deg);
+  --destructive: oklch(63.56% 0.2082 25.38);
   --destructive-foreground: var(--color-white);
   --border: var(--color-border);
   --input: var(--color-border);

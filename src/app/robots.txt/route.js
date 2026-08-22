@@ -15,7 +15,7 @@ export const GET = async () => {
     normalizedHost === `www.${site.primaryDomain}`
 
   const body = isIndexableHost
-    ? `User-agent: facebookexternalhit\nAllow: /\nAllow: /api/og/\nAllow: /api/og-image/\n\nUser-agent: Facebot\nAllow: /\nAllow: /api/og/\nAllow: /api/og-image/\n\nUser-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /studio/\nDisallow: /style-guide\nDisallow: /style-guide/\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nSitemap: ${getPrimaryUrl(site, '/sitemap.xml')}\n`
+    ? `User-agent: facebookexternalhit\nAllow: /\nAllow: /api/og/\nAllow: /api/og-image/\n\nUser-agent: Facebot\nAllow: /\nAllow: /api/og/\nAllow: /api/og-image/\n\nUser-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /studio/\nDisallow: /style-guide\nDisallow: /style-guide/\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nSitemap: ${getPrimaryUrl(site, '/sitemap.xml')}\n\n# Structured content index for language models: ${getPrimaryUrl(site, '/llms.txt')}\n# AI crawler policy: ${getPrimaryUrl(site, '/ai.txt')}\n`
     : `User-agent: *\nDisallow: /\n`
 
   return new Response(body, {

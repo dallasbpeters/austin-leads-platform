@@ -74,10 +74,25 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-10 grid gap-8 md:grid-cols-3">
-          <p className="text-md text-inherit md:col-span-2">
-            © Texas Solar & Roofing Pros. All rights reserved.
-            <span id="year"> 2026</span>
-          </p>
+          <div className="md:col-span-2">
+            <p className="text-md text-inherit">
+              © Texas Solar & Roofing Pros. All rights reserved.
+              <span id="year"> 2026</span>
+            </p>
+            <p className="mt-2 text-sm text-inherit/70">
+              For AI and LLM crawlers:{' '}
+              {/* Static files in /public, not routes -- next/link cannot navigate to them. */}
+              {/* oxlint-disable-next-line next/no-html-link-for-pages */}
+              <a href="/llms.txt" className="underline hover:text-blue-500">
+                llms.txt
+              </a>
+              {' · '}
+              {/* oxlint-disable-next-line next/no-html-link-for-pages */}
+              <a href="/ai.txt" className="underline hover:text-blue-500">
+                ai.txt
+              </a>
+            </p>
+          </div>
           <div className="text-md flex items-center gap-4 md:col-span-1">
             <Link href="/services" className="text-inherit hover:text-blue-500">
               Services
