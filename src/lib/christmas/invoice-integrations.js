@@ -11,21 +11,18 @@
  * connected or working.
  */
 
+import { syncChristmasInvoiceToSheet } from '@/lib/zoho/christmas-sheet'
+import { syncInvoicePdfToWorkdrive } from '@/lib/zoho/workdrive'
 import { markInvoiceSheetSynced, markInvoiceUploaded } from './invoice-db.js'
 import { christmasInvoiceFileName, renderChristmasInvoicePdf } from './invoice-pdf.js'
 import { getChristmasInvoiceSettings } from './invoice-settings.js'
-import { syncChristmasInvoiceToSheet } from '@/lib/zoho/christmas-sheet'
-import { syncInvoicePdfToWorkdrive } from '@/lib/zoho/workdrive'
 
 /**
  * @param {object} invoice The saved invoice record to sync out to Zoho
  * @param {object} [settings] Resolved invoice settings (fetched if omitted)
  * @param {{ includeWorkdrive?: boolean }} [options] Set includeWorkdrive false to skip the PDF upload
  */
-export async function syncChristmasInvoiceIntegrations(invoice, settings = null, options = {}) {
-  const includeWorkdrive = options.includeWorkdrive !== false
-  const config = settings || (await getChristmasInvoiceSettings())
-
+async function syncSheet(invoice, config) {
   const sheet = await syncChristmasInvoiceToSheet({
     invoice,
     resourceId: config.sheetResource || config.sheetResourceId,
@@ -34,28 +31,46 @@ export async function syncChristmasInvoiceIntegrations(invoice, settings = null,
   if (sheet.ok) {
     await markInvoiceSheetSynced(invoice.id)
   }
+  return sheet
+}
 
-  let workdrive
-  if (includeWorkdrive) {
-    try {
-      const buffer = await renderChristmasInvoicePdf(invoice, { company: config })
-      const fileName = christmasInvoiceFileName(invoice)
-      workdrive = await syncInvoicePdfToWorkdrive({
-        clientName: invoice.customerName,
-        fileName,
-        buffer,
-        parentFolderId: config.workdriveFolder,
-      })
-      if (workdrive.ok) {
-        await markInvoiceUploaded(invoice.id, { fileId: workdrive.fileId, folderId: workdrive.folderId })
-      }
-    } catch (error) {
-      console.error('[christmas/invoices] workdrive sync failed', error)
-      workdrive = { ok: false, error: error.message }
+async function syncWorkdrive(invoice, config) {
+  try {
+    const buffer = await renderChristmasInvoicePdf(invoice, { company: config })
+    const fileName = christmasInvoiceFileName(invoice)
+    const workdrive = await syncInvoicePdfToWorkdrive({
+      clientName: invoice.customerName,
+      fileName,
+      buffer,
+      parentFolderId: config.workdriveFolder,
+    })
+    if (workdrive.ok) {
+      await markInvoiceUploaded(invoice.id, { fileId: workdrive.fileId, folderId: workdrive.folderId })
     }
-  } else {
-    workdrive = { skipped: true, reason: 'WorkDrive not requested' }
+    return workdrive
+  } catch (error) {
+    console.error('[christmas/invoices] workdrive sync failed', error)
+    return { ok: false, error: error.message }
   }
+}
+
+export async function syncChristmasInvoiceIntegrations(invoice, settings = null, options = {}) {
+  const includeWorkdrive = options.includeWorkdrive !== false
+  const config = settings || (await getChristmasInvoiceSettings())
+
+  /*
+   * The two integrations are independent, and the WorkDrive leg renders the
+   * PDF before uploading it. Running them serially made every save wait for
+   * the sheet append *plus* a full PDF render *plus* the upload; in parallel a
+   * save costs the slower of the two. Each still reports its own result, so a
+   * failure in one is surfaced without affecting the other.
+   */
+  const [sheet, workdrive] = await Promise.all([
+    syncSheet(invoice, config),
+    includeWorkdrive
+      ? syncWorkdrive(invoice, config)
+      : Promise.resolve({ skipped: true, reason: 'WorkDrive not requested' }),
+  ])
 
   return { sheet, workdrive }
 }

@@ -1,8 +1,8 @@
 'use client'
 
-import { Children, cloneElement, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Children, cloneElement, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import {
   Copy,
@@ -20,6 +20,8 @@ import {
   Zap,
 } from 'lucide-react'
 
+import SystemLayoutEditor from '@/components/admin/system-layout-editor'
+import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,8 +38,6 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import SystemLayoutEditor from '@/components/admin/system-layout-editor'
-import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
 import { UTILITY_PROVIDER_OPTIONS, computeQuote, defaultRebateForUtility } from '@/lib/quotes/calc'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -141,11 +141,6 @@ const buildSaveNotice = (editingId, quoteNumber, results) => {
   return `${base} ${bits.join(' · ')}.`
 }
 
-const resolveEditPreload = (quotes, editId, dupeId) => {
-  const targetId = editId ?? dupeId
-  return quotes.find((q) => String(q.id) === String(targetId)) ?? null
-}
-
 const optionalNumber = (value, fallback = 0) => (value === '' ? '' : Number(value) || fallback)
 
 const formDataToInputs = (form) => {
@@ -212,6 +207,39 @@ const quoteToForm = (quote) => {
   return { ...next, ...resolveUtilityFields(inputs) }
 }
 
+/*
+ * List rows carry no `data` snapshot (listQuotes omits the column), so the full
+ * quote is fetched before the form is populated.
+ */
+const loadFullQuote = async (quote) => {
+  if (quote.data?.inputs) {
+    return quote
+  }
+  const response = await fetch(`/api/quotes/${quote.id}`)
+  if (!response.ok) {
+    throw new Error('Could not load that quote.')
+  }
+  const payload = await response.json()
+  return payload.quote || quote
+}
+
+/*
+ * ?edit= / ?dupe= is resolved on the server into `preloadQuote`; these seed the
+ * builder's initial state from it.
+ */
+const templateNotice = (quoteNumber) => `Loaded ${quoteNumber} as a template — saving creates a new quote.`
+
+const preloadForm = (preloadQuote) => (preloadQuote ? quoteToForm(preloadQuote) : EMPTY_FORM)
+
+const preloadEditingId = (preloadQuote, editId) => (editId && preloadQuote ? preloadQuote.id : null)
+
+const preloadNotice = (preloadQuote, editId) => {
+  if (!preloadQuote) {
+    return null
+  }
+  return editId ? `Editing quote ${preloadQuote.quoteNumber}.` : templateNotice(preloadQuote.quoteNumber)
+}
+
 // ─── API helpers ──────────────────────────────────────────────────────────────
 
 async function sendQuoteEmail(id, email, message) {
@@ -227,6 +255,9 @@ async function sendQuoteEmail(id, email, message) {
   return payload.results
 }
 
+/* Debounce before re-rendering the preview PDF; each render is a full server-side PDF build. */
+const PREVIEW_DEBOUNCE_MS = 1000
+
 // ─── Custom hooks ─────────────────────────────────────────────────────────────
 
 function useLiveMathPreview(form) {
@@ -239,7 +270,14 @@ function usePdfTemplatePreview(form, rightTab) {
   const [pdfPreviewError, setPdfPreviewError] = useState(null)
   const timerRef = useRef(null)
   const urlRef = useRef(null)
+  const abortRef = useRef(null)
 
+  /*
+   * Each preview renders the whole PDF server-side, so it is debounced and
+   * every superseded request is aborted. Without the abort, a slow render
+   * begun mid-edit kept running and could resolve after a newer one, leaving
+   * a stale preview on screen while the server did duplicate work.
+   */
   useEffect(() => {
     if (rightTab !== 'template') {
       return
@@ -247,6 +285,11 @@ function usePdfTemplatePreview(form, rightTab) {
     if (timerRef.current) {
       clearTimeout(timerRef.current)
     }
+    abortRef.current?.abort()
+
+    const controller = new AbortController()
+    abortRef.current = controller
+
     timerRef.current = setTimeout(async () => {
       setPdfPreviewLoading(true)
       try {
@@ -254,6 +297,7 @@ function usePdfTemplatePreview(form, rightTab) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ inputs: formDataToInputs(form) }),
+          signal: controller.signal,
         })
         if (response.ok) {
           const url = URL.createObjectURL(await response.blob())
@@ -268,12 +312,20 @@ function usePdfTemplatePreview(form, rightTab) {
           setPdfPreviewError(payload.error || `Preview failed (HTTP ${response.status})`)
         }
       } catch (fetchError) {
-        setPdfPreviewError(fetchError.message || 'Preview request failed')
+        if (fetchError.name !== 'AbortError') {
+          setPdfPreviewError(fetchError.message || 'Preview request failed')
+        }
       } finally {
-        setPdfPreviewLoading(false)
+        if (!controller.signal.aborted) {
+          setPdfPreviewLoading(false)
+        }
       }
-    }, 800)
-    return () => clearTimeout(timerRef.current)
+    }, PREVIEW_DEBOUNCE_MS)
+
+    return () => {
+      clearTimeout(timerRef.current)
+      controller.abort()
+    }
   }, [form, rightTab])
 
   useEffect(
@@ -1035,20 +1087,20 @@ function ExpandedPreviewDialog({ open, url, onClose }) {
 
 export default function QuotesClient({
   initialQuotes = [],
+  preloadQuote,
   dbConfigured,
   dbError,
   editId,
-  dupeId,
   zohoConnected = false,
   zohoAuthEnabled = false,
 }) {
   const router = useRouter()
-  const [form, setForm] = useState(EMPTY_FORM)
+  const [form, setForm] = useState(() => preloadForm(preloadQuote))
   const [quotes, setQuotes] = useState(initialQuotes)
-  const [editingId, setEditingId] = useState(null)
+  const [editingId, setEditingId] = useState(() => preloadEditingId(preloadQuote, editId))
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
-  const [notice, setNotice] = useState(null)
+  const [notice, setNotice] = useState(() => preloadNotice(preloadQuote, editId))
   const [savedQuote, setSavedQuote] = useState(null)
   const [sendTarget, setSendTarget] = useState(null)
   const [sendEmail, setSendEmail] = useState('')
@@ -1060,21 +1112,6 @@ export default function QuotesClient({
   const [previewExpanded, setPreviewExpanded] = useState(false)
   const computed = useLiveMathPreview(form)
   const { pdfPreviewUrl, pdfPreviewLoading, pdfPreviewError } = usePdfTemplatePreview(form, rightTab)
-
-  useEffect(() => {
-    const found = resolveEditPreload(initialQuotes, editId, dupeId)
-    if (!found) {
-      return
-    }
-    setForm(quoteToForm(found))
-    setEditingId(editId ? found.id : null)
-    setNotice(
-      editId
-        ? `Editing quote ${found.quoteNumber}.`
-        : `Loaded ${found.quoteNumber} as a template — saving creates a new quote.`,
-    )
-    router.replace('/quotes', { scroll: false })
-  }, [editId, dupeId, initialQuotes, router])
 
   const refreshQuotes = useCallback(async () => {
     try {
@@ -1133,6 +1170,9 @@ export default function QuotesClient({
     setEditingId(null)
     setSavedQuote(null)
     setError(null)
+    setNotice(null)
+    // Drop ?edit= / ?dupe= so a refresh doesn't reopen the quote just closed.
+    router.replace('/quotes', { scroll: false })
   }
 
   const persistQuote = async () => {
@@ -1193,12 +1233,16 @@ export default function QuotesClient({
     }
   }
 
-  const handleDuplicate = (quote) => {
-    setForm(quoteToForm(quote))
-    setEditingId(null)
-    setNotice(`Loaded ${quote.quoteNumber} as a template — saving creates a new quote.`)
+  const handleDuplicate = async (quote) => {
     setError(null)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    try {
+      setForm(quoteToForm(await loadFullQuote(quote)))
+      setEditingId(null)
+      setNotice(templateNotice(quote.quoteNumber))
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (loadError) {
+      setError(loadError.message)
+    }
   }
 
   const handleSend = async () => {

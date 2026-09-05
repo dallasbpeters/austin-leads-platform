@@ -290,13 +290,13 @@ html:not([data-cloud-tone]),
   --cloud-section-background: oklch(43.3% 0.13749 269.251);
   --cloud-section-foreground: #fff8ef;
   --cloud-section-muted: #f0deec;
-  --cloud-section-eyebrow: #ffd46f;
+  --cloud-section-eyebrow: oklch(77.751% 0.16415 72.838);
   --gradient-sky-a: oklch(55.579% 0.165 275.669);
-  --gradient-sky-b: #1a1d6e;
-  --gradient-sky-from: #2a3a8a;
+  --gradient-sky-b: oklch(29.309% 0.13619 272.663);
+  --gradient-sky-from: oklch(38.517% 0.13422 270.328);
   --gradient-sky-to: oklch(47.71% 0.12 266.24);
-  --gradient-sun-a: #ff9a4d;
-  --gradient-sun-b: #e8484f;
+  --gradient-sun-a: oklch(77.751% 0.16415 72.838);
+  --gradient-sun-b: oklch(55.921% 0.22738 28.172);
   --gradient-sun-highlight: #ffb86b;
   --cloud-image-overlay-strength: 72%;
   --cloud-image-saturation: 0.7;

@@ -29,4 +29,4 @@ function PopoverContent({ className, align = 'center', sideOffset = 8, ...props 
   )
 }
 
-export { Popover, PopoverTrigger, PopoverContent }
+export { Popover, PopoverContent, PopoverTrigger }

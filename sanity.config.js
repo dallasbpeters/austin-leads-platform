@@ -1,11 +1,11 @@
-import './src/sanity/studioPatches.css'
-import { agentContextPlugin } from '@sanity/context/studio'
 import { assist } from '@sanity/assist'
 import { colorInput } from '@sanity/color-input'
+import { agentContextPlugin } from '@sanity/context/studio'
 import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
 import { presentationTool } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
+import './src/sanity/studioPatches.css'
 
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
 import { SiteSwitcherNavigator } from './src/sanity/components/site-switcher-navigator'

@@ -1,19 +1,17 @@
-import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { VercelToolbar } from '@vercel/toolbar/next'
-import { Gloock, JetBrains_Mono } from 'next/font/google'
 import dynamic from 'next/dynamic'
+import { Gloock, JetBrains_Mono } from 'next/font/google'
 import { draftMode, headers } from 'next/headers'
 
 import '../styles/globals.css'
 
 import { PostHogProvider } from '@/app/providers'
-import ViewTransitionWrapper from '@/components/view-transition-wrapper'
-import CloudToneSync from '@/components/cloud-tone-sync'
 import { cloudToneBootstrapScript } from '@/components/cloud-tone'
+import CloudToneSync from '@/components/cloud-tone-sync'
 import { getPublicDataSiteAttribute } from '@/components/platform/public-site-utils'
-import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
+import ViewTransitionWrapper from '@/components/view-transition-wrapper'
 import { resolveCurrentSite, resolveSiteBySlug } from '@/lib/platform/content'
 
 const fontSerif = Gloock({
@@ -81,7 +79,6 @@ export default async function RootLayout({ children }) {
   const isOperatorShell = headerList.get('x-alp-operator-shell') === '1'
   const previewSiteSlug = headerList.get('x-alp-preview-site-slug')
   const currentSite = await resolveCurrentSite().catch(() => null)
-  const { measurementId: gaMeasurementId, gtmId } = getGoogleAnalyticsConfig(currentSite?.slug)
 
   let publicSiteAttr = null
   let analyticsSiteSlug = currentSite?.slug ?? null
@@ -130,8 +127,6 @@ export default async function RootLayout({ children }) {
         {facebookAppId ? <meta property="fb:app_id" content={facebookAppId} /> : null}
         <script dangerouslySetInnerHTML={{ __html: cloudToneBootstrapScript }} />
       </head>
-      {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
-      {!gtmId && gaMeasurementId ? <GoogleAnalytics gaId={gaMeasurementId} /> : null}
       <body
         className={`${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >

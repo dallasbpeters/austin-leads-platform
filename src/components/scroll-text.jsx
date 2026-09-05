@@ -1,5 +1,6 @@
 'use client'
 
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import {
   motion,
   useAnimationFrame,
@@ -9,7 +10,6 @@ import {
   useTransform,
   useVelocity,
 } from 'framer-motion'
-import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import { useLayoutEffect, useRef, useState } from 'react'
 
 import TexasFlag from '@/components/texas-flag'

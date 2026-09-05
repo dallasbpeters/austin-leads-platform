@@ -1,9 +1,25 @@
 'use client'
 
-import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useCallback, useState } from 'react'
 
-import { Copy, Download, Eye, Loader2, Mail, Pencil, Plus, RefreshCw, Trash2, Upload, X } from 'lucide-react'
+import {
+  Copy,
+  Download,
+  Eye,
+  Loader2,
+  Mail,
+  MailCheck,
+  MailOpen,
+  MailWarning,
+  Pencil,
+  Plus,
+  RefreshCw,
+  ShieldCheck,
+  Trash2,
+  Upload,
+  X,
+} from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -20,6 +36,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
+import { EMAIL_STATUS_LABELS } from '@/lib/christmas/invoice-email-labels'
 
 const moneyCents = (cents) =>
   new Intl.NumberFormat('en-US', {
@@ -38,6 +55,87 @@ const shortDate = (value) => {
     return '—'
   }
   return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }).format(date)
+}
+
+const stamp = (value) =>
+  value
+    ? new Intl.DateTimeFormat('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone: 'America/Chicago',
+      }).format(new Date(value))
+    : ''
+
+/*
+ * Delivery state comes from Resend's `last_event`, pulled on demand by
+ * POST /api/christmas/invoices/[id]/email-status. "Sent" only means Resend
+ * accepted the message; "Delivered" is the confirmation that it landed.
+ */
+const DELIVERY_TONES = {
+  opened: { className: 'bg-emerald-600 hover:bg-emerald-600', icon: MailOpen },
+  clicked: { className: 'bg-emerald-600 hover:bg-emerald-600', icon: MailOpen },
+  delivered: { className: 'bg-sky-600 hover:bg-sky-600', icon: MailCheck },
+  bounced: { variant: 'destructive', icon: MailWarning },
+  complained: { variant: 'destructive', icon: MailWarning },
+  failed: { variant: 'destructive', icon: MailWarning },
+  suppressed: { variant: 'destructive', icon: MailWarning },
+  canceled: { variant: 'destructive', icon: MailWarning },
+  delivery_delayed: { className: 'bg-amber-600 hover:bg-amber-600', icon: MailWarning },
+}
+
+function DeliveryBadge({ invoice }) {
+  if (invoice.status !== 'sent' && !invoice.emailStatus) {
+    return <Badge variant="secondary">Draft</Badge>
+  }
+
+  const status = invoice.emailStatus
+  const tone = DELIVERY_TONES[status]
+  const label = EMAIL_STATUS_LABELS[status] || 'Sent'
+  const Icon = tone?.icon || Mail
+  const checked = invoice.emailCheckedAt
+    ? `Confirmed with Resend ${stamp(invoice.emailCheckedAt)}`
+    : 'Not verified yet — use Check delivery'
+
+  return (
+    <Badge
+      className={tone?.className}
+      title={`${label} · sent to ${invoice.emailedTo || 'customer'} ${stamp(invoice.sentAt)} · ${checked}`}
+      variant={tone?.variant || (tone?.className ? undefined : 'outline')}
+    >
+      <Icon className="mr-1 size-3" />
+      {label}
+    </Badge>
+  )
+}
+
+function JobberResultLine({ result }) {
+  if (!result) {
+    return null
+  }
+  if (result.ok) {
+    return <p className="mt-1 text-right text-xs text-emerald-600">Pushed to Jobber.</p>
+  }
+  if (result.skipped) {
+    return <p className="text-muted-foreground mt-1 text-right text-xs">{`Skipped — ${result.reason}`}</p>
+  }
+  return <p className="text-destructive mt-1 text-right text-xs">{result.error || 'Push failed.'}</p>
+}
+
+function DeliveryResultLine({ result }) {
+  if (!result) {
+    return null
+  }
+  if (result.ok) {
+    const label = EMAIL_STATUS_LABELS[result.status] || result.status
+    return (
+      <p className="text-muted-foreground mt-1 text-right text-xs">{`Resend: ${label} — ${result.to}`}</p>
+    )
+  }
+  return (
+    <p className="text-destructive mt-1 text-right text-xs">
+      {result.reason || result.error || 'Could not verify.'}
+    </p>
+  )
 }
 
 function SendResultRow({ label, result }) {
@@ -67,6 +165,8 @@ export default function ChristmasInvoicesHistoryClient({
   const [sendResults, setSendResults] = useState(null)
   const [jobberPushingId, setJobberPushingId] = useState(null)
   const [jobberResults, setJobberResults] = useState({})
+  const [checkingId, setCheckingId] = useState(null)
+  const [deliveryResults, setDeliveryResults] = useState({})
 
   const refreshInvoices = useCallback(async () => {
     try {
@@ -122,6 +222,33 @@ export default function ChristmasInvoicesHistoryClient({
 
   const handleEdit = (invoice) => router.push(`/christmas/invoices?edit=${invoice.id}`)
   const handleDuplicate = (invoice) => router.push(`/christmas/invoices?dupe=${invoice.id}`)
+
+  /*
+   * Asks Resend what actually happened to the invoice email. The send only
+   * proves Resend accepted it; this confirms delivery (or surfaces a bounce).
+   */
+  const handleCheckDelivery = async (invoice) => {
+    setCheckingId(invoice.id)
+    setDeliveryResults((current) => ({ ...current, [invoice.id]: null }))
+    try {
+      const response = await fetch(`/api/christmas/invoices/${invoice.id}/email-status`, {
+        method: 'POST',
+      })
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(data.error || 'Delivery check failed')
+      }
+      setDeliveryResults((current) => ({ ...current, [invoice.id]: data.result }))
+      if (data.invoice) {
+        setInvoices((list) => list.map((item) => (item.id === data.invoice.id ? data.invoice : item)))
+        setViewing((current) => (current?.id === data.invoice.id ? data.invoice : current))
+      }
+    } catch (error) {
+      setDeliveryResults((current) => ({ ...current, [invoice.id]: { ok: false, error: error.message } }))
+    } finally {
+      setCheckingId(null)
+    }
+  }
 
   /** Pushed on-demand only — see src/lib/christmas/invoice-integrations.js for why this isn't automatic. */
   const handlePushToJobber = async (invoice) => {
@@ -217,9 +344,9 @@ export default function ChristmasInvoicesHistoryClient({
                   <TableRow key={invoice.id}>
                     <TableCell className="font-medium">
                       <div>{invoice.invoiceNumber}</div>
-                      <Badge className="mt-1" variant={invoice.status === 'sent' ? 'outline' : 'secondary'}>
-                        {invoice.status === 'sent' ? 'Sent' : 'Draft'}
-                      </Badge>
+                      <div className="mt-1">
+                        <DeliveryBadge invoice={invoice} />
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="font-medium">{invoice.customerName}</div>
@@ -284,6 +411,19 @@ export default function ChristmasInvoicesHistoryClient({
                         >
                           <Mail className="size-4" />
                         </Button>
+                        <Button
+                          disabled={checkingId === invoice.id || invoice.status !== 'sent'}
+                          onClick={() => handleCheckDelivery(invoice)}
+                          size="icon"
+                          title={invoice.status === 'sent' ? 'Check delivery with Resend' : 'Not emailed yet'}
+                          variant="ghost"
+                        >
+                          {checkingId === invoice.id ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <ShieldCheck className="size-4" />
+                          )}
+                        </Button>
                         <Button onClick={() => handleEdit(invoice)} size="icon" title="Edit" variant="ghost">
                           <Pencil className="size-4" />
                         </Button>
@@ -317,23 +457,8 @@ export default function ChristmasInvoicesHistoryClient({
                           <Trash2 className="text-destructive size-4" />
                         </Button>
                       </div>
-                      {jobberResults[invoice.id] ? (
-                        <p
-                          className={`mt-1 text-right text-xs ${
-                            jobberResults[invoice.id].ok
-                              ? 'text-emerald-600'
-                              : jobberResults[invoice.id].skipped
-                                ? 'text-muted-foreground'
-                                : 'text-destructive'
-                          }`}
-                        >
-                          {jobberResults[invoice.id].ok
-                            ? 'Pushed to Jobber.'
-                            : jobberResults[invoice.id].skipped
-                              ? `Skipped — ${jobberResults[invoice.id].reason}`
-                              : jobberResults[invoice.id].error || 'Push failed.'}
-                        </p>
-                      ) : null}
+                      <DeliveryResultLine result={deliveryResults[invoice.id]} />
+                      <JobberResultLine result={jobberResults[invoice.id]} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -421,6 +546,27 @@ export default function ChristmasInvoicesHistoryClient({
                 <SendResultRow label="Email" result={sendResults.email} />
                 <SendResultRow label="Zoho Sheet" result={sendResults.sheet} />
                 <SendResultRow label="WorkDrive" result={sendResults.workdrive} />
+                {sendResults.email?.ok ? (
+                  <div className="border-t pt-2">
+                    <p className="text-muted-foreground mb-2">
+                      Resend accepted the message. Confirm it reached the inbox:
+                    </p>
+                    <Button
+                      disabled={checkingId === sendTarget?.id}
+                      onClick={() => handleCheckDelivery(sendTarget)}
+                      size="sm"
+                      variant="outline"
+                    >
+                      {checkingId === sendTarget?.id ? (
+                        <Loader2 className="mr-1.5 size-3 animate-spin" />
+                      ) : (
+                        <ShieldCheck className="mr-1.5 size-3" />
+                      )}
+                      Check delivery
+                    </Button>
+                    <DeliveryResultLine result={deliveryResults[sendTarget?.id]} />
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>

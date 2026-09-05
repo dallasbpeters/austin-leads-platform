@@ -17,3 +17,11 @@ test-results/
 # Google OAuth client downloads — these contain a live client_secret.
 client_secret*.json
 *.apps.googleusercontent.com.json
+balmy-vehicle-289113-9aca4d434292.json
+
+# Google service account key files (private credentials -- never commit)
+*-[0-9a-f][0-9a-f]*.json
+balmy-vehicle-*.json
+
+# ShipStudio metadata
+.shipstudio/

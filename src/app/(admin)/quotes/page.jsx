@@ -1,6 +1,6 @@
 import QuotesClient from '@/components/admin/quotes-client'
 import { safeAuth } from '@/lib/auth/session'
-import { ensureQuotesTable, hasQuoteDatabase, listQuotes } from '@/lib/quotes/db'
+import { ensureQuotesTable, getQuote, hasQuoteDatabase, listQuotes } from '@/lib/quotes/db'
 
 export const metadata = {
   title: 'Quotes | Austin Leads Admin',
@@ -16,10 +16,19 @@ export default async function QuotesPage({ searchParams }) {
   let quotes = []
   let dbError = null
 
+  // The quote behind ?edit= / ?dupe=, loaded by id so the builder can open it
+  // even when it falls outside the recent-quote list below.
+  let preloadQuote = null
+
   if (dbConfigured) {
     try {
       await ensureQuotesTable()
-      quotes = await listQuotes({ limit: 200 })
+      const [list, target] = await Promise.all([
+        listQuotes({ limit: 200 }),
+        editId || dupeId ? getQuote(editId || dupeId) : null,
+      ])
+      quotes = list
+      preloadQuote = target
     } catch (error) {
       dbError = { message: error?.message || String(error) }
       console.error('[quotes] failed to load quotes', error)
@@ -35,9 +44,9 @@ export default async function QuotesPage({ searchParams }) {
     <QuotesClient
       dbConfigured={dbConfigured}
       dbError={dbError}
-      dupeId={dupeId}
       editId={editId}
       initialQuotes={quotes}
+      preloadQuote={preloadQuote}
       zohoAuthEnabled={zohoAuthEnabled}
       zohoConnected={Boolean(session?.user?.zohoConnected) && !session?.user?.zohoNeedsReauth}
     />

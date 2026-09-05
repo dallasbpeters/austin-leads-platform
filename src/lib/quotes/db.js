@@ -8,7 +8,7 @@ export function hasQuoteDatabase() {
   return hasDatabaseUrl()
 }
 
-export async function ensureQuotesTable() {
+async function runQuotesMigrations() {
   const sql = getSql()
 
   await sql`
@@ -61,6 +61,31 @@ export async function ensureQuotesTable() {
   await sql`CREATE INDEX IF NOT EXISTS solar_quotes_resend_email_id_idx ON solar_quotes (resend_email_id)`
 }
 
+/*
+ * These are 11 serial statements and every quotes request used to run all of
+ * them before reading a row. They only need to run once per process; the
+ * promise is cached on globalThis so dev hot-reloads reuse it, and cleared on
+ * failure so a transient connection error doesn't poison the cache.
+ */
+const SCHEMA_PROMISE_KEY = '__solarQuotesSchemaReady__'
+
+async function migrateOnce() {
+  try {
+    await runQuotesMigrations()
+  } catch (error) {
+    globalThis[SCHEMA_PROMISE_KEY] = null
+    throw error
+  }
+}
+
+export function ensureQuotesTable() {
+  if (!globalThis[SCHEMA_PROMISE_KEY]) {
+    globalThis[SCHEMA_PROMISE_KEY] = migrateOnce()
+  }
+
+  return globalThis[SCHEMA_PROMISE_KEY]
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const newId = () => `qt_${randomBytes(8).toString('hex')}`
@@ -95,6 +120,7 @@ const rowToQuote = (row) => {
     annualProductionKwh: row.annual_production_kwh === null ? null : Number(row.annual_production_kwh),
     systemPrice: row.system_price_cents === null ? null : Number(row.system_price_cents) / 100,
     netPrice: row.net_price_cents === null ? null : Number(row.net_price_cents) / 100,
+    // Empty for rows from listQuotes(), which omits the column -- see below.
     data: row.data || {},
     sentAt: row.sent_at,
     emailedTo: row.emailed_to,
@@ -175,10 +201,27 @@ export async function getQuote(id) {
   return rowToQuote(rows[0])
 }
 
+/*
+ * List views render only the denormalized columns -- never `data`, which holds
+ * the full input + computed snapshot for the PDF and is by far the largest
+ * column on the row. Selecting it for 200-500 rows moved megabytes per page
+ * load for data the table never displays. Callers that need the snapshot
+ * (edit, use-as-template, PDF render) fetch the single row through getQuote().
+ */
 export async function listQuotes({ limit = 100 } = {}) {
   const sql = getSql()
   const rows = await sql`
-    SELECT * FROM solar_quotes ORDER BY created_at DESC LIMIT ${limit}
+    SELECT
+      id, quote_number, created_at, updated_at, status,
+      customer_name, customer_email, customer_phone,
+      property_address, property_city, property_state, property_zip, utility_provider,
+      system_size_kw, annual_production_kwh, system_price_cents, net_price_cents,
+      sent_at, emailed_to, zoho_sheet_synced_at, workdrive_file_id, workdrive_folder_id,
+      resend_email_id, email_status, delivered_at, opened_at, open_count,
+      signature_request_id, signature_requested_at
+    FROM solar_quotes
+    ORDER BY created_at DESC
+    LIMIT ${limit}
   `
   return rows.map(rowToQuote)
 }

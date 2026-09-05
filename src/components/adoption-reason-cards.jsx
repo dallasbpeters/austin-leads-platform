@@ -1,6 +1,6 @@
 import PortableTextContent from '@/components/portable-text-content'
-import { buildRuntimeKey } from '@/lib/sanity/stega'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
+import { buildRuntimeKey } from '@/lib/sanity/stega'
 
 export default function AdoptionReasonCards({ reasons }) {
   if (!reasons?.length) {

@@ -80,5 +80,4 @@ export const sectionRenderers = {
   video: VideoSection,
 }
 
-export { RoofingLogoCloudSection }
-export { CtaSection }
+export { CtaSection, RoofingLogoCloudSection }

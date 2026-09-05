@@ -59,8 +59,9 @@ export async function POST(request, { params }) {
   // 1. Email
   try {
     const sent = await sendInvoiceEmail({ invoice, pdfBuffer, fileName, to, message, company: config })
-    await markInvoiceSent(id, { emailedTo: sent.to })
-    results.email = { ok: true, to: sent.to }
+    // Keep Resend's message id -- it is what the delivery check looks up later.
+    await markInvoiceSent(id, { emailedTo: sent.to, resendEmailId: sent.id })
+    results.email = { ok: true, to: sent.to, resendEmailId: sent.id }
   } catch (error) {
     console.error('[christmas/invoices] email failed', error)
     results.email = { ok: false, error: error.message }

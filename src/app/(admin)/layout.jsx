@@ -1,12 +1,11 @@
 import { Building2 } from 'lucide-react'
-import { Outfit, JetBrains_Mono } from 'next/font/google'
+import { JetBrains_Mono, Outfit } from 'next/font/google'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import AdminBodyScrollLock from '@/components/admin/admin-body-scroll-lock'
 import AdminNav from '@/components/admin/admin-nav'
 import SignOutButton from '@/components/admin/sign-out-button'
-import { isQuotesRole } from '@/lib/auth/roles'
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +18,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { isQuotesRole } from '@/lib/auth/roles'
 import { safeAuth } from '@/lib/auth/session'
 
 const fontSans = Outfit({ subsets: ['latin'], variable: '--font-sans' })

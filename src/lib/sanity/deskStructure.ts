@@ -1,5 +1,5 @@
 // deskStructure.ts
-import { Preflight, DeadLinks } from '@planetary/sanity-plugin-preflight'
+import { DeadLinks, Preflight } from '@planetary/sanity-plugin-preflight'
 import { RocketIcon } from '@sanity/icons/Rocket'
 
 export const getDefaultDocumentNode = (S, { schemaType }) => {

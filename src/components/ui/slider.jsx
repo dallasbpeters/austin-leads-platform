@@ -38,10 +38,17 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, 'aria-labe
           )}
         />
       </SliderPrimitive.Track>
+      {/*
+       * Keyed by position on purpose: a thumb's identity IS its position. On a range
+       * slider index 0 is always the lower handle and index 1 the upper, and they never
+       * reorder. Keying by value would break controlled sliders -- the value changes on
+       * every drag and keypress, so the key would change, so React would remount the
+       * thumb and it would lose focus mid-interaction.
+       */}
       {Array.from({ length: _values.length }, (_, index) => (
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
-          key={index}
+          key={`slider-thumb-${index}`}
           aria-label={ariaLabel || `Value ${_values[index]}`}
           className="bg-secondary border-secondary shadow-theme-sm ring-secondary/50 block size-4 shrink-0 rounded-full border transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
         />

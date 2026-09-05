@@ -2,8 +2,8 @@
 
 import type { Feature, FeatureCollection, Geometry } from 'geojson'
 import mapboxgl from 'mapbox-gl'
-import { useEffect, useMemo, useRef } from 'react'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import { useEffect, useMemo, useRef } from 'react'
 
 import geoJson from './texasCounties.json'
 

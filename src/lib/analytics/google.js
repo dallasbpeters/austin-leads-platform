@@ -1,6 +1,6 @@
-import 'server-only'
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
 import { unstable_noStore as noStore } from 'next/cache'
+import 'server-only'
 
 const DEFAULT_WINDOW_DAYS = 30
 
@@ -103,6 +103,24 @@ export function getGoogleAnalyticsConfig(siteSlug) {
     propertyId,
     credentials,
   }
+}
+
+/*
+ * Analytics tags load on the public marketing site in production only.
+ *
+ * Previously the tags sat in the root layout, so they fired everywhere: the
+ * dev server reported into the production property (GA4 showed
+ * `localhost:3000 / referral` sessions), and every admin screen was counted as
+ * marketing traffic -- /documents, /documents/history and /christmas/invoices
+ * all ranked among the top landing pages, and admin sign-ins showed up as
+ * `accounts.google.com / referral`. None of that is customer behaviour, and it
+ * skewed every report built on it.
+ *
+ * VERCEL_ENV is the gate rather than NODE_ENV because preview deployments also
+ * build with NODE_ENV=production, and preview traffic is our own too.
+ */
+export function shouldLoadAnalyticsTags() {
+  return process.env.VERCEL_ENV === 'production'
 }
 
 export function hasGoogleAnalyticsMeasurementId() {

@@ -1,5 +1,6 @@
 'use client'
 
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import { AnimatePresence, motion, useInView } from 'framer-motion'
 import {
   AirConditioner,
@@ -11,7 +12,6 @@ import {
   Thunderstorm,
   WindowTabs,
 } from 'iconoir-react'
-import { resolveIconoirIcon } from '@/lib/resolve-icon'
 
 import Image from 'next/image'
 import Link from 'next/link'

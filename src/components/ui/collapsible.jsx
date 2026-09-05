@@ -26,4 +26,4 @@ const CollapsibleContent = ({ className, animate = true, ...props }) => {
   )
 }
 
-export { Collapsible, CollapsibleTrigger, CollapsibleContent }
+export { Collapsible, CollapsibleContent, CollapsibleTrigger }

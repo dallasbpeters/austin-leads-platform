@@ -34,7 +34,13 @@ const JobStatus = ({ status }) => {
   )
 }
 
-const PublishClient = ({ initialJobs, sites }) => {
+const PublishClient = ({
+  initialJobs,
+  sites,
+  dbConfigured = true,
+  dbError = null,
+  generatorConfigured = true,
+}) => {
   const { form, jobs, loading, changeJob, refreshJobs, setForm, submitJob } = usePublishManager({
     initialJobs,
     sites,
@@ -42,6 +48,22 @@ const PublishClient = ({ initialJobs, sites }) => {
 
   return (
     <div className="space-y-8 p-6 lg:p-10">
+      {dbConfigured ? null : (
+        <p className="border-destructive/30 bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm">
+          Publish jobs need a database. Set DATABASE_URL — jobs cannot be saved without it.
+        </p>
+      )}
+      {dbError ? (
+        <p className="border-destructive/30 bg-destructive/10 text-destructive rounded-md border px-4 py-3 text-sm">
+          {dbError.message}
+        </p>
+      ) : null}
+      {dbConfigured && !generatorConfigured ? (
+        <p className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Draft generation is not configured. Set GROQ_API_KEY to generate drafts; jobs will save but stay
+          empty until then.
+        </p>
+      ) : null}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-muted-foreground text-sm tracking-[0.22em] uppercase">AI publishing</p>

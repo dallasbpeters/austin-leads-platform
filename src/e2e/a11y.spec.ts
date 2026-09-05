@@ -1,6 +1,5 @@
-import { expect, test } from 'vitest'
-import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { expect, test } from 'vitest'
 
 const PUBLIC_ROUTES: { path: string; label: string }[] = [
   { path: '/', label: 'homepage' },

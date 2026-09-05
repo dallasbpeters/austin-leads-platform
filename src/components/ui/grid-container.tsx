@@ -1,6 +1,6 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import React from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 
 interface GridProps {
   children: ReactNode

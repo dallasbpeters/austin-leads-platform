@@ -59,7 +59,7 @@ function getSectionStyles(section) {
     sectionStyle: {
       background: `linear-gradient(188deg, color-mix(in oklch, ${accentHex} 1%, white) 3.24%, color-mix(in oklch, ${accentHex} 12%, white) 110.59%)`,
     },
-    labelStyle: { color: accentHex },
+    labelStyle: { color: 'var(--color-voodoo)' },
     dividerStyle: { borderColor: `color-mix(in oklch, ${accentHex} 28%, transparent)` },
   }
 }
@@ -97,7 +97,7 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
     >
       <div className="mx-auto w-full max-w-6xl px-12">
         <p
-          className="type-accent mb-8 text-sm font-semibold tracking-[0.2em] text-cyan-900 uppercase"
+          className="type-accent mb-8 text-sm font-semibold tracking-[0.2em] text-(--color-voodoo) uppercase"
           style={labelStyle}
         >
           {eyebrow}

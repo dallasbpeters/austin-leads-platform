@@ -1,4 +1,5 @@
 // oxlint-disable sort-keys radix eqeqeq no-eq-null
+import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import {
   AirConditioner,
   AreaSearch,
@@ -10,7 +11,6 @@ import {
   Thunderstorm,
   WindowTabs,
 } from 'iconoir-react'
-import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -212,16 +212,25 @@ const formatServiceGridPrice = (value) => {
   })
 }
 
+/*
+ * Cards with no color set in Sanity fall back to the active theme's primary, so
+ * the overlay follows whichever site theme is in scope instead of a hard-coded
+ * teal. rgba() can't take a var(), so the translucent stop is mixed toward
+ * transparent -- color-mix(in srgb, C x%, transparent) is C at x% alpha.
+ */
+const THEME_OVERLAY_COLOR = 'var(--color-primary)'
+
+const fadeThemeColor = (percent) => `color-mix(in srgb, ${THEME_OVERLAY_COLOR} ${percent}, transparent)`
+
 const buildCardOverlay = (hex, variant = 'large') => {
   if (!hex) {
-    const fallback = '11,59,66'
     if (variant === 'large') {
-      return `linear-gradient(to top, rgba(${fallback},1) 50%, rgba(${fallback},0.08), transparent)`
+      return `linear-gradient(to top, ${THEME_OVERLAY_COLOR} 50%, ${fadeThemeColor('8%')}, transparent)`
     }
     if (variant === 'medium') {
-      return `linear-gradient(to top, rgba(${fallback},1) 15%, rgba(${fallback},0.20), transparent)`
+      return `linear-gradient(to top, ${THEME_OVERLAY_COLOR} 15%, ${fadeThemeColor('20%')}, transparent)`
     }
-    return `linear-gradient(to top, rgba(${fallback},1) 5%, rgba(${fallback},0.20), transparent)`
+    return `linear-gradient(to top, ${THEME_OVERLAY_COLOR} 5%, ${fadeThemeColor('20%')}, transparent)`
   }
   const r = Number.parseInt(hex.slice(1, 3), 16)
   const g = Number.parseInt(hex.slice(3, 5), 16)
@@ -242,7 +251,7 @@ const enrichItems = (rawItems) =>
     return {
       ...item,
       isRecommended: item.isRecommended || false,
-      number: item.number ? Number.parseInt(item.number) : null,
+      number: item.number ? Number.parseInt(item.number, 10) : null,
       price: item.price != null && Number.isFinite(Number(item.price)) ? Number(item.price) : null,
       copy: item.body || item.answer || null,
       imageUrl: serviceImage.url,
@@ -349,7 +358,7 @@ export const ServiceGridSection = ({ section, sectionId }) => {
                 </div>
                 <div className="service-grid-card-copy rounded-[inherit] p-4 text-white">
                   {item.icon ? (
-                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-(--color-tidal) backdrop-blur-sm">
                       <Icon className="h-8 w-8" strokeWidth={2} />
                     </div>
                   ) : null}

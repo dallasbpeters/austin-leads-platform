@@ -152,45 +152,97 @@ export function quoteToSheetRecord(quote) {
   }
 }
 
-export async function appendQuoteToSheet(quote) {
+const worksheetName = () => process.env.ZOHO_SHEET_WORKSHEET_NAME?.trim() || 'Quotes'
+
+async function postSheetCommand(params) {
   if (!hasZohoSheetConfig()) {
     throw new Error('Zoho Sheet is not configured. Set ZOHO_SHEET_RESOURCE_ID.')
   }
 
   const token = await getZohoAccessToken()
   const resourceId = process.env.ZOHO_SHEET_RESOURCE_ID.trim()
-  const worksheetName = process.env.ZOHO_SHEET_WORKSHEET_NAME?.trim() || 'Quotes'
-
-  const body = new URLSearchParams({
-    method: 'worksheet.records.add',
-    worksheet_name: worksheetName,
-    header_row: '1',
-    json_data: JSON.stringify([quoteToSheetRecord(quote)]),
-  })
-
   const response = await fetch(`${sheetApiUrl()}/api/v2/${resourceId}`, {
     method: 'POST',
     headers: {
       ...zohoAuthHeader(token),
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: body.toString(),
+    body: new URLSearchParams(params).toString(),
   })
 
-  const payload = await response.json().catch(() => ({}))
-  if (!response.ok || payload.status === 'failure') {
-    const detail = payload.error_message || JSON.stringify(payload)
-    const hint =
-      payload.error_code === 2866 || response.status === 500
-        ? ' Usually a bad ZOHO_SHEET_RESOURCE_ID (must be the id after /sheet/open/ in the sheet URL). List workbooks with method workbook.list if unsure.'
-        : payload.error_code === 2863
-          ? ' Worksheet name not found — set ZOHO_SHEET_WORKSHEET_NAME to match the tab (default Quotes).'
-          : payload.error_code === 2403
-            ? ' Re-generate the refresh token with scopes ZohoSheet.dataAPI.UPDATE,ZohoSheet.dataAPI.READ,WorkDrive.files.CREATE,WorkDrive.files.READ'
-            : ''
-    throw new Error(`Zoho Sheet append failed (${response.status}): ${detail}.${hint}`)
+  return { response, payload: await response.json().catch(() => ({})) }
+}
+
+function assertSheetSuccess(response, payload, action) {
+  if (response.ok && payload.status !== 'failure') {
+    return
   }
+  const detail = payload.error_message || JSON.stringify(payload)
+  const hint =
+    payload.error_code === 2866 || response.status === 500
+      ? ' Usually a bad ZOHO_SHEET_RESOURCE_ID (must be the id after /sheet/open/ in the sheet URL). List workbooks with method workbook.list if unsure.'
+      : payload.error_code === 2863
+        ? ' Worksheet name not found — set ZOHO_SHEET_WORKSHEET_NAME to match the tab (default Quotes).'
+        : payload.error_code === 2403
+          ? ' Re-generate the refresh token with scopes ZohoSheet.dataAPI.UPDATE,ZohoSheet.dataAPI.READ,WorkDrive.files.CREATE,WorkDrive.files.READ'
+          : ''
+  throw new Error(`Zoho Sheet ${action} failed (${response.status}): ${detail}.${hint}`)
+}
+
+/** Appends a brand-new row — used only when no existing row matches the quote. */
+export async function appendQuoteToSheet(quote) {
+  const { response, payload } = await postSheetCommand({
+    method: 'worksheet.records.add',
+    worksheet_name: worksheetName(),
+    header_row: '1',
+    json_data: JSON.stringify([quoteToSheetRecord(quote)]),
+  })
+  assertSheetSuccess(response, payload, 'append')
   return payload
+}
+
+/*
+ * Matched on "Quote Number" rather than "Quote ID". Zoho Sheet maps records by
+ * header name and silently drops any field whose column is missing, and the
+ * live workbook has no "Quote ID" column -- so matching on it would never hit.
+ * Quote numbers are unique (the DB has a UNIQUE constraint), which makes them a
+ * safe key.
+ */
+const quoteMatchCriteria = (quote) =>
+  `"Quote Number"="${String(quote.quoteNumber).replaceAll('"', String.raw`\"`)}"`
+
+/**
+ * Updates the row matching this quote's number. Returns the raw payload —
+ * check `no_of_affected_rows` to see whether a row matched.
+ */
+export async function updateQuoteInSheet(quote) {
+  const { response, payload } = await postSheetCommand({
+    method: 'worksheet.records.update',
+    worksheet_name: worksheetName(),
+    criteria: quoteMatchCriteria(quote),
+    first_match_only: 'true',
+    data: JSON.stringify(quoteToSheetRecord(quote)),
+  })
+  assertSheetSuccess(response, payload, 'update')
+  return payload
+}
+
+/**
+ * Upserts one row per quote: updates the existing row if there is one,
+ * otherwise appends. Every save and every send used to append, so a single
+ * quote could accumulate a dozen rows in the sheet.
+ */
+export async function upsertQuoteInSheet(quote) {
+  if (!quote.quoteNumber) {
+    return appendQuoteToSheet(quote)
+  }
+
+  const updatePayload = await updateQuoteInSheet(quote)
+  if (Number(updatePayload.no_of_affected_rows) > 0) {
+    return updatePayload
+  }
+
+  return appendQuoteToSheet(quote)
 }
 
 /**
@@ -203,7 +255,7 @@ export async function syncQuoteToSheet(quote) {
     return { skipped: true, reason: status.reason }
   }
   try {
-    await appendQuoteToSheet(quote)
+    await upsertQuoteInSheet(quote)
     return { ok: true }
   } catch (error) {
     console.error('[quotes] zoho sheet sync failed', error)

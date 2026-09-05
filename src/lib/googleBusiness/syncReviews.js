@@ -17,7 +17,7 @@ import { groq } from 'next-sanity'
 
 import { sanityWriteClient } from '@/sanity/client'
 
-import { hasGoogleBusinessCredentials, describeGoogleBusinessCredentialGap } from './auth'
+import { describeGoogleBusinessCredentialGap, hasGoogleBusinessCredentials } from './auth'
 import { isPublishableReview, listGoogleBusinessReviews, toSanityReview } from './reviews'
 
 const SITES_QUERY = groq`*[_type == "site" && defined(googleBusiness.locationId)]{

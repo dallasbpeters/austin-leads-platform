@@ -15,7 +15,7 @@
 [data-public-site='texas-solar-and-roofing-pros'] {
   --color-primary: oklch(28.08% 0.06 273.77);
   --color-tertiary: oklch(48.73% 0.03 260.31);
-  --color-secondary: oklch(87.4% 0.06 257.1);
+  --color-secondary: oklch(62.686% 0.185 257.772);
   --color-secondary-alt: oklch(74.333% 0.066 256);
   --color-primary-50: oklch(from var(--color-primary) 97% c h);
   --color-primary-100: oklch(from var(--color-primary) 92% c h);

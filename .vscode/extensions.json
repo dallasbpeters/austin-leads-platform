@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    // Tailwind v4 syntax support: completions and hovers for @theme,
+    // @custom-variant, @apply and @utility in src/styles/*.css.
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "oxc.oxc-vscode",
+    "stylelint.vscode-stylelint"
+  ],
+  // Biome is not part of this toolchain (see biome.enabled in settings.json);
+  // prettier + oxlint + ESLint + stylelint are. Its extension applies defaults
+  // no CLI here enforces.
+  "unwantedRecommendations": ["biomejs.biome"]
+}

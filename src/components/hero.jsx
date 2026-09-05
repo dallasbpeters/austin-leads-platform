@@ -7,13 +7,23 @@ import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/san
 
 import Card from './card'
 import { getDevSectionAttributes } from './dev/dev-trace'
+import HeroActions from './hero-actions'
 import ImageFader from './image-fader'
 import PortableTextContent from './portable-text-content'
-import HeroActions from './hero-actions'
 
+/*
+ * The calculator link is root-relative so it works from any page, and carries
+ * the calculator section's real DOM id. getSectionDomId() builds that id from
+ * the section type plus its slugified title ("See what solar could save"), so
+ * a bare `#calculator` matched nothing on the rendered page.
+ */
 const FALLBACK_HERO_ACTIONS = [
   { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'default' },
-  { label: 'See how the math works', href: '#calculator', variant: 'secondary' },
+  {
+    label: 'See how the math works',
+    href: '/#calculator-see-what-solar-could-save',
+    variant: 'secondary',
+  },
 ]
 
 function resolveHeroMediaMode(heroVideoSource, explicitHeroMediaMode, hasHeroSlides) {

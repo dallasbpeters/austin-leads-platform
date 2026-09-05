@@ -1,9 +1,9 @@
 // oxlint-disable react-hooks/exhaustive-deps
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   Download,
@@ -21,6 +21,7 @@ import {
   X,
 } from 'lucide-react'
 
+import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,7 +37,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
 
 import { computeChristmasInvoice, presetLineItems } from '@/lib/christmas/invoice-calc'
 
@@ -195,6 +195,9 @@ const formToInputs = (form) => ({
   })),
 })
 
+/* Debounce before re-rendering the preview PDF; each render is a full server-side PDF build. */
+const PREVIEW_DEBOUNCE_MS = 1000
+
 const orDefault = (value, fallback) => value || fallback
 
 const inputsToForm = (inputs, settings) => {
@@ -226,10 +229,38 @@ const inputsToForm = (inputs, settings) => {
   }
 }
 
-const resolveEditPreload = (invoices, editId, dupeId) => {
-  const targetId = editId ?? dupeId
-  return invoices.find((item) => String(item.id) === String(targetId)) ?? null
+/*
+ * ?edit= / ?dupe= is resolved on the server into `preloadInvoice`, and these
+ * seed the builder's initial state from it.
+ */
+const preloadForm = (preloadInvoice, settings, presets) =>
+  preloadInvoice ? inputsToForm(preloadInvoice.data?.inputs || {}, settings) : emptyForm(settings, presets)
+
+/*
+ * List rows carry no `data` snapshot (listInvoices omits the column), so the
+ * full invoice is fetched before the form is populated.
+ */
+const loadInvoiceInputs = async (invoice) => {
+  if (invoice.data?.inputs) {
+    return invoice.data.inputs
+  }
+  const response = await fetch(`/api/christmas/invoices/${invoice.id}`)
+  if (!response.ok) {
+    throw new Error('Could not load that invoice.')
+  }
+  const payload = await response.json()
+  return payload.invoice?.data?.inputs || {}
 }
+
+const duplicateMessage = (invoiceNumber) =>
+  `Loaded ${invoiceNumber} as a template — saving creates a new invoice.`
+
+const preloadMessage = (preloadInvoice, dupeId) =>
+  dupeId && preloadInvoice ? duplicateMessage(preloadInvoice.invoiceNumber) : ''
+
+const preloadEditingId = (preloadInvoice, editId) => (editId && preloadInvoice ? preloadInvoice.id : null)
+
+const isLoadingInvoice = (loadingInvoiceId, invoice) => Boolean(invoice) && loadingInvoiceId === invoice.id
 
 // ─── Small presentational pieces ─────────────────────────────────────────────
 
@@ -575,7 +606,7 @@ function ExpandedPreviewDialog({ open, url, onClose }) {
   )
 }
 
-function SavedInvoicePreviewDialog({ invoice, onClose, onEdit, onDuplicate }) {
+function SavedInvoicePreviewDialog({ invoice, onClose, onEdit, onDuplicate, busy = false }) {
   return (
     <Dialog onOpenChange={(next) => (next ? null : onClose())} open={Boolean(invoice)}>
       <DialogContent className="h-[92vh] w-[90vw] overflow-hidden sm:max-w-[90vw]">
@@ -586,10 +617,15 @@ function SavedInvoicePreviewDialog({ invoice, onClose, onEdit, onDuplicate }) {
                 {invoice.customerName} — Invoice {invoice.invoiceNumber}
               </DialogTitle>
               <div className="flex shrink-0 items-center gap-2">
-                <Button onClick={() => onEdit(invoice)} size="sm" variant="outline">
-                  <Pencil className="mr-1.5 size-4" /> Edit
+                <Button disabled={busy} onClick={() => onEdit(invoice)} size="sm" variant="outline">
+                  {busy ? (
+                    <Loader2 className="mr-1.5 size-4 animate-spin" />
+                  ) : (
+                    <Pencil className="mr-1.5 size-4" />
+                  )}
+                  Edit
                 </Button>
-                <Button onClick={() => onDuplicate(invoice)} size="sm" variant="outline">
+                <Button disabled={busy} onClick={() => onDuplicate(invoice)} size="sm" variant="outline">
                   <Plus className="mr-1.5 size-4" /> Duplicate
                 </Button>
                 <Button asChild size="sm">
@@ -717,6 +753,7 @@ function SavedInvoicesSummaryBar({ invoices, onPreviewLatest }) {
 
 const ChristmasInvoicesClient = ({
   invoices: initialInvoices,
+  preloadInvoice,
   presets = [],
   settings,
   templates = [],
@@ -727,14 +764,23 @@ const ChristmasInvoicesClient = ({
 }) => {
   const router = useRouter()
   const [invoices, setInvoices] = useState(initialInvoices)
-  const [form, setForm] = useState(() => emptyForm(settings, presets))
-  const [editingId, setEditingId] = useState(null)
+  /*
+   * ?edit= / ?dupe= is resolved on the server and seeded straight into state.
+   * It used to be applied from an effect that then called router.replace() to
+   * strip the query param -- the resulting re-render raced the state update and
+   * left the builder showing a blank new invoice, so Edit and Duplicate in the
+   * history table appeared to do nothing. Seeding here also keeps the URL
+   * meaningful, so refreshing an edit screen reopens the same invoice.
+   */
+  const [form, setForm] = useState(() => preloadForm(preloadInvoice, settings, presets))
+  const [editingId, setEditingId] = useState(() => preloadEditingId(preloadInvoice, editId))
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [integrationResults, setIntegrationResults] = useState(null)
+  const [loadingInvoiceId, setLoadingInvoiceId] = useState(null)
   const [jobberPushing, setJobberPushing] = useState(false)
   const [jobberResult, setJobberResult] = useState(null)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(() => preloadMessage(preloadInvoice, dupeId))
   const [viewing, setViewing] = useState(null)
   const [previewExpanded, setPreviewExpanded] = useState(false)
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null)
@@ -748,6 +794,7 @@ const ChristmasInvoicesClient = ({
 
   const previewTimerRef = useRef(null)
   const previewUrlRef = useRef(null)
+  const previewAbortRef = useRef(null)
 
   const computed = useMemo(
     () =>
@@ -760,10 +807,21 @@ const ChristmasInvoicesClient = ({
     [form, settings],
   )
 
+  /*
+   * Each preview renders the whole PDF server-side, so it is debounced and
+   * every superseded request is aborted. Without the abort, a slow render
+   * begun mid-edit kept running and could resolve after a newer one, leaving
+   * a stale preview on screen while the server did duplicate work.
+   */
   useEffect(() => {
     if (previewTimerRef.current) {
       clearTimeout(previewTimerRef.current)
     }
+    previewAbortRef.current?.abort()
+
+    const controller = new AbortController()
+    previewAbortRef.current = controller
+
     previewTimerRef.current = setTimeout(async () => {
       setPdfPreviewLoading(true)
       try {
@@ -771,6 +829,7 @@ const ChristmasInvoicesClient = ({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ inputs: formToInputs(form) }),
+          signal: controller.signal,
         })
         if (response.ok) {
           const url = URL.createObjectURL(await response.blob())
@@ -785,12 +844,20 @@ const ChristmasInvoicesClient = ({
           setPdfPreviewError(payload.error || `Preview failed (HTTP ${response.status})`)
         }
       } catch (fetchError) {
-        setPdfPreviewError(fetchError.message || 'Preview request failed')
+        if (fetchError.name !== 'AbortError') {
+          setPdfPreviewError(fetchError.message || 'Preview request failed')
+        }
       } finally {
-        setPdfPreviewLoading(false)
+        if (!controller.signal.aborted) {
+          setPdfPreviewLoading(false)
+        }
       }
-    }, 800)
-    return () => clearTimeout(previewTimerRef.current)
+    }, PREVIEW_DEBOUNCE_MS)
+
+    return () => {
+      clearTimeout(previewTimerRef.current)
+      controller.abort()
+    }
   }, [form])
 
   useEffect(
@@ -877,41 +944,33 @@ const ChristmasInvoicesClient = ({
 
   const openNew = () => {
     resetForm()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const openEdit = (invoice) => {
-    setForm(inputsToForm(invoice.data?.inputs || {}, settings))
-    setEditingId(invoice.id)
-    setSaveError('')
-    setIntegrationResults(null)
-    setJobberResult(null)
-    setMessage('')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const openDuplicate = (invoice) => {
-    setForm(inputsToForm(invoice.data?.inputs || {}, settings))
-    setEditingId(null)
-    setSaveError('')
-    setIntegrationResults(null)
-    setJobberResult(null)
-    setMessage(`Loaded ${invoice.invoiceNumber} as a template — saving creates a new invoice.`)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  useEffect(() => {
-    const found = resolveEditPreload(initialInvoices, editId, dupeId)
-    if (!found) {
-      return
-    }
-    if (editId) {
-      openEdit(found)
-    } else {
-      openDuplicate(found)
-    }
+    // Drop ?edit= / ?dupe= so a refresh doesn't reopen the invoice just closed.
     router.replace('/christmas/invoices', { scroll: false })
-  }, [editId, dupeId, initialInvoices, router])
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const openLoadedInvoice = async (invoice, { asDuplicate }) => {
+    setLoadingInvoiceId(invoice.id)
+    setSaveError('')
+    try {
+      const inputs = await loadInvoiceInputs(invoice)
+      setForm(inputsToForm(inputs, settings))
+      setEditingId(asDuplicate ? null : invoice.id)
+      setIntegrationResults(null)
+      setJobberResult(null)
+      setMessage(asDuplicate ? duplicateMessage(invoice.invoiceNumber) : '')
+      setViewing(null)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (error) {
+      setSaveError(error.message)
+    } finally {
+      setLoadingInvoiceId(null)
+    }
+  }
+
+  const openEdit = (invoice) => openLoadedInvoice(invoice, { asDuplicate: false })
+
+  const openDuplicate = (invoice) => openLoadedInvoice(invoice, { asDuplicate: true })
 
   const persistInvoice = async () => {
     if (!form.customerFirstName.trim()) {
@@ -1412,6 +1471,7 @@ const ChristmasInvoicesClient = ({
         url={pdfPreviewUrl}
       />
       <SavedInvoicePreviewDialog
+        busy={isLoadingInvoice(loadingInvoiceId, viewing)}
         invoice={viewing}
         onClose={() => setViewing(null)}
         onDuplicate={openDuplicate}

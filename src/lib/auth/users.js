@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
 
-import { normalizePlatformRole, PLATFORM_ROLES } from './roles.js'
 import { getSql } from '../db/pool.js'
+import { normalizePlatformRole, PLATFORM_ROLES } from './roles.js'
 
 export { PLATFORM_ROLES }
 

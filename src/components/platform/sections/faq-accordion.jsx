@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { buildRuntimeKey } from '@/lib/sanity/stega'
-import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import PortableTextContent from '@/components/portable-text-content'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
+import { buildRuntimeKey } from '@/lib/sanity/stega'
 
 export function FaqAccordion({ items }) {
   const [expandedValue, setExpandedValue] = useState(null)

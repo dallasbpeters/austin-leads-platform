@@ -1,7 +1,7 @@
 'use client'
 
+import { ChristmasLights } from '@/components/christmas-lights'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ChristmasLights } from '@components/christmas-lights'
 
 import PortableTextContent from '@/components/portable-text-content'
 import { getImageUrl } from '@/lib/platform/imageSource'

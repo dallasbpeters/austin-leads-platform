@@ -1,6 +1,6 @@
 import { getDevSectionAttributes } from '@/components/dev/dev-trace'
-import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
+import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
 const defaultItems = [
   {

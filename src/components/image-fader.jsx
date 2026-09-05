@@ -1,7 +1,7 @@
 // oxlint-disable no-nested-ternary
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 

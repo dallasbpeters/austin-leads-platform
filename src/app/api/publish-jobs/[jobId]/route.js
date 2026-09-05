@@ -2,12 +2,78 @@ import { NextResponse } from 'next/server'
 
 import { requireAdminRequest } from '@/lib/auth/guards'
 import { publishPageToSanity } from '@/lib/platform/content'
-import { getPublishJob, updatePublishJob } from '@/lib/platform/store'
+import {
+  ensurePublishJobsTable,
+  getPublishJob,
+  hasPublishDatabase,
+  updatePublishJob,
+} from '@/lib/platform/publish-db'
+import { generatePublishDraft } from '@/lib/platform/publish-generate'
 
 export const runtime = 'nodejs'
+export const maxDuration = 60
 
-function createDraftOutput(job) {
-  return `Placeholder draft for ${job.title}\n\nAudience: ${job.siteSlug}\n\nBrief:\n${job.prompt}\n\nSources:\n${job.sources.join('\n')}`
+const ACTIONS = new Set(['regenerate', 'approve', 'reject', 'publish'])
+
+export async function GET(_request, { params }) {
+  const unauthorized = await requireAdminRequest()
+  if (unauthorized) {
+    return unauthorized
+  }
+
+  const { jobId } = await params
+  await ensurePublishJobsTable()
+  const job = await getPublishJob(jobId)
+
+  return job ? NextResponse.json({ job }) : NextResponse.json({ error: 'Job not found.' }, { status: 404 })
+}
+
+async function handleRegenerate(job) {
+  const draft = await generatePublishDraft(job)
+  if (!draft.ok) {
+    return updatePublishJob(job.id, { status: 'failed', error: draft.error || draft.reason })
+  }
+
+  return updatePublishJob(job.id, {
+    status: 'draft_ready',
+    reviewStatus: 'in_review',
+    output: draft.output,
+    provider: draft.provider,
+    model: draft.model,
+    error: null,
+  })
+}
+
+/*
+ * The Sanity write is the one genuinely external step, and it reports its own
+ * outcome rather than throwing. The job is only marked published when that
+ * write actually landed -- it previously flipped to 'published' regardless, so
+ * a missing write token produced jobs that claimed success while nothing had
+ * been created.
+ */
+async function handlePublish(job) {
+  if (!job.output) {
+    return updatePublishJob(job.id, {
+      status: 'failed',
+      error: 'Nothing to publish — generate a draft first.',
+    })
+  }
+
+  const publishResult = await publishPageToSanity(job)
+  if (publishResult?.ok === false) {
+    return updatePublishJob(job.id, {
+      status: 'failed',
+      publishResult,
+      error: publishResult.message || 'Publishing to Sanity failed.',
+    })
+  }
+
+  return updatePublishJob(job.id, {
+    status: 'published',
+    reviewStatus: 'published',
+    publishResult,
+    error: null,
+  })
 }
 
 export async function PATCH(request, { params }) {
@@ -15,54 +81,48 @@ export async function PATCH(request, { params }) {
   if (unauthorized) {
     return unauthorized
   }
+  if (!hasPublishDatabase()) {
+    return NextResponse.json({ error: 'Database is not configured' }, { status: 503 })
+  }
 
   const { jobId } = await params
-  const body = await request.json()
-  const job = getPublishJob(jobId)
 
-  if (!job) {
-    return NextResponse.json({ error: 'Job not found.' }, { status: 404 })
+  let body = {}
+  try {
+    body = await request.json()
+  } catch {
+    // An empty body means "regenerate", matching the previous default.
   }
 
-  if (body.action === 'approve') {
-    const updated = updatePublishJob(jobId, {
-      status: job.output ? 'approved' : 'draft_ready',
-      reviewStatus: 'approved',
-      output: job.output || createDraftOutput(job),
-    })
-
-    return NextResponse.json({ job: updated })
+  const action = body.action || 'regenerate'
+  if (!ACTIONS.has(action)) {
+    return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 })
   }
 
-  if (body.action === 'reject') {
-    const updated = updatePublishJob(jobId, {
-      status: 'rejected',
-      reviewStatus: 'changes_requested',
-    })
+  try {
+    await ensurePublishJobsTable()
+    const job = await getPublishJob(jobId)
+    if (!job) {
+      return NextResponse.json({ error: 'Job not found.' }, { status: 404 })
+    }
 
-    return NextResponse.json({ job: updated })
+    if (action === 'approve') {
+      const updated = await updatePublishJob(jobId, { status: 'approved', reviewStatus: 'approved' })
+      return NextResponse.json({ job: updated })
+    }
+
+    if (action === 'reject') {
+      const updated = await updatePublishJob(jobId, {
+        status: 'rejected',
+        reviewStatus: 'changes_requested',
+      })
+      return NextResponse.json({ job: updated })
+    }
+
+    const updated = action === 'publish' ? await handlePublish(job) : await handleRegenerate(job)
+    return NextResponse.json({ job: updated, publishResult: updated.publishResult ?? null })
+  } catch (error) {
+    console.error('[publish] update failed', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
-
-  if (body.action === 'publish') {
-    const publishResult = await publishPageToSanity({
-      ...job,
-      output: job.output || createDraftOutput(job),
-    })
-
-    const updated = updatePublishJob(jobId, {
-      status: 'published',
-      reviewStatus: 'published',
-      output: job.output || createDraftOutput(job),
-      publishResult,
-    })
-
-    return NextResponse.json({ job: updated, publishResult })
-  }
-
-  const updated = updatePublishJob(jobId, {
-    status: 'draft_ready',
-    output: job.output || createDraftOutput(job),
-  })
-
-  return NextResponse.json({ job: updated })
 }

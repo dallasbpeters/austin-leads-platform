@@ -1,17 +1,17 @@
-import { Fragment } from 'react'
 import dynamic from 'next/dynamic'
+import { Fragment } from 'react'
 
+import { CookieConsent } from '@/components/blocks/cookie-consent'
+import { getSectionDomId } from '@/components/platform/public-site-utils'
 import { sectionRenderers } from '@/components/platform/sections'
 import SectionSurface from '@/components/platform/sections/section-surface'
-import { getSectionDomId } from '@/components/platform/public-site-utils'
-import { CookieConsent } from '@/components/blocks/cookie-consent'
 
+import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import ConsultationSection from './components/consultation-section'
 import DevTrace from './components/dev/dev-trace'
 import Footer from './components/footer'
 import Header from './components/header'
 import Hero from './components/hero'
-import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 
 export function CookieConsentWrapper() {
   return <CookieConsent variant="small" />

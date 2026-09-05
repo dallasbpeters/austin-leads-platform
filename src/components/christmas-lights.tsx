@@ -1,5 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import type { BufferGeometry } from 'three'
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -12,7 +13,6 @@ import {
   SphereGeometry,
   Vector3,
 } from 'three'
-import type { BufferGeometry } from 'three'
 
 export interface ChristmasLightsProps {
   lightCount?: number

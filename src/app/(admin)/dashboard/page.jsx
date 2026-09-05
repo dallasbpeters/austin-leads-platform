@@ -11,7 +11,8 @@ import {
   listRecentLeadSubmissions,
 } from '@/lib/leads/db'
 import { getAllRenderableSites, getAllSites, getLaunchChecklist } from '@/lib/platform/content'
-import { getAnalyticsOverview, listDomainRecords, listPublishJobs } from '@/lib/platform/store'
+import { ensurePublishJobsTable, hasPublishDatabase, listPublishJobs } from '@/lib/platform/publish-db'
+import { getAnalyticsOverview, listDomainRecords } from '@/lib/platform/store'
 
 const statCards = [
   { label: 'Published Content', key: 'jobs', icon: FileText },
@@ -23,7 +24,13 @@ export default async function DashboardPage() {
   const sites = getAllSites()
   const liveSites = getAllRenderableSites()
   const domains = listDomainRecords()
-  const jobs = listPublishJobs()
+  // Publish jobs live in Postgres; a database hiccup must not blank the whole
+  // dashboard, so an empty list is the fallback.
+  const jobs = hasPublishDatabase()
+    ? await ensurePublishJobsTable()
+        .then(() => listPublishJobs({ limit: 20 }))
+        .catch(() => [])
+    : []
   const analytics = getAnalyticsOverview()
   const gaSnapshot = await getGoogleAnalyticsSnapshot()
   const checklist = await getLaunchChecklist()

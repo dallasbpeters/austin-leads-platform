@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import posthog from 'posthog-js'
+import { useEffect, useRef } from 'react'
 
+import { JobberDialog } from '@/components/jobber-dialog'
 import JobberWorkRequestEmbed, { JOBBER_FORM_IDS } from '@/components/jobber-work-request-embed'
-import { JobberDialog } from '@components/jobber-dialog'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const JobberCheckoutForm = () => {

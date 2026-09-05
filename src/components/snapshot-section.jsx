@@ -1,4 +1,4 @@
-import { Wallet, StatUp, Leaf, Clock } from 'iconoir-react'
+import { Clock, Leaf, StatUp, Wallet } from 'iconoir-react'
 
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
 

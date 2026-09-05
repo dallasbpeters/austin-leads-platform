@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
 
-import { buildMetadataForCurrentSite } from '@/lib/platform/site-page'
-import { resolveCurrentSite, resolveNavigationForSite } from '@/lib/platform/content'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
+import { resolveCurrentSite, resolveNavigationForSite } from '@/lib/platform/content'
+import { buildMetadataForCurrentSite } from '@/lib/platform/site-page'
 
 /** @returns {Promise<import('next').Metadata>} Metadata for the service request page. */
 export const generateMetadata = () => buildMetadataForCurrentSite(['service-request'])

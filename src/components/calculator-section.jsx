@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 
+import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import Card from './card'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import PortableTextContent from './portable-text-content'
-import { trackAnalyticsEvent } from '@/lib/analytics/client'
 
 const DEFAULT_BILL = 200
 const MIN_BILL = 50
@@ -112,21 +112,13 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
         content: 'local JSX copy and local calculator logic',
       })}
     >
-      <div
-        className="absolute top-0 right-0 h-240 w-lg translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px]"
-        style={{ background: 'oklch(from var(--color-primary) 99% c h)' }}
-      ></div>
-      <div
-        className="absolute bottom-0 left-0 h-72 w-72 -translate-x-1/2 translate-y-1/2 rounded-full blur-[48px]"
-        style={{ background: 'oklch(from var(--color-primary) 97% c h / 0.14)' }}
-      ></div>
       <div className="relative z-1 mx-auto w-[min(72rem,calc(100%-3rem))]">
         <div className="mb-14 text-center">
           <h2 className="text-foreground type-display m-0 text-[clamp(2.875rem,4vw,4.25rem)]">{title}</h2>
           <PortableTextContent
             as="div"
             value={body}
-            className="text-foreground mx-auto mt-3 max-w-208 text-[1rem]"
+            className="text-foreground mx-auto mt-3 max-w-208 text-[1rem] text-balance"
           />
         </div>
 
@@ -135,10 +127,10 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
           variant="surfaceStrong"
           radius="lg"
         >
-          <div className="flex flex-col justify-center bg-[linear-gradient(to_bottom_right,var(--color-cyan-950),var(--color-cyan-900))] p-8 text-white">
+          <div className="flex flex-col justify-center bg-[linear-gradient(to_bottom_right,var(--color-primary-800),var(--color-primary))] p-8 text-white">
             <label
               htmlFor="calc-bill"
-              className="mb-3 block text-sm font-bold tracking-[0.15em] text-[rgba(103,232,249,0.7)] uppercase"
+              className="mb-3 block text-sm font-bold tracking-[0.15em] text-(--color-tidal) uppercase"
             >
               Your Monthly Electric Bill
             </label>
@@ -165,12 +157,12 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
               onValueChange={([nextBill]) => setBill(clampBill(nextBill))}
               className="mb-4"
             />
-            <div className="flex justify-between text-sm font-medium text-[rgba(103,232,249,0.5)]">
+            <div className="flex justify-between text-sm font-medium text-(--color-tidal)">
               <span>$50</span>
               <span>$800</span>
             </div>
 
-            <div className="mt-8 flex items-center gap-2 border-t border-white/10 pt-6 text-sm text-[rgba(103,232,249,0.6)]">
+            <div className="mt-8 flex items-center gap-2 border-t border-white/10 pt-6 text-sm text-(--color-sea-mist)">
               <svg
                 className="h-4 w-4 shrink-0"
                 fill="none"

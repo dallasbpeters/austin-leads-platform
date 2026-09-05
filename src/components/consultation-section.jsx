@@ -142,10 +142,10 @@ function getClassNames(isDarkTheme) {
   return {
     avatarClassName: `size-16 ${isDarkTheme ? 'bg-white/10 ring-1 ring-white/20' : 'bg-primary ring-1 ring-black/5'}`,
     blurbClassName: `mt-3 text-sm leading-6 ${isDarkTheme ? 'text-white/80' : 'cloud-theme-section__body'}`,
-    copy: `type-accent text-[1rem] font-semibold ${isDarkTheme ? 'text-white/78' : 'cloud-theme-section__body'}`,
+    copy: `type-accent text-[1rem] max-w-[60ch] font-semibold ${isDarkTheme ? 'text-white/78' : 'cloud-theme-section__body'}`,
     eyebrowClassName: `mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'cloud-theme-section__eyebrow'}`,
     fallbackClassName: `text-[1rem] font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`,
-    heading: `type- mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'cloud-theme-section__heading'}`,
+    heading: `mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'cloud-theme-section__heading'}`,
     nameClassName: `text-lg font-semibold ${isDarkTheme ? 'text-white' : 'cloud-theme-section__heading'}`,
     roleClassName: `text-sm ${isDarkTheme ? 'text-white/72' : 'cloud-theme-section__body'}`,
   }

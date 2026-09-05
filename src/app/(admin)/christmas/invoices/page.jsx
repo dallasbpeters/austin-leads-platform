@@ -1,7 +1,7 @@
 import ChristmasInvoicesClient from '@/components/admin/christmas-invoices-client'
 import { safeAuth } from '@/lib/auth/session'
 import { CHRISTMAS_PACKAGE_PRESETS } from '@/lib/christmas/invoice-calc'
-import { ensureChristmasInvoiceTables, listInvoices } from '@/lib/christmas/invoice-db'
+import { ensureChristmasInvoiceTables, getInvoice, listInvoices } from '@/lib/christmas/invoice-db'
 import { getChristmasInvoiceSettings } from '@/lib/christmas/invoice-settings'
 import { INVOICE_TEMPLATES } from '@/lib/christmas/invoice-templates'
 
@@ -16,11 +16,20 @@ export default async function ChristmasInvoicesPage({ searchParams }) {
 
   let invoices = []
   let settings = null
+  // The invoice behind ?edit= / ?dupe=, loaded by id so the builder can open it
+  // even when it falls outside the recent-invoice list below.
+  let preloadInvoice = null
 
   try {
     await ensureChristmasInvoiceTables()
-    invoices = await listInvoices({ limit: 200 })
-    settings = await getChristmasInvoiceSettings()
+    const [list, loadedSettings, target] = await Promise.all([
+      listInvoices({ limit: 200 }),
+      getChristmasInvoiceSettings(),
+      editId || dupeId ? getInvoice(editId || dupeId) : null,
+    ])
+    invoices = list
+    settings = loadedSettings
+    preloadInvoice = target
   } catch (error) {
     console.error('[christmas/invoices/page] db error:', error)
   }
@@ -35,6 +44,7 @@ export default async function ChristmasInvoicesPage({ searchParams }) {
       dupeId={dupeId}
       editId={editId}
       invoices={invoices}
+      preloadInvoice={preloadInvoice}
       presets={CHRISTMAS_PACKAGE_PRESETS}
       settings={settings}
       templates={INVOICE_TEMPLATES}

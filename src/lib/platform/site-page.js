@@ -10,9 +10,9 @@ import {
 } from '@/components/platform/public-site-utils'
 import {
   createJsonLd,
+  getHeroHomepageForSite,
   getHomepageForSite,
   getHomepageReviewsForSite,
-  getHeroHomepageForSite,
   getPageForRequest,
   getPrimaryUrl,
   isPrimarySiteSlug,
@@ -22,8 +22,8 @@ import {
 } from '@/lib/platform/content'
 import { getHeroImageUrl } from '@/lib/platform/imageSource'
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
-import { getCaseStudiesForSite } from '@/sanity/lib/caseStudies'
 import { SHARE_DESCRIPTION_MAX, SHARE_TITLE_MAX, truncateForShare } from '@/lib/platform/social-share-text'
+import { getCaseStudiesForSite } from '@/sanity/lib/caseStudies'
 
 /**
  * Sanity Presentation passes ?__site=<slug> so the multi-tenant renderer can

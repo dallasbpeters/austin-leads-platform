@@ -1,26 +1,26 @@
 'use client'
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
-import Image from 'next/image'
+import { ImagePlus, Map as MapIcon, RotateCw, Trash2 } from 'lucide-react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { ImagePlus, Map as MapIcon, RotateCw, Trash2 } from 'lucide-react'
+import Image from 'next/image'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
+  clampPanelScale,
+  createPanelId,
+  emptyLayoutState,
   MAP_MAX_ZOOM,
   MAP_ROOF_ZOOM,
+  metersPerPixel,
   PANEL_ICON_URL,
   PANEL_SCALE_DEFAULT,
   PANEL_SIZE_KEYS,
   PANEL_SIZES,
-  clampPanelScale,
-  createPanelId,
-  emptyLayoutState,
-  metersPerPixel,
   panelSizeMeta,
 } from '@/lib/quotes/panel-geometry'
 

@@ -6,21 +6,21 @@
  * neutrals that any theme may reference.
  */
 :root {
-  --color-tidal: oklch(95.49% 0.11 118.86deg);
-  --color-voodoo: oklch(32.87% 0.06 332.81deg);
-  --color-chalet-green: oklch(45.52% 0.08 127.48deg);
-  --color-tasman: oklch(87.92% 0.03 140.12deg);
-  --color-metterhorn: oklch(32.6% 0.04 350.45deg);
+  --color-tidal: oklch(83.02% 0.17 81.36deg);
+  --color-voodoo: oklch(56.86% 0.23 27.81deg);
+  --color-chalet-green: oklch(28.01% 0.06 273.7deg);
+  --color-tasman: oklch(71.345% 0.123 267.778deg);
+  --color-metterhorn: oklch(38.672% 0.1564 28.905deg);
   --color-heather: oklch(84.9% 0.03 244.95deg);
-  --color-charade: oklch(28.29% 0.03 270.21deg);
-  --color-wattle: oklch(87.43% 0.16 108.14deg);
-  --color-ceramic: oklch(98.39% 0.01 125.5deg);
-  --color-tapa-green: oklch(36.1% 0.03 164.74deg);
-  --color-sea-mist: oklch(86.57% 0.03 156.49deg);
-  --color-sweetcorn: oklch(93.57% 0.13 101.75deg);
-  --color-black-current: oklch(32.05% 0.04 322.94deg);
-  --color-confetti: oklch(84.99% 0.14 104.07deg);
-  --color-blue-400: #546bf3;
+  --color-charade: oklch(28.01% 0.06 273.7deg);
+  --color-wattle: oklch(83.02% 0.17 81.36deg);
+  --color-ceramic: oklch(92.365% 0.034 235.98deg);
+  --color-tapa-green: oklch(38.503% 0.1751 262.128deg);
+  --color-sea-mist: oklch(83.691% 0.023 272.015deg);
+  --color-sweetcorn: oklch(83.02% 0.17 81.36deg);
+  --color-black-current: oklch(28.01% 0.06 273.7deg);
+  --color-confetti: oklch(83.02% 0.17 81.36deg);
+  --color-blue-400: oklch(28.01% 0.06 273.7deg);
   --color-white: #fff;
   --color-black: #111;
 

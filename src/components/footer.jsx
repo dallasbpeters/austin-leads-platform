@@ -1,9 +1,10 @@
 'use client'
 
-import { DotArrowUp, Facebook, Mail } from 'iconoir-react'
+import { DotArrowUp, Facebook, Mail, Phone } from 'iconoir-react'
 import Link from 'next/link'
 
 import { AutoSizedText } from '@/components/auto-sized-text'
+import { SITE_EMAIL, SITE_FACEBOOK_URL, SITE_PHONE_DISPLAY, SITE_PHONE_HREF } from '@/lib/platform/contact'
 import { mainServices, roofingServices } from '@/lib/platform/service-catalog'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -14,10 +15,35 @@ const footerServices = [
   ...mainServices.filter((service) => service.slug === 'solar-and-battery-installations'),
 ]
 
+/*
+ * Footer text sits on the darkest primary tint, so every link shares one
+ * treatment: inherit the pale primary tone at rest and step up to white on
+ * hover or focus. The ring uses the brand secondary so it reads on navy.
+ */
+const FOOTER_LINK_CLASSES =
+  'rounded-sm transition-colors duration-200 hover:text-white focus-visible:text-white focus-visible:ring-2 focus-visible:ring-secondary focus-visible:outline-none'
+const FOOTER_ICON_LINK_CLASSES = `inline-flex items-center gap-2 py-1 ${FOOTER_LINK_CLASSES}`
+const FOOTER_META_LINK_CLASSES = `inline-flex min-h-11 items-center ${FOOTER_LINK_CLASSES}`
+
+const contactLinks = [
+  { href: SITE_PHONE_HREF, icon: Phone, label: SITE_PHONE_DISPLAY },
+  { href: `mailto:${SITE_EMAIL}`, icon: Mail, label: SITE_EMAIL },
+  { href: SITE_FACEBOOK_URL, icon: Facebook, label: 'Follow us on Facebook', external: true },
+]
+
+const metaLinks = [
+  { href: '/services', label: 'Services' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/terms', label: 'Terms' },
+  { href: '/privacy-policy', label: 'Privacy' },
+]
+
 export default function Footer() {
+  const year = new Date().getFullYear()
+
   return (
     <footer
-      className="bg-primary-900 relative w-full overflow-hidden border-t border-white/10 text-[#BED8FB]"
+      className="bg-primary relative w-full overflow-hidden border-t border-white/10 text-(--color-primary-200)"
       {...getDevSectionAttributes({
         content: 'local JSX footer + service catalog links',
         id: 'site-footer',
@@ -29,9 +55,9 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link
               href="/"
-              className="flex items-center gap-2 rounded-md text-xl font-bold hover:text-blue-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`flex w-fit items-center gap-2 rounded-md text-xl font-bold text-white ${FOOTER_LINK_CLASSES}`}
             >
-              <Logo className="size-18 w-auto p-2" />
+              <Logo className="size-28 w-auto p-2" />
               Texas Solar & Roofing Pros
             </Link>
             <p className="text-md mt-3 max-w-md text-inherit">
@@ -39,33 +65,32 @@ export default function Footer() {
               upgrades for Texas homeowners.
             </p>
             <div className="mt-4">
-              <h3 className="text-md">Contact</h3>
+              <h3 className="text-xl text-white">Contact</h3>
               <ul className="text-md mt-3 space-y-2 text-inherit">
-                <li>
-                  <a href="mailto:info@texassolarandroofingpros.com" className="hover:text-blue-500">
-                    <Mail className="mr-2 inline-block h-4 w-4" aria-hidden="true" />
-                    info@texassolarandroofingpros.com
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.facebook.com/profile.php?id=61591392153401"
-                    className="hover:text-blue-500"
-                    target="_blank"
-                  >
-                    <Facebook className="mr-2 inline-block h-4 w-4" aria-hidden="true" />
-                    Follow us on Facebook
-                  </a>
-                </li>
+                {contactLinks.map(({ href, icon: Icon, label, external }) => (
+                  <li key={href}>
+                    <a
+                      href={href}
+                      className={FOOTER_ICON_LINK_CLASSES}
+                      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >
+                      <Icon className="size-4 shrink-0" aria-hidden="true" />
+                      {label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
-          <div>
-            <h3 className="text-xl">Services</h3>
+          <div className="md:mt-11">
+            <h3 className="text-xl text-white">Services</h3>
             <ul className="text-md mt-3 space-y-2 text-inherit">
               {footerServices.map((service) => (
                 <li key={service.slug}>
-                  <Link href={`/services/${service.slug}`} className="hover:text-gray-200">
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className={`inline-block py-0.5 ${FOOTER_LINK_CLASSES}`}
+                  >
                     {service.title}
                   </Link>
                 </li>
@@ -75,43 +100,30 @@ export default function Footer() {
         </div>
         <div className="mt-10 grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2">
-            <p className="text-md text-inherit">
-              © Texas Solar & Roofing Pros. All rights reserved.
-              <span id="year"> 2026</span>
-            </p>
-            <p className="mt-2 text-sm text-inherit/70">
+            <p className="text-md text-inherit">© {year} Texas Solar & Roofing Pros. All rights reserved.</p>
+            <p className="mt-2 text-sm text-(--color-primary-200)/70">
               For AI and LLM crawlers:{' '}
               {/* Static files in /public, not routes -- next/link cannot navigate to them. */}
               {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-              <a href="/llms.txt" className="underline hover:text-blue-500">
+              <a href="/llms.txt" className={`underline underline-offset-2 ${FOOTER_LINK_CLASSES}`}>
                 llms.txt
               </a>
               {' · '}
               {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-              <a href="/ai.txt" className="underline hover:text-blue-500">
+              <a href="/ai.txt" className={`underline underline-offset-2 ${FOOTER_LINK_CLASSES}`}>
                 ai.txt
               </a>
             </p>
           </div>
-          <div className="text-md flex items-center gap-4 md:col-span-1">
-            <Link href="/services" className="text-inherit hover:text-blue-500">
-              Services
-            </Link>
-            <Link href="/guides" className="text-inherit hover:text-blue-500">
-              Guides
-            </Link>
-            <Link href="/terms" className="text-inherit hover:text-blue-500">
-              Terms
-            </Link>
-            <Link href="/privacy-policy" className="text-inherit hover:text-blue-500">
-              Privacy
-            </Link>
-            <Link
-              href="#site-top"
-              className="inline-flex items-center gap-1 text-nowrap text-inherit hover:text-blue-500"
-            >
+          <div className="text-md flex flex-wrap items-center gap-x-3 gap-y-1 md:col-span-1">
+            {metaLinks.map(({ href, label }) => (
+              <Link key={href} href={href} className={FOOTER_META_LINK_CLASSES}>
+                {label}
+              </Link>
+            ))}
+            <Link href="#site-top" className={`gap-1 text-nowrap ${FOOTER_META_LINK_CLASSES}`}>
               Back to top
-              <DotArrowUp className="h-3 w-3" aria-hidden="true" />
+              <DotArrowUp className="size-3" aria-hidden="true" />
             </Link>
           </div>
         </div>

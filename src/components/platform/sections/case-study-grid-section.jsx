@@ -1,9 +1,9 @@
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import GuideCardGrid from '@/components/guide-card'
 import PortableTextContent from '@/components/portable-text-content'
+import { AutoFillGrid } from '@/components/ui/grid-container'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
-import { AutoFillGrid } from '@/components/ui/grid-container'
 
 /**
  * Pinned case studies first, in the order the editor pinned them, then everything

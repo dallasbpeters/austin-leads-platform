@@ -11,8 +11,8 @@ import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/l
 
 import { ChristmasFaviconBlinker } from './christmas-favicon-blinker'
 import { getSectionDomId, getSiteBrandStyleVars } from './public-site-utils'
+import { CtaSection, RoofingLogoCloudSection, sectionRenderers } from './sections'
 import SectionSurface from './sections/section-surface'
-import { sectionRenderers, RoofingLogoCloudSection, CtaSection } from './sections'
 import { GenericFooter, GenericHeader } from './shell'
 
 const EMPTY_REVIEWS = []

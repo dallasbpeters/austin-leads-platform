@@ -83,4 +83,4 @@ function AvatarGroupCount({ className, ...props }) {
   )
 }
 
-export { Avatar, AvatarImage, AvatarFallback, AvatarBadge, AvatarGroup, AvatarGroupCount }
+export { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage }

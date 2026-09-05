@@ -53,6 +53,19 @@
   "[yaml]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
+  // Tailwind v4 puts its configuration in CSS (@theme, @custom-variant, @apply,
+  // @layer, @utility). VS Code's built-in CSS linter doesn't know those at-rules
+  // and flags every one of them as unknown, so it is told to stay quiet about
+  // at-rules. stylelint still checks them -- see .stylelintrc.json.
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+  // Biome is NOT part of this project's toolchain -- @biomejs/biome is not
+  // installed and nothing in package.json runs it. Its VS Code extension was
+  // applying its own defaults (import order, lint rules) that no CLI enforces,
+  // which is why the editor and `pnpm check` disagreed. prettier owns
+  // formatting and import sorting; oxlint and ESLint own linting.
+  "biome.enabled": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
   },

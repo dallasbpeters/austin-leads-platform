@@ -3,13 +3,13 @@
  * Upserts by email when possible so re-saving a quote doesn't duplicate leads.
  */
 
-import { getSql } from '../db/pool.js'
 import {
   createLeadSubmission,
   ensureLeadSubmissionsTable,
   hasLeadDatabase,
   updateLeadSubmission,
 } from '@/lib/leads/db'
+import { getSql } from '../db/pool.js'
 
 async function findLeadByEmail(email) {
   const normalized = String(email || '')

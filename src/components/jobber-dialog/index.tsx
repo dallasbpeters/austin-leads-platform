@@ -1,13 +1,13 @@
 // oxlint-disable no-negated-condition func-style react-hooks/exhaustive-deps
 'use client'
+import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
+import LeadCaptureForm from '@/components/lead-capture-form'
 import { Button } from '@/components/ui/button'
-import { useCallback, useEffect, useState } from 'react'
-import type { ReactNode } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
-import LeadCaptureForm from '@/components/lead-capture-form'
-import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
 import { cn } from '@/lib/utils'
+import type { ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Floating-action-button positioning for the bottom-right corner.
 const FAB_CLASSES = 'fixed right-5 bottom-5 z-50 size-14 rounded-full sm:right-6 sm:bottom-6'
@@ -41,14 +41,17 @@ export function JobberDialog({
   const [open, setOpen] = useState(false)
   const [isReady, setIsReady] = useState(false)
 
-  const analyticsParams = {
-    form_id: 'jobber_dialog',
-    button_label: buttonLabel,
-    lead_type: context?.sourceType || 'consultation',
-    source_section: context?.sourceSection || 'unknown',
-    site_slug: context?.siteSlug || 'unknown',
-    page_path: context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
-  }
+  const analyticsParams = useMemo(
+    () => ({
+      form_id: 'jobber_dialog',
+      button_label: buttonLabel,
+      lead_type: context?.sourceType || 'consultation',
+      source_section: context?.sourceSection || 'unknown',
+      site_slug: context?.siteSlug || 'unknown',
+      page_path: context?.pagePath || (typeof window !== 'undefined' ? window.location.pathname : '/unknown'),
+    }),
+    [buttonLabel, context?.sourceType, context?.sourceSection, context?.siteSlug, context?.pagePath],
+  )
 
   const handleOpenChange = useCallback(
     (next: boolean) => {

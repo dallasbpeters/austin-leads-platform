@@ -1,11 +1,11 @@
-import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import CloudSectionBackground from '@/components/cloud-section-background'
+import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 // import LeadCaptureForm from '@/components/lead-capture-form'
+import { JobberDialog } from '@/components/jobber-dialog'
 import PortableTextContent from '@/components/portable-text-content'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
-import { JobberDialog } from '@components/jobber-dialog'
 
 import { CONSULTATION_ANCHOR_ID } from '../public-site-utils'
 

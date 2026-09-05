@@ -1,10 +1,10 @@
+import { hasZohoCredentials } from '@/lib/zoho/auth'
 import {
   getChristmasInvoiceSettingsRow,
   hasInvoiceDatabase,
   upsertChristmasInvoiceSettingsRow,
 } from './invoice-db.js'
 import { DEFAULT_INVOICE_TEMPLATE_KEY } from './invoice-templates.js'
-import { hasZohoCredentials } from '@/lib/zoho/auth'
 
 const DEFAULT_COMPANY_NAME = 'Texas Christmas Lights'
 const DEFAULT_TAGLINE = 'Professional installation in Austin and surrounding areas'

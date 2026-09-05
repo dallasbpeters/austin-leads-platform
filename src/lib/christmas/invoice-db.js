@@ -8,7 +8,7 @@ export function hasInvoiceDatabase() {
 
 // ─── Schema setup ────────────────────────────────────────────────────────────
 
-export async function ensureChristmasInvoiceTables() {
+async function runChristmasInvoiceMigrations() {
   const sql = getSql()
 
   await sql`
@@ -89,6 +89,48 @@ export async function ensureChristmasInvoiceTables() {
   await sql`ALTER TABLE christmas_invoice_settings ADD COLUMN IF NOT EXISTS sales_tax_rate_percent NUMERIC DEFAULT 8.25`
   await sql`ALTER TABLE christmas_invoice_settings ADD COLUMN IF NOT EXISTS early_payment_discount_percent NUMERIC DEFAULT 20`
   await sql`ALTER TABLE christmas_invoice_settings ADD COLUMN IF NOT EXISTS pay_in_full_discount_percent NUMERIC DEFAULT 5`
+
+  // The Jobber push columns live on this table, so create them here rather than
+  // only in ensureJobberTables() -- every read path below names them explicitly.
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS jobber_client_id TEXT`
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS jobber_invoice_id TEXT`
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS jobber_synced_at TIMESTAMPTZ`
+
+  // Resend delivery tracking: the message id returned by the send, the last
+  // event Resend reported for it, and when we last asked.
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS resend_email_id TEXT`
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS email_status TEXT`
+  await sql`ALTER TABLE christmas_invoices ADD COLUMN IF NOT EXISTS email_checked_at TIMESTAMPTZ`
+  await sql`CREATE INDEX IF NOT EXISTS christmas_invoices_resend_email_id_idx ON christmas_invoices (resend_email_id)`
+}
+
+/*
+ * The migrations above are ~15 serial statements, and every admin request used
+ * to pay for all of them -- the invoices page ran them twice (once directly,
+ * once inside getChristmasInvoiceSettingsRow), so a page load spent roughly 30
+ * round trips on DDL before fetching a single row.
+ *
+ * They only need to run once per process. The promise is cached on globalThis
+ * so dev hot-reloads reuse it too, and cleared on failure so a transient
+ * connection error doesn't poison the cache for the life of the process.
+ */
+const SCHEMA_PROMISE_KEY = '__christmasInvoiceSchemaReady__'
+
+async function migrateOnce() {
+  try {
+    await runChristmasInvoiceMigrations()
+  } catch (error) {
+    globalThis[SCHEMA_PROMISE_KEY] = null
+    throw error
+  }
+}
+
+export function ensureChristmasInvoiceTables() {
+  if (!globalThis[SCHEMA_PROMISE_KEY]) {
+    globalThis[SCHEMA_PROMISE_KEY] = migrateOnce()
+  }
+
+  return globalThis[SCHEMA_PROMISE_KEY]
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -157,6 +199,7 @@ const rowToInvoice = (row) => {
     subtotalCents: Number(row.subtotal_cents || 0),
     depositCents: Number(row.deposit_cents || 0),
     balanceDueCents: Number(row.balance_due_cents || 0),
+    // Empty for rows from listInvoices(), which omits the column -- see below.
     data: row.data || {},
     sentAt: row.sent_at,
     emailedTo: row.emailed_to,
@@ -166,6 +209,9 @@ const rowToInvoice = (row) => {
     jobberClientId: row.jobber_client_id || null,
     jobberInvoiceId: row.jobber_invoice_id || null,
     jobberSyncedAt: row.jobber_synced_at || null,
+    resendEmailId: row.resend_email_id || null,
+    emailStatus: row.email_status || null,
+    emailCheckedAt: row.email_checked_at || null,
   }
 }
 
@@ -235,10 +281,28 @@ export async function getInvoice(id) {
   return rowToInvoice(rows[0])
 }
 
+/*
+ * List views render only the denormalized columns -- never `data`, which holds
+ * the full input + computed snapshot for the PDF and is by far the largest
+ * column on the row. Selecting it for 200-500 rows moved megabytes per page
+ * load for data the table never displays. Callers that need the snapshot
+ * (edit, duplicate, PDF render) fetch the single row through getInvoice().
+ */
 export async function listInvoices({ limit = 200 } = {}) {
   const sql = getSql()
   const rows = await sql`
-    SELECT * FROM christmas_invoices ORDER BY created_at DESC LIMIT ${limit}
+    SELECT
+      id, invoice_number, created_at, updated_at, status,
+      customer_name, customer_first_name, customer_last_name, customer_email, customer_phone,
+      property_address, property_city, property_state, property_zip,
+      invoice_date, due_date, install_date, template_key,
+      subtotal_cents, deposit_cents, balance_due_cents,
+      sent_at, emailed_to, zoho_sheet_synced_at, workdrive_file_id, workdrive_folder_id,
+      jobber_client_id, jobber_invoice_id, jobber_synced_at,
+      resend_email_id, email_status, email_checked_at
+    FROM christmas_invoices
+    ORDER BY created_at DESC
+    LIMIT ${limit}
   `
   return rows.map(rowToInvoice)
 }
@@ -266,16 +330,39 @@ export async function markInvoiceUploaded(id, { fileId, folderId }) {
   `
 }
 
-export async function markInvoiceSent(id, { emailedTo }) {
+/*
+ * `resendEmailId` is the message id Resend returns from the send. It is the
+ * handle used later to ask Resend what actually happened to the message --
+ * see fetchResendEmailStatus() in ./invoice-email-status.js.
+ */
+export async function markInvoiceSent(id, { emailedTo, resendEmailId = null }) {
   const sql = getSql()
   await sql`
     UPDATE christmas_invoices
     SET status = 'sent',
         sent_at = NOW(),
         emailed_to = ${emailedTo || null},
+        resend_email_id = ${resendEmailId},
+        email_status = ${resendEmailId ? 'sent' : null},
+        email_checked_at = NULL,
         updated_at = NOW()
     WHERE id = ${id}
   `
+}
+
+/** Records what Resend reported for the invoice's last send. */
+export async function markInvoiceEmailStatus(id, { status, resendEmailId = null }) {
+  const sql = getSql()
+  const rows = await sql`
+    UPDATE christmas_invoices
+    SET email_status = ${status || null},
+        resend_email_id = COALESCE(${resendEmailId}, resend_email_id),
+        email_checked_at = NOW(),
+        updated_at = NOW()
+    WHERE id = ${id}
+    RETURNING id
+  `
+  return rows[0]?.id || null
 }
 
 // ─── Settings ────────────────────────────────────────────────────────────────

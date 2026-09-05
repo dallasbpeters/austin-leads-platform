@@ -1,5 +1,5 @@
 import { getSolarGuideGridItems, getSolarGuidePages } from './guides.js'
-import { mainServices, roofingServices, specialtyServices, servicePages } from './service-catalog.js'
+import { mainServices, roofingServices, servicePages, specialtyServices } from './service-catalog.js'
 
 const categories = {
   solarRoofing: 'Solar + Roofing',

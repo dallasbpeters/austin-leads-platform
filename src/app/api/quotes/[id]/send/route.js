@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { safeAuth } from '@/lib/auth/session'
+import { syncQuoteToCrm } from '@/lib/quotes/crm'
 import {
   getQuote,
   hasQuoteDatabase,
@@ -8,7 +9,6 @@ import {
   markQuoteSheetSynced,
   markQuoteUploaded,
 } from '@/lib/quotes/db'
-import { syncQuoteToCrm } from '@/lib/quotes/crm'
 import { hasQuoteEmailConfig, sendQuoteEmail } from '@/lib/quotes/email'
 import { quotePdfFileName, renderQuotePdf } from '@/lib/quotes/pdf'
 import { syncQuoteToSheet } from '@/lib/zoho/sheet'

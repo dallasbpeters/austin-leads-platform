@@ -5,8 +5,8 @@ import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 
-import { getDevSectionAttributes } from './dev/dev-trace'
 import CloudSectionBackground from './cloud-section-background'
+import { getDevSectionAttributes } from './dev/dev-trace'
 import GuideCardGrid from './guide-card'
 import PortableTextContent from './portable-text-content'
 
