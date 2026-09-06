@@ -6,57 +6,34 @@ import PortableTextContent from '@/components/portable-text-content'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
+import { cn } from '@/lib/utils'
 
 import { CONSULTATION_ANCHOR_ID } from '../public-site-utils'
 
-function avatarCx(isDarkTheme, lightClass, darkClass) {
-  return isDarkTheme ? darkClass : lightClass
-}
-
-function AvatarVisual({
-  avatarImageUrl,
-  avatarImageAlt,
-  avatarInitials,
-  avatarStyle,
-  isCloudTheme,
-  isDarkTheme,
-}) {
+function AvatarVisual({ avatarImageUrl, avatarImageAlt, avatarInitials, avatarStyle }) {
   return (
-    <Avatar
-      size="xl"
-      className={`size-16 ${isCloudTheme ? 'bg-primary ring-1 ring-black/10' : avatarCx(isDarkTheme, 'bg-primary ring-1 ring-black/5', 'bg-white/10 ring-1 ring-white/20')}`}
-      style={avatarStyle}
-    >
+    <Avatar size="xl" className="cta-banner__avatar" style={avatarStyle}>
       {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
-      <AvatarFallback
-        className={`text-[1rem] font-semibold ${isCloudTheme ? 'text-secondary-foreground bg-secondary' : avatarCx(isDarkTheme, 'text-secondary-foreground bg-secondary', 'bg-white/12 text-white')}`}
-        style={avatarStyle}
-      >
+      <AvatarFallback className="cta-banner__avatar-fallback" style={avatarStyle}>
         {avatarInitials || 'TS'}
       </AvatarFallback>
     </Avatar>
   )
 }
 
-function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isCloudTheme, isDarkTheme }) {
+function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isCloudTheme }) {
   return (
-    <div className="min-w-0">
+    <div className="cta-banner__person-text">
       {avatarEyebrow ? (
-        <div
-          className={`mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isCloudTheme ? 'cloud-theme-section__eyebrow' : avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/58')}`}
-        >
+        <div className={cn('cta-banner__person-eyebrow', isCloudTheme && 'cloud-theme-section__eyebrow')}>
           {avatarEyebrow}
         </div>
       ) : null}
-      <div
-        className={`text-lg font-semibold ${isCloudTheme ? 'cloud-theme-section__heading' : avatarCx(isDarkTheme, 'text-foreground', 'text-white')}`}
-      >
+      <div className={cn('cta-banner__person-name', isCloudTheme && 'cloud-theme-section__heading')}>
         {avatarName}
       </div>
       {avatarRole ? (
-        <div
-          className={`text-sm ${isCloudTheme ? 'cloud-theme-section__body' : avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/72')}`}
-        >
+        <div className={cn('cta-banner__person-role', isCloudTheme && 'cloud-theme-section__body')}>
           {avatarRole}
         </div>
       ) : null}
@@ -64,7 +41,7 @@ function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isClou
         <PortableTextContent
           as="div"
           value={avatarBlurb}
-          className={`mt-3 text-sm leading-6 ${isCloudTheme ? 'cloud-theme-section__body' : avatarCx(isDarkTheme, 'text-muted-foreground', 'text-white/80')}`}
+          className={cn('cta-banner__person-blurb', isCloudTheme && 'cloud-theme-section__body')}
         />
       ) : null}
     </div>
@@ -103,15 +80,13 @@ export function buildAvatarSection(section, isDarkTheme, isCloudTheme) {
   const image = s.avatarImage || s.profileImage
 
   return (
-    <div className="max-w-xl pt-2">
-      <div className="flex items-center gap-4">
+    <div className="cta-banner__person">
+      <div className="cta-banner__person-row">
         <AvatarVisual
           avatarImageUrl={getImageUrl(imageAsset, image)}
           avatarImageAlt={getImageAlt(imageAsset, image, avatarName)}
           avatarInitials={computeInitials(avatarName)}
           avatarStyle={avatarColor ? { backgroundColor: avatarColor } : undefined}
-          isCloudTheme={isCloudTheme}
-          isDarkTheme={isDarkTheme}
         />
         <AvatarInfo
           avatarEyebrow={avatarEyebrow}
@@ -119,7 +94,6 @@ export function buildAvatarSection(section, isDarkTheme, isCloudTheme) {
           avatarRole={avatarRole}
           avatarBlurb={avatarBlurb}
           isCloudTheme={isCloudTheme}
-          isDarkTheme={isDarkTheme}
         />
       </div>
     </div>
@@ -153,7 +127,10 @@ export function CtaBannerSection({ page, section, site }) {
   return (
     <CloudSectionBackground
       id={CONSULTATION_ANCHOR_ID}
-      className={`relative isolate overflow-hidden py-20 ${showClouds ? 'cloud-theme-section--cta' : isDarkTheme ? 'bg-[linear-gradient(135deg,oklch(from_var(--color-secondary)_15%_calc(c_*_0.56)_h),oklch(from_var(--color-secondary)_12%_calc(c_*_0.46)_h))] text-white' : 'bg-card text-foreground border-border/60 border-b'}`}
+      className={cn(
+        'cta-banner',
+        showClouds ? 'cloud-theme-section--cta' : isDarkTheme ? 'cta-banner--dark' : 'cta-banner--light',
+      )}
       preserveSurfaceWhenCloudsHidden
       showClouds={showClouds}
       {...getDevSectionAttributes({
@@ -166,24 +143,20 @@ export function CtaBannerSection({ page, section, site }) {
         markup="src/components/platform/sections/cta-banner-section.jsx"
         content={`cross-lead banner from ${section?._type || 'page section'}`}
       />
-      <div className="relative z-2 mx-auto grid max-w-7xl grid-cols-1 place-items-center gap-12 px-3 md:px-6 lg:grid-cols-2 lg:px-10">
-        <div className="space-y-4">
+      <div className="cta-banner__inner">
+        <div className="cta-banner__copy">
           {section.eyebrow ? (
-            <p
-              className={`text-sm tracking-[0.22em] uppercase ${showClouds ? 'cloud-theme-section__eyebrow' : isDarkTheme ? 'text-white/58' : 'text-muted-foreground'}`}
-            >
+            <p className={cn('cta-banner__eyebrow', showClouds && 'cloud-theme-section__eyebrow')}>
               {section.eyebrow}
             </p>
           ) : null}
-          <h2
-            className={`max-w-6xl text-3xl tracking-normal md:text-4xl ${showClouds ? 'cloud-theme-section__heading' : ''}`}
-          >
+          <h2 className={cn('cta-banner__title', showClouds && 'cloud-theme-section__heading')}>
             {section.title}
           </h2>
           <PortableTextContent
             as="div"
             value={section.body}
-            className={`max-w-2xl text-[1rem] leading-8 ${showClouds ? 'cloud-theme-section__body' : isDarkTheme ? 'text-white/78' : 'text-muted-foreground'}`}
+            className={cn('cta-banner__body', showClouds && 'cloud-theme-section__body')}
           />
           {buildAvatarSection(section, isDarkTheme, showClouds)}
           <JobberDialog buttonLabel={buttonLabel} context={leadContext} />

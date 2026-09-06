@@ -7,12 +7,12 @@ import { cn } from '@/lib/utils'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
 
-const quoteVariants = cva('relative p-6 sm:p-10 rounded-3xl overflow-hidden ring-1 ring-white/10', {
+const quoteVariants = cva('quote-banner__panel', {
   variants: {
     variant: {
-      default: 'bg-neutral-900 text-primary-foreground',
-      primary: 'bg-primary text-secondary-foreground',
-      secondary: 'bg-secondary text-secondary-foreground',
+      default: 'quote-banner__panel--default',
+      primary: 'quote-banner__panel--primary',
+      secondary: 'quote-banner__panel--secondary',
     },
   },
   defaultVariants: {
@@ -113,7 +113,7 @@ export default function QuoteSection({
   return (
     <section
       ref={sectionRef}
-      className="quoteRevealSection relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-3 md:px-6 lg:px-8"
+      className="quote-banner quoteRevealSection"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/quote-section.jsx',
@@ -121,8 +121,8 @@ export default function QuoteSection({
       })}
     >
       <div data-variant={variant} className={cn(quoteVariants({ variant, size, className }))}>
-        <div className="flex justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-neutral-200">
+        <div className="quote-banner__eyebrow-row">
+          <span className="quote-banner__eyebrow">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -133,7 +133,7 @@ export default function QuoteSection({
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-3.5 w-3.5"
+              className="quote-banner__eyebrow-icon"
               aria-hidden="true"
             >
               <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
@@ -142,12 +142,12 @@ export default function QuoteSection({
           </span>
         </div>
 
-        <div className="quoteReveal relative mt-8 sm:mt-10">
-          <p className="mx-auto max-w-5xl text-center text-xl leading-snug tracking-normal sm:text-2xl md:text-3xl lg:text-4xl">
+        <div className="quoteReveal quote-banner__reveal">
+          <p className="quote-banner__text">
             {words.map((word, index) => (
               <span
                 key={`${word}-${index}`}
-                className="quote-word transition-colors duration-300"
+                className="quote-banner__word"
                 style={{ color: index < revealedCount ? wordColors.active : wordColors.inactive }}
               >
                 {word}
@@ -157,8 +157,8 @@ export default function QuoteSection({
           </p>
         </div>
 
-        <div className="mt-8 flex items-center justify-center sm:mt-10">
-          <span className="text-sm font-medium text-neutral-300 sm:text-[1rem]">{attribution}</span>
+        <div className="quote-banner__attribution">
+          <span>{attribution}</span>
         </div>
       </div>
     </section>

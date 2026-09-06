@@ -61,31 +61,23 @@ export const SecondaryCTASection = ({ section, sectionId }) => {
   const blendedTextColor = `color-mix(in oklch, ${resolvedColor} 10%, ${contrastBase})`
 
   return (
-    <section id={sectionId} className="bg-card border-border/60 scroll-mt-38 border-b">
-      <div className="mx-auto max-w-7xl px-3 py-10 md:px-6 lg:px-10">
+    <section id={sectionId} className="secondary-cta">
+      <div className="secondary-cta__inner">
         <Link
           href={ctaHref}
-          className="block rounded-2xl border border-white/12 py-8"
+          className="secondary-cta__panel"
           style={{ backgroundColor: resolvedColor, color: blendedTextColor }}
         >
-          <div className="grid content-end items-center justify-end gap-6 md:grid-cols-1">
-            <div className="space-y-3">
-              <h2 className="text-center text-2xl font-semibold tracking-normal text-inherit md:text-3xl">
-                {section?.title || 'Secondary CTA section'}
-              </h2>
+          <div className="secondary-cta__layout">
+            <div className="secondary-cta__copy">
+              <h2 className="secondary-cta__title">{section?.title || 'Secondary CTA section'}</h2>
               {section?.body ? (
-                <PortableTextContent
-                  as="div"
-                  value={section.body}
-                  className="mx-auto max-w-3xl text-center leading-7 text-inherit/85"
-                />
+                <PortableTextContent as="div" value={section.body} className="secondary-cta__body" />
               ) : (
-                <p className="mx-auto max-w-3xl text-center leading-7 text-inherit">Secondary CTA section</p>
+                <p className="secondary-cta__body">Secondary CTA section</p>
               )}
             </div>
-            <div className="inline-flex w-fit items-center gap-3 place-self-center rounded-full border border-inherit px-5 py-3 text-sm font-semibold text-inherit">
-              {ctaLabel}
-            </div>
+            <div className="secondary-cta__pill">{ctaLabel}</div>
           </div>
         </Link>
       </div>
