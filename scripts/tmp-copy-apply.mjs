@@ -1,6 +1,6 @@
 import { createClient } from 'next-sanity'
 import { randomBytes } from 'node:crypto'
-const { PLAN } = await import(process.env.PLAN_PATH)
+const { PLAN } = await import(process.env.PLAN_PATH || new URL('./copy-plan.mjs', import.meta.url).href)
 const DRY = process.argv.includes('--dry')
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,

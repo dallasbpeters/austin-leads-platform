@@ -49,6 +49,13 @@
   justify-content: space-between;
 }
 
+.site-header__phone-wrapper {
+  background-color: var(--primary);
+  display: grid;
+  place-content: end;
+  padding: var(--spacing-medium) var(--spacing-xlarge);
+}
+
 .site-header__brand {
   display: grid;
   grid-auto-flow: column;
@@ -78,7 +85,7 @@
   border-radius: 999px;
   font-size: 1rem;
   font-variation-settings: 'wght' 450;
-  color: var(--foreground);
+  color: var(--color-primary);
   background: transparent;
 }
 
@@ -125,7 +132,7 @@
   padding: 0.5rem;
   border-radius: 999px;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-foreground);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-decoration-color: color-mix(in oklch, var(--primary) 40%, transparent);

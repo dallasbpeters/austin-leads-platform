@@ -42,8 +42,8 @@ await new Promise((resolve) => setTimeout(resolve, 800))
 console.log(`Next on http://localhost:${nextPort}  ·  Studio on http://localhost:${studioPort}`)
 
 const commands = [
-  { name: 'next', args: ['run', 'dev:next', '--', '--port', String(nextPort)] },
-  { name: 'studio', args: ['run', 'studio:dev', '--', '--port', String(studioPort)] },
+  { name: 'next', args: ['run', 'dev:next', '--port', String(nextPort)] },
+  { name: 'studio', args: ['run', 'studio:dev', '--port', String(studioPort)] },
 ]
 
 const children = commands.map(({ name, args }) => {

@@ -110,13 +110,15 @@ const NavList = ({ items, onNavigate }) => (
  * instruction ("Call us") on a small screen where the icon alone is easy to miss.
  */
 const PhoneLink = ({ inSheet = false, prefix = null }) => (
-  <a href={SITE_PHONE_HREF} className={cn('site-header__phone', inSheet && 'site-header__phone--sheet')}>
-    <Phone className="site-header__phone-icon" strokeWidth={2} aria-hidden="true" />
-    <span>
-      {prefix ? `${prefix} ` : null}
-      {SITE_PHONE_DISPLAY}
-    </span>
-  </a>
+  <div className="site-header__phone-wrapper">
+    <a href={SITE_PHONE_HREF} className={cn('site-header__phone', inSheet && 'site-header__phone--sheet')}>
+      <Phone className="site-header__phone-icon" strokeWidth={2} aria-hidden="true" />
+      <span>
+        {prefix ? `${prefix} ` : null}
+        {SITE_PHONE_DISPLAY}
+      </span>
+    </a>
+  </div>
 )
 
 const Header = ({ navigation = EMPTY_NAVIGATION }) => {
@@ -157,6 +159,7 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
         markup: 'src/components/header.jsx',
       })}
     >
+      <PhoneLink />
       <div className="site-header__bar">
         <div className="site-header__inner">
           <Link href="/" aria-label="Texas Solar & Roofing Pros - Home" className="site-header__brand">
@@ -165,7 +168,6 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
           </Link>
           <div className="site-header__nav">
             <NavList items={navItems} />
-            <PhoneLink />
           </div>
           <Button
             variant="ghost"
