@@ -7,6 +7,7 @@ const client = createClient({
   apiVersion: '2025-10-21',
   token: APPLY ? process.env.SANITY_API_WRITE_TOKEN : process.env.SANITY_API_READ_TOKEN,
   useCdn: false,
+  perspective: 'raw',
 })
 const docs = await client.fetch(
   `*[_type in ["page","servicePage","locationPage"] && count(sections[_type=="snapshotSection"]) > 0]{_id, "sections": sections[_type=="snapshotSection"]{_key, items[]{_key, _type}}}`,

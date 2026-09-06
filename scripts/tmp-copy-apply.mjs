@@ -8,6 +8,7 @@ const client = createClient({
   apiVersion: '2025-10-21',
   token: DRY ? process.env.SANITY_API_READ_TOKEN : process.env.SANITY_API_WRITE_TOKEN,
   useCdn: false,
+  perspective: 'raw',
 })
 const key = () => randomBytes(6).toString('hex')
 const PT_FIELDS = new Set(['body', 'subtitle'])
@@ -20,13 +21,18 @@ const toPT = (text) => [
     children: [{ _type: 'span', _key: key(), marks: [], text }],
   },
 ]
-const ids = [...new Set(PLAN.map((p) => p.doc))]
+const baseIds = [...new Set(PLAN.map((p) => p.doc))]
+/* Drafts get the same patch, or publishing a stale draft would undo the change. */
+const ids = baseIds.flatMap((id) => [id, `drafts.${id}`])
 const docs = Object.fromEntries(
   (await client.fetch('*[_id in $ids]{_id, sections}', { ids })).map((d) => [d._id, d]),
 )
+const PLAN_WITH_DRAFTS = PLAN.flatMap((entry) =>
+  docs[`drafts.${entry.doc}`] ? [entry, { ...entry, doc: `drafts.${entry.doc}` }] : [entry],
+)
 let problems = 0
 const tx = client.transaction()
-for (const entry of PLAN) {
+for (const entry of PLAN_WITH_DRAFTS) {
   const doc = docs[entry.doc]
   if (!doc) {
     console.log('MISSING DOC', entry.doc)
