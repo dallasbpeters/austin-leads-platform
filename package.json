@@ -38,6 +38,7 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "audit:css-classes": "node scripts/css-class-usage-audit.mjs",
+    "audit:schema": "node --env-file=.env --env-file-if-exists=.env.local scripts/schema-usage-dump.mjs > .schema-usage.json && node scripts/audit-schema-fields.mjs .schema-usage.json > docs/schema-field-audit.md",
     "check": "ultracite check",
     "fix": "ultracite fix",
     "prepare": "husky"

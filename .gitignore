@@ -25,3 +25,6 @@ balmy-vehicle-*.json
 
 # ShipStudio metadata
 .shipstudio/
+
+# schema audit scratch output
+.schema-usage.json

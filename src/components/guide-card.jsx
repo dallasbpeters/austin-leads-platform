@@ -18,47 +18,22 @@ import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
+import { CARD_TONE_KEYS, cardToneSlug } from '@/lib/platform/card-tones'
 import { buildRuntimeKey, cleanRuntimeHref } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
-/*
- * Card tones map to `guide-card--tone-*` modifiers in guide-card.css. Sanity
- * stores the camelCase key; the palette below is the rotation used when a card
- * has no color of its own.
- */
-const GUIDE_CARD_TONE_KEYS = [
-  'primary',
-  'sweetcorn',
-  'voodoo',
-  'tidal',
-  'secondaryAlt',
-  'blue400',
-  'secondary',
-  'tasman',
-  'chaletGreen',
-  'metterhorn',
-  'heather',
-  'wattle',
-  'charade',
-  'ceramic',
-  'tapaGreen',
-  'seaMist',
-  'blackCurrent',
-  'confetti',
-]
-
-const toneModifier = (key) =>
-  `guide-card--tone-${key.replaceAll(/([a-z])([A-Z0-9])/gu, '$1-$2').toLowerCase()}`
+/* Card tones map to `guide-card--tone-*` modifiers in guide-card.css. */
+const toneModifier = (key) => `guide-card--tone-${cardToneSlug(key)}`
 
 function resolveGuideCardToneClass(colorKey, index) {
   if (typeof colorKey === 'string') {
     const normalizedKey = colorKey.trim()
-    if (normalizedKey && GUIDE_CARD_TONE_KEYS.includes(normalizedKey)) {
+    if (normalizedKey && CARD_TONE_KEYS.includes(normalizedKey)) {
       return toneModifier(normalizedKey)
     }
   }
 
-  return toneModifier(GUIDE_CARD_TONE_KEYS[index % GUIDE_CARD_TONE_KEYS.length])
+  return toneModifier(CARD_TONE_KEYS[index % CARD_TONE_KEYS.length])
 }
 
 const containerVariants = {

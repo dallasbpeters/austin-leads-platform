@@ -902,6 +902,88 @@ const pageItemType = {
   },
 }
 
+const snapshotItemType = {
+  name: 'snapshotItem',
+  title: 'Snapshot card',
+  type: 'object',
+  fields: [
+    {
+      name: 'number',
+      title: 'Big number',
+      type: 'string',
+      options: canvasPurpose('The figure the card leads with, such as $18k-$28k or 7-9 years.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Shown when there is no big number, or as the label under it.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'portableTextSimple',
+      options: canvasPurpose('One or two sentences that explain the figure.'),
+    },
+    {
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: {
+        list: publicSiteIconOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Select the icon that best matches this card.'),
+      },
+    },
+    {
+      name: 'color',
+      title: 'Card color',
+      type: 'string',
+      options: {
+        list: guideCardColorOptions,
+        layout: 'dropdown',
+        ...canvasPurpose('Optional fixed color for the card. Leave empty for the dark glass look.'),
+      },
+    },
+    {
+      name: 'image',
+      title: 'Background image',
+      type: 'heroImage',
+      options: canvasExclude,
+    },
+    {
+      ...defineUploadedImage('imageAsset', 'Uploaded background image', canvasExclude),
+    },
+    {
+      name: 'imageUrl',
+      title: 'Background image URL',
+      type: 'string',
+      options: canvasPurpose('Optional direct image URL used when no image asset is set.'),
+    },
+    {
+      name: 'video',
+      title: 'Background video',
+      type: 'heroVideo',
+      options: canvasExclude,
+    },
+    {
+      name: 'videoAsset',
+      title: 'Uploaded background video',
+      type: 'uploadedVideo',
+      options: canvasExclude,
+    },
+  ],
+  preview: {
+    select: { title: 'title', number: 'number', subtitle: 'body', color: 'color' },
+    prepare({ title, number, subtitle, color }) {
+      return {
+        title: [number, title].filter(Boolean).join(' · ') || 'Snapshot card',
+        subtitle: previewText(subtitle, color ? `Color: ${color}` : 'Supporting content'),
+      }
+    },
+  },
+}
+
 const serviceGridItemType = {
   name: 'serviceGridItem',
   title: 'Service Card',
@@ -2820,7 +2902,7 @@ const snapshotSectionType = {
       name: 'items',
       title: 'Snapshot cards',
       type: 'array',
-      of: [{ type: 'pageItem' }],
+      of: [{ type: 'snapshotItem' }],
       validation: (Rule) => Rule.max(4),
       options: canvasPurpose('Metric cards with value/title/body and optional icon.'),
     },
@@ -4975,6 +5057,7 @@ export default [
   pageMetricType,
   pageActionType,
   pageItemType,
+  snapshotItemType,
   serviceGridItemType,
   guideCardItemType,
   energyChartPointType,

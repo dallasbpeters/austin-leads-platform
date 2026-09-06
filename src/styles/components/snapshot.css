@@ -1,0 +1,164 @@
+/**
+ * .snapshot block: the "numbers people ask for" stat tiles. A card is dark
+ * glass by default. A Sanity color turns it solid with contrast text. An image
+ * or video sits behind the text with a dark wash so the figure stays readable.
+ */
+
+.snapshot {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: 6rem;
+}
+
+.snapshot__glyph {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.1;
+}
+
+.snapshot__glyph-svg {
+  position: absolute;
+  top: 2.5rem;
+  left: 10%;
+  width: 25rem;
+  height: 25rem;
+}
+
+.snapshot__shell {
+  position: relative;
+  z-index: 1;
+  width: min(80rem, calc(100% - 3rem));
+  margin-inline: auto;
+}
+
+.snapshot__intro {
+  max-width: 48rem;
+  margin: 0 auto 4rem;
+  text-align: center;
+}
+
+.snapshot__eyebrow {
+  margin: 0 0 1rem;
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.snapshot__title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.875rem, 4vw, 2.25rem);
+}
+
+.snapshot__body {
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.snapshot__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (width <= 900px) {
+  .snapshot__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 640px) {
+  .snapshot__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card. Card component supplies radius and the dark-glass surface. */
+.snapshot__card {
+  --snapshot-card-tone: transparent;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.snapshot__card--toned {
+  border-color: transparent;
+  background: var(--snapshot-card-tone);
+  color: contrast-color(var(--snapshot-card-tone));
+}
+
+.snapshot__card--media {
+  border-color: transparent;
+  color: var(--color-white);
+}
+
+.snapshot__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.snapshot__media-image,
+.snapshot__media-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Keeps the figure legible over any photo or frame. */
+.snapshot__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, oklch(0% 0 0deg / 72%), oklch(0% 0 0deg / 28%));
+}
+
+.snapshot__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 999px;
+  background: color-mix(in oklch, currentcolor 12%, transparent);
+}
+
+.snapshot__icon-svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.snapshot__value {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-accent);
+  font-size: 1.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.snapshot__label {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.snapshot__copy {
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  opacity: 0.72;
+}

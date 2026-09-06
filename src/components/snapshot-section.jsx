@@ -1,13 +1,16 @@
 import { Clock, Leaf, StatUp, Wallet } from 'iconoir-react'
 
+import { cardToneCssVar } from '@/lib/platform/card-tones'
+import { getHeroVideoSource, getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
+import { cn } from '@/lib/utils'
 
 import Card from './card'
 import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import PortableTextContent from './portable-text-content'
 
-const items = [
+const fallbackItems = [
   {
     icon: 'solar:wallet-money-linear',
     value: '$18k-$28k',
@@ -49,40 +52,102 @@ function inferSnapshotIcon(item) {
   return StatUp
 }
 
+/*
+ * Shapes one Sanity snapshotItem for render. The big number leads; when a card
+ * has only a title, the title takes the number's place. Media resolution
+ * follows the hero: uploaded asset first, then Unsplash metadata, then a raw
+ * URL; video beats image when both are set.
+ */
+function resolveItem(item, index) {
+  const imageUrl = getImageUrl(item.imageAsset, item.image) || item.imageUrl || ''
+  const video = getHeroVideoSource(item.video, item.videoAsset, { posterWidth: 800 })
+
+  return {
+    key: item._key || `${item.number || item.title || 'snapshot'}-${index}`,
+    icon: item.icon || fallbackItems[index]?.icon || 'solar:wallet-money-linear',
+    value: item.number || item.title,
+    label: item.number && item.title ? item.title : '',
+    copy: item.body || fallbackItems[index]?.copy || '',
+    tone: cardToneCssVar(item.color),
+    imageUrl,
+    imageAlt: getImageAlt(item.imageAsset, item.image, ''),
+    video,
+  }
+}
+
+function SnapshotIcon({ item }) {
+  const Icon = (item.icon && resolveIconoirIcon(item.icon)) || inferSnapshotIcon(item)
+  return <Icon className="snapshot__icon-svg" strokeWidth={2} aria-hidden="true" />
+}
+
+function SnapshotMedia({ item }) {
+  if (item.video) {
+    return (
+      <div className="snapshot__media" aria-hidden="true">
+        <video
+          className="snapshot__media-video"
+          autoPlay={item.video.autoplay}
+          loop={item.video.loop}
+          muted={item.video.muted}
+          playsInline={item.video.playsInline}
+          poster={item.video.poster || item.imageUrl || undefined}
+          preload="metadata"
+        >
+          <source src={item.video.src} type={item.video.type || undefined} />
+        </video>
+      </div>
+    )
+  }
+
+  if (item.imageUrl) {
+    return (
+      <div className="snapshot__media">
+        <img className="snapshot__media-image" src={item.imageUrl} alt={item.imageAlt} loading="lazy" />
+      </div>
+    )
+  }
+
+  return null
+}
+
+function SnapshotCard({ item }) {
+  const hasMedia = Boolean(item.video || item.imageUrl)
+  const toned = Boolean(item.tone) && !hasMedia
+
+  return (
+    <Card
+      className={cn('snapshot__card', toned && 'snapshot__card--toned', hasMedia && 'snapshot__card--media')}
+      style={toned ? { '--snapshot-card-tone': item.tone } : undefined}
+      variant="darkGlass"
+    >
+      <SnapshotMedia item={item} />
+      <div className="snapshot__icon">
+        <SnapshotIcon item={item} />
+      </div>
+      <div className="snapshot__value">{item.value}</div>
+      {item.label ? <p className="snapshot__label">{item.label}</p> : null}
+      <PortableTextContent as="div" value={item.copy} className="snapshot__copy" />
+    </Card>
+  )
+}
+
 export default function SnapshotSection({ section = null, sectionId = 'texas-snapshot' }) {
   const eyebrow = section?.eyebrow || 'Texas Snapshot'
   const title = section?.title || 'The numbers people usually ask for.'
   const body =
     section?.body ||
     "Most homeowners walk into their first quote with zero frame of reference. These are the cost ranges, timelines, and coverage benchmarks we see on Central Texas projects — so you're not starting from scratch. Your numbers will vary based on roof size, material, and carrier, but at least you'll know what ballpark you're in."
-  const resolvedItems = section?.items?.length
-    ? section.items.map((item, index) => ({
-        icon: item.icon || items[index]?.icon || 'solar:wallet-money-linear',
-        value: item.number || item.title,
-        copy: item.body || items[index]?.copy || '',
-      }))
-    : items
+  const items = section?.items?.length
+    ? section.items.map(resolveItem)
+    : fallbackItems.map((item, index) => ({ ...item, key: `fallback-${index}` }))
   const showClouds =
     section?.cloudVisibility !== 'hide' &&
     section?.cloudVisibility !== 'off' &&
     section?.cloudVisibility !== false
 
-  const renderIcon = (item) => {
-    const iconName = item?.icon
-
-    if (!iconName) {
-      const InferredIcon = inferSnapshotIcon(item)
-      return <InferredIcon className="size-6" strokeWidth={2} />
-    }
-
-    // Handles Iconoir names, service slugs, and legacy iconify ids alike.
-    const Icon = resolveIconoirIcon(iconName) || inferSnapshotIcon(item)
-    return <Icon className="size-6" strokeWidth={2} />
-  }
-
   return (
     <CloudSectionBackground
-      className="cloud-theme-section--metrics relative isolate overflow-hidden py-24"
+      className="snapshot cloud-theme-section--metrics"
       density="regular"
       showClouds={showClouds}
       {...getDevSectionAttributes({
@@ -91,13 +156,11 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
         content: 'local JSX copy',
       })}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-10">
+      <div className="snapshot__glyph">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="400"
-          height="400"
           viewBox="0 0 24 24"
-          className="absolute top-10 left-[10%] h-100 w-100"
+          className="snapshot__glyph-svg"
           aria-hidden="true"
         >
           <g fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -110,32 +173,16 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
         </svg>
       </div>
 
-      <div className="relative z-1 mx-auto w-[min(80rem,calc(100%-3rem))]">
-        <div className="mx-auto mb-16 max-w-3xl text-center">
-          <p className="cloud-theme-section__eyebrow type-accent mb-4 text-sm font-semibold tracking-[0.2em] uppercase">
-            {eyebrow}
-          </p>
-          <h2 className="cloud-theme-section__heading mb-4 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
-          <PortableTextContent
-            as="div"
-            value={body}
-            className="cloud-theme-section__body type-accent m-0 text-[1rem] font-semibold"
-          />
+      <div className="snapshot__shell">
+        <div className="snapshot__intro">
+          <p className="snapshot__eyebrow cloud-theme-section__eyebrow">{eyebrow}</p>
+          <h2 className="snapshot__title cloud-theme-section__heading">{title}</h2>
+          <PortableTextContent as="div" value={body} className="snapshot__body cloud-theme-section__body" />
         </div>
 
-        <div className="grid gap-6 max-[900px]:grid-cols-2 max-[640px]:grid-cols-1 md:grid-cols-4">
-          {resolvedItems.map((item) => (
-            <Card key={item.value} className="p-8" variant="darkGlass">
-              <div className="mb-6 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white">
-                {renderIcon(item)}
-              </div>
-              <div className="type-accent mb-2 text-[1.875rem] font-bold">{item.value}</div>
-              <PortableTextContent
-                as="div"
-                value={item.copy}
-                className="type-accent text-sm leading-6 font-semibold text-white/60"
-              />
-            </Card>
+        <div className="snapshot__grid">
+          {items.map((item) => (
+            <SnapshotCard key={item.key} item={item} />
           ))}
         </div>
       </div>
