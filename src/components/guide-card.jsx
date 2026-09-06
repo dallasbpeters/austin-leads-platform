@@ -21,57 +21,44 @@ import { Badge } from '@/components/ui/badge'
 import { buildRuntimeKey, cleanRuntimeHref } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
-const defaultPalette = [
-  'bg-primary text-[contrast-color(var(--color-primary))]',
-  'bg-[var(--color-sweetcorn)] text-[contrast-color(var(--color-sweetcorn))]',
-  'bg-[var(--color-voodoo)] text-[contrast-color(var(--color-voodoo))] ',
-  'bg-[var(--color-tidal)] text-[contrast-color(var(--color-tidal))] ',
-  'bg-[var(--color-secondary-alt)] text-[contrast-color(var(--color-secondary-alt))] ',
-  'bg-[var(--color-blue-400)] text-[contrast-color(var(--color-blue-400))] ',
-  'bg-secondary text-[contrast-color(var(--color-secondary))] ',
-  'bg-[var(--color-tasman)] text-[contrast-color(var(--color-tasman))] ',
-  'bg-[var(--color-chalet-green)] text-[contrast-color(var(--color-chalet-green))] ',
-  'bg-[var(--color-metterhorn)] text-[contrast-color(var(--color-metterhorn))] ',
-  'bg-[var(--color-heather)] text-[contrast-color(var(--color-heather))] ',
-  'bg-[var(--color-wattle)] text-[contrast-color(var(--color-wattle))] ',
-  'bg-[var(--color-charade)] text-[contrast-color(var(--color-charade))] ',
-  'bg-[var(--color-ceramic)] text-[contrast-color(var(--color-ceramic))] ',
-  'bg-[var(--color-tapa-green)] text-[contrast-color(var(--color-tapa-green))] ',
-  'bg-[var(--color-sea-mist)] text-[contrast-color(var(--color-sea-mist))] ',
-  'bg-[var(--color-black-current)] text-[contrast-color(var(--color-black-current))] ',
-  'bg-[var(--color-confetti)] text-[contrast-color(var(--color-confetti))] ',
+/*
+ * Card tones map to `guide-card--tone-*` modifiers in guide-card.css. Sanity
+ * stores the camelCase key; the palette below is the rotation used when a card
+ * has no color of its own.
+ */
+const GUIDE_CARD_TONE_KEYS = [
+  'primary',
+  'sweetcorn',
+  'voodoo',
+  'tidal',
+  'secondaryAlt',
+  'blue400',
+  'secondary',
+  'tasman',
+  'chaletGreen',
+  'metterhorn',
+  'heather',
+  'wattle',
+  'charade',
+  'ceramic',
+  'tapaGreen',
+  'seaMist',
+  'blackCurrent',
+  'confetti',
 ]
 
-const guideCardToneClassByKey = {
-  primary: 'bg-primary text-[contrast-color(var(--color-primary))]',
-  sweetcorn: 'bg-[var(--color-sweetcorn)] text-[contrast-color(var(--color-sweetcorn))]',
-  voodoo: 'bg-[var(--color-voodoo)] text-[contrast-color(var(--color-voodoo))]',
-  tidal: 'bg-[var(--color-tidal)] text-[contrast-color(var(--color-tidal))]',
-  secondaryAlt: 'bg-[var(--color-secondary-alt)] text-[contrast-color(var(--color-secondary-alt))]',
-  blue400: 'bg-[var(--color-blue-400)] text-[contrast-color(var(--color-blue-400))]',
-  secondary: 'bg-secondary text-[contrast-color(var(--color-secondary))]',
-  tasman: 'bg-[var(--color-tasman)] text-[contrast-color(var(--color-tasman))]',
-  chaletGreen: 'bg-[var(--color-chalet-green)] text-[contrast-color(var(--color-chalet-green))]',
-  metterhorn: 'bg-[var(--color-metterhorn)] text-[contrast-color(var(--color-metterhorn))]',
-  heather: 'bg-[var(--color-heather)] text-[contrast-color(var(--color-heather))]',
-  wattle: 'bg-[var(--color-wattle)] text-[contrast-color(var(--color-wattle))]',
-  charade: 'bg-[var(--color-charade)] text-[contrast-color(var(--color-charade))]',
-  ceramic: 'bg-[var(--color-ceramic)] text-[contrast-color(var(--color-ceramic))]',
-  tapaGreen: 'bg-[var(--color-tapa-green)] text-[contrast-color(var(--color-tapa-green))]',
-  seaMist: 'bg-[var(--color-sea-mist)] text-[contrast-color(var(--color-sea-mist))]',
-  blackCurrent: 'bg-[var(--color-black-current)] text-[contrast-color(var(--color-black-current))]',
-  confetti: 'bg-[var(--color-confetti)] text-[contrast-color(var(--color-confetti))]',
-}
+const toneModifier = (key) =>
+  `guide-card--tone-${key.replaceAll(/([a-z])([A-Z0-9])/gu, '$1-$2').toLowerCase()}`
 
 function resolveGuideCardToneClass(colorKey, index) {
   if (typeof colorKey === 'string') {
     const normalizedKey = colorKey.trim()
-    if (normalizedKey && guideCardToneClassByKey[normalizedKey]) {
-      return guideCardToneClassByKey[normalizedKey]
+    if (normalizedKey && GUIDE_CARD_TONE_KEYS.includes(normalizedKey)) {
+      return toneModifier(normalizedKey)
     }
   }
 
-  return defaultPalette[index % defaultPalette.length]
+  return toneModifier(GUIDE_CARD_TONE_KEYS[index % GUIDE_CARD_TONE_KEYS.length])
 }
 
 const containerVariants = {
@@ -189,11 +176,7 @@ function GuideCardBody({ card }) {
   return (
     <motion.article
       animate="rest"
-      className={cn(
-        'grid-columns-1 shadow-theme-sm grid h-full min-h-95 grid-rows-[auto_auto_auto_1fr_auto] items-start justify-start overflow-hidden rounded-xl border-0 p-6',
-        card.toneClassName,
-        card.className,
-      )}
+      className={cn('guide-card', card.toneClassName, card.className)}
       initial={false}
       variants={{
         rest: {
@@ -211,30 +194,22 @@ function GuideCardBody({ card }) {
       }}
       whileHover="hover"
     >
-      <div className="grid grid-cols-2 items-start text-current/88">
-        {CardIcon ? <CardIcon className="size-8" aria-hidden="true" /> : <ArrowIcon />}
-        {card.number ? (
-          <span className="w-full text-right text-[2rem] font-semibold">{card.number}</span>
-        ) : null}
+      <div className="guide-card__head">
+        {CardIcon ? <CardIcon className="guide-card__icon" aria-hidden="true" /> : <ArrowIcon />}
+        {card.number ? <span className="guide-card__number">{card.number}</span> : null}
       </div>
-      {card.eyebrow ? (
-        <p className="mt-4 text-sm font-semibold tracking-[0.18em] text-current/72 uppercase">
-          {card.eyebrow}
-        </p>
-      ) : null}
-      <h3 className="text-[2rem] leading-10 tracking-normal">{card.title}</h3>
-      <p className="font-wght-450 mt-2 text-[0.95rem] leading-6 text-current/88">{card.copy}</p>
+      {card.eyebrow ? <p className="guide-card__eyebrow">{card.eyebrow}</p> : null}
+      <h3 className="guide-card__title">{card.title}</h3>
+      <p className="guide-card__copy">{card.copy}</p>
       {card.category ? (
-        <div className="mt-4 flex flex-wrap gap-2">
-          <span className="rounded-full border border-current/30 px-2 py-1 text-[0.7rem] font-semibold tracking-[0.12em] uppercase">
-            {card.category}
-          </span>
+        <div className="guide-card__tags">
+          <span className="guide-card__tag">{card.category}</span>
         </div>
       ) : null}
       {card.image ? (
-        <div className="relative mt-6 h-56 w-full overflow-hidden rounded-lg after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-1 after:ring-black/10 after:content-[''] after:ring-inset">
+        <div className="guide-card__media">
           <motion.div
-            className="absolute inset-0"
+            className="guide-card__media-motion"
             variants={{
               rest: { scale: 1 },
               hover: { scale: 1.08 },
@@ -251,12 +226,12 @@ function GuideCardBody({ card }) {
               quality={95}
               sizes="(max-width: 900px) 100vw, (max-width: 1280px) 50vw, 33vw"
               loading="lazy"
-              className="object-cover"
+              className="guide-card__image"
             />
           </motion.div>
         </div>
       ) : null}
-      <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-current/88">
+      <div className="guide-card__cta">
         <SunIcon />
         <span>{card.ctaLabel || 'Learn more'}</span>
       </div>
@@ -342,12 +317,10 @@ export default function GuideCardGrid({
     scrollToPaginationTarget()
   }
 
-  const minWidth = '350px'
-
   return (
-    <div>
+    <div className="guide-grid">
       {enableFiltering ? (
-        <div className="relative z-20 mb-6 flex flex-wrap items-center gap-2.5 sm:gap-3">
+        <div className="guide-grid__filters">
           {availableCategories.map((category) => {
             const isActive = selectedCategory === category
 
@@ -356,24 +329,20 @@ export default function GuideCardGrid({
                 asChild
                 key={category}
                 variant={isActive ? 'secondary' : 'outline'}
-                className={
-                  isActive
-                    ? 'bg-secondary hover:bg-secondary/95 px-4 py-1.5 text-sm text-white'
-                    : 'bg-background! hover:bg-background! px-4 py-1.5 text-sm'
-                }
+                className={cn('guide-grid__filter', isActive && 'guide-grid__filter--active')}
               >
                 <button
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => setSelectedCategory(category)}
-                  className="min-h-9 cursor-pointer rounded-full"
+                  className="guide-grid__filter-button"
                 >
                   {category}
                 </button>
               </Badge>
             )
           })}
-          <div className="text-muted-foreground ml-auto basis-full pt-1 text-sm font-bold sm:basis-auto sm:pt-0">
+          <div className="guide-grid__count">
             {filteredCards.length} {filteredCards.length === 1 ? 'guide' : 'guides'}
           </div>
         </div>
@@ -383,12 +352,7 @@ export default function GuideCardGrid({
         <motion.div
           ref={ref}
           animate={isInView ? 'visible' : 'hidden'}
-          className={cn(columnsClassName, className)}
-          style={{
-            display: 'grid',
-            gap: 12,
-            gridTemplateColumns: `repeat(auto-fit, minmax(${minWidth}, 1fr))`,
-          }}
+          className={cn('guide-grid__cards', columnsClassName, className)}
           initial="hidden"
           variants={containerVariants}
         >
@@ -405,21 +369,21 @@ export default function GuideCardGrid({
       </AnimatePresence>
 
       {enableFiltering && totalPages > 1 ? (
-        <div className="mt-6 flex items-center justify-between gap-3">
+        <div className="guide-grid__pagination">
           <button
             type="button"
-            className="text-foreground bg-background border-border rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="guide-grid__page-button"
             onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
           >
             Previous
           </button>
-          <span className="text-muted-foreground text-sm">
+          <span className="guide-grid__page-status">
             Page {currentPage} of {totalPages}
           </span>
           <button
             type="button"
-            className="text-foreground bg-background border-border rounded-md border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="guide-grid__page-button"
             onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
           >

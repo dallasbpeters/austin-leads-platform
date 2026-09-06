@@ -1,0 +1,283 @@
+/**
+ * .guide-card block and the .guide-grid that lays cards out with filters and
+ * paging. A card's color comes from a tone modifier that sets one custom
+ * property; the block derives the text color from it with contrast-color().
+ */
+
+.guide-card {
+  --guide-card-tone: var(--color-primary);
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto 1fr auto;
+  place-items: start start;
+  height: 100%;
+  min-height: 23.75rem;
+  overflow: hidden;
+  padding: 1.5rem;
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--guide-card-tone);
+  color: contrast-color(var(--guide-card-tone));
+  box-shadow: var(--shadow-sm);
+}
+
+.guide-card--tone-primary {
+  --guide-card-tone: var(--color-primary);
+}
+
+.guide-card--tone-secondary {
+  --guide-card-tone: var(--color-secondary);
+}
+
+.guide-card--tone-secondary-alt {
+  --guide-card-tone: var(--color-secondary-alt);
+}
+
+.guide-card--tone-sweetcorn {
+  --guide-card-tone: var(--color-sweetcorn);
+}
+
+.guide-card--tone-voodoo {
+  --guide-card-tone: var(--color-voodoo);
+}
+
+.guide-card--tone-tidal {
+  --guide-card-tone: var(--color-tidal);
+}
+
+.guide-card--tone-blue-400 {
+  --guide-card-tone: var(--color-blue-400);
+}
+
+.guide-card--tone-tasman {
+  --guide-card-tone: var(--color-tasman);
+}
+
+.guide-card--tone-chalet-green {
+  --guide-card-tone: var(--color-chalet-green);
+}
+
+.guide-card--tone-metterhorn {
+  --guide-card-tone: var(--color-metterhorn);
+}
+
+.guide-card--tone-heather {
+  --guide-card-tone: var(--color-heather);
+}
+
+.guide-card--tone-wattle {
+  --guide-card-tone: var(--color-wattle);
+}
+
+.guide-card--tone-charade {
+  --guide-card-tone: var(--color-charade);
+}
+
+.guide-card--tone-ceramic {
+  --guide-card-tone: var(--color-ceramic);
+}
+
+.guide-card--tone-tapa-green {
+  --guide-card-tone: var(--color-tapa-green);
+}
+
+.guide-card--tone-sea-mist {
+  --guide-card-tone: var(--color-sea-mist);
+}
+
+.guide-card--tone-black-current {
+  --guide-card-tone: var(--color-black-current);
+}
+
+.guide-card--tone-confetti {
+  --guide-card-tone: var(--color-confetti);
+}
+
+.guide-card__head {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  width: 100%;
+  color: color-mix(in oklch, currentcolor 88%, transparent);
+}
+
+.guide-card__icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.guide-card__number {
+  width: 100%;
+  text-align: right;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.guide-card__eyebrow {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklch, currentcolor 72%, transparent);
+}
+
+.guide-card__title {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.5rem;
+  letter-spacing: normal;
+}
+
+.guide-card__copy {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  font-variation-settings: 'wght' 450;
+  line-height: 1.5rem;
+  color: color-mix(in oklch, currentcolor 88%, transparent);
+}
+
+.guide-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.guide-card__tag {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid color-mix(in oklch, currentcolor 30%, transparent);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.guide-card__media {
+  position: relative;
+  width: 100%;
+  height: 14rem;
+  margin-top: 1.5rem;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+/* A hairline on the photo edge so light images do not bleed into the card. */
+.guide-card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 1px oklch(0% 0 0deg / 10%);
+  pointer-events: none;
+}
+
+.guide-card__media-motion {
+  position: absolute;
+  inset: 0;
+}
+
+.guide-card__image {
+  object-fit: cover;
+}
+
+.guide-card__cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: color-mix(in oklch, currentcolor 88%, transparent);
+}
+
+/* Grid, filters and paging */
+.guide-grid__filters {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (width >= 40rem) {
+  .guide-grid__filters {
+    gap: 0.75rem;
+  }
+}
+
+.guide-grid__filter {
+  padding: 0.375rem 1rem;
+  font-size: 0.875rem;
+  background: var(--background);
+}
+
+.guide-grid__filter:hover {
+  background: var(--background);
+}
+
+.guide-grid__filter--active,
+.guide-grid__filter--active:hover {
+  color: var(--color-white);
+  background: var(--secondary);
+}
+
+.guide-grid__filter-button {
+  min-height: 2.25rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.guide-grid__count {
+  flex-basis: 100%;
+  margin-left: auto;
+  padding-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--muted-foreground);
+}
+
+@media (width >= 40rem) {
+  .guide-grid__count {
+    flex-basis: auto;
+    padding-top: 0;
+  }
+}
+
+.guide-grid__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 0.75rem;
+}
+
+.guide-grid__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.guide-grid__page-button {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.guide-grid__page-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.guide-grid__page-status {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
