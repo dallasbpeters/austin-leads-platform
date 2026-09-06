@@ -18,20 +18,7 @@ const EMPTY_IMAGES = []
 // Cycled heights produce the masonry rhythm. The order is intentionally
 // non-monotonic so neighbouring tiles never sit at matching heights and the
 // columns end up offset from each other.
-const MASONRY_HEIGHTS = [
-  'h-64',
-  'h-48',
-  'h-72',
-  'h-56',
-  'h-52',
-  'h-60',
-  'h-80',
-  'h-44',
-  'h-56',
-  'h-72',
-  'h-48',
-  'h-64',
-]
+const MASONRY_HEIGHTS_REM = [16, 12, 18, 14, 13, 15, 20, 11, 14, 18, 12, 16]
 
 const getImageCaption = (item) => {
   const neighborhood = cleanRuntimeString(item?.neighborhood || '')
@@ -45,18 +32,16 @@ const resolveImageAlt = (item, index, fallback) =>
 
 function GalleryHeader({ section }) {
   return (
-    <div className="mb-8 grid max-w-3xl gap-2">
+    <div className="section-shell__intro gallery__intro">
       {section.eyebrow ? (
-        <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">
-          {section.eyebrow}
-        </p>
+        <p className="section-shell__eyebrow section-shell__eyebrow--muted">{section.eyebrow}</p>
       ) : null}
-      <h2 className="text-foreground text-3xl md:text-4xl">{section.title}</h2>
+      <h2 className="section-shell__title">{section.title}</h2>
       {section.subtitle ? (
         <PortableTextContent
           as="div"
           value={section.subtitle}
-          className="text-foreground mb-4 text-xl leading-8"
+          className="section-shell__subtitle gallery__subtitle"
         />
       ) : null}
     </div>
@@ -70,7 +55,7 @@ function GalleryTile({ item, index, title, onClick }) {
   }
 
   const alt = resolveImageAlt(item, index, title)
-  const heightClass = MASONRY_HEIGHTS[index % MASONRY_HEIGHTS.length]
+  const height = `${MASONRY_HEIGHTS_REM[index % MASONRY_HEIGHTS_REM.length]}rem`
   const { neighborhood, year, packageName } = getImageCaption(item)
   const hasCaption = Boolean(neighborhood || year || packageName)
 
@@ -80,7 +65,8 @@ function GalleryTile({ item, index, title, onClick }) {
       key={buildRuntimeKey('gallery-image', item?._key, item?.asset?._ref, index)}
       onClick={onClick}
       aria-label={`Open ${alt}`}
-      className={`${heightClass} group focus-visible:outline-primary relative mb-3 block w-full cursor-zoom-in break-inside-avoid overflow-hidden rounded-lg shadow-md transition-shadow duration-300 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 md:mb-4`}
+      className="gallery__tile"
+      style={{ height }}
     >
       <Image
         src={src}
@@ -89,19 +75,15 @@ function GalleryTile({ item, index, title, onClick }) {
         width={1000}
         loading="lazy"
         decoding="async"
-        className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-110"
+        className="gallery__image"
       />
       {hasCaption ? (
         <>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/75 via-black/30 to-transparent" />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 text-left text-white">
-            {neighborhood ? (
-              <p className="text-sm leading-tight font-medium md:text-[1rem]">{neighborhood}</p>
-            ) : null}
+          <div className="gallery__fade" />
+          <div className="gallery__caption">
+            {neighborhood ? <p className="gallery__caption-title">{neighborhood}</p> : null}
             {year || packageName ? (
-              <p className="mt-0.5 text-[0.7rem] tracking-[0.18em] text-white/85 uppercase">
-                {[year, packageName].filter(Boolean).join(' · ')}
-              </p>
+              <p className="gallery__caption-meta">{[year, packageName].filter(Boolean).join(' · ')}</p>
             ) : null}
           </div>
         </>
@@ -131,23 +113,16 @@ function GalleryLightbox({
   return (
     <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-80 bg-black/95 backdrop-blur-sm" />
-        <Dialog.Content
-          aria-describedby={undefined}
-          className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-90 flex flex-col items-center justify-center p-4 outline-none select-none"
-        >
+        <Dialog.Overlay className="gallery-lightbox__overlay" />
+        <Dialog.Content aria-describedby={undefined} className="gallery-lightbox__content">
           <Dialog.Title className="sr-only">{title || 'Gallery image viewer'}</Dialog.Title>
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4 md:p-6">
-            <span className="text-sm tracking-wide text-white/70 tabular-nums">
+          <div className="gallery-lightbox__bar">
+            <span className="gallery-lightbox__count">
               {(lightboxIndex ?? 0) + 1} / {imageCount}
             </span>
             <Dialog.Close asChild>
-              <button
-                type="button"
-                aria-label="Close gallery"
-                className="grid size-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none"
-              >
-                <Xmark className="size-5" strokeWidth={2.2} />
+              <button type="button" aria-label="Close gallery" className="gallery-lightbox__button">
+                <Xmark className="gallery-lightbox__button-icon" strokeWidth={2.2} />
               </button>
             </Dialog.Close>
           </div>
@@ -158,17 +133,17 @@ function GalleryLightbox({
               alt={activeAlt}
               height={400}
               width={400}
-              className="data-[state=open]:animate-in data-[state=open]:fade-in-0 max-h-[82vh] max-w-[92vw] object-contain shadow-2xl"
+              className="gallery-lightbox__image"
               draggable={false}
             />
           ) : null}
           {hasActiveCaption ? (
-            <div className="z-10 mt-6 max-w-[92vw] text-center text-white">
+            <div className="gallery-lightbox__caption">
               {activeCaption.neighborhood ? (
-                <p className="text-[1rem] font-medium md:text-lg">{activeCaption.neighborhood}</p>
+                <p className="gallery-lightbox__caption-title">{activeCaption.neighborhood}</p>
               ) : null}
               {activeCaption.year || activeCaption.packageName ? (
-                <p className="mt-1 text-[0.7rem] tracking-[0.22em] text-white/70 uppercase">
+                <p className="gallery-lightbox__caption-meta">
                   {[activeCaption.year, activeCaption.packageName].filter(Boolean).join(' · ')}
                 </p>
               ) : null}
@@ -180,17 +155,17 @@ function GalleryLightbox({
                 type="button"
                 aria-label="Previous image"
                 onClick={handlePrev}
-                className="absolute top-1/2 left-2 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none md:left-6 md:size-14"
+                className="gallery-lightbox__button gallery-lightbox__nav gallery-lightbox__nav--prev"
               >
-                <NavArrowLeft className="size-6 md:size-7" strokeWidth={2} />
+                <NavArrowLeft className="gallery-lightbox__nav-icon" strokeWidth={2} />
               </button>
               <button
                 type="button"
                 aria-label="Next image"
                 onClick={handleNext}
-                className="absolute top-1/2 right-2 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:outline-none md:right-6 md:size-14"
+                className="gallery-lightbox__button gallery-lightbox__nav gallery-lightbox__nav--next"
               >
-                <NavArrowRight className="size-6 md:size-7" strokeWidth={2} />
+                <NavArrowRight className="gallery-lightbox__nav-icon" strokeWidth={2} />
               </button>
             </>
           ) : null}
@@ -259,7 +234,7 @@ export function GallerySection({ section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 bg-background border-b"
+      className="gallery section-shell"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/gallery-section.jsx',
@@ -270,9 +245,9 @@ export function GallerySection({ section, sectionId }) {
         markup="src/components/platform/sections/gallery-section.jsx"
         content={`gallery section with ${imageCount} images`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
+      <div className="section-shell__inner">
         <GalleryHeader section={section} />
-        <div className="columns-1 gap-3 sm:columns-2 md:columns-2 md:gap-4 lg:columns-3 xl:columns-4">
+        <div className="gallery__grid">
           {images.map((item, index) => (
             <GalleryTile
               key={buildRuntimeKey('gallery-image', item?._key, item?.asset?._ref, index)}

@@ -213,8 +213,8 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 
   if (hasError) {
     return (
-      <div className="bg-muted text-muted-foreground flex aspect-video items-center justify-center rounded-lg">
-        <p className="text-sm">Could not load video</p>
+      <div className="section-shell__empty">
+        <p>Could not load video</p>
       </div>
     )
   }
@@ -222,14 +222,14 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
   return (
     <div
       ref={containerRef}
-      className="group relative isolate overflow-hidden rounded-lg bg-black"
+      className="video-player"
       style={{ aspectRatio: aspectRatio ? undefined : '16 / 9' }}
       onMouseEnter={() => setShowVolume(true)}
       onMouseLeave={() => setShowVolume(false)}
     >
       <video
         ref={videoRef}
-        className="h-full w-full object-contain"
+        className="video-player__video"
         style={aspectRatio ? { aspectRatio } : undefined}
         src={videoSrc}
         poster={posterSrc}
@@ -243,24 +243,19 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
       />
 
       {!isPlaying && !hasError && (
-        <button
-          type="button"
-          className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/20 transition-colors hover:bg-black/30"
-          onClick={togglePlay}
-          aria-label="Play video"
-        >
-          <span className="bg-primary text-primary-foreground flex h-16 w-16 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105">
+        <button type="button" className="video-player__cover" onClick={togglePlay} aria-label="Play video">
+          <span className="video-player__play">
             <PlayIcon size={32} />
           </span>
         </button>
       )}
 
-      <div className="absolute inset-x-0 bottom-0 z-20 translate-y-full transition-transform group-focus-within:translate-y-0 group-hover:translate-y-0">
-        <div className="bg-linear-to-t from-black/80 to-transparent px-2 pt-8 pb-2">
-          <div className="flex items-center gap-2 px-1">
+      <div className="video-player__controls">
+        <div className="video-player__controls-inner">
+          <div className="video-player__row">
             <div
               ref={scrubberRef}
-              className="relative h-6 flex-1 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="video-player__scrubber"
               tabIndex={0}
               onMouseDown={handleScrubStart}
               onMouseMove={(e) => {
@@ -289,38 +284,32 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
                 }
               }}
             >
-              <div className="absolute inset-y-1/2 left-0 h-1 w-full -translate-y-1/2 rounded-full bg-white/30">
-                <div
-                  className="bg-primary h-full rounded-full transition-[width] duration-75"
-                  style={{ width: `${progress}%` }}
-                />
+              <div className="video-player__track">
+                <div className="video-player__progress" style={{ width: `${progress}%` }} />
               </div>
-              <div
-                className="bg-primary absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full shadow transition-[left] duration-75"
-                style={{ left: `calc(${progress}% - 6px)` }}
-              />
+              <div className="video-player__thumb" style={{ left: `calc(${progress}% - 6px)` }} />
             </div>
           </div>
 
-          <div className="flex items-center gap-2 px-1 pb-0.5">
+          <div className="video-player__row video-player__row--meta">
             <button
               type="button"
-              className="flex items-center justify-center p-1 text-white/80 transition-colors hover:text-white"
+              className="video-player__button"
               onClick={togglePlay}
               aria-label={isPlaying ? 'Pause' : 'Play'}
             >
               {isPlaying ? <PauseIcon size={18} /> : <PlayIcon size={18} />}
             </button>
 
-            <span className="min-w-20 text-xs text-white/70 tabular-nums select-none">
+            <span className="video-player__time">
               {formatTime(currentTime)} / {formatTime(duration)}
             </span>
 
-            <div className="ml-auto flex items-center gap-1">
-              <div className="flex items-center gap-1">
+            <div className="video-player__cluster video-player__cluster--end">
+              <div className="video-player__cluster">
                 <button
                   type="button"
-                  className="flex items-center justify-center p-1 text-white/80 transition-colors hover:text-white"
+                  className="video-player__button"
                   onClick={toggleMute}
                   aria-label={isMuted ? 'Unmute' : 'Mute'}
                 >
@@ -334,7 +323,7 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
                     step={0.05}
                     value={isMuted ? 0 : volume}
                     onChange={handleVolumeChange}
-                    className="h-1 w-16 cursor-pointer appearance-none rounded-full bg-white/30 accent-white [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                    className="video-player__volume"
                     aria-label="Volume"
                   />
                 )}
@@ -342,7 +331,7 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 
               <button
                 type="button"
-                className="flex items-center justify-center p-1 text-white/80 transition-colors hover:text-white"
+                className="video-player__button"
                 onClick={toggleFullscreen}
                 aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
               >
@@ -369,18 +358,12 @@ export function VideoSection({ section, sectionId }) {
 
   if (!hasVideo) {
     return (
-      <section id={sectionId} className="border-border/60 bg-background border-b">
-        <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
-          {eyebrow && (
-            <p className="text-primary mb-4 text-sm font-semibold tracking-wider uppercase">{eyebrow}</p>
-          )}
-          {title && (
-            <h2 className="font-display text-foreground mb-4 text-3xl tracking-normal md:text-4xl">
-              {title}
-            </h2>
-          )}
-          <div className="bg-muted text-muted-foreground flex aspect-video items-center justify-center rounded-lg">
-            <p className="text-sm">No video source set</p>
+      <section id={sectionId} className="video-section section-shell">
+        <div className="section-shell__inner">
+          {eyebrow && <p className="section-shell__eyebrow">{eyebrow}</p>}
+          {title && <h2 className="section-shell__title video-section__title">{title}</h2>}
+          <div className="section-shell__empty">
+            <p>No video source set</p>
           </div>
         </div>
       </section>
@@ -388,7 +371,7 @@ export function VideoSection({ section, sectionId }) {
   }
 
   return (
-    <section id={sectionId} className="border-primary bg-background relative border-t-4">
+    <section id={sectionId} className="video-section section-shell section-shell--accent-top">
       <ChristmasLights
         lightCount={23}
         strandCount={9}
@@ -406,19 +389,15 @@ export function VideoSection({ section, sectionId }) {
         cordColor="#252d25"
         enableGlowMesh={true}
       />
-      <div className="mx-auto max-w-5xl px-3 py-20 md:px-6 lg:px-10">
+      <div className="section-shell__inner section-shell__inner--narrow">
         {(eyebrow || title) && (
-          <div className="mb-8 max-w-3xl">
-            {eyebrow && (
-              <p className="text-primary mb-4 text-sm font-semibold tracking-wider uppercase">{eyebrow}</p>
-            )}
-            {title && (
-              <h2 className="font-display text-foreground text-3xl tracking-normal md:text-4xl">{title}</h2>
-            )}
+          <div className="section-shell__intro">
+            {eyebrow && <p className="section-shell__eyebrow">{eyebrow}</p>}
+            {title && <h2 className="section-shell__title video-section__title">{title}</h2>}
           </div>
         )}
 
-        <div className={'relative w-full'}>
+        <div className="video-section__player">
           <CustomVideoPlayer
             videoSrc={videoSrc}
             posterSrc={posterSrc}
@@ -429,9 +408,9 @@ export function VideoSection({ section, sectionId }) {
           />
         </div>
 
-        {body && <PortableTextContent value={body} className="text-muted-foreground mt-6 leading-7" />}
+        {body && <PortableTextContent value={body} className="video-section__body" />}
 
-        {caption && <p className="text-muted-foreground mt-3 text-center text-sm">{caption}</p>}
+        {caption && <p className="video-section__caption">{caption}</p>}
       </div>
     </section>
   )

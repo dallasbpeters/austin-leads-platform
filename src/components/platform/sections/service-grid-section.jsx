@@ -262,7 +262,7 @@ const enrichItems = (rawItems) =>
 
 const ServiceMedia = ({ item, overlayStyle }) => {
   if (!item.imageUrl) {
-    return <div className="pointer-events-none absolute inset-0" style={overlayStyle} />
+    return <div className="service-grid__wash" style={overlayStyle} />
   }
   return (
     <>
@@ -271,22 +271,19 @@ const ServiceMedia = ({ item, overlayStyle }) => {
         height={2000}
         src={item.imageUrl}
         alt={item.title}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        className="service-grid__image"
       />
-      <div className="pointer-events-none absolute inset-0" style={overlayStyle} />
+      <div className="service-grid__wash" style={overlayStyle} />
     </>
   )
 }
 
 const ServiceCardLink = ({ item, children }) => {
   if (!item.href) {
-    return <div className="service-grid-card-border-wrap block w-full">{children}</div>
+    return <div className="service-grid__link-wrap">{children}</div>
   }
   return (
-    <Link
-      href={cleanRuntimeHref(item.href)}
-      className="service-grid-card-link block w-full rounded-2xl focus-visible:outline-none"
-    >
+    <Link href={cleanRuntimeHref(item.href)} className="service-grid__link">
       {children}
     </Link>
   )
@@ -299,7 +296,7 @@ export const ServiceGridSection = ({ section, sectionId }) => {
 
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,244,238,0.96))]"
+      className="service-grid section-shell section-shell--paper"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/service-grid-section.jsx',
@@ -310,78 +307,62 @@ export const ServiceGridSection = ({ section, sectionId }) => {
         markup="src/components/platform/sections/service-grid-section.jsx"
         content={`service grid from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
-        <div className="mb-10 max-w-3xl">
+      <div className="section-shell__inner">
+        <div className="section-shell__intro">
           {section.eyebrow ? (
-            <Badge variant="outline" className="text-primary border-primary">
+            <Badge variant="outline" className="section-shell__badge">
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="text-foreground mt-5 text-3xl tracking-normal md:text-4xl">{section.title}</h2>
+          <h2 className="section-shell__title section-shell__title--after-badge">{section.title}</h2>
           {section.subtitle ? (
-            <PortableTextContent
-              as="div"
-              value={section.subtitle}
-              className="text-foreground/80 mt-4 text-lg leading-8"
-            />
+            <PortableTextContent as="div" value={section.subtitle} className="section-shell__subtitle" />
           ) : null}
           {section.body ? (
-            <PortableTextContent
-              as="div"
-              value={section.body}
-              className="text-muted-foreground mt-4 text-[1rem] leading-8"
-            />
+            <PortableTextContent as="div" value={section.body} className="section-shell__body" />
           ) : null}
         </div>
 
-        <ul className="grid gap-6 max-[900px]:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="service-grid__list">
           {items.map((item) => {
             const Icon = getServiceIcon(item)
             const card = (
-              <Card className="service-grid-card-border group relative aspect-4/4 overflow-hidden rounded-2xl border-0 bg-transparent shadow-none contain-none">
+              <Card className="service-grid__card">
                 {item.isRecommended ? (
-                  <div className="absolute top-3 right-5 z-10">
-                    <Badge variant="outline" className="border-secondary bg-secondary text-white">
-                      <Star className="h-4 w-4" />
+                  <div className="service-grid__flag">
+                    <Badge variant="outline" className="service-grid__flag-badge">
+                      <Star className="service-grid__flag-icon" />
                       Recommended
                     </Badge>
                   </div>
                 ) : null}
-                <div className="service-grid-card-media-frame">
-                  <div className="service-grid-card-stack">
+                <div className="service-grid__media-frame">
+                  <div className="service-grid__stack">
                     <ServiceMedia
                       item={item}
                       overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'large') }}
                     />
                   </div>
-                  <div className="service-grid-card-ring" aria-hidden />
+                  <div className="service-grid__ring" aria-hidden />
                 </div>
-                <div className="service-grid-card-copy rounded-[inherit] p-4 text-white">
+                <div className="service-grid__copy">
                   {item.icon ? (
-                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-(--color-tidal) backdrop-blur-sm">
-                      <Icon className="h-8 w-8" strokeWidth={2} />
+                    <div className="service-grid__glyph service-grid__glyph--icon">
+                      <Icon className="service-grid__glyph-icon" strokeWidth={2} />
                     </div>
                   ) : null}
                   {item.number ? (
-                    <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                      <div className="type-accent font-mono text-[2.5rem] leading-[1.1] font-bold">
-                        {item.number}
-                      </div>
+                    <div className="service-grid__glyph">
+                      <div className="service-grid__number">{item.number}</div>
                     </div>
                   ) : null}
 
-                  <h3 className="font-mono text-sm leading-[1.1] font-bold uppercase">{item.eyebrow}</h3>
-                  <div className="type-accent mb-3 text-[1.975rem] leading-[1.1] font-bold">{item.title}</div>
+                  <h3 className="service-grid__eyebrow">{item.eyebrow}</h3>
+                  <div className="service-grid__title">{item.title}</div>
                   {item.price ? (
-                    <div className="mb-3 text-[1.575rem] leading-[1.1] font-bold">
-                      {formatServiceGridPrice(item.price)}
-                    </div>
+                    <div className="service-grid__price">{formatServiceGridPrice(item.price)}</div>
                   ) : null}
-                  <PortableTextContent
-                    as="div"
-                    value={item.copy}
-                    className="mt-1 text-sm font-normal text-white"
-                  />
+                  <PortableTextContent as="div" value={item.copy} className="service-grid__body" />
                 </div>
               </Card>
             )
@@ -394,28 +375,25 @@ export const ServiceGridSection = ({ section, sectionId }) => {
         </ul>
 
         {roofingItems.length ? (
-          <div className="border-border/60 mt-8 border-t pt-8">
+          <div className="service-grid__group">
             {section.roofingTitle ? (
-              <h3 className="text-foreground mb-4 text-lg">{section.roofingTitle}</h3>
+              <h3 className="service-grid__group-title">{section.roofingTitle}</h3>
             ) : null}
-            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="service-grid__subgrid">
               {roofingItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
-                  <Card className="group relative aspect-4/5 overflow-hidden" variant="media" radius="lg">
+                  <Card className="service-grid__mini" variant="media" radius="lg">
                     <ServiceMedia
                       item={item}
                       overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'medium') }}
                     />
-                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                        <Icon className="h-5 w-5" strokeWidth={2.2} />
+                    <div className="service-grid__mini-copy">
+                      <div className="service-grid__mini-glyph">
+                        <Icon className="service-grid__mini-icon" strokeWidth={2.2} />
                       </div>
-                      <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
-                      <PortableTextContent
-                        value={item.copy}
-                        className="text-md mt-2 leading-6 text-white/82"
-                      />
+                      <div className="service-grid__mini-title">{item.title}</div>
+                      <PortableTextContent value={item.copy} className="service-grid__mini-body" />
                     </div>
                   </Card>
                 )
@@ -430,28 +408,25 @@ export const ServiceGridSection = ({ section, sectionId }) => {
         ) : null}
 
         {secondaryItems.length ? (
-          <div className="border-border/60 mt-8 border-t pt-8">
+          <div className="service-grid__group">
             {section.secondaryTitle ? (
-              <h3 className="text-foreground mb-4 text-lg">{section.secondaryTitle}</h3>
+              <h3 className="service-grid__group-title">{section.secondaryTitle}</h3>
             ) : null}
-            <div className="grid gap-4 max-[900px]:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="service-grid__subgrid">
               {secondaryItems.map((item) => {
                 const Icon = getServiceIcon(item)
                 const card = (
-                  <Card className="group relative aspect-square overflow-hidden" variant="media" radius="lg">
+                  <Card className="service-grid__mini service-grid__mini--square" variant="media" radius="lg">
                     <ServiceMedia
                       item={item}
                       overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'small') }}
                     />
-                    <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                      <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                        <Icon className="h-5 w-5" strokeWidth={2.2} />
+                    <div className="service-grid__mini-copy">
+                      <div className="service-grid__mini-glyph">
+                        <Icon className="service-grid__mini-icon" strokeWidth={2.2} />
                       </div>
-                      <div className="type-accent text-[1.375rem] leading-[1.05] font-bold">{item.title}</div>
-                      <PortableTextContent
-                        value={item.copy}
-                        className="text-md mt-2 leading-6 text-white/82"
-                      />
+                      <div className="service-grid__mini-title">{item.title}</div>
+                      <PortableTextContent value={item.copy} className="service-grid__mini-body" />
                     </div>
                   </Card>
                 )

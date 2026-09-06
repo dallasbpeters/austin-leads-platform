@@ -31,7 +31,11 @@
 @import './components/button.css';
 @import './components/card.css';
 @import './components/cloud-background.css';
+@import './components/sections.css';
+@import './components/section-shell.css';
 @import './components/service-grid.css';
+@import './components/gallery.css';
+@import './components/video-section.css';
 @import './components/solar-calculator.css';
 @import './components/solar-costs.css';
 @import './components/consult.css';

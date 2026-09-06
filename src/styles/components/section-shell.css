@@ -1,0 +1,110 @@
+/**
+ * .section-shell block: the container most Sanity sections share. A bottom
+ * hairline, the page background, a centered column with responsive gutters,
+ * and an intro group of eyebrow, title, subtitle and body.
+ */
+
+.section-shell {
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+  background: var(--background);
+}
+
+.section-shell--paper {
+  background: linear-gradient(180deg, rgb(255 255 255 / 98%), rgb(247 244 238 / 96%));
+}
+
+.section-shell--accent-top {
+  border-bottom: 0;
+  border-top: 4px solid var(--primary);
+}
+
+.section-shell__inner {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 5rem 0.75rem;
+}
+
+.section-shell__inner--narrow {
+  max-width: 64rem;
+}
+
+@media (width >= 48rem) {
+  .section-shell__inner {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .section-shell__inner {
+    padding-inline: 2.5rem;
+  }
+}
+
+.section-shell__intro {
+  max-width: 48rem;
+  margin-bottom: 2.5rem;
+}
+
+.section-shell__eyebrow {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.section-shell__eyebrow--muted {
+  margin-bottom: 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  color: var(--muted-foreground);
+}
+
+.section-shell__title {
+  margin: 0;
+  font-size: 1.875rem;
+  letter-spacing: normal;
+  color: var(--foreground);
+}
+
+@media (width >= 48rem) {
+  .section-shell__title {
+    font-size: 2.25rem;
+  }
+}
+
+.section-shell__subtitle {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  line-height: 2rem;
+  color: color-mix(in oklch, var(--foreground) 80%, transparent);
+}
+
+.section-shell__body {
+  margin-top: 1rem;
+  font-size: 1rem;
+  line-height: 2rem;
+  color: var(--muted-foreground);
+}
+
+.section-shell__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  background: var(--muted);
+}
+
+.section-shell__badge {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.section-shell__title--after-badge {
+  margin-top: 1.25rem;
+}
