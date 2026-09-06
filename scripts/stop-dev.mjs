@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process'
 
-const ports = [3000, 3334]
+const DEFAULT_PORTS = [3000, 3334]
 
 function getPidsForPort(port) {
   try {
@@ -29,11 +29,11 @@ function killPid(pid, signal) {
   }
 }
 
-export function stopDevServers() {
+export function stopDevServers(ports = DEFAULT_PORTS) {
   const pids = [...new Set(ports.flatMap(getPidsForPort))]
 
   if (!pids.length) {
-    console.log('No local Next/Sanity dev servers found on ports 3000 or 3334.')
+    console.log(`No local Next/Sanity dev servers found on ports ${ports.join(', ')}.`)
     return
   }
 
