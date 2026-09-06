@@ -1,0 +1,148 @@
+/**
+ * .solar-difference block: stacked sticky cards. Each card sticks a little
+ * lower than the one before, so they pile up as you scroll.
+ */
+
+.solar-difference {
+  background: var(--background);
+}
+
+.solar-difference__inner {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 6rem 1rem 8rem;
+}
+
+@media (width >= 40rem) {
+  .solar-difference__inner {
+    padding-inline: 1.5rem;
+    padding-top: 8rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .solar-difference__inner {
+    padding-inline: 2rem;
+  }
+}
+
+.solar-difference__intro {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 5rem;
+}
+
+@media (width >= 64rem) {
+  .solar-difference__intro {
+    grid-template-columns: minmax(0, 0.68fr) minmax(18rem, 0.32fr);
+  }
+}
+
+.solar-difference__title {
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: clamp(2rem, 4vw, 4.5rem);
+  font-weight: 900;
+  line-height: 0.94;
+  text-wrap: balance;
+  color: var(--color-neutral-950);
+}
+
+.solar-difference__lede {
+  padding-top: 0.75rem;
+  font-size: 1.25rem;
+  line-height: 2rem;
+  color: var(--color-neutral-900);
+}
+
+@media (width >= 64rem) {
+  .solar-difference__lede {
+    padding-top: 3rem;
+  }
+}
+
+.solar-difference__stack {
+  position: relative;
+}
+
+.solar-difference__card {
+  position: sticky;
+  overflow: hidden;
+  padding: 2rem 1.5rem 3rem;
+  border-radius: 2rem;
+}
+
+@media (width >= 40rem) {
+  .solar-difference__card {
+    padding-inline: 3rem;
+    border-radius: 2.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .solar-difference__card {
+    padding: 2.5rem 4rem 4rem;
+  }
+}
+
+.solar-difference__card-head {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  margin-bottom: 6rem;
+}
+
+.solar-difference__card-number {
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.solar-difference__card-eyebrow {
+  font-size: 1.125rem;
+  font-weight: 900;
+}
+
+.solar-difference__card-body {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (width >= 64rem) {
+  .solar-difference__card-body {
+    grid-template-columns: minmax(0, 0.48fr) minmax(0, 0.52fr);
+    align-items: end;
+  }
+}
+
+.solar-difference__card-title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 4.6rem);
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+.solar-difference__card-copy {
+  max-width: 36rem;
+  margin: 2rem 0 0;
+  font-size: 1.125rem;
+  line-height: 2rem;
+}
+
+.solar-difference__card-media {
+  position: relative;
+  min-height: 22rem;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: color-mix(in oklch, var(--color-white) 8%, transparent);
+}
+
+@media (width >= 64rem) {
+  .solar-difference__card-media {
+    min-height: 30rem;
+  }
+}
+
+.solar-difference__card-image {
+  object-fit: cover;
+}

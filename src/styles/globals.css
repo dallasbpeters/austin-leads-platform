@@ -39,6 +39,9 @@
 @import './components/about-profile.css';
 @import './components/pricing.css';
 @import './components/card-grid.css';
+@import './components/solar-difference.css';
+@import './components/solar-adoption.css';
+@import './components/resources.css';
 @import './components/solar-calculator.css';
 @import './components/solar-costs.css';
 @import './components/consult.css';

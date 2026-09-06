@@ -36,22 +36,18 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
   return (
     <section
       ref={sectionRef}
-      className="bg-background text-foreground pt-20"
+      className="solar-adoption"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/solar-adoption-section.jsx',
         content: 'ION-inspired roof and solar panel adoption section',
       })}
     >
-      <div className="mx-auto w-full max-w-7xl px-4 pt-4 pb-10 sm:px-6 lg:px-8 lg:pt-12">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.66fr)_minmax(18rem,0.34fr)] lg:items-start">
+      <div className="solar-adoption__inner">
+        <div className="solar-adoption__intro">
           <div>
-            {section?.eyebrow ? (
-              <p className="text-primary-foreground/40 mb-5 text-xs font-semibold tracking-[0.24em] uppercase">
-                {section.eyebrow}
-              </p>
-            ) : null}
-            <h2 className="type-accent text-foreground m-0 max-w-4xl text-[clamp(3.1rem,4vw,6.75rem)] leading-[0.92] font-black text-balance">
+            {section?.eyebrow ? <p className="solar-adoption__eyebrow">{section.eyebrow}</p> : null}
+            <h2 className="solar-adoption__title">
               {section?.title || 'Why nearly 30 million Americans have switched to solar'}
             </h2>
           </div>
@@ -60,19 +56,16 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
               section?.body ||
               'Homeowners are moving to solar for more predictable energy costs, stronger home resilience, and better control over how their house uses power.'
             }
-            className="text-primary-foreground/40 max-w-md pt-2 text-lg leading-8 lg:pt-12"
+            className="solar-adoption__lede"
           />
         </div>
       </div>
 
-      <div className="relative min-h-55 sm:min-h-140 lg:min-h-165">
-        <div className="absolute inset-x-0 bottom-0 h-[56%]">
-          <Image src={roofImage} alt={roofAlt} fill sizes="100vw" className="object-cover object-top" />
+      <div className="solar-adoption__scene">
+        <div className="solar-adoption__roof">
+          <Image src={roofImage} alt={roofAlt} fill sizes="100vw" className="solar-adoption__roof-image" />
         </div>
-        <motion.div
-          className="absolute inset-x-0 bottom-[7%] mx-auto w-[min(110rem,96vw)] will-change-transform"
-          style={panelMotion}
-        >
+        <motion.div className="solar-adoption__panels" style={panelMotion}>
           <Image
             src={panelImage}
             alt={panelAlt}
@@ -80,10 +73,10 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
             height={450}
             sizes="(max-width: 900px) 96vw, 78rem"
             quality={95}
-            className="mx-auto h-auto w-full"
+            className="solar-adoption__panels-image"
           />
         </motion.div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-25 bg-linear-to-b from-transparent to-black" />
+        <div className="solar-adoption__fade" />
       </div>
 
       <AdoptionReasonCards reasons={section?.reasons} />

@@ -8,26 +8,22 @@ export default function AdoptionReasonCards({ reasons }) {
   }
 
   return (
-    <div className="bg-black px-4 py-20 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-2">
+    <div className="adoption-reasons">
+      <div className="adoption-reasons__grid">
         {reasons.map((reason, index) => {
           const Icon = resolveIconoirIcon(reason.icon)
           return (
             <div
               key={buildRuntimeKey('adoption-reason', reason.title, index)}
-              className="flex flex-col gap-4"
+              className="adoption-reasons__item"
             >
               {Icon ? (
-                <Icon className="h-8 w-8 text-white" />
+                <Icon className="adoption-reasons__icon" />
               ) : (
-                <span className="text-4xl font-bold text-white">{String(index + 1).padStart(2, '0')}</span>
+                <span className="adoption-reasons__index">{String(index + 1).padStart(2, '0')}</span>
               )}
-              <h3 className="text-4xl font-bold text-white">{reason.title}</h3>
-              <PortableTextContent
-                as="div"
-                value={reason.body}
-                className="text-lg leading-relaxed text-white/60"
-              />
+              <h3 className="adoption-reasons__title">{reason.title}</h3>
+              <PortableTextContent as="div" value={reason.body} className="adoption-reasons__body" />
             </div>
           )
         })}

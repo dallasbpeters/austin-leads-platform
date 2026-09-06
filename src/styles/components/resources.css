@@ -1,0 +1,121 @@
+/**
+ * .resources block: three photo tiles that route to the main help topics.
+ */
+
+.resources {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: 6rem;
+}
+
+.resources__shell {
+  position: relative;
+  z-index: 1;
+  width: min(80rem, calc(100% - 3rem));
+  margin-inline: auto;
+}
+
+.resources__intro {
+  max-width: 48rem;
+  margin: 0 auto 4rem;
+  text-align: center;
+}
+
+.resources__title {
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: clamp(1.875rem, 4vw, 2.25rem);
+}
+
+.resources__body {
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: clamp(1rem, 4vw, 1.25rem);
+}
+
+.resources__grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (width >= 48rem) {
+  .resources__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 900px) {
+  .resources__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.resources__card {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.resources__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms ease-out;
+}
+
+.resources__card:hover .resources__image {
+  transform: scale(1.05);
+}
+
+.resources__wash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--color-charade), rgb(11 59 66 / 20%), transparent);
+}
+
+.resources__copy {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 2rem;
+  color: var(--color-white);
+}
+
+.resources__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--color-white) 20%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.resources__icon-svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.resources__card-title {
+  font-family: var(--font-accent);
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.resources__card-copy {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: color-mix(in oklch, var(--color-white) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resources__image {
+    transition: none;
+  }
+}

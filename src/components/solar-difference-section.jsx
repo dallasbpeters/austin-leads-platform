@@ -38,22 +38,22 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
   const stackTopBase = 132
   return (
     <section
-      className="bg-background"
+      className="solar-difference"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/solar-difference-section.jsx',
         content: 'stacked ION-inspired service difference cards',
       })}
     >
-      <div className="mx-auto w-full max-w-7xl px-4 pt-24 pb-32 sm:px-6 sm:pt-32 lg:px-8">
-        <div className="mb-20 grid gap-8 lg:grid-cols-[minmax(0,0.68fr)_minmax(18rem,0.32fr)]">
-          <h2 className="type-accent m-0 text-[clamp(2rem,4vw,4.5rem)] leading-[0.94] font-black text-balance text-neutral-950">
+      <div className="solar-difference__inner">
+        <div className="solar-difference__intro">
+          <h2 className="solar-difference__title">
             {section?.title || 'The difference — premium products, design, & support'}
           </h2>
-          <PortableTextContent value={body} className="text-neutral-9s00 pt-3 text-xl leading-8 lg:pt-12" />
+          <PortableTextContent value={body} className="solar-difference__lede" />
         </div>
 
-        <div className="relative">
+        <div className="solar-difference__stack">
           {items.map((item, index) => {
             const image = resolveCardImage(item)
             const imageAlt = getImageAlt(item?.imageAsset, item?.image, item.title || '')
@@ -66,36 +66,33 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
             return (
               <article
                 key={item._key || `${item.title}-${index}`}
-                className="overflow-hidden rounded-4xl px-6 pt-8 pb-12 sm:rounded-[2.5rem] sm:px-12 lg:px-16 lg:pt-10 lg:pb-16"
+                className="solar-difference__card"
                 style={{
                   backgroundColor,
-                  position: 'sticky',
                   top: stackTop,
                   zIndex: stackZ,
                   color: `contrast-color(${backgroundColor})`,
                 }}
               >
-                <div className="mb-24 flex items-center gap-7">
-                  <span className="text-xl font-black">
+                <div className="solar-difference__card-head">
+                  <span className="solar-difference__card-number">
                     {item.number || String(index + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-lg font-black">{item.eyebrow || item.title}</span>
+                  <span className="solar-difference__card-eyebrow">{item.eyebrow || item.title}</span>
                 </div>
-                <div className="grid gap-10 lg:grid-cols-[minmax(0,0.48fr)_minmax(0,0.52fr)] lg:items-end">
+                <div className="solar-difference__card-body">
                   <div>
-                    <h3 className="m-0 text-[clamp(2rem,4vw,4.6rem)] leading-[0.96] text-balance">
-                      {item.title}
-                    </h3>
-                    {itemBody ? <p className="mt-8 max-w-xl text-lg leading-8">{itemBody}</p> : null}
+                    <h3 className="solar-difference__card-title">{item.title}</h3>
+                    {itemBody ? <p className="solar-difference__card-copy">{itemBody}</p> : null}
                   </div>
                   {image ? (
-                    <div className="relative min-h-88 overflow-hidden rounded-3xl bg-white/8 lg:min-h-120">
+                    <div className="solar-difference__card-media">
                       <Image
                         src={image}
                         alt={imageAlt}
                         fill
                         sizes="(max-width: 1024px) 100vw, 50vw"
-                        className="object-cover"
+                        className="solar-difference__card-image"
                       />
                     </div>
                   ) : null}

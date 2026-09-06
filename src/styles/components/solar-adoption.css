@@ -1,0 +1,193 @@
+/**
+ * .solar-adoption block: headline, a roof photo with a panel array that slides
+ * in on scroll, then reason cards on black.
+ */
+
+.solar-adoption {
+  padding-top: 5rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.solar-adoption__inner {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 1rem 1rem 2.5rem;
+}
+
+@media (width >= 40rem) {
+  .solar-adoption__inner {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .solar-adoption__inner {
+    padding-inline: 2rem;
+    padding-top: 3rem;
+  }
+}
+
+.solar-adoption__intro {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (width >= 64rem) {
+  .solar-adoption__intro {
+    grid-template-columns: minmax(0, 0.66fr) minmax(18rem, 0.34fr);
+    align-items: start;
+  }
+}
+
+.solar-adoption__eyebrow {
+  margin: 0 0 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in oklch, var(--primary-foreground) 40%, transparent);
+}
+
+.solar-adoption__title {
+  max-width: 56rem;
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: clamp(3.1rem, 4vw, 6.75rem);
+  font-weight: 900;
+  line-height: 0.92;
+  text-wrap: balance;
+  color: var(--foreground);
+}
+
+.solar-adoption__lede {
+  max-width: 28rem;
+  padding-top: 0.5rem;
+  font-size: 1.125rem;
+  line-height: 2rem;
+  color: color-mix(in oklch, var(--primary-foreground) 40%, transparent);
+}
+
+@media (width >= 64rem) {
+  .solar-adoption__lede {
+    padding-top: 3rem;
+  }
+}
+
+.solar-adoption__scene {
+  position: relative;
+  min-height: 13.75rem;
+}
+
+@media (width >= 40rem) {
+  .solar-adoption__scene {
+    min-height: 35rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .solar-adoption__scene {
+    min-height: 41.25rem;
+  }
+}
+
+.solar-adoption__roof {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 56%;
+}
+
+.solar-adoption__roof-image {
+  object-fit: cover;
+  object-position: top;
+}
+
+.solar-adoption__panels {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 7%;
+  width: min(110rem, 96vw);
+  margin-inline: auto;
+  will-change: transform;
+}
+
+.solar-adoption__panels-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.solar-adoption__fade {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 6.25rem;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--color-black));
+}
+
+/* Reason cards */
+.adoption-reasons {
+  padding: 5rem 1rem;
+  background: var(--color-black);
+}
+
+@media (width >= 40rem) {
+  .adoption-reasons {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .adoption-reasons {
+    padding-inline: 2rem;
+  }
+}
+
+.adoption-reasons__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  max-width: 80rem;
+  margin-inline: auto;
+}
+
+@media (width >= 40rem) {
+  .adoption-reasons__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.adoption-reasons__item {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.adoption-reasons__icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-white);
+}
+
+.adoption-reasons__index {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.adoption-reasons__title {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.adoption-reasons__body {
+  font-size: 1.125rem;
+  line-height: 1.625;
+  color: color-mix(in oklch, var(--color-white) 60%, transparent);
+}

@@ -86,7 +86,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
 
   return (
     <CloudSectionBackground
-      className="cloud-theme-section--editorial relative isolate overflow-hidden py-24"
+      className="resources cloud-theme-section--editorial"
       density="thick"
       showClouds={showClouds}
       {...getDevSectionAttributes({
@@ -97,43 +97,33 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
           : 'local fallback resource cards',
       })}
     >
-      <div className="relative z-1 mx-auto w-[min(80rem,calc(100%-3rem))]">
-        <div className="mx-auto mb-16 max-w-3xl text-center">
-          <h2 className="cloud-theme-section__heading type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">
-            {title}
-          </h2>
-          <PortableTextContent
-            as="div"
-            value={body}
-            className="cloud-theme-section__body type-accent m-0 text-[clamp(1rem,4vw,1.25rem)]"
-          />
+      <div className="resources__shell">
+        <div className="resources__intro">
+          <h2 className="resources__title cloud-theme-section__heading">{title}</h2>
+          <PortableTextContent as="div" value={body} className="resources__body cloud-theme-section__body" />
         </div>
 
-        <div className="grid gap-6 max-[900px]:grid-cols-1 md:grid-cols-3">
+        <div className="resources__grid">
           {items.map((item) => {
             const Icon = getResourceIcon(item.icon) || inferResourceIcon(item)
 
             return (
               <Link key={item.title} href={item.href}>
-                <Card className="relative aspect-square" variant="media" radius="lg">
+                <Card className="resources__card" variant="media" radius="lg">
                   <Image
                     src={item.image}
                     alt={item.alt}
                     width={700}
                     height={700}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="resources__image"
                   />
-                  <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-charade),rgba(11,59,66,0.2),transparent)]"></div>
-                  <div className="absolute inset-x-0 bottom-0 p-8 text-white">
-                    <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                      <Icon className="h-8 w-8" strokeWidth={2} aria-hidden="true" />
+                  <div className="resources__wash"></div>
+                  <div className="resources__copy">
+                    <div className="resources__icon">
+                      <Icon className="resources__icon-svg" strokeWidth={2} aria-hidden="true" />
                     </div>
-                    <div className="type-accent text-[1.875rem] leading-[1.1] font-bold">{item.title}</div>
-                    <PortableTextContent
-                      as="div"
-                      value={item.copy}
-                      className="mt-1 text-sm font-semibold text-white/70"
-                    />
+                    <div className="resources__card-title">{item.title}</div>
+                    <PortableTextContent as="div" value={item.copy} className="resources__card-copy" />
                   </div>
                 </Card>
               </Link>
