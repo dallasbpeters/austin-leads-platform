@@ -47,6 +47,34 @@ const hasValidApiKey = (request) => {
 }
 
 /**
+ * Explains a response with no image, so the editor can change the prompt
+ * instead of retrying blind: a safety block, a finish reason, or the text the
+ * model answered with instead.
+ *
+ * @param {object} response - Raw Gemini response.
+ * @param {object} candidate - Its first candidate, if any.
+ * @returns {string} A message for the client.
+ */
+const describeEmptyResponse = (response, candidate) => {
+  const blockReason = response?.promptFeedback?.blockReason
+  const finishReason = candidate?.finishReason
+  const text = (candidate?.content?.parts || [])
+    .map((part) => part.text)
+    .filter(Boolean)
+    .join(' ')
+    .trim()
+  const reason = [
+    blockReason ? `blocked: ${blockReason}` : null,
+    finishReason && finishReason !== 'STOP' ? `finish reason: ${finishReason}` : null,
+    text ? `model said: "${text.slice(0, 240)}"` : null,
+  ]
+    .filter(Boolean)
+    .join('; ')
+
+  return reason ? `No image generated (${reason})` : 'No image generated in response'
+}
+
+/**
  * Generates one image, either from a prompt alone or by editing a supplied
  * base image.
  *
@@ -67,16 +95,18 @@ const generateSingleImage = async (client, { prompt, aspectRatio, mode, baseImag
           : [{ text: prompt }],
       },
     ],
-    config: isEdit ? { imageConfig } : { imageConfig, responseModalities: ['Image'] },
+    /* Ask for an image in both modes. Without this the edit path could come back as prose. */
+    config: { imageConfig, responseModalities: ['Image'] },
   })
 
-  for (const part of response?.candidates?.[0]?.content?.parts || []) {
+  const candidate = response?.candidates?.[0]
+  for (const part of candidate?.content?.parts || []) {
     if (part.inlineData) {
       return { imageData: part.inlineData.data, mimeType: part.inlineData.mimeType || 'image/png' }
     }
   }
 
-  throw new Error('No image generated in response')
+  throw new Error(describeEmptyResponse(response, candidate))
 }
 
 /**
