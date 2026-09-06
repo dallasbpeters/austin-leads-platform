@@ -11,10 +11,10 @@ import { ImageGeneratorContent } from './image-generator'
  * pinned to `sanity ^3 || ^4` and `@sanity/ui ^2 || ^3` and has no Sanity 6
  * release, so the studio could not build against it.
  *
- * Only the surface this project actually used is reproduced: the "Generate
- * with AI" asset source on image fields, and the panel the AI Drafting tool
- * embeds directly. The upstream standalone "AI Image Studio" tool was already
- * switched off here, so it is not carried over.
+ * Two surfaces are reproduced: the "Generate with AI" asset source on image
+ * fields, and the panel the AI Drafting tool embeds directly. The panel keeps
+ * the package's features: single image or a consistent series, an optional
+ * reference image, and a review step before anything is uploaded.
  */
 
 /**
