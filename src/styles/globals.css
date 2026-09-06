@@ -1348,3 +1348,29 @@ footer .logo {
   --logo-flag-red: #de1017;
   --logo-tan: #dbbda4;
 }
+
+@layer base {
+  /* Balanced headings avoid a lone word on the last line; pretty body text avoids orphans. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Tactile press feedback. .btn already transitions transform, so this is interruptible. */
+  .btn:active {
+    transform: scale(0.96);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:active {
+      transform: none;
+    }
+  }
+}

@@ -190,7 +190,7 @@ const GenericHeader = ({ site, navigation = EMPTY_NAVIGATION }) => {
         >
           <div className="bg-card mx-auto w-full rounded-none border-b px-4 py-2 shadow-sm md:rounded-md md:border">
             <div
-              className={`mt-2 space-y-1 transition-all duration-200 ${
+              className={`mt-2 space-y-1 transition-[transform,opacity] duration-200 ${
                 openNav ? 'translate-y-0 opacity-100' : '-translate-y-1 opacity-0'
               }`}
             >

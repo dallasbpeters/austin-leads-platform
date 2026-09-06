@@ -232,7 +232,7 @@ function GuideCardBody({ card }) {
         </div>
       ) : null}
       {card.image ? (
-        <div className="relative mt-6 h-56 w-full overflow-hidden rounded-lg">
+        <div className="relative mt-6 h-56 w-full overflow-hidden rounded-lg after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:ring-1 after:ring-black/10 after:content-[''] after:ring-inset">
           <motion.div
             className="absolute inset-0"
             variants={{

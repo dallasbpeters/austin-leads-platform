@@ -211,9 +211,9 @@ function HeroEyebrow({ eyebrow, heroTextColor }) {
       <div className="relative flex h-3 w-3">
         <span
           className="absolute inset-0 animate-ping rounded-full opacity-75"
-          style={{ backgroundColor: 'var(--color-primary-300)' }}
+          style={{ backgroundColor: 'var(--color-wattle)' }}
         />
-        <span className="bg-primary relative h-3 w-3 rounded-full" />
+        <span className="relative h-3 w-3 rounded-full bg-(--color-wattle)" />
       </div>
       <span
         className="text-[12px] font-bold tracking-[0.4em] uppercase"
@@ -239,7 +239,7 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
 
   return (
     <h1
-      className="type-display mb-10 text-[clamp(3.5rem,6vw,6rem)] leading-none! tracking-[-0.02em] text-black"
+      className="type-display mb-10 text-[clamp(2.5rem,6vw,5rem)] leading-none! tracking-[-0.02em] text-black"
       style={heroTextColor ? { color: heroTextColor } : undefined}
     >
       {titlePrimary}

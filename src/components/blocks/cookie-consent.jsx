@@ -58,7 +58,7 @@ const CookieConsent = React.forwardRef(
     }
 
     const containerClasses = cn(
-      'fixed z-50 transition-all duration-700',
+      'fixed z-50 transition-[transform,opacity] duration-700',
       !isOpen ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100',
       className,
     )

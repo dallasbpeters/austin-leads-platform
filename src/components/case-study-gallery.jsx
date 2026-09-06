@@ -91,7 +91,7 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
                 <button
                   aria-current={position === index ? 'true' : undefined}
                   aria-label={`Go to photo ${position + 1}`}
-                  className={`h-2 rounded-full transition-all ${
+                  className={`relative h-2 rounded-full transition-[width,background-color] duration-200 before:absolute before:-inset-x-1 before:-inset-y-4.5 before:content-[''] ${
                     position === index ? 'w-6 bg-blue-500' : 'bg-border hover:bg-muted-foreground w-2'
                   }`}
                   key={photo.key}

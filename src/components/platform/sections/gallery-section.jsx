@@ -80,7 +80,7 @@ function GalleryTile({ item, index, title, onClick }) {
       key={buildRuntimeKey('gallery-image', item?._key, item?.asset?._ref, index)}
       onClick={onClick}
       aria-label={`Open ${alt}`}
-      className={`${heightClass} group focus-visible:outline-primary relative mb-3 block w-full cursor-zoom-in break-inside-avoid overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 md:mb-4`}
+      className={`${heightClass} group focus-visible:outline-primary relative mb-3 block w-full cursor-zoom-in break-inside-avoid overflow-hidden rounded-lg shadow-md transition-shadow duration-300 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-2 md:mb-4`}
     >
       <Image
         src={src}

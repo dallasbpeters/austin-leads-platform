@@ -123,7 +123,7 @@ const PhoneLink = ({ className = '', prefix = null }) => (
     href={SITE_PHONE_HREF}
     className={`text-primary decoration-primary/40 hover:decoration-primary focus-visible:ring-secondary inline-flex items-center gap-2 rounded-full px-2 font-bold underline decoration-1 underline-offset-4 transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none ${className}`}
   >
-    <Phone className="size-4 shrink-0 text-(--color-voodoo)" aria-hidden="true" />
+    <Phone className="size-4 shrink-0 text-(--color-voodoo)" strokeWidth={2} aria-hidden="true" />
     <span>
       {prefix ? `${prefix} ` : null}
       {SITE_PHONE_DISPLAY}
@@ -193,7 +193,19 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
             aria-controls={MOBILE_MENU_ID}
             aria-label={openNav ? 'Close navigation menu' : 'Open navigation menu'}
           >
-            {openNav ? <Xmark className="size-6" /> : <Menu className="size-6" />}
+            {/* Both icons stay mounted and cross-fade, so the close icon has an exit as well as an entrance. */}
+            <span className="relative block size-6" aria-hidden="true">
+              <Menu
+                className={`absolute inset-0 size-6 transition-[opacity,scale,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ${
+                  openNav ? 'scale-25 opacity-0 blur-[4px]' : 'blur-0 scale-100 opacity-100'
+                }`}
+              />
+              <Xmark
+                className={`absolute inset-0 size-6 transition-[opacity,scale,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none ${
+                  openNav ? 'blur-0 scale-100 opacity-100' : 'scale-25 opacity-0 blur-[4px]'
+                }`}
+              />
+            </span>
           </Button>
         </div>
       </div>

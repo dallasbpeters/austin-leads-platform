@@ -27,7 +27,7 @@ const SolarBenefitsSection = ({ section = null, sectionId = 'solar-benefits' }) 
 
   return (
     <section
-      className="bg-black py-24 text-white sm:py-32"
+      className="from-primary bg-linear-to-t to-black py-24 text-white sm:py-32"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/solar-benefits-section.jsx',
@@ -52,7 +52,7 @@ const SolarBenefitsSection = ({ section = null, sectionId = 'solar-benefits' }) 
             return (
               <article key={item._key || `${item.title}-${index}`} className="max-w-xl">
                 {Icon ? (
-                  <Icon className="mb-7 size-10 text-white" aria-hidden="true" strokeWidth={2} />
+                  <Icon className="mb-7 size-10 text-(--color-wattle)" aria-hidden="true" strokeWidth={2} />
                 ) : null}
                 <h3 className="m-0 text-[clamp(2rem,4vw,3.4rem)] leading-[1.05] font-black tracking-[-0.055em] text-balance">
                   {item.title}

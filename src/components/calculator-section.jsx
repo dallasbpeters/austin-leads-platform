@@ -145,7 +145,7 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
                 max={MAX_BILL}
                 value={bill}
                 onChange={(event) => setBill(clampBill(event.target.value))}
-                className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-4 pl-10 text-[1.875rem] font-semibold text-white outline-none"
+                className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-4 pl-10 text-[1.875rem] font-semibold text-white tabular-nums transition-[border-color,box-shadow] duration-200 outline-none focus-visible:border-(--color-tidal) focus-visible:ring-2 focus-visible:ring-(--color-tidal)/40"
               />
             </div>
             <Slider
@@ -257,7 +257,7 @@ function ResultCard({ title, value, prefix = '', suffix = '', detail, accent = f
       <span className="text-sm font-bold tracking-[0.08em] text-slate-700 uppercase">{title}</span>
       <div className="text-foreground mt-2 flex items-baseline gap-1 text-[1.875rem] font-bold">
         {prefix ? <span className="text-sm font-medium text-slate-700">{prefix}</span> : null}
-        <span>{value}</span>
+        <span className="tabular-nums">{value}</span>
         {suffix ? <span className="text-sm font-medium text-slate-700">{suffix}</span> : null}
       </div>
       <p className="mt-1.5 text-sm text-slate-700">{detail}</p>
