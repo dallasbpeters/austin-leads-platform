@@ -484,32 +484,24 @@ Renderer: `src/components/platform/sections/service-grid-section.jsx`, `src/comp
 
 ## snapshotSection (snapshot) · 2 in data
 
-Renderer: `src/components/snapshot-section.jsx`, `src/components/card.jsx`, `src/components/cloud-section-background.jsx`, `src/components/dev/dev-trace.jsx`, `src/components/portable-text-content.jsx`
+Renderer: `src/components/snapshot-section.jsx`, `src/lib/platform/card-tones.js`, `src/lib/platform/imageSource.js`, `src/components/card.jsx`, `src/components/cloud-section-background.jsx`, `src/components/dev/dev-trace.jsx`, `src/components/portable-text-content.jsx`
 
-| Field                 | Type               | Renderer | Helpers | Data | Verdict                   |
-| --------------------- | ------------------ | -------- | ------- | ---- | ------------------------- |
-| type                  | string             | no       | yes     | 2    | shared wrapper            |
-| eyebrow               | string             | yes      | no      | 2    | keep                      |
-| title                 | string             | yes      | yes     | 2    | keep                      |
-| body                  | portableTextSimple | yes      | yes     | 2    | keep                      |
-| items                 | array              | yes      | yes     | 2    | keep                      |
-| items[].number        | string             | yes      | no      | 4    | keep                      |
-| items[].eyebrow       | string             | yes      | no      | 0    | keep (no data yet)        |
-| items[].title         | string             | yes      | yes     | 4    | keep                      |
-| items[].subtitleLabel | portableTextSimple | no       | no      | 0    | **unused**                |
-| items[].subtitleValue | portableTextSimple | no       | no      | 0    | **unused**                |
-| items[].body          | portableTextSimple | yes      | yes     | 8    | keep                      |
-| items[].question      | string             | no       | yes     | 0    | **helpers only, no data** |
-| items[].answer        | portableTextSimple | no       | yes     | 0    | **helpers only, no data** |
-| items[].href          | string             | yes      | yes     | 0    | keep (no data yet)        |
-| items[].ctaLabel      | string             | no       | yes     | 0    | **helpers only, no data** |
-| items[].category      | string             | no       | yes     | 0    | **helpers only, no data** |
-| items[].color         | string             | no       | yes     | 0    | **helpers only, no data** |
-| items[].icon          | string             | yes      | yes     | 6    | keep                      |
-| items[].image         | heroImage          | no       | yes     | 0    | **helpers only, no data** |
-| items[].imageUrl      | string             | no       | yes     | 0    | **helpers only, no data** |
-| items[].video         | heroVideo          | no       | no      | 4    | **data only**             |
-| items[].videoAsset    | uploadedVideo      | no       | no      | 0    | **unused**                |
+| Field              | Type               | Renderer | Helpers | Data | Verdict            |
+| ------------------ | ------------------ | -------- | ------- | ---- | ------------------ |
+| type               | string             | yes      | yes     | 2    | shared wrapper     |
+| eyebrow            | string             | yes      | no      | 2    | keep               |
+| title              | string             | yes      | yes     | 2    | keep               |
+| body               | portableTextSimple | yes      | yes     | 2    | keep               |
+| items              | array              | yes      | yes     | 2    | keep               |
+| items[].number     | string             | yes      | no      | 4    | keep               |
+| items[].title      | string             | yes      | yes     | 4    | keep               |
+| items[].body       | portableTextSimple | yes      | yes     | 8    | keep               |
+| items[].icon       | string             | yes      | yes     | 6    | keep               |
+| items[].color      | string             | yes      | yes     | 0    | keep (no data yet) |
+| items[].image      | heroImage          | yes      | yes     | 0    | keep (no data yet) |
+| items[].imageUrl   | string             | yes      | yes     | 0    | keep (no data yet) |
+| items[].video      | heroVideo          | yes      | no      | 4    | keep               |
+| items[].videoAsset | uploadedVideo      | yes      | no      | 0    | keep (no data yet) |
 
 ## solarAdoptionSection (solarAdoption) · 1 in data
 
@@ -630,4 +622,4 @@ Renderer: `src/components/platform/sections/video-section.jsx`, `src/components/
 
 ## Totals
 
-329 fields checked. 10 unused. 2 data only.
+321 fields checked. 7 unused. 1 data only.
