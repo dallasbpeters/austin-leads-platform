@@ -5,34 +5,14 @@ import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cardToneCssVar } from '@/lib/platform/card-tones'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
-
-const aboutCardThemeColorMap = {
-  primary: 'var(--color-primary)',
-  sweetcorn: 'var(--color-sweetcorn)',
-  voodoo: 'var(--color-voodoo)',
-  tidal: 'var(--color-tidal)',
-  secondaryAlt: 'var(--color-secondary-alt)',
-  blue400: 'var(--color-blue-400)',
-  secondary: 'var(--color-secondary)',
-  tasman: 'var(--color-tasman)',
-  chaletGreen: 'var(--color-chalet-green)',
-  metterhorn: 'var(--color-metterhorn)',
-  heather: 'var(--color-heather)',
-  wattle: 'var(--color-wattle)',
-  charade: 'var(--color-charade)',
-  ceramic: 'var(--color-ceramic)',
-  tapaGreen: 'var(--color-tapa-green)',
-  seaMist: 'var(--color-sea-mist)',
-  blackCurrent: 'var(--color-black-current)',
-  confetti: 'var(--color-confetti)',
-}
 
 const defaultAboutCardGradients = [
   { start: 'primary', end: 'tidal' },
   { start: 'primary', end: 'sweetcorn' },
-  { start: 'secondary', end: 'tertiary' },
+  { start: 'secondary', end: 'tasman' },
 ]
 
 export function AboutProfileSection({ section, sectionId }) {
@@ -63,7 +43,7 @@ export function AboutProfileSection({ section, sectionId }) {
 
   return (
     <section
-      className="bg-gradient"
+      className="about-profile"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/about-profile-section.jsx',
@@ -74,8 +54,8 @@ export function AboutProfileSection({ section, sectionId }) {
         markup="src/components/platform/sections/about-profile-section.jsx"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-3 py-20 md:grid-cols-[.85fr_1.15fr] md:px-6 lg:px-10">
-        <div className="grid grid-cols-1 content-start gap-6">
+      <div className="about-profile__layout">
+        <div className="about-profile__people">
           {people.map((person, index) => {
             const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
             const profileImageAlt = getImageAlt(
@@ -97,17 +77,15 @@ export function AboutProfileSection({ section, sectionId }) {
             const resolvedBadgeImageAlt = badgeImageAlt || person.certificationTitle || 'Certification badge'
             const defaultGradient = defaultAboutCardGradients[index % defaultAboutCardGradients.length]
             const gradientStart =
-              aboutCardThemeColorMap[person.cardGradientStart] ||
-              aboutCardThemeColorMap[defaultGradient.start]
-            const gradientEnd =
-              aboutCardThemeColorMap[person.cardGradientEnd] || aboutCardThemeColorMap[defaultGradient.end]
+              cardToneCssVar(person.cardGradientStart) || cardToneCssVar(defaultGradient.start)
+            const gradientEnd = cardToneCssVar(person.cardGradientEnd) || cardToneCssVar(defaultGradient.end)
             const profileCardBackground = `linear-gradient(45deg, ${gradientStart}, ${gradientEnd}), url('https://grainy-gradients.vercel.app/noise.svg')`
 
             return (
               <Card
                 key={buildRuntimeKey('about-person', person.name, index)}
                 radius="lg"
-                className="bg-card grid aspect-3/3 grid-cols-1 content-between items-end pt-8"
+                className="about-profile__card"
                 style={{ background: profileCardBackground, backgroundBlendMode: 'multiply' }}
               >
                 <Image
@@ -115,77 +93,57 @@ export function AboutProfileSection({ section, sectionId }) {
                   height={700}
                   src={profileImageUrl}
                   alt={profileImageAlt}
-                  className="absolute inset-0 size-full object-cover grayscale filter"
+                  className="about-profile__portrait"
                 />
-                <CardHeader className="relative z-10 flex items-center gap-4">
-                  <div className="flex items-start">
-                    <div className="grid gap-1">
-                      <div className="text-xs tracking-[0.2em] text-white uppercase">
-                        {person.label || 'Profile'}
-                      </div>
-                      <CardTitle className="text-3xl leading-10 tracking-normal text-white">
-                        {person.name}
-                      </CardTitle>
-                      {person.role ? (
-                        <p className="text-lg leading-4 font-semibold text-white">{person.role}</p>
-                      ) : null}
+                <CardHeader className="about-profile__head">
+                  <div>
+                    <div className="about-profile__name-group">
+                      <div className="about-profile__label">{person.label || 'Profile'}</div>
+                      <CardTitle className="about-profile__name">{person.name}</CardTitle>
+                      {person.role ? <p className="about-profile__role">{person.role}</p> : null}
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="relative z-10 grid grid-cols-1 content-end gap-4">
+                <CardContent className="about-profile__content">
                   {person.blurb ? (
-                    <PortableTextContent
-                      as="div"
-                      value={person.blurb}
-                      className="max-w-[34ch] text-sm leading-6 text-white/88"
-                    />
+                    <PortableTextContent as="div" value={person.blurb} className="about-profile__blurb" />
                   ) : null}
                   {person.certificationTitle ? (
-                    <div className="border-border/80 grid gap-3">
-                      <div className="flex items-center gap-3">
+                    <div>
+                      <div className="about-profile__cert">
                         {resolvedBadgeImageUrl ? (
                           <Image
                             width={100}
                             height={100}
                             src={resolvedBadgeImageUrl}
                             alt={resolvedBadgeImageAlt}
-                            className="size-18 rounded-full bg-white object-contain"
+                            className="about-profile__cert-badge"
                           />
                         ) : null}
-                        <div className="grid gap-1">
+                        <div className="about-profile__cert-text">
                           {person.certificationLabel ? (
-                            <div className="text-xs tracking-[0.2em] text-white uppercase">
-                              {person.certificationLabel}
-                            </div>
+                            <div className="about-profile__label">{person.certificationLabel}</div>
                           ) : null}
-                          <div className="text-[1rem] leading-6 font-semibold text-white">
-                            {person.certificationTitle}
-                          </div>
+                          <div className="about-profile__cert-title">{person.certificationTitle}</div>
                         </div>
                       </div>
                     </div>
                   ) : null}
                 </CardContent>
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--color-black)_15%,rgba(11,59,66,0.2),transparent)]" />
+                <div className="about-profile__wash" />
               </Card>
             )
           })}
         </div>
-        <div className="mb-10 max-w-3xl">
+        <div className="about-profile__copy">
           {section.eyebrow ? (
-            <Badge variant="outline" className="text-foreground bg-primary/5 border-primary/20">
+            <Badge variant="outline" className="about-profile__badge">
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="text-foreground mt-5 text-3xl leading-1 tracking-normal md:text-4xl">
-            {section.title}
-          </h2>
+          <h2 className="about-profile__title">{section.title}</h2>
           {section.body ? (
-            <PortableTextContent
-              as="div"
-              value={section.body}
-              className="text-muted-foreground mt-2 text-[1rem] leading-8"
-            />
+            <PortableTextContent as="div" value={section.body} className="about-profile__body" />
           ) : null}
         </div>
       </div>

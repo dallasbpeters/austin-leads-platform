@@ -17,11 +17,11 @@ export function PricingSection({ section, sectionId }) {
   const calloutNotes = notes.filter((n) => n?.variant === 'callout')
 
   const stepCols =
-    stepNotes.length === 2 ? 'grid-cols-2' : stepNotes.length >= 3 ? 'grid-cols-3' : 'grid-cols-1'
+    stepNotes.length === 2 ? 'pricing__steps--2' : stepNotes.length >= 3 ? 'pricing__steps--3' : ''
 
   return (
     <section
-      className="border-border border-b bg-white px-3 py-14 md:py-20"
+      className="pricing"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/pricing-section.jsx',
@@ -30,28 +30,16 @@ export function PricingSection({ section, sectionId }) {
     >
       <DevTrace markup="src/components/platform/sections/pricing-section.jsx" content="pricing section" />
 
-      <div className="mx-auto max-w-6xl">
-        <div className="grid gap-10 lg:grid-cols-[260px_1fr] lg:gap-x-14">
-          {/* Left: heading block — spans both rows at lg */}
-          <div className="lg:row-span-2">
-            {eyebrow ? (
-              <p className="text-muted-foreground mb-4 text-xs tracking-[0.2em] uppercase">{eyebrow}</p>
-            ) : null}
-            <h2 className="text-foreground mb-4 font-serif text-2xl leading-tight tracking-normal text-balance md:text-3xl">
-              {title}
-            </h2>
-            {body ? (
-              <PortableTextContent
-                as="div"
-                value={body}
-                className="text-muted-foreground space-y-3 text-[0.9375rem] leading-relaxed"
-              />
-            ) : null}
+      <div className="pricing__inner">
+        <div className="pricing__layout">
+          <div className="pricing__heading">
+            {eyebrow ? <p className="pricing__eyebrow">{eyebrow}</p> : null}
+            <h2 className="pricing__title">{title}</h2>
+            {body ? <PortableTextContent as="div" value={body} className="pricing__body" /> : null}
           </div>
 
-          {/* Right top: step columns */}
           {stepNotes.length > 0 ? (
-            <div className={`divide-border border-border grid divide-x border-y ${stepCols}`}>
+            <div className={`pricing__steps ${stepCols}`}>
               {stepNotes.map((note, i) => {
                 const noteTitle = note?.title
                 const noteBody = note?.body
@@ -63,29 +51,19 @@ export function PricingSection({ section, sectionId }) {
                 return (
                   <div
                     key={key}
-                    className="py-5 first:pl-0 last:pr-0"
+                    className="pricing__step"
                     style={{
                       paddingLeft: i > 0 ? '1.25rem' : 0,
                       paddingRight: i < stepNotes.length - 1 ? '1.25rem' : 0,
                     }}
                   >
-                    <p className="text-foreground/30 mb-2 text-xs font-bold tracking-[0.16em] uppercase">
-                      0{i + 1}
-                    </p>
-                    {noteTitle ? (
-                      <h3 className="text-foreground mb-1 font-serif text-xl tracking-normal">{noteTitle}</h3>
-                    ) : null}
-                    <p className="mb-1 text-xs font-bold tracking-[0.16em] text-amber-500 uppercase">
-                      {paymentDue}
-                    </p>
-                    <p className="text-foreground mb-2 font-serif text-3xl leading-tight">{amount}</p>
+                    <p className="pricing__step-index">0{i + 1}</p>
+                    {noteTitle ? <h3 className="pricing__step-title">{noteTitle}</h3> : null}
+                    <p className="pricing__step-due">{paymentDue}</p>
+                    <p className="pricing__step-amount">{amount}</p>
 
                     {noteBody ? (
-                      <PortableTextContent
-                        as="div"
-                        value={noteBody}
-                        className="text-muted-foreground space-y-1 text-sm leading-relaxed"
-                      />
+                      <PortableTextContent as="div" value={noteBody} className="pricing__step-body" />
                     ) : null}
                   </div>
                 )
@@ -93,9 +71,8 @@ export function PricingSection({ section, sectionId }) {
             </div>
           ) : null}
 
-          {/* Right bottom: callout notes */}
           {calloutNotes.length > 0 ? (
-            <div className="space-y-6">
+            <div className="pricing__callouts">
               {calloutNotes.map((note, index) => {
                 const noteTitle = note?.title
                 const noteBody = note?.body
@@ -104,17 +81,9 @@ export function PricingSection({ section, sectionId }) {
 
                 return (
                   <div key={key}>
-                    {noteTitle ? (
-                      <h3 className="mb-2 font-serif text-xl font-bold tracking-normal text-green-900">
-                        {noteTitle}
-                      </h3>
-                    ) : null}
+                    {noteTitle ? <h3 className="pricing__callout-title">{noteTitle}</h3> : null}
                     {noteBody ? (
-                      <PortableTextContent
-                        as="div"
-                        value={noteBody}
-                        className="text-muted-foreground space-y-2 text-sm leading-relaxed"
-                      />
+                      <PortableTextContent as="div" value={noteBody} className="pricing__callout-body" />
                     ) : null}
                   </div>
                 )
