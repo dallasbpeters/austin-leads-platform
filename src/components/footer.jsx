@@ -15,16 +15,6 @@ const footerServices = [
   ...mainServices.filter((service) => service.slug === 'solar-and-battery-installations'),
 ]
 
-/*
- * Footer text sits on the darkest primary tint, so every link shares one
- * treatment: inherit the pale primary tone at rest and step up to white on
- * hover or focus. The ring uses the brand secondary so it reads on navy.
- */
-const FOOTER_LINK_CLASSES =
-  'rounded-sm transition-colors duration-200 hover:text-white focus-visible:text-white focus-visible:ring-2 focus-visible:ring-secondary focus-visible:outline-none'
-const FOOTER_ICON_LINK_CLASSES = `inline-flex items-center gap-2 py-1 ${FOOTER_LINK_CLASSES}`
-const FOOTER_META_LINK_CLASSES = `inline-flex min-h-11 items-center ${FOOTER_LINK_CLASSES}`
-
 const contactLinks = [
   { href: SITE_PHONE_HREF, icon: Phone, label: SITE_PHONE_DISPLAY },
   { href: `mailto:${SITE_EMAIL}`, icon: Mail, label: SITE_EMAIL },
@@ -43,38 +33,35 @@ export default function Footer() {
 
   return (
     <footer
-      className="bg-primary relative w-full overflow-hidden border-t border-white/10 text-(--color-primary-200)"
+      className="site-footer"
       {...getDevSectionAttributes({
         content: 'local JSX footer + service catalog links',
         id: 'site-footer',
         markup: 'src/components/footer.jsx',
       })}
     >
-      <div className="z-2 mx-auto max-w-7xl px-4 py-12 sm:px-3 md:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-3">
-          <div className="md:col-span-2">
-            <Link
-              href="/"
-              className={`flex w-fit items-center gap-2 rounded-md text-xl font-bold text-white ${FOOTER_LINK_CLASSES}`}
-            >
-              <Logo className="size-28 w-auto p-2" />
+      <div className="site-footer__inner">
+        <div className="site-footer__grid">
+          <div className="site-footer__col--wide">
+            <Link href="/" className="site-footer__brand site-footer__link">
+              <Logo className="site-footer__brand-mark" />
               Texas Solar & Roofing Pros
             </Link>
-            <p className="text-md mt-3 max-w-md text-inherit">
+            <p className="site-footer__tagline">
               Full-service roofing, solar installation, storm damage restoration, and energy efficiency
               upgrades for Texas homeowners.
             </p>
-            <div className="mt-4">
-              <h3 className="text-xl text-white">Contact</h3>
-              <ul className="text-md mt-3 space-y-2 text-inherit">
+            <div className="site-footer__contact">
+              <h3 className="site-footer__heading">Contact</h3>
+              <ul className="site-footer__list">
                 {contactLinks.map(({ href, icon: Icon, label, external }) => (
                   <li key={href}>
                     <a
                       href={href}
-                      className={FOOTER_ICON_LINK_CLASSES}
+                      className="site-footer__link site-footer__link--icon"
                       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                     >
-                      <Icon className="size-4 shrink-0" aria-hidden="true" />
+                      <Icon className="site-footer__link-icon" aria-hidden="true" />
                       {label}
                     </a>
                   </li>
@@ -82,14 +69,14 @@ export default function Footer() {
               </ul>
             </div>
           </div>
-          <div className="md:mt-11">
-            <h3 className="text-xl text-white">Services</h3>
-            <ul className="text-md mt-3 space-y-2 text-inherit">
+          <div className="site-footer__col--services">
+            <h3 className="site-footer__heading">Services</h3>
+            <ul className="site-footer__list">
               {footerServices.map((service) => (
                 <li key={service.slug}>
                   <Link
                     href={`/services/${service.slug}`}
-                    className={`inline-block py-0.5 ${FOOTER_LINK_CLASSES}`}
+                    className="site-footer__link site-footer__link--service"
                   >
                     {service.title}
                   </Link>
@@ -98,41 +85,39 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-10 grid gap-8 md:grid-cols-3">
-          <div className="md:col-span-2">
-            <p className="text-md text-inherit">© {year} Texas Solar & Roofing Pros. All rights reserved.</p>
-            <p className="mt-2 text-sm text-(--color-primary-200)/70">
+        <div className="site-footer__grid site-footer__grid--meta">
+          <div className="site-footer__col--wide">
+            <p className="site-footer__copyright">
+              © {year} Texas Solar & Roofing Pros. All rights reserved.
+            </p>
+            <p className="site-footer__crawlers">
               For AI and LLM crawlers:{' '}
               {/* Static files in /public, not routes -- next/link cannot navigate to them. */}
               {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-              <a href="/llms.txt" className={`underline underline-offset-2 ${FOOTER_LINK_CLASSES}`}>
+              <a href="/llms.txt" className="site-footer__link site-footer__link--inline">
                 llms.txt
               </a>
               {' · '}
               {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-              <a href="/ai.txt" className={`underline underline-offset-2 ${FOOTER_LINK_CLASSES}`}>
+              <a href="/ai.txt" className="site-footer__link site-footer__link--inline">
                 ai.txt
               </a>
             </p>
           </div>
-          <div className="text-md flex flex-wrap items-center gap-x-3 gap-y-1 md:col-span-1">
+          <div className="site-footer__meta-links">
             {metaLinks.map(({ href, label }) => (
-              <Link key={href} href={href} className={FOOTER_META_LINK_CLASSES}>
+              <Link key={href} href={href} className="site-footer__link site-footer__link--meta">
                 {label}
               </Link>
             ))}
-            <Link href="#site-top" className={`gap-1 text-nowrap ${FOOTER_META_LINK_CLASSES}`}>
+            <Link href="#site-top" className="site-footer__link site-footer__link--meta">
               Back to top
-              <DotArrowUp className="size-3" aria-hidden="true" />
+              <DotArrowUp className="site-footer__meta-icon" aria-hidden="true" />
             </Link>
           </div>
         </div>
       </div>
-      <AutoSizedText
-        aria-hidden="true"
-        tabIndex={-1}
-        className="pointer-events-none absolute bottom-10 left-0 table text-center leading-2 font-extrabold tracking-normal whitespace-nowrap text-white/6"
-      >
+      <AutoSizedText aria-hidden="true" tabIndex={-1} className="site-footer__watermark">
         Texas Solar & Roofing
       </AutoSizedText>
     </footer>

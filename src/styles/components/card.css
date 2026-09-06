@@ -1,0 +1,49 @@
+/* .card block: radius and surface modifiers used by components/card.jsx. */
+
+@layer components {
+  .card {
+    position: relative;
+  }
+
+  .card--radius-md {
+    border-radius: 1rem;
+  }
+
+  .card--radius-lg {
+    border-radius: 1.5rem;
+  }
+
+  .card--surface {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface-elevated);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card--surface-strong {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface-elevated);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card--media {
+    overflow: hidden;
+  }
+
+  .card--color {
+    color: white;
+  }
+
+  .card--dark-glass {
+    border: 1px solid;
+    border-color: rgb(255 255 255 / 30%);
+    background: rgb(255 255 255 / 5%);
+    color: white;
+    box-shadow: none;
+    transition: background-color 150ms ease;
+  }
+
+  .card--dark-glass:hover {
+    background: rgb(255 255 255 / 10%);
+  }
+}

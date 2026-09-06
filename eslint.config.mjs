@@ -89,11 +89,11 @@ export default defineConfig([
   },
 
   // ── CSS ───────────────────────────────────────────────────────────────────
-  // Exclude theme.css — it uses Tailwind v4 @custom-variant / @theme at-rules
+  // Exclude tokens.css — it uses Tailwind v4 @custom-variant / @theme at-rules
   // that the standard CSS parser doesn't understand.
   {
     files: ['src/styles/**/*.css'],
-    ignores: ['src/styles/theme.css'],
+    ignores: ['src/styles/tokens.css'],
     plugins: { css },
     language: 'css/css',
     extends: ['css/recommended'],

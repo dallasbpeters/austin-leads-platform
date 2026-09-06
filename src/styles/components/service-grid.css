@@ -1,0 +1,87 @@
+/* Service grid card: animated conic rim. */
+
+@property --border-angle {
+  inherits: true;
+  initial-value: 0deg;
+  syntax: '<angle>';
+}
+
+@keyframes border {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+/*
+ * Service grid: animated rim is an out-of-flow ring (no padding/layout shift on the media frame).
+ * Band = conic fill + mask xor/exclude so only the padded “border” shows.
+ */
+.service-grid-card-border {
+  contain: none;
+}
+
+.service-grid-card-media-frame {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.service-grid-card-ring {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  box-sizing: border-box;
+  border-radius: inherit;
+  padding: 3px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  background: conic-gradient(
+    from var(--border-angle),
+    color-mix(in oklch, var(--color-secondary) 50%, white),
+    var(--color-secondary),
+    color-mix(in oklch, var(--color-secondary) 72%, transparent),
+    var(--color-secondary),
+    color-mix(in oklch, var(--color-secondary) 72%, white)
+  );
+  background-origin: border-box;
+  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  mask-clip: content-box, border-box;
+  mask-origin: border-box;
+  mask-composite: exclude;
+  mask-repeat: no-repeat;
+}
+
+.service-grid-card-link:hover .service-grid-card-ring,
+.service-grid-card-link:focus-visible .service-grid-card-ring,
+.service-grid-card-border-wrap:hover .service-grid-card-ring {
+  opacity: 1;
+  animation: border 2s cubic-bezier(0.55, 0.08, 0.68, 0.53) infinite;
+}
+
+.service-grid-card-stack {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.service-grid-card-copy {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-grid-card-link:hover .service-grid-card-ring,
+  .service-grid-card-link:focus-visible .service-grid-card-ring,
+  .service-grid-card-border-wrap:hover .service-grid-card-ring {
+    animation: none;
+  }
+}

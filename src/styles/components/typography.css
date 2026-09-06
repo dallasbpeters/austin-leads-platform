@@ -1,0 +1,55 @@
+/* Type family helpers. */
+
+@layer components {
+  .type-display {
+    font-family: var(--font-display);
+  }
+
+  .type-accent {
+    font-family: var(--font-accent);
+  }
+
+  .btn {
+    display: inline-grid;
+    place-content: center;
+    grid-auto-flow: column;
+    gap: 0.5rem;
+    border: 0;
+    font-family: var(--font-accent);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      transform 200ms ease-out,
+      box-shadow 200ms ease-out,
+      background-color 200ms ease-out,
+      color 200ms ease-out;
+  }
+
+  .google-sans {
+    --font-weight: 300;
+
+    font-family: Switzer-Variable, sans-serif;
+    font-optical-sizing: auto;
+    font-weight: var(--font-weight);
+    font-style: normal;
+    font-variation-settings:
+      'slnt' 0,
+      'wdth' 100,
+      'GRAD' 0,
+      'ROND' 0;
+  }
+
+  .google-sans.google-sans-normal {
+    --font-weight: 400;
+  }
+
+  .google-sans.google-sans-medium {
+    --font-weight: 500;
+  }
+
+  .google-sans.google-sans-bold {
+    --font-weight: 700;
+  }
+}

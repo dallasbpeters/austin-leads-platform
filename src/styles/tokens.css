@@ -1,0 +1,201 @@
+/* stylelint-disable number-max-precision */
+/* stylelint-disable hue-degree-notation */
+
+/**
+ * Design tokens.
+ *
+ * 1. Tailwind @theme mapping: forwards the shadcn-style slot vars
+ *    (--background, --primary, ...) to utilities (bg-primary, text-foreground).
+ * 2. :root defaults: the named palette every theme may reference, the neutral
+ *    operator-shell slot values used when <html> has no data-public-site, the
+ *    logo palette and the sidebar tokens.
+ *
+ * Tenant themes (*-theme.css) override the slot vars inside their own scope.
+ * Named palette colors with identical values are aliased to one canonical
+ * token so a change in one place moves every name that shares it.
+ */
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --animate-collapsible-down: collapsible-down 0.2s ease-out;
+  --animate-collapsible-up: collapsible-up 0.2s ease-out;
+  --breakpoint-xs: 30rem;
+  --breakpoint-2xl: 100rem;
+  --breakpoint-3xl: 120rem;
+}
+
+:root {
+  --color-tidal: oklch(83.02% 0.17 81.36deg);
+  --color-voodoo: oklch(56.86% 0.23 27.81deg);
+  --color-chalet-green: oklch(28.01% 0.06 273.7deg);
+  --color-tasman: oklch(71.345% 0.123 267.778deg);
+  --color-metterhorn: oklch(38.672% 0.1564 28.905deg);
+  --color-heather: oklch(84.9% 0.03 244.95deg);
+  --color-charade: var(--color-chalet-green);
+  --color-wattle: var(--color-tidal);
+  --color-ceramic: oklch(92.365% 0.034 235.98deg);
+  --color-tapa-green: oklch(38.503% 0.1751 262.128deg);
+  --color-sea-mist: oklch(83.691% 0.023 272.015deg);
+  --color-sweetcorn: var(--color-tidal);
+  --color-black-current: var(--color-chalet-green);
+  --color-confetti: var(--color-tidal);
+  --color-blue-400: var(--color-chalet-green);
+  --color-white: #fff;
+  --color-black: #111;
+
+  /*
+   * Neutral operator-shell defaults when `<html>` has no `data-public-site`
+   * (admin + sign-in). Mirrors `.admin-theme` light tokens so body/Radix
+   * portals do not inherit tenant oranges from the primary domain host.
+   * `[data-public-site="…"]` in tenant theme files override these per slot.
+   */
+  --background: oklch(99.11% 0 0deg);
+  --foreground: oklch(20.46% 0 0deg);
+  --card: oklch(99.11% 0 0deg);
+  --card-foreground: oklch(20.46% 0 0deg);
+  --popover: oklch(99.11% 0 0deg);
+  --popover-foreground: oklch(43.86% 0 0deg);
+  --primary: oklch(46.969% 0.2624 266.664deg);
+  --primary-foreground: oklch(98.573% 0.0074 165.775deg);
+  --secondary: oklch(99.4% 0 0deg);
+  --secondary-foreground: oklch(20.46% 0 0deg);
+  --muted: oklch(94.61% 0 0deg);
+  --muted-foreground: oklch(24.35% 0 0deg);
+  --accent: oklch(94.61% 0 0deg);
+  --accent-foreground: oklch(24.35% 0 0deg);
+  --destructive: oklch(55.23% 0.1927 32.7272deg);
+  --destructive-foreground: oklch(99.34% 0.0032 17.2118deg);
+  --border: oklch(90.37% 0 0deg);
+  --input: oklch(97.31% 0 0deg);
+  --ring: oklch(46.969% 0.2624 266.664deg);
+  --chart-1: oklch(83.48% 0.1302 160.908deg);
+  --chart-2: oklch(62.31% 0.188 259.8145deg);
+  --chart-3: oklch(60.56% 0.2189 292.7172deg);
+  --chart-4: oklch(76.86% 0.1647 70.0804deg);
+  --chart-5: oklch(69.59% 0.1491 162.4796deg);
+  --sidebar: oklch(99.11% 0 0deg);
+  --sidebar-foreground: oklch(54.52% 0 0deg);
+  --sidebar-primary: oklch(46.969% 0.2624 266.664deg);
+  --sidebar-primary-foreground: oklch(26.26% 0.0147 166.4589deg);
+  --sidebar-accent: oklch(94.61% 0 0deg);
+  --sidebar-accent-foreground: oklch(24.35% 0 0deg);
+  --sidebar-border: oklch(90.37% 0 0deg);
+  --sidebar-ring: oklch(46.969% 0.2624 266.664deg);
+  --font-display: ui-serif, georgia, cambria, 'Times New Roman', times, serif;
+  --radius: 0.5rem;
+  --shadow-x: 0px;
+  --shadow-y: 1px;
+  --shadow-blur: 3px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.17;
+  --shadow-color: #000;
+  --shadow-2xs: 0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 9%);
+  --shadow-xs: 0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 9%);
+  --shadow-sm:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 1px 2px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 1px 2px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-md:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 2px 4px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-lg:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 4px 6px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-xl:
+    0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 17%),
+    0px 8px 10px -1px oklch(from var(--shadow-color) l c h / 17%);
+  --shadow-2xl: 0px 1px 3px 0px oklch(from var(--shadow-color) l c h / 43%);
+  --tracking-normal: 0.025em;
+  --spacing: 0.25rem;
+}
+
+/*
+ * Logo palette. The mark ships as inline SVG so it can follow tenant theming,
+ * and every fill in `logo.jsx` references one of these rather than a literal.
+ *
+ * The blues are lightness steps of the tenant's own primary hue, so the logo
+ * re-tints with the theme while keeping the tonal separation the artwork
+ * relies on -- collapsing them onto a single `--color-primary` would flatten
+ * the state outline, roof and panels into one shade.
+ *
+ * The flag red and the tan are deliberately fixed: the Texas flag is always
+ * the same red regardless of a tenant's palette. They live here so they are
+ * overridable in one place rather than buried in 71 path attributes.
+ */
+/* stylelint-disable-next-line no-duplicate-selectors */
+:root {
+  --logo-navy-950: oklch(from var(--color-primary) 10% c h);
+  --logo-navy-900: oklch(from var(--color-primary) 12% c h);
+  --logo-navy-800: var(--color-primary);
+  --logo-navy-700: oklch(from var(--color-primary) 24% c h);
+  --logo-steel: oklch(from var(--color-primary) 41% calc(c * 0.23) h);
+  --logo-grey-400: oklch(from var(--color-primary) 63% calc(c * 0.04) h);
+  --logo-grey-300: oklch(from var(--color-primary) 76% calc(c * 0.04) h);
+  --logo-sun: var(--color-amber-400);
+  --logo-sun-deep: oklch(78.52% 0.1663 73.7deg);
+  --logo-surface: var(--background);
+  --logo-flag-red: #de1017;
+  --logo-tan: #dbbda4;
+  --sidebar: oklch(98.48% 0 0deg);
+  --sidebar-foreground: oklch(37.05% 0.012 285.8deg);
+  --sidebar-primary: oklch(21.03% 0.0059 285.88deg);
+  --sidebar-primary-foreground: oklch(98.48% 0 0deg);
+  --sidebar-accent: oklch(96.76% 0.0013 286.38deg);
+  --sidebar-accent-foreground: oklch(21.03% 0.0059 285.88deg);
+  --sidebar-border: oklch(92.78% 0.0058 264.53deg);
+  --sidebar-ring: oklch(62.32% 0.1879 259.8deg);
+}
+
+.dark {
+  --sidebar: oklch(21.03% 0.0059 285.88deg);
+  --sidebar-foreground: oklch(96.76% 0.0013 286.38deg);
+  --sidebar-primary: oklch(48.78% 0.217 264.39deg);
+  --sidebar-primary-foreground: oklch(100% 0 0deg);
+  --sidebar-accent: oklch(27.41% 0.0055 286.03deg);
+  --sidebar-accent-foreground: oklch(96.76% 0.0013 286.38deg);
+  --sidebar-border: oklch(85.99% 0.0013 286.37deg);
+  --sidebar-ring: oklch(62.32% 0.1879 259.8deg);
+}

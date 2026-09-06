@@ -1,0 +1,210 @@
+/**
+ * .site-footer block. Text sits on the primary brand color, so every link
+ * shares one treatment: pale primary tint at rest, white on hover or focus.
+ */
+
+/*
+ * Unlayered on purpose, like .cloud-background: cascade layers beat specificity,
+ * so a layered block could never override the Tailwind utilities that shared
+ * components (Button, Logo) put on the same elements.
+ */
+
+.site-footer {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-top: 1px solid color-mix(in oklch, var(--color-white) 10%, transparent);
+  background: var(--primary);
+  color: var(--color-primary-200);
+}
+
+.site-footer__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 3rem 1rem;
+}
+
+@media (width >= 40rem) {
+  .site-footer__inner {
+    padding-inline: 0.75rem;
+  }
+}
+
+@media (width >= 48rem) {
+  .site-footer__inner {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  .site-footer__inner {
+    padding-inline: 2rem;
+  }
+}
+
+.site-footer__grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.site-footer__grid--meta {
+  margin-top: 2.5rem;
+}
+
+@media (width >= 48rem) {
+  .site-footer__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* The meta row needs a wider right column so its links stay on one line. */
+  .site-footer__grid--meta {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+  }
+
+  .site-footer__col--wide {
+    grid-column: span 2;
+  }
+
+  /* Lines the Services heading up with the brand name beside the logo. */
+  .site-footer__col--services {
+    margin-top: 2.75rem;
+  }
+}
+
+.site-footer__link {
+  border-radius: var(--radius-sm);
+  color: inherit;
+  transition: color 200ms ease-out;
+}
+
+.site-footer__link:hover,
+.site-footer__link:focus-visible {
+  color: var(--color-white);
+}
+
+.site-footer__link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondary);
+}
+
+.site-footer__brand {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.site-footer__brand-mark {
+  width: auto;
+  height: 7rem;
+  padding: 0.5rem;
+}
+
+.site-footer__tagline {
+  max-width: 28rem;
+  margin-top: 0.75rem;
+}
+
+.site-footer__contact {
+  margin-top: 1rem;
+}
+
+.site-footer__heading {
+  font-size: 1.25rem;
+}
+
+.site-footer__list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__link--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 0.25rem;
+}
+
+.site-footer__link--service {
+  display: inline-block;
+  padding-block: 0.125rem;
+}
+
+.site-footer__link-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.site-footer__copyright {
+  margin: 0;
+}
+
+.site-footer__crawlers {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: color-mix(in oklch, var(--color-primary-200) 70%, transparent);
+}
+
+.site-footer__link--inline {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.site-footer__meta-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+}
+
+/* 44px tall so each link is a comfortable touch target. */
+.site-footer__link--meta {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.site-footer__meta-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.site-footer__watermark {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 0;
+  display: table;
+  pointer-events: none;
+  text-align: center;
+  font-weight: 800;
+  line-height: 0.5rem;
+  letter-spacing: normal;
+  white-space: nowrap;
+  color: color-mix(in oklch, var(--color-white) 6%, transparent);
+}
+
+.site-footer .logo {
+  --logo-navy-950: #fff;
+  --logo-navy-900: #fff;
+  --logo-navy-800: #fff;
+  --logo-navy-700: #fff;
+  --logo-steel: #fff;
+  --logo-grey-400: #fff;
+  --logo-grey-300: #fff;
+  --logo-sun: var(--color-amber-400);
+  --logo-sun-deep: oklch(78.52% 0.1663 73.7deg);
+  --logo-surface: var(--primary);
+  --logo-flag-red: #de1017;
+  --logo-tan: #dbbda4;
+}

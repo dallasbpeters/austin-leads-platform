@@ -1,0 +1,380 @@
+/* stylelint-disable number-max-precision */
+/* stylelint-disable hue-degree-notation */
+
+/**
+ * Cloud background block: sky tone tokens, drifting cloud layers and the
+ * cloud-theme-section text tokens that read against them.
+ */
+
+@keyframes cloud-background-breathe {
+  from {
+    transform: scale(0.94);
+  }
+
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes cloud-background-puff-spin {
+  from {
+    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z)) rotateZ(var(--puff-start))
+      scale(var(--puff-scale));
+  }
+
+  to {
+    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z))
+      rotateZ(calc(var(--puff-start) + 360deg)) scale(var(--puff-scale));
+  }
+}
+
+@keyframes cloud-background-drift {
+  from {
+    transform: translate3d(-30%, 2%, 0) rotate(-1deg);
+  }
+
+  to {
+    transform: translate3d(4%, -3%, 0) rotate(1deg);
+  }
+}
+
+/*
+ * Sky tone resolves through inherited custom properties, from the nearest
+ * ancestor carrying `data-cloud-tone`. `cloudToneBootstrapScript` stamps the
+ * visitor's local phase onto `<html>` before the first paint, so cloud
+ * sections render their final colors immediately rather than starting on the
+ * day palette and transitioning once React mounts. A section may still set the
+ * attribute itself to override the tone for its own subtree — because these
+ * are inherited properties, the nearest declaration wins with no specificity
+ * juggling required.
+ */
+html:not([data-cloud-tone]),
+[data-cloud-tone='day'] {
+  --cloud-tone-opacity: 0.5;
+  --cloud-tone-layer: linear-gradient(
+    to bottom,
+    oklab(76.461% -0.01704 -0.10761) 0%,
+    oklab(68.309% -0.01491 -0.13193) 100%
+  );
+  --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
+  --cloud-section-background: oklab(62.12% -0.01006 -0.16663);
+  --cloud-section-foreground: #082f43;
+  --cloud-section-muted: #16485d;
+  --cloud-section-eyebrow: #f0f0ef;
+  --gradient-sky-a: oklch(88.282% 0.04208 263.03deg);
+  --gradient-sky-b: oklch(83.981% 0.07972 275.157deg);
+  --gradient-sky-from: oklch(91.99% 0.03404 263.604deg);
+  --gradient-sky-to: oklch(79.42% 0.09 268.49deg);
+  --gradient-sun-a: oklch(90.199% 0.13949 92.626deg);
+  --gradient-sun-b: oklch(76.431% 0.16187 64.269deg);
+  --gradient-sun-highlight: oklch(90.508% 0.18375 98.807deg);
+  --cloud-image-overlay-strength: 55%;
+  --cloud-image-saturation: 1;
+}
+
+[data-cloud-tone='dusk'] {
+  --cloud-tone-opacity: 0.2;
+  --cloud-tone-layer: linear-gradient(
+    to top,
+    oklch(31.455% 0.14125 273.278deg / 70%) 0%,
+    oklch(55.579% 0.165 275.669deg / 50%) 100%
+  );
+  --cloud-tone-sprite-filter: sepia(0.04) saturate(0.15) drop-shadow(0 0.8rem 1.3rem rgb(120 53 15 / 22%));
+  --cloud-section-background: oklch(43.3% 0.13749 269.251deg);
+  --cloud-section-foreground: #fff8ef;
+  --cloud-section-muted: #f0deec;
+  --cloud-section-eyebrow: oklch(77.751% 0.16415 72.838deg);
+  --gradient-sky-a: oklch(55.579% 0.165 275.669deg);
+  --gradient-sky-b: oklch(29.309% 0.13619 272.663deg);
+  --gradient-sky-from: oklch(38.517% 0.13422 270.328deg);
+  --gradient-sky-to: oklch(47.71% 0.12 266.24deg);
+  --gradient-sun-a: oklch(77.751% 0.16415 72.838deg);
+  --gradient-sun-b: oklch(55.921% 0.22738 28.172deg);
+  --gradient-sun-highlight: #ffb86b;
+  --cloud-image-overlay-strength: 72%;
+  --cloud-image-saturation: 0.7;
+}
+
+[data-cloud-tone='night'] {
+  --cloud-tone-opacity: 0.3;
+  --cloud-tone-layer: linear-gradient(
+    to bottom,
+    oklab(17.949% -0.0022 -0.03) 0%,
+    oklab(20.768% -0.002 -0.039) 100%
+  );
+  --cloud-tone-sprite-filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 38%));
+  --cloud-section-background: oklab(17.949% -0.0022 -0.03);
+  --cloud-section-foreground: #effcff;
+  --cloud-section-muted: #c5e4ea;
+  --cloud-section-eyebrow: #ffd06b;
+  --gradient-sky-a: #1d3a5c;
+  --gradient-sky-b: #0a1626;
+  --gradient-sky-from: #14293f;
+  --gradient-sky-to: #6b86b8;
+  --gradient-sun-a: #6584b0;
+  --gradient-sun-b: #4668a1;
+  --gradient-sun-highlight: #49668d;
+  --cloud-image-overlay-strength: 86%;
+  --cloud-image-saturation: 0.45;
+}
+
+.cloud-background {
+  --cloud-opacity: var(--cloud-tone-opacity);
+  --cloud-scroll-progress: 0.5;
+
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  background: var(--cloud-tone-layer);
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.cloud-background__cloud {
+  position: absolute;
+  width: clamp(11rem, 23vw, 24rem);
+  opacity: var(--cloud-opacity);
+  filter: var(--cloud-tone-sprite-filter);
+}
+
+.cloud-theme-section {
+  background-color: var(--cloud-section-background);
+  color: var(--cloud-section-foreground);
+  transition:
+    background-color 700ms ease,
+    color 500ms ease;
+}
+
+.cloud-theme-section--clouds-hidden {
+  --cloud-section-background: var(--color-warm-bg);
+  --cloud-section-foreground: var(--color-text-strong);
+  --cloud-section-muted: var(--color-text-muted);
+  --cloud-section-eyebrow: var(--color-primary);
+}
+
+.cloud-theme-section--metrics.cloud-theme-section--clouds-hidden {
+  --cloud-section-background: #040a17;
+  --cloud-section-foreground: #fff;
+  --cloud-section-muted: rgb(255 255 255 / 70%);
+  --cloud-section-eyebrow: #ffd06b;
+}
+
+.cloud-theme-section__heading {
+  color: var(--cloud-section-foreground);
+}
+
+.cloud-theme-section__body {
+  color: var(--cloud-section-muted);
+}
+
+.cloud-theme-section__eyebrow {
+  color: var(--cloud-section-eyebrow);
+}
+
+.cloud-theme-section__image-overlay {
+  background-color: color-mix(
+    in srgb,
+    var(--cloud-section-background) var(--cloud-image-overlay-strength, 55%),
+    transparent
+  );
+  backdrop-filter: saturate(var(--cloud-image-saturation, 1));
+}
+
+.cloud-background__scroll,
+.cloud-background__breathe,
+.cloud-background__motion {
+  display: block;
+  transform-origin: center;
+}
+
+.cloud-background__scroll {
+  transform: translate3d(0, calc((var(--cloud-scroll-progress) - 0.5) * var(--cloud-parallax, 90) * 1px), 0)
+    scale(var(--cloud-scroll-scale, 0.86));
+  will-change: transform;
+}
+
+.cloud-background__breathe {
+  animation: cloud-background-breathe var(--cloud-breathe-duration) ease-in-out var(--cloud-delay) infinite
+    alternate;
+}
+
+.cloud-background__motion {
+  animation: cloud-background-drift var(--cloud-drift-duration) ease-in-out var(--cloud-delay) infinite
+    alternate;
+}
+
+/* The shallow 3D volume the puffs are scattered through. Perspective is what
+ * turns their depth offsets into a size difference, so nearer planes read as
+ * closer rather than merely larger. */
+.cloud-background__puffs {
+  position: relative;
+  display: block;
+  transform-style: preserve-3d;
+  aspect-ratio: 1;
+  perspective: 520px;
+}
+
+.cloud-background__puff {
+  position: absolute;
+  display: block;
+  inset: 0;
+  opacity: var(--puff-opacity);
+  animation: cloud-background-puff-spin var(--puff-spin) linear infinite;
+}
+
+.cloud-background__puff img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cloud-background__cloud--one {
+  --cloud-parallax: 200;
+  --cloud-breathe-duration: 9s;
+  --cloud-delay: -3s;
+  --cloud-drift-duration: 23s;
+
+  top: -11%;
+  left: -8%;
+}
+
+.cloud-background__cloud--two {
+  --cloud-parallax: 120;
+  --cloud-breathe-duration: 11s;
+  --cloud-delay: -7s;
+  --cloud-drift-duration: 28s;
+
+  top: 5%;
+  right: 5%;
+  width: clamp(9rem, 19vw, 20rem);
+}
+
+.cloud-background__cloud--three {
+  --cloud-parallax: 78;
+  --cloud-breathe-duration: 8s;
+  --cloud-delay: -4s;
+  --cloud-drift-duration: 20s;
+
+  top: 42%;
+  left: 13%;
+  width: clamp(8rem, 15vw, 17rem);
+}
+
+.cloud-background__cloud--four {
+  --cloud-parallax: 230;
+  --cloud-breathe-duration: 12s;
+  --cloud-delay: -10s;
+  --cloud-drift-duration: 31s;
+
+  right: -6%;
+  bottom: -12%;
+}
+
+.cloud-background__cloud--five {
+  --cloud-parallax: 165;
+  --cloud-breathe-duration: 10s;
+  --cloud-delay: -6s;
+  --cloud-drift-duration: 26s;
+
+  bottom: 2%;
+  left: -3%;
+  width: clamp(8rem, 17vw, 19rem);
+}
+
+.cloud-background__cloud--six {
+  --cloud-parallax: 58;
+  --cloud-breathe-duration: 13s;
+  --cloud-delay: -9s;
+  --cloud-drift-duration: 34s;
+
+  top: 34%;
+  right: 31%;
+  width: clamp(7rem, 12vw, 14rem);
+}
+
+.cloud-background__cloud--seven {
+  --cloud-parallax: 96;
+  --cloud-breathe-duration: 10s;
+  --cloud-delay: -8s;
+  --cloud-drift-duration: 25s;
+
+  top: 23%;
+  left: 45%;
+  width: clamp(7rem, 13vw, 15rem);
+}
+
+.cloud-background__cloud--eight {
+  --cloud-parallax: 185;
+  --cloud-breathe-duration: 11s;
+  --cloud-delay: -5s;
+  --cloud-drift-duration: 29s;
+
+  right: 17%;
+  bottom: 8%;
+  width: clamp(9rem, 18vw, 20rem);
+}
+
+.cloud-background__cloud--nine {
+  --cloud-parallax: 50;
+  --cloud-breathe-duration: 8s;
+  --cloud-delay: -2s;
+  --cloud-drift-duration: 21s;
+
+  top: -8%;
+  right: 32%;
+  width: clamp(6rem, 11vw, 13rem);
+}
+
+.cloud-background__cloud--ten {
+  --cloud-parallax: 140;
+  --cloud-breathe-duration: 12s;
+  --cloud-delay: -11s;
+  --cloud-drift-duration: 32s;
+
+  bottom: -3%;
+  left: 38%;
+  width: clamp(7rem, 14vw, 16rem);
+}
+
+.cloud-background__cloud--eleven {
+  --cloud-parallax: 66;
+  --cloud-breathe-duration: 9s;
+  --cloud-delay: -6s;
+  --cloud-drift-duration: 24s;
+
+  top: 56%;
+  left: 59%;
+  width: clamp(6rem, 10vw, 12rem);
+}
+
+.cloud-background__cloud--twelve {
+  --cloud-parallax: 110;
+  --cloud-breathe-duration: 13s;
+  --cloud-delay: -12s;
+  --cloud-drift-duration: 35s;
+
+  right: -4%;
+  bottom: 29%;
+  width: clamp(7rem, 13vw, 15rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-background__scroll,
+  .cloud-background__breathe,
+  .cloud-background__motion,
+  .cloud-background__puff {
+    animation: none;
+  }
+
+  /* Without the spin animation the puffs lose the transform it carried, so
+   * their scatter has to be restated statically. */
+  .cloud-background__puff {
+    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z)) rotateZ(var(--puff-start))
+      scale(var(--puff-scale));
+  }
+
+  .cloud-background__scroll {
+    transform: none;
+  }
+}

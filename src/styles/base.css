@@ -1,0 +1,179 @@
+/**
+ * Element defaults and resets. Anything that styles a bare tag or a global
+ * host attribute lives here. Component blocks live in ./components.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  display: flex;
+  min-height: 80vh;
+  flex-direction: column;
+}
+
+.jobber-inline-work-request {
+  width: 100%;
+}
+
+.jobber-inline-work-request iframe,
+iframe.jobber-work-request {
+  display: block !important;
+  width: 100% !important;
+  min-height: min(760px, calc(100dvh - 10rem)) !important;
+  border: 0 !important;
+}
+
+/* Global resets */
+a {
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Quote layout Mapbox host — keep a real box; Mapbox sets position:relative on this node. */
+.quote-layout-map,
+.quote-layout-map.mapboxgl-map {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+/* ─── Revert global resets inside Sanity Studio UI ──────────────────────────
+   Global element resets bleed into @sanity/ui components (hotspot dialogs,
+   crop editors, Presentation overlays). These revert rules restore browser
+   defaults for Sanity's UI tree.
+─────────────────────────────────────────────────────────────────────────── */
+sanity-visual-editing img,
+sanity-visual-editing picture,
+[data-ui] img,
+[data-ui] picture,
+[data-ui] video,
+[data-ui] canvas {
+  display: revert;
+  width: revert;
+  max-width: revert;
+  height: revert;
+}
+
+sanity-visual-editing h1,
+sanity-visual-editing h2,
+sanity-visual-editing h3,
+sanity-visual-editing h4,
+sanity-visual-editing h5,
+sanity-visual-editing h6,
+[data-ui] h1,
+[data-ui] h2,
+[data-ui] h3,
+[data-ui] h4,
+[data-ui] h5,
+[data-ui] h6 {
+  line-height: revert;
+  font-weight: revert;
+}
+
+sanity-visual-editing a,
+[data-ui] a {
+  text-decoration: revert;
+}
+
+/* Portaled dialogs render outside [data-ui] tree — revert for them too */
+[role='dialog'] img,
+[role='dialog'] picture {
+  display: revert;
+  width: revert;
+  max-width: revert;
+  height: revert;
+}
+
+[role='dialog'] h1,
+[role='dialog'] h2,
+[role='dialog'] h3,
+[role='dialog'] h4,
+[role='dialog'] h5,
+[role='dialog'] h6 {
+  line-height: revert;
+  font-weight: revert;
+}
+
+[role='dialog'] a {
+  text-decoration: revert;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+/* ─── @sanity/visual-editing portal host ───────────────────────────────────
+   Overlays portal into <sanity-visual-editing> (direct child of <html>).
+   Without a sized containing block, in-flow height/percent and nested flex
+   rows collapse → hotspot/crop dialogs show headers only (body height 0).
+   Fill the viewport; keep pointer-events off on the shell so the page stays
+   interactive unless a child (overlay/dialog) opts in.
+─────────────────────────────────────────────────────────────────────────── */
+sanity-visual-editing {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+}
+
+html.admin-html-locked,
+body.admin-body-locked {
+  overflow: hidden;
+}
+
+@layer base {
+  /* Balanced headings avoid a lone word on the last line; pretty body text avoids orphans. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  input[type='checkbox'] {
+    accent-color: var(--color-primary) !important;
+  }
+}

@@ -163,7 +163,7 @@ async function readStyleFile(relativePath) {
 
 async function loadStyleGuideData() {
   const [globalsCss, solarCss, christmasCss, adminCss] = await Promise.all([
-    readStyleFile('src/styles/globals.css'),
+    readStyleFile('src/styles/tokens.css'),
     readStyleFile('src/styles/texas-solar-and-roofing-pros-theme.css'),
     readStyleFile('src/styles/txchristmaslights-theme.css'),
     readStyleFile('src/styles/admin-theme.css'),

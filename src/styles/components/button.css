@@ -1,0 +1,129 @@
+/* .btn block and its modifiers. The shadcn Button wrapper adds these classes. */
+
+@layer components {
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid oklch(from var(--color-primary) 65% c h / 65%);
+    outline-offset: 3px;
+  }
+
+  .btn--primary {
+    background-color: var(--color-primary);
+    box-shadow: 2px 2px 0 0 color-mix(in oklch, var(--color-primary) 54%, white 3%);
+    color: var(--color-white);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Inner must be a real box (not display:contents) so z-index stacks above ::after. */
+  .btn--primary > [data-slot='button-inner'] {
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn--primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    clip-path: circle(0% at 0% 100%);
+    background-color: color-mix(in oklch, var(--color-primary) 54%, black 10%);
+    transition: clip-path 0.25s ease-in-out;
+  }
+
+  .btn--primary:hover::after {
+    clip-path: circle(150% at 0% 100%);
+  }
+
+  .btn--primary:hover {
+    box-shadow: var(--shadow-brand-hover);
+    background-color: var(--color-primary-700);
+  }
+
+  .btn--secondary {
+    --btn-secondary-bg: color-mix(in oklch, var(--color-ceramic) 82%, var(--color-secondary-300) 18%);
+    --btn-secondary-border: color-mix(in oklch, var(--color-secondary-300) 56%, var(--color-ceramic) 44%);
+
+    border: 1px solid var(--btn-secondary-border);
+    background-color: var(--btn-secondary-bg);
+    color: var(--color-secondary-950);
+  }
+
+  @supports (color: color-contrast(white vs black)) {
+    .btn--secondary {
+      color: color-contrast(
+        var(--btn-secondary-bg) vs var(--color-secondary-950),
+        var(--color-text-strong),
+        var(--color-white)
+      );
+    }
+  }
+
+  .btn--secondary:hover {
+    --btn-secondary-bg: color-mix(in oklch, var(--color-ceramic) 72%, var(--color-secondary-300) 28%);
+    --btn-secondary-border: color-mix(in oklch, var(--color-secondary-300) 70%, var(--color-ceramic) 30%);
+
+    background-color: var(--btn-secondary-bg);
+    border-color: var(--btn-secondary-border);
+  }
+
+  @supports (color: color-contrast(white vs black)) {
+    .btn--secondary:hover {
+      color: color-contrast(
+        var(--btn-secondary-bg) vs var(--color-secondary-950),
+        var(--color-text-strong),
+        var(--color-white)
+      );
+    }
+  }
+
+  .btn--tertiary {
+    background-color: var(--color-tertiary-alt);
+    color: var(--color-black);
+  }
+
+  .btn--tertiary:hover {
+    background-color: var(--color-tertiary-700);
+  }
+
+  .btn--md {
+    min-height: 2.4rem;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  .btn--lg {
+    min-height: 3.5rem;
+    padding: 1rem 2rem;
+    font-size: 0.9rem;
+  }
+
+  .btn--pill {
+    border-radius: 999px;
+  }
+
+  .btn--rounded {
+    border-radius: 0.75rem;
+  }
+
+  .btn--full {
+    width: 100%;
+  }
+
+  /* Tactile press feedback. .btn already transitions transform, so this is interruptible. */
+  .btn:active {
+    transform: scale(0.96);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:active {
+      transform: none;
+    }
+  }
+}
