@@ -67,15 +67,11 @@ function getSectionStyles(section) {
 function StatItem({ item, labelStyle }) {
   return (
     <div key={item._key || item.title}>
-      <p className="mb-3 text-6xl font-bold text-neutral-900">{item.number}</p>
-      <p className="mb-3 text-sm font-semibold tracking-[0.2em] text-cyan-800 uppercase" style={labelStyle}>
+      <p className="solar-costs__stat-number">{item.number}</p>
+      <p className="solar-costs__stat-label" style={labelStyle}>
         {item.title}
       </p>
-      <PortableTextContent
-        as="div"
-        value={item.body}
-        className="text-[0.9375rem] leading-7 font-semibold text-neutral-500"
-      />
+      <PortableTextContent as="div" value={item.body} className="solar-costs__stat-body" />
     </div>
   )
 }
@@ -87,7 +83,7 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
 
   return (
     <section
-      className="grid place-content-center border-t border-stone-100 py-24"
+      className="solar-costs"
       style={sectionStyle}
       {...getDevSectionAttributes({
         id: sectionId,
@@ -95,46 +91,26 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
         content: 'local JSX copy',
       })}
     >
-      <div className="mx-auto w-full max-w-6xl px-12">
-        <p
-          className="type-accent mb-8 text-sm font-semibold tracking-[0.2em] text-(--color-voodoo) uppercase"
-          style={labelStyle}
-        >
+      <div className="solar-costs__shell">
+        <p className="solar-costs__eyebrow" style={labelStyle}>
           {eyebrow}
         </p>
-        <h2 className="mb-6 text-[clamp(2.25rem,5vw,3.5rem)] text-slate-900">{title}</h2>
-        <PortableTextContent
-          as="div"
-          value={body}
-          className="text-[1.125rem] leading-7 font-semibold text-neutral-500"
-        />
-        <PortableTextContent
-          as="div"
-          value={subtitle}
-          className="mt-3 text-[1.125rem] leading-7 font-semibold text-neutral-500"
-        />
-        <div className="my-16 grid gap-12 lg:grid-cols-3">
+        <h2 className="solar-costs__title">{title}</h2>
+        <PortableTextContent as="div" value={body} className="solar-costs__body" />
+        <PortableTextContent as="div" value={subtitle} className="solar-costs__subtitle" />
+        <div className="solar-costs__stats">
           {stats.map((item) => (
             <StatItem key={item._key || item.title} item={item} labelStyle={labelStyle} />
           ))}
         </div>
-        <div className="mb-12 border-t border-blue-300" style={dividerStyle} />
-        <div className="flex items-baseline gap-8 max-[900px]:flex-col">
-          <p
-            className="shrink-0 text-sm font-semibold tracking-[0.2em] text-blue-900 uppercase"
-            style={labelStyle}
-          >
+        <div className="solar-costs__divider" style={dividerStyle} />
+        <div className="solar-costs__payback">
+          <p className="solar-costs__payback-eyebrow" style={labelStyle}>
             {paybackEyebrow}
           </p>
           <div>
-            <p className="text-[clamp(1.5rem,4vw,1.875rem)] leading-[1.35] font-semibold text-neutral-900">
-              {paybackTitle}
-            </p>
-            <PortableTextContent
-              as="div"
-              value={paybackBody}
-              className="mt-3 text-[1rem] leading-7 font-semibold text-neutral-500"
-            />
+            <p className="solar-costs__payback-title">{paybackTitle}</p>
+            <PortableTextContent as="div" value={paybackBody} className="solar-costs__payback-body" />
           </div>
         </div>
       </div>

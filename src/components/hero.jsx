@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
 import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
+import { cn } from '@/lib/utils'
 
 import Card from './card'
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -137,7 +138,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
       <>
         <video
           key={heroVideoSource.src}
-          className="absolute inset-0 z-0 h-full w-full bg-black object-cover object-center"
+          className="solar-hero__media solar-hero__media--video"
           poster={heroVideoSource.poster || undefined}
           autoPlay={heroVideoSource.autoplay}
           loop={heroVideoSource.loop}
@@ -149,7 +150,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
         >
           <source src={heroVideoSource.src} type={heroVideoSource.type || undefined} />
         </video>
-        <div className="absolute inset-0 z-10" style={overlayStyle} />
+        <div className="solar-hero__overlay" style={overlayStyle} />
       </>
     )
   }
@@ -165,7 +166,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
         showOverlay={Boolean(overlayStyle)}
         showDots={false}
         objectPosition="center"
-        className="absolute inset-0 z-0 min-h-[80vh]"
+        className="solar-hero__fader"
         imageClassName="object-top"
         backgroundColor="#000000"
         initialPriority
@@ -184,9 +185,9 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
           fetchPriority="high"
           quality={68}
           sizes="100vw"
-          className="absolute inset-0 z-0 h-full w-full object-cover object-center"
+          className="solar-hero__media"
         />
-        <div className="absolute inset-0 z-10" style={overlayStyle} />
+        <div className="solar-hero__overlay" style={overlayStyle} />
       </>
     )
   }
@@ -200,25 +201,19 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
       fetchPriority="high"
       quality={90}
       sizes="100vw"
-      className="absolute inset-0 object-cover object-top opacity-10"
+      className="solar-hero__media solar-hero__media--fallback"
     />
   )
 }
 
 function HeroEyebrow({ eyebrow, heroTextColor }) {
   return (
-    <div className="mb-8 inline-flex items-center gap-4">
-      <div className="relative flex h-3 w-3">
-        <span
-          className="absolute inset-0 animate-ping rounded-full opacity-75"
-          style={{ backgroundColor: 'var(--color-wattle)' }}
-        />
-        <span className="relative h-3 w-3 rounded-full bg-(--color-wattle)" />
+    <div className="solar-hero__eyebrow">
+      <div className="solar-hero__pulse">
+        <span className="solar-hero__pulse-ring animate-ping" />
+        <span className="solar-hero__pulse-dot" />
       </div>
-      <span
-        className="text-[12px] font-bold tracking-[0.4em] uppercase"
-        style={{ color: heroTextColor || 'var(--color-primary)' }}
-      >
+      <span className="solar-hero__eyebrow-text" style={{ color: heroTextColor || 'var(--color-primary)' }}>
         {eyebrow}
       </span>
     </div>
@@ -229,7 +224,7 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
   if (useSingleHeadline) {
     return (
       <h1
-        className="type-display mb-3 text-[clamp(3.5rem,8vw,5rem)] leading-tight tracking-[-0.02em] text-black"
+        className="solar-hero__title solar-hero__title--single"
         style={heroTextColor ? { color: heroTextColor } : undefined}
       >
         {title}
@@ -238,20 +233,10 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
   }
 
   return (
-    <h1
-      className="type-display mb-10 text-[clamp(2.5rem,6vw,5rem)] leading-none! tracking-[-0.02em] text-black"
-      style={heroTextColor ? { color: heroTextColor } : undefined}
-    >
+    <h1 className="solar-hero__title" style={heroTextColor ? { color: heroTextColor } : undefined}>
       {titlePrimary}
       <br />
-      <span
-        style={{
-          color: 'var(--color-amber-400)',
-          paintOrder: 'stroke fill',
-        }}
-      >
-        {titleAccent}
-      </span>
+      <span className="solar-hero__title-accent">{titleAccent}</span>
     </h1>
   )
 }
@@ -267,16 +252,13 @@ function HeroMetricTile({
   return (
     <div
       key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-      className="rounded-xl border px-4 py-3"
+      className="solar-hero__metric"
       style={{ backgroundColor: metricTileBackground, borderColor: metricTileBorder }}
     >
-      <div
-        className="text-[11px] font-semibold tracking-[0.18em] uppercase"
-        style={{ color: metricLabelColor }}
-      >
+      <div className="solar-hero__metric-label" style={{ color: metricLabelColor }}>
         {metric.label}
       </div>
-      <div className="text-lg font-semibold tracking-normal" style={{ color: metricValueColor }}>
+      <div className="solar-hero__metric-value" style={{ color: metricValueColor }}>
         {metric.value}
       </div>
     </div>
@@ -291,8 +273,8 @@ function HeroMetrics({
   metricValueColor,
 }) {
   return (
-    <div className="grid gap-3">
-      <div className="text-[11px] font-bold tracking-[0.22em] uppercase" style={{ color: metricLabelColor }}>
+    <div className="solar-hero__metrics">
+      <div className="solar-hero__metrics-heading" style={{ color: metricLabelColor }}>
         Snapshot
       </div>
       {heroMetrics.map((metric, index) => (
@@ -316,13 +298,13 @@ function HeroCardCopy({ cardCopy, heroTextColor }) {
       <PortableTextContent
         as="div"
         value={cardCopy}
-        className="font-wght-650 m-0 text-lg leading-7"
+        className="solar-hero__card-copy"
         style={{ color: heroTextColor || 'var(--color-text-strong)' }}
       />
-      <div className="mt-6 flex gap-2">
-        <div className="bg-primary h-1 w-8 rounded-full" />
-        <div className="bg-primary h-1 w-2 rounded-full" />
-        <div className="bg-primary h-1 w-2 rounded-full" />
+      <div className="solar-hero__card-bars" aria-hidden="true">
+        <div className="solar-hero__card-bar solar-hero__card-bar--long" />
+        <div className="solar-hero__card-bar" />
+        <div className="solar-hero__card-bar" />
       </div>
     </>
   )
@@ -347,7 +329,7 @@ function HeroAside({
   return (
     <div className="solar-fade-up solar-fade-up-delay">
       <Card
-        className="p-6 backdrop-blur-md"
+        className="solar-hero__aside-card"
         radius="lg"
         style={{ backgroundColor: cardBackground, borderColor: cardBorder }}
       >
@@ -408,11 +390,7 @@ export default function Hero({
 
   return (
     <section
-      className="text-body type-accent relative top-0 min-h-[50vh] overflow-x-hidden"
-      style={{
-        backgroundImage: 'radial-gradient(var(--color-grid) 1px, transparent 1px)',
-        backgroundSize: '24px 24px',
-      }}
+      className="solar-hero radial-grid-bg"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/hero.jsx',
@@ -425,11 +403,9 @@ export default function Hero({
         rotatingHeroImages={rotatingHeroImages}
         overlayStyle={overlayStyle}
       />
-      <div className="relative z-20 mx-auto flex min-h-[60vh] w-[min(80rem,calc(100%-3rem))] items-center px-2 pt-40 md:px-4">
-        <div
-          className={`grid w-full items-end gap-12 pb-12 ${hasHeroAside ? 'lg:grid-cols-[minmax(0,3fr)_minmax(240px,1fr)]' : 'lg:grid-cols-1'}`}
-        >
-          <div className="solar-fade-up max-w-4xl">
+      <div className="solar-hero__shell">
+        <div className={cn('solar-hero__layout', hasHeroAside && 'solar-hero__layout--with-aside')}>
+          <div className="solar-hero__copy solar-fade-up">
             <HeroEyebrow eyebrow={eyebrow} heroTextColor={heroTextColor} />
             <HeroHeadline
               useSingleHeadline={useSingleHeadline}
@@ -442,12 +418,12 @@ export default function Hero({
               <PortableTextContent
                 as="div"
                 value={body}
-                className="mb-10 max-w-2xl text-lg leading-7"
+                className="solar-hero__body"
                 style={{ color: softTextColor || 'var(--color-muted-foreground)' }}
               />
             ) : null}
-            <div className="flex flex-wrap items-center gap-6 max-md:flex-col max-md:items-start">
-              <div className="flex flex-wrap gap-3">
+            <div className="solar-hero__actions">
+              <div className="solar-hero__action-group">
                 <HeroActions actions={heroActions} textColor={heroTextColor} />
               </div>
             </div>

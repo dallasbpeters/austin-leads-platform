@@ -32,6 +32,10 @@
 @import './components/card.css';
 @import './components/cloud-background.css';
 @import './components/service-grid.css';
+@import './components/solar-calculator.css';
+@import './components/solar-costs.css';
+@import './components/consult.css';
+@import './components/solar-hero.css';
 @import './components/site-header.css';
 @import './components/site-footer.css';
 

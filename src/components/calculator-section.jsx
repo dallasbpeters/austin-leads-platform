@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import { cn } from '@/lib/utils'
 
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import Card from './card'
@@ -105,39 +106,26 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
 
   return (
     <section
-      className="bg-warm relative overflow-hidden py-24"
+      className="solar-calculator"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/calculator-section.jsx',
         content: 'local JSX copy and local calculator logic',
       })}
     >
-      <div className="relative z-1 mx-auto w-[min(72rem,calc(100%-3rem))]">
-        <div className="mb-14 text-center">
-          <h2 className="text-foreground type-display m-0 text-[clamp(2.875rem,4vw,4.25rem)]">{title}</h2>
-          <PortableTextContent
-            as="div"
-            value={body}
-            className="text-foreground mx-auto mt-3 max-w-208 text-[1rem] text-balance"
-          />
+      <div className="solar-calculator__shell">
+        <div className="solar-calculator__intro">
+          <h2 className="solar-calculator__title">{title}</h2>
+          <PortableTextContent as="div" value={body} className="solar-calculator__lede" />
         </div>
 
-        <Card
-          className="grid grid-cols-[minmax(280px,2fr)_minmax(320px,3fr)] overflow-hidden shadow-md max-[900px]:grid-cols-1"
-          variant="surfaceStrong"
-          radius="lg"
-        >
-          <div className="flex flex-col justify-center bg-[linear-gradient(to_bottom_right,var(--color-primary-800),var(--color-primary))] p-8 text-white">
-            <label
-              htmlFor="calc-bill"
-              className="mb-3 block text-sm font-bold tracking-[0.15em] text-(--color-tidal) uppercase"
-            >
+        <Card className="solar-calculator__panel" variant="surfaceStrong" radius="lg">
+          <div className="solar-calculator__input-pane">
+            <label htmlFor="calc-bill" className="solar-calculator__label">
               Your Monthly Electric Bill
             </label>
-            <div className="relative mb-6">
-              <span className="absolute top-1/2 left-4 -translate-y-1/2 text-2xl font-semibold text-white/60">
-                $
-              </span>
+            <div className="solar-calculator__field">
+              <span className="solar-calculator__currency">$</span>
               <input
                 id="calc-bill"
                 type="number"
@@ -145,7 +133,7 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
                 max={MAX_BILL}
                 value={bill}
                 onChange={(event) => setBill(clampBill(event.target.value))}
-                className="w-full rounded-xl border border-white/15 bg-white/10 px-4 py-4 pl-10 text-[1.875rem] font-semibold text-white tabular-nums transition-[border-color,box-shadow] duration-200 outline-none focus-visible:border-(--color-tidal) focus-visible:ring-2 focus-visible:ring-(--color-tidal)/40"
+                className="solar-calculator__input"
               />
             </div>
             <Slider
@@ -155,16 +143,16 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
               step={10}
               value={[bill]}
               onValueChange={([nextBill]) => setBill(clampBill(nextBill))}
-              className="mb-4"
+              className="solar-calculator__slider"
             />
-            <div className="flex justify-between text-sm font-medium text-(--color-tidal)">
+            <div className="solar-calculator__range-labels">
               <span>$50</span>
               <span>$800</span>
             </div>
 
-            <div className="mt-8 flex items-center gap-2 border-t border-white/10 pt-6 text-sm text-(--color-sea-mist)">
+            <div className="solar-calculator__note">
               <svg
-                className="h-4 w-4 shrink-0"
+                className="solar-calculator__note-icon"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -181,7 +169,7 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 p-4 max-sm:grid-cols-1 md:gap-6 md:p-8">
+          <div className="solar-calculator__results">
             <ResultCard
               title={cards[0].title}
               value={results.systemKw}
@@ -216,12 +204,12 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
               accent={cards[3].accent}
             />
 
-            <div className="col-span-full mt-2 flex flex-wrap items-center gap-4">
+            <div className="solar-calculator__actions">
               <Button
                 href={ctaHref}
                 size="md"
                 shape="pill"
-                className="w-full max-w-72"
+                className="solar-calculator__cta"
                 onClick={() =>
                   trackAnalyticsEvent('calculator_cta_click', {
                     cta_label: ctaLabel,
@@ -234,33 +222,26 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
               >
                 {ctaLabel}
               </Button>
-              <span className="text-sm text-slate-700">{ctaNote}</span>
+              <span className="solar-calculator__cta-note">{ctaNote}</span>
             </div>
           </div>
         </Card>
       </div>
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-        }}
-      ></div>
+      <div className="solar-calculator__backdrop solar-grid-bg" aria-hidden="true" />
     </section>
   )
 }
 
 function ResultCard({ title, value, prefix = '', suffix = '', detail, accent = false }) {
   return (
-    <Card className={`bg-card p-5 ${accent ? 'ring-primary/10 ring-1' : ''}`}>
-      <span className="text-sm font-bold tracking-[0.08em] text-slate-700 uppercase">{title}</span>
-      <div className="text-foreground mt-2 flex items-baseline gap-1 text-[1.875rem] font-bold">
-        {prefix ? <span className="text-sm font-medium text-slate-700">{prefix}</span> : null}
-        <span className="tabular-nums">{value}</span>
-        {suffix ? <span className="text-sm font-medium text-slate-700">{suffix}</span> : null}
+    <Card className={cn('solar-calculator__result', accent && 'solar-calculator__result--accent')}>
+      <span className="solar-calculator__result-title">{title}</span>
+      <div className="solar-calculator__result-value">
+        {prefix ? <span className="solar-calculator__result-unit">{prefix}</span> : null}
+        <span className="solar-calculator__result-number">{value}</span>
+        {suffix ? <span className="solar-calculator__result-unit">{suffix}</span> : null}
       </div>
-      <p className="mt-1.5 text-sm text-slate-700">{detail}</p>
+      <p className="solar-calculator__result-detail">{detail}</p>
     </Card>
   )
 }

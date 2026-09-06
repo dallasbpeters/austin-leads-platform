@@ -1,0 +1,126 @@
+/**
+ * .solar-costs block: the "what does solar cost" section. Sanity can pass a
+ * section color; costs-section.jsx applies it inline on the section, the
+ * eyebrows and the divider, so those rules only set defaults.
+ */
+
+.solar-costs {
+  display: grid;
+  place-content: center;
+  padding-block: 6rem;
+  border-top: 1px solid var(--border);
+}
+
+.solar-costs__shell {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 3rem;
+}
+
+.solar-costs__eyebrow {
+  margin: 0 0 2rem;
+  font-family: var(--font-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-voodoo);
+}
+
+.solar-costs__title {
+  margin: 0 0 1.5rem;
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  color: var(--color-slate-900);
+}
+
+.solar-costs__body,
+.solar-costs__subtitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: var(--color-neutral-500);
+}
+
+.solar-costs__subtitle {
+  margin-top: 0.75rem;
+}
+
+.solar-costs__stats {
+  display: grid;
+  gap: 3rem;
+  margin-block: 4rem;
+}
+
+@media (width >= 64rem) {
+  .solar-costs__stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.solar-costs__stat-number {
+  margin: 0 0 0.75rem;
+  font-size: 3.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-neutral-900);
+}
+
+.solar-costs__stat-label {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-cyan-800);
+}
+
+.solar-costs__stat-body {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: var(--color-neutral-500);
+}
+
+.solar-costs__divider {
+  margin-bottom: 3rem;
+  border-top: 1px solid var(--color-secondary-300);
+}
+
+.solar-costs__payback {
+  display: flex;
+  align-items: baseline;
+  gap: 2rem;
+}
+
+@media (width <= 900px) {
+  .solar-costs__payback {
+    flex-direction: column;
+  }
+}
+
+.solar-costs__payback-eyebrow {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.solar-costs__payback-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-neutral-900);
+}
+
+.solar-costs__payback-body {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  color: var(--color-neutral-500);
+}

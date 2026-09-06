@@ -1,0 +1,232 @@
+/**
+ * .solar-hero block: the home page hero. Colors that Sanity can override
+ * (text color, tile backgrounds, overlay) stay inline in hero.jsx; this block
+ * owns layout, type scale and the defaults.
+ */
+
+.solar-hero {
+  position: relative;
+  top: 0;
+  min-height: 50vh;
+  overflow-x: hidden;
+  font-family: var(--font-accent);
+  color: var(--color-text);
+}
+
+.solar-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.solar-hero__media--video {
+  background: var(--color-black);
+}
+
+.solar-hero__media--fallback {
+  object-position: top;
+  opacity: 0.1;
+}
+
+.solar-hero__fader {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  min-height: 80vh;
+}
+
+.solar-hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+.solar-hero__shell {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  width: min(80rem, calc(100% - 3rem));
+  min-height: 60vh;
+  margin-inline: auto;
+  padding: 10rem 0.5rem 0;
+}
+
+@media (width >= 48rem) {
+  .solar-hero__shell {
+    padding-inline: 1rem;
+  }
+}
+
+.solar-hero__layout {
+  display: grid;
+  width: 100%;
+  align-items: end;
+  gap: 3rem;
+  padding-bottom: 3rem;
+}
+
+@media (width >= 64rem) {
+  .solar-hero__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .solar-hero__layout--with-aside {
+    grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr);
+  }
+}
+
+.solar-hero__copy {
+  max-width: 56rem;
+}
+
+/* Eyebrow with the pulsing dot */
+.solar-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.solar-hero__pulse {
+  position: relative;
+  display: flex;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.solar-hero__pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--color-wattle);
+  opacity: 0.75;
+}
+
+.solar-hero__pulse-dot {
+  position: relative;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--color-wattle);
+}
+
+.solar-hero__eyebrow-text {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+/* Headline */
+.solar-hero__title {
+  margin: 0 0 2.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1 !important;
+  letter-spacing: -0.02em;
+  color: var(--color-black);
+}
+
+.solar-hero__title--single {
+  margin-bottom: 0.75rem;
+  font-size: clamp(3.5rem, 8vw, 5rem);
+  line-height: 1.25 !important;
+}
+
+.solar-hero__title-accent {
+  color: var(--color-amber-400);
+  paint-order: stroke fill;
+}
+
+.solar-hero__body {
+  max-width: 42rem;
+  margin-bottom: 2.5rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.solar-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (width < 48rem) {
+  .solar-hero__actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.solar-hero__action-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Aside card: metrics or a short quote */
+.solar-hero__aside-card {
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+}
+
+.solar-hero__metrics {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.solar-hero__metrics-heading {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.solar-hero__metric {
+  padding: 0.75rem 1rem;
+  border: 1px solid;
+  border-radius: var(--radius-xl);
+}
+
+.solar-hero__metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.solar-hero__metric-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: normal;
+}
+
+.solar-hero__card-copy {
+  margin: 0;
+  font-size: 1.125rem;
+  font-variation-settings: 'wght' 650;
+  line-height: 1.75rem;
+}
+
+.solar-hero__card-bars {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.solar-hero__card-bar {
+  width: 0.5rem;
+  height: 0.25rem;
+  border-radius: 999px;
+  background: var(--primary);
+}
+
+.solar-hero__card-bar--long {
+  width: 2rem;
+}

@@ -1,6 +1,7 @@
 // oxlint-disable func-style
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+import { cn } from '@/lib/utils'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import Gradient from './gradient'
 import { JobberDialog } from './jobber-dialog'
@@ -31,15 +32,6 @@ const SECTION_VARIANTS = {
     serviceInterest: 'roofing',
     sourceSection: 'roofing-consultation',
   },
-}
-
-const SECTION_STYLES = {
-  christmasLights: { wrapperBgClass: '' },
-  dark: {
-    wrapperBgClass:
-      'bg-[linear-gradient(135deg,oklch(from_var(--color-secondary)_15%_calc(c_*_0.56)_h),oklch(from_var(--color-secondary)_12%_calc(c_*_0.46)_h))]',
-  },
-  light: { wrapperBgClass: '' },
 }
 
 function getSectionContent(section, variant) {
@@ -135,19 +127,20 @@ function getAvatarData(section) {
  * The light variant sits over the tone-tinted gradient, so its text takes the
  * same `--cloud-section-*` tokens the cloud sections use rather than fixed
  * colours. Without this the copy stays dark navy after the sky turns to night
- * and becomes unreadable. The dark variant has its own opaque background and
- * no gradient, so it keeps its fixed palette.
+ * and becomes unreadable. The dark variant (`consult--dark`) has its own
+ * opaque background and keeps a fixed palette in consult.css.
  */
 function getClassNames(isDarkTheme) {
+  const light = (cloudClass) => (isDarkTheme ? '' : cloudClass)
   return {
-    avatarClassName: `size-16 ${isDarkTheme ? 'bg-white/10 ring-1 ring-white/20' : 'bg-primary ring-1 ring-black/5'}`,
-    blurbClassName: `mt-3 text-sm leading-6 ${isDarkTheme ? 'text-white/80' : 'cloud-theme-section__body'}`,
-    copy: `type-accent text-[1rem] max-w-[60ch] font-semibold ${isDarkTheme ? 'text-white/78' : 'cloud-theme-section__body'}`,
-    eyebrowClassName: `mb-1 text-[11px] font-semibold tracking-[0.22em] uppercase ${isDarkTheme ? 'text-white/58' : 'cloud-theme-section__eyebrow'}`,
-    fallbackClassName: `text-[1rem] font-semibold ${isDarkTheme ? 'bg-white/12 text-white' : 'text-secondary-foreground bg-secondary'}`,
-    heading: `mb-4 text-[clamp(1.875rem,6vw,2.75rem)] leading-[1em]! ${isDarkTheme ? 'text-white' : 'cloud-theme-section__heading'}`,
-    nameClassName: `text-lg font-semibold ${isDarkTheme ? 'text-white' : 'cloud-theme-section__heading'}`,
-    roleClassName: `text-sm ${isDarkTheme ? 'text-white/72' : 'cloud-theme-section__body'}`,
+    avatarClassName: 'consult__avatar',
+    blurbClassName: cn('consult__person-blurb', light('cloud-theme-section__body')),
+    copy: cn('consult__copy', light('cloud-theme-section__body')),
+    eyebrowClassName: cn('consult__person-eyebrow', light('cloud-theme-section__eyebrow')),
+    fallbackClassName: 'consult__avatar-fallback',
+    heading: cn('consult__heading', light('cloud-theme-section__heading')),
+    nameClassName: cn('consult__person-name', light('cloud-theme-section__heading')),
+    roleClassName: cn('consult__person-role', light('cloud-theme-section__body')),
   }
 }
 
@@ -169,15 +162,15 @@ function AvatarSection({ section, isDarkTheme }) {
   }
 
   return (
-    <div className="mt-8 max-w-xl">
-      <div className="flex items-center gap-4">
+    <div className="consult__person">
+      <div className="consult__person-row">
         <Avatar size="xl" className={classes.avatarClassName} style={avatarStyle}>
           {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
           <AvatarFallback className={classes.fallbackClassName} style={avatarStyle}>
             {avatarInitials}
           </AvatarFallback>
         </Avatar>
-        <div className="min-w-0">
+        <div className="consult__person-text">
           {avatarEyebrow ? <div className={classes.eyebrowClassName}>{avatarEyebrow}</div> : null}
           <div className={classes.nameClassName}>{avatarName}</div>
           {avatarRole ? <div className={classes.roleClassName}>{avatarRole}</div> : null}
@@ -202,14 +195,13 @@ export default function ConsultationSection({
   const isChristmasTheme = theme === 'christmasLights'
   const isDarkTheme = theme === 'dark' || isChristmasTheme
   const content = getSectionContent(section, variant)
-  const wrapperBgClass = SECTION_STYLES[theme]?.wrapperBgClass || ''
   const sectionStyle = buildSectionStyle(theme, isChristmasTheme)
   const leadContext = buildLeadContext(site, content, pagePath, pageTitle)
 
   return (
     <section
       id={sectionId}
-      className={`relative scroll-mt-38 overflow-hidden py-10 ${isDarkTheme ? 'text-white' : ''} ${wrapperBgClass}`}
+      className={cn('consult', isDarkTheme && 'consult--dark', theme === 'dark' && 'consult--dark-gradient')}
       {...getDevSectionAttributes({
         content: 'local JSX section + live lead form',
         id: sectionId,
@@ -217,12 +209,12 @@ export default function ConsultationSection({
       })}
       style={sectionStyle}
     >
-      <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-4 py-12 sm:px-3 md:px-6 lg:px-8">
+      <div className="consult__shell">
         <div>
           <h2 className={getClassNames(isDarkTheme).heading}>{content.headline}</h2>
           <PortableTextContent as="div" value={content.copy} className={getClassNames(isDarkTheme).copy} />
           <AvatarSection section={section} isDarkTheme={isDarkTheme} />
-          <div className="mt-8">
+          <div className="consult__cta">
             <JobberDialog buttonLabel={content.buttonLabel} context={leadContext} />
           </div>
         </div>

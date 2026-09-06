@@ -116,6 +116,7 @@
 
 .site-footer__heading {
   font-size: 1.25rem;
+  color: var(--color-white);
 }
 
 .site-footer__list {
