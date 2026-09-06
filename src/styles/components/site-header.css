@@ -53,6 +53,7 @@
   background-color: var(--primary);
   display: grid;
   place-content: end;
+  align-items: center;
   padding: var(--spacing-medium) var(--spacing-xlarge);
 }
 
