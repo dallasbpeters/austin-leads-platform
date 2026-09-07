@@ -125,17 +125,28 @@ export default async function RootLayout({ children }) {
           crossOrigin="anonymous"
         />
         {facebookAppId ? <meta property="fb:app_id" content={facebookAppId} /> : null}
-        <script dangerouslySetInnerHTML={{ __html: cloudToneBootstrapScript }} />
       </head>
       <body
         className={`${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >
-        <a
-          href="#main-content"
-          className="bg-primary text-primary-foreground sr-only p-8 focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-999 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:shadow-lg"
-        >
-          Skip to main content
-        </a>
+        {/*
+         * First child of `<body>`, not `<head>`, on purpose. React 19 hoists
+         * `<link>` and `<meta>`, so an inline `<script>` is the only child of
+         * `<head>` it matches by position -- and dev proxies and browser
+         * extensions inject their own scripts at the top of `<head>`, which
+         * shifts that position and trips a hydration mismatch. Here it still
+         * runs synchronously before any body content paints, so the tone is
+         * stamped on `<html>` in time and there is no flash.
+         */}
+        <script dangerouslySetInnerHTML={{ __html: cloudToneBootstrapScript }} />
+        <nav aria-label="Skip links">
+          <a
+            href="#main-content"
+            className="bg-primary text-primary-foreground sr-only p-8 focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-999 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:shadow-lg"
+          >
+            Skip to main content
+          </a>
+        </nav>
         <CloudToneSync />
         <ViewTransitionWrapper />
         <PostHogProvider siteSlug={analyticsSiteSlug}>{children}</PostHogProvider>
