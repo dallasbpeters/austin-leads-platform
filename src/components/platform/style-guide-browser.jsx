@@ -172,6 +172,13 @@ const StyleGuideBrowser = ({
           <section
             key={section.id}
             id={section.id}
+            /*
+             * A token swatch is a specimen, not an interface. This page shows
+             * each theme's colours deliberately outside the theme they belong
+             * to, so a11y tooling reads them as contrast failures. Marking the
+             * block keeps the rest of the style guide in the scan.
+             */
+            data-token-preview="true"
             className={cn(
               'rounded-4xl border p-5 sm:p-6',
               section.theme === 'admin'

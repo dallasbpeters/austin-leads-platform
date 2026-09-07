@@ -38,7 +38,11 @@ export default function Testimonials({ section = null, sectionId = 'testimonials
         />
       ) : null}
       <Script src="https://elfsightcdn.com/platform.js" async></Script>
-      <div className="elfsight-app-a47faa40-0d7d-4ae2-bf46-e4e63e4bf10a" data-elfsight-app-lazy></div>
+      <div
+        className="elfsight-app-a47faa40-0d7d-4ae2-bf46-e4e63e4bf10a"
+        data-elfsight-app-lazy
+        data-third-party-embed="elfsight-reviews"
+      ></div>
     </section>
   )
 }

@@ -28,3 +28,9 @@ balmy-vehicle-*.json
 
 # schema audit scratch output
 .schema-usage.json
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
