@@ -7,6 +7,6 @@ const client = createClient({
   useCdn: false,
 })
 const r = await client.fetch(
-  `{"home": *[_id=="EIUGL2ggZiTenNpjp4Ai8z"][0].sections[_type=="ctaSection"][0]{title, ctaLabel}, "hail": *[_id=="page-hail-damage"][0].sections[_type=="ctaBannerSection"][0].title, "svc": *[_id=="page-service-metal-roofing"][0].sections[_type=="ctaSection"][0].title}`,
+  `*[_type in ["page","servicePage","locationPage"] && !(_id in path("drafts.**"))]{"slug": slug.current, "site": coalesce(site->slug.current, siteSlug), "types": array::unique(sections[]._type)}[count(types[@ in ["gallerySection","videoSection","serviceGridSection"]]) > 0]{slug, site, "has": types[@ in ["gallerySection","videoSection","serviceGridSection"]]}`,
 )
 console.log(JSON.stringify(r))
