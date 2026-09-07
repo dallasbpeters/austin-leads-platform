@@ -190,7 +190,6 @@
 
 .service-grid__number {
   font-family: var(--font-mono);
-  font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -198,7 +197,6 @@
 .service-grid__eyebrow {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.875rem;
   font-weight: 700;
   line-height: 1.1;
   text-transform: uppercase;
@@ -207,21 +205,18 @@
 .service-grid__title {
   margin-bottom: 0.75rem;
   font-family: var(--font-accent);
-  font-size: 1.975rem;
   font-weight: 700;
   line-height: 1.1;
 }
 
 .service-grid__price {
   margin-bottom: 0.75rem;
-  font-size: 1.575rem;
   font-weight: 700;
   line-height: 1.1;
 }
 
 .service-grid__body {
   margin-top: 0.25rem;
-  font-size: 0.875rem;
   font-weight: 400;
   color: var(--color-white);
 }
@@ -235,7 +230,6 @@
 
 .service-grid__group-title {
   margin: 0 0 1rem;
-  font-size: 1.125rem;
   color: var(--foreground);
 }
 
@@ -299,7 +293,6 @@
 
 .service-grid__mini-title {
   font-family: var(--font-accent);
-  font-size: 1.375rem;
   font-weight: 700;
   line-height: 1.05;
 }
@@ -320,4 +313,13 @@
   .service-grid__image {
     transition: none;
   }
+}
+
+/*
+ * The list item exists for semantics only: a <ul> may hold nothing but <li>,
+ * and axe's `list` rule fails otherwise. `display: contents` hands the grid
+ * cell straight to the link inside, so the layout is exactly as it was.
+ */
+.service-grid__list-item {
+  display: contents;
 }

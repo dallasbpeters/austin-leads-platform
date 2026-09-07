@@ -124,9 +124,9 @@ function SnapshotCard({ item }) {
       <div className="snapshot__icon">
         <SnapshotIcon item={item} />
       </div>
-      <div className="snapshot__value">{item.value}</div>
-      {item.label ? <p className="snapshot__label">{item.label}</p> : null}
-      <PortableTextContent as="div" value={item.copy} className="snapshot__copy" />
+      <div className="snapshot__value text-size-400">{item.value}</div>
+      {item.label ? <p className="snapshot__label text-size-90">{item.label}</p> : null}
+      <PortableTextContent as="div" value={item.copy} className="snapshot__copy text-size-90" />
     </Card>
   )
 }
@@ -175,9 +175,13 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
 
       <div className="snapshot__shell">
         <div className="snapshot__intro">
-          <p className="snapshot__eyebrow cloud-theme-section__eyebrow">{eyebrow}</p>
-          <h2 className="snapshot__title cloud-theme-section__heading">{title}</h2>
-          <PortableTextContent as="div" value={body} className="snapshot__body cloud-theme-section__body" />
+          <p className="snapshot__eyebrow text-size-90 cloud-theme-section__eyebrow">{eyebrow}</p>
+          <h2 className="snapshot__title text-fluid-500 cloud-theme-section__heading">{title}</h2>
+          <PortableTextContent
+            as="div"
+            value={body}
+            className="snapshot__body text-size-100 cloud-theme-section__body"
+          />
         </div>
 
         <div className="snapshot__grid">

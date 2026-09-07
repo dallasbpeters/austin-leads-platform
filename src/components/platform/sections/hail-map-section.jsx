@@ -26,7 +26,7 @@ export function HailMapSection({ section, sectionId }) {
         <Link href={ctaHref} className="hail-map-cta__panel">
           <div className="hail-map-cta__layout">
             <div className="hail-map-cta__copy">
-              <h2 className="hail-map-cta__title">
+              <h2 className="hail-map-cta__title text-fluid-400">
                 {section?.title || 'Check hail risk and recent storm signals near your property'}
               </h2>
               {section?.body ? (
@@ -38,7 +38,7 @@ export function HailMapSection({ section, sectionId }) {
                 </p>
               )}
             </div>
-            <div className="hail-map-cta__pill">
+            <div className="hail-map-cta__pill text-size-90">
               {ctaLabel}
               <FastArrowRight className="hail-map-cta__pill-icon" />
             </div>

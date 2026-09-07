@@ -36,17 +36,17 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
 
   return (
     <section
-      className="bg-warm px-3 py-24 md:px-6"
+      className="incentives"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/incentives-section.jsx',
         content: 'local JSX copy',
       })}
     >
-      <div className="mx-auto grid max-w-6xl items-center gap-16 max-[900px]:grid-cols-1 md:grid-cols-2">
-        <div className="grid place-items-start gap-4">
-          <h2 className="text-secondary type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">{title}</h2>
-          <div className="type-accent text-[1rem] leading-7 font-normal text-slate-500">
+      <div className="incentives__layout">
+        <div className="incentives__copy">
+          <h2 className="incentives__title text-size-400">{title}</h2>
+          <div className="incentives__body text-size-100">
             {resolvedParagraphs.map((paragraph) => (
               <PortableTextContent key={paragraph} as="p" value={paragraph} />
             ))}
@@ -58,14 +58,14 @@ export default function IncentivesSection({ section = null, sectionId = 'incenti
           ) : null}
         </div>
 
-        <div className="relative h-[400px] overflow-hidden rounded-3xl">
+        <div className="incentives__media">
           <Image
             src={imageUrl}
             alt={imageAlt}
             fill
             sizes="(max-width: 900px) 100vw, 50vw"
             loading="lazy"
-            className="object-cover"
+            className="incentives__image"
           />
         </div>
       </div>

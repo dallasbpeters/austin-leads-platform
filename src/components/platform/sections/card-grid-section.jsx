@@ -22,14 +22,16 @@ export function CardGridSection({ section, sectionId }) {
       <div className="section-shell__inner card-grid__inner">
         <div className="section-shell__intro card-grid__intro">
           {section.eyebrow ? (
-            <p className="section-shell__eyebrow section-shell__eyebrow--muted">{section.eyebrow}</p>
+            <p className="section-shell__eyebrow section-shell__eyebrow--muted text-size-80">
+              {section.eyebrow}
+            </p>
           ) : null}
-          <h2 className="section-shell__title">{section.title}</h2>
+          <h2 className="section-shell__title text-fluid-500">{section.title}</h2>
           {section.subtitle ? (
             <PortableTextContent
               as="div"
               value={section.subtitle}
-              className="section-shell__subtitle card-grid__subtitle"
+              className="section-shell__subtitle card-grid__subtitle text-size-200"
             />
           ) : null}
         </div>
@@ -49,8 +51,8 @@ export function CardGridSection({ section, sectionId }) {
                     <Icon className="card-grid__icon-svg" strokeWidth={2} />
                   </div>
                 ) : null}
-                <p className="card-grid__eyebrow">{eyebrow}</p>
-                <h3 className="card-grid__title">{item.title || item.question}</h3>
+                <p className="card-grid__eyebrow text-size-80">{eyebrow}</p>
+                <h3 className="card-grid__title text-fluid-300">{item.title || item.question}</h3>
                 <PortableTextContent as="div" value={item.body || item.answer} className="card-grid__body" />
               </article>
             )

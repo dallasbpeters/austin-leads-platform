@@ -46,8 +46,10 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
       <div className="solar-adoption__inner">
         <div className="solar-adoption__intro">
           <div>
-            {section?.eyebrow ? <p className="solar-adoption__eyebrow">{section.eyebrow}</p> : null}
-            <h2 className="solar-adoption__title">
+            {section?.eyebrow ? (
+              <p className="solar-adoption__eyebrow text-size-90">{section.eyebrow}</p>
+            ) : null}
+            <h2 className="solar-adoption__title text-fluid-700">
               {section?.title || 'Why nearly 30 million Americans have switched to solar'}
             </h2>
           </div>
@@ -56,7 +58,7 @@ const SolarAdoptionSection = ({ section = null, sectionId = 'solar-adoption' }) 
               section?.body ||
               'Homeowners are moving to solar for more predictable energy costs, stronger home resilience, and better control over how their house uses power.'
             }
-            className="solar-adoption__lede"
+            className="solar-adoption__lede text-size-200"
           />
         </div>
       </div>

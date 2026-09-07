@@ -6,7 +6,7 @@
 
 .solar-hero {
   position: relative;
-  min-height: 80vh;
+  min-height: 70vh;
   display: grid;
   place-content: center stretch;
   overflow-x: hidden;
@@ -117,7 +117,6 @@
 }
 
 .solar-hero__eyebrow-text {
-  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.4em;
   text-transform: uppercase;
@@ -127,7 +126,7 @@
 .solar-hero__title {
   margin: 0 0 2.5rem;
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-size: var(--text-size-800);
   line-height: 1 !important;
   letter-spacing: -0.02em;
   color: var(--color-black);
@@ -135,7 +134,6 @@
 
 .solar-hero__title--single {
   margin-bottom: 0.75rem;
-  font-size: clamp(3.5rem, 8vw, 5rem);
   line-height: 1.25 !important;
 }
 
@@ -147,7 +145,6 @@
 .solar-hero__body {
   max-width: 42rem;
   margin-bottom: 2.5rem;
-  font-size: 1.125rem;
   line-height: 1.75rem;
 }
 
@@ -183,7 +180,6 @@
 }
 
 .solar-hero__metrics-heading {
-  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -196,21 +192,18 @@
 }
 
 .solar-hero__metric-label {
-  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
 .solar-hero__metric-value {
-  font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: normal;
 }
 
 .solar-hero__card-copy {
   margin: 0;
-  font-size: 1.125rem;
   font-variation-settings: 'wght' 650;
   line-height: 1.75rem;
 }

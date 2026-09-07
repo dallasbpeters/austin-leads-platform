@@ -1,0 +1,34 @@
+/**
+ * .faq block: a title and one card holding the accordion.
+ */
+
+.faq {
+  background: linear-gradient(180deg, rgb(249 247 244 / 98%), rgb(255 255 255 / 98%));
+}
+
+.faq__title {
+  font-family: var(--font-display);
+}
+
+.faq__card {
+  padding: 1rem;
+  border-color: color-mix(in oklch, var(--border) 80%, transparent);
+  background: var(--card);
+}
+
+.faq__item {
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
+}
+
+.faq__item:last-child {
+  border-bottom: 0;
+}
+
+.faq__question {
+  color: var(--foreground);
+}
+
+.faq__answer {
+  line-height: 1.5rem;
+  color: var(--muted-foreground);
+}

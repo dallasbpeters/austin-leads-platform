@@ -1,0 +1,64 @@
+/**
+ * .incentives block: copy beside a rounded photo.
+ */
+
+.incentives {
+  padding: 6rem 0.75rem;
+  background: var(--color-warm-bg);
+}
+
+@media (width >= 48rem) {
+  .incentives {
+    padding-inline: 1.5rem;
+  }
+}
+
+.incentives__layout {
+  display: grid;
+  align-items: center;
+  gap: 4rem;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+@media (width >= 48rem) {
+  .incentives__layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 900px) {
+  .incentives__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.incentives__copy {
+  display: grid;
+  gap: 1rem;
+  place-items: start;
+}
+
+.incentives__title {
+  margin: 0;
+  font-family: var(--font-accent);
+  color: var(--secondary);
+}
+
+.incentives__body {
+  font-family: var(--font-accent);
+  font-weight: 400;
+  line-height: 1.75rem;
+  color: var(--color-slate-500);
+}
+
+.incentives__media {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.incentives__image {
+  object-fit: cover;
+}

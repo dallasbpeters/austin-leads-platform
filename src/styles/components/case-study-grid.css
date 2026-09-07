@@ -1,0 +1,17 @@
+/**
+ * .case-study-grid block: a featured lead card above an even grid of jobs.
+ */
+
+.case-study-grid {
+  padding-top: 6rem;
+  background: transparent;
+}
+
+.case-study-grid__title {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.case-study-grid__lead {
+  margin-bottom: 1.5rem;
+}

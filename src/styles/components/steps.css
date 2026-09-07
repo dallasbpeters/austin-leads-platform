@@ -1,0 +1,50 @@
+/**
+ * .steps block: numbered cards on a dotted grid.
+ */
+
+.steps {
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+  background-color: var(--color-secondary-100);
+}
+
+.steps__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (width >= 48rem) {
+  .steps__grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+.steps__card {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+  border-color: color-mix(in oklch, var(--border) 80%, transparent);
+  background: var(--card);
+}
+
+.steps__card-head {
+  gap: 1rem;
+}
+
+.steps__index {
+  width: 2rem;
+  height: 2rem;
+  border-color: var(--primary);
+  border-radius: 999px;
+  color: var(--secondary-foreground);
+  background: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.steps__card-title {
+  color: var(--foreground);
+}
+
+.steps__card-body {
+  line-height: 1.5rem;
+  color: var(--muted-foreground);
+}

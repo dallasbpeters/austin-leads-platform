@@ -99,8 +99,12 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
     >
       <div className="resources__shell">
         <div className="resources__intro">
-          <h2 className="resources__title cloud-theme-section__heading">{title}</h2>
-          <PortableTextContent as="div" value={body} className="resources__body cloud-theme-section__body" />
+          <h2 className="resources__title text-fluid-500 cloud-theme-section__heading">{title}</h2>
+          <PortableTextContent
+            as="div"
+            value={body}
+            className="resources__body text-fluid-200 cloud-theme-section__body"
+          />
         </div>
 
         <div className="resources__grid">
@@ -122,8 +126,12 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
                     <div className="resources__icon">
                       <Icon className="resources__icon-svg" strokeWidth={2} aria-hidden="true" />
                     </div>
-                    <div className="resources__card-title">{item.title}</div>
-                    <PortableTextContent as="div" value={item.copy} className="resources__card-copy" />
+                    <div className="resources__card-title text-size-400">{item.title}</div>
+                    <PortableTextContent
+                      as="div"
+                      value={item.copy}
+                      className="resources__card-copy text-size-90"
+                    />
                   </div>
                 </Card>
               </Link>

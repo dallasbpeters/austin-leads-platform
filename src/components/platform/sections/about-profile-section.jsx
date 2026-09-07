@@ -98,15 +98,21 @@ export function AboutProfileSection({ section, sectionId }) {
                 <CardHeader className="about-profile__head">
                   <div>
                     <div className="about-profile__name-group">
-                      <div className="about-profile__label">{person.label || 'Profile'}</div>
-                      <CardTitle className="about-profile__name">{person.name}</CardTitle>
-                      {person.role ? <p className="about-profile__role">{person.role}</p> : null}
+                      <div className="about-profile__label text-size-90">{person.label || 'Profile'}</div>
+                      <CardTitle className="about-profile__name text-size-400">{person.name}</CardTitle>
+                      {person.role ? (
+                        <p className="about-profile__role text-size-200">{person.role}</p>
+                      ) : null}
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="about-profile__content">
                   {person.blurb ? (
-                    <PortableTextContent as="div" value={person.blurb} className="about-profile__blurb" />
+                    <PortableTextContent
+                      as="div"
+                      value={person.blurb}
+                      className="about-profile__blurb text-size-90"
+                    />
                   ) : null}
                   {person.certificationTitle ? (
                     <div>
@@ -122,9 +128,13 @@ export function AboutProfileSection({ section, sectionId }) {
                         ) : null}
                         <div className="about-profile__cert-text">
                           {person.certificationLabel ? (
-                            <div className="about-profile__label">{person.certificationLabel}</div>
+                            <div className="about-profile__label text-size-90">
+                              {person.certificationLabel}
+                            </div>
                           ) : null}
-                          <div className="about-profile__cert-title">{person.certificationTitle}</div>
+                          <div className="about-profile__cert-title text-size-100">
+                            {person.certificationTitle}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -141,9 +151,13 @@ export function AboutProfileSection({ section, sectionId }) {
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="about-profile__title">{section.title}</h2>
+          <h2 className="about-profile__title text-fluid-500">{section.title}</h2>
           {section.body ? (
-            <PortableTextContent as="div" value={section.body} className="about-profile__body" />
+            <PortableTextContent
+              as="div"
+              value={section.body}
+              className="about-profile__body text-size-100"
+            />
           ) : null}
         </div>
       </div>

@@ -42,7 +42,6 @@
 .snapshot__eyebrow {
   margin: 0 0 1rem;
   font-family: var(--font-accent);
-  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -50,13 +49,11 @@
 
 .snapshot__title {
   margin: 0 0 1rem;
-  font-size: clamp(1.875rem, 4vw, 2.25rem);
 }
 
 .snapshot__body {
   margin: 0;
   font-family: var(--font-accent);
-  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -140,7 +137,6 @@
 .snapshot__value {
   margin-bottom: 0.5rem;
   font-family: var(--font-accent);
-  font-size: 1.875rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -148,7 +144,6 @@
 .snapshot__label {
   margin: 0 0 0.5rem;
   font-family: var(--font-accent);
-  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -157,7 +152,6 @@
 
 .snapshot__copy {
   font-family: var(--font-accent);
-  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.5rem;
   opacity: 0.72;

@@ -107,7 +107,7 @@ export function CaseStudyGridSection({ section = null, sectionId = 'case-studies
 
   return (
     <section
-      className="border-border/60 border-b pt-24"
+      className="case-study-grid section-shell"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/case-study-grid-section.jsx',
@@ -118,25 +118,23 @@ export function CaseStudyGridSection({ section = null, sectionId = 'case-studies
         markup="src/components/platform/sections/case-study-grid-section.jsx"
         content={`${resolved.length} case studies from Sanity`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
+      <div className="section-shell__inner">
         {section?.title || section?.body ? (
-          <div className="mb-10 max-w-3xl">
+          <div className="section-shell__intro">
             {section?.title ? (
-              <h2 className="text-foreground mb-4 text-3xl font-medium tracking-normal md:text-4xl">
-                {section.title}
-              </h2>
+              <h2 className="section-shell__title case-study-grid__title text-fluid-500">{section.title}</h2>
             ) : null}
             {section?.body ? (
               <PortableTextContent
                 as="div"
                 value={section.body}
-                className="text-muted-foreground text-lg leading-8"
+                className="section-shell__body text-size-100"
               />
             ) : null}
           </div>
         ) : null}
         <AutoFillGrid>
-          {leadCards.length ? <GuideCardGrid cards={leadCards} className="mb-6" /> : null}
+          {leadCards.length ? <GuideCardGrid cards={leadCards} className="case-study-grid__lead" /> : null}
         </AutoFillGrid>
         {/* Skipped entirely when the featured lead is the only case study, so the
             grid does not render an empty animated container below it. */}

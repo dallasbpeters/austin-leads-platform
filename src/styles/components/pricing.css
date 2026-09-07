@@ -37,7 +37,6 @@
 
 .pricing__eyebrow {
   margin: 0 0 1rem;
-  font-size: 0.75rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted-foreground);
@@ -46,23 +45,15 @@
 .pricing__title {
   margin: 0 0 1rem;
   font-family: var(--font-serif);
-  font-size: 1.5rem;
   line-height: 1.25;
   letter-spacing: normal;
   text-wrap: balance;
   color: var(--foreground);
 }
 
-@media (width >= 48rem) {
-  .pricing__title {
-    font-size: 1.875rem;
-  }
-}
-
 .pricing__body {
   display: grid;
   gap: 0.75rem;
-  font-size: 0.9375rem;
   line-height: 1.625;
   color: var(--muted-foreground);
 }
@@ -91,7 +82,6 @@
 
 .pricing__step-index {
   margin: 0 0 0.5rem;
-  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -101,14 +91,12 @@
 .pricing__step-title {
   margin: 0 0 0.25rem;
   font-family: var(--font-serif);
-  font-size: 1.25rem;
   letter-spacing: normal;
   color: var(--foreground);
 }
 
 .pricing__step-due {
   margin: 0 0 0.25rem;
-  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -118,7 +106,6 @@
 .pricing__step-amount {
   margin: 0 0 0.5rem;
   font-family: var(--font-serif);
-  font-size: 1.875rem;
   line-height: 1.25;
   color: var(--foreground);
 }
@@ -126,7 +113,6 @@
 .pricing__step-body {
   display: grid;
   gap: 0.25rem;
-  font-size: 0.875rem;
   line-height: 1.625;
   color: var(--muted-foreground);
 }
@@ -139,7 +125,6 @@
 .pricing__callout-title {
   margin: 0 0 0.5rem;
   font-family: var(--font-serif);
-  font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: normal;
   color: var(--color-green-900);
@@ -148,7 +133,6 @@
 .pricing__callout-body {
   display: grid;
   gap: 0.5rem;
-  font-size: 0.875rem;
   line-height: 1.625;
   color: var(--muted-foreground);
 }

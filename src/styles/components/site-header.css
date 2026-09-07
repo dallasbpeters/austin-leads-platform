@@ -54,7 +54,7 @@
   display: grid;
   place-content: end;
   align-items: center;
-  padding: var(--spacing-medium) var(--spacing-xlarge);
+  padding: var(--spacing-medium) var(--spacing-x-large);
 }
 
 .site-header__brand {
@@ -84,7 +84,6 @@
   gap: 0.5rem;
   padding: 1rem 0.5rem;
   border-radius: 999px;
-  font-size: 1rem;
   font-variation-settings: 'wght' 450;
   color: var(--color-primary);
   background: transparent;

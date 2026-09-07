@@ -171,14 +171,14 @@ function GuideCardBody({ card }) {
     >
       <div className="guide-card__head">
         {CardIcon ? <CardIcon className="guide-card__icon" aria-hidden="true" /> : <ArrowIcon />}
-        {card.number ? <span className="guide-card__number">{card.number}</span> : null}
+        {card.number ? <span className="guide-card__number text-size-400">{card.number}</span> : null}
       </div>
-      {card.eyebrow ? <p className="guide-card__eyebrow">{card.eyebrow}</p> : null}
-      <h3 className="guide-card__title">{card.title}</h3>
-      <p className="guide-card__copy">{card.copy}</p>
+      {card.eyebrow ? <p className="guide-card__eyebrow text-size-90">{card.eyebrow}</p> : null}
+      <h3 className="guide-card__title text-size-400">{card.title}</h3>
+      <p className="guide-card__copy text-size-100">{card.copy}</p>
       {card.category ? (
         <div className="guide-card__tags">
-          <span className="guide-card__tag">{card.category}</span>
+          <span className="guide-card__tag text-size-80">{card.category}</span>
         </div>
       ) : null}
       {card.image ? (
@@ -206,7 +206,7 @@ function GuideCardBody({ card }) {
           </motion.div>
         </div>
       ) : null}
-      <div className="guide-card__cta">
+      <div className="guide-card__cta text-size-90">
         <SunIcon />
         <span>{card.ctaLabel || 'Learn more'}</span>
       </div>
@@ -304,7 +304,7 @@ export default function GuideCardGrid({
                 asChild
                 key={category}
                 variant={isActive ? 'secondary' : 'outline'}
-                className={cn('guide-grid__filter', isActive && 'guide-grid__filter--active')}
+                className={cn('guide-grid__filter text-size-90', isActive && 'guide-grid__filter--active')}
               >
                 <button
                   type="button"
@@ -317,7 +317,7 @@ export default function GuideCardGrid({
               </Badge>
             )
           })}
-          <div className="guide-grid__count">
+          <div className="guide-grid__count text-size-90">
             {filteredCards.length} {filteredCards.length === 1 ? 'guide' : 'guides'}
           </div>
         </div>
@@ -347,18 +347,18 @@ export default function GuideCardGrid({
         <div className="guide-grid__pagination">
           <button
             type="button"
-            className="guide-grid__page-button"
+            className="guide-grid__page-button text-size-90"
             onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
           >
             Previous
           </button>
-          <span className="guide-grid__page-status">
+          <span className="guide-grid__page-status text-size-90">
             Page {currentPage} of {totalPages}
           </span>
           <button
             type="button"
-            className="guide-grid__page-button"
+            className="guide-grid__page-button text-size-90"
             onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
           >

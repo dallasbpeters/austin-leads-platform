@@ -22,7 +22,7 @@ export function GuideGridSection({ section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(to_right,var(--color-grid-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-grid-line)_1px,transparent_1px)] bg-size-[24px_24px]"
+      className="guide-grid-section section-shell solar-grid-bg"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/guide-grid-section.jsx',
@@ -33,14 +33,14 @@ export function GuideGridSection({ section, sectionId }) {
         markup="src/components/platform/sections/guide-grid-section.jsx"
         content={`guide grid from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
-        <div id={gridHeaderId} className="mb-8 max-w-3xl scroll-mt-28 md:scroll-mt-32">
-          <h2 className="text-foreground mb-4 text-3xl md:text-4xl">{section.title}</h2>
+      <div className="section-shell__inner">
+        <div id={gridHeaderId} className="section-shell__intro guide-grid-section__header">
+          <h2 className="section-shell__title guide-grid-section__title text-fluid-500">{section.title}</h2>
           {section.body ? (
             <PortableTextContent
               as="div"
               value={section.body}
-              className="text-muted-foreground text-lg leading-8"
+              className="section-shell__body text-size-100"
             />
           ) : null}
         </div>

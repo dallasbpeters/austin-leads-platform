@@ -314,12 +314,22 @@ export const ServiceGridSection = ({ section, sectionId }) => {
               {section.eyebrow}
             </Badge>
           ) : null}
-          <h2 className="section-shell__title section-shell__title--after-badge">{section.title}</h2>
+          <h2 className="section-shell__title section-shell__title--after-badge text-fluid-500">
+            {section.title}
+          </h2>
           {section.subtitle ? (
-            <PortableTextContent as="div" value={section.subtitle} className="section-shell__subtitle" />
+            <PortableTextContent
+              as="div"
+              value={section.subtitle}
+              className="section-shell__subtitle text-size-200"
+            />
           ) : null}
           {section.body ? (
-            <PortableTextContent as="div" value={section.body} className="section-shell__body" />
+            <PortableTextContent
+              as="div"
+              value={section.body}
+              className="section-shell__body text-size-100"
+            />
           ) : null}
         </div>
 
@@ -353,23 +363,34 @@ export const ServiceGridSection = ({ section, sectionId }) => {
                   ) : null}
                   {item.number ? (
                     <div className="service-grid__glyph">
-                      <div className="service-grid__number">{item.number}</div>
+                      <div className="service-grid__number text-size-500">{item.number}</div>
                     </div>
                   ) : null}
 
-                  <h3 className="service-grid__eyebrow">{item.eyebrow}</h3>
-                  <div className="service-grid__title">{item.title}</div>
-                  {item.price ? (
-                    <div className="service-grid__price">{formatServiceGridPrice(item.price)}</div>
+                  {item.eyebrow ? (
+                    <h3 className="service-grid__eyebrow text-size-90">{item.eyebrow}</h3>
                   ) : null}
-                  <PortableTextContent as="div" value={item.copy} className="service-grid__body" />
+                  <div className="service-grid__title text-size-400">{item.title}</div>
+                  {item.price ? (
+                    <div className="service-grid__price text-size-300">
+                      {formatServiceGridPrice(item.price)}
+                    </div>
+                  ) : null}
+                  <PortableTextContent
+                    as="div"
+                    value={item.copy}
+                    className="service-grid__body text-size-90"
+                  />
                 </div>
               </Card>
             )
             return (
-              <ServiceCardLink key={buildRuntimeKey('service-item', item.title, item.href)} item={item}>
-                {card}
-              </ServiceCardLink>
+              <li
+                className="service-grid__list-item"
+                key={buildRuntimeKey('service-item', item.title, item.href)}
+              >
+                <ServiceCardLink item={item}>{card}</ServiceCardLink>
+              </li>
             )
           })}
         </ul>
@@ -377,7 +398,7 @@ export const ServiceGridSection = ({ section, sectionId }) => {
         {roofingItems.length ? (
           <div className="service-grid__group">
             {section.roofingTitle ? (
-              <h3 className="service-grid__group-title">{section.roofingTitle}</h3>
+              <h3 className="service-grid__group-title text-size-200">{section.roofingTitle}</h3>
             ) : null}
             <div className="service-grid__subgrid">
               {roofingItems.map((item) => {
@@ -392,7 +413,7 @@ export const ServiceGridSection = ({ section, sectionId }) => {
                       <div className="service-grid__mini-glyph">
                         <Icon className="service-grid__mini-icon" strokeWidth={2.2} />
                       </div>
-                      <div className="service-grid__mini-title">{item.title}</div>
+                      <div className="service-grid__mini-title text-size-200">{item.title}</div>
                       <PortableTextContent value={item.copy} className="service-grid__mini-body" />
                     </div>
                   </Card>
@@ -410,7 +431,7 @@ export const ServiceGridSection = ({ section, sectionId }) => {
         {secondaryItems.length ? (
           <div className="service-grid__group">
             {section.secondaryTitle ? (
-              <h3 className="service-grid__group-title">{section.secondaryTitle}</h3>
+              <h3 className="service-grid__group-title text-size-200">{section.secondaryTitle}</h3>
             ) : null}
             <div className="service-grid__subgrid">
               {secondaryItems.map((item) => {
@@ -425,7 +446,7 @@ export const ServiceGridSection = ({ section, sectionId }) => {
                       <div className="service-grid__mini-glyph">
                         <Icon className="service-grid__mini-icon" strokeWidth={2.2} />
                       </div>
-                      <div className="service-grid__mini-title">{item.title}</div>
+                      <div className="service-grid__mini-title text-size-200">{item.title}</div>
                       <PortableTextContent value={item.copy} className="service-grid__mini-body" />
                     </div>
                   </Card>

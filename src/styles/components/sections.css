@@ -1,0 +1,38 @@
+/**
+ * .section-surface block: the optional colour or photo backdrop a Sanity
+ * section can sit on. The content layer floats above the image layer.
+ */
+
+.section-surface {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-surface--custom .section-surface__content > * {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.section-surface__content {
+  position: relative;
+  z-index: 10;
+}
+
+.section-surface__image-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%) translateY(25%);
+  z-index: 0;
+
+  img {
+    mask-image: linear-gradient(to bottom, oklch(0% 0 0deg / 0%), oklch(0% 0 0deg));
+    mask-repeat: no-repeat;
+    height: auto;
+    max-height: 42rem; /* 168 / 4 = 42rem assuming 1rem = 4px */
+    width: 100vw;
+    object-fit: cover;
+    object-position: 50% 0%;
+  }
+}

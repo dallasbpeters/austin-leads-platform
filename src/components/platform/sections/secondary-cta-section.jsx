@@ -70,14 +70,16 @@ export const SecondaryCTASection = ({ section, sectionId }) => {
         >
           <div className="secondary-cta__layout">
             <div className="secondary-cta__copy">
-              <h2 className="secondary-cta__title">{section?.title || 'Secondary CTA section'}</h2>
+              <h2 className="secondary-cta__title text-fluid-400">
+                {section?.title || 'Secondary CTA section'}
+              </h2>
               {section?.body ? (
                 <PortableTextContent as="div" value={section.body} className="secondary-cta__body" />
               ) : (
                 <p className="secondary-cta__body">Secondary CTA section</p>
               )}
             </div>
-            <div className="secondary-cta__pill">{ctaLabel}</div>
+            <div className="secondary-cta__pill text-size-90">{ctaLabel}</div>
           </div>
         </Link>
       </div>

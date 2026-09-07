@@ -68,7 +68,7 @@ const NavList = ({ items, onNavigate }) => (
             key={key}
             href={href}
             onClick={onNavigate}
-            className={cn('btn site-header__link site-header__link--cta', itemClassName)}
+            className={cn('btn site-header__link text-size-100 site-header__link--cta', itemClassName)}
           >
             <LinkInner>{label}</LinkInner>
           </Button>
@@ -83,7 +83,7 @@ const NavList = ({ items, onNavigate }) => (
             onClick={onNavigate}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn('btn site-header__link', itemClassName)}
+            className={cn('btn site-header__link text-size-100', itemClassName)}
           >
             <LinkInner>{label}</LinkInner>
           </a>
@@ -95,7 +95,7 @@ const NavList = ({ items, onNavigate }) => (
           key={key}
           href={href}
           onClick={onNavigate}
-          className={cn('btn site-header__link', itemClassName)}
+          className={cn('btn site-header__link text-size-100', itemClassName)}
         >
           <LinkInner>{label}</LinkInner>
         </Link>

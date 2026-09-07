@@ -115,17 +115,17 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
     >
       <div className="solar-calculator__shell">
         <div className="solar-calculator__intro">
-          <h2 className="solar-calculator__title">{title}</h2>
-          <PortableTextContent as="div" value={body} className="solar-calculator__lede" />
+          <h2 className="solar-calculator__title text-fluid-700">{title}</h2>
+          <PortableTextContent as="div" value={body} className="solar-calculator__lede text-size-100" />
         </div>
 
         <Card className="solar-calculator__panel" variant="surfaceStrong" radius="lg">
           <div className="solar-calculator__input-pane">
-            <label htmlFor="calc-bill" className="solar-calculator__label">
+            <label htmlFor="calc-bill" className="solar-calculator__label text-size-90">
               Your Monthly Electric Bill
             </label>
             <div className="solar-calculator__field">
-              <span className="solar-calculator__currency">$</span>
+              <span className="solar-calculator__currency text-size-300">$</span>
               <input
                 id="calc-bill"
                 type="number"
@@ -133,7 +133,7 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
                 max={MAX_BILL}
                 value={bill}
                 onChange={(event) => setBill(clampBill(event.target.value))}
-                className="solar-calculator__input"
+                className="solar-calculator__input text-size-400"
               />
             </div>
             <Slider
@@ -145,12 +145,12 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
               onValueChange={([nextBill]) => setBill(clampBill(nextBill))}
               className="solar-calculator__slider"
             />
-            <div className="solar-calculator__range-labels">
+            <div className="solar-calculator__range-labels text-size-90">
               <span>$50</span>
               <span>$800</span>
             </div>
 
-            <div className="solar-calculator__note">
+            <div className="solar-calculator__note text-size-90">
               <svg
                 className="solar-calculator__note-icon"
                 fill="none"
@@ -222,7 +222,7 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
               >
                 {ctaLabel}
               </Button>
-              <span className="solar-calculator__cta-note">{ctaNote}</span>
+              <span className="solar-calculator__cta-note text-size-90">{ctaNote}</span>
             </div>
           </div>
         </Card>
@@ -235,13 +235,13 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
 function ResultCard({ title, value, prefix = '', suffix = '', detail, accent = false }) {
   return (
     <Card className={cn('solar-calculator__result', accent && 'solar-calculator__result--accent')}>
-      <span className="solar-calculator__result-title">{title}</span>
-      <div className="solar-calculator__result-value">
-        {prefix ? <span className="solar-calculator__result-unit">{prefix}</span> : null}
+      <span className="solar-calculator__result-title text-size-90">{title}</span>
+      <div className="solar-calculator__result-value text-size-400">
+        {prefix ? <span className="solar-calculator__result-unit text-size-90">{prefix}</span> : null}
         <span className="solar-calculator__result-number">{value}</span>
-        {suffix ? <span className="solar-calculator__result-unit">{suffix}</span> : null}
+        {suffix ? <span className="solar-calculator__result-unit text-size-90">{suffix}</span> : null}
       </div>
-      <p className="solar-calculator__result-detail">{detail}</p>
+      <p className="solar-calculator__result-detail text-size-90">{detail}</p>
     </Card>
   )
 }

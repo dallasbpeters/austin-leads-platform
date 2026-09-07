@@ -43,7 +43,6 @@
 
 .solar-adoption__eyebrow {
   margin: 0 0 1.25rem;
-  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -54,7 +53,6 @@
   max-width: 56rem;
   margin: 0;
   font-family: var(--font-accent);
-  font-size: clamp(3.1rem, 4vw, 6.75rem);
   font-weight: 900;
   line-height: 0.92;
   text-wrap: balance;
@@ -64,7 +62,6 @@
 .solar-adoption__lede {
   max-width: 28rem;
   padding-top: 0.5rem;
-  font-size: 1.125rem;
   line-height: 2rem;
   color: color-mix(in oklch, var(--primary-foreground) 40%, transparent);
 }
@@ -174,20 +171,17 @@
 }
 
 .adoption-reasons__index {
-  font-size: 2.25rem;
   font-weight: 700;
   color: var(--color-white);
 }
 
 .adoption-reasons__title {
   margin: 0;
-  font-size: 2.25rem;
   font-weight: 700;
   color: var(--color-white);
 }
 
 .adoption-reasons__body {
-  font-size: 1.125rem;
   line-height: 1.625;
   color: color-mix(in oklch, var(--color-white) 60%, transparent);
 }

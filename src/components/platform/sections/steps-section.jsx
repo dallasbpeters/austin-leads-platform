@@ -7,7 +7,7 @@ import { buildRuntimeKey } from '@/lib/sanity/stega'
 export const StepsSection = ({ section, sectionId }) => {
   return (
     <section
-      className="bg-secondary-100 border-border/60 radial-grid-bg border-b"
+      className="steps section-shell radial-grid-bg"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/steps-section.jsx',
@@ -18,28 +18,19 @@ export const StepsSection = ({ section, sectionId }) => {
         markup="src/components/platform/sections/steps-section.jsx"
         content={`steps section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
-        <div className="mb-10 max-w-3xl">
-          <h2 className="text-foreground text-3xl tracking-normal md:text-4xl">{section.title}</h2>
+      <div className="section-shell__inner">
+        <div className="section-shell__intro">
+          <h2 className="section-shell__title text-fluid-500">{section.title}</h2>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
+        <div className="steps__grid">
           {section.items?.map((item, index) => (
-            <Card
-              key={buildRuntimeKey('step-item', item.title, index)}
-              className="bg-card border-border/80 pt-12 pb-8"
-            >
-              <CardHeader className="gap-4">
-                <Badge className="text-secondary-foreground bg-primary border-primary ring-primary size-8 rounded-full text-lg ring-1">
-                  {index + 1}
-                </Badge>
-                <CardTitle className="text-foreground text-xl">{item.title}</CardTitle>
+            <Card key={buildRuntimeKey('step-item', item.title, index)} className="steps__card">
+              <CardHeader className="steps__card-head">
+                <Badge className="steps__index text-size-100">{index + 1}</Badge>
+                <CardTitle className="steps__card-title text-size-200">{item.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <PortableTextContent
-                  as="div"
-                  value={item.body}
-                  className="text-md text-muted-foreground leading-6"
-                />
+                <PortableTextContent as="div" value={item.body} className="steps__card-body" />
               </CardContent>
             </Card>
           ))}

@@ -77,65 +77,46 @@ export default function InstallProcessTimelineClient({ items = [] }) {
   }, [])
 
   return (
-    <div ref={timelineRef} className="relative">
-      <div className="pointer-events-none absolute inset-y-0 left-6 w-px bg-black/16 md:left-1/2 md:-translate-x-1/2" />
-      <div
-        className="pointer-events-none absolute left-6 w-px bg-black md:left-1/2 md:-translate-x-1/2"
-        style={{ top: 0, height: `${timelineProgress * 100}%` }}
-      />
-      <div
-        className="pointer-events-none absolute left-6 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black shadow-[0_0_0_8px_var(--background)] md:left-1/2"
-        style={{ top: `${timelineProgress * 100}%` }}
-      />
+    <div ref={timelineRef} className="install-timeline">
+      <div className="install-timeline__rail" />
+      <div className="install-timeline__rail-fill" style={{ top: 0, height: `${timelineProgress * 100}%` }} />
+      <div className="install-timeline__rail-head" style={{ top: `${timelineProgress * 100}%` }} />
 
-      <div className="space-y-20">
+      <div className="install-timeline__steps">
         {items.map((item, index) => {
           const imageSide = resolveStepImageSide(index, item.imageSide)
           const stepNumber = String(index + 1).padStart(2, '0')
           const image = resolveStepImage(item)
 
           return (
-            <div
-              key={buildRuntimeKey('install-step', item.title, index)}
-              className="grid grid-cols-[3rem_minmax(0,1fr)] gap-x-6 gap-y-6 md:grid-cols-[minmax(0,1fr)_5rem_minmax(0,1fr)] md:gap-x-10 lg:gap-x-16"
-            >
-              <div className="relative col-start-1 row-span-2 md:col-start-2 md:row-span-1">
-                <div className="bg-background absolute top-6 left-6 h-5 w-5 -translate-x-1/2 rounded-full border border-black/20 md:left-1/2" />
+            <div key={buildRuntimeKey('install-step', item.title, index)} className="install-timeline__step">
+              <div className="install-timeline__marker">
+                <div className="install-timeline__dot" />
               </div>
 
-              <div
-                className={`relative aspect-4/3 overflow-hidden rounded-2xl ${
-                  imageSide === 'right' ? 'md:col-start-3 md:row-start-1' : 'md:col-start-1 md:row-start-1'
-                }`}
-              >
+              <div className={`install-timeline__media install-timeline__media--${imageSide}`}>
                 {image.src ? (
                   <Image
                     src={image.src}
                     alt={image.alt}
                     fill
-                    className="object-cover"
+                    className="install-timeline__image"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 ) : (
-                  <div className="bg-muted flex h-full w-full items-center justify-center">
-                    <span className="text-muted-foreground text-sm">Image</span>
+                  <div className="install-timeline__placeholder">
+                    <span className="text-size-90">Image</span>
                   </div>
                 )}
               </div>
 
-              <div
-                className={`flex flex-col gap-4 pt-1 md:justify-center ${
-                  imageSide === 'right' ? 'md:col-start-1 md:row-start-1' : 'md:col-start-3 md:row-start-1'
-                }`}
-              >
-                <span className="text-primary text-2xl leading-none font-bold md:text-2xl">
-                  Step {stepNumber}
-                </span>
-                <h3 className="text-foreground text-2xl font-semibold md:text-3xl">{item.title}</h3>
+              <div className={`install-timeline__copy install-timeline__copy--${imageSide}`}>
+                <span className="install-timeline__step-number text-size-300">Step {stepNumber}</span>
+                <h3 className="install-timeline__title text-size-400">{item.title}</h3>
                 <PortableTextContent
                   as="div"
                   value={item.body}
-                  className="text-muted-foreground text-[1rem] leading-relaxed md:text-lg"
+                  className="install-timeline__body text-size-100"
                 />
               </div>
             </div>

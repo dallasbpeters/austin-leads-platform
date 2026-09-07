@@ -31,15 +31,11 @@ export function FaqAccordion({ items }) {
         <AccordionItem
           key={buildRuntimeKey('faq-item', item.question, index)}
           value={item.question}
-          className="border-border/80 border-b"
+          className="faq__item"
         >
-          <AccordionTrigger className="text-foreground text-xl">{item.question}</AccordionTrigger>
+          <AccordionTrigger className="faq__question text-size-200">{item.question}</AccordionTrigger>
           <AccordionContent>
-            <PortableTextContent
-              as="div"
-              value={item.answer}
-              className="text-muted-foreground text-lg leading-6"
-            />
+            <PortableTextContent as="div" value={item.answer} className="faq__answer text-size-100" />
           </AccordionContent>
         </AccordionItem>
       ))}

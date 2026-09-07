@@ -27,11 +27,11 @@ const SectionSurface = ({ section, children }) => {
 
   return (
     <div
-      className="section-surface section-surface--custom relative overflow-hidden"
+      className="section-surface section-surface--custom"
       style={{ backgroundColor: background.backgroundColor || undefined }}
     >
       {background.imageUrl ? (
-        <div className="pointer-events-none absolute bottom-0 left-1/2 z-0 w-screen -translate-x-1/2 translate-y-1/4">
+        <div className="section-surface__image-wrapper">
           <Image
             src={background.imageUrl}
             alt=""
@@ -40,11 +40,10 @@ const SectionSurface = ({ section, children }) => {
             height={1680}
             priority
             quality={100}
-            className="h-auto max-h-168 w-screen object-cover object-[50%_0%]"
           />
         </div>
       ) : null}
-      <div className="section-surface__content relative z-10">{children}</div>
+      <div className="section-surface__content">{children}</div>
     </div>
   )
 }

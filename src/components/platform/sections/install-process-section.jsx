@@ -10,7 +10,7 @@ export function InstallProcessSection({ section, sectionId }) {
 
   return (
     <section
-      className="border-border/60 bg-background border-b"
+      className="section-shell"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/install-process-section.jsx',
@@ -22,7 +22,7 @@ export function InstallProcessSection({ section, sectionId }) {
         markup="src/components/platform/sections/install-process-section.jsx"
         content={`install process section from ${section._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
+      <div className="section-shell__inner">
         <InstallProcessTimelineClient items={items} />
       </div>
     </section>

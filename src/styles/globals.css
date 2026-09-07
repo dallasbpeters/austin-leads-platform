@@ -43,6 +43,14 @@
 @import './components/solar-adoption.css';
 @import './components/resources.css';
 @import './components/cta-blocks.css';
+@import './components/steps.css';
+@import './components/install-timeline.css';
+@import './components/incentives.css';
+@import './components/guides-section.css';
+@import './components/faq.css';
+@import './components/guide-grid-section.css';
+@import './components/case-study-grid.css';
+@import './components/logo-cloud-section.css';
 @import './components/solar-calculator.css';
 @import './components/solar-costs.css';
 @import './components/consult.css';

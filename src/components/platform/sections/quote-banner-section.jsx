@@ -5,7 +5,7 @@ import { portableTextToPlainText } from '@/lib/sanity/portableText'
 export const QuoteBannerSection = ({ section, sectionId }) => {
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(247,244,239,0.98),rgba(255,255,255,0.98))]"
+      className="section-shell section-shell--paper-inverse"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/quote-banner-section.jsx',

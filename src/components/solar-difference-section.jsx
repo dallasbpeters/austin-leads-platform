@@ -47,10 +47,10 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
     >
       <div className="solar-difference__inner">
         <div className="solar-difference__intro">
-          <h2 className="solar-difference__title">
+          <h2 className="solar-difference__title text-fluid-700">
             {section?.title || 'The difference — premium products, design, & support'}
           </h2>
-          <PortableTextContent value={body} className="solar-difference__lede" />
+          <PortableTextContent value={body} className="solar-difference__lede text-size-200" />
         </div>
 
         <div className="solar-difference__stack">
@@ -75,15 +75,19 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
                 }}
               >
                 <div className="solar-difference__card-head">
-                  <span className="solar-difference__card-number">
+                  <span className="solar-difference__card-number text-size-200">
                     {item.number || String(index + 1).padStart(2, '0')}
                   </span>
-                  <span className="solar-difference__card-eyebrow">{item.eyebrow || item.title}</span>
+                  <span className="solar-difference__card-eyebrow text-size-200">
+                    {item.eyebrow || item.title}
+                  </span>
                 </div>
                 <div className="solar-difference__card-body">
                   <div>
-                    <h3 className="solar-difference__card-title">{item.title}</h3>
-                    {itemBody ? <p className="solar-difference__card-copy">{itemBody}</p> : null}
+                    <h3 className="solar-difference__card-title text-fluid-700">{item.title}</h3>
+                    {itemBody ? (
+                      <p className="solar-difference__card-copy text-size-200">{itemBody}</p>
+                    ) : null}
                   </div>
                   {image ? (
                     <div className="solar-difference__card-media">

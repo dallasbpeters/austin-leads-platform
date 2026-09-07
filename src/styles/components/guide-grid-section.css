@@ -1,0 +1,19 @@
+/**
+ * .guide-grid-section block: the section chrome around the guide card grid.
+ * The grid itself (filters, cards, pagination) is the .guide-grid block in
+ * guide-card.css.
+ */
+
+.guide-grid-section__header {
+  scroll-margin-top: 7rem;
+}
+
+@media (width >= 48rem) {
+  .guide-grid-section__header {
+    scroll-margin-top: 8rem;
+  }
+}
+
+.guide-grid-section__title {
+  margin-bottom: 1rem;
+}

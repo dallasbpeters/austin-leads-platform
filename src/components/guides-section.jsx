@@ -82,38 +82,28 @@ export default function GuidesSection({ section = null, page = null, sectionId =
 
   return (
     <CloudSectionBackground
-      className="cloud-theme-section--editorial relative isolate overflow-hidden py-24"
+      className="guides cloud-theme-section--editorial solar-grid-bg"
       showClouds={showClouds}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/guides-section.jsx',
         content: 'local JSX section + guide cards from guides library',
       })}
-      style={{
-        backgroundImage:
-          'linear-gradient(to right, var(--color-grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--color-grid-line) 1px, transparent 1px)',
-        backgroundSize: '24px 24px',
-      }}
     >
-      <div className="relative z-1 mx-auto w-full max-w-7xl px-4">
-        <div className="mb-8">
-          <h2 className="cloud-theme-section__heading type-accent m-0 text-[clamp(1.875rem,4vw,2.25rem)]">
-            {title}
-          </h2>
+      <div className="guides__shell">
+        <div className="guides__intro">
+          <h2 className="guides__title cloud-theme-section__heading text-size-400">{title}</h2>
           {body ? (
             <PortableTextContent
               as="div"
               value={body}
-              className="cloud-theme-section__body mt-3 max-w-3xl text-[1rem] leading-7"
+              className="guides__body cloud-theme-section__body text-size-100"
             />
           ) : null}
         </div>
         <GuideCardGrid cards={cards} icon={icon} />
-        <div className="mt-8 flex justify-end">
-          <Link
-            className="btn bg-background text-primary type-accent border-primary hover:bg-primary hover:text-primary-foreground h-10 rounded-full border px-12 text-sm font-semibold tracking-[0.18em] uppercase"
-            href="/guides"
-          >
+        <div className="guides__footer">
+          <Link className="btn guides__all-link text-size-90" href="/guides">
             {ctaLabel}
           </Link>
         </div>

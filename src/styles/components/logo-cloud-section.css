@@ -1,0 +1,20 @@
+/**
+ * .logo-cloud-section block: an optional intro above the logo marquee.
+ */
+
+.logo-cloud-section__intro {
+  padding-top: 4rem;
+  text-align: left;
+}
+
+.logo-cloud-section__title {
+  margin: 0;
+  letter-spacing: normal;
+}
+
+.logo-cloud-section__body {
+  margin-top: 1rem;
+  margin-inline: auto;
+  line-height: 2rem;
+  color: var(--muted-foreground);
+}

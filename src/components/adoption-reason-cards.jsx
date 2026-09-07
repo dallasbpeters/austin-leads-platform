@@ -20,10 +20,16 @@ export default function AdoptionReasonCards({ reasons }) {
               {Icon ? (
                 <Icon className="adoption-reasons__icon" />
               ) : (
-                <span className="adoption-reasons__index">{String(index + 1).padStart(2, '0')}</span>
+                <span className="adoption-reasons__index text-size-500">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
               )}
-              <h3 className="adoption-reasons__title">{reason.title}</h3>
-              <PortableTextContent as="div" value={reason.body} className="adoption-reasons__body" />
+              <h3 className="adoption-reasons__title text-size-500">{reason.title}</h3>
+              <PortableTextContent
+                as="div"
+                value={reason.body}
+                className="adoption-reasons__body text-size-200"
+              />
             </div>
           )
         })}

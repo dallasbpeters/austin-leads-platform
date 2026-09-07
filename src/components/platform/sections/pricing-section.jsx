@@ -33,9 +33,11 @@ export function PricingSection({ section, sectionId }) {
       <div className="pricing__inner">
         <div className="pricing__layout">
           <div className="pricing__heading">
-            {eyebrow ? <p className="pricing__eyebrow">{eyebrow}</p> : null}
-            <h2 className="pricing__title">{title}</h2>
-            {body ? <PortableTextContent as="div" value={body} className="pricing__body" /> : null}
+            {eyebrow ? <p className="pricing__eyebrow text-size-90">{eyebrow}</p> : null}
+            <h2 className="pricing__title text-fluid-400">{title}</h2>
+            {body ? (
+              <PortableTextContent as="div" value={body} className="pricing__body text-size-100" />
+            ) : null}
           </div>
 
           {stepNotes.length > 0 ? (
@@ -57,13 +59,17 @@ export function PricingSection({ section, sectionId }) {
                       paddingRight: i < stepNotes.length - 1 ? '1.25rem' : 0,
                     }}
                   >
-                    <p className="pricing__step-index">0{i + 1}</p>
-                    {noteTitle ? <h3 className="pricing__step-title">{noteTitle}</h3> : null}
-                    <p className="pricing__step-due">{paymentDue}</p>
-                    <p className="pricing__step-amount">{amount}</p>
+                    <p className="pricing__step-index text-size-90">0{i + 1}</p>
+                    {noteTitle ? <h3 className="pricing__step-title text-size-200">{noteTitle}</h3> : null}
+                    <p className="pricing__step-due text-size-90">{paymentDue}</p>
+                    <p className="pricing__step-amount text-size-400">{amount}</p>
 
                     {noteBody ? (
-                      <PortableTextContent as="div" value={noteBody} className="pricing__step-body" />
+                      <PortableTextContent
+                        as="div"
+                        value={noteBody}
+                        className="pricing__step-body text-size-90"
+                      />
                     ) : null}
                   </div>
                 )
@@ -81,9 +87,13 @@ export function PricingSection({ section, sectionId }) {
 
                 return (
                   <div key={key}>
-                    {noteTitle ? <h3 className="pricing__callout-title">{noteTitle}</h3> : null}
+                    {noteTitle ? <h3 className="pricing__callout-title text-size-200">{noteTitle}</h3> : null}
                     {noteBody ? (
-                      <PortableTextContent as="div" value={noteBody} className="pricing__callout-body" />
+                      <PortableTextContent
+                        as="div"
+                        value={noteBody}
+                        className="pricing__callout-body text-size-90"
+                      />
                     ) : null}
                   </div>
                 )

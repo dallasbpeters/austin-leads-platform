@@ -34,14 +34,14 @@ function GalleryHeader({ section }) {
   return (
     <div className="section-shell__intro gallery__intro">
       {section.eyebrow ? (
-        <p className="section-shell__eyebrow section-shell__eyebrow--muted">{section.eyebrow}</p>
+        <p className="section-shell__eyebrow section-shell__eyebrow--muted text-size-80">{section.eyebrow}</p>
       ) : null}
-      <h2 className="section-shell__title">{section.title}</h2>
+      <h2 className="section-shell__title text-fluid-500">{section.title}</h2>
       {section.subtitle ? (
         <PortableTextContent
           as="div"
           value={section.subtitle}
-          className="section-shell__subtitle gallery__subtitle"
+          className="section-shell__subtitle gallery__subtitle text-size-200"
         />
       ) : null}
     </div>
@@ -81,9 +81,11 @@ function GalleryTile({ item, index, title, onClick }) {
         <>
           <div className="gallery__fade" />
           <div className="gallery__caption">
-            {neighborhood ? <p className="gallery__caption-title">{neighborhood}</p> : null}
+            {neighborhood ? <p className="gallery__caption-title text-size-100">{neighborhood}</p> : null}
             {year || packageName ? (
-              <p className="gallery__caption-meta">{[year, packageName].filter(Boolean).join(' · ')}</p>
+              <p className="gallery__caption-meta text-size-80">
+                {[year, packageName].filter(Boolean).join(' · ')}
+              </p>
             ) : null}
           </div>
         </>
@@ -117,7 +119,7 @@ function GalleryLightbox({
         <Dialog.Content aria-describedby={undefined} className="gallery-lightbox__content">
           <Dialog.Title className="sr-only">{title || 'Gallery image viewer'}</Dialog.Title>
           <div className="gallery-lightbox__bar">
-            <span className="gallery-lightbox__count">
+            <span className="gallery-lightbox__count text-size-90">
               {(lightboxIndex ?? 0) + 1} / {imageCount}
             </span>
             <Dialog.Close asChild>
@@ -140,10 +142,10 @@ function GalleryLightbox({
           {hasActiveCaption ? (
             <div className="gallery-lightbox__caption">
               {activeCaption.neighborhood ? (
-                <p className="gallery-lightbox__caption-title">{activeCaption.neighborhood}</p>
+                <p className="gallery-lightbox__caption-title text-fluid-200">{activeCaption.neighborhood}</p>
               ) : null}
               {activeCaption.year || activeCaption.packageName ? (
-                <p className="gallery-lightbox__caption-meta">
+                <p className="gallery-lightbox__caption-meta text-size-80">
                   {[activeCaption.year, activeCaption.packageName].filter(Boolean).join(' · ')}
                 </p>
               ) : null}

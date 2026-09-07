@@ -95,20 +95,12 @@
 
 .gallery__caption-title {
   margin: 0;
-  font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.25;
 }
 
-@media (width >= 48rem) {
-  .gallery__caption-title {
-    font-size: 1rem;
-  }
-}
-
 .gallery__caption-meta {
   margin: 0.125rem 0 0;
-  font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: color-mix(in oklch, var(--color-white) 85%, transparent);
@@ -177,7 +169,6 @@
 }
 
 .gallery-lightbox__count {
-  font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.025em;
   color: color-mix(in oklch, var(--color-white) 70%, transparent);
@@ -228,19 +219,11 @@
 
 .gallery-lightbox__caption-title {
   margin: 0;
-  font-size: 1rem;
   font-weight: 500;
-}
-
-@media (width >= 48rem) {
-  .gallery-lightbox__caption-title {
-    font-size: 1.125rem;
-  }
 }
 
 .gallery-lightbox__caption-meta {
   margin: 0.25rem 0 0;
-  font-size: 0.7rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: color-mix(in oklch, var(--color-white) 70%, transparent);
@@ -308,6 +291,5 @@
 
 .gallery__subtitle {
   margin-bottom: 1rem;
-  font-size: 1.25rem;
   color: var(--foreground);
 }

@@ -25,7 +25,7 @@ export const ScrollTextSection = ({ section, sectionId }) => {
   const shouldShowIcon = Boolean(section?.showIcon || section?.showFlag || section?.icon)
 
   return (
-    <section id={sectionId} className="bg-card border-border/60 border-b">
+    <section id={sectionId} className="section-shell section-shell--card">
       <ScrollText
         texts={scrollTexts}
         numCopies={resolveNumericProp(section?.numCopies)}

@@ -6,7 +6,7 @@ const EMPTY_SECTION = {}
 
 export const RoofingLogoCloudSection = ({ section = EMPTY_SECTION, sectionId }) => (
   <section
-    className="bg-card border-border/60 border-b"
+    className="logo-cloud-section section-shell section-shell--card"
     {...getDevSectionAttributes({
       id: sectionId,
       markup: 'src/components/platform/sections/roofing-logo-cloud-section.jsx',
@@ -17,15 +17,17 @@ export const RoofingLogoCloudSection = ({ section = EMPTY_SECTION, sectionId }) 
       markup="src/components/platform/sections/roofing-logo-cloud-section.jsx"
       content={`logos marquee section from ${section?._type || 'local fallback section'}`}
     />
-    <div className="mx-auto max-w-7xl px-3 md:px-6 lg:px-10">
+    <div className="section-shell__inner section-shell__inner--flush">
       {section?.title || section?.body ? (
-        <div className="pt-16 text-left">
-          {section?.title ? <h2 className="text-xl tracking-normal md:text-2xl">{section.title}</h2> : null}
+        <div className="logo-cloud-section__intro">
+          {section?.title ? (
+            <h2 className="logo-cloud-section__title text-size-200">{section.title}</h2>
+          ) : null}
           {section?.body ? (
             <PortableTextContent
               as="div"
               value={section.body}
-              className="text-muted-foreground mx-auto mt-4 text-[1rem] leading-8"
+              className="logo-cloud-section__body text-size-100"
             />
           ) : null}
         </div>

@@ -213,7 +213,10 @@ function HeroEyebrow({ eyebrow, heroTextColor }) {
         <span className="solar-hero__pulse-ring animate-ping" />
         <span className="solar-hero__pulse-dot" />
       </div>
-      <span className="solar-hero__eyebrow-text" style={{ color: heroTextColor || 'var(--color-primary)' }}>
+      <span
+        className="solar-hero__eyebrow-text text-size-90"
+        style={{ color: heroTextColor || 'var(--color-primary)' }}
+      >
         {eyebrow}
       </span>
     </div>
@@ -224,7 +227,7 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
   if (useSingleHeadline) {
     return (
       <h1
-        className="solar-hero__title solar-hero__title--single"
+        className="solar-hero__title solar-hero__title--single text-fluid-800"
         style={heroTextColor ? { color: heroTextColor } : undefined}
       >
         {title}
@@ -233,7 +236,10 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
   }
 
   return (
-    <h1 className="solar-hero__title" style={heroTextColor ? { color: heroTextColor } : undefined}>
+    <h1
+      className="solar-hero__title text-fluid-800"
+      style={heroTextColor ? { color: heroTextColor } : undefined}
+    >
       {titlePrimary}
       <br />
       <span className="solar-hero__title-accent">{titleAccent}</span>
@@ -255,10 +261,10 @@ function HeroMetricTile({
       className="solar-hero__metric"
       style={{ backgroundColor: metricTileBackground, borderColor: metricTileBorder }}
     >
-      <div className="solar-hero__metric-label" style={{ color: metricLabelColor }}>
+      <div className="solar-hero__metric-label text-size-80" style={{ color: metricLabelColor }}>
         {metric.label}
       </div>
-      <div className="solar-hero__metric-value" style={{ color: metricValueColor }}>
+      <div className="solar-hero__metric-value text-size-200" style={{ color: metricValueColor }}>
         {metric.value}
       </div>
     </div>
@@ -274,7 +280,7 @@ function HeroMetrics({
 }) {
   return (
     <div className="solar-hero__metrics">
-      <div className="solar-hero__metrics-heading" style={{ color: metricLabelColor }}>
+      <div className="solar-hero__metrics-heading text-size-80" style={{ color: metricLabelColor }}>
         Snapshot
       </div>
       {heroMetrics.map((metric, index) => (
@@ -298,7 +304,7 @@ function HeroCardCopy({ cardCopy, heroTextColor }) {
       <PortableTextContent
         as="div"
         value={cardCopy}
-        className="solar-hero__card-copy"
+        className="solar-hero__card-copy text-size-200"
         style={{ color: heroTextColor || 'var(--color-text-strong)' }}
       />
       <div className="solar-hero__card-bars" aria-hidden="true">
@@ -418,7 +424,7 @@ export default function Hero({
               <PortableTextContent
                 as="div"
                 value={body}
-                className="solar-hero__body"
+                className="solar-hero__body text-size-200"
                 style={{ color: softTextColor || 'var(--color-muted-foreground)' }}
               />
             ) : null}

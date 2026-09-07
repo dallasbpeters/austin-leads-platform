@@ -4,7 +4,7 @@ import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 export function BandSection({ section, sectionId }) {
   return (
     <section
-      className="bg-transparent"
+      className="section-shell section-shell--transparent"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/band-section.jsx',

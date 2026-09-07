@@ -19,7 +19,6 @@
 
 .card-grid__subtitle {
   margin-bottom: 1rem;
-  font-size: 1.25rem;
   color: var(--foreground);
 }
 
@@ -65,7 +64,7 @@
 @media (width >= 48rem) {
   .card-grid__item--reverse .card-grid__icon {
     display: flex;
-    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -76,7 +75,6 @@
 
 .card-grid__eyebrow {
   margin: 0 0 0.5rem;
-  font-size: 0.65rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted-foreground);
@@ -84,15 +82,8 @@
 
 .card-grid__title {
   margin: 0;
-  font-size: 1.25rem;
   letter-spacing: normal;
   color: var(--foreground);
-}
-
-@media (width >= 48rem) {
-  .card-grid__title {
-    font-size: 1.5rem;
-  }
 }
 
 .card-grid__body {

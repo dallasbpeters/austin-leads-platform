@@ -67,11 +67,11 @@ function getSectionStyles(section) {
 function StatItem({ item, labelStyle }) {
   return (
     <div key={item._key || item.title}>
-      <p className="solar-costs__stat-number">{item.number}</p>
-      <p className="solar-costs__stat-label" style={labelStyle}>
+      <p className="solar-costs__stat-number text-size-700">{item.number}</p>
+      <p className="solar-costs__stat-label text-size-90" style={labelStyle}>
         {item.title}
       </p>
-      <PortableTextContent as="div" value={item.body} className="solar-costs__stat-body" />
+      <PortableTextContent as="div" value={item.body} className="solar-costs__stat-body text-size-100" />
     </div>
   )
 }
@@ -92,12 +92,12 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
       })}
     >
       <div className="solar-costs__shell">
-        <p className="solar-costs__eyebrow" style={labelStyle}>
+        <p className="solar-costs__eyebrow text-size-90" style={labelStyle}>
           {eyebrow}
         </p>
-        <h2 className="solar-costs__title">{title}</h2>
-        <PortableTextContent as="div" value={body} className="solar-costs__body" />
-        <PortableTextContent as="div" value={subtitle} className="solar-costs__subtitle" />
+        <h2 className="solar-costs__title text-fluid-700">{title}</h2>
+        <PortableTextContent as="div" value={body} className="solar-costs__body text-size-200" />
+        <PortableTextContent as="div" value={subtitle} className="solar-costs__subtitle text-size-200" />
         <div className="solar-costs__stats">
           {stats.map((item) => (
             <StatItem key={item._key || item.title} item={item} labelStyle={labelStyle} />
@@ -105,12 +105,16 @@ export default function CostsSection({ section = null, sectionId = 'costs' }) {
         </div>
         <div className="solar-costs__divider" style={dividerStyle} />
         <div className="solar-costs__payback">
-          <p className="solar-costs__payback-eyebrow" style={labelStyle}>
+          <p className="solar-costs__payback-eyebrow text-size-90" style={labelStyle}>
             {paybackEyebrow}
           </p>
           <div>
-            <p className="solar-costs__payback-title">{paybackTitle}</p>
-            <PortableTextContent as="div" value={paybackBody} className="solar-costs__payback-body" />
+            <p className="solar-costs__payback-title text-fluid-400">{paybackTitle}</p>
+            <PortableTextContent
+              as="div"
+              value={paybackBody}
+              className="solar-costs__payback-body text-size-100"
+            />
           </div>
         </div>
       </div>

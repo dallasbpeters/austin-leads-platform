@@ -23,7 +23,7 @@
 .solar-calculator__shell {
   position: relative;
   z-index: 1;
-  width: min(72rem, calc(100% - 3rem));
+  width: min(calc(var(--spacing-xx-large) * 76), calc(100% - 3rem));
   margin-inline: auto;
 }
 
@@ -35,14 +35,12 @@
 .solar-calculator__title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.875rem, 4vw, 4.25rem);
   color: var(--foreground);
 }
 
 .solar-calculator__lede {
-  max-width: 52rem;
+  max-width: 5calc (var(--spacing-xx-large) * 2);
   margin: 0.75rem auto 0;
-  font-size: 1rem;
   color: var(--foreground);
   text-wrap: balance;
 }
@@ -64,7 +62,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem;
+  padding: calc(var(--spacing-xx-large) * 2);
   color: var(--color-white);
   background: linear-gradient(to bottom right, var(--color-primary-800), var(--color-primary));
 }
@@ -72,7 +70,6 @@
 .solar-calculator__label {
   display: block;
   margin-bottom: 0.75rem;
-  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -87,20 +84,18 @@
 .solar-calculator__currency {
   position: absolute;
   top: 50%;
-  left: 1rem;
+  left: var(--spacing-xx-large);
   translate: 0 -50%;
-  font-size: 1.5rem;
   font-weight: 600;
   color: color-mix(in oklch, var(--color-white) 60%, transparent);
 }
 
 .solar-calculator__input {
   width: 100%;
-  padding: 1rem 1rem 1rem 2.5rem;
+  padding: var(--spacing-xx-large) var(--spacing-xx-large) var(--spacing-xx-large) 2.5rem;
   border: 1px solid color-mix(in oklch, var(--color-white) 15%, transparent);
   border-radius: var(--radius-xl);
   background: color-mix(in oklch, var(--color-white) 10%, transparent);
-  font-size: 1.875rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--color-white);
@@ -116,13 +111,12 @@
 }
 
 .solar-calculator__slider {
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-xx-large);
 }
 
 .solar-calculator__range-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-tidal);
 }
@@ -130,17 +124,16 @@
 .solar-calculator__note {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 2rem;
+  gap: var(--spacing-medium);
+  margin-top: calc(var(--spacing-xx-large) * 2);
   padding-top: 1.5rem;
   border-top: 1px solid color-mix(in oklch, var(--color-white) 10%, transparent);
-  font-size: 0.875rem;
   color: var(--color-sea-mist);
 }
 
 .solar-calculator__note-icon {
-  width: 1rem;
-  height: 1rem;
+  width: var(--spacing-xx-large);
+  height: var(--spacing-xx-large);
   flex-shrink: 0;
 }
 
@@ -148,7 +141,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
-  padding: 1rem;
+  padding: var(--spacing-xx-large);
 }
 
 @media (width < 40rem) {
@@ -160,7 +153,7 @@
 @media (width >= 48rem) {
   .solar-calculator__results {
     gap: 1.5rem;
-    padding: 2rem;
+    padding: calc(var(--spacing-xx-large) * 2);
   }
 }
 
@@ -168,7 +161,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-xx-large);
   grid-column: 1 / -1;
   margin-top: 0.5rem;
 }
@@ -179,7 +172,6 @@
 }
 
 .solar-calculator__cta-note {
-  font-size: 0.875rem;
   color: var(--color-slate-700);
 }
 
@@ -194,7 +186,6 @@
 }
 
 .solar-calculator__result-title {
-  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -206,13 +197,11 @@
   align-items: baseline;
   gap: 0.25rem;
   margin-top: 0.5rem;
-  font-size: 1.875rem;
   font-weight: 700;
   color: var(--foreground);
 }
 
 .solar-calculator__result-unit {
-  font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-slate-700);
 }
@@ -223,6 +212,5 @@
 
 .solar-calculator__result-detail {
   margin: 0.375rem 0 0;
-  font-size: 0.875rem;
   color: var(--color-slate-700);
 }

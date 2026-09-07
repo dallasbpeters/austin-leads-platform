@@ -14,7 +14,7 @@ function AvatarVisual({ avatarImageUrl, avatarImageAlt, avatarInitials, avatarSt
   return (
     <Avatar size="xl" className="cta-banner__avatar" style={avatarStyle}>
       {avatarImageUrl ? <AvatarImage src={avatarImageUrl} alt={avatarImageAlt} /> : null}
-      <AvatarFallback className="cta-banner__avatar-fallback" style={avatarStyle}>
+      <AvatarFallback className="cta-banner__avatar-fallback text-size-100" style={avatarStyle}>
         {avatarInitials || 'TS'}
       </AvatarFallback>
     </Avatar>
@@ -25,15 +25,27 @@ function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isClou
   return (
     <div className="cta-banner__person-text">
       {avatarEyebrow ? (
-        <div className={cn('cta-banner__person-eyebrow', isCloudTheme && 'cloud-theme-section__eyebrow')}>
+        <div
+          className={cn(
+            'cta-banner__person-eyebrow text-size-80',
+            isCloudTheme && 'cloud-theme-section__eyebrow',
+          )}
+        >
           {avatarEyebrow}
         </div>
       ) : null}
-      <div className={cn('cta-banner__person-name', isCloudTheme && 'cloud-theme-section__heading')}>
+      <div
+        className={cn(
+          'cta-banner__person-name text-size-200',
+          isCloudTheme && 'cloud-theme-section__heading',
+        )}
+      >
         {avatarName}
       </div>
       {avatarRole ? (
-        <div className={cn('cta-banner__person-role', isCloudTheme && 'cloud-theme-section__body')}>
+        <div
+          className={cn('cta-banner__person-role text-size-90', isCloudTheme && 'cloud-theme-section__body')}
+        >
           {avatarRole}
         </div>
       ) : null}
@@ -41,7 +53,7 @@ function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isClou
         <PortableTextContent
           as="div"
           value={avatarBlurb}
-          className={cn('cta-banner__person-blurb', isCloudTheme && 'cloud-theme-section__body')}
+          className={cn('cta-banner__person-blurb text-size-90', isCloudTheme && 'cloud-theme-section__body')}
         />
       ) : null}
     </div>
@@ -146,17 +158,21 @@ export function CtaBannerSection({ page, section, site }) {
       <div className="cta-banner__inner">
         <div className="cta-banner__copy">
           {section.eyebrow ? (
-            <p className={cn('cta-banner__eyebrow', showClouds && 'cloud-theme-section__eyebrow')}>
+            <p
+              className={cn('cta-banner__eyebrow text-size-90', showClouds && 'cloud-theme-section__eyebrow')}
+            >
               {section.eyebrow}
             </p>
           ) : null}
-          <h2 className={cn('cta-banner__title', showClouds && 'cloud-theme-section__heading')}>
+          <h2
+            className={cn('cta-banner__title text-fluid-500', showClouds && 'cloud-theme-section__heading')}
+          >
             {section.title}
           </h2>
           <PortableTextContent
             as="div"
             value={section.body}
-            className={cn('cta-banner__body', showClouds && 'cloud-theme-section__body')}
+            className={cn('cta-banner__body text-size-100', showClouds && 'cloud-theme-section__body')}
           />
           {buildAvatarSection(section, isDarkTheme, showClouds)}
           <JobberDialog buttonLabel={buttonLabel} context={leadContext} />

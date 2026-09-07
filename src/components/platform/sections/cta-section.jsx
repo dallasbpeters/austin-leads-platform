@@ -21,7 +21,7 @@ export function CtaSection({ page, section, site, pathname, editAttributes }) {
 
   if (isChristmasLightsContext) {
     return (
-      <section id={CONSULTATION_ANCHOR_ID} className="scroll-mt-38" {...editAttributes}>
+      <section id={CONSULTATION_ANCHOR_ID} className="cta-anchor" {...editAttributes}>
         <DevTrace
           markup="src/components/platform/sections/cta-section.jsx"
           content="christmas lights booking form"

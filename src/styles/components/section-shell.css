@@ -47,7 +47,6 @@
 
 .section-shell__eyebrow {
   margin: 0 0 1rem;
-  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -56,7 +55,6 @@
 
 .section-shell__eyebrow--muted {
   margin-bottom: 0.5rem;
-  font-size: 0.65rem;
   font-weight: 400;
   letter-spacing: 0.22em;
   color: var(--muted-foreground);
@@ -64,27 +62,18 @@
 
 .section-shell__title {
   margin: 0;
-  font-size: 1.875rem;
   letter-spacing: normal;
   color: var(--foreground);
 }
 
-@media (width >= 48rem) {
-  .section-shell__title {
-    font-size: 2.25rem;
-  }
-}
-
 .section-shell__subtitle {
   margin-top: 1rem;
-  font-size: 1.125rem;
   line-height: 2rem;
   color: color-mix(in oklch, var(--foreground) 80%, transparent);
 }
 
 .section-shell__body {
   margin-top: 1rem;
-  font-size: 1rem;
   line-height: 2rem;
   color: var(--muted-foreground);
 }
@@ -95,7 +84,6 @@
   justify-content: center;
   aspect-ratio: 16 / 9;
   border-radius: var(--radius-lg);
-  font-size: 0.875rem;
   color: var(--muted-foreground);
   background: var(--muted);
 }
@@ -107,4 +95,22 @@
 
 .section-shell__title--after-badge {
   margin-top: 1.25rem;
+}
+
+.section-shell--card {
+  background: var(--card);
+}
+
+.section-shell--transparent {
+  border-bottom: 0;
+  background: transparent;
+}
+
+.section-shell--paper-inverse {
+  background: linear-gradient(180deg, rgb(247 244 239 / 98%), rgb(255 255 255 / 98%));
+}
+
+/* For sections whose child block supplies its own vertical rhythm. */
+.section-shell__inner--flush {
+  padding-block: 0;
 }

@@ -15,12 +15,16 @@ function BannerCtaContent({ isCloudTheme, section }) {
     <div className={cn('banner-cta__content', !isCloudTheme && 'banner-cta__content--solid')}>
       <div className="banner-cta__copy">
         {section?.eyebrow ? (
-          <p className={cn('banner-cta__eyebrow', isCloudTheme && 'cloud-theme-section__eyebrow')}>
+          <p
+            className={cn('banner-cta__eyebrow text-size-90', isCloudTheme && 'cloud-theme-section__eyebrow')}
+          >
             {section.eyebrow}
           </p>
         ) : null}
         {section?.title ? (
-          <h2 className={cn('banner-cta__title', isCloudTheme && 'cloud-theme-section__heading')}>
+          <h2
+            className={cn('banner-cta__title text-fluid-500', isCloudTheme && 'cloud-theme-section__heading')}
+          >
             {section.title}
           </h2>
         ) : null}
@@ -28,7 +32,7 @@ function BannerCtaContent({ isCloudTheme, section }) {
           <PortableTextContent
             as="div"
             value={section.body}
-            className={cn('banner-cta__body', isCloudTheme && 'cloud-theme-section__body')}
+            className={cn('banner-cta__body text-size-100', isCloudTheme && 'cloud-theme-section__body')}
           />
         ) : null}
       </div>

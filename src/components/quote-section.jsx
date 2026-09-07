@@ -122,7 +122,7 @@ export default function QuoteSection({
     >
       <div data-variant={variant} className={cn(quoteVariants({ variant, size, className }))}>
         <div className="quote-banner__eyebrow-row">
-          <span className="quote-banner__eyebrow">
+          <span className="quote-banner__eyebrow text-size-80">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -143,7 +143,7 @@ export default function QuoteSection({
         </div>
 
         <div className="quoteReveal quote-banner__reveal">
-          <p className="quote-banner__text">
+          <p className="quote-banner__text text-fluid-500">
             {words.map((word, index) => (
               <span
                 key={`${word}-${index}`}
@@ -157,7 +157,7 @@ export default function QuoteSection({
           </p>
         </div>
 
-        <div className="quote-banner__attribution">
+        <div className="quote-banner__attribution text-size-100">
           <span>{attribution}</span>
         </div>
       </div>

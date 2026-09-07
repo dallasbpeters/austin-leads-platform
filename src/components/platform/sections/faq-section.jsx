@@ -5,7 +5,7 @@ import { FaqAccordion } from './faq-accordion'
 export function FaqSection({ section, sectionId }) {
   return (
     <section
-      className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(249,247,244,0.98),rgba(255,255,255,0.98))]"
+      className="faq section-shell"
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/faq-section.jsx',
@@ -16,14 +16,12 @@ export function FaqSection({ section, sectionId }) {
         markup="src/components/platform/sections/faq-section.jsx"
         content={`faq section from ${section?._type || 'page section'}`}
       />
-      <div className="mx-auto max-w-7xl px-3 py-20 md:px-6 lg:px-10">
-        <div className="mb-10 max-w-3xl">
-          <h2 className="font-display text-foreground text-3xl tracking-normal md:text-4xl">
-            {section.title}
-          </h2>
+      <div className="section-shell__inner">
+        <div className="section-shell__intro">
+          <h2 className="section-shell__title faq__title text-fluid-500">{section.title}</h2>
         </div>
-        <div className="space-y-4">
-          <Card className="bg-card border-border/80 p-4">
+        <div>
+          <Card className="faq__card">
             <FaqAccordion items={section.items} />
           </Card>
         </div>
