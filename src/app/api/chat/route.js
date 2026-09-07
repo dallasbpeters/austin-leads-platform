@@ -168,6 +168,9 @@ const validateChatEnvironment = async (request) => {
  */
 function buildInsightsTelemetry(threadId, messages) {
   if (!sanityWriteClient) {
+    /* Say so rather than skipping in silence: an empty dashboard otherwise
+     * looks the same as an agent nobody has used yet. */
+    console.warn('[insights] skipped: no Sanity write client. SANITY_API_WRITE_TOKEN is missing or empty.')
     return undefined
   }
 
@@ -177,6 +180,10 @@ function buildInsightsTelemetry(threadId, messages) {
   const resolvedThreadId = threadId || messages[0]?.id
 
   if (!resolvedThreadId) {
+    console.warn(
+      '[insights] skipped: no threadId on the request and no id on the first message, ' +
+        'so turns could not be grouped into a conversation.',
+    )
     return undefined
   }
 
