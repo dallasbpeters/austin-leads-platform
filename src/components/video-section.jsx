@@ -1,10 +1,20 @@
 'use client'
 
-import { ChristmasLights } from '@/components/christmas-lights'
+import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import PortableTextContent from '@/components/portable-text-content'
 import { getImageUrl } from '@/lib/platform/imageSource'
+
+/*
+ * The bulb strand is a WebGL scene: it drags in three.js and react-three-fiber,
+ * together the heaviest dependency the marketing pages can reach. It is purely
+ * decorative and cannot render on the server anyway, so it loads on its own.
+ */
+const ChristmasLights = dynamic(
+  () => import('@/components/christmas-lights').then((mod) => mod.ChristmasLights),
+  { ssr: false },
+)
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) {
@@ -213,7 +223,7 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
 
   if (hasError) {
     return (
-      <div className="section-shell__empty">
+      <div className="section-shell__empty text-size-90">
         <p>Could not load video</p>
       </div>
     )
@@ -301,7 +311,7 @@ function CustomVideoPlayer({ videoSrc, posterSrc, autoplay: _autoplay, loop, mut
               {isPlaying ? <PauseIcon size={18} /> : <PlayIcon size={18} />}
             </button>
 
-            <span className="video-player__time">
+            <span className="video-player__time text-size-90">
               {formatTime(currentTime)} / {formatTime(duration)}
             </span>
 
@@ -360,9 +370,9 @@ export function VideoSection({ section, sectionId }) {
     return (
       <section id={sectionId} className="video-section section-shell">
         <div className="section-shell__inner">
-          {eyebrow && <p className="section-shell__eyebrow">{eyebrow}</p>}
-          {title && <h2 className="section-shell__title video-section__title">{title}</h2>}
-          <div className="section-shell__empty">
+          {eyebrow && <p className="section-shell__eyebrow text-size-90">{eyebrow}</p>}
+          {title && <h2 className="section-shell__title video-section__title text-fluid-500">{title}</h2>}
+          <div className="section-shell__empty text-size-90">
             <p>No video source set</p>
           </div>
         </div>
@@ -392,8 +402,8 @@ export function VideoSection({ section, sectionId }) {
       <div className="section-shell__inner section-shell__inner--narrow">
         {(eyebrow || title) && (
           <div className="section-shell__intro">
-            {eyebrow && <p className="section-shell__eyebrow">{eyebrow}</p>}
-            {title && <h2 className="section-shell__title video-section__title">{title}</h2>}
+            {eyebrow && <p className="section-shell__eyebrow text-size-90">{eyebrow}</p>}
+            {title && <h2 className="section-shell__title video-section__title text-fluid-500">{title}</h2>}
           </div>
         )}
 
@@ -410,7 +420,7 @@ export function VideoSection({ section, sectionId }) {
 
         {body && <PortableTextContent value={body} className="video-section__body" />}
 
-        {caption && <p className="video-section__caption">{caption}</p>}
+        {caption && <p className="video-section__caption text-size-90">{caption}</p>}
       </div>
     </section>
   )
