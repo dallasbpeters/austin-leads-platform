@@ -1,6 +1,160 @@
 /* Type family helpers. */
+:root {
+  --text-size-80: 0.64rem;
+  --text-size-90: 0.8rem;
+  --text-size-100: 1rem;
+  --text-size-200: 1.25rem;
+  --text-size-300: 1.563rem;
+  --text-size-400: 1.953rem;
+  --text-size-500: 2.441rem;
+  --text-size-600: 3.052rem;
+  --text-size-700: 4.115rem;
+  --text-size-800: 5.115rem;
+  --text-size-900: 5.515rem;
+}
+
+/*
+ * The type scale, applied as a class in the markup. These rules are
+ * deliberately UNLAYERED so they beat Tailwind's own text-* utilities, exactly
+ * as the component font-size declarations they replaced used to. The fluid
+ * steps grow between two rungs of the same scale, so a heading can shrink on a
+ * phone without any component file declaring a size.
+ */
+
+.text-size-80 {
+  font-size: var(--text-size-80);
+}
+
+.text-size-90 {
+  font-size: var(--text-size-90);
+}
+
+.text-size-100 {
+  font-size: var(--text-size-100);
+}
+
+.text-size-200 {
+  font-size: var(--text-size-200);
+}
+
+.text-size-300 {
+  font-size: var(--text-size-300);
+}
+
+.text-size-400 {
+  font-size: var(--text-size-400);
+}
+
+.text-size-500 {
+  font-size: var(--text-size-500);
+}
+
+.text-size-600 {
+  font-size: var(--text-size-600);
+}
+
+.text-size-700 {
+  font-size: var(--text-size-700);
+}
+
+.text-size-800 {
+  font-size: var(--text-size-800);
+}
+
+.text-size-900 {
+  font-size: var(--text-size-900);
+}
+
+.text-fluid-200 {
+  font-size: clamp(var(--text-size-100), 3vw, var(--text-size-200));
+}
+
+.text-fluid-300 {
+  font-size: clamp(var(--text-size-200), 4vw, var(--text-size-300));
+}
+
+.text-fluid-400 {
+  font-size: clamp(var(--text-size-300), 4vw, var(--text-size-400));
+}
+
+.text-fluid-500 {
+  font-size: clamp(var(--text-size-400), 5vw, var(--text-size-500));
+}
+
+.text-fluid-600 {
+  font-size: clamp(var(--text-size-500), 6vw, var(--text-size-600));
+}
+
+.text-fluid-700 {
+  font-size: clamp(var(--text-size-600), 7vw, var(--text-size-700));
+}
+
+.text-fluid-800 {
+  font-size: clamp(var(--text-size-700), 8vw, var(--text-size-800));
+}
+
+.text-fluid-900 {
+  font-size: clamp(var(--text-size-800), 9vw, var(--text-size-900));
+}
 
 @layer components {
+  h1,
+  .h1,
+  h2,
+  .h2,
+  h3,
+  .h3,
+  h4,
+  .h4,
+  h5,
+  .h5,
+  h6,
+  .h6 {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.022em;
+  }
+
+  p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  small {
+    font-size: var(--text-size-90);
+  }
+
+  h6,
+  .h6 {
+    font-size: var(--text-size-200);
+  }
+
+  h5,
+  .h5 {
+    font-size: var(--text-size-300);
+  }
+
+  h4,
+  .h4 {
+    font-size: var(--text-size-400);
+  }
+
+  h3,
+  .h3 {
+    font-size: var(--text-size-500);
+  }
+
+  h2,
+  .h2 {
+    font-size: var(--text-size-600);
+  }
+
+  h1,
+  .h1 {
+    font-size: var(--text-size-700);
+  }
+
   .type-display {
     font-family: var(--font-display);
   }
@@ -51,5 +205,15 @@
 
   .google-sans.google-sans-bold {
     --font-weight: 700;
+  }
+}
+
+/*
+ * Tailwind's own text-base is remapped onto the scale. It stays in the
+ * utilities layer so it keeps beating component rules, exactly as before.
+ */
+@layer utilities {
+  .text-base {
+    font-size: var(--text-size-90);
   }
 }
