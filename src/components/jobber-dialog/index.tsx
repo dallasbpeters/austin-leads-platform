@@ -26,6 +26,7 @@ interface JobberDialogProps {
   // Pin the trigger as a floating action button in the bottom-right corner.
   fixed?: boolean
   triggerClassName?: string
+  variant?: 'default' | 'inverse' | 'secondary' | 'tertiary'
 }
 
 export function JobberDialog({
@@ -37,6 +38,7 @@ export function JobberDialog({
   iconOnly = false,
   fixed = false,
   triggerClassName,
+  variant = 'tertiary',
 }: JobberDialogProps) {
   const [open, setOpen] = useState(false)
   const [isReady, setIsReady] = useState(false)
@@ -76,7 +78,7 @@ export function JobberDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
-          variant="default"
+          variant={variant}
           size={iconOnly ? 'icon' : 'default'}
           aria-label={iconOnly ? buttonLabel : undefined}
           className={cn(fixed && FAB_CLASSES, triggerClassName)}

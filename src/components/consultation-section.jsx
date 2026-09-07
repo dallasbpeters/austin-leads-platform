@@ -1,9 +1,10 @@
 // oxlint-disable func-style
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+import { shouldShowClouds } from '@/lib/platform/section-helpers'
 import { cn } from '@/lib/utils'
+import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
-import Gradient from './gradient'
 import { JobberDialog } from './jobber-dialog'
 import PortableTextContent from './portable-text-content'
 
@@ -43,26 +44,6 @@ function getSectionContent(section, variant) {
     metadata: content.metadata,
     serviceInterest: content.serviceInterest,
     sourceSection: content.sourceSection,
-  }
-}
-
-function buildSectionStyle(theme, isChristmasTheme) {
-  if (theme === 'light') {
-    return {
-      backgroundImage:
-        'linear-gradient(to right, oklch(from var(--color-secondary) 78% calc(c * 0.36) h / 0.12), oklch(from var(--color-secondary) 70% calc(c * 0.66) h / 0), oklch(from var(--color-primary) 72% calc(c * 0.73) calc(h + 10) / 0.12))',
-    }
-  }
-  if (isChristmasTheme) {
-    return {
-      backgroundColor: '#090e09',
-      backgroundImage: [
-        'radial-gradient(at 80.5% 40.8%, #14420e 0px, transparent 100%)',
-        'radial-gradient(at 50.8% 17.7%, #16390d 0px, transparent 100%)',
-        'radial-gradient(at 36.3% 72.7%, #0a570f 0px, transparent 50%)',
-        'radial-gradient(at 10% 33%, #213819 0px, transparent 100%)',
-      ].join(', '),
-    }
   }
 }
 
@@ -124,27 +105,22 @@ function getAvatarData(section) {
 }
 
 /*
- * The light variant sits over the tone-tinted gradient, so its text takes the
- * same `--cloud-section-*` tokens the cloud sections use rather than fixed
- * colours. Without this the copy stays dark navy after the sky turns to night
- * and becomes unreadable. The dark variant (`consult--dark`) has its own
- * opaque background and keeps a fixed palette in consult.css.
+ * The band is a dark brand surface on every theme now, so there is no
+ * light/dark text split to resolve -- consult.css owns the colours and this
+ * only names the size step for each element.
  */
-function getClassNames(isDarkTheme) {
-  const light = (cloudClass) => (isDarkTheme ? '' : cloudClass)
-  return {
-    avatarClassName: 'consult__avatar',
-    blurbClassName: cn('consult__person-blurb', light('cloud-theme-section__body')),
-    copy: cn('consult__copy', light('cloud-theme-section__body')),
-    eyebrowClassName: cn('consult__person-eyebrow', light('cloud-theme-section__eyebrow')),
-    fallbackClassName: 'consult__avatar-fallback',
-    heading: cn('consult__heading', light('cloud-theme-section__heading')),
-    nameClassName: cn('consult__person-name', light('cloud-theme-section__heading')),
-    roleClassName: cn('consult__person-role', light('cloud-theme-section__body')),
-  }
+const CLASS_NAMES = {
+  avatarClassName: 'consult__avatar',
+  blurbClassName: 'consult__person-blurb text-size-90',
+  copy: 'consult__copy text-size-100',
+  eyebrowClassName: 'consult__person-eyebrow text-size-80',
+  fallbackClassName: 'consult__avatar-fallback text-size-100',
+  heading: 'consult__heading text-fluid-600',
+  nameClassName: 'consult__person-name text-size-200',
+  roleClassName: 'consult__person-role text-size-90',
 }
 
-function AvatarSection({ section, isDarkTheme }) {
+function AvatarSection({ section }) {
   const {
     avatarName,
     avatarEyebrow,
@@ -155,7 +131,7 @@ function AvatarSection({ section, isDarkTheme }) {
     avatarInitials,
     avatarStyle,
   } = getAvatarData(section)
-  const classes = getClassNames(isDarkTheme)
+  const classes = CLASS_NAMES
 
   if (!avatarName) {
     return null
@@ -193,33 +169,33 @@ export default function ConsultationSection({
   pageTitle = 'Texas Solar and Roofing Pros',
 }) {
   const isChristmasTheme = theme === 'christmasLights'
-  const isDarkTheme = theme === 'dark' || isChristmasTheme
+  const showClouds = shouldShowClouds(section?.cloudVisibility)
   const content = getSectionContent(section, variant)
-  const sectionStyle = buildSectionStyle(theme, isChristmasTheme)
   const leadContext = buildLeadContext(site, content, pagePath, pageTitle)
 
   return (
-    <section
+    <CloudSectionBackground
       id={sectionId}
-      className={cn('consult', isDarkTheme && 'consult--dark', theme === 'dark' && 'consult--dark-gradient')}
+      className={cn('consult', isChristmasTheme && 'consult--christmas')}
+      showClouds={showClouds}
       {...getDevSectionAttributes({
         content: 'local JSX section + live lead form',
         id: sectionId,
         markup: 'src/components/consultation-section.jsx',
       })}
-      style={sectionStyle}
     >
       <div className="consult__shell">
-        <div>
-          <h2 className={getClassNames(isDarkTheme).heading}>{content.headline}</h2>
-          <PortableTextContent as="div" value={content.copy} className={getClassNames(isDarkTheme).copy} />
-          <AvatarSection section={section} isDarkTheme={isDarkTheme} />
+        {/* The card is what holds contrast steady: the sky behind it runs from
+            midday bright to near black, the card does not. */}
+        <div className="consult__card">
+          <h2 className={CLASS_NAMES.heading}>{content.headline}</h2>
+          <PortableTextContent as="div" value={content.copy} className={CLASS_NAMES.copy} />
+          <AvatarSection section={section} />
           <div className="consult__cta">
-            <JobberDialog buttonLabel={content.buttonLabel} context={leadContext} />
+            <JobberDialog variant="inverse" buttonLabel={content.buttonLabel} context={leadContext} />
           </div>
         </div>
       </div>
-      {isDarkTheme ? null : <Gradient zIndex={0} />}
-    </section>
+    </CloudSectionBackground>
   )
 }

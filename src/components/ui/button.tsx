@@ -13,6 +13,7 @@ const buttonVariants = cva(
           'btn--primary bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_4px_10px_0_oklch(0%_0_0deg_/_0.1)]',
         dark: 'bg-mist-900 text-white hover:bg-mist-900/90 shadow-[0_4px_10px_0_oklch(0%_0_0deg_/_0.1)]',
         secondary: 'btn--secondary',
+        inverse: 'btn--inverse',
         tertiary: 'btn--tertiary',
         destructive:
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',
@@ -27,11 +28,11 @@ const buttonVariants = cva(
         circle: 'rounded-full p-0',
       },
       size: {
-        default: 'btn--md has-[svg]:px-3',
+        default: 'btn--md text-size-90 has-[svg]:px-3',
         xs: "h-6 gap-1 px-2 text-sm has-[svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: 'h-8 gap-1.5 px-3 has-[svg]:px-2.5',
         md: 'h-9 gap-2 px-4 has-[svg]:px-3',
-        lg: 'btn--lg has-[svg]:px-4',
+        lg: 'btn--lg text-size-100 has-[svg]:px-4',
         icon: 'size-9',
         'icon-xs': "size-6 [&_svg:not([class*='size-'])]:size-3",
         'icon-sm': 'size-8',
@@ -47,7 +48,7 @@ const buttonVariants = cva(
 )
 
 type ButtonVariant =
-  'default' | 'dark' | 'secondary' | 'tertiary' | 'destructive' | 'outline' | 'ghost' | 'link'
+  'default' | 'dark' | 'inverse' | 'secondary' | 'tertiary' | 'destructive' | 'outline' | 'ghost' | 'link'
 type ButtonShape = 'default' | 'pill' | 'circle'
 type ButtonSize = 'default' | 'xs' | 'sm' | 'md' | 'lg' | 'icon' | 'icon-xs' | 'icon-sm' | 'icon-lg'
 
