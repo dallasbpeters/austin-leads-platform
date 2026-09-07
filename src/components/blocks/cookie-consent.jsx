@@ -65,6 +65,13 @@ const CookieConsent = React.forwardRef(
 
     const commonWrapperProps = {
       ref,
+      /*
+       * The banner is fixed-position, so it sits outside <main> and axe's
+       * `region` rule flags it on every page. A named region landmark is the
+       * correct home for a persistent notice like this.
+       */
+      role: 'region',
+      'aria-label': 'Cookie notice',
       className: cn(
         containerClasses,
         variant === 'mini'

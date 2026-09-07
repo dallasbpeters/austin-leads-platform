@@ -95,7 +95,6 @@
   align-items: center;
   gap: 0.5rem;
   border-radius: var(--radius-md);
-  font-size: 1.25rem;
   font-weight: 700;
 }
 
@@ -115,7 +114,6 @@
 }
 
 .site-footer__heading {
-  font-size: 1.25rem;
   color: var(--color-white);
 }
 
@@ -151,7 +149,6 @@
 
 .site-footer__crawlers {
   margin: 0.5rem 0 0;
-  font-size: 0.875rem;
   color: color-mix(in oklch, var(--color-primary-200) 70%, transparent);
 }
 

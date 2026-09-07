@@ -10,5 +10,11 @@ export const metadata: Metadata = {
 }
 
 export default function BookPage() {
-  return <SchedulingForm />
+  /* The form is the whole page here, so it needs the page's main landmark and
+   * its headline has to be the h1. */
+  return (
+    <main>
+      <SchedulingForm headingLevel="h1" />
+    </main>
+  )
 }

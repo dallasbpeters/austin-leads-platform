@@ -305,7 +305,7 @@ export const MapBox = ({
           {eyebrow && (
             <p
               className="mb-4 text-xs font-bold tracking-[0.22em] uppercase"
-              style={{ color: 'var(--color-tertiary)' }}
+              style={{ color: 'rgba(255,255,255,0.62)' }}
             >
               {eyebrow}
             </p>
@@ -324,7 +324,7 @@ export const MapBox = ({
             <>
               <p
                 className="mb-2.5 text-[0.65rem] font-bold tracking-[0.18em] uppercase"
-                style={{ color: 'rgba(255,255,255,0.30)' }}
+                style={{ color: 'rgba(255,255,255,0.55)' }}
               >
                 Service counties
               </p>

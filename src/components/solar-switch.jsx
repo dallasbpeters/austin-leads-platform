@@ -79,6 +79,17 @@ const SolarSwitch = ({
     }
   }, [accentWord])
 
+  /*
+   * Resting values, used until the section scrolls into view.
+   *
+   * These are not decoration: they are the state a11y tooling and any visitor who
+   * has not reached the section yet actually sees. The old #CCCCCC put white text
+   * at 1.6:1 and the trailing word at 1.4:1. Both now clear the 3:1 that WCAG
+   * asks of large text, and the "dims, then lights up" effect still reads.
+   */
+  const SWITCH_RESTING_BG = '#8a8a8a'
+  const TRAILING_RESTING_OPACITY = 0.5
+
   return (
     <section
       ref={sectionRef}
@@ -98,7 +109,7 @@ const SolarSwitch = ({
         <span
           className="solar-wrapper relative inline-flex overflow-hidden rounded-full align-middle leading-none transition-colors duration-500"
           style={{
-            backgroundColor: isActive ? 'var(--color-primary)' : '#CCCCCC',
+            backgroundColor: isActive ? 'var(--color-primary)' : SWITCH_RESTING_BG,
             width: `${wrapperWidth}px`,
             height: `${wrapperHeight}px`,
             verticalAlign: '-0.48em',
@@ -127,7 +138,7 @@ const SolarSwitch = ({
         <span
           className="ml-3 inline-block align-middle font-bold tracking-[-0.02em] transition-opacity duration-500"
           style={{
-            opacity: isActive ? 0.5 : 0.15,
+            opacity: isActive ? 0.5 : TRAILING_RESTING_OPACITY,
             verticalAlign: '-0.08em',
           }}
         >

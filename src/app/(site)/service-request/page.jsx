@@ -20,6 +20,9 @@ const ServiceRequestPage = async () => {
     <>
       <Header navigation={navigation} />
       <main className="mx-auto w-full max-w-4xl px-4 pt-36">
+        {/* The request form is a third-party embed with no heading of its own,
+            so the page needs one to be navigable. */}
+        <h1 className="text-size-500">Request service</h1>
         <JobberWorkRequestEmbed />
       </main>
       <Footer />

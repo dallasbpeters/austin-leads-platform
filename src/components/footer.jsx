@@ -43,7 +43,7 @@ export default function Footer() {
       <div className="site-footer__inner">
         <div className="site-footer__grid">
           <div className="site-footer__col--wide">
-            <Link href="/" className="site-footer__brand site-footer__link">
+            <Link href="/" className="site-footer__brand text-size-200 site-footer__link">
               <Logo className="site-footer__brand-mark" />
               Texas Solar & Roofing Pros
             </Link>
@@ -52,7 +52,7 @@ export default function Footer() {
               upgrades for Texas homeowners.
             </p>
             <div className="site-footer__contact">
-              <h3 className="site-footer__heading">Contact</h3>
+              <h2 className="site-footer__heading text-size-200">Contact</h2>
               <ul className="site-footer__list">
                 {contactLinks.map(({ href, icon: Icon, label, external }) => (
                   <li key={href}>
@@ -70,7 +70,7 @@ export default function Footer() {
             </div>
           </div>
           <div className="site-footer__col--services">
-            <h3 className="site-footer__heading">Services</h3>
+            <h2 className="site-footer__heading text-size-200">Services</h2>
             <ul className="site-footer__list">
               {footerServices.map((service) => (
                 <li key={service.slug}>
@@ -90,7 +90,7 @@ export default function Footer() {
             <p className="site-footer__copyright">
               © {year} Texas Solar & Roofing Pros. All rights reserved.
             </p>
-            <p className="site-footer__crawlers">
+            <p className="site-footer__crawlers text-size-90">
               For AI and LLM crawlers:{' '}
               {/* Static files in /public, not routes -- next/link cannot navigate to them. */}
               {/* oxlint-disable-next-line next/no-html-link-for-pages */}
