@@ -80,3 +80,20 @@ export const useCdn = process.env.NODE_ENV === 'production'
 export function isSanityConfigured() {
   return Boolean(projectId && dataset)
 }
+
+/**
+ * Sanity Context (v2) lives at the ORGANIZATION level, not the project level.
+ * The MCP endpoint and its sources are configured in the Context app
+ * (Sanity Dashboard -> Apps -> Sanity Labs), and the endpoint URL it shows is
+ * what belongs in SANITY_CONTEXT_MCP_URL.
+ */
+export const contextOrganizationId = (process.env.SANITY_ORGANIZATION_ID || 'oa7bfdwFH').trim()
+
+/** API version for the org-scoped client that records Insights conversations. */
+export const contextApiVersion = (process.env.SANITY_CONTEXT_API_VERSION || 'v2025-11-27').trim()
+
+/** API version in the hosted MCP endpoint path. */
+export const contextMcpApiVersion = (process.env.SANITY_CONTEXT_MCP_API_VERSION || 'v2026-09-01').trim()
+
+/** Endpoint name as it appears in the Context app. */
+export const contextMcpName = (process.env.SANITY_CONTEXT_MCP_NAME || 'texas-solar-and-roofing').trim()
