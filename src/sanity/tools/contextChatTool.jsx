@@ -1,7 +1,7 @@
 import { Badge, Box, Button, Card, Flex, Spinner, Stack, Text, TextArea } from '@sanity/ui'
 import React from 'react'
 
-import { localFrontendUrl, studioPreviewOrigin } from '../env'
+import { chatAgentApiKey, chatApiEndpoint, localFrontendUrl } from '../env'
 
 /**
  * Chat pane for the Sanity Context agent.
@@ -21,30 +21,14 @@ const isLocal = () =>
   typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname)
 
 /**
- * Origin of the Next app that serves /api/chat.
- *
- * `studioPreviewOrigin` rather than `frontendUrl`: the apex domain 301s to www
- * on Vercel, and a cross-origin POST that redirects loses both its body and its
- * CORS headers.
- *
- * @returns {string} Origin without a trailing slash.
- */
-const appOrigin = () => (isLocal() ? localFrontendUrl : studioPreviewOrigin).replace(/\/$/, '')
-
-/**
  * Where to POST chat turns.
  *
- * Decided by HOST, not by path. Studio runs in three places -- embedded in the
- * app at /studio, on <project>.sanity.studio, and inside the Sanity dashboard --
- * and only the first shares an origin with the API. The hosted studio's path
- * also starts with /studio, so a path check sends the request to the studio host
- * and 404s.
+ * `chatApiEndpoint` is absolute and already normalized to www, because the
+ * deployed Studio runs on *.sanity.studio and Vercel's apex redirect breaks CORS
+ * preflight. Override with SANITY_STUDIO_CHAT_ENDPOINT; only `SANITY_STUDIO_*`
+ * variables reach this bundle, since Studio is built by Vite.
  *
- * Set SANITY_STUDIO_CHAT_ENDPOINT to override. Only `SANITY_STUDIO_*` variables
- * reach this bundle: Studio is built by Vite, so NEXT_PUBLIC_* is undefined here
- * and env.js falls back to its literals.
- *
- * @returns {string} Relative URL when same-origin, absolute otherwise.
+ * @returns {string} URL of the chat route.
  */
 const chatEndpoint = () => {
   const configured = process.env.SANITY_STUDIO_CHAT_ENDPOINT
@@ -52,13 +36,7 @@ const chatEndpoint = () => {
     return configured.trim().replace(/\/$/, '')
   }
 
-  const origin = appOrigin()
-
-  if (typeof window !== 'undefined' && window.location.origin === origin) {
-    return '/api/chat'
-  }
-
-  return `${origin}/api/chat`
+  return isLocal() ? `${localFrontendUrl}/api/chat` : chatApiEndpoint
 }
 
 const newId = () => `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -196,7 +174,10 @@ function ContextChat() {
       const response = await fetch(endpoint, {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(chatAgentApiKey ? { 'x-api-key': chatAgentApiKey } : {}),
+        },
         body: JSON.stringify({ messages: outgoing, threadId }),
       })
 
@@ -213,7 +194,7 @@ function ContextChat() {
         throw new Error(
           detail.error ||
             (response.status === 401
-              ? `Not signed in (401 from ${endpoint}). Open the admin in this browser, sign in, then try again.`
+              ? `Unauthorized (401 from ${endpoint}). The browser withholds the app session cookie from Studio, so this uses a shared key: set SANITY_STUDIO_CHAT_AGENT_KEY at Studio build time and CHAT_AGENT_KEY on the server to the same value.`
               : `Request failed (${response.status}) from ${endpoint}.`),
         )
       }

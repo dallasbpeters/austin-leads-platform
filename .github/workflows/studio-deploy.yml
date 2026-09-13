@@ -13,6 +13,10 @@
 #   NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET, NEXT_PUBLIC_SANITY_API_VERSION
 # Optional repo secrets:
 #   SANITY_STUDIO_GEMINI_PLUGIN_API_KEY, SANITY_STUDIO_AGENT_SCHEMA_ID
+#   SANITY_STUDIO_CHAT_AGENT_KEY — shared secret for the Content agent tool's calls to
+#                       /api/chat. Must equal CHAT_AGENT_KEY in Vercel, or the tool
+#                       gets 401: browsers withhold the app session cookie from the
+#                       hosted Studio, so a header is the only way through.
 
 name: Deploy Sanity Studio
 
@@ -85,6 +89,7 @@ jobs:
           SANITY_STUDIO_TOOL_API_ORIGIN: ${{ vars.SANITY_STUDIO_TOOL_API_ORIGIN }}
           SANITY_STUDIO_GEMINI_PLUGIN_API_KEY: ${{ secrets.SANITY_STUDIO_GEMINI_PLUGIN_API_KEY }}
           SANITY_STUDIO_AGENT_SCHEMA_ID: ${{ secrets.SANITY_STUDIO_AGENT_SCHEMA_ID }}
+          SANITY_STUDIO_CHAT_AGENT_KEY: ${{ secrets.SANITY_STUDIO_CHAT_AGENT_KEY }}
         # -y: unattended. --schema-required: fail the run if the schema store step
         # fails, so a green check always means the deployed schema matches the code.
         run: pnpm exec sanity deploy --yes --schema-required

@@ -48,7 +48,7 @@ const corsHeaders = (request) => {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   }
@@ -242,10 +242,39 @@ const withholdDangerousTools = (tools) => {
   return { tools: kept, withheld }
 }
 
-const validateChatEnvironment = async (request) => {
+/**
+ * Whether the caller is allowed in.
+ *
+ * Two ways: an app session (the admin, same-origin) or the shared key (the
+ * Studio tool, which runs on *.sanity.studio). The key exists because browsers
+ * withhold the session cookie from a third-party context no matter what
+ * SameSite says, the same reason the Gemini image route works this way.
+ *
+ * @param {Request} request - Incoming request.
+ * @returns {Promise<boolean>} True when authorized.
+ */
+const isAuthorized = async (request) => {
+  const expectedKey = process.env.CHAT_AGENT_KEY?.trim()
+  if (expectedKey && request.headers.get('x-api-key') === expectedKey) {
+    return true
+  }
+
   const session = await safeAuth()
-  if (!session?.user) {
-    return { error: jsonWithCors(request, { error: 'Unauthorized' }, 401) }
+  return Boolean(session?.user)
+}
+
+const validateChatEnvironment = async (request) => {
+  if (!(await isAuthorized(request))) {
+    return {
+      error: jsonWithCors(
+        request,
+        {
+          error:
+            'Unauthorized. Sign in to the admin, or send x-api-key matching CHAT_AGENT_KEY (what the Studio tool does).',
+        },
+        401,
+      ),
+    }
   }
 
   const endpoint = resolveContextEndpoint()

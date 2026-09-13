@@ -60,6 +60,20 @@ export const toolApiOrigin = normalizeStudioFrontendOrigin(
 export const geminiImageApiEndpoint = `${toolApiOrigin}/api/gemini/generate-image`
 
 /**
+ * Absolute endpoint for the Content agent chat route, same reasoning as the
+ * Gemini endpoint above: the deployed Studio is on another origin.
+ */
+export const chatApiEndpoint = `${toolApiOrigin}/api/chat`
+
+/**
+ * Shared secret for the chat route. Cookies are not an option here: the hosted
+ * Studio is a third-party context, so browsers withhold the session cookie even
+ * as SameSite=None. Same approach the Gemini route already uses.
+ */
+export const chatAgentApiKey =
+  process.env.SANITY_STUDIO_CHAT_AGENT_KEY || process.env.NEXT_PUBLIC_CHAT_AGENT_KEY || undefined
+
+/**
  * Optional shared secret for the Gemini image route. Only needed when the server
  * sets GEMINI_PLUGIN_API_KEY — without a match the route answers 401.
  */
