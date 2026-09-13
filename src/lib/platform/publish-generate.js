@@ -83,7 +83,10 @@ function buildTelemetry(job) {
     integrations: [
       sanityInsightsIntegration({
         client: sanityContextClient,
-        metadata: { mcpEndpoints: PUBLISH_AGENT_ID },
+        /* No MCP endpoint in this flow -- drafting goes through Agent Actions --
+         * so `mcpEndpoints` stays empty and grouping rides on our own key.
+         * Context filters that field with GROQ `in`, so it must be an array. */
+        metadata: { mcpEndpoints: [], agent: PUBLISH_AGENT_ID },
         // One publish job is one conversation: regenerating the same job
         // continues its thread rather than starting a new one.
         threadId: job.id,

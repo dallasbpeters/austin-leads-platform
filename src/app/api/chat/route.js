@@ -14,9 +14,13 @@ export const runtime = 'nodejs'
 
 const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-5'
 const DEFAULT_GROQ_MODEL = 'llama-3.3-70b-versatile'
-/* Groups this agent's conversations in the Context app. In v2 this rides on
- * the well-known `mcpEndpoints` metadata key instead of the old `agentId`. */
-const INSIGHTS_ENDPOINT_NAME = 'austin-leads-studio-agent'
+/* Groups this agent's conversations in the Context app, under a key of our own.
+ * `agentId` is gone in v2; arbitrary metadata keys are allowed alongside the
+ * well-known ones. */
+const INSIGHTS_AGENT = 'austin-leads-studio-agent'
+
+/* Name of the hosted Sanity MCP server as it appears in conversation metadata. */
+const SANITY_MCP_ENDPOINT_NAME = 'sanity-mcp'
 
 const MAX_STEPS = 20
 
@@ -31,10 +35,21 @@ const BASE_SYSTEM_PROMPT = `You are a **Sanity CMS assistant** for the Austin Le
 - **groq_query** — run **Sanity GROQ** (the query language). This is **not** the Groq Cloud LLM. Always include **_id** in projections when the user might open or patch documents.
 - **schema_explorer** — field-level detail for a document type.
 
+## Tools (Sanity MCP — writes)
+- **create_documents / patch_documents** and friends let you change content. They are real writes against the live dataset.
+
+## Write rules — follow exactly
+1. **Read before you write.** Fetch the document and confirm the current values before patching. Never patch a field you have not read.
+2. **Drafts only.** Write to the draft (\`drafts.<id>\`), never to a published document. Publishing is a human action in Studio; the publish tools are withheld from you on purpose. Do not look for a way around that.
+3. **Say what you are about to do**, then do it, then report the \`_id\` and the fields you changed so the person can open it and check.
+4. **One change at a time.** No sweeping rewrites across many documents in a single turn unless the person asked for exactly that and named the scope.
+5. **Never delete.** Not documents, not array items, unless the person asked for that specific removal in this conversation.
+6. If a write fails, say so plainly and stop. Do not retry with a different shape hoping it sticks.
+
 ## Behaviors
-- Prefer accurate, structured answers: cite document types, key fields, and query patterns.
-- When suggesting edits, describe what to change in Studio; you only have **read** access via this stack unless the user’s workflow says otherwise.
+- Prefer accurate, structured answers: cite document types, key fields, and \`_id\`s.
 - Stay concise; use markdown for lists and code blocks for GROQ examples.
+- Content you draft follows the brand voice: warm, plain, direct. No hype words. The federal solar tax credit expired December 31, 2025 — never reference it.
 `
 
 const resolveLanguageModel = () => {
@@ -62,7 +77,7 @@ const resolveLanguageModel = () => {
 }
 
 /**
- * @param {{ extra?: string; documentFocus?: Record<string, string>; legacyContext?: Record<string, string> }} props
+ * @param {{ extra?: string; documentFocus?: Record<string, string>; legacyContext?: Record<string, string> }} props - Extra instructions plus any document the client has open.
  */
 const buildSystemPrompt = (props) => {
   const { extra = '', documentFocus = {}, legacyContext = {} } = props
@@ -96,7 +111,8 @@ ${extra ? `\n## Additional instructions\n${extra}\n` : ''}
  * project read token, so it stays as a fallback: if the org token is missing or
  * wrong, chat keeps working against the dataset instead of going dark.
  *
- * @returns {{url: string, token: string, scope: 'organization' | 'dataset'} | null}
+ * @returns {{url: string, token: string, scope: 'organization' | 'dataset'} | null} The endpoint to
+ *   use and the token for it, or null when neither is configured.
  */
 const resolveContextEndpoint = () => {
   const orgToken = process.env.SANITY_CONTEXT_ORG_TOKEN?.trim()
@@ -122,6 +138,48 @@ const resolveContextEndpoint = () => {
   }
 
   return null
+}
+
+/** Hosted Sanity MCP server, the write half of this agent's toolset. */
+const SANITY_MCP_URL = (process.env.SANITY_MCP_URL || 'https://mcp.sanity.io').trim()
+
+/**
+ * Tools withheld from the model. The agent drafts; a person publishes in Studio.
+ * Matched case-insensitively as substrings, so `publish_documents` and
+ * `publish_release` both fall out.
+ */
+const WITHHELD_TOOL_PATTERNS = (
+  process.env.SANITY_MCP_WITHHELD_TOOLS ||
+  'publish,unpublish,delete,discard,schedule,release,deploy,transaction'
+)
+  .split(',')
+  .map((entry) => entry.trim().toLowerCase())
+  .filter(Boolean)
+
+/**
+ * Drops write tools this agent should not have.
+ *
+ * The guardrail lives here rather than in the prompt: a system prompt is a
+ * request, an absent tool is a fact.
+ *
+ * @param {Record<string, unknown>} tools - Tool set as reported by the MCP server.
+ * @returns {{tools: Record<string, unknown>, withheld: string[]}} The tools the model may
+ *   use, plus the names that were dropped, for logging.
+ */
+const withholdDangerousTools = (tools) => {
+  const kept = {}
+  const withheld = []
+
+  for (const [name, tool] of Object.entries(tools)) {
+    const lower = name.toLowerCase()
+    if (WITHHELD_TOOL_PATTERNS.some((pattern) => lower.includes(pattern))) {
+      withheld.push(name)
+      continue
+    }
+    kept[name] = tool
+  }
+
+  return { tools: kept, withheld }
 }
 
 const validateChatEnvironment = async (request) => {
@@ -182,11 +240,19 @@ const validateChatEnvironment = async (request) => {
  * org-scoped client. Without `SANITY_CONTEXT_ORG_TOKEN` that client is null and
  * telemetry is skipped rather than failing the request.
  *
+ * `metadata.mcpEndpoints` must be an ARRAY of endpoint names, not a string:
+ * Context's own queries filter it with `$mcpEndpoint in metadata.mcpEndpoints`,
+ * and GROQ's `in` needs an array on the right. A bare string still type-checks
+ * (the field is `string | string[]`) and then quietly matches nothing, so
+ * conversations would never group by endpoint or enter the classification
+ * queue.
+ *
  * @param {string | undefined} threadId - Conversation id supplied by the caller, if any.
  * @param {Array<{ id?: string }>} messages - UI messages for this turn.
+ * @param {string[]} mcpEndpoints - Names of the MCP endpoints used for this turn.
  * @returns {object | undefined} An `experimental_telemetry` config, when enabled.
  */
-function buildInsightsTelemetry(threadId, messages) {
+function buildInsightsTelemetry(threadId, messages, mcpEndpoints) {
   if (!sanityContextClient) {
     /* Say so rather than skipping in silence: an empty dashboard otherwise
      * looks the same as an agent nobody has used yet. */
@@ -215,7 +281,10 @@ function buildInsightsTelemetry(threadId, messages) {
       sanityInsightsIntegration({
         client: sanityContextClient,
         threadId: resolvedThreadId,
-        metadata: { mcpEndpoints: INSIGHTS_ENDPOINT_NAME },
+        metadata: {
+          mcpEndpoints,
+          agent: INSIGHTS_AGENT,
+        },
       }),
     ],
   }
@@ -230,6 +299,7 @@ export const POST = async (request) => {
   const { endpoint, model, messages, documentFocus, documentContext, systemPromptExtra, threadId } = validated
 
   let mcpClient = null
+  let writeClient = null
 
   try {
     mcpClient = await createMCPClient({
@@ -242,7 +312,50 @@ export const POST = async (request) => {
       },
     })
 
-    const mcpTools = await mcpClient.tools()
+    const contextTools = await mcpClient.tools()
+
+    /* Writes come from the hosted Sanity MCP server, which needs a token with
+     * write access. Without one the agent stays read-only instead of failing. */
+    let writeTools = {}
+    let withheldTools = []
+    const writeToken = process.env.SANITY_MCP_TOKEN?.trim() || process.env.SANITY_API_WRITE_TOKEN?.trim()
+
+    if (writeToken) {
+      try {
+        writeClient = await createMCPClient({
+          transport: {
+            type: 'http',
+            url: SANITY_MCP_URL,
+            headers: { Authorization: `Bearer ${writeToken}` },
+          },
+        })
+        const filtered = withholdDangerousTools(await writeClient.tools())
+        writeTools = filtered.tools
+        withheldTools = filtered.withheld
+      } catch (writeError) {
+        /* A dead write server should not take the whole agent down: log it and
+         * carry on with reads. */
+        console.error('[api/chat] Sanity MCP (write) unavailable:', writeError)
+        await writeClient?.close()
+        writeClient = null
+      }
+    } else {
+      console.warn('[api/chat] read-only: no SANITY_MCP_TOKEN or SANITY_API_WRITE_TOKEN set.')
+    }
+
+    if (withheldTools.length > 0) {
+      console.info('[api/chat] withheld write tools:', withheldTools.join(', '))
+    }
+
+    const mcpTools = { ...contextTools, ...writeTools }
+
+    /* Endpoint names for Insights: the Context endpoint is the last path segment
+     * of its URL, which is the name the Context app shows. */
+    const mcpEndpoints = [endpoint.url.split('/').filter(Boolean).pop()]
+    if (writeClient) {
+      mcpEndpoints.push(SANITY_MCP_ENDPOINT_NAME)
+    }
+
     const extra =
       typeof systemPromptExtra === 'string' ? systemPromptExtra : process.env.AGENT_SYSTEM_PROMPT_EXTRA || ''
 
@@ -261,9 +374,9 @@ export const POST = async (request) => {
       messages: await convertToModelMessages(messages),
       tools: mcpTools,
       stopWhen: stepCountIs(MAX_STEPS),
-      experimental_telemetry: buildInsightsTelemetry(threadId, messages),
+      experimental_telemetry: buildInsightsTelemetry(threadId, messages, mcpEndpoints),
       onFinish: async () => {
-        await mcpClient?.close()
+        await Promise.allSettled([mcpClient?.close(), writeClient?.close()])
       },
     })
 
@@ -271,7 +384,7 @@ export const POST = async (request) => {
       originalMessages: messages,
     })
   } catch (error) {
-    await mcpClient?.close()
+    await Promise.allSettled([mcpClient?.close(), writeClient?.close()])
     console.error('[api/chat]', error)
     return Response.json(
       { error: error instanceof Error ? error.message : 'Sanity agent request failed.' },

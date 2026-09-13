@@ -27,6 +27,7 @@ import { presentationDocuments, presentationLocations } from './src/sanity/prese
 import { schemaTypes } from './src/sanity/schemaTypes'
 import { studioStructure } from './src/sanity/studioStructure'
 import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
+import { contextChatTool } from './src/sanity/tools/contextChatTool'
 import { pageSpeedTool } from './src/sanity/tools/pageSpeedTool'
 
 const previewModeRoutes = {
@@ -105,7 +106,7 @@ export default defineConfig({
       },
     ],
   },
-  tools: (prev) => [...prev, aiDraftingTool(), pageSpeedTool()],
+  tools: (prev) => [...prev, contextChatTool(), aiDraftingTool(), pageSpeedTool()],
   studio: {
     components: {
       layout: (props) => props.renderDefault(props),
