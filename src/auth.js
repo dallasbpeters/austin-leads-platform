@@ -114,6 +114,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: 'jwt',
   },
+  /*
+   * The Sanity-hosted Studio runs on another origin (austin-leads-platform
+   * .sanity.studio), and its Content agent tool posts to /api/chat with
+   * credentials. A SameSite=Lax cookie is not sent on that cross-site request,
+   * so the session has to be SameSite=None -- which browsers only accept
+   * alongside Secure.
+   *
+   * Secure cookies still work on http://localhost, so dev is unaffected.
+   */
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' ? '__Secure-authjs.session-token' : 'authjs.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'none',
+        path: '/',
+        secure: true,
+      },
+    },
+  },
   providers,
   callbacks: {
     async signIn({ user, account }) {

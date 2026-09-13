@@ -12,6 +12,66 @@ import { contextMcpApiVersion, contextMcpName, contextOrganizationId, dataset, p
 
 export const runtime = 'nodejs'
 
+/*
+ * Origins allowed to call this route with credentials.
+ *
+ * The Content agent tool ships inside Studio, which is served from Sanity's
+ * hosts, not ours. Add more with SANITY_STUDIO_ALLOWED_ORIGINS (comma
+ * separated). Credentialed CORS forbids `*`, so the request's own origin is
+ * echoed back only when it is on this list.
+ */
+const ALLOWED_ORIGINS = new Set(
+  [
+    'https://austin-leads-platform.sanity.studio',
+    'https://www.sanity.io',
+    'https://sanity.io',
+    ...(process.env.SANITY_STUDIO_ALLOWED_ORIGINS || '')
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean),
+  ].map((entry) => entry.replace(/\/$/, '')),
+)
+
+/**
+ * CORS headers for one request, empty when the origin is not allowed.
+ *
+ * @param {Request} request - Incoming request.
+ * @returns {Record<string, string>} Headers to merge into the response.
+ */
+const corsHeaders = (request) => {
+  const origin = request.headers.get('origin')
+  if (!origin || !ALLOWED_ORIGINS.has(origin.replace(/\/$/, ''))) {
+    return {}
+  }
+
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
+  }
+}
+
+/**
+ * Preflight. Without this the browser never sends the POST from Studio.
+ *
+ * @param {Request} request - Incoming preflight request.
+ * @returns {Response} 204 with CORS headers when the origin is allowed.
+ */
+export const OPTIONS = (request) => new Response(null, { status: 204, headers: corsHeaders(request) })
+
+/**
+ * JSON response carrying this request's CORS headers.
+ *
+ * @param {Request} request - Incoming request.
+ * @param {object} body - JSON body.
+ * @param {number} status - HTTP status.
+ * @returns {Response} The response.
+ */
+const jsonWithCors = (request, body, status) => Response.json(body, { status, headers: corsHeaders(request) })
+
 const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-5'
 const DEFAULT_GROQ_MODEL = 'llama-3.3-70b-versatile'
 /* Groups this agent's conversations in the Context app, under a key of our own.
@@ -185,19 +245,20 @@ const withholdDangerousTools = (tools) => {
 const validateChatEnvironment = async (request) => {
   const session = await safeAuth()
   if (!session?.user) {
-    return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
+    return { error: jsonWithCors(request, { error: 'Unauthorized' }, 401) }
   }
 
   const endpoint = resolveContextEndpoint()
 
   if (!endpoint) {
     return {
-      error: Response.json(
+      error: jsonWithCors(
+        request,
         {
           error:
             'No Sanity Context endpoint available. Set SANITY_CONTEXT_ORG_TOKEN (plus SANITY_CONTEXT_MCP_URL) for the org endpoint, or SANITY_API_READ_TOKEN for the dataset endpoint.',
         },
-        { status: 500 },
+        500,
       ),
     }
   }
@@ -205,12 +266,13 @@ const validateChatEnvironment = async (request) => {
   const model = resolveLanguageModel()
   if (!model) {
     return {
-      error: Response.json(
+      error: jsonWithCors(
+        request,
         {
           error:
             'No LLM configured. Set GROQ_API_KEY and/or ANTHROPIC_API_KEY (optional CHAT_LLM_PROVIDER=groq|anthropic).',
         },
-        { status: 500 },
+        500,
       ),
     }
   }
@@ -219,13 +281,13 @@ const validateChatEnvironment = async (request) => {
   try {
     body = await request.json()
   } catch {
-    return { error: Response.json({ error: 'Invalid JSON body.' }, { status: 400 }) }
+    return { error: jsonWithCors(request, { error: 'Invalid JSON body.' }, 400) }
   }
 
   const { messages, documentFocus, documentContext, systemPromptExtra, threadId } = body
   if (!Array.isArray(messages) || messages.length === 0) {
     return {
-      error: Response.json({ error: 'Request must include a non-empty messages array.' }, { status: 400 }),
+      error: jsonWithCors(request, { error: 'Request must include a non-empty messages array.' }, 400),
     }
   }
 
@@ -318,7 +380,7 @@ export const POST = async (request) => {
      * write access. Without one the agent stays read-only instead of failing. */
     let writeTools = {}
     let withheldTools = []
-    const writeToken = process.env.SANITY_MCP_TOKEN?.trim() || process.env.SANITY_API_WRITE_TOKEN?.trim()
+    const writeToken = process.env.SANITY_API_WRITE_TOKEN?.trim()
 
     if (writeToken) {
       try {
@@ -340,7 +402,7 @@ export const POST = async (request) => {
         writeClient = null
       }
     } else {
-      console.warn('[api/chat] read-only: no SANITY_MCP_TOKEN or SANITY_API_WRITE_TOKEN set.')
+      console.warn('[api/chat] read-only: SANITY_API_WRITE_TOKEN is not set.')
     }
 
     if (withheldTools.length > 0) {
@@ -382,13 +444,15 @@ export const POST = async (request) => {
 
     return result.toUIMessageStreamResponse({
       originalMessages: messages,
+      headers: corsHeaders(request),
     })
   } catch (error) {
     await Promise.allSettled([mcpClient?.close(), writeClient?.close()])
     console.error('[api/chat]', error)
-    return Response.json(
+    return jsonWithCors(
+      request,
       { error: error instanceof Error ? error.message : 'Sanity agent request failed.' },
-      { status: 500 },
+      500,
     )
   }
 }
