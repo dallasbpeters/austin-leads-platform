@@ -1,6 +1,16 @@
+import { createClient as createContextClient } from '@sanity/client'
 import { createClient } from 'next-sanity'
 
-import { apiVersion, canonicalStudioUrl, dataset, isSanityConfigured, projectId, useCdn } from './env'
+import {
+  apiVersion,
+  canonicalStudioUrl,
+  contextApiVersion,
+  contextOrganizationId,
+  dataset,
+  isSanityConfigured,
+  projectId,
+  useCdn,
+} from './env'
 
 const baseConfig = {
   projectId,
@@ -34,6 +44,30 @@ export const sanityAgentWriteClient =
         useCdn: false,
       })
     : null
+
+/**
+ * Org-scoped client for Sanity Context (v2).
+ *
+ * Insights conversations are stored against the ORGANIZATION, so this client
+ * needs `context: {organizationId}` and an organization token -- a project
+ * token is rejected with "Not a member of this organization". Null when no
+ * organization token is set, which turns Insights off rather than failing the
+ * chat request.
+ */
+export const sanityContextClient = (() => {
+  const token = process.env.SANITY_CONTEXT_ORG_TOKEN?.trim()
+  if (!token || !contextOrganizationId) {
+    return null
+  }
+  return createContextClient({
+    projectId,
+    dataset,
+    apiVersion: contextApiVersion,
+    token,
+    useCdn: false,
+    context: { organizationId: contextOrganizationId },
+  })
+})()
 
 export const sanityServerClient = sanityWriteClient || sanityClient
 

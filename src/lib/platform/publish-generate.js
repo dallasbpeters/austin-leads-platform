@@ -2,7 +2,7 @@ import { createGroq } from '@ai-sdk/groq'
 import { sanityInsightsIntegration } from '@sanity/context/ai-sdk'
 import { generateText } from 'ai'
 
-import { sanityWriteClient } from '@/sanity/client'
+import { sanityContextClient } from '@/sanity/client'
 
 /*
  * Draft generation for publish jobs.
@@ -68,12 +68,13 @@ const buildPrompt = (job) => {
 }
 
 /*
- * Insights writes each conversation into the dataset, so it needs the
- * write-token client. Without that token the client is null and telemetry is
- * simply left off -- drafting still works, it is just not recorded.
+ * Insights records each conversation against the organization, so it needs the
+ * org-scoped Context client. Without SANITY_CONTEXT_ORG_TOKEN that client is
+ * null and telemetry is simply left off -- drafting still works, it is just not
+ * recorded.
  */
 function buildTelemetry(job) {
-  if (!sanityWriteClient) {
+  if (!sanityContextClient) {
     return null
   }
 
@@ -81,8 +82,8 @@ function buildTelemetry(job) {
     isEnabled: true,
     integrations: [
       sanityInsightsIntegration({
-        client: sanityWriteClient,
-        agentId: PUBLISH_AGENT_ID,
+        client: sanityContextClient,
+        metadata: { mcpEndpoints: PUBLISH_AGENT_ID },
         // One publish job is one conversation: regenerating the same job
         // continues its thread rather than starting a new one.
         threadId: job.id,

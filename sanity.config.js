@@ -1,6 +1,6 @@
 import { assist } from '@sanity/assist'
 import { colorInput } from '@sanity/color-input'
-import { agentContextPlugin } from '@sanity/context/studio'
+import { contextPlugin } from '@sanity/context/studio'
 import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
 import { presentationTool } from 'sanity/presentation'
@@ -45,7 +45,11 @@ export default defineConfig({
   // encode `{ tool, structure }` routes and crash with "Unable to find matching route for state".
   releases: { enabled: false },
   plugins: [
-    agentContextPlugin(),
+    /* Renamed in @sanity/context v2. The plugin itself is deprecated: endpoint
+     * config and Insights now live in the Context app (Sanity Dashboard ->
+     * Apps -> Sanity Labs). Kept registered because the dataset still holds a
+     * `sanity.agentContext` document; drop it once that is migrated. */
+    contextPlugin(),
     assist({ fieldActions: austinAssistFieldActions }),
     guideImageSyncPlugin(),
     colorInput(),

@@ -1,0 +1,1674 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jobber, Zoho or JobNimbus — Texas Solar &amp; Roofing Pros</title>
+    <meta name="description" content="Field service software options for Texas Solar &amp; Roofing Pros." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Gloock&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    />
+    <style>
+      html {
+        color-scheme: light dark;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden] {
+        display: none !important;
+      }
+
+      :root {
+        color-scheme: light;
+        --ground: #ffffff;
+        --paper: #f9f7f4;
+        --mist: #f4f7fa;
+        --ink: #0f172a;
+        --ink-2: #333333;
+        --muted: #62748e;
+        --rule: #e3e0da;
+        --rule-soft: #eeece7;
+        --flag: #de1017;
+        --sun: #ea580c;
+        --jobber: #1668a8;
+        --quoteiq: #ea580c;
+        --zoho: #00a06b;
+        --nimbus: #c2497f;
+        --chip-good-bg: rgba(0, 160, 107, 0.12);
+        --chip-good-fg: #04704c;
+        --chip-warn-bg: rgba(234, 88, 12, 0.13);
+        --chip-warn-fg: #9a3d05;
+        --chip-stop-bg: rgba(222, 16, 23, 0.11);
+        --chip-stop-fg: #a30d12;
+        --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px -16px rgba(15, 23, 42, 0.28);
+        --display: Gloock, 'Times New Roman', Times, serif;
+        --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          color-scheme: dark;
+          --ground: #0b1219;
+          --paper: #121a20;
+          --mist: #101820;
+          --ink: #f1f5f9;
+          --ink-2: #dbe3ec;
+          --muted: #94a3b8;
+          --rule: #22303c;
+          --rule-soft: #1a2530;
+          --flag: #ff5c5f;
+          --sun: #f5883f;
+          --jobber: #3d92d6;
+          --quoteiq: #dd6a24;
+          --zoho: #0aa86e;
+          --nimbus: #d4638f;
+          --chip-good-bg: rgba(10, 168, 110, 0.16);
+          --chip-good-fg: #52d9a5;
+          --chip-warn-bg: rgba(221, 106, 36, 0.18);
+          --chip-warn-fg: #f2a15e;
+          --chip-stop-bg: rgba(255, 92, 95, 0.15);
+          --chip-stop-fg: #ff8b8d;
+          --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -16px rgba(0, 0, 0, 0.7);
+        }
+      }
+      :root[data-theme='dark'] {
+        color-scheme: dark;
+        --ground: #0b1219;
+        --paper: #121a20;
+        --mist: #101820;
+        --ink: #f1f5f9;
+        --ink-2: #dbe3ec;
+        --muted: #94a3b8;
+        --rule: #22303c;
+        --rule-soft: #1a2530;
+        --flag: #ff5c5f;
+        --sun: #f5883f;
+        --jobber: #3d92d6;
+        --quoteiq: #dd6a24;
+        --zoho: #0aa86e;
+        --nimbus: #d4638f;
+        --chip-good-bg: rgba(10, 168, 110, 0.16);
+        --chip-good-fg: #52d9a5;
+        --chip-warn-bg: rgba(221, 106, 36, 0.18);
+        --chip-warn-fg: #f2a15e;
+        --chip-stop-bg: rgba(255, 92, 95, 0.15);
+        --chip-stop-fg: #ff8b8d;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -16px rgba(0, 0, 0, 0.7);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--ground);
+        color: var(--ink-2);
+        font-family: var(--body);
+        font-size: 16.5px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 780px;
+        margin: 0 auto;
+        padding-inline: 20px;
+        padding-block: 0 80px;
+      }
+
+      .masthead {
+        padding-block: 56px 36px;
+        border-bottom: 1px solid var(--rule);
+      }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 18px;
+      }
+      h1 {
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: clamp(38px, 7vw, 60px);
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin: 0 0 18px;
+        text-wrap: balance;
+      }
+      .standfirst {
+        font-size: 19px;
+        line-height: 1.55;
+        color: var(--muted);
+        margin: 0;
+        max-width: 54ch;
+      }
+
+      section {
+        padding-block: 46px;
+        border-bottom: 1px solid var(--rule-soft);
+      }
+      section:last-of-type {
+        border-bottom: 0;
+      }
+      .sec-num {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        color: var(--sun);
+        margin: 0 0 10px;
+      }
+      h2 {
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: clamp(26px, 4.2vw, 34px);
+        line-height: 1.16;
+        color: var(--ink);
+        margin: 0 0 18px;
+        text-wrap: balance;
+      }
+      h3 {
+        font-family: var(--body);
+        font-weight: 650;
+        font-size: 17px;
+        color: var(--ink);
+        margin: 30px 0 12px;
+      }
+      p {
+        margin: 0 0 15px;
+        max-width: 64ch;
+      }
+      p:last-child {
+        margin-bottom: 0;
+      }
+      a {
+        color: var(--jobber);
+        text-underline-offset: 2px;
+      }
+      strong {
+        color: var(--ink);
+        font-weight: 650;
+      }
+      .lede {
+        font-size: 18px;
+        color: var(--ink-2);
+      }
+      ul.plain {
+        margin: 0 0 15px;
+        padding-left: 20px;
+        max-width: 64ch;
+      }
+      ul.plain li {
+        margin-bottom: 9px;
+      }
+      ul.plain li::marker {
+        color: var(--muted);
+      }
+
+      figure {
+        margin: 28px 0;
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        border-radius: 1.5rem;
+        padding: 24px 22px 18px;
+        box-shadow: var(--shadow);
+      }
+      .fig-kicker {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 7px;
+      }
+      .fig-title {
+        font-weight: 650;
+        font-size: 17px;
+        color: var(--ink);
+        margin: 0 0 16px;
+      }
+      figcaption {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-top: 14px;
+        padding-top: 13px;
+        border-top: 1px solid var(--rule-soft);
+        max-width: 66ch;
+      }
+
+      /* SVG colors: literal hex in the attributes so dumb HTML converters keep them;
+     these rules put the theme tokens back for real browsers. */
+      .f-ground {
+        fill: var(--ground);
+      }
+      .f-ink {
+        fill: var(--ink);
+      }
+      .f-jobber {
+        fill: var(--jobber);
+      }
+      .f-muted {
+        fill: var(--muted);
+      }
+      .f-nimbus {
+        fill: var(--nimbus);
+      }
+      .f-quoteiq {
+        fill: var(--quoteiq);
+      }
+      .f-zoho {
+        fill: var(--zoho);
+      }
+      .k-jobber {
+        stroke: var(--jobber);
+      }
+      .k-nimbus {
+        stroke: var(--nimbus);
+      }
+      .k-paper {
+        stroke: var(--paper);
+      }
+      .k-quoteiq {
+        stroke: var(--quoteiq);
+      }
+      .k-rule {
+        stroke: var(--rule);
+      }
+      .k-rule-soft {
+        stroke: var(--rule-soft);
+      }
+      .k-zoho {
+        stroke: var(--zoho);
+      }
+      .chart-scroll {
+        overflow-x: auto;
+      }
+      svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      svg text {
+        font-family: var(--mono);
+      }
+      .bar {
+        transition: opacity 0.12s ease;
+      }
+      .chart-scroll:hover .bar {
+        opacity: 0.55;
+      }
+      .chart-scroll .bar:hover {
+        opacity: 1;
+      }
+
+      .table-scroll {
+        overflow-x: auto;
+        margin: 24px 0;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 520px;
+        font-size: 14.5px;
+      }
+      caption {
+        caption-side: top;
+        text-align: left;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-bottom: 12px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 12px 13px;
+        border-bottom: 1px solid var(--rule-soft);
+        vertical-align: top;
+      }
+      thead th {
+        font-weight: 650;
+        font-size: 12.5px;
+        color: var(--ink);
+        border-bottom: 1px solid var(--rule);
+        background: var(--mist);
+        white-space: nowrap;
+      }
+      thead th:first-child {
+        border-top-left-radius: 0.75rem;
+      }
+      thead th:last-child {
+        border-top-right-radius: 0.75rem;
+      }
+      tbody th {
+        font-weight: 550;
+        color: var(--ink);
+        font-size: 14px;
+      }
+      td.num {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      td.ctr,
+      th.ctr {
+        text-align: center;
+      }
+      tbody tr:last-child th,
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      tr.total th,
+      tr.total td {
+        border-top: 1px solid var(--rule);
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .chip {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .chip-good {
+        background: var(--chip-good-bg);
+        color: var(--chip-good-fg);
+      }
+      .chip-warn {
+        background: var(--chip-warn-bg);
+        color: var(--chip-warn-fg);
+      }
+      .chip-stop {
+        background: var(--chip-stop-bg);
+        color: var(--chip-stop-fg);
+      }
+
+      .verdict {
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        border-left: 4px solid var(--flag);
+        border-radius: 1rem;
+        padding: 24px;
+        margin: 26px 0;
+      }
+      .verdict-label {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--flag);
+        margin: 0 0 12px;
+      }
+      .verdict h3 {
+        margin: 0 0 12px;
+        font-family: var(--display);
+        font-weight: 400;
+        font-size: 24px;
+        line-height: 1.22;
+        color: var(--ink);
+      }
+      .verdict p {
+        font-size: 15.5px;
+      }
+
+      .steps {
+        counter-reset: step;
+        margin: 24px 0;
+        display: grid;
+        gap: 11px;
+      }
+      .step {
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        border-radius: 1rem;
+        padding: 16px 18px 16px 58px;
+        position: relative;
+      }
+      .step::before {
+        counter-increment: step;
+        content: counter(step);
+        position: absolute;
+        left: 18px;
+        top: 16px;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--ground);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 500;
+        display: grid;
+        place-items: center;
+      }
+      .step b {
+        display: block;
+        color: var(--ink);
+        font-size: 15.5px;
+        margin-bottom: 3px;
+      }
+      .step span {
+        font-size: 14.5px;
+        color: var(--ink-2);
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 13px;
+        margin: 24px 0;
+      }
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        border-radius: 1rem;
+        padding: 18px;
+      }
+      .card-k {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
+      .card-v {
+        font-family: var(--mono);
+        font-size: 25px;
+        font-weight: 500;
+        color: var(--ink);
+        line-height: 1.1;
+        margin: 0 0 6px;
+        font-variant-numeric: tabular-nums;
+      }
+      .card-d {
+        font-size: 13px;
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.45;
+      }
+
+      .open-q {
+        padding-left: 20px;
+        margin: 0;
+        max-width: 64ch;
+      }
+      .open-q li {
+        margin-bottom: 10px;
+        font-size: 15px;
+      }
+      .open-q li::marker {
+        color: var(--sun);
+      }
+
+      footer {
+        padding-block: 32px 0;
+        border-top: 1px solid var(--rule);
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      footer h3 {
+        font-size: 13px;
+        margin-top: 0;
+      }
+      footer ul {
+        padding-left: 18px;
+        margin: 0 0 16px;
+      }
+      footer li {
+        margin-bottom: 6px;
+        word-break: break-word;
+      }
+
+      .tip {
+        position: fixed;
+        pointer-events: none;
+        z-index: 40;
+        background: var(--ink);
+        color: var(--ground);
+        font-family: var(--mono);
+        font-size: 11.5px;
+        line-height: 1.5;
+        padding: 8px 11px;
+        border-radius: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.1s ease;
+        white-space: nowrap;
+      }
+      .tip.on {
+        opacity: 1;
+      }
+
+      @media (max-width: 560px) {
+        .masthead {
+          padding-block: 40px 30px;
+        }
+        section {
+          padding-block: 36px;
+        }
+        figure {
+          padding: 18px 15px 14px;
+          border-radius: 1rem;
+        }
+        .verdict {
+          padding: 18px 16px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+      :focus-visible {
+        outline: 2px solid var(--jobber);
+        outline-offset: 2px;
+        border-radius: 3px;
+      }
+
+      /* ---------- print / PDF ---------- */
+      @page {
+        margin: 15mm 14mm;
+      }
+      @media print {
+        /* Printers and document converters don't do dark mode — pin the light palette. */
+        :root,
+        :root[data-theme='dark'] {
+          --ground: #ffffff;
+          --paper: #f9f7f4;
+          --mist: #f4f7fa;
+          --ink: #0f172a;
+          --ink-2: #333333;
+          --muted: #5a6b80;
+          --rule: #d8d5cf;
+          --rule-soft: #e6e4df;
+          --flag: #de1017;
+          --sun: #c2470a;
+          --jobber: #1668a8;
+          --quoteiq: #ea580c;
+          --zoho: #00a06b;
+          --nimbus: #c2497f;
+          --shadow: none;
+        }
+        body {
+          font-size: 10.5pt;
+          line-height: 1.52;
+          background: #fff;
+        }
+        .wrap {
+          max-width: none;
+          padding: 0;
+        }
+        .tip {
+          display: none !important;
+        }
+        a {
+          color: var(--ink);
+          text-decoration: none;
+        }
+        /* Flow naturally; just never split a figure, table or callout across pages. */
+        figure,
+        table,
+        .verdict,
+        .step,
+        .card {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .table-scroll,
+        .chart-scroll {
+          overflow: visible;
+          break-inside: avoid;
+        }
+        h1,
+        h2,
+        h3,
+        .sec-num,
+        .fig-kicker,
+        caption {
+          break-after: avoid;
+        }
+        section {
+          padding-block: 20px;
+          border-bottom: 1px solid var(--rule-soft);
+        }
+        .masthead {
+          padding-block: 0 26px;
+        }
+        table {
+          min-width: 0;
+          font-size: 9.5pt;
+        }
+        thead {
+          display: table-header-group;
+        }
+        tr {
+          break-inside: avoid;
+        }
+        p,
+        li {
+          orphans: 3;
+          widows: 3;
+        }
+        footer {
+          break-before: page;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="masthead">
+        <p class="eyebrow">For Texas Solar &amp; Roofing Pros · September 2026</p>
+        <h1>Jobber, or something else?</h1>
+        <p class="standfirst">
+          You asked if QuoteIQ would be better than Jobber. I looked at that, and at three other options.
+          Here's what I found.
+        </p>
+      </header>
+
+      <!-- 01 -->
+      <section>
+        <p class="sec-num">01 — THE SHORT VERSION</p>
+        <h2>What I found</h2>
+
+        <p class="lede">Your software isn't the problem. The shared login is.</p>
+
+        <p>
+          Your crew all sign in with one Jobber account. That saves money, but it breaks things. And I think
+          it's why they say the app doesn't work.
+        </p>
+
+        <p>Here are the three things that matter.</p>
+
+        <ul class="plain">
+          <li>
+            <strong>The shared login is probably breaking the app.</strong> Your crew says Jobber's app is
+            unusable. But Jobber's app is one of the best rated on the market. What they describe — getting
+            kicked offline, clock-ins that don't save — is what happens when seven phones share one account.
+          </li>
+          <li>
+            <strong>QuoteIQ can't talk to your website.</strong> Your site files invoices into Jobber by
+            itself. QuoteIQ can't accept that. Someone would have to type them in by hand again.
+          </li>
+          <li>
+            <strong>Zoho is worth a look.</strong> You already use Zoho for contacts, quotes and files. Zoho's
+            field service tool charges by job, not by person — so everyone gets their own login for free. But
+            its app is rated poorly, which is a problem when your crew already won't use one.
+          </li>
+        </ul>
+
+        <div class="verdict">
+          <p class="verdict-label">What I'd do</p>
+          <h3>Buy your crew their own logins. Wait 30 days. Then decide.</h3>
+          <p>
+            Six more Jobber seats cost about <strong>$174 a month</strong>. That tells you if the app is
+            really the problem. It also gets your records straight and puts you back inside Jobber's rules.
+          </p>
+          <p style="margin-bottom: 0">
+            If the complaints stop, you're done. If they don't, look at <strong>JobNimbus</strong> — not
+            QuoteIQ.
+          </p>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section>
+        <p class="sec-num">02 — START HERE</p>
+        <h2>The shared login costs more than it saves</h2>
+
+        <p>
+          You share one login to avoid paying $29 a month per person. That saves you about $348 a year. Here's
+          what it costs you.
+        </p>
+
+        <ul class="plain">
+          <li>
+            <strong>You can't tell who did what.</strong> Every quote and every price change has the same name
+            on it.
+          </li>
+          <li><strong>Time tracking is useless.</strong> So is GPS. Both work off the person signed in.</li>
+          <li>
+            <strong>Passwords never change.</strong> When someone quits, all seven of you would have to
+            switch. It rarely happens.
+          </li>
+          <li>
+            <strong>It breaks Jobber's rules.</strong> Their terms say accounts are for one person and must
+            not be shared. They could shut the account down.
+          </li>
+        </ul>
+
+        <h3>And it explains the app complaints</h3>
+
+        <p>Here's what Jobber users complain about in public reviews:</p>
+
+        <ul class="plain">
+          <li>"I keep going <em>offline</em>" — has to close and reopen the app several times a day.</li>
+          <li>The app "will tell you it's clocked you in when it has not."</li>
+          <li>"Schedules are not updating live… critical notes are missed."</li>
+        </ul>
+
+        <p>
+          All three are the same kind of problem. One account signed in on seven phones means each phone keeps
+          kicking the others out. That looks exactly like a broken app.
+        </p>
+
+        <div class="verdict">
+          <p class="verdict-label">The main finding</p>
+          <h3>Your crew is right that it doesn't work. They may be wrong about why.</h3>
+          <p style="margin-bottom: 0">
+            I can't prove this from outside your account. But it fits, and it's cheap to check. And if I'm
+            wrong, you still end up with proper records and working time tracking. You don't lose either way.
+          </p>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section>
+        <p class="sec-num">03 — THE PHONE APPS</p>
+        <h2>Which app would your crew actually use?</h2>
+
+        <p>
+          This matters most for you, because your crew already refuses one. So I pulled the public ratings.
+        </p>
+
+        <figure>
+          <p class="fig-kicker">Chart 1 — Phone apps</p>
+          <p class="fig-title">Star ratings, out of 5</p>
+          <div class="chart-scroll">
+            <svg
+              viewBox="0 0 720 390"
+              role="img"
+              aria-label="App store ratings out of 5. Apple App Store: Jobber 4.8 from 21,000 ratings, JobNimbus 4.8 from 13,000, QuoteIQ 4.7 from 3,300, Zoho FSM 2.7 from 11. Google Play: JobNimbus 4.7 from 1,580, Jobber 4.4 from 6,720, QuoteIQ 4.4 from 1,190, Zoho FSM 3.9 from 69."
+            >
+              <g stroke="#eeece7" stroke-width="1" class="k-rule-soft">
+                <line x1="278" y1="30" x2="278" y2="330"></line>
+                <line x1="376" y1="30" x2="376" y2="330"></line>
+                <line x1="474" y1="30" x2="474" y2="330"></line>
+                <line x1="572" y1="30" x2="572" y2="330"></line>
+              </g>
+              <line
+                x1="180"
+                y1="30"
+                x2="180"
+                y2="330"
+                stroke="#e3e0da"
+                stroke-width="1"
+                class="k-rule"
+              ></line>
+
+              <text x="180" y="22" fill="#62748e" font-size="11" font-weight="500" class="f-muted">
+                iPhone
+              </text>
+
+              <line
+                x1="180"
+                y1="48"
+                x2="650.4"
+                y2="48"
+                stroke="#1668a8"
+                stroke-width="2"
+                opacity=".38"
+                class="k-jobber"
+              ></line>
+              <circle
+                cx="650.4"
+                cy="48"
+                r="7"
+                fill="#1668a8"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-jobber k-paper"
+              ></circle>
+              <text x="166" y="52" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">Jobber</text>
+              <text x="665" y="52" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">4.8</text>
+
+              <line
+                x1="180"
+                y1="78"
+                x2="650.4"
+                y2="78"
+                stroke="#c2497f"
+                stroke-width="2"
+                opacity=".38"
+                class="k-nimbus"
+              ></line>
+              <circle
+                cx="650.4"
+                cy="78"
+                r="7"
+                fill="#c2497f"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-nimbus k-paper"
+              ></circle>
+              <text x="166" y="82" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">
+                JobNimbus
+              </text>
+              <text x="665" y="82" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">4.8</text>
+
+              <line
+                x1="180"
+                y1="108"
+                x2="640.6"
+                y2="108"
+                stroke="#ea580c"
+                stroke-width="2"
+                opacity=".38"
+                class="k-quoteiq"
+              ></line>
+              <circle
+                cx="640.6"
+                cy="108"
+                r="7"
+                fill="#ea580c"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-quoteiq k-paper"
+              ></circle>
+              <text x="166" y="112" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">
+                QuoteIQ
+              </text>
+              <text x="655" y="112" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">4.7</text>
+
+              <line
+                x1="180"
+                y1="138"
+                x2="444.6"
+                y2="138"
+                stroke="#00a06b"
+                stroke-width="2"
+                opacity=".38"
+                class="k-zoho"
+              ></line>
+              <circle
+                cx="444.6"
+                cy="138"
+                r="7"
+                fill="#00a06b"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-zoho k-paper"
+              ></circle>
+              <text x="166" y="142" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">
+                Zoho FSM
+              </text>
+              <text x="459" y="142" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">2.7</text>
+
+              <text x="180" y="192" fill="#62748e" font-size="11" font-weight="500" class="f-muted">
+                Android
+              </text>
+
+              <line
+                x1="180"
+                y1="218"
+                x2="640.6"
+                y2="218"
+                stroke="#c2497f"
+                stroke-width="2"
+                opacity=".38"
+                class="k-nimbus"
+              ></line>
+              <circle
+                cx="640.6"
+                cy="218"
+                r="7"
+                fill="#c2497f"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-nimbus k-paper"
+              ></circle>
+              <text x="166" y="222" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">
+                JobNimbus
+              </text>
+              <text x="655" y="222" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">4.7</text>
+
+              <line
+                x1="180"
+                y1="248"
+                x2="611.2"
+                y2="248"
+                stroke="#1668a8"
+                stroke-width="2"
+                opacity=".38"
+                class="k-jobber"
+              ></line>
+              <circle
+                cx="611.2"
+                cy="248"
+                r="7"
+                fill="#1668a8"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-jobber k-paper"
+              ></circle>
+              <text x="166" y="252" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">
+                Jobber
+              </text>
+              <text x="626" y="252" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">4.4</text>
+
+              <line
+                x1="180"
+                y1="278"
+                x2="611.2"
+                y2="278"
+                stroke="#ea580c"
+                stroke-width="2"
+                opacity=".38"
+                class="k-quoteiq"
+              ></line>
+              <circle
+                cx="611.2"
+                cy="278"
+                r="7"
+                fill="#ea580c"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-quoteiq k-paper"
+              ></circle>
+              <text x="166" y="282" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">
+                QuoteIQ
+              </text>
+              <text x="626" y="282" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">4.4</text>
+
+              <line
+                x1="180"
+                y1="308"
+                x2="562"
+                y2="308"
+                stroke="#00a06b"
+                stroke-width="2"
+                opacity=".38"
+                class="k-zoho"
+              ></line>
+              <circle
+                cx="562"
+                cy="308"
+                r="7"
+                fill="#00a06b"
+                stroke="#f9f7f4"
+                stroke-width="2"
+                class="f-zoho k-paper"
+              ></circle>
+              <text x="166" y="312" fill="#0f172a" font-size="12" text-anchor="end" class="f-ink">
+                Zoho FSM
+              </text>
+              <text x="577" y="312" fill="#0f172a" font-size="12.5" font-weight="500" class="f-ink">3.9</text>
+
+              <line
+                x1="180"
+                y1="330"
+                x2="670"
+                y2="330"
+                stroke="#e3e0da"
+                stroke-width="1"
+                class="k-rule"
+              ></line>
+              <g fill="#62748e" font-size="11" text-anchor="middle" class="f-muted">
+                <text x="180" y="350">0</text>
+                <text x="278" y="350">1</text>
+                <text x="376" y="350">2</text>
+                <text x="474" y="350">3</text>
+                <text x="572" y="350">4</text>
+                <text x="670" y="350">5</text>
+              </g>
+              <text x="425" y="374" fill="#62748e" font-size="11" text-anchor="middle" class="f-muted">
+                Star rating
+              </text>
+            </svg>
+          </div>
+          <figcaption>
+            Jobber's app is <em>not</em> badly rated — it ties for best on iPhone, from 21,000 ratings. Zoho's
+            2.7 comes from only 11 ratings, so treat it carefully, but the written reviews say the same thing:
+            too many taps, looks dated, wouldn't open on a new iPhone.
+          </figcaption>
+        </figure>
+
+        <p>
+          So the app your crew rejects is one of the two best on the market. That's a strong sign the problem
+          is your setup, not the software.
+        </p>
+
+        <p>
+          If the 30-day test fails, JobNimbus is the one with a clearly better app. It beats Jobber on Android
+          and is built for roofers.
+        </p>
+      </section>
+
+      <!-- 04 -->
+      <section>
+        <p class="sec-num">04 — COST</p>
+        <h2>What each one costs</h2>
+
+        <p>They charge in three different ways:</p>
+
+        <ul class="plain">
+          <li>
+            <strong>Per person</strong> — Jobber and JobNimbus. This is what pushed you into sharing logins.
+          </li>
+          <li>
+            <strong>Per group of seats</strong> — QuoteIQ. Adding people is free until you outgrow your plan.
+          </li>
+          <li><strong>Per job</strong> — Zoho. Up to 200 people, at no extra charge.</li>
+        </ul>
+
+        <p>
+          At seven people the gap between them is small. QuoteIQ's plans jump from 4 seats to 10, so you'd pay
+          for 10 either way.
+        </p>
+
+        <figure>
+          <p class="fig-kicker">Chart 2 — Cost</p>
+          <p class="fig-title">Roughly what a year costs for 7 people</p>
+          <div class="chart-scroll">
+            <svg
+              viewBox="0 0 720 330"
+              role="img"
+              aria-label="Yearly cost for 7 people. Zoho FSM from $360, QuoteIQ $2,990, Jobber Connect $3,276, Jobber Grow $3,876, JobNimbus about $9,960."
+            >
+              <g stroke="#eeece7" stroke-width="1" class="k-rule-soft">
+                <line x1="303" y1="24" x2="303" y2="276"></line>
+                <line x1="426" y1="24" x2="426" y2="276"></line>
+                <line x1="549" y1="24" x2="549" y2="276"></line>
+                <line x1="672" y1="24" x2="672" y2="276"></line>
+              </g>
+              <line
+                x1="180"
+                y1="24"
+                x2="180"
+                y2="276"
+                stroke="#e3e0da"
+                stroke-width="1"
+                class="k-rule"
+              ></line>
+
+              <path
+                class="bar f-zoho"
+                data-t="Zoho FSM · from $360/yr · grows with job volume"
+                fill="#00a06b"
+                d="M180,32 L193.71,32 Q197.71,32 197.71,36 L197.71,54 Q197.71,58 193.71,58 L180,58 Z"
+              ></path>
+              <text x="166" y="49" fill="#0f172a" font-size="12.5" text-anchor="end" class="f-ink">
+                Zoho FSM
+              </text>
+              <text x="209" y="49" fill="#0f172a" font-size="12" font-weight="500" class="f-ink">
+                from $360
+              </text>
+
+              <path
+                class="bar f-quoteiq"
+                data-t="QuoteIQ · $2,990/yr · smallest plan that fits 7 people holds 10"
+                fill="#ea580c"
+                d="M180,82 L323.11,82 Q327.11,82 327.11,86 L327.11,104 Q327.11,108 323.11,108 L180,108 Z"
+              ></path>
+              <text x="166" y="99" fill="#0f172a" font-size="12.5" text-anchor="end" class="f-ink">
+                QuoteIQ
+              </text>
+              <text x="338" y="99" fill="#0f172a" font-size="12" font-weight="500" class="f-ink">$2,990</text>
+
+              <path
+                class="bar f-jobber"
+                data-t="Jobber Connect · $3,276/yr · only $286 more than QuoteIQ"
+                fill="#1668a8"
+                d="M180,132 L337.18,132 Q341.18,132 341.18,136 L341.18,154 Q341.18,158 337.18,158 L180,158 Z"
+              ></path>
+              <text x="166" y="149" fill="#0f172a" font-size="12.5" text-anchor="end" class="f-ink">
+                Jobber Connect
+              </text>
+              <text x="352" y="149" fill="#0f172a" font-size="12" font-weight="500" class="f-ink">
+                $3,276
+              </text>
+
+              <path
+                class="bar f-jobber"
+                data-t="Jobber Grow · $3,876/yr"
+                fill="#1668a8"
+                d="M180,182 L366.7,182 Q370.7,182 370.7,186 L370.7,204 Q370.7,208 366.7,208 L180,208 Z"
+              ></path>
+              <text x="166" y="199" fill="#0f172a" font-size="12.5" text-anchor="end" class="f-ink">
+                Jobber Grow
+              </text>
+              <text x="382" y="199" fill="#0f172a" font-size="12" font-weight="500" class="f-ink">
+                $3,876
+              </text>
+
+              <path
+                class="bar f-nimbus"
+                data-t="JobNimbus · about $9,960/yr"
+                fill="#c2497f"
+                d="M180,232 L666,232 Q670,232 670,236 L670,254 Q670,258 666,258 L180,258 Z"
+              ></path>
+              <text x="166" y="249" fill="#0f172a" font-size="12.5" text-anchor="end" class="f-ink">
+                JobNimbus
+              </text>
+              <text x="586" y="249" fill="#ffffff" font-size="12" font-weight="500" class="f-ground">
+                ≈ $9,960
+              </text>
+
+              <line
+                x1="180"
+                y1="276"
+                x2="672"
+                y2="276"
+                stroke="#e3e0da"
+                stroke-width="1"
+                class="k-rule"
+              ></line>
+              <g fill="#62748e" font-size="11" text-anchor="middle" class="f-muted">
+                <text x="180" y="296">$0</text>
+                <text x="303" y="296">$2.5k</text>
+                <text x="426" y="296">$5k</text>
+                <text x="549" y="296">$7.5k</text>
+                <text x="672" y="296">$10k</text>
+              </g>
+              <text x="426" y="320" fill="#62748e" font-size="11" text-anchor="middle" class="f-muted">
+                Cost per year
+              </text>
+            </svg>
+          </div>
+          <figcaption>
+            At seven people, QuoteIQ is only <strong>$286 a year</strong> cheaper than Jobber Connect — and
+            that's before card fees. Zoho's price is for 60 jobs a month and will go up with your volume, so
+            treat it as a starting point rather than a quote. JobNimbus is my estimate from their published
+            rates. Jobber is their base price plus $29 a month per extra person.
+          </figcaption>
+        </figure>
+
+        <h3>Watch the card fees</h3>
+
+        <p>
+          Every one of these takes a cut when a customer pays by card. That cut is bigger than the software
+          bill.
+        </p>
+
+        <div class="table-scroll">
+          <table>
+            <caption>
+              Table 1 — Card fees
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Option</th>
+                <th scope="col">Card rate</th>
+                <th scope="col">On $500k of card payments</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Jobber</th>
+                <td class="num">2.9% + 30¢</td>
+                <td class="num">$14,500</td>
+              </tr>
+              <tr>
+                <th scope="row">QuoteIQ</th>
+                <td class="num">3.9% + 30¢</td>
+                <td class="num">$19,500</td>
+              </tr>
+              <tr>
+                <th scope="row">Zoho / JobNimbus</th>
+                <td>Depends who you connect</td>
+                <td>Varies</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          QuoteIQ charges <strong>1% more</strong> than Jobber. On $500,000 of card payments that's $5,000 a
+          year. The software only saves you $286. So QuoteIQ ends up costing you roughly
+          <strong>$4,700 a year more</strong>, not less.
+        </p>
+
+        <p>
+          Jobber also charges just <strong>1% for bank transfers</strong> instead of 2.9% for cards. On
+          roofing-sized invoices that's worth real money. Worth pushing customers that way whatever you
+          decide.
+        </p>
+
+        <p>
+          One thing to keep in mind: all these prices assume everyone has their own login. You're paying about
+          $348 a year right now. Doing this properly costs more no matter which one you pick.
+        </p>
+      </section>
+
+      <!-- 05 -->
+      <section>
+        <p class="sec-num">05 — ZOHO</p>
+        <h2>You're already using Zoho</h2>
+
+        <p>
+          I found this in your website's code. You're not really a Jobber company. You're a Zoho company that
+          also uses Jobber.
+        </p>
+
+        <div class="table-scroll">
+          <table>
+            <caption>
+              Table 2 — Zoho you already run
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Zoho tool</th>
+                <th scope="col">What it does for you</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Zoho CRM</th>
+                <td>Holds your contacts. Your quote screen searches them as you type.</td>
+              </tr>
+              <tr>
+                <th scope="row">Zoho Sheet</th>
+                <td>Every quote and Christmas invoice lands in a spreadsheet on its own.</td>
+              </tr>
+              <tr>
+                <th scope="row">Zoho WorkDrive</th>
+                <td>Stores documents, one folder per client.</td>
+              </tr>
+              <tr>
+                <th scope="row">Zoho sign-in</th>
+                <td>Your team signs into the admin site with Zoho. They already have accounts.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          <strong>Zoho's field service tool would fix your biggest problem.</strong> It charges by job, not by
+          person — up to 200 people at no extra cost. Everyone gets their own login for free. It also has a
+          proper two-way connection your website could use, and it syncs with the Zoho CRM you already have.
+        </p>
+
+        <div class="verdict">
+          <p class="verdict-label">The catch</p>
+          <h3>Zoho's phone app is the worst of the bunch — and a phone app is your problem.</h3>
+          <p style="margin-bottom: 0">
+            Moving a crew that already won't use one app onto a worse one is a bad bet, however good the price
+            is.
+          </p>
+        </div>
+
+        <p>
+          <strong>My suggestion:</strong> don't rule it out, don't sign anything. Zoho has a free plan for up
+          to 20 users. Put two people on it for two weeks and see what they say about the app. That costs
+          nothing.
+        </p>
+      </section>
+
+      <!-- 06 -->
+      <section>
+        <p class="sec-num">06 — CONNECTIONS</p>
+        <h2>Can your website still talk to it?</h2>
+
+        <p>
+          Your website files invoices and customers into Jobber by itself. That works because Jobber has a
+          two-way door — your site can put things in and take things out. Not all of these do.
+        </p>
+
+        <div class="table-scroll">
+          <table>
+            <caption>
+              Chart 3 — Connections compared
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Jobber</th>
+                <th scope="col">Zoho</th>
+                <th scope="col">JobNimbus</th>
+                <th scope="col">QuoteIQ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Your site can put data in</th>
+                <td><span class="chip chip-good">Yes</span></td>
+                <td><span class="chip chip-good">Yes</span></td>
+                <td><span class="chip chip-warn">Paid tier</span></td>
+                <td><span class="chip chip-stop">No</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Which plan you need</th>
+                <td>Any plan</td>
+                <td>Any plan, free included</td>
+                <td>$550/mo plan</td>
+                <td>$299/mo plan</td>
+              </tr>
+              <tr>
+                <th scope="row">Written instructions for developers</th>
+                <td><span class="chip chip-good">Full</span></td>
+                <td><span class="chip chip-good">Full</span></td>
+                <td>Yes</td>
+                <td><span class="chip chip-warn">One page</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Add your own fields</th>
+                <td>Connect plan up</td>
+                <td>Standard plan up</td>
+                <td>Yes</td>
+                <td><span class="chip chip-warn">Forms only</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          That top row is why QuoteIQ keeps losing here. A cheap price doesn't help if the system can't take
+          the data your website already makes.
+        </p>
+
+        <p>
+          Jobber isn't perfect either. Your team already hit a real limit: once an invoice is created, Jobber
+          won't let the website change its line items, and it can't record deposits. That's noted in your own
+          code.
+        </p>
+      </section>
+
+      <!-- 07 -->
+      <section>
+        <p class="sec-num">07 — SWITCHING</p>
+        <h2>What switching would take</h2>
+
+        <p>
+          You've already paid for software that talks to Jobber — about
+          <strong>840 lines of code across 11 files</strong>. Here's where it would land.
+        </p>
+
+        <div class="table-scroll">
+          <table>
+            <caption>
+              Table 3 — Where the work goes
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Job to do</th>
+                <th scope="col">Move to Zoho</th>
+                <th scope="col">Move to QuoteIQ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Sign in to the new system</th>
+                <td><span class="chip chip-good">Already built</span></td>
+                <td><span class="chip chip-stop">Can't</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Send invoices over automatically</th>
+                <td><span class="chip chip-warn">Rebuild</span></td>
+                <td><span class="chip chip-stop">Can't</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Get notified when things change</th>
+                <td><span class="chip chip-warn">Rebuild</span></td>
+                <td><span class="chip chip-warn">Partly</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Booking forms on your website</th>
+                <td><span class="chip chip-good">Rebuild</span></td>
+                <td><span class="chip chip-good">Rebuild</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Move your old records over</th>
+                <td><span class="chip chip-good">Fine</span></td>
+                <td><span class="chip chip-good">Fine</span></td>
+              </tr>
+              <tr class="total">
+                <th scope="row">Rough time</th>
+                <td class="num">75–120 hours</td>
+                <td class="num">45–75 hours</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          QuoteIQ looks like the quicker move, but only because there's less to move to. You'd end up with
+          less than you have now, and someone typing invoices again every week.
+        </p>
+
+        <p>These hours are estimates for planning, not a quote.</p>
+      </section>
+
+      <!-- 08 -->
+      <section>
+        <p class="sec-num">08 — SCORECARD</p>
+        <h2>How much you can shape each one</h2>
+
+        <p>
+          This is about bending the software to fit your business. Scored 0 to 5 on what each company
+          publishes. Higher is better.
+        </p>
+
+        <figure>
+          <p class="fig-kicker">Chart 4 — Scorecard</p>
+          <p class="fig-title">Scored out of 5 in five areas</p>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col" class="ctr" style="color: var(--jobber)">Jobber</th>
+                  <th scope="col" class="ctr" style="color: var(--zoho)">Zoho</th>
+                  <th scope="col" class="ctr" style="color: var(--nimbus)">JobNimbus</th>
+                  <th scope="col" class="ctr" style="color: var(--quoteiq)">QuoteIQ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Things it plugs into</th>
+                  <td class="ctr num">5</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">2</td>
+                </tr>
+                <tr>
+                  <th scope="row">Track your own info</th>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">2</td>
+                </tr>
+                <tr>
+                  <th scope="row">Works while you sleep</th>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">4</td>
+                </tr>
+                <tr>
+                  <th scope="row">Talks to your website</th>
+                  <td class="ctr num">5</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">3</td>
+                  <td class="ctr num">1</td>
+                </tr>
+                <tr>
+                  <th scope="row">Getting your data back out</th>
+                  <td class="ctr num">3</td>
+                  <td class="ctr num">4</td>
+                  <td class="ctr num">3</td>
+                  <td class="ctr num">3</td>
+                </tr>
+                <tr class="total">
+                  <th scope="row">Total out of 25</th>
+                  <td class="ctr num">21</td>
+                  <td class="ctr num">20</td>
+                  <td class="ctr num">18</td>
+                  <td class="ctr num">12</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <figcaption>
+            Jobber and Zoho end up close, by different routes. QuoteIQ's low score is about how little it lets
+            others build alongside it — not about how good its own features are.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- 09 -->
+      <section>
+        <p class="sec-num">09 — WHAT TO DO</p>
+        <h2>In order</h2>
+
+        <div class="steps">
+          <div class="step">
+            <b>Buy six more Jobber logins. Change the shared password.</b
+            ><span
+              >About $174 a month, so all seven of you have your own. Run it 30 days. This is the only urgent
+              step.</span
+            >
+          </div>
+          <div class="step">
+            <b>Find two numbers while you wait.</b
+            ><span
+              >Last year's card payment total, and your average jobs per month. The first settles the QuoteIQ
+              question. The second is the only way to price Zoho.</span
+            >
+          </div>
+          <div class="step">
+            <b>Put two people on Zoho's free plan.</b
+            ><span>Costs nothing. Tells you if the app is really as weak as its rating.</span>
+          </div>
+          <div class="step">
+            <b>Ask the crew again at day 30.</b
+            ><span
+              >If the complaints stopped, you're done. Move up to Connect or Grow and get on with it.</span
+            >
+          </div>
+          <div class="step">
+            <b>If they didn't stop, book a JobNimbus demo.</b
+            ><span
+              >Best app of the five, built for roofers. Ask about the $550/mo plan and your real total.</span
+            >
+          </div>
+        </div>
+
+        <p>
+          I'd check QuoteIQ again in a year. If they build a proper two-way connection, this changes in their
+          favour. The product is well liked and the pricing is honest. It just can't do the one thing your
+          setup needs.
+        </p>
+      </section>
+
+      <!-- 10 -->
+      <section>
+        <p class="sec-num">10 — LOOSE ENDS</p>
+        <h2>What I couldn't check</h2>
+
+        <p>None of this changes my advice, but sort it out before you sign anything.</p>
+
+        <ol class="open-q">
+          <li>
+            <strong>Your jobs per month.</strong> Zoho charges by job. Without your real number, its price on
+            the chart is a floor and nothing more.
+          </li>
+          <li>
+            <strong>QuoteIQ's extra 1%.</strong> This came from a reviewer quoting their terms, not from
+            QuoteIQ. It's the most important number in the cost section. Ask them directly.
+          </li>
+          <li>
+            <strong>Jobber's limits per plan.</strong> Their pricing page and their help pages disagree about
+            how many people each plan allows. Check with your rep.
+          </li>
+          <li>
+            <strong>Zoho's app score.</strong> Eleven ratings is almost nothing. The written reviews back it
+            up, but that's why I'm suggesting a trial rather than a decision.
+          </li>
+          <li>
+            <strong>JobNimbus's real price.</strong> My $9,960 assumes one admin, one office person and five
+            in the field. If your seven split differently, so does the price. Get a written quote.
+          </li>
+        </ol>
+      </section>
+
+      <footer>
+        <h3>Where this came from</h3>
+        <ul>
+          <li>
+            Jobber: <a href="https://www.getjobber.com/pricing/">pricing</a> ·
+            <a href="https://help.getjobber.com/en/articles/the-core-plan/">plan details</a> ·
+            <a href="https://developer.getjobber.com/docs/custom_integrations/">developer docs</a> ·
+            <a href="https://www.getjobber.com/terms-of-service/">terms of service</a>
+          </li>
+          <li>
+            Zoho: <a href="https://www.zoho.com/fsm/pricing.html">FSM pricing</a> ·
+            <a href="https://www.zoho.com/fsm/developer/help/api/">FSM developer docs</a> ·
+            <a href="https://www.zoho.com/fsm/crm-integration.html">FSM and CRM together</a>
+          </li>
+          <li>
+            QuoteIQ: <a href="https://myquoteiq.com/pricing/">pricing</a> ·
+            <a href="https://intercom.help/quoteiq/en/articles/11429217-quoteiq-outbound-api-integration"
+              >connection help page</a
+            >
+            ·
+            <a href="https://contractortoolstack.com/software/quoteiq/pricing/">independent pricing review</a>
+          </li>
+          <li>
+            Others: <a href="https://projul.com/blog/jobnimbus-pricing-analysis-2026/">JobNimbus pricing</a> ·
+            <a href="https://schedulingkit.com/pricing-guides/housecall-pro-pricing">Housecall Pro pricing</a>
+          </li>
+          <li>
+            App ratings, September 2026: <a href="https://apps.apple.com/us/app/1014146758">Jobber</a> ·
+            <a href="https://apps.apple.com/us/app/quoteiq-contractor-crm/id1635217093">QuoteIQ</a> ·
+            <a href="https://apps.apple.com/us/app/zoho-fsm/id1509013474">Zoho FSM</a> ·
+            <a href="https://apps.apple.com/us/app/jobnimbus-all-in-one-roof-app/id1571207100">JobNimbus</a>
+          </li>
+          <li>Your own website code, September 2026</li>
+        </ul>
+        <p style="margin-bottom: 0">
+          Note: some top search results for "Jobber pricing" are written by QuoteIQ. None of my numbers come
+          from those. Prices checked September 2026 and can change. This covers software cost and capability —
+          it isn't legal or financial advice.
+        </p>
+      </footer>
+    </div>
+
+    <div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+    <script>
+      ;(function () {
+        var tip = document.getElementById('tip')
+        if (!tip) {
+          return
+        }
+        document.querySelectorAll('.bar').forEach(function (bar) {
+          bar.addEventListener('mouseenter', function (e) {
+            tip.textContent = bar.getAttribute('data-t') || ''
+            tip.classList.add('on')
+            place(e)
+          })
+          bar.addEventListener('mousemove', place)
+          bar.addEventListener('mouseleave', function () {
+            tip.classList.remove('on')
+          })
+        })
+        function place(e) {
+          var pad = 14,
+            x = e.clientX + pad,
+            y = e.clientY + pad,
+            w = tip.offsetWidth
+          if (x + w > window.innerWidth - 8) {
+            x = e.clientX - w - pad
+          }
+          if (y + tip.offsetHeight > window.innerHeight - 8) {
+            y = e.clientY - tip.offsetHeight - pad
+          }
+          tip.style.left = x + 'px'
+          tip.style.top = y + 'px'
+        }
+      })()
+    </script>
+  </body>
+</html>

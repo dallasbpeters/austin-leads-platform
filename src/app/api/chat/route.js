@@ -7,15 +7,16 @@ import { createMCPClient } from '@ai-sdk/mcp'
 import { convertToModelMessages, stepCountIs, streamText } from 'ai'
 
 import { safeAuth } from '@/lib/auth/session'
-import { sanityWriteClient } from '@/sanity/client'
-import { dataset, projectId } from '@/sanity/env'
+import { sanityContextClient } from '@/sanity/client'
+import { contextMcpApiVersion, contextMcpName, contextOrganizationId, dataset, projectId } from '@/sanity/env'
 
 export const runtime = 'nodejs'
 
 const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-5'
 const DEFAULT_GROQ_MODEL = 'llama-3.3-70b-versatile'
-/* Groups this agent's conversations in the Sanity Insights dashboard. */
-const INSIGHTS_AGENT_ID = 'austin-leads-studio-agent'
+/* Groups this agent's conversations in the Context app. In v2 this rides on
+ * the well-known `mcpEndpoints` metadata key instead of the old `agentId`. */
+const INSIGHTS_ENDPOINT_NAME = 'austin-leads-studio-agent'
 
 const MAX_STEPS = 20
 
@@ -83,15 +84,44 @@ ${extra ? `\n## Additional instructions\n${extra}\n` : ''}
 `
 }
 
-const getAgentContextMcpUrl = () => {
-  const fromEnv = process.env.SANITY_CONTEXT_MCP_URL?.trim()
-  if (fromEnv) {
-    return fromEnv
+/**
+ * Resolves which Context MCP endpoint to talk to, and the token for it.
+ *
+ * Sanity Context v2 moved endpoints to the organization: they are created in
+ * the Context app (Dashboard -> Apps -> Sanity Labs) and addressed as
+ * `/<apiVersion>/context/organizations/<orgId>/mcp/<name>`. Those require an
+ * ORGANIZATION token with Context permission.
+ *
+ * The older dataset-addressed `agent-context` endpoint still answers to a
+ * project read token, so it stays as a fallback: if the org token is missing or
+ * wrong, chat keeps working against the dataset instead of going dark.
+ *
+ * @returns {{url: string, token: string, scope: 'organization' | 'dataset'} | null}
+ */
+const resolveContextEndpoint = () => {
+  const orgToken = process.env.SANITY_CONTEXT_ORG_TOKEN?.trim()
+  if (orgToken) {
+    const url =
+      process.env.SANITY_CONTEXT_MCP_URL?.trim() ||
+      (contextOrganizationId && contextMcpName
+        ? `https://api.sanity.io/${contextMcpApiVersion}/context/organizations/${contextOrganizationId}/mcp/${contextMcpName}`
+        : '')
+    if (url) {
+      return { url, token: orgToken, scope: 'organization' }
+    }
   }
-  if (!projectId || !dataset) {
-    return ''
+
+  const projectToken =
+    process.env.SANITY_API_READ_TOKEN?.trim() || process.env.SANITY_API_VIEWER_TOKEN?.trim()
+  if (projectToken && projectId && dataset) {
+    return {
+      url: `https://api.sanity.io/v2026-03-03/agent-context/${projectId}/${dataset}`,
+      token: projectToken,
+      scope: 'dataset',
+    }
   }
-  return `https://api.sanity.io/v2026-03-03/agent-context/${projectId}/${dataset}`
+
+  return null
 }
 
 const validateChatEnvironment = async (request) => {
@@ -100,25 +130,15 @@ const validateChatEnvironment = async (request) => {
     return { error: Response.json({ error: 'Unauthorized' }, { status: 401 }) }
   }
 
-  const mcpUrl = getAgentContextMcpUrl()
-  const readToken = process.env.SANITY_API_READ_TOKEN?.trim() || process.env.SANITY_API_VIEWER_TOKEN?.trim()
+  const endpoint = resolveContextEndpoint()
 
-  if (!mcpUrl) {
+  if (!endpoint) {
     return {
       error: Response.json(
         {
           error:
-            'Sanity project/dataset missing. Set NEXT_PUBLIC_SANITY_PROJECT_ID and NEXT_PUBLIC_SANITY_DATASET, or SANITY_CONTEXT_MCP_URL.',
+            'No Sanity Context endpoint available. Set SANITY_CONTEXT_ORG_TOKEN (plus SANITY_CONTEXT_MCP_URL) for the org endpoint, or SANITY_API_READ_TOKEN for the dataset endpoint.',
         },
-        { status: 500 },
-      ),
-    }
-  }
-
-  if (!readToken) {
-    return {
-      error: Response.json(
-        { error: 'SANITY_API_READ_TOKEN (or SANITY_API_VIEWER_TOKEN) is required for Agent Context MCP.' },
         { status: 500 },
       ),
     }
@@ -151,26 +171,28 @@ const validateChatEnvironment = async (request) => {
     }
   }
 
-  return { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra, threadId }
+  return { endpoint, model, messages, documentFocus, documentContext, systemPromptExtra, threadId }
 }
 
 /**
  * Builds Sanity Insights telemetry for this agent, or returns undefined when it
  * cannot run.
  *
- * The integration writes conversations back to the dataset, so it needs a token
- * with write access. Without `SANITY_API_WRITE_TOKEN` the write client is null
- * and telemetry is skipped rather than failing the request.
+ * Conversations are stored against the organization, so this needs the
+ * org-scoped client. Without `SANITY_CONTEXT_ORG_TOKEN` that client is null and
+ * telemetry is skipped rather than failing the request.
  *
  * @param {string | undefined} threadId - Conversation id supplied by the caller, if any.
  * @param {Array<{ id?: string }>} messages - UI messages for this turn.
  * @returns {object | undefined} An `experimental_telemetry` config, when enabled.
  */
 function buildInsightsTelemetry(threadId, messages) {
-  if (!sanityWriteClient) {
+  if (!sanityContextClient) {
     /* Say so rather than skipping in silence: an empty dashboard otherwise
      * looks the same as an agent nobody has used yet. */
-    console.warn('[insights] skipped: no Sanity write client. SANITY_API_WRITE_TOKEN is missing or empty.')
+    console.warn(
+      '[insights] skipped: no org-scoped Context client. SANITY_CONTEXT_ORG_TOKEN is missing or empty.',
+    )
     return undefined
   }
 
@@ -191,9 +213,9 @@ function buildInsightsTelemetry(threadId, messages) {
     isEnabled: true,
     integrations: [
       sanityInsightsIntegration({
-        agentId: INSIGHTS_AGENT_ID,
-        client: sanityWriteClient,
+        client: sanityContextClient,
         threadId: resolvedThreadId,
+        metadata: { mcpEndpoints: INSIGHTS_ENDPOINT_NAME },
       }),
     ],
   }
@@ -205,8 +227,7 @@ export const POST = async (request) => {
     return validated.error
   }
 
-  const { mcpUrl, readToken, model, messages, documentFocus, documentContext, systemPromptExtra, threadId } =
-    validated
+  const { endpoint, model, messages, documentFocus, documentContext, systemPromptExtra, threadId } = validated
 
   let mcpClient = null
 
@@ -214,9 +235,9 @@ export const POST = async (request) => {
     mcpClient = await createMCPClient({
       transport: {
         type: 'http',
-        url: mcpUrl,
+        url: endpoint.url,
         headers: {
-          Authorization: `Bearer ${readToken}`,
+          Authorization: `Bearer ${endpoint.token}`,
         },
       },
     })
