@@ -73,7 +73,8 @@ export const OPTIONS = (request) => new Response(null, { status: 204, headers: c
 const jsonWithCors = (request, body, status) => Response.json(body, { status, headers: corsHeaders(request) })
 
 const DEFAULT_ANTHROPIC_MODEL = 'claude-sonnet-4-5'
-const DEFAULT_GROQ_MODEL = 'llama-3.3-70b-versatile'
+/* llama-3.3-70b-versatile was decommissioned: Groq answers 404 for it. */
+const DEFAULT_GROQ_MODEL = 'openai/gpt-oss-120b'
 /* Groups this agent's conversations in the Context app, under a key of our own.
  * `agentId` is gone in v2; arbitrary metadata keys are allowed alongside the
  * well-known ones. */
@@ -419,6 +420,11 @@ export const POST = async (request) => {
             url: SANITY_MCP_URL,
             headers: { Authorization: `Bearer ${writeToken}` },
           },
+          /* mcp.sanity.io rejects the protocol version this client probes with
+           * (2026-07-28; the server tops out at 2025-11-25) and errors instead
+           * of negotiating down. Skipping discovery makes it initialize on a
+           * version the server accepts. Drop this once Sanity catches up. */
+          protocolVersionDiscovery: false,
         })
         const filtered = withholdDangerousTools(await writeClient.tools())
         writeTools = filtered.tools
@@ -474,6 +480,12 @@ export const POST = async (request) => {
     return result.toUIMessageStreamResponse({
       originalMessages: messages,
       headers: corsHeaders(request),
+      /* Default is a bare "An error occurred.", which sends you to the server
+       * logs for every failure. This is an internal tool: say what broke. */
+      onError: (error) => {
+        console.error('[api/chat] stream error:', error)
+        return error instanceof Error ? error.message : String(error)
+      },
     })
   } catch (error) {
     await Promise.allSettled([mcpClient?.close(), writeClient?.close()])
