@@ -2,9 +2,7 @@ import { AUDIENCE, buildVoiceRules } from './voice'
 
 const BASE_INSTRUCTIONS = `You are drafting public-facing content for Texas Solar and Roofing Pros inside Sanity.
 
-${AUDIENCE}
-
-${buildVoiceRules()}
+$voiceRules
 
 Content requirements:
 - Keep the title aligned to the requested title.
@@ -61,20 +59,24 @@ const CONTENT_TYPE_GUIDANCE = {
 - Match the page type implied by the brief instead of writing generic filler.`,
 }
 
+// Sanity treats any `$word` in an instruction as a param, so "$2,500" in the voice
+// rules becomes a missing `$2` param. Pass rules and user text via instructionParams.
+export const SANITY_AGENT_VOICE_RULES = [AUDIENCE, buildVoiceRules()].join('\n\n')
+
 export const SANITY_AGENT_PUBLISHING_SETUP_NOTES = [
   'Create the draft document first so required references and slug fields already exist.',
   'Run Sanity Agent Generate against that existing draft instead of asking the agent to invent the schema from scratch.',
   'Keep Sanity as the editorial source of truth. The agent should draft content, but editors should still review and publish in Studio.',
 ]
 
-export function buildSanityAgentPublishingInstruction({ contentType = 'page', title, siteName }) {
+export function buildSanityAgentPublishingInstruction({ contentType = 'page' }) {
   const contentGuidance = CONTENT_TYPE_GUIDANCE[contentType] || CONTENT_TYPE_GUIDANCE.page
 
   return `${BASE_INSTRUCTIONS}
 
 Target document:
-- Title: ${title}
-- Site: ${siteName || 'Texas Solar and Roofing Pros'}
+- Title: $title
+- Site: $siteName
 - Content type: ${contentType}
 
 ${contentGuidance}`

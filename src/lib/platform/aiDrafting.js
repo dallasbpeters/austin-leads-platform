@@ -8,7 +8,10 @@ import {
   sanitizeDraftDocumentIdPart,
   trimDraftLines,
 } from '@/sanity/agent/draftHelpers'
-import { buildSanityAgentPublishingInstruction } from '@/sanity/agent/publishingInstructions'
+import {
+  buildSanityAgentPublishingInstruction,
+  SANITY_AGENT_VOICE_RULES,
+} from '@/sanity/agent/publishingInstructions'
 import { sanityAgentWriteClient, sanityWriteClient } from '@/sanity/client'
 import { syncGuideHeroToGuideGridItems } from '@/sanity/lib/syncGuideListingImages'
 
@@ -114,19 +117,19 @@ const runSanityAgentGenerate = async ({ documentId, schemaType, input }) => {
   await sanityAgentWriteClient.agent.action.generate({
     schemaId: SANITY_AGENT_SCHEMA_ID,
     documentId,
-    instruction: buildSanityAgentPublishingInstruction({
-      contentType: input.contentType,
-      title: input.title,
-      siteName: input.siteName,
-    }),
+    instruction: buildSanityAgentPublishingInstruction({ contentType: input.contentType }),
     instructionParams: {
+      voiceRules: {
+        type: 'constant',
+        value: SANITY_AGENT_VOICE_RULES,
+      },
       title: {
         type: 'constant',
         value: input.title,
       },
       siteName: {
         type: 'constant',
-        value: input.siteName || '',
+        value: input.siteName || 'Texas Solar and Roofing Pros',
       },
       brief: {
         type: 'constant',

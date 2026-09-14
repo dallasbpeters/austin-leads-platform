@@ -14,6 +14,7 @@ import {
 import {
   buildSanityAgentPublishingInstruction,
   SANITY_AGENT_PUBLISHING_SETUP_NOTES,
+  SANITY_AGENT_VOICE_RULES,
 } from '../agent/publishingInstructions'
 import { geminiImageApiEndpoint, geminiPluginApiKey, studioUrl } from '../env'
 import { syncGuideHeroToGuideGridItems } from '../lib/syncGuideListingImages'
@@ -201,14 +202,11 @@ export function AiDraftingTool() {
       await client.agent.action.generate({
         schemaId: SANITY_AGENT_SCHEMA_ID,
         documentId: draftId,
-        instruction: buildSanityAgentPublishingInstruction({
-          contentType: schemaType,
-          title: form.title,
-          siteName: selectedSite?.name || '',
-        }),
+        instruction: buildSanityAgentPublishingInstruction({ contentType: schemaType }),
         instructionParams: {
+          voiceRules: { type: 'constant', value: SANITY_AGENT_VOICE_RULES },
           title: { type: 'constant', value: form.title },
-          siteName: { type: 'constant', value: selectedSite?.name || '' },
+          siteName: { type: 'constant', value: selectedSite?.name || 'Texas Solar and Roofing Pros' },
           brief: { type: 'constant', value: form.brief },
           sources: { type: 'constant', value: trimDraftLines(form.sources).join('\n') },
           neighboringTitles: {
