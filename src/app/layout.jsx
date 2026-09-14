@@ -104,7 +104,14 @@ export default async function RootLayout({ children }) {
    * `x-alp-preview-site-slug` for `/preview/…`, `/_site/:slug`, or `?__site=`
    * (when override is allowed) so the operator shell never inherits tenant oranges.
    */
-  const shouldShowVercelToolbar = !isDraftMode && process.env.VERCEL_ENV !== 'production'
+  /*
+   * Vercel's visual editing needs the toolbar AND Sanity's content source maps
+   * (stega) in the same render. Stega only turns on in draft mode, so excluding
+   * draft mode here meant the two halves could never appear together: draft
+   * mode gave source maps with no toolbar, normal browsing gave a toolbar with
+   * nothing to edit. Hence "it never worked".
+   */
+  const shouldShowVercelToolbar = process.env.VERCEL_ENV !== 'production'
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
   /* `suppressHydrationWarning` covers `data-cloud-tone`, which the tone
