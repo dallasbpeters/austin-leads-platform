@@ -76,3 +76,12 @@ export function buildVoiceRules({ includeStructure = true } = {}) {
 
 /** Who the copy is for. Short on purpose — it frames everything above. */
 export const AUDIENCE = `You are writing for Texas homeowners who already have a problem: a storm hit, a bill spiked, an insurance letter arrived, or a neighbour got panels. They are not browsing. Write the way someone who does this work every day would explain it across a kitchen table.`
+
+/**
+ * Sanity Agent Actions read any `$word` as a template variable, even inside param
+ * values, so "$2,500" fails as a missing `$2` param. Swap the sign before sending.
+ */
+export const escapeAgentTemplateVars = (text = '') =>
+  String(text)
+    .replace(/\$(?=\d)/g, 'USD ')
+    .replace(/\$(?=[A-Za-z_])/g, '＄')

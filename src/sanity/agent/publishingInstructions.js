@@ -1,4 +1,4 @@
-import { AUDIENCE, buildVoiceRules } from './voice'
+import { AUDIENCE, buildVoiceRules, escapeAgentTemplateVars } from './voice'
 
 const BASE_INSTRUCTIONS = `You are drafting public-facing content for Texas Solar and Roofing Pros inside Sanity.
 
@@ -61,7 +61,7 @@ const CONTENT_TYPE_GUIDANCE = {
 
 // Sanity treats any `$word` in an instruction as a param, so "$2,500" in the voice
 // rules becomes a missing `$2` param. Pass rules and user text via instructionParams.
-export const SANITY_AGENT_VOICE_RULES = [AUDIENCE, buildVoiceRules()].join('\n\n')
+export const SANITY_AGENT_VOICE_RULES = escapeAgentTemplateVars([AUDIENCE, buildVoiceRules()].join('\n\n'))
 
 export const SANITY_AGENT_PUBLISHING_SETUP_NOTES = [
   'Create the draft document first so required references and slug fields already exist.',

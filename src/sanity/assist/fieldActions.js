@@ -8,7 +8,7 @@ import {
 import { useMemo } from 'react'
 import { useClient } from 'sanity'
 
-import { AUDIENCE, buildVoiceRules } from '../agent/voice'
+import { AUDIENCE, buildVoiceRules, escapeAgentTemplateVars } from '../agent/voice'
 
 const AI_CONTEXT_DOC_ID = 'aiContext'
 
@@ -28,7 +28,7 @@ const loadAssistContext = async (client) => {
   )
 
   if (!row) {
-    return [PLATFORM_COPY_RULES].filter(Boolean).join('\n\n')
+    return escapeAgentTemplateVars(PLATFORM_COPY_RULES)
   }
 
   const parts = [
@@ -48,7 +48,7 @@ const loadAssistContext = async (client) => {
       : '',
   ].filter(Boolean)
 
-  return parts.join('\n\n').trim()
+  return escapeAgentTemplateVars(parts.join('\n\n').trim())
 }
 
 /*
