@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>F02 — Warranty vs Texas</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        @font-face {
+          font-family: 'Gloock';
+          src: url('assets/fonts/Gloock.woff2') format('woff2');
+          font-weight: 400;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'Switzer';
+          src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+          font-weight: 300 700;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'JetBrainsMono';
+          src: url('assets/fonts/JetBrainsMono.woff2') format('woff2');
+          font-weight: 500;
+          font-display: block;
+        }
+        #f02-root {
+          /* surfaces — all tinted to the brand hue */
+          --ground: oklch(10% 0.028 273.77);
+          --surface: oklch(16.5% 0.032 273.77);
+          --line: oklch(27% 0.03 273.77);
+          --muted: oklch(80% 0.026 273.77);
+          --text: oklch(95.5% 0.012 90);
+          --paper: oklch(98.5% 0.014 90);
+          --deep-sky: oklch(31% 0.055 230);
+          /* accents — rare by design */
+          --gold: oklch(86% 0.13 82);
+          --sky: oklch(74% 0.15 258);
+          --flag: oklch(57% 0.23 28);
+          --orange: oklch(78% 0.17 73);
+          --green: oklch(80% 0.14 165);
+          --alert: oklch(74% 0.19 25);
+          /* type — perfect fourth, six steps */
+          --t-1: 24px;
+          --t-2: 32px;
+          --t-3: 44px;
+          --t-4: 76px;
+          --t-5: 102px;
+          --t-6: 136px;
+          /* light type on a dark ground reads lighter, so leading opens up */
+          --lh-display: 1.06;
+          --lh-title: 1.1;
+          --lh-body: 1.45;
+          --tracking-chrome: 0.14em;
+          /* space — 4pt */
+          --s-2: 8px;
+          --s-3: 12px;
+          --s-4: 16px;
+          --s-5: 24px;
+          --s-6: 32px;
+          --s-7: 48px;
+          --s-8: 64px;
+          --s-9: 96px;
+          --s-10: 128px;
+          --gutter: 128px;
+        }
+
+        #f02-root {
+          position: absolute;
+          inset: 0;
+          background: var(--ground);
+          overflow: hidden;
+          font-family: 'Switzer', Helvetica, ui-sans-serif, system-ui;
+        }
+        #f02-root .eyebrow {
+          position: absolute;
+          left: var(--gutter);
+          top: 150px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--muted);
+          opacity: 0;
+        }
+        #f02-root .head {
+          position: absolute;
+          left: var(--gutter);
+          top: 204px;
+          width: 1240px;
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-5);
+          line-height: var(--lh-display);
+          letter-spacing: -0.022em;
+          color: var(--text);
+        }
+        #f02-root .head .w {
+          display: inline-block;
+          opacity: 0;
+          will-change: transform;
+        }
+
+        #f02-root .rows {
+          position: absolute;
+          left: var(--gutter);
+          right: var(--gutter);
+          top: 452px;
+        }
+        #f02-root .row {
+          position: relative;
+          height: 128px;
+        }
+        #f02-root .row .name {
+          position: absolute;
+          left: 0;
+          top: 30px;
+          width: 430px;
+          font-size: var(--t-2);
+          color: var(--text);
+          opacity: 0;
+        }
+        #f02-root .row .name em {
+          font-style: normal;
+          display: block;
+          font-size: 22px;
+          color: var(--muted);
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin-top: 6px;
+        }
+        #f02-root .track {
+          position: absolute;
+          left: 470px;
+          right: 190px;
+          top: 34px;
+          height: 34px;
+        }
+        #f02-root .track .fill {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          border-radius: 4px;
+          transform-origin: left center;
+          transform: scaleX(0);
+        }
+        #f02-root .track .ghost {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          border-radius: 4px;
+          border: 1px dashed var(--line);
+          opacity: 0;
+        }
+        #f02-root .row .yrs {
+          position: absolute;
+          right: 0;
+          top: 30px;
+          width: 160px;
+          text-align: right;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-3);
+          color: var(--text);
+          opacity: 0;
+          font-variant-numeric: tabular-nums;
+        }
+        #f02-root .fine {
+          position: absolute;
+          left: var(--gutter);
+          bottom: 104px;
+          font-size: var(--t-1);
+          color: var(--muted);
+          opacity: 0;
+        }
+      </style>
+
+      <div data-hf-id="hf-rw5c" id="f02-root" data-composition-id="f02" data-width="1920" data-height="1080">
+        <div data-hf-id="hf-cdhh" class="eyebrow">Material lifespan · what we see in Central Texas</div>
+        <div data-hf-id="hf-z992" class="head">
+          <span data-hf-id="hf-ys6r" class="w">The</span> <span data-hf-id="hf-8cs1" class="w">box</span>
+          <span data-hf-id="hf-2yug" class="w">says</span> <span data-hf-id="hf-0osi" class="w">thirty.</span>
+        </div>
+
+        <div data-hf-id="hf-hnc7" class="rows">
+          <div data-hf-id="hf-tar7" class="row r1">
+            <div data-hf-id="hf-7kjv" class="name">
+              Shingle warranty<em data-hf-id="hf-4lm5">What the box says</em>
+            </div>
+            <div data-hf-id="hf-64lp" class="track">
+              <div data-hf-id="hf-d40w" class="ghost" style="width: 100%"></div>
+              <div data-hf-id="hf-qr1e" class="fill g" style="width: 100%; background: var(--line)"></div>
+            </div>
+            <div data-hf-id="hf-8vtz" class="yrs">30 yrs</div>
+          </div>
+          <div data-hf-id="hf-if9k" class="row r2">
+            <div data-hf-id="hf-ia7q" class="name">
+              Your roof, in Texas<em data-hf-id="hf-mj2w">Heat, UV, hail</em>
+            </div>
+            <div data-hf-id="hf-gav5" class="track">
+              <div data-hf-id="hf-tqhf" class="fill r" style="width: 66.7%; background: var(--alert)"></div>
+            </div>
+            <div data-hf-id="hf-oxwg" class="yrs" style="color: var(--alert)">20 yrs</div>
+          </div>
+          <div data-hf-id="hf-j6xd" class="row r3">
+            <div data-hf-id="hf-nhuh" class="name">
+              Your panels<em data-hf-id="hf-l2hi">Mid-tier warranty</em>
+            </div>
+            <div data-hf-id="hf-hhs8" class="track">
+              <div data-hf-id="hf-joyc" class="fill s" style="width: 83.3%; background: var(--sky)"></div>
+            </div>
+            <div data-hf-id="hf-yoca" class="yrs" style="color: var(--sky)">25 yrs</div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-m3t5" class="fine">
+          Real-world Austin-area figures. Yours will vary by material, pitch, ventilation and storm history.
+        </div>
+      </div>
+
+      <script>
+        ;(function () {
+          /* The teaching chart. Three bars on one scale: what the warranty
+             promises, what Texas delivers, and how long the panels last. Each
+             bar draws on the clause of the voiceover that names it. */
+          const tl = gsap.timeline({ paused: true })
+          const F = 1 / 60
+          tl.fromTo(
+            '#f02-root .eyebrow',
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            0.22,
+          )
+          let t = 0.42
+          document.querySelectorAll('#f02-root .head .w').forEach((el, i, a) => {
+            const heavy = i === a.length - 1
+            const d = heavy ? 0.28 : 0.22
+            tl.set(el, { opacity: 1, y: heavy ? 88 : 54 }, t)
+            tl.to(el, { y: 0, duration: d, ease: 'power4.out' }, t)
+            t += d - F
+          })
+
+          const BEAT = [1.9, 4.5, 6.6] /* "thirty years" / "we see twenty" / "warranted for twenty five" */
+          ;[1, 2, 3].forEach((n, i) => {
+            const r = '#f02-root .r' + n + ' '
+            const at = BEAT[i]
+            tl.fromTo(
+              r + '.name',
+              { opacity: 0, x: -22 },
+              { opacity: 1, x: 0, duration: 0.46, ease: 'power3.out' },
+              at,
+            )
+            if (document.querySelector(r + '.ghost')) {
+              tl.fromTo(r + '.ghost', { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' }, at)
+            }
+            tl.fromTo(
+              r + '.fill',
+              { scaleX: 0 },
+              { scaleX: 1, duration: 0.86, ease: 'power3.out' },
+              at + 0.12,
+            )
+            tl.fromTo(
+              r + '.yrs',
+              { opacity: 0, y: 14 },
+              { opacity: 1, y: 0, duration: 0.44, ease: 'power3.out' },
+              at + 0.6,
+            )
+          })
+          tl.fromTo('#f02-root .fine', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 8.0)
+
+          window.__timelines['f02'] = tl
+        })()
+      </script>
+    </template>
+  </body>
+</html>

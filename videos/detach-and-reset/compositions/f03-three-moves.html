@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>F03 — The collision</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        @font-face {
+          font-family: 'Gloock';
+          src: url('assets/fonts/Gloock.woff2') format('woff2');
+          font-weight: 400;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'Switzer';
+          src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+          font-weight: 300 700;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'JetBrainsMono';
+          src: url('assets/fonts/JetBrainsMono.woff2') format('woff2');
+          font-weight: 500;
+          font-display: block;
+        }
+        #f03-root {
+          /* surfaces — all tinted to the brand hue */
+          --ground: oklch(10% 0.028 273.77);
+          --surface: oklch(16.5% 0.032 273.77);
+          --line: oklch(27% 0.03 273.77);
+          --muted: oklch(80% 0.026 273.77);
+          --text: oklch(95.5% 0.012 90);
+          --paper: oklch(98.5% 0.014 90);
+          --deep-sky: oklch(31% 0.055 230);
+          /* accents — rare by design */
+          --gold: oklch(86% 0.13 82);
+          --sky: oklch(74% 0.15 258);
+          --flag: oklch(57% 0.23 28);
+          --orange: oklch(78% 0.17 73);
+          --green: oklch(80% 0.14 165);
+          --alert: oklch(74% 0.19 25);
+          /* type — perfect fourth, six steps */
+          --t-1: 24px;
+          --t-2: 32px;
+          --t-3: 44px;
+          --t-4: 76px;
+          --t-5: 102px;
+          --t-6: 136px;
+          /* light type on a dark ground reads lighter, so leading opens up */
+          --lh-display: 1.06;
+          --lh-title: 1.1;
+          --lh-body: 1.45;
+          --tracking-chrome: 0.14em;
+          /* space — 4pt */
+          --s-2: 8px;
+          --s-3: 12px;
+          --s-4: 16px;
+          --s-5: 24px;
+          --s-6: 32px;
+          --s-7: 48px;
+          --s-8: 64px;
+          --s-9: 96px;
+          --s-10: 128px;
+          --gutter: 128px;
+        }
+
+        #f03-root {
+          position: absolute;
+          inset: 0;
+          background: var(--ground);
+          overflow: hidden;
+          font-family: 'Switzer', Helvetica, ui-sans-serif, system-ui;
+        }
+        #f03-root .eyebrow {
+          position: absolute;
+          left: var(--gutter);
+          top: 150px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--muted);
+          opacity: 0;
+        }
+        #f03-root .head {
+          position: absolute;
+          left: var(--gutter);
+          top: 202px;
+          width: 1360px;
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-5);
+          line-height: var(--lh-display);
+          letter-spacing: -0.022em;
+          color: var(--text);
+        }
+        #f03-root .head .w {
+          display: inline-block;
+          opacity: 0;
+          will-change: transform;
+        }
+        #f03-root .head .hot {
+          color: var(--orange);
+        }
+
+        #f03-root .tl {
+          position: absolute;
+          left: var(--gutter);
+          right: var(--gutter);
+          top: 470px;
+          height: 300px;
+        }
+        #f03-root .axis {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 1px;
+          background: var(--line);
+          transform-origin: left center;
+        }
+        #f03-root .tick {
+          position: absolute;
+          bottom: -42px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: 20px;
+          color: var(--muted);
+          transform: translateX(-50%);
+          opacity: 0;
+        }
+        #f03-root .lane {
+          position: absolute;
+          left: 0;
+          height: 44px;
+          border-radius: 5px;
+          transform-origin: left center;
+          transform: scaleX(0);
+        }
+        #f03-root .roof {
+          top: 74px;
+          background: var(--alert);
+        }
+        #f03-root .panel {
+          top: 146px;
+          background: var(--sky);
+        }
+        #f03-root .lane-lbl {
+          position: absolute;
+          left: 22px;
+          top: 9px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: 22px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--ground);
+          opacity: 0;
+        }
+        #f03-root .gap {
+          position: absolute;
+          top: 60px;
+          height: 146px;
+          border-left: 1px dashed var(--orange);
+          border-right: 1px dashed var(--orange);
+          background: rgba(255, 159, 0, 0.1);
+          opacity: 0;
+        }
+        #f03-root .gap-lbl {
+          position: absolute;
+          top: -52px;
+          left: 50%;
+          transform: translateX(-50%);
+          white-space: nowrap;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: 22px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--orange);
+        }
+        #f03-root .fine {
+          position: absolute;
+          left: var(--gutter);
+          bottom: 104px;
+          font-size: var(--t-1);
+          color: var(--muted);
+          opacity: 0;
+        }
+      </style>
+
+      <div data-hf-id="hf-c2s8" id="f03-root" data-composition-id="f03" data-width="1920" data-height="1080">
+        <div data-hf-id="hf-nvwa" class="eyebrow">Year by year</div>
+        <div data-hf-id="hf-z992" class="head">
+          <span data-hf-id="hf-ys6r" class="w">The</span> <span data-hf-id="hf-ixcv" class="w">panels</span>
+          <span data-hf-id="hf-ucmx" class="w hot">outlive</span>
+          <span data-hf-id="hf-9o0j" class="w">the</span> <span data-hf-id="hf-v14o" class="w">roof.</span>
+        </div>
+
+        <div data-hf-id="hf-tgpc" class="tl">
+          <div data-hf-id="hf-2hmb" class="axis"></div>
+          <div data-hf-id="hf-wxtz" class="lane roof" style="width: 66.7%">
+            <span data-hf-id="hf-9lr9" class="lane-lbl">Roof · 20 yrs</span>
+          </div>
+          <div data-hf-id="hf-h3t4" class="lane panel" style="width: 83.3%">
+            <span data-hf-id="hf-i3c5" class="lane-lbl">Panels · 25 yrs</span>
+          </div>
+          <div data-hf-id="hf-tmbv" class="gap" style="left: 66.7%; width: 16.6%">
+            <span data-hf-id="hf-i5so" class="gap-lbl">Something has to come off</span>
+          </div>
+          <div data-hf-id="hf-pned" class="tick" style="left: 0%">Year 0</div>
+          <div data-hf-id="hf-hota" class="tick" style="left: 33.3%">10</div>
+          <div data-hf-id="hf-h1ib" class="tick" style="left: 66.7%">20</div>
+          <div data-hf-id="hf-4pqj" class="tick" style="left: 83.3%">25</div>
+          <div data-hf-id="hf-d40q" class="tick" style="left: 100%">30</div>
+        </div>
+
+        <div data-hf-id="hf-1028" class="fine">
+          Typical Central Texas architectural shingle against a mid-tier panel warranty.
+        </div>
+      </div>
+
+      <script>
+        ;(function () {
+          /* One 30-year timeline, two lanes. The roof lane stops at 20, the panel
+             lane runs to 25, and the overlap is the whole point of the film. */
+          const tl = gsap.timeline({ paused: true })
+          const F = 1 / 60
+          tl.fromTo(
+            '#f03-root .eyebrow',
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            0.2,
+          )
+          let t = 0.4
+          document.querySelectorAll('#f03-root .head .w').forEach((el, i) => {
+            const heavy = i === 1 || i === 2
+            const d = heavy ? 0.28 : 0.22
+            tl.set(el, { opacity: 1, y: heavy ? 88 : 54 }, t)
+            tl.to(el, { y: 0, duration: d, ease: 'power4.out' }, t)
+            t += d - F
+          })
+
+          tl.fromTo('#f03-root .axis', { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'expo.out' }, 1.7)
+          tl.fromTo(
+            '#f03-root .tick',
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out', stagger: 0.07 },
+            1.9,
+          )
+          tl.fromTo('#f03-root .roof', { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: 'power3.out' }, 2.5)
+          tl.fromTo(
+            '#f03-root .roof .lane-lbl',
+            { opacity: 0 },
+            { opacity: 1, duration: 0.4, ease: 'power2.out' },
+            3.0,
+          )
+          tl.fromTo('#f03-root .panel', { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: 'power3.out' }, 3.4)
+          tl.fromTo(
+            '#f03-root .panel .lane-lbl',
+            { opacity: 0 },
+            { opacity: 1, duration: 0.4, ease: 'power2.out' },
+            3.9,
+          )
+          /* "Somewhere around year twenty, something has to come off." */
+          tl.fromTo(
+            '#f03-root .gap',
+            { opacity: 0, scaleX: 0 },
+            { opacity: 1, scaleX: 1, duration: 0.6, ease: 'power3.out', transformOrigin: 'left center' },
+            5.4,
+          )
+          tl.fromTo('#f03-root .fine', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 6.6)
+
+          window.__timelines['f03'] = tl
+        })()
+      </script>
+    </template>
+  </body>
+</html>

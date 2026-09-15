@@ -14,6 +14,7 @@ import { GallerySection } from './gallery-section'
 import { GuideGridSection } from './guide-grid-section'
 import { HailMapSection } from './hail-map-section'
 import { HeroSection } from './hero-section'
+import { HyperframesSection } from './hyperframes-section'
 import { PricingSection } from './pricing-section'
 import { QuoteBannerSection } from './quote-banner-section'
 import { RoofingLogoCloudSection } from './roofing-logo-cloud-section'
@@ -58,6 +59,7 @@ export const sectionRenderers = {
   guides: GuidesSection,
   hailMap: HailMapSection,
   hero: HeroSection,
+  hyperframes: HyperframesSection,
   installProcess: InstallProcessSection,
   highlights: CardGridSection,
   incentives: IncentivesSection,

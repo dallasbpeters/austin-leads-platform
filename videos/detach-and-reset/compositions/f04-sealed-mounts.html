@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>F04 — What the order costs</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        @font-face {
+          font-family: 'Gloock';
+          src: url('assets/fonts/Gloock.woff2') format('woff2');
+          font-weight: 400;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'Switzer';
+          src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+          font-weight: 300 700;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'JetBrainsMono';
+          src: url('assets/fonts/JetBrainsMono.woff2') format('woff2');
+          font-weight: 500;
+          font-display: block;
+        }
+        #f04-root {
+          /* surfaces — all tinted to the brand hue */
+          --ground: oklch(10% 0.028 273.77);
+          --surface: oklch(16.5% 0.032 273.77);
+          --line: oklch(27% 0.03 273.77);
+          --muted: oklch(80% 0.026 273.77);
+          --text: oklch(95.5% 0.012 90);
+          --paper: oklch(98.5% 0.014 90);
+          --deep-sky: oklch(31% 0.055 230);
+          /* accents — rare by design */
+          --gold: oklch(86% 0.13 82);
+          --sky: oklch(74% 0.15 258);
+          --flag: oklch(57% 0.23 28);
+          --orange: oklch(78% 0.17 73);
+          --green: oklch(80% 0.14 165);
+          --alert: oklch(74% 0.19 25);
+          /* type — perfect fourth, six steps */
+          --t-1: 24px;
+          --t-2: 32px;
+          --t-3: 44px;
+          --t-4: 76px;
+          --t-5: 102px;
+          --t-6: 136px;
+          /* light type on a dark ground reads lighter, so leading opens up */
+          --lh-display: 1.06;
+          --lh-title: 1.1;
+          --lh-body: 1.45;
+          --tracking-chrome: 0.14em;
+          /* space — 4pt */
+          --s-2: 8px;
+          --s-3: 12px;
+          --s-4: 16px;
+          --s-5: 24px;
+          --s-6: 32px;
+          --s-7: 48px;
+          --s-8: 64px;
+          --s-9: 96px;
+          --s-10: 128px;
+          --gutter: 128px;
+        }
+
+        #f04-root {
+          position: absolute;
+          inset: 0;
+          background: var(--ground);
+          overflow: hidden;
+          font-family: 'Switzer', Helvetica, ui-sans-serif, system-ui;
+        }
+        #f04-root .eyebrow {
+          position: absolute;
+          left: var(--gutter);
+          top: 150px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--muted);
+          opacity: 0;
+        }
+        #f04-root .head {
+          position: absolute;
+          left: var(--gutter);
+          top: 202px;
+          width: 1300px;
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-5);
+          line-height: var(--lh-display);
+          letter-spacing: -0.022em;
+          color: var(--text);
+        }
+        #f04-root .head .w {
+          display: inline-block;
+          opacity: 0;
+          will-change: transform;
+        }
+
+        #f04-root .cols {
+          position: absolute;
+          left: var(--gutter);
+          top: 420px;
+          width: 1020px;
+        }
+        #f04-root .col {
+          position: relative;
+          height: 104px;
+        }
+        #f04-root .col .name {
+          position: absolute;
+          left: 0;
+          top: 26px;
+          width: 380px;
+          font-size: var(--t-2);
+          color: var(--muted);
+          opacity: 0;
+        }
+        #f04-root .col.hot .name {
+          color: var(--text);
+        }
+        #f04-root .col .track {
+          position: absolute;
+          left: 420px;
+          right: 210px;
+          top: 28px;
+          height: 32px;
+        }
+        #f04-root .col .fill {
+          position: absolute;
+          inset: 0;
+          border-radius: 4px;
+          background: var(--line);
+          transform-origin: left center;
+          transform: scaleX(0);
+        }
+        #f04-root .col.bad .fill {
+          background: var(--alert);
+        }
+        #f04-root .col.good .fill {
+          background: var(--green);
+        }
+        #f04-root .col .amt {
+          position: absolute;
+          right: 0;
+          top: 22px;
+          width: 200px;
+          text-align: right;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-3);
+          color: var(--text);
+          opacity: 0;
+          font-variant-numeric: tabular-nums;
+        }
+
+        #f04-root .delta {
+          box-sizing: border-box;
+          position: absolute;
+          right: var(--gutter);
+          top: 420px;
+          width: 560px;
+          border: 1px solid var(--line);
+          border-radius: 24px;
+          background: var(--surface);
+          padding: var(--s-7) var(--s-7) var(--s-8);
+          opacity: 0;
+        }
+        #f04-root .delta .k {
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--muted);
+        }
+        #f04-root .delta .v {
+          margin-top: var(--s-4);
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-6);
+          line-height: 1;
+          color: var(--orange);
+          font-variant-numeric: tabular-nums;
+        }
+        #f04-root .delta .c {
+          margin-top: var(--s-5);
+          font-size: var(--t-2);
+          line-height: var(--lh-body);
+          color: var(--text);
+        }
+        #f04-root .fine {
+          position: absolute;
+          left: var(--gutter);
+          bottom: 100px;
+          font-size: var(--t-1);
+          color: var(--muted);
+          opacity: 0;
+        }
+      </style>
+
+      <div data-hf-id="hf-91bk" id="f04-root" data-composition-id="f04" data-width="1920" data-height="1080">
+        <div data-hf-id="hf-v72g" class="eyebrow">Typical 8 kW system + full roof replacement</div>
+        <div data-hf-id="hf-z992" class="head">
+          <span data-hf-id="hf-ys6r" class="w">The</span> <span data-hf-id="hf-5dww" class="w">order</span>
+          <span data-hf-id="hf-yccw" class="w">has</span> <span data-hf-id="hf-b7a3" class="w">a</span>
+          <span data-hf-id="hf-ca8h" class="w">price.</span>
+        </div>
+
+        <div data-hf-id="hf-6ra9" class="cols">
+          <div data-hf-id="hf-fjfa" class="col c1">
+            <div data-hf-id="hf-va83" class="name">Roof only</div>
+            <div data-hf-id="hf-64lp" class="track">
+              <div data-hf-id="hf-rf8x" class="fill" style="width: 31%"></div>
+            </div>
+            <div data-hf-id="hf-6z4p" class="amt">$12,000</div>
+          </div>
+          <div data-hf-id="hf-blb9" class="col c2">
+            <div data-hf-id="hf-bkso" class="name">Solar only</div>
+            <div data-hf-id="hf-gav5" class="track">
+              <div data-hf-id="hf-bcyy" class="fill" style="width: 58%"></div>
+            </div>
+            <div data-hf-id="hf-vphu" class="amt">$22,400</div>
+          </div>
+          <div data-hf-id="hf-fe58" class="col c3 bad hot">
+            <div data-hf-id="hf-hfnu" class="name">Separately, detach later</div>
+            <div data-hf-id="hf-hhs8" class="track">
+              <div data-hf-id="hf-gqoy" class="fill" style="width: 100%"></div>
+            </div>
+            <div data-hf-id="hf-9zo3" class="amt" style="color: var(--alert)">$38,400</div>
+          </div>
+          <div data-hf-id="hf-gue3" class="col c4 good hot">
+            <div data-hf-id="hf-bfmt" class="name">Both together, once</div>
+            <div data-hf-id="hf-h3h7" class="track">
+              <div data-hf-id="hf-jkaz" class="fill" style="width: 86%"></div>
+            </div>
+            <div data-hf-id="hf-4vxr" class="amt" style="color: var(--green)">$33,000</div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-9lwy" class="delta">
+          <div data-hf-id="hf-ki11" class="k">Cost of the wrong order</div>
+          <div data-hf-id="hf-f5j3" class="v" id="f04-delta">$0</div>
+          <div data-hf-id="hf-2t8p" class="c">Same roof. Same panels. One extra detach and reset.</div>
+        </div>
+
+        <div data-hf-id="hf-lkrr" class="fine">
+          Typical Austin project costs. Yours depends on system size, roof complexity and permitting.
+        </div>
+      </div>
+
+      <script>
+        ;(function () {
+          /* The money beat. Four real totals, then the difference counts up —
+             seek-safe, because the readout is a pure function of a proxy value
+             the timeline owns. */
+          const tl = gsap.timeline({ paused: true })
+          const F = 1 / 60
+          tl.fromTo(
+            '#f04-root .eyebrow',
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            0.2,
+          )
+          let t = 0.4
+          document.querySelectorAll('#f04-root .head .w').forEach((el, i, a) => {
+            const heavy = i === 1 || i === a.length - 1
+            const d = heavy ? 0.28 : 0.22
+            tl.set(el, { opacity: 1, y: heavy ? 88 : 54 }, t)
+            tl.to(el, { y: 0, duration: d, ease: 'power4.out' }, t)
+            t += d - F
+          })
+
+          /* Reference rows first, quietly, then the two that matter. */
+          ;[
+            ['c1', 1.7],
+            ['c2', 2.2],
+            ['c3', 3.5],
+            ['c4', 5.6],
+          ].forEach(([c, at]) => {
+            const r = '#f04-root .' + c + ' '
+            tl.fromTo(
+              r + '.name',
+              { opacity: 0, x: -20 },
+              { opacity: 1, x: 0, duration: 0.44, ease: 'power3.out' },
+              at,
+            )
+            tl.fromTo(r + '.fill', { scaleX: 0 }, { scaleX: 1, duration: 0.82, ease: 'power3.out' }, at + 0.1)
+            tl.fromTo(
+              r + '.amt',
+              { opacity: 0, y: 14 },
+              { opacity: 1, y: 0, duration: 0.44, ease: 'power3.out' },
+              at + 0.56,
+            )
+          })
+
+          /* "...costs you five thousand four hundred dollars." */
+          const out = document.getElementById('f04-delta')
+          const proxy = { v: 0 }
+          tl.fromTo(
+            '#f04-root .delta',
+            { opacity: 0, y: 34 },
+            { opacity: 1, y: 0, duration: 0.56, ease: 'power3.out' },
+            7.3,
+          )
+          tl.to(
+            proxy,
+            {
+              v: 5400,
+              duration: 1.5,
+              ease: 'power2.out',
+              onUpdate: () => {
+                out.textContent = '$' + Math.round(proxy.v).toLocaleString('en-US')
+              },
+            },
+            7.6,
+          )
+          tl.fromTo('#f04-root .fine', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 9.2)
+
+          window.__timelines['f04'] = tl
+        })()
+      </script>
+    </template>
+  </body>
+</html>

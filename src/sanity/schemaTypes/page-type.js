@@ -4827,6 +4827,104 @@ const videoSectionType = {
   },
 }
 
+/**
+ * A published HyperFrames composition, embedded live.
+ *
+ * Distinct from `videoSection`, which points at a rendered MP4. This one points
+ * at the composition itself: re-publishing the project updates the same URL, so
+ * a copy fix ships without a re-render or a re-upload. Use `videoSection` when a
+ * file is genuinely wanted (a download, a social cut); use this for the page.
+ */
+const hyperframesSectionType = {
+  name: 'hyperframesSection',
+  title: 'HyperFrames video',
+  type: 'object',
+  initialValue: { type: 'hyperframes', aspectRatio: '16:9' },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      options: canvasPurpose('Short overline above the video heading.'),
+    },
+    {
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      options: canvasPurpose('Primary heading for the video section.'),
+    },
+    {
+      name: 'body',
+      title: 'Body',
+      type: 'text',
+      rows: 3,
+      options: canvasPurpose('Supporting copy shown above the player.'),
+    },
+    {
+      name: 'project',
+      title: 'Video project',
+      type: 'reference',
+      to: [{ type: 'videoProject' }],
+      description: "The document that owns this film's script and figures.",
+      options: canvasExclude,
+    },
+    {
+      name: 'embedUrl',
+      title: 'Published HyperFrames URL',
+      type: 'url',
+      description:
+        'From `npx hyperframes publish`. Must be public for visitors to play it — a private project shows a sign-in wall.',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Hosted URL of the published composition.'),
+    },
+    {
+      ...defineUploadedImage(
+        'posterImage',
+        'Poster image',
+        canvasPurpose('Still shown before playback. The embed does not load until the visitor presses play.'),
+      ),
+    },
+    {
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+      options: canvasPurpose('Optional caption below the player.'),
+    },
+    {
+      name: 'fallbackUrl',
+      title: 'Fallback link',
+      type: 'url',
+      description: 'Where to send someone who cannot run the embed — usually the YouTube URL.',
+      options: canvasExclude,
+    },
+    {
+      name: 'aspectRatio',
+      title: 'Aspect ratio',
+      type: 'string',
+      initialValue: '16:9',
+      options: {
+        list: [
+          { title: '16:9', value: '16:9' },
+          { title: '1:1 (Square)', value: '1:1' },
+          { title: '9:16 (Vertical)', value: '9:16' },
+        ],
+        layout: 'dropdown',
+        ...canvasPurpose('Width-to-height ratio of the player.'),
+      },
+    },
+  ]),
+  preview: {
+    select: { title: 'title', caption: 'caption', url: 'embedUrl' },
+    prepare({ title, caption, url }) {
+      return {
+        title: title || 'HyperFrames video',
+        subtitle: caption || url || 'No URL set',
+      }
+    },
+  },
+}
+
 const pageSectionType = {
   name: 'pageSection',
   title: 'Legacy Page Section',
@@ -4886,6 +4984,7 @@ export const pageSectionTypes = [
   { type: 'solarSwitchSection' },
   { type: 'energyChartSection' },
   { type: 'videoSection' },
+  { type: 'hyperframesSection' },
   { type: 'serviceGridSection' },
   { type: 'resourceGridSection' },
   { type: 'guideGridSection' },
@@ -5101,6 +5200,7 @@ export default [
   solarSwitchSectionType,
   energyChartSectionType,
   videoSectionType,
+  hyperframesSectionType,
   serviceGridSectionType,
   resourceGridSectionType,
   guideGridSectionType,

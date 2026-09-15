@@ -34,3 +34,17 @@ balmy-vehicle-*.json
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Video compositions: the HTML, brief and storyboard are source and belong in
+# git. The media does not — renders, captures and generated voice run to tens of
+# MB and are reproducible from the composition plus the Sanity project.
+videos/*/renders/
+videos/*/capture/
+videos/*/assets/
+videos/*/snapshots/
+videos/*/node_modules/
+videos/*/.hyperframes/
+videos/*/.thumbnails/
+videos/*/.media/
+videos/*/package-lock.json
+videos/**/.DS_Store

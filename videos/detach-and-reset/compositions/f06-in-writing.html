@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>F06 — The rule and the ask</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        @font-face {
+          font-family: 'Gloock';
+          src: url('assets/fonts/Gloock.woff2') format('woff2');
+          font-weight: 400;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'Switzer';
+          src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+          font-weight: 300 700;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'JetBrainsMono';
+          src: url('assets/fonts/JetBrainsMono.woff2') format('woff2');
+          font-weight: 500;
+          font-display: block;
+        }
+        #f06-root {
+          /* surfaces — all tinted to the brand hue */
+          --ground: oklch(10% 0.028 273.77);
+          --surface: oklch(16.5% 0.032 273.77);
+          --line: oklch(27% 0.03 273.77);
+          --muted: oklch(80% 0.026 273.77);
+          --text: oklch(95.5% 0.012 90);
+          --paper: oklch(98.5% 0.014 90);
+          --deep-sky: oklch(31% 0.055 230);
+          /* accents — rare by design */
+          --gold: oklch(86% 0.13 82);
+          --sky: oklch(74% 0.15 258);
+          --flag: oklch(57% 0.23 28);
+          --orange: oklch(78% 0.17 73);
+          --green: oklch(80% 0.14 165);
+          --alert: oklch(74% 0.19 25);
+          /* type — perfect fourth, six steps */
+          --t-1: 24px;
+          --t-2: 32px;
+          --t-3: 44px;
+          --t-4: 76px;
+          --t-5: 102px;
+          --t-6: 136px;
+          /* light type on a dark ground reads lighter, so leading opens up */
+          --lh-display: 1.06;
+          --lh-title: 1.1;
+          --lh-body: 1.45;
+          --tracking-chrome: 0.14em;
+          /* space — 4pt */
+          --s-2: 8px;
+          --s-3: 12px;
+          --s-4: 16px;
+          --s-5: 24px;
+          --s-6: 32px;
+          --s-7: 48px;
+          --s-8: 64px;
+          --s-9: 96px;
+          --s-10: 128px;
+          --gutter: 128px;
+        }
+        #f06-root {
+          position: absolute;
+          inset: 0;
+          background: var(--ground);
+          overflow: hidden;
+          font-family: 'Switzer', Helvetica, ui-sans-serif, system-ui;
+        }
+        #f06-root .center {
+          position: absolute;
+          left: var(--gutter);
+          right: 700px;
+          top: 150px;
+        }
+        #f06-root .eyebrow {
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--muted);
+          opacity: 0;
+        }
+
+        #f06-root .rule-card {
+          box-sizing: border-box;
+          margin-top: var(--s-5);
+          border: 1px solid var(--line);
+          border-radius: 24px;
+          background: var(--surface);
+          padding: var(--s-5) var(--s-6) var(--s-6);
+          opacity: 0;
+        }
+        #f06-root .rule-card .k {
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--gold);
+        }
+        #f06-root .rule-card .v {
+          margin-top: var(--s-3);
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-4);
+          line-height: var(--lh-title);
+          letter-spacing: -0.02em;
+          color: var(--text);
+        }
+
+        #f06-root .ask {
+          margin-top: var(--s-6);
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: 62px;
+          line-height: var(--lh-title);
+          letter-spacing: -0.02em;
+          color: var(--text);
+          max-width: 1060px;
+        }
+        #f06-root .ask .w {
+          display: inline-block;
+          opacity: 0;
+          will-change: transform;
+        }
+        #f06-root .ask .hot {
+          color: var(--orange);
+        }
+
+        /* The call to action — the company's own words from the content pack. */
+        #f06-root .cta {
+          position: absolute;
+          left: var(--gutter);
+          right: var(--gutter);
+          bottom: 232px;
+          opacity: 0;
+        }
+        #f06-root .cta .lead {
+          font-size: var(--t-3);
+          line-height: var(--lh-title);
+          color: var(--text);
+          max-width: 1120px;
+        }
+        #f06-root .cta .lead b {
+          font-weight: 500;
+          color: var(--gold);
+        }
+        #f06-root .actions {
+          display: flex;
+          align-items: center;
+          gap: var(--s-5);
+          margin-top: var(--s-5);
+        }
+        #f06-root .tel {
+          display: flex;
+          align-items: baseline;
+          gap: var(--s-4);
+          border: 1px solid var(--gold);
+          border-radius: 999px;
+          padding: 20px 40px;
+          background: rgba(255, 208, 107, 0.08);
+          opacity: 0;
+        }
+        #f06-root .tel .t {
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: 46px;
+          color: var(--gold);
+          letter-spacing: 0.02em;
+          font-variant-numeric: tabular-nums;
+        }
+        #f06-root .site {
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: 0.08em;
+          color: var(--muted);
+          opacity: 0;
+        }
+        #f06-root .free {
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--muted);
+          opacity: 0;
+        }
+
+        #f06-root .plate-v {
+          position: absolute;
+          right: var(--gutter);
+          top: 178px;
+          width: 496px;
+          height: 470px;
+          border-radius: 22px;
+          overflow: hidden;
+          border: 1px solid var(--line);
+          background: var(--surface);
+        }
+        #f06-root .plate-v .hold {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        #f06-root .plate-v .inner {
+          position: absolute;
+          inset: 0;
+          will-change: transform;
+        }
+        #f06-root .plate-v video {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        #f06-root .plate-v .veil {
+          position: absolute;
+          inset: 0;
+          background: var(--ground);
+          transform-origin: right center;
+        }
+
+        #f06-root .rule {
+          position: absolute;
+          left: var(--gutter);
+          right: var(--gutter);
+          bottom: 186px;
+          height: 1px;
+          background: var(--line);
+          transform-origin: left center;
+        }
+        #f06-root .mark {
+          position: absolute;
+          left: var(--gutter);
+          bottom: 74px;
+          display: flex;
+          align-items: center;
+          gap: var(--s-5);
+        }
+        #f06-root .plate {
+          width: 88px;
+          height: 88px;
+          border-radius: 16px;
+          background: var(--paper);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 10px;
+          flex: none;
+          opacity: 0;
+        }
+        #f06-root .plate img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        #f06-root .words {
+          opacity: 0;
+        }
+        #f06-root .name {
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-2);
+          color: var(--text);
+          letter-spacing: -0.01em;
+        }
+        #f06-root .sub {
+          margin-top: 4px;
+          font-size: var(--t-1);
+          color: var(--muted);
+        }
+      </style>
+
+      <div data-hf-id="hf-rksw" id="f06-root" data-composition-id="f06" data-width="1920" data-height="1080">
+        <div data-hf-id="hf-0oij" class="center">
+          <div data-hf-id="hf-lvuu" class="eyebrow">The rule</div>
+          <div data-hf-id="hf-acsh" class="rule-card">
+            <div data-hf-id="hf-okmd" class="k">If your roof has under 10 years left</div>
+            <div data-hf-id="hf-jgl6" class="v">Do the roof first.</div>
+          </div>
+          <div data-hf-id="hf-p6ez" class="ask">
+            <span data-hf-id="hf-fjsh" class="w">And</span> <span data-hf-id="hf-tzc4" class="w">get</span>
+            <span data-hf-id="hf-9o0j" class="w">the</span> <span data-hf-id="hf-mibj" class="w">detach</span>
+            <span data-hf-id="hf-td31" class="w">cost</span>
+            <span data-hf-id="hf-27n6" class="w hot">in&#160;writing</span
+            ><span data-hf-id="hf-2mf0" class="w">,</span> <span data-hf-id="hf-a3sz" class="w">before</span>
+            <span data-hf-id="hf-cto3" class="w">the</span>
+            <span data-hf-id="hf-cnd6" class="w">roofing</span>
+            <span data-hf-id="hf-33vr" class="w">bid.</span>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-avhh" class="plate-v">
+          <img
+            data-hf-id="hf-ce38"
+            class="hold"
+            src="assets/photos/close-hold.jpg"
+            alt="Finished array on a new roof"
+          />
+          <div data-hf-id="hf-lm34" class="inner">
+            <video
+              data-hf-id="hf-a98v"
+              id="f06-close-vid"
+              src="assets/video/installers.mp4"
+              data-start="0"
+              data-duration="14.6"
+              data-media-start="8.48"
+              data-playback-rate="0.1"
+              data-hf-media-start-basis="local"
+              data-track-index="0"
+              muted
+              playsinline
+            ></video>
+          </div>
+          <div data-hf-id="hf-h5f4" class="veil"></div>
+        </div>
+
+        <div data-hf-id="hf-apeu" class="cta">
+          <div data-hf-id="hf-08ql" class="lead">
+            Not sure which way to go? Send us your <b data-hf-id="hf-cm78">roof age</b> and
+            <b data-hf-id="hf-32tz">a year of electric bills</b> — we’ll map out your best next step.
+          </div>
+          <div data-hf-id="hf-zgc1" class="actions">
+            <div data-hf-id="hf-8z2f" class="tel">
+              <span data-hf-id="hf-uwbm" class="t">512-400-3763</span>
+            </div>
+            <div data-hf-id="hf-ir7p" class="site">texassolarandroofingpros.com</div>
+            <div data-hf-id="hf-ivqv" class="free">Free estimate · no commitment</div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-a46i" class="rule"></div>
+        <div data-hf-id="hf-9gvv" class="mark">
+          <div data-hf-id="hf-69d8" class="plate">
+            <img
+              data-hf-id="hf-ej0b"
+              src="assets/brand/tx-solar-logo.svg"
+              alt="Texas Solar and Roofing Pros"
+            />
+          </div>
+          <div data-hf-id="hf-m60b" class="words">
+            <div data-hf-id="hf-7h09" class="name">Texas Solar &amp; Roofing Pros</div>
+            <div data-hf-id="hf-km8n" class="sub">Central Texas · roofing and solar under one roof</div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        ;(function () {
+          /* The close: the rule, the ask, then the call to action. The phone number
+             arrives last and holds to the end, which is the only thing on screen
+             when the film stops. The video window maxes out at rate 0.1, so an
+             identical still sits behind it and takes over at 14.6s unseen. */
+          const tl = gsap.timeline({ paused: true })
+          const F = 1 / 60
+          tl.fromTo(
+            '#f06-root .eyebrow',
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            0.3,
+          )
+          tl.fromTo(
+            '#f06-root .rule-card',
+            { opacity: 0, y: 36 },
+            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+            1.1,
+          )
+          tl.fromTo(
+            '#f06-root .plate-v .veil',
+            { scaleX: 1 },
+            { scaleX: 0, duration: 0.8, ease: 'power3.inOut' },
+            1.3,
+          )
+          tl.fromTo(
+            '#f06-root .plate-v .inner',
+            { scale: 1.14 },
+            { scale: 1, duration: 2.6, ease: 'power3.out' },
+            1.3,
+          )
+
+          let t = 4.3
+          document.querySelectorAll('#f06-root .ask .w').forEach((el) => {
+            const hot = el.classList.contains('hot')
+            const d = hot ? 0.26 : 0.2
+            tl.set(el, { opacity: 1, y: hot ? 78 : 48 }, t)
+            tl.to(el, { y: 0, duration: d, ease: 'power4.out' }, t)
+            t += d - F
+          })
+
+          /* "Not sure which way to go? Send us your roof age and a year of bills." */
+          tl.fromTo(
+            '#f06-root .cta',
+            { opacity: 0, y: 30 },
+            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+            8.6,
+          )
+          tl.fromTo(
+            '#f06-root .tel',
+            { opacity: 0, y: 24 },
+            { opacity: 1, y: 0, duration: 0.56, ease: 'power3.out' },
+            11.9,
+          )
+          tl.fromTo(
+            '#f06-root .site',
+            { opacity: 0 },
+            { opacity: 1, duration: 0.5, ease: 'power2.out' },
+            12.2,
+          )
+          tl.fromTo(
+            '#f06-root .free',
+            { opacity: 0 },
+            { opacity: 1, duration: 0.5, ease: 'power2.out' },
+            13.6,
+          )
+          tl.fromTo('#f06-root .rule', { scaleX: 0 }, { scaleX: 1, duration: 0.95, ease: 'power4.out' }, 9.0)
+          tl.fromTo(
+            '#f06-root .plate',
+            { opacity: 0, y: 24 },
+            { opacity: 1, y: 0, duration: 0.56, ease: 'power3.out' },
+            9.4,
+          )
+          tl.fromTo(
+            '#f06-root .words',
+            { opacity: 0, x: -18 },
+            { opacity: 1, x: 0, duration: 0.56, ease: 'power3.out' },
+            9.6,
+          )
+          window.__timelines['f06'] = tl
+        })()
+      </script>
+    </template>
+  </body>
+</html>

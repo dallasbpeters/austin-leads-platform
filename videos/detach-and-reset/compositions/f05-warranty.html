@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>F05 — The warranty trap</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        @font-face {
+          font-family: 'Gloock';
+          src: url('assets/fonts/Gloock.woff2') format('woff2');
+          font-weight: 400;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'Switzer';
+          src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+          font-weight: 300 700;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'JetBrainsMono';
+          src: url('assets/fonts/JetBrainsMono.woff2') format('woff2');
+          font-weight: 500;
+          font-display: block;
+        }
+        #f05-root {
+          /* surfaces — all tinted to the brand hue */
+          --ground: oklch(10% 0.028 273.77);
+          --surface: oklch(16.5% 0.032 273.77);
+          --line: oklch(27% 0.03 273.77);
+          --muted: oklch(80% 0.026 273.77);
+          --text: oklch(95.5% 0.012 90);
+          --paper: oklch(98.5% 0.014 90);
+          --deep-sky: oklch(31% 0.055 230);
+          /* accents — rare by design */
+          --gold: oklch(86% 0.13 82);
+          --sky: oklch(74% 0.15 258);
+          --flag: oklch(57% 0.23 28);
+          --orange: oklch(78% 0.17 73);
+          --green: oklch(80% 0.14 165);
+          --alert: oklch(74% 0.19 25);
+          /* type — perfect fourth, six steps */
+          --t-1: 24px;
+          --t-2: 32px;
+          --t-3: 44px;
+          --t-4: 76px;
+          --t-5: 102px;
+          --t-6: 136px;
+          /* light type on a dark ground reads lighter, so leading opens up */
+          --lh-display: 1.06;
+          --lh-title: 1.1;
+          --lh-body: 1.45;
+          --tracking-chrome: 0.14em;
+          /* space — 4pt */
+          --s-2: 8px;
+          --s-3: 12px;
+          --s-4: 16px;
+          --s-5: 24px;
+          --s-6: 32px;
+          --s-7: 48px;
+          --s-8: 64px;
+          --s-9: 96px;
+          --s-10: 128px;
+          --gutter: 128px;
+        }
+
+        #f05-root {
+          position: absolute;
+          inset: 0;
+          background: var(--deep-sky);
+          overflow: hidden;
+          font-family: 'Switzer', Helvetica, ui-sans-serif, system-ui;
+        }
+        #f05-root .bloom {
+          position: absolute;
+          left: 52%;
+          top: 50%;
+          width: 1500px;
+          height: 1020px;
+          margin-left: -750px;
+          margin-top: -510px;
+          background: radial-gradient(circle, rgba(255, 208, 107, 0.16) 0%, rgba(8, 47, 67, 0) 60%);
+          opacity: 0;
+        }
+        #f05-root .scan {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          height: 2px;
+          background: var(--gold);
+          opacity: 0;
+        }
+        #f05-root .eyebrow {
+          position: absolute;
+          left: var(--gutter);
+          top: 150px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--gold);
+          opacity: 0;
+        }
+        #f05-root .head {
+          position: absolute;
+          left: var(--gutter);
+          top: 226px;
+          width: 1480px;
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-5);
+          line-height: var(--lh-display);
+          letter-spacing: -0.022em;
+          color: var(--text);
+        }
+        #f05-root .head .w {
+          display: inline-block;
+          opacity: 0;
+          will-change: transform;
+        }
+        #f05-root .risk {
+          position: absolute;
+          left: var(--gutter);
+          top: 486px;
+          width: 1500px;
+          font-size: var(--t-3);
+          line-height: var(--lh-title);
+          color: var(--gold);
+          font-weight: 500;
+        }
+        #f05-root .risk .w {
+          display: inline-block;
+          opacity: 0;
+          will-change: transform;
+        }
+        #f05-root .bar {
+          position: absolute;
+          left: var(--gutter);
+          top: 700px;
+          width: 920px;
+          height: 2px;
+          background: rgba(255, 252, 245, 0.24);
+          transform-origin: left center;
+        }
+        #f05-root .ask {
+          position: absolute;
+          left: var(--gutter);
+          top: 762px;
+          width: 1340px;
+          font-size: var(--t-3);
+          line-height: var(--lh-title);
+          color: var(--text);
+          opacity: 0;
+        }
+        #f05-root .fine {
+          position: absolute;
+          left: var(--gutter);
+          bottom: 104px;
+          font-size: var(--t-1);
+          color: rgba(255, 252, 245, 0.64);
+          opacity: 0;
+        }
+      </style>
+
+      <div data-hf-id="hf-ilvc" id="f05-root" data-composition-id="f05" data-width="1920" data-height="1080">
+        <div data-hf-id="hf-j2ll" class="bloom"></div>
+        <div data-hf-id="hf-az1f" class="scan"></div>
+        <div data-hf-id="hf-ss9s" class="eyebrow">One more thing</div>
+        <div data-hf-id="hf-z992" class="head">
+          <span data-hf-id="hf-3lf4" class="w">Some</span> <span data-hf-id="hf-5prl" class="w">solar</span>
+          <span data-hf-id="hf-10is" class="w">warranties</span>
+          <span data-hf-id="hf-3x9d" class="w">end…</span>
+        </div>
+        <div data-hf-id="hf-kunt" class="risk">
+          <span data-hf-id="hf-ekil" class="w">…if</span> <span data-hf-id="hf-b7a3" class="w">a</span>
+          <span data-hf-id="hf-hysp" class="w">different</span>
+          <span data-hf-id="hf-q8gf" class="w">company</span>
+          <span data-hf-id="hf-dkhu" class="w">moves</span> <span data-hf-id="hf-kxir" class="w">your</span>
+          <span data-hf-id="hf-xkgz" class="w">panels.</span>
+        </div>
+        <div data-hf-id="hf-ufsv" class="bar"></div>
+        <div data-hf-id="hf-7zjv" class="ask">Check your paperwork before anyone touches them.</div>
+        <div data-hf-id="hf-gs3w" class="fine">
+          Terms vary by installer and carrier. Read your own contract.
+        </div>
+      </div>
+
+      <script>
+        ;(function () {
+          const tl = gsap.timeline({ paused: true })
+          const F = 1 / 60
+          tl.fromTo(
+            '#f05-root .bloom',
+            { opacity: 0, scale: 0.9 },
+            { opacity: 1, scale: 1, duration: 2.0, ease: 'power2.out', transformOrigin: '52% 50%' },
+            0,
+          )
+          tl.fromTo(
+            '#f05-root .eyebrow',
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            0.3,
+          )
+          let t = 0.62
+          document.querySelectorAll('#f05-root .head .w').forEach((el, i) => {
+            const heavy = i === 2 || i === 3
+            const d = heavy ? 0.3 : 0.22
+            tl.set(el, { opacity: 1, y: heavy ? 90 : 56 }, t)
+            tl.to(el, { y: 0, duration: d, ease: 'power4.out' }, t)
+            t += d - F
+          })
+          tl.fromTo(
+            '#f05-root .scan',
+            { opacity: 0, y: 150 },
+            { opacity: 0.5, y: 920, duration: 0.9, ease: 'none' },
+            1.9,
+          )
+          tl.to('#f05-root .scan', { opacity: 0, duration: 0.3, ease: 'power1.in' }, 2.8)
+          let tr = 2.5
+          document.querySelectorAll('#f05-root .risk .w').forEach((el) => {
+            tl.set(el, { opacity: 1, y: 44 }, tr)
+            tl.to(el, { y: 0, duration: 0.2, ease: 'power4.out' }, tr)
+            tr += 0.2 - 2 * F
+          })
+          tl.fromTo('#f05-root .bar', { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: 'power4.out' }, 4.3)
+          tl.fromTo(
+            '#f05-root .ask',
+            { opacity: 0, y: 26 },
+            { opacity: 1, y: 0, duration: 0.56, ease: 'power3.out' },
+            4.7,
+          )
+          tl.fromTo(
+            '#f05-root .fine',
+            { opacity: 0, y: 14 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            5.8,
+          )
+          window.__timelines['f05'] = tl
+        })()
+      </script>
+    </template>
+  </body>
+</html>

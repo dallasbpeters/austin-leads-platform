@@ -2,6 +2,7 @@
 
 import {
   Bot,
+  Clapperboard,
   FileSignature,
   FileText,
   Globe2,
@@ -40,6 +41,7 @@ const workspaceItems = [
   { href: '/clients', label: 'Clients', icon: UsersRound },
   { href: '/hero-pages', label: 'Hero Pages', icon: ImagePlus },
   { href: '/publish', label: 'Publish', icon: PenSquare },
+  { href: '/videos', label: 'Videos', icon: Clapperboard },
   { href: '/documents', label: 'Documents', icon: FileSignature },
   { href: '/domains', label: 'Domains', icon: Globe2 },
   { href: '/users', label: 'Users', icon: ShieldCheck },

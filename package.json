@@ -41,7 +41,12 @@
     "audit:schema": "node --env-file=.env --env-file-if-exists=.env.local scripts/schema-usage-dump.mjs > .schema-usage.json && node scripts/audit-schema-fields.mjs .schema-usage.json > docs/schema-field-audit.md",
     "check": "ultracite check",
     "fix": "ultracite fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "video:sync": "node --env-file=.env.local scripts/sync-video-project.mjs",
+    "video:yt:auth": "node --env-file=.env.local scripts/youtube-auth.mjs",
+    "video:yt:push": "node --env-file=.env.local scripts/youtube-upload.mjs",
+    "video:seed": "node --env-file=.env.local scripts/seed-video-project.mjs",
+    "video:render:push": "node --env-file=.env.local scripts/push-render.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.111",

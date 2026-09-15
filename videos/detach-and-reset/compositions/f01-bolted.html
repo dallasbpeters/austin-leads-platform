@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>F01 — The number nobody mentions</title>
+  </head>
+  <body>
+    <template>
+      <style>
+        @font-face {
+          font-family: 'Gloock';
+          src: url('assets/fonts/Gloock.woff2') format('woff2');
+          font-weight: 400;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'Switzer';
+          src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+          font-weight: 300 700;
+          font-display: block;
+        }
+        @font-face {
+          font-family: 'JetBrainsMono';
+          src: url('assets/fonts/JetBrainsMono.woff2') format('woff2');
+          font-weight: 500;
+          font-display: block;
+        }
+        #f01-root {
+          /* surfaces — all tinted to the brand hue */
+          --ground: oklch(10% 0.028 273.77);
+          --surface: oklch(16.5% 0.032 273.77);
+          --line: oklch(27% 0.03 273.77);
+          --muted: oklch(80% 0.026 273.77);
+          --text: oklch(95.5% 0.012 90);
+          --paper: oklch(98.5% 0.014 90);
+          --deep-sky: oklch(31% 0.055 230);
+          /* accents — rare by design */
+          --gold: oklch(86% 0.13 82);
+          --sky: oklch(74% 0.15 258);
+          --flag: oklch(57% 0.23 28);
+          --orange: oklch(78% 0.17 73);
+          --green: oklch(80% 0.14 165);
+          --alert: oklch(74% 0.19 25);
+          /* type — perfect fourth, six steps */
+          --t-1: 24px;
+          --t-2: 32px;
+          --t-3: 44px;
+          --t-4: 76px;
+          --t-5: 102px;
+          --t-6: 136px;
+          /* light type on a dark ground reads lighter, so leading opens up */
+          --lh-display: 1.06;
+          --lh-title: 1.1;
+          --lh-body: 1.45;
+          --tracking-chrome: 0.14em;
+          /* space — 4pt */
+          --s-2: 8px;
+          --s-3: 12px;
+          --s-4: 16px;
+          --s-5: 24px;
+          --s-6: 32px;
+          --s-7: 48px;
+          --s-8: 64px;
+          --s-9: 96px;
+          --s-10: 128px;
+          --gutter: 128px;
+        }
+
+        #f01-root {
+          position: absolute;
+          inset: 0;
+          background: var(--ground);
+          overflow: hidden;
+          font-family: 'Switzer', Helvetica, ui-sans-serif, system-ui;
+        }
+        #f01-root .scene {
+          position: absolute;
+          inset: 0;
+        }
+        #f01-root .shot {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+        }
+        #f01-root .shot .inner {
+          position: absolute;
+          inset: 0;
+          will-change: transform;
+        }
+        #f01-root .shot video {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        #f01-root .scrim {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            100deg,
+            var(--ground) 0%,
+            rgba(4, 10, 23, 0.93) 36%,
+            rgba(4, 10, 23, 0.42) 66%,
+            rgba(4, 10, 23, 0.76) 100%
+          );
+        }
+        #f01-root .logo {
+          position: absolute;
+          right: var(--gutter);
+          top: 148px;
+          width: 104px;
+          height: 104px;
+          border-radius: 18px;
+          background: var(--paper);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 12px;
+          opacity: 0;
+        }
+        #f01-root .logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        #f01-root .eyebrow {
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-1);
+          letter-spacing: var(--tracking-chrome);
+          text-transform: uppercase;
+          color: var(--muted);
+          opacity: 0;
+        }
+        #f01-root .a {
+          position: absolute;
+          left: var(--gutter);
+          top: 330px;
+          width: 980px;
+        }
+        #f01-root .a .head {
+          margin-top: var(--s-7);
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-5);
+          line-height: var(--lh-display);
+          letter-spacing: -0.022em;
+          color: var(--text);
+        }
+        #f01-root .a .head .w {
+          display: inline-block;
+          opacity: 0;
+          will-change: transform;
+        }
+
+        /* Scene B — the cost chart */
+        #f01-root .b {
+          position: absolute;
+          inset: 0;
+          background: var(--ground);
+          opacity: 0;
+        }
+        #f01-root .b .eyebrow {
+          position: absolute;
+          left: var(--gutter);
+          top: 150px;
+        }
+        #f01-root .b .title {
+          position: absolute;
+          left: var(--gutter);
+          top: 204px;
+          width: 1100px;
+          font-family: 'Gloock', Georgia, serif;
+          font-weight: 400;
+          font-size: var(--t-4);
+          line-height: var(--lh-title);
+          letter-spacing: -0.02em;
+          color: var(--text);
+          opacity: 0;
+        }
+        #f01-root .chart {
+          position: absolute;
+          left: var(--gutter);
+          right: var(--gutter);
+          top: 392px;
+          height: 420px;
+        }
+        #f01-root .bar {
+          position: absolute;
+          bottom: 44px;
+          width: 232px;
+        }
+        #f01-root .bar .fill {
+          width: 100%;
+          background: var(--sky);
+          border-radius: 6px 6px 0 0;
+          transform-origin: bottom center;
+          transform: scaleY(0);
+        }
+        #f01-root .bar .val {
+          position: absolute;
+          left: 0;
+          right: 0;
+          text-align: center;
+          top: -52px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: var(--t-2);
+          color: var(--text);
+          opacity: 0;
+          font-variant-numeric: tabular-nums;
+        }
+        #f01-root .bar .lbl {
+          position: absolute;
+          left: -12px;
+          right: -12px;
+          text-align: center;
+          bottom: -44px;
+          font-family: 'JetBrainsMono', ui-monospace, monospace;
+          font-weight: 500;
+          font-size: 20px;
+          letter-spacing: 0.06em;
+          color: var(--muted);
+          opacity: 0;
+        }
+        #f01-root .axis {
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 44px;
+          height: 1px;
+          background: var(--line);
+          transform-origin: left center;
+        }
+        #f01-root .fine {
+          position: absolute;
+          left: var(--gutter);
+          bottom: 96px;
+          font-size: var(--t-1);
+          color: var(--muted);
+          opacity: 0;
+        }
+      </style>
+
+      <div data-hf-id="hf-7c3c" id="f01-root" data-composition-id="f01" data-width="1920" data-height="1080">
+        <div data-hf-id="hf-wua0" class="scene">
+          <div data-hf-id="hf-2ycw" class="shot">
+            <div data-hf-id="hf-lm34" class="inner">
+              <video
+                data-hf-id="hf-j4jx"
+                id="f01-installers"
+                src="assets/video/installers.mp4"
+                data-start="0"
+                data-duration="5.2"
+                data-media-start="0.05"
+                data-playback-rate="0.262"
+                data-hf-media-start-basis="local"
+                data-track-index="0"
+                muted
+                playsinline
+              ></video>
+            </div>
+          </div>
+          <div data-hf-id="hf-261e" class="scrim"></div>
+          <div data-hf-id="hf-e319" class="logo">
+            <img
+              data-hf-id="hf-ej0b"
+              src="assets/brand/tx-solar-logo.svg"
+              alt="Texas Solar and Roofing Pros"
+            />
+          </div>
+          <div data-hf-id="hf-cqep" class="a">
+            <div data-hf-id="hf-i5e4" class="eyebrow">Before you go solar</div>
+            <div data-hf-id="hf-z992" class="head">
+              <span data-hf-id="hf-d6gm" class="w">There’s</span>
+              <span data-hf-id="hf-b7a3" class="w">a</span> <span data-hf-id="hf-bso9" class="w">number</span
+              ><br data-hf-id="hf-x5px" /><span data-hf-id="hf-sddb" class="w">nobody</span>
+              <span data-hf-id="hf-w2gv" class="w">mentions.</span>
+            </div>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-goiq" class="b">
+          <div data-hf-id="hf-xle0" class="eyebrow">Detach &amp; reset · typical Austin pricing, 2026</div>
+          <div data-hf-id="hf-ersf" class="title">
+            Taking the panels back off, then putting them on again.
+          </div>
+          <div data-hf-id="hf-ntnc" class="chart">
+            <div data-hf-id="hf-2hmb" class="axis"></div>
+            <div data-hf-id="hf-y21v" class="bar" style="left: 0px">
+              <div data-hf-id="hf-bjd6" class="val">$1,800</div>
+              <div data-hf-id="hf-f8qb" class="fill" style="height: 118px"></div>
+              <div data-hf-id="hf-7f1m" class="lbl">10 panels</div>
+            </div>
+            <div data-hf-id="hf-pwtr" class="bar" style="left: 332px">
+              <div data-hf-id="hf-frsw" class="val">$2,500</div>
+              <div data-hf-id="hf-clnc" class="fill" style="height: 164px"></div>
+              <div data-hf-id="hf-rb28" class="lbl">16 panels</div>
+            </div>
+            <div data-hf-id="hf-rf1f" class="bar" style="left: 664px">
+              <div data-hf-id="hf-ckk3" class="val">$3,500</div>
+              <div data-hf-id="hf-nvp4" class="fill" style="height: 230px"></div>
+              <div data-hf-id="hf-mcql" class="lbl">22 panels</div>
+            </div>
+            <div data-hf-id="hf-787v" class="bar" style="left: 996px">
+              <div data-hf-id="hf-qqa3" class="val">$4,200</div>
+              <div data-hf-id="hf-i3s2" class="fill" style="height: 276px"></div>
+              <div data-hf-id="hf-u1sj" class="lbl">28 panels</div>
+            </div>
+            <div data-hf-id="hf-ib8h" class="bar" style="left: 1328px">
+              <div data-hf-id="hf-k040" class="val">$5,200</div>
+              <div data-hf-id="hf-nspa" class="fill" style="height: 342px"></div>
+              <div data-hf-id="hf-ynvl" class="lbl">34+ panels</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-ya09" class="fine">
+            Removal, secure storage, reinstallation and re-inspection. Varies by roof, pitch and system.
+          </div>
+        </div>
+      </div>
+
+      <script>
+        ;(function () {
+          /* Two scenes in one frame, cut at 4.6s on the voiceover's own comma.
+             Scene A is the hook over live footage; scene B is the number that
+             makes the hook true, drawn as the real chart from the guide data. */
+          const tl = gsap.timeline({ paused: true })
+          const F = 1 / 60
+
+          tl.fromTo(
+            '#f01-root .shot .inner',
+            { scale: 1.1, xPercent: 1.5 },
+            { scale: 1, xPercent: 0, duration: 4.8, ease: 'power3.out' },
+            0,
+          )
+          tl.fromTo(
+            '#f01-root .a .eyebrow',
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            0.3,
+          )
+          tl.fromTo(
+            '#f01-root .logo',
+            { opacity: 0, y: 18 },
+            { opacity: 1, y: 0, duration: 0.62, ease: 'power3.out' },
+            0.4,
+          )
+          let t = 0.62
+          document.querySelectorAll('#f01-root .a .head .w').forEach((el, i, a) => {
+            const heavy = i === 2 || i === a.length - 1
+            const d = heavy ? 0.26 : 0.2
+            tl.set(el, { opacity: 1, y: heavy ? 84 : 52 }, t)
+            tl.to(el, { y: 0, duration: d, ease: 'power4.out' }, t)
+            t += d - F
+          })
+
+          /* Internal cut — the footage hands off to the data. */
+          tl.fromTo('#f01-root .b', { opacity: 0 }, { opacity: 1, duration: 0.42, ease: 'power2.inOut' }, 4.6)
+          tl.to('#f01-root .scene', { opacity: 0, duration: 0.34, ease: 'power2.inOut' }, 4.64)
+          tl.fromTo(
+            '#f01-root .b .eyebrow',
+            { opacity: 0, y: 12 },
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            4.78,
+          )
+          tl.fromTo(
+            '#f01-root .b .title',
+            { opacity: 0, y: 26 },
+            { opacity: 1, y: 0, duration: 0.56, ease: 'power3.out' },
+            4.92,
+          )
+          tl.fromTo('#f01-root .axis', { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'expo.out' }, 5.1)
+          tl.fromTo(
+            '#f01-root .bar .fill',
+            { scaleY: 0 },
+            { scaleY: 1, duration: 0.82, ease: 'power3.out', stagger: 0.1 },
+            5.3,
+          )
+          tl.fromTo(
+            '#f01-root .bar .lbl',
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out', stagger: 0.1 },
+            5.42,
+          )
+          tl.fromTo(
+            '#f01-root .bar .val',
+            { opacity: 0, y: 14 },
+            { opacity: 1, y: 0, duration: 0.42, ease: 'power3.out', stagger: 0.1 },
+            5.72,
+          )
+          tl.fromTo('#f01-root .fine', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 7.2)
+
+          window.__timelines['f01'] = tl
+        })()
+      </script>
+    </template>
+  </body>
+</html>
