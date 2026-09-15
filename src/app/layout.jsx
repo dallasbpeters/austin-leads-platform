@@ -4,6 +4,7 @@ import { VercelToolbar } from '@vercel/toolbar/next'
 import dynamic from 'next/dynamic'
 import { Gloock, JetBrains_Mono } from 'next/font/google'
 import { draftMode, headers } from 'next/headers'
+import Script from 'next/script'
 
 import '../styles/globals.css'
 
@@ -137,15 +138,14 @@ export default async function RootLayout({ children }) {
         className={`${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >
         {/*
-         * First child of `<body>`, not `<head>`, on purpose. React 19 hoists
-         * `<link>` and `<meta>`, so an inline `<script>` is the only child of
-         * `<head>` it matches by position -- and dev proxies and browser
-         * extensions inject their own scripts at the top of `<head>`, which
-         * shifts that position and trips a hydration mismatch. Here it still
-         * runs synchronously before any body content paints, so the tone is
-         * stamped on `<html>` in time and there is no flash.
+         * next/script with `beforeInteractive` — Next places and runs it
+         * before hydration, so the tone lands on `<html>` with no flash and
+         * React never re-renders a raw <script> on the client (which it warns
+         * about, and which would not run anyway).
          */}
-        <script dangerouslySetInnerHTML={{ __html: cloudToneBootstrapScript }} />
+        <Script id="cloud-tone-bootstrap" strategy="beforeInteractive">
+          {cloudToneBootstrapScript}
+        </Script>
         <nav aria-label="Skip links">
           <a
             href="#main-content"

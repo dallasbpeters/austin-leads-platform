@@ -381,6 +381,8 @@ const s = StyleSheet.create({
   balanceValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Switzer Bold' },
 
   notesBlock: { marginTop: 10 },
+  mockupPicture: { marginTop: 10, width: '100%', maxHeight: 560, objectFit: 'contain', borderRadius: 6 },
+  mockupCaption: { fontSize: 8.5, color: MUTED, lineHeight: 1.4, marginTop: 8 },
   sectionTitleRow: { flexDirection: 'row', alignItems: 'center' },
   sectionTitle: {
     fontSize: 8,
@@ -795,6 +797,33 @@ const getTemplateLabel = (key) => {
   return key
 }
 
+/** Second page: the customer's house with their lights, from the lights mockup. */
+function buildMockupPage({ picture, invoice, company, logo, inputs }) {
+  return h(
+    Page,
+    { size: 'LETTER', style: s.page },
+    buildHeader(invoice, company, logo, inputs),
+    h(
+      View,
+      { style: s.body },
+      h(
+        View,
+        { style: s.sectionTitleRow },
+        Ornament({ size: 10 }),
+        h(Text, { style: s.sectionTitle }, 'YOUR LIGHTS'),
+      ),
+      h(Image, { src: { data: picture, format: 'jpg' }, style: s.mockupPicture }),
+      h(
+        Text,
+        { style: s.mockupCaption },
+        'A preview of your lights, drawn on a photo of your home. Final placement and bulb spacing are confirmed ' +
+          'with you on install day.',
+      ),
+    ),
+    buildFooter(company),
+  )
+}
+
 // ─── Document ────────────────────────────────────────────────────────────────
 
 /**
@@ -803,6 +832,7 @@ const getTemplateLabel = (key) => {
  * @param {object} [options]
  * @param {object} [options.company] Override company info (from settings)
  * @param {string|Buffer} [options.logo] Override logo (path or buffer)
+ * @param {Buffer|null} [options.mockupPicture] Lights mockup JPEG, added as a second page
  */
 export function ChristmasInvoiceDocument(invoice, options = {}) {
   const company = options.company || getChristmasCompanyInfo()
@@ -840,14 +870,39 @@ export function ChristmasInvoiceDocument(invoice, options = {}) {
       ),
       buildFooter(company),
     ),
+    options.mockupPicture
+      ? buildMockupPage({ picture: options.mockupPicture, invoice, company, logo, inputs })
+      : null,
   )
 }
 
+/*
+ * The invoice's lights mockup picture, if it has one. Best-effort: a missing
+ * table or database hiccup just renders the invoice without the extra page.
+ * Imported lazily so plain Node scripts can render PDFs without a database.
+ */
+async function loadMockupPicture(invoiceId) {
+  if (!invoiceId) {
+    return null
+  }
+  try {
+    const { ensureChristmasMockupTables, getInvoiceMockupPicture } = await import('./mockup-db.js')
+    await ensureChristmasMockupTables()
+    return await getInvoiceMockupPicture(invoiceId)
+  } catch (error) {
+    console.warn('[christmas/invoice-pdf] mockup picture unavailable', error.message)
+    return null
+  }
+}
+
 /**
- * Render an invoice to a PDF Buffer.
+ * Render an invoice to a PDF Buffer. Includes the invoice's lights mockup
+ * picture unless `options.mockupPicture` is given (pass null to leave it out).
  */
 export async function renderChristmasInvoicePdf(invoice, options = {}) {
-  const instance = pdf(ChristmasInvoiceDocument(invoice, options))
+  const mockupPicture =
+    options.mockupPicture === undefined ? await loadMockupPicture(invoice.id) : options.mockupPicture
+  const instance = pdf(ChristmasInvoiceDocument(invoice, { ...options, mockupPicture }))
   const blob = await instance.toBlob().catch(() => null)
   if (blob) {
     return Buffer.from(await blob.arrayBuffer())

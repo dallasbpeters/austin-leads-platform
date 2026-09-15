@@ -12,6 +12,7 @@ export default async function ChristmasInvoicesPage({ searchParams }) {
   const params = await searchParams
   const editId = typeof params?.edit === 'string' ? params.edit : null
   const dupeId = typeof params?.dupe === 'string' ? params.dupe : null
+  const fromMockup = params?.fromMockup === '1'
   const session = await safeAuth()
 
   let invoices = []
@@ -43,6 +44,7 @@ export default async function ChristmasInvoicesPage({ searchParams }) {
     <ChristmasInvoicesClient
       dupeId={dupeId}
       editId={editId}
+      fromMockup={fromMockup}
       invoices={invoices}
       preloadInvoice={preloadInvoice}
       presets={CHRISTMAS_PACKAGE_PRESETS}

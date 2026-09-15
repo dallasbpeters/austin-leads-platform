@@ -61,6 +61,53 @@ The builder ships presets that mirror the txchristmaslights.com packages (`src/l
 All line items are editable after applying a preset, so any package can be customized per client.
 Deposit is optional and reduces the subtotal to a balance due.
 
+## Service and color options
+
+Each line item picks from fixed lists (`CHRISTMAS_SERVICE_TYPES` and `CHRISTMAS_LIGHT_COLORS` in
+`src/lib/christmas/invoice-calc.js`):
+
+- **Service:** Tree lights, Stake lights, Roofline / ridge, Garland
+- **Color:** Warm white, Multicolor, Bright white
+
+The quote-level "Color lights" field uses the same color list. Old invoices with free-text values still
+open and show their saved value. The service and color print on the PDF, the Zoho Sheet row, and the
+Jobber line description.
+
+## Lights mockup
+
+`/christmas/mockup` (Christmas Lights → Lights mockup). Quote users can open it too. From an invoice, the
+"Lights mockup" card opens the mockup for that invoice (`/christmas/mockup?invoice=<id>`).
+
+1. Take or pick a photo of the house. A straight-on daytime shot works best.
+2. Pick a service and a color, tap points on the photo, then tap Finish.
+   - Roofline / ridge, Garland, Stake lights: tap along the line.
+   - Tree lights: tap around the tree outline.
+3. Drag a dot to fix it. Tap a set of lights in the list to change its color. Tap outside the photo to hide
+   the dots.
+4. **Set scale** to measure: tap both ends of something you know (front door height, garage door width),
+   then pick a preset or type the length. Bulbs resize to real C9 size, roofline bulbs space 1 ft apart,
+   stakes 3 ft apart.
+5. The **Estimate** shows feet (trees by height, stakes by count) and prices them from "Your prices". Prices
+   are shared by everyone and save to the database when you leave a price box. It is an estimate from one
+   photo — check on site before the final price.
+6. **Save**: from an invoice it saves to that invoice. Otherwise name it (customer or address) and save.
+   **Saved mockups** lists everything saved; open one to keep working.
+7. Share or Download the picture, or send the lines (with measured quantities and prices) to a quote.
+
+Storage (Postgres): `christmas_mockups` holds the photo, the finished picture, and the traced lights + scale
+as JSON, optionally tied to an invoice. `christmas_mockup_settings` holds the estimator prices. Both tables
+are created on first use. API routes live under `/api/christmas/invoices/mockups` and
+`/api/christmas/invoices/[id]/mockup`.
+
+Code: geometry and estimating in `src/lib/christmas/mockup-geometry.js` (tested), drawing in
+`src/lib/christmas/mockup-render.js`, storage in `src/lib/christmas/mockup-db.js`, page in
+`src/components/admin/christmas-mockup-client.jsx` and `christmas-mockup-panels.jsx`.
+
+Bulb and garland art: the source files live in `src/components/admin/drawing-assets/`. The page loads small
+copies from `public/christmas-mockup/`. After you change the source art, rebuild the copies with
+`python3 scripts/prepare-mockup-assets.py` (needs Pillow). Every bulb color is recolored from the blue C9,
+because it is the only source bulb with a clean transparent background.
+
 ## Env vars
 
 See the Christmas Invoices block in `.env.example` (`CHRISTMAS_COMPANY_*`, `CHRISTMAS_INVOICE_*`,

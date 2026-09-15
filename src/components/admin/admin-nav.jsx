@@ -2,6 +2,7 @@
 
 import {
   Bot,
+  Camera,
   Clapperboard,
   FileSignature,
   FileText,
@@ -55,7 +56,10 @@ const quotesWorkspaceItems = [
   { href: '/quotes', label: 'Quotes', icon: FileSignature },
 ]
 
-const quotesChristmasItems = [{ href: '/christmas/invoices', label: 'Invoices', icon: FileText }]
+const quotesChristmasItems = [
+  { href: '/christmas/invoices', label: 'Invoices', icon: FileText },
+  { href: '/christmas/mockup', label: 'Lights mockup', icon: Camera },
+]
 
 const nestedItems = {
   '/documents': [{ href: '/documents/history', label: 'History', icon: PenSquare }],
@@ -69,6 +73,7 @@ const nestedItems = {
 const christmasItems = [
   { href: '/christmas', label: 'Jobs', icon: UsersRound },
   { href: '/christmas/invoices', label: 'Invoices', icon: FileText },
+  { href: '/christmas/mockup', label: 'Lights mockup', icon: Camera },
   { href: '/christmas/slots', label: 'Slots', icon: Sparkles },
 ]
 

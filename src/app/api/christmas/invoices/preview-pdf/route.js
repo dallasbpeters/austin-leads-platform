@@ -37,6 +37,8 @@ export async function POST(request) {
   }
   const computed = computeChristmasInvoice(payloadInputs)
   const invoice = {
+    // A saved invoice's id lets the preview include its lights mockup page.
+    id: typeof body?.invoiceId === 'string' ? body.invoiceId : undefined,
     invoiceNumber: body?.invoiceNumber || 'PREVIEW',
     invoiceDate: payloadInputs.invoiceDate,
     dueDate: payloadInputs.dueDate,
