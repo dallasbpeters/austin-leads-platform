@@ -112,6 +112,7 @@ const NavList = ({ items, onNavigate }) => (
 const PhoneLink = ({ inSheet = false, prefix = null }) => (
   <div className="site-header__phone-wrapper">
     <a href={SITE_PHONE_HREF} className={cn('site-header__phone', inSheet && 'site-header__phone--sheet')}>
+      <span> Call us at:</span>
       <Phone className="site-header__phone-icon" strokeWidth={2} aria-hidden="true" />
       <span>
         {prefix ? `${prefix} ` : null}
@@ -163,7 +164,7 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
       <div className="site-header__bar">
         <div className="site-header__inner">
           <Link href="/" aria-label="Texas Solar & Roofing Pros - Home" className="site-header__brand">
-            <Logo height={60} width={80} />
+            <Logo height={90} width={120} />
             <span className="sr-only">Texas Solar & Roofing Pros</span>
           </Link>
           <div className="site-header__nav">

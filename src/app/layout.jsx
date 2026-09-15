@@ -3,13 +3,12 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { VercelToolbar } from '@vercel/toolbar/next'
 import dynamic from 'next/dynamic'
 import { Gloock, JetBrains_Mono } from 'next/font/google'
-import { draftMode, headers } from 'next/headers'
-import Script from 'next/script'
+import { cookies, draftMode, headers } from 'next/headers'
 
 import '../styles/globals.css'
 
 import { PostHogProvider } from '@/app/providers'
-import { cloudToneBootstrapScript } from '@/components/cloud-tone'
+import { CLOUD_TONE_COOKIE, normalizeCloudTone } from '@/components/cloud-tone'
 import CloudToneSync from '@/components/cloud-tone-sync'
 import { getPublicDataSiteAttribute } from '@/components/platform/public-site-utils'
 import ViewTransitionWrapper from '@/components/view-transition-wrapper'
@@ -115,13 +114,21 @@ export default async function RootLayout({ children }) {
   const shouldShowVercelToolbar = process.env.VERCEL_ENV !== 'production'
   const facebookAppId = (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 
-  /* `suppressHydrationWarning` covers `data-cloud-tone`, which the tone
-   * bootstrap stamps onto `<html>` before React hydrates. */
+  /*
+   * The sky phase (day / dusk / night) comes from the visitor's own clock, so
+   * only the browser knows it. `CloudToneSync` stores it in a cookie, and we
+   * stamp it into the HTML here — the first paint is already the right palette,
+   * with no inline script for React to complain about. A first-ever visit has
+   * no cookie yet; it starts on the day palette and `CloudToneSync` corrects it.
+   * `suppressHydrationWarning` covers the attribute changing during that catch-up.
+   */
+  const cloudTone = normalizeCloudTone((await cookies()).get(CLOUD_TONE_COOKIE)?.value)
   return (
     <html
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
+      {...(cloudTone ? { 'data-cloud-tone': cloudTone } : {})}
       {...(publicSiteAttr ? { 'data-public-site': publicSiteAttr } : {})}
     >
       <head>
@@ -137,15 +144,6 @@ export default async function RootLayout({ children }) {
       <body
         className={`${fontSerif.variable} ${fontMono.variable} text-foreground bg-background has-[admin-theme]:overflow-hidden`}
       >
-        {/*
-         * next/script with `beforeInteractive` — Next places and runs it
-         * before hydration, so the tone lands on `<html>` with no flash and
-         * React never re-renders a raw <script> on the client (which it warns
-         * about, and which would not run anyway).
-         */}
-        <Script id="cloud-tone-bootstrap" strategy="beforeInteractive">
-          {cloudToneBootstrapScript}
-        </Script>
         <nav aria-label="Skip links">
           <a
             href="#main-content"
