@@ -119,6 +119,112 @@ if (!dryRun) {
 
 console.log(`\n${recorded} line(s) recorded, ${skipped} unchanged.`)
 
+/*
+ * On-screen copy.
+ *
+ * Re-recording the voice alone is not enough: if a beat's wording changes, the
+ * frame keeps shouting the old line and the film contradicts itself. Elements
+ * the frame marks with `data-copy="<field>"` are rewritten from the document;
+ * everything else — charts, labels, the brand lockup — stays hand-authored.
+ *
+ * `data-copy-words` means the element drives a per-word cascade, so its text is
+ * re-split into spans. `|` in a headline forces a line break.
+ */
+const FRAMES = [
+  'f01-bolted.html',
+  'f02-detach-reset.html',
+  'f03-three-moves.html',
+  'f04-sealed-mounts.html',
+  'f05-warranty.html',
+  'f06-in-writing.html',
+]
+
+/*
+ * Copy arriving from Sanity is plain text, but a field backfilled out of the
+ * frames can still carry an entity like `&mdash;`. Escaping that verbatim gives
+ * `&amp;mdash;`, which renders as the literal characters on screen. Decode to the
+ * real character first, then escape exactly once.
+ */
+const ENTITIES = {
+  '&mdash;': '\u2014',
+  '&ndash;': '\u2013',
+  '&rsquo;': '\u2019',
+  '&lsquo;': '\u2018',
+  '&rdquo;': '\u201D',
+  '&ldquo;': '\u201C',
+  '&hellip;': '\u2026',
+  '&middot;': '\u00B7',
+  '&nbsp;': '\u00A0',
+  '&amp;': '&',
+}
+
+function decodeEntities(value) {
+  let text = String(value)
+  for (const [entity, character] of Object.entries(ENTITIES)) {
+    text = text.replaceAll(entity, character)
+  }
+  return text.replaceAll(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+}
+
+function escapeHtml(value) {
+  return String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+}
+
+function renderCopy(value, asWords) {
+  const text = decodeEntities(value).trim()
+  if (!asWords) {
+    return escapeHtml(text).replaceAll('|', '<br />')
+  }
+  return text
+    .split('|')
+    .map((line) =>
+      line
+        .trim()
+        .split(/\s+/)
+        .map((word) => `<span class="w">${escapeHtml(word)}</span>`)
+        .join(' '),
+    )
+    .join('<br />')
+}
+
+let copyEdits = 0
+for (const [i, beat] of (doc.beats || []).entries()) {
+  const framePath = path.join(projectDir, 'compositions', FRAMES[i])
+  if (!existsSync(framePath)) {
+    continue
+  }
+  let html = readFileSync(framePath, 'utf-8')
+  const before = html
+
+  for (const field of ['eyebrow', 'headline', 'support', 'cardLabel', 'cardText', 'fine']) {
+    const value = beat[field]
+    if (!value) {
+      continue
+    }
+    /* Match the opening tag carrying this field, then replace only its content. */
+    const pattern = new RegExp(`(<(\\w+)[^>]*data-copy="${field}"([^>]*)>)([\\s\\S]*?)(</\\2>)`)
+    const match = html.match(pattern)
+    if (!match) {
+      continue
+    }
+    const asWords = match[3].includes('data-copy-words')
+    const replacement = match[1] + renderCopy(value, asWords) + match[5]
+    if (replacement !== match[0]) {
+      html = html.replace(match[0], replacement)
+    }
+  }
+
+  if (html !== before) {
+    if (!dryRun) {
+      writeFileSync(framePath, html)
+    }
+    copyEdits += 1
+    console.log(`  ${FRAMES[i]} — on-screen copy updated`)
+  }
+}
+
+console.log(`${copyEdits} frame(s) had their copy rewritten.`)
+
 if (recorded > 0) {
   console.log(
     '\nAudio lengths changed, so the timeline no longer matches. Next:\n' +

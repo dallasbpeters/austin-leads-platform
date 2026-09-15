@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { requireAdminRequest } from '@/lib/auth/guards'
 import { accessTokenFromRefresh, resolveRefreshToken } from '@/lib/platform/youtube-db'
-import { getSanityServerClient } from '@/sanity/client'
+import { getSanityServerClient, sanityWriteClient } from '@/sanity/client'
 
 export const runtime = 'nodejs'
 /*
@@ -66,7 +66,7 @@ async function loadApprovedProject(request) {
       ),
     }
   }
-  return { sanity, doc }
+  return { doc }
 }
 
 function listingFor(doc) {
@@ -91,7 +91,7 @@ export async function POST(request) {
   if (loaded.response) {
     return loaded.response
   }
-  const { sanity, doc } = loaded
+  const { doc } = loaded
 
   const stored = await resolveRefreshToken()
   if (!stored) {
@@ -162,10 +162,35 @@ export async function POST(request) {
   }
 
   const url = `https://www.youtube.com/watch?v=${result.id}`
-  await sanity
-    .patch(doc._id)
-    .set({ 'youtube.videoId': result.id, 'youtube.url': url, status: 'published' })
-    .commit()
+  /*
+   * The video is on YouTube from here on. A failure to record that in Sanity
+   * must NOT read as a failed upload — otherwise the obvious response is to
+   * press the button again and publish a duplicate. Return the URL either way
+   * and say plainly that the write-back is what broke.
+   */
+  try {
+    if (!sanityWriteClient) {
+      throw new Error('SANITY_API_WRITE_TOKEN is not set on this deployment')
+    }
+    await sanityWriteClient
+      .patch(doc._id)
+      .set({ 'youtube.videoId': result.id, 'youtube.url': url, status: 'published' })
+      .commit()
+  } catch (error) {
+    console.error('[youtube] uploaded but could not record it in Sanity', error)
+    return NextResponse.json(
+      {
+        videoId: result.id,
+        url,
+        privacy,
+        bytes: size,
+        warning:
+          `The video uploaded to ${url}, but recording it in Sanity failed: ${error.message}. ` +
+          'Do not upload again — paste the URL into the project by hand instead.',
+      },
+      { status: 207 },
+    )
+  }
 
   return NextResponse.json({ videoId: result.id, url, privacy, bytes: size })
 }

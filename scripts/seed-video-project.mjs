@@ -12,7 +12,11 @@ import { createClient } from '@sanity/client'
 const dryRun = process.argv.includes('--dry-run')
 
 const doc = {
-  _id: 'videoProject.detach-and-reset',
+  /* Dashes, never dots. Sanity reserves dotted ID prefixes for system documents
+     (drafts., versions.), and a document with an unrecognised dotted prefix is
+     readable with a token but invisible to unauthenticated reads — so it exists,
+     the Studio shows it, and the live site renders nothing. */
+  _id: 'videoProject-detach-and-reset',
   _type: 'videoProject',
   title: 'What a detach and reset really costs',
   slug: { _type: 'slug', current: 'detach-and-reset' },

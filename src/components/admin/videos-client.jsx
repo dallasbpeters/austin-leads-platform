@@ -80,6 +80,11 @@ export default function VideosClient({ initialProjects, youtubeConnected, channe
       if (!res.ok) {
         throw new Error(data.error || `Upload failed (${res.status})`)
       }
+      /* 207: the video IS on YouTube but Sanity was not updated. Saying
+         "uploaded" alone would invite a second, duplicate upload. */
+      if (data.warning) {
+        setProblem(data.warning)
+      }
       await refresh()
     } catch (error) {
       setProblem(error.message)

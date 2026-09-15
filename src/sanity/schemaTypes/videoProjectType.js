@@ -74,7 +74,54 @@ export default {
                 'Spoken verbatim. Write numbers as words ("five thousand four hundred") — the voice reads them better.',
               validation: (Rule) => Rule.required(),
             },
-            { name: 'onScreen', title: 'What is on screen', type: 'text', rows: 2 },
+            /* The words the frame actually shows. `sync-video-project.mjs` writes
+               these into the composition, so editing them here changes the film
+               — unlike `onScreen`, which is a note for the team. */
+            {
+              name: 'eyebrow',
+              title: 'Eyebrow (on screen)',
+              type: 'string',
+              description: 'Small mono label above the headline.',
+            },
+            {
+              name: 'headline',
+              title: 'Headline (on screen)',
+              type: 'text',
+              rows: 2,
+              description: 'The large serif line. Use | to force a line break.',
+            },
+            {
+              name: 'support',
+              title: 'Support line (on screen)',
+              type: 'text',
+              rows: 2,
+              description: 'The smaller line under the headline, where the frame has one.',
+            },
+            {
+              name: 'cardLabel',
+              title: 'Card label (on screen)',
+              type: 'string',
+              description: 'Only used by frames with a callout card, e.g. the rule in the close.',
+            },
+            {
+              name: 'cardText',
+              title: 'Card text (on screen)',
+              type: 'string',
+            },
+            {
+              name: 'fine',
+              title: 'Fine print (on screen)',
+              type: 'text',
+              rows: 2,
+              description: 'What the figure varies by. Required wherever a number is shown.',
+            },
+            {
+              name: 'onScreen',
+              title: 'Note: what is on screen',
+              type: 'text',
+              rows: 2,
+              description: 'A description for the team. Not rendered.',
+            },
             {
               name: 'why',
               title: 'Why this beat exists',

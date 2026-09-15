@@ -76,7 +76,7 @@
           position: absolute;
           left: var(--gutter);
           right: 700px;
-          top: 150px;
+          top: 208px;
         }
         #f06-root .eyebrow {
           font-family: 'JetBrainsMono', ui-monospace, monospace;
@@ -87,14 +87,13 @@
           color: var(--muted);
           opacity: 0;
         }
-
         #f06-root .rule-card {
           box-sizing: border-box;
-          margin-top: var(--s-5);
+          margin-top: var(--s-6);
           border: 1px solid var(--line);
           border-radius: 24px;
           background: var(--surface);
-          padding: var(--s-5) var(--s-6) var(--s-6);
+          padding: var(--s-6) var(--s-7) var(--s-7);
           opacity: 0;
         }
         #f06-root .rule-card .k {
@@ -106,40 +105,20 @@
           color: var(--gold);
         }
         #f06-root .rule-card .v {
-          margin-top: var(--s-3);
+          margin-top: var(--s-4);
           font-family: 'Gloock', Georgia, serif;
           font-weight: 400;
-          font-size: var(--t-4);
-          line-height: var(--lh-title);
-          letter-spacing: -0.02em;
+          font-size: var(--t-5);
+          line-height: var(--lh-display);
+          letter-spacing: -0.022em;
           color: var(--text);
         }
 
-        #f06-root .ask {
-          margin-top: var(--s-6);
-          font-family: 'Gloock', Georgia, serif;
-          font-weight: 400;
-          font-size: 62px;
-          line-height: var(--lh-title);
-          letter-spacing: -0.02em;
-          color: var(--text);
-          max-width: 1060px;
-        }
-        #f06-root .ask .w {
-          display: inline-block;
-          opacity: 0;
-          will-change: transform;
-        }
-        #f06-root .ask .hot {
-          color: var(--orange);
-        }
-
-        /* The call to action — the company's own words from the content pack. */
         #f06-root .cta {
           position: absolute;
           left: var(--gutter);
           right: var(--gutter);
-          bottom: 232px;
+          bottom: 236px;
           opacity: 0;
         }
         #f06-root .cta .lead {
@@ -148,10 +127,6 @@
           color: var(--text);
           max-width: 1120px;
         }
-        #f06-root .cta .lead b {
-          font-weight: 500;
-          color: var(--gold);
-        }
         #f06-root .actions {
           display: flex;
           align-items: center;
@@ -159,9 +134,6 @@
           margin-top: var(--s-5);
         }
         #f06-root .tel {
-          display: flex;
-          align-items: baseline;
-          gap: var(--s-4);
           border: 1px solid var(--gold);
           border-radius: 999px;
           padding: 20px 40px;
@@ -173,7 +145,6 @@
           font-weight: 500;
           font-size: 46px;
           color: var(--gold);
-          letter-spacing: 0.02em;
           font-variant-numeric: tabular-nums;
         }
         #f06-root .site {
@@ -197,9 +168,9 @@
         #f06-root .plate-v {
           position: absolute;
           right: var(--gutter);
-          top: 178px;
+          top: 232px;
           width: 496px;
-          height: 470px;
+          height: 500px;
           border-radius: 22px;
           overflow: hidden;
           border: 1px solid var(--line);
@@ -284,88 +255,63 @@
         }
       </style>
 
-      <div data-hf-id="hf-rksw" id="f06-root" data-composition-id="f06" data-width="1920" data-height="1080">
-        <div data-hf-id="hf-0oij" class="center">
-          <div data-hf-id="hf-lvuu" class="eyebrow">The rule</div>
-          <div data-hf-id="hf-acsh" class="rule-card">
-            <div data-hf-id="hf-okmd" class="k">If your roof has under 10 years left</div>
-            <div data-hf-id="hf-jgl6" class="v">Do the roof first.</div>
-          </div>
-          <div data-hf-id="hf-p6ez" class="ask">
-            <span data-hf-id="hf-fjsh" class="w">And</span> <span data-hf-id="hf-tzc4" class="w">get</span>
-            <span data-hf-id="hf-9o0j" class="w">the</span> <span data-hf-id="hf-mibj" class="w">detach</span>
-            <span data-hf-id="hf-td31" class="w">cost</span>
-            <span data-hf-id="hf-27n6" class="w hot">in&#160;writing</span
-            ><span data-hf-id="hf-2mf0" class="w">,</span> <span data-hf-id="hf-a3sz" class="w">before</span>
-            <span data-hf-id="hf-cto3" class="w">the</span>
-            <span data-hf-id="hf-cnd6" class="w">roofing</span>
-            <span data-hf-id="hf-33vr" class="w">bid.</span>
+      <div id="f06-root" data-composition-id="f06" data-width="1920" data-height="1080">
+        <div class="center">
+          <div class="eyebrow" data-copy="eyebrow">The rule</div>
+          <div class="rule-card">
+            <div class="k" data-copy="cardLabel">If your roof has under 10 years left</div>
+            <div class="v" data-copy="cardText">Fix your roof first.</div>
           </div>
         </div>
 
-        <div data-hf-id="hf-avhh" class="plate-v">
-          <img
-            data-hf-id="hf-ce38"
-            class="hold"
-            src="assets/photos/close-hold.jpg"
-            alt="Finished array on a new roof"
-          />
-          <div data-hf-id="hf-lm34" class="inner">
+        <div class="plate-v">
+          <img class="hold" src="assets/photos/close-hold.jpg" alt="Finished array on a new roof" />
+          <div class="inner">
             <video
-              data-hf-id="hf-a98v"
               id="f06-close-vid"
               src="assets/video/installers.mp4"
               data-start="0"
-              data-duration="14.6"
+              data-duration="12"
               data-media-start="8.48"
-              data-playback-rate="0.1"
+              data-playback-rate="0.121"
               data-hf-media-start-basis="local"
               data-track-index="0"
               muted
               playsinline
             ></video>
           </div>
-          <div data-hf-id="hf-h5f4" class="veil"></div>
+          <div class="veil"></div>
         </div>
 
-        <div data-hf-id="hf-apeu" class="cta">
-          <div data-hf-id="hf-08ql" class="lead">
-            Not sure which way to go? Send us your <b data-hf-id="hf-cm78">roof age</b> and
-            <b data-hf-id="hf-32tz">a year of electric bills</b> — we’ll map out your best next step.
+        <div class="cta">
+          <div class="lead" data-copy="support">
+            Not sure which way to go? Contact us — we’ll give you a free estimate.
           </div>
-          <div data-hf-id="hf-zgc1" class="actions">
-            <div data-hf-id="hf-8z2f" class="tel">
-              <span data-hf-id="hf-uwbm" class="t">512-400-3763</span>
-            </div>
-            <div data-hf-id="hf-ir7p" class="site">texassolarandroofingpros.com</div>
-            <div data-hf-id="hf-ivqv" class="free">Free estimate · no commitment</div>
+          <div class="actions">
+            <div class="tel"><span class="t">512-400-3763</span></div>
+            <div class="site">texassolarandroofingpros.com</div>
+            <div class="free">No commitment</div>
           </div>
         </div>
 
-        <div data-hf-id="hf-a46i" class="rule"></div>
-        <div data-hf-id="hf-9gvv" class="mark">
-          <div data-hf-id="hf-69d8" class="plate">
-            <img
-              data-hf-id="hf-ej0b"
-              src="assets/brand/tx-solar-logo.svg"
-              alt="Texas Solar and Roofing Pros"
-            />
+        <div class="rule"></div>
+        <div class="mark">
+          <div class="plate">
+            <img src="assets/brand/tx-solar-logo.svg" alt="Texas Solar and Roofing Pros" />
           </div>
-          <div data-hf-id="hf-m60b" class="words">
-            <div data-hf-id="hf-7h09" class="name">Texas Solar &amp; Roofing Pros</div>
-            <div data-hf-id="hf-km8n" class="sub">Central Texas · roofing and solar under one roof</div>
+          <div class="words">
+            <div class="name">Texas Solar &amp; Roofing Pros</div>
+            <div class="sub">Central Texas &middot; roofing and solar under one roof</div>
           </div>
         </div>
       </div>
 
       <script>
         ;(function () {
-          /* The close: the rule, the ask, then the call to action. The phone number
-             arrives last and holds to the end, which is the only thing on screen
-             when the film stops. The video window maxes out at rate 0.1, so an
-             identical still sits behind it and takes over at 14.6s unseen. */
+          /* The close. Shorter than it was: the "get it in writing" ask moved out
+             of the script, so it is gone from the screen too — the frame must not
+             say something the narration does not. */
           const tl = gsap.timeline({ paused: true })
-          const F = 1 / 60
           tl.fromTo(
             '#f06-root .eyebrow',
             { opacity: 0, y: 12 },
@@ -375,68 +321,47 @@
           tl.fromTo(
             '#f06-root .rule-card',
             { opacity: 0, y: 36 },
-            { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-            1.1,
+            { opacity: 1, y: 0, duration: 0.62, ease: 'power3.out' },
+            1.0,
           )
           tl.fromTo(
             '#f06-root .plate-v .veil',
             { scaleX: 1 },
             { scaleX: 0, duration: 0.8, ease: 'power3.inOut' },
-            1.3,
+            1.2,
           )
           tl.fromTo(
             '#f06-root .plate-v .inner',
             { scale: 1.14 },
             { scale: 1, duration: 2.6, ease: 'power3.out' },
-            1.3,
+            1.2,
           )
-
-          let t = 4.3
-          document.querySelectorAll('#f06-root .ask .w').forEach((el) => {
-            const hot = el.classList.contains('hot')
-            const d = hot ? 0.26 : 0.2
-            tl.set(el, { opacity: 1, y: hot ? 78 : 48 }, t)
-            tl.to(el, { y: 0, duration: d, ease: 'power4.out' }, t)
-            t += d - F
-          })
-
-          /* "Not sure which way to go? Send us your roof age and a year of bills." */
           tl.fromTo(
             '#f06-root .cta',
             { opacity: 0, y: 30 },
             { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-            8.6,
+            3.6,
           )
           tl.fromTo(
             '#f06-root .tel',
             { opacity: 0, y: 24 },
             { opacity: 1, y: 0, duration: 0.56, ease: 'power3.out' },
-            11.9,
+            5.2,
           )
-          tl.fromTo(
-            '#f06-root .site',
-            { opacity: 0 },
-            { opacity: 1, duration: 0.5, ease: 'power2.out' },
-            12.2,
-          )
-          tl.fromTo(
-            '#f06-root .free',
-            { opacity: 0 },
-            { opacity: 1, duration: 0.5, ease: 'power2.out' },
-            13.6,
-          )
-          tl.fromTo('#f06-root .rule', { scaleX: 0 }, { scaleX: 1, duration: 0.95, ease: 'power4.out' }, 9.0)
+          tl.fromTo('#f06-root .site', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 5.5)
+          tl.fromTo('#f06-root .free', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 6.4)
+          tl.fromTo('#f06-root .rule', { scaleX: 0 }, { scaleX: 1, duration: 0.95, ease: 'power4.out' }, 4.2)
           tl.fromTo(
             '#f06-root .plate',
             { opacity: 0, y: 24 },
             { opacity: 1, y: 0, duration: 0.56, ease: 'power3.out' },
-            9.4,
+            4.6,
           )
           tl.fromTo(
             '#f06-root .words',
             { opacity: 0, x: -18 },
             { opacity: 1, x: 0, duration: 0.56, ease: 'power3.out' },
-            9.6,
+            4.8,
           )
           window.__timelines['f06'] = tl
         })()

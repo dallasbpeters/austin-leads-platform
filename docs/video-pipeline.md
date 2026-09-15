@@ -200,6 +200,14 @@ Vercel never sees your local `videos/` folder.
 large render can exceed that; if it does, run `npm run video:yt:push` from a
 machine instead. Same script, same guards, no timeout.
 
+## Gotchas worth knowing
+
+**Never put a dot in a document `_id`.** Sanity reserves dotted prefixes for
+system documents (`drafts.`, `versions.`). A document with any other dotted
+prefix is readable _with a token_ and invisible to unauthenticated reads — so
+Studio shows it, an authenticated query finds it, and the live site renders
+nothing. Use dashes: `videoProject-detach-and-reset`.
+
 ## Env
 
 ```
