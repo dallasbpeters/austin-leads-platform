@@ -52,9 +52,22 @@ Render  →  push it to a URL  →  it plays on the page  →  Approve  →  Upl
 ```
 
 ```bash
-cd videos/detach-and-reset && npx hyperframes render
+cd videos/detach-and-reset && npx hyperframes render --resolution 4k --video-bitrate 40M
 npm run video:render:push detach-and-reset
 ```
+
+**Render at 4K for anything going to YouTube.** The default (`--quality looks`)
+produced 1.8 Mbps for this film — not a bug, the frames are flat colour and hard
+edged type and compress that well. But YouTube re-encodes whatever it is given,
+and a low-bitrate source compounds the loss: banding in the dark grounds and
+mush on the serif headlines.
+
+Uploading 4K also moves the video into YouTube's better encoding tier, so even
+the 1080p rendition viewers actually watch is noticeably cleaner. 56s costs about
+75 seconds to render and roughly 74 MB.
+
+`--crf` and `--video-bitrate` are mutually exclusive, and `--quality` sets CRF —
+pass one or the other, never both, or the bitrate is silently ignored.
 
 `video:render:push` uploads the MP4 to Sanity and sets `renderUrl`. That step is
 what makes the page work on Vercel at all — the deployment cannot see your local
