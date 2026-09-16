@@ -19,6 +19,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
+import DeploySettingsPanel from './deploy-settings-panel'
+
 const when = (value) =>
   value
     ? new Date(value).toLocaleString('en-US', {
@@ -248,9 +250,8 @@ export default function SocialAccountsClient({ platforms, tokenKeySet, connected
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p className="font-medium">One more variable first: SOCIAL_TOKEN_KEY</p>
           <p className="mt-1">
-            Tokens are encrypted before they are stored. Set <code>SOCIAL_TOKEN_KEY</code> to a long random
-            value (for example the output of <code>openssl rand -hex 32</code>) in Vercel and{' '}
-            <code>.env.local</code>. Keep it stable — changing it disconnects every account.
+            Tokens are encrypted before they are stored. Tap <strong>Generate and set</strong> next to
+            SOCIAL_TOKEN_KEY under Deploy settings below, then redeploy the site.
           </p>
         </div>
       )}
@@ -300,6 +301,8 @@ export default function SocialAccountsClient({ platforms, tokenKeySet, connected
           </Card>
         ))}
       </div>
+
+      <DeploySettingsPanel />
     </div>
   )
 }
