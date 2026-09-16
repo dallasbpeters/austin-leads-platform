@@ -5,6 +5,7 @@ import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
 import { Button } from '@/components/ui/button'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+import { shouldShowClouds } from '@/lib/platform/section-helpers'
 import { cn } from '@/lib/utils'
 
 function BannerCtaContent({ isCloudTheme, section }) {
@@ -49,10 +50,7 @@ export function BannerCtaSection({ section, sectionId }) {
   const imageUrl =
     getImageUrl(section?.imageAsset, section?.image, { width: 1600 }) || '/images/solar-install.png'
   const imageAlt = getImageAlt(section?.imageAsset, section?.image, section?.title || 'Consultation banner')
-  const showClouds =
-    section?.cloudVisibility !== 'hide' &&
-    section?.cloudVisibility !== 'off' &&
-    section?.cloudVisibility !== false
+  const showClouds = shouldShowClouds(section?.cloudVisibility)
 
   return (
     <CloudSectionBackground

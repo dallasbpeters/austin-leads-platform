@@ -8,6 +8,7 @@ import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
+import { sectionSetting, shouldShowClouds } from '@/lib/platform/section-helpers'
 import { CONSULTATION_ANCHOR_ID } from '../public-site-utils'
 
 function AvatarVisual({ avatarImageUrl, avatarImageAlt, avatarInitials, avatarStyle }) {
@@ -129,11 +130,8 @@ function buildLeadContext(page, section, site) {
 }
 
 export function CtaBannerSection({ page, section, site }) {
-  const isDarkTheme = section?.theme !== 'light'
-  const showClouds =
-    section?.cloudVisibility !== 'hide' &&
-    section?.cloudVisibility !== 'off' &&
-    section?.cloudVisibility !== false
+  const isDarkTheme = sectionSetting(section?.theme) !== 'light'
+  const showClouds = shouldShowClouds(section?.cloudVisibility)
   const buttonLabel = section?.ctaLabel || 'Request an Install'
   const leadContext = buildLeadContext(page, section, site)
 

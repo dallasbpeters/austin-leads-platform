@@ -4,7 +4,7 @@ import Footer from '@/components/footer'
 import GuideShareBar from '@/components/guide-share-bar'
 import Header from '@/components/header'
 import { isPrimarySiteSlug } from '@/lib/platform/content'
-import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
+import { isHeroSectionBlock, sectionSetting } from '@/lib/platform/section-helpers'
 import { roofingServices } from '@/lib/platform/service-catalog'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
@@ -44,13 +44,13 @@ function computePublicSiteFlags(site, page, pathname) {
     sections,
     leadCaptureSectionTypes,
     hasLeadCaptureSection: sections.some((section) => leadCaptureSectionTypes.has(section.type)),
-    hasLogosSection: sections.some((section) => section.type === 'logos'),
+    hasLogosSection: sections.some((section) => sectionSetting(section.type) === 'logos'),
     heroSectionIndex: sections.findIndex(isHeroSectionBlock),
     pageSlug,
     firstLeadCaptureSectionIndex: sections.findIndex((section) => leadCaptureSectionTypes.has(section.type)),
     showRoofingLogoCloud,
     showFallbackRoofingLogoCloud:
-      showRoofingLogoCloud && !sections.some((section) => section.type === 'logos'),
+      showRoofingLogoCloud && !sections.some((section) => sectionSetting(section.type) === 'logos'),
     suppressDefaultLeadCapture: suppressedSlugs.has(pageSlug),
     isGuidePost: page?.pageType === 'post' && pageSlug.startsWith('guides/'),
     guideShareAfterIndex,

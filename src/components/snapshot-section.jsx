@@ -5,6 +5,7 @@ import { getHeroVideoSource, getImageAlt, getImageUrl } from '@/lib/platform/ima
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import { cn } from '@/lib/utils'
 
+import { shouldShowClouds } from '@/lib/platform/section-helpers'
 import Card from './card'
 import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -140,10 +141,7 @@ export default function SnapshotSection({ section = null, sectionId = 'texas-sna
   const items = section?.items?.length
     ? section.items.map(resolveItem)
     : fallbackItems.map((item, index) => ({ ...item, key: `fallback-${index}` }))
-  const showClouds =
-    section?.cloudVisibility !== 'hide' &&
-    section?.cloudVisibility !== 'off' &&
-    section?.cloudVisibility !== false
+  const showClouds = shouldShowClouds(section?.cloudVisibility)
 
   return (
     <CloudSectionBackground
