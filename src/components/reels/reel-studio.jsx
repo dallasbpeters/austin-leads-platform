@@ -420,7 +420,7 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Film className="size-5 text-[#f0c987]" />
-            <h1 className="text-lg font-semibold">Reel studio</h1>
+            <h1 className="mb-0 text-lg font-semibold">Reel studio</h1>
           </div>
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1 text-sm text-white/55">
