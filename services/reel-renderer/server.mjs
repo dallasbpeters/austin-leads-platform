@@ -14,7 +14,7 @@
 import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { cp, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
 import { promisify } from 'node:util'
@@ -31,6 +31,13 @@ const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || ''
 const PROJECTS_DIR = process.env.PROJECTS_DIR || '/app/videos'
 const WORK_DIR = process.env.WORK_DIR || '/tmp/renders'
 const RENDER_TIMEOUT_MS = Number(process.env.RENDER_TIMEOUT_MS) || 15 * 60 * 1000
+/*
+ * Local mode: with no Blob token the finished MP4 stays on disk and is served
+ * from this process at PUBLIC_URL/files/<id>.mp4. Good enough to watch a reel
+ * on a laptop; Instagram needs the Blob URL, so production keeps the token.
+ */
+const PUBLIC_URL = (process.env.PUBLIC_URL || `http://localhost:${PORT}`).replace(/\/$/, '')
+const FILES_DIR = path.join(WORK_DIR, 'files')
 
 /** Templates this worker will render. Anything else is refused, so a caller can't reach elsewhere on disk. */
 const TEMPLATES = {
@@ -136,20 +143,27 @@ async function renderJob(job) {
   }
 
   job.status = 'uploading'
-  const blob = await put(`reels/${job.id}.mp4`, createReadStream(outputPath), {
-    access: 'public',
-    contentType: 'video/mp4',
-    token: BLOB_TOKEN,
-    addRandomSuffix: false,
-  })
-
-  await rm(outputPath, { force: true })
+  let url
+  if (BLOB_TOKEN) {
+    const blob = await put(`reels/${job.id}.mp4`, createReadStream(outputPath), {
+      access: 'public',
+      contentType: 'video/mp4',
+      token: BLOB_TOKEN,
+      addRandomSuffix: false,
+    })
+    url = blob.url
+    await rm(outputPath, { force: true })
+  } else {
+    await mkdir(FILES_DIR, { recursive: true })
+    await rename(outputPath, path.join(FILES_DIR, `${job.id}.mp4`))
+    url = `${PUBLIC_URL}/files/${job.id}.mp4`
+  }
   if (projectDir.startsWith(WORK_DIR)) {
     await rm(projectDir, { recursive: true, force: true })
   }
 
   job.status = 'done'
-  job.url = blob.url
+  job.url = url
   job.bytes = size
   job.finishedAt = Date.now()
 }
@@ -205,6 +219,7 @@ const routes = {
       ok: true,
       templates: Object.keys(TEMPLATES),
       audio: hasAudioKey() ? 'voice + music' : 'silent (no ELEVENLABS_API_KEY)',
+      storage: BLOB_TOKEN ? 'vercel-blob' : `local (${PUBLIC_URL}/files)`,
       queued: queue.length,
       working,
     }),
@@ -215,7 +230,7 @@ const routes = {
       return json(response, 400, { error: `Unknown template: ${body.template}` })
     }
     if (!BLOB_TOKEN) {
-      return json(response, 500, { error: 'BLOB_READ_WRITE_TOKEN is not set on the worker.' })
+      console.warn('[reel-renderer] no BLOB_READ_WRITE_TOKEN: serving the MP4 from this process (local mode)')
     }
 
     const job = {
@@ -239,6 +254,24 @@ const routes = {
 const server = createServer(async (request, response) => {
   const url = new URL(request.url, `http://${request.headers.host}`)
   const key = `${request.method} ${url.pathname}`
+
+  /* Local-mode files are public by design: the id is a UUID and the browser needs to fetch them. */
+  const fileMatch = url.pathname.match(/^\/files\/([\w-]+\.mp4)$/)
+  if (request.method === 'GET' && fileMatch) {
+    const file = path.join(FILES_DIR, fileMatch[1])
+    try {
+      const { size } = await stat(file)
+      response.writeHead(200, {
+        'Content-Type': 'video/mp4',
+        'Content-Length': size,
+        'Access-Control-Allow-Origin': '*',
+      })
+      createReadStream(file).pipe(response)
+    } catch {
+      json(response, 404, { error: 'No such file' })
+    }
+    return
+  }
 
   if (key !== 'GET /health' && !authorized(request)) {
     return json(response, 401, { error: 'Unauthorized' })

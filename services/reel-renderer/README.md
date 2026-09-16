@@ -26,6 +26,20 @@ It lives outside Vercel because a render needs Chrome, FFmpeg, and minutes of CP
 | `REEL_MUSIC_PROMPT`     | Optional. Describes the soundtrack. Default is cozy instrumental Christmas music.                         |
 | `REEL_SFX`              | Optional. `off` renders with voice and music only. Effects are cached on disk under `WORK_DIR/sfx-cache`. |
 
+## Run it on a laptop
+
+```bash
+export RENDER_SHARED_SECRET=dev ELEVENLABS_API_KEY=sk_... \
+  PORT=8080 PROJECTS_DIR=$PWD/videos WORK_DIR=/tmp/renders HYPERFRAMES_BIN=$(which hyperframes)
+node services/reel-renderer/server.mjs
+REEL_RENDERER_URL=http://localhost:8080 pnpm dev   # the site talks to the local worker
+```
+
+With no `BLOB_READ_WRITE_TOKEN` the worker keeps the MP4 under `WORK_DIR/files` and
+serves it at `PUBLIC_URL/files/<id>.mp4` (default `http://localhost:8080`). That is
+enough to watch a reel; posting to Instagram still needs the Blob URL, so production
+keeps the token. `/health` reports which mode is active under `storage`.
+
 ## API
 
 ```
