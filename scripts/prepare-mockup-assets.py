@@ -20,6 +20,7 @@ SOURCE = ROOT / 'src/components/admin/drawing-assets'
 OUT = ROOT / 'public/christmas-mockup'
 BULB_HEIGHT = 256
 GARLAND_WIDTH = 2000
+WREATH_WIDTH = 900
 
 # name: (hue 0-1, saturation scale, brightness lift)
 BULB_COLORS = {
@@ -68,6 +69,11 @@ def main():
     garland = garland.crop(garland.split()[3].getbbox())
     garland = garland.resize((GARLAND_WIDTH, round(garland.height * GARLAND_WIDTH / garland.width)), Image.LANCZOS)
     garland.save(OUT / 'garland.webp', quality=82, method=6)
+
+    wreath = Image.open(SOURCE / 'wreath.png').convert('RGBA')
+    wreath = wreath.crop(wreath.split()[3].getbbox())
+    wreath = wreath.resize((WREATH_WIDTH, round(wreath.height * WREATH_WIDTH / wreath.width)), Image.LANCZOS)
+    wreath.save(OUT / 'wreath.webp', quality=85, method=6)
 
 
 if __name__ == '__main__':

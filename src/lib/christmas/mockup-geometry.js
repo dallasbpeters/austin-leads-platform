@@ -8,14 +8,58 @@
 
 import { CHRISTMAS_LIGHT_COLORS, CHRISTMAS_SERVICE_TYPES } from '@/lib/christmas/invoice-calc'
 
-export const [TREE_LIGHTS, STAKE_LIGHTS, ROOFLINE, GARLAND] = CHRISTMAS_SERVICE_TYPES
+export const [TREE_LIGHTS, STAKE_LIGHTS, ROOFLINE, GARLAND, WREATH] = CHRISTMAS_SERVICE_TYPES
 export const [WARM_WHITE, MULTICOLOR, BRIGHT_WHITE] = CHRISTMAS_LIGHT_COLORS
 
 /** Tree lights fill a traced outline; every other service follows a traced line. */
 export const isAreaService = (service) => service === TREE_LIGHTS
 
+/** A wreath is one placed picture: a center point plus a `size` (its width in image pixels). */
+export const isPlacedItem = (service) => service === WREATH
+
 /** Minimum points before a shape can be finished. */
-export const minPointsFor = (service) => (isAreaService(service) ? 3 : service === STAKE_LIGHTS ? 1 : 2)
+export const minPointsFor = (service) =>
+  isAreaService(service) ? 3 : service === STAKE_LIGHTS || isPlacedItem(service) ? 1 : 2
+
+/* A front-door wreath is about 2 ft across. Without a scale, a sensible share of the photo. */
+const WREATH_FEET = 2
+
+export const defaultWreathSize = (width, height, pxPerFoot = null) =>
+  Math.round(pxPerFoot ? WREATH_FEET * pxPerFoot : Math.min(width, height) * 0.14)
+
+export const MIN_WREATH_SIZE = 20
+
+/** Where the resize handle sits: the wreath's lower-right corner. */
+export const wreathHandle = (shape) => ({
+  x: shape.points[0].x + shape.size / 2,
+  y: shape.points[0].y + shape.size / 2,
+})
+
+/** New size when the handle is dragged to `point`: the corner stays under the finger. */
+export const wreathSizeFromHandle = (shape, point) =>
+  Math.max(
+    MIN_WREATH_SIZE,
+    Math.round(Math.max(Math.abs(point.x - shape.points[0].x), Math.abs(point.y - shape.points[0].y)) * 2),
+  )
+
+/*
+ * Mini lights woven around the wreath ring, evenly spaced with a little
+ * wobble so they don't look stamped on. `size` is the wreath's width.
+ */
+export function bulbsOnWreath(center, size, seed = 1) {
+  const random = seededRandom(seed)
+  const ring = size * 0.36
+  const count = Math.max(8, Math.round(size / 9))
+  return Array.from({ length: count }, (_, index) => {
+    const angle = (index / count) * Math.PI * 2 + (random() - 0.5) * 0.25
+    const reach = ring + (random() - 0.5) * size * 0.14
+    return {
+      x: center.x + Math.cos(angle) * reach,
+      y: center.y + Math.sin(angle) * reach,
+      behind: random() < 0.3,
+    }
+  })
+}
 
 /** Bulb spacing along a line or inside an area, as a multiple of bulb radius. */
 const SPACING_FACTOR = {
@@ -172,6 +216,9 @@ export function bulbsInPolygon(polygon, spacing, seed = 1) {
 
 /** Where the bulbs for one finished (or in-progress) shape go. */
 export function bulbsForShape(shape, bulbRadius, pxPerFoot = null) {
+  if (isPlacedItem(shape.service)) {
+    return shape.points.length && shape.size ? bulbsOnWreath(shape.points[0], shape.size, shape.seed) : []
+  }
   const spacing = bulbSpacing(shape.service, bulbRadius, pxPerFoot)
   if (isAreaService(shape.service)) {
     return bulbsInPolygon(shape.points, spacing, shape.seed)
@@ -242,6 +289,10 @@ export function hitTestShape(shape, point, tolerance) {
   }
   if (best) {
     return best
+  }
+  if (isPlacedItem(shape.service)) {
+    const gap = shape.points.length ? distance(shape.points[0], point) : Infinity
+    return gap <= Math.max(tolerance, (shape.size || 0) / 2) ? { kind: 'inside', distance: gap } : null
   }
   if (shape.points.length === 1 && distance(shape.points[0], point) <= tolerance) {
     return { kind: 'point', distance: distance(shape.points[0], point) }
@@ -321,10 +372,14 @@ export const ESTIMATE_UNITS = {
   [GARLAND]: 'ft',
   [TREE_LIGHTS]: 'ft tall',
   [STAKE_LIGHTS]: 'stakes',
+  [WREATH]: 'wreaths',
 }
 
 /** How much of a service one shape is: feet of line, feet of tree height, or a stake count. */
 export function measureShape(shape, pxPerFoot, bulbRadius = 3) {
+  if (isPlacedItem(shape.service)) {
+    return 1
+  }
   if (!pxPerFoot) {
     return 0
   }
@@ -360,10 +415,13 @@ export function estimateMockup(shapes, { pxPerFoot = null, rates = {}, bulbRadiu
   }
 
   const lines = [...groups.values()].toSorted(byMenuOrder).map((group) => {
-    const quantity = pxPerFoot ? Math.ceil(group.measured) : 0
+    // Wreaths are counted, so they have a quantity with or without a scale.
+    const counted = isPlacedItem(group.service)
+    const quantity = pxPerFoot || counted ? Math.ceil(group.measured) : 0
     const unitPriceCents = Math.max(0, Math.round(Number(rates[group.service]) || 0))
     return {
       ...group,
+      counted,
       quantity,
       unit: ESTIMATE_UNITS[group.service],
       unitPriceCents,
@@ -384,20 +442,23 @@ export function estimateMockup(shapes, { pxPerFoot = null, rates = {}, bulbRadiu
 export function mockupToLineItems(shapes, options = {}) {
   const { lines, measured } = estimateMockup(shapes, options)
   return lines.map((line) => {
-    const areas = line.areas > 1 ? `, ${line.areas} areas` : ''
-    const amount = measured
-      ? ` (${line.quantity} ${line.unit}${areas})`
+    const priced = measured || line.counted
+    const areas = line.areas > 1 && !line.counted ? `, ${line.areas} areas` : ''
+    const unit = line.counted && line.quantity === 1 ? line.unit.replace(/s$/, '') : line.unit
+    const amount = priced
+      ? ` (${line.quantity} ${unit}${areas})`
       : line.areas > 1
         ? ` (${line.areas} areas)`
         : ''
+    const lit = line.counted ? ` with ${line.color.toLowerCase()} lights` : ` — ${line.color.toLowerCase()}`
     return {
       category: line.service,
       color: line.color,
-      description: `${line.service} — ${line.color.toLowerCase()}${amount}`,
+      description: `${line.service}${lit}${amount}`,
       location: '',
       nr: '',
-      quantity: measured ? line.quantity : 1,
-      unitPriceCents: measured ? line.unitPriceCents : 0,
+      quantity: priced ? line.quantity : 1,
+      unitPriceCents: priced ? line.unitPriceCents : 0,
     }
   })
 }

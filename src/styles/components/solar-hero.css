@@ -6,7 +6,6 @@
 
 .solar-hero {
   position: relative;
-  min-height: 80vh;
   display: grid;
   place-content: center stretch;
   overflow-x: hidden;
@@ -52,9 +51,8 @@
   display: flex;
   align-items: end;
   width: min(80rem, calc(100% - 3rem));
-  min-height: 60vh;
   margin-inline: auto;
-  padding: 10rem 0.5rem 0;
+  padding: 5rem 0.5rem 0;
 }
 
 @media (width >= 48rem) {
@@ -126,7 +124,7 @@
 .solar-hero__title {
   margin: 0 0 2.5rem;
   font-family: var(--font-display);
-  font-size: var(--text-size-800);
+  font-size: var(--text-size-700);
   line-height: 1 !important;
   letter-spacing: -0.02em;
   color: var(--color-black);

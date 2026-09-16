@@ -1,0 +1,22 @@
+# The renderer image only needs videos/christmas-reels and services/reel-renderer.
+.git
+.next
+node_modules
+coverage
+playwright-report
+test-results
+public
+!public/christmas-mockup
+!public/fonts
+!public/images
+!public/christmas-logo.svg
+src
+docs
+scripts
+!scripts/sync-reel-assets.mjs
+videos/*/renders
+videos/*/snapshots
+videos/*/capture
+videos/*/.thumbnails
+videos/detach-and-reset
+**/.DS_Store

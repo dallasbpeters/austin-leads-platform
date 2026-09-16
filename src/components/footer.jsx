@@ -1,6 +1,7 @@
 'use client'
 
 import { DotArrowUp, Facebook, Mail, Phone } from 'iconoir-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { AutoSizedText } from '@/components/auto-sized-text'
@@ -48,28 +49,39 @@ export default function Footer() {
               Texas Solar & Roofing Pros
             </Link>
             <p className="site-footer__tagline">
-              Full-service roofing, solar installation, storm damage restoration, and energy efficiency
-              upgrades for Texas homeowners.
+              Full-service solar installation and energy efficiency upgrades for Texas homeowners.
             </p>
-            <div className="site-footer__contact">
-              <h2 className="site-footer__heading text-size-200">Contact</h2>
-              <ul className="site-footer__list">
-                {contactLinks.map(({ href, icon: Icon, label, external }) => (
-                  <li key={href}>
-                    <a
-                      href={href}
-                      className="site-footer__link site-footer__link--icon"
-                      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    >
-                      <Icon className="site-footer__link-icon" aria-hidden="true" />
-                      {label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <a
+              href="https://www.bbb.org/us/tx/cedar-park/profile/solar-energy-contractors/texas-solar-and-roofing-pros-llc-0825-1000263664/#sealclick"
+              target="_blank"
+              rel="nofollow"
+              style={{ marginTop: '1em', display: 'block' }}
+            >
+              <Image
+                src="https://m.bbb.org/brand/seals/Accredited_Business_Seal_Rating_RGB.svg?tx=w_340,dpr_2.0"
+                style={{ border: 0 }}
+                height={130}
+                width={220}
+                alt="Texas Solar and Roofing Pros LLC BBB Business Review"
+              />
+            </a>
           </div>
           <div className="site-footer__col--services">
+            <h2 className="site-footer__heading text-size-200">Contact</h2>
+            <ul className="site-footer__list">
+              {contactLinks.map(({ href, icon: Icon, label, external }) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    className="site-footer__link site-footer__link--icon"
+                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  >
+                    <Icon className="site-footer__link-icon" aria-hidden="true" />
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
             <h2 className="site-footer__heading text-size-200">Services</h2>
             <ul className="site-footer__list">
               {footerServices.map((service) => (

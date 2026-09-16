@@ -1,0 +1,772 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"scenes","type":"string","label":"Scenes (JSON)","default":"[{\"type\":\"lights\",\"duration\":6,\"eyebrow\":\"Central Texas\",\"headline\":\"Your roofline. Lit.\",\"sub\":\"No ladder. No tangled box of lights.\",\"bulbColor\":\"warm-white\"},{\"type\":\"signoff\",\"duration\":4,\"headline\":\"Free estimate · No pressure\",\"sub\":\"(512) 775-0561\"}]"},
+    {"id":"totalDuration","type":"number","label":"Total seconds","default":10,"min":2,"max":90,"step":0.5}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Switzer';
+        src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Bespoke Serif';
+        src: url('assets/fonts/BespokeSerif-Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-display: block;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #05080f;
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        font-family: 'Switzer', system-ui, sans-serif;
+        color: #f6f4ef;
+        overflow: hidden;
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        overflow: hidden;
+      }
+
+      /* ── Night air ─────────────────────────────────────────────────────
+         Sky, a low warm haze (street light off frame), and cold rim light. */
+
+      .sky {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(90% 46% at 50% 96%, rgba(255, 176, 92, 0.16) 0%, rgba(255, 176, 92, 0) 66%),
+          radial-gradient(120% 62% at 50% 4%, #16384a 0%, rgba(9, 20, 34, 0) 58%),
+          linear-gradient(180deg, #0a1b2c 0%, #071322 42%, #050a12 74%, #04070d 100%);
+      }
+
+      /* Snow in three depth layers: far grains, mid flakes, near bokeh. */
+      .flake {
+        position: absolute;
+        display: block;
+        border-radius: 50%;
+        background: #ffffff;
+      }
+
+      .flake--far {
+        filter: blur(0.4px);
+      }
+
+      .flake--mid {
+        filter: blur(1.4px);
+      }
+
+      .flake--near {
+        filter: blur(7px);
+      }
+
+      /* Film finishing: vignette, grain, and a slow warm leak across the top. */
+      .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(78% 62% at 50% 46%, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.62) 100%);
+      }
+
+      .grain {
+        position: absolute;
+        inset: -50%;
+        width: 200%;
+        height: 200%;
+        pointer-events: none;
+        opacity: 0.11;
+        mix-blend-mode: overlay;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        animation: grain-shift 0.5s steps(1) infinite;
+      }
+
+      @keyframes grain-shift {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        20% {
+          transform: translate(-6%, 4%);
+        }
+        40% {
+          transform: translate(5%, -7%);
+        }
+        60% {
+          transform: translate(-4%, -3%);
+        }
+        80% {
+          transform: translate(7%, 5%);
+        }
+      }
+
+      .leak {
+        position: absolute;
+        inset: -20% -30%;
+        pointer-events: none;
+        opacity: 0.4;
+        mix-blend-mode: screen;
+        background: radial-gradient(
+          52% 34% at 18% 6%,
+          rgba(255, 168, 92, 0.42) 0%,
+          rgba(255, 168, 92, 0) 70%
+        );
+      }
+
+      /* ── Type ──────────────────────────────────────────────────────────
+         Restrained: one gold eyebrow with hairlines, a serif headline that
+         wipes up line by line, one supporting line. */
+
+      /* Type sits above the vignette and grain, so nothing dulls the words. */
+      .copy {
+        z-index: 30;
+        position: absolute;
+        right: 96px;
+        bottom: 250px;
+        left: 96px;
+        text-align: center;
+      }
+
+      .copy--center {
+        top: 50%;
+        bottom: auto;
+        transform: translateY(-50%);
+      }
+
+      .copy--top {
+        top: 190px;
+        bottom: auto;
+      }
+
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+        color: #f0c987;
+        font-size: 27px;
+        font-weight: 500;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before,
+      .eyebrow::after {
+        content: '';
+        width: 88px;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(240, 201, 135, 0) 0%, rgba(240, 201, 135, 0.85) 100%);
+      }
+
+      .eyebrow::after {
+        background: linear-gradient(90deg, rgba(240, 201, 135, 0.85) 0%, rgba(240, 201, 135, 0) 100%);
+      }
+
+      .headline {
+        margin-top: 40px;
+        font-family: 'Bespoke Serif', Georgia, serif;
+        font-size: 112px;
+        line-height: 1.06;
+        font-weight: 400;
+        letter-spacing: -0.022em;
+      }
+
+      /* Each line sits in a masked box, so it wipes up instead of popping. */
+      .line-mask {
+        display: block;
+        overflow: hidden;
+        /* room for descenders (g, p, y) inside the wipe mask */
+        padding-bottom: 0.12em;
+        margin-bottom: -0.12em;
+      }
+
+      .line {
+        display: block;
+        transform: translateY(105%);
+      }
+
+      .sub {
+        margin: 32px auto 0;
+        max-width: 780px;
+        font-size: 40px;
+        line-height: 1.34;
+        font-weight: 400;
+        color: rgba(246, 244, 239, 0.74);
+      }
+
+      /* The gradient paints only inside the text box, and this serif's figures
+         reach above and below it — so the box gets real headroom, or the tops
+         and tails of the numbers are cut off. */
+      .price {
+        margin-top: 18px;
+        padding: 0.1em 0.06em 0.16em;
+        font-family: 'Bespoke Serif', Georgia, serif;
+        font-size: 204px;
+        line-height: 1.12;
+        white-space: nowrap;
+        font-weight: 500;
+        letter-spacing: -0.045em;
+        background: linear-gradient(180deg, #ffe6b0 0%, #f0c987 46%, #c98f3f 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      /* ── Photo scene ──────────────────────────────────────────────── */
+
+      .photo {
+        position: absolute;
+        inset: -8%;
+        background-size: cover;
+        background-position: center;
+        filter: saturate(1.06) contrast(1.06) brightness(0.92);
+      }
+
+      .photo-grade {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(70% 44% at 50% 30%, rgba(255, 190, 120, 0.12) 0%, rgba(255, 190, 120, 0) 70%),
+          linear-gradient(
+            180deg,
+            rgba(5, 10, 18, 0.72) 0%,
+            rgba(5, 10, 18, 0.06) 34%,
+            rgba(5, 10, 18, 0.9) 100%
+          );
+      }
+
+      /* ── Illustrated night scene ──────────────────────────────────── */
+
+      .scene-art {
+        position: absolute;
+        inset: 0;
+      }
+
+      .bulb {
+        position: absolute;
+        width: 44px;
+        transform-origin: 50% 6%;
+        opacity: 0;
+      }
+
+      .bulb-bloom {
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        opacity: 0;
+        mix-blend-mode: screen;
+      }
+
+      /* ── Sign-off ─────────────────────────────────────────────────── */
+
+      .signoff {
+        z-index: 30;
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 96px;
+        text-align: center;
+      }
+
+      .signoff-logo {
+        width: 430px;
+        filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.6));
+      }
+
+      .phone {
+        margin-top: 52px;
+        font-size: 78px;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+      }
+
+      .rule {
+        width: 0;
+        height: 1px;
+        margin: 34px auto 0;
+        background: linear-gradient(
+          90deg,
+          rgba(240, 201, 135, 0) 0%,
+          rgba(240, 201, 135, 0.9) 50%,
+          rgba(240, 201, 135, 0) 100%
+        );
+      }
+
+      .cta {
+        margin-top: 26px;
+        font-size: 34px;
+        letter-spacing: 0.06em;
+        color: rgba(246, 244, 239, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div class="clip" id="stage" data-start="0" data-duration="10" data-track-index="0">
+        <div class="sky" id="sky"></div>
+        <div id="snow"></div>
+        <div id="scenes"></div>
+        <!-- Finishing layers: translucent by design, so the checker is told the overlap is intentional. -->
+        <div class="leak" id="leak"></div>
+        <div class="vignette" id="vignette"></div>
+        <div class="grain" id="grain"></div>
+        <!-- Words live above the film finish, so vignette and grain never dull them. -->
+        <div id="copy-layer"></div>
+      </div>
+    </div>
+
+    <script>
+      /*
+       * Scene engine.
+       *
+       * The builder at /reels sends a list of scenes; each one becomes DOM plus
+       * a slice of the timeline. Art direction rules that keep these postable:
+       * photography leads where there is a photo, motion is slow and eased
+       * (no bounce), type wipes rather than pops, and every frame carries the
+       * same night grade — haze, vignette, grain.
+       *
+       * Deterministic only: no Math.random, no Date.now.
+       */
+
+      const { scenes: scenesRaw } = window.__hyperframes.getVariables()
+
+      const DEFAULT_SCENES = [
+        {
+          type: 'lights',
+          duration: 6,
+          eyebrow: 'Central Texas',
+          headline: 'Your roofline. Lit.',
+          sub: 'No ladder. No tangled box of lights.',
+          bulbColor: 'warm-white',
+        },
+        { type: 'signoff', duration: 4, headline: 'Free estimate · No pressure', sub: '(512) 775-0561' },
+      ]
+
+      const parseScenes = (raw) => {
+        if (Array.isArray(raw)) {
+          return raw
+        }
+        try {
+          const parsed = JSON.parse(String(raw || ''))
+          return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_SCENES
+        } catch {
+          return DEFAULT_SCENES
+        }
+      }
+
+      const scenes = parseScenes(scenesRaw)
+      const sceneDuration = (scene) => Math.max(2, Number(scene.duration) || 4)
+      const totalDuration = scenes.reduce((sum, scene) => sum + sceneDuration(scene), 0)
+
+      const seeded = (seed) => {
+        let state = Math.floor(seed) % 2147483647 || 1
+        return () => {
+          state = (state * 16807) % 2147483647
+          return (state - 1) / 2147483646
+        }
+      }
+
+      const el = (tag, className, parent) => {
+        const node = document.createElement(tag)
+        if (className) {
+          node.className = className
+        }
+        if (parent) {
+          parent.append(node)
+        }
+        return node
+      }
+
+      const tl = gsap.timeline({ paused: true })
+      const stage = document.getElementById('scenes')
+      const copyLayer = document.getElementById('copy-layer')
+
+      // ── Snowfall, three depths ───────────────────────────────────────
+
+      const snowRandom = seeded(20261225)
+      const snow = document.getElementById('snow')
+      const LAYERS = [
+        { name: 'far', count: 48, size: [3, 6], opacity: [0.25, 0.5], speed: [0.55, 0.75] },
+        { name: 'mid', count: 26, size: [8, 14], opacity: [0.35, 0.6], speed: [0.8, 1] },
+        { name: 'near', count: 9, size: [26, 46], opacity: [0.16, 0.3], speed: [1.15, 1.45] },
+      ]
+
+      for (const layer of LAYERS) {
+        for (let index = 0; index < layer.count; index += 1) {
+          const size = layer.size[0] + snowRandom() * (layer.size[1] - layer.size[0])
+          const flake = el('span', `flake flake--${layer.name}`, snow)
+          flake.style.width = `${size.toFixed(1)}px`
+          flake.style.height = `${size.toFixed(1)}px`
+          flake.style.left = `${(snowRandom() * 1080).toFixed(0)}px`
+          flake.style.opacity = `${(layer.opacity[0] + snowRandom() * (layer.opacity[1] - layer.opacity[0])).toFixed(2)}`
+          const speed = layer.speed[0] + snowRandom() * (layer.speed[1] - layer.speed[0])
+          tl.fromTo(
+            flake,
+            { y: -300 - snowRandom() * 900 },
+            { y: 2200, x: (snowRandom() - 0.5) * 160, duration: totalDuration / speed, ease: 'none' },
+            0,
+          )
+        }
+      }
+
+      /* The leak drifts, so the finish never sits perfectly still. */
+      tl.fromTo(
+        '#leak',
+        { xPercent: -4, opacity: 0.28 },
+        { xPercent: 4, opacity: 0.46, duration: totalDuration, ease: 'sine.inOut' },
+        0,
+      )
+
+      // ── Copy ─────────────────────────────────────────────────────────
+
+      /** Breaks a headline into masked lines: two or three words per line reads best at 9:16. */
+      const headlineLines = (text) => {
+        const parts = String(text || '')
+          .split(/\s+/)
+          .filter(Boolean)
+        const lines = []
+        const perLine = parts.length > 6 ? 3 : 2
+        for (let index = 0; index < parts.length; index += perLine) {
+          lines.push(parts.slice(index, index + perLine).join(' '))
+        }
+        return lines
+      }
+
+      const copyBlock = (scene, root, { center = false, top = false } = {}) => {
+        const position = center ? 'copy copy--center' : top ? 'copy copy--top' : 'copy'
+        const copy = el('div', position, root)
+        const parts = { lines: [] }
+
+        if (scene.eyebrow) {
+          parts.eyebrow = el('div', 'eyebrow', copy)
+          parts.eyebrow.textContent = scene.eyebrow
+        }
+        if (scene.headline) {
+          parts.headline = el('h1', 'headline', copy)
+          for (const text of headlineLines(scene.headline)) {
+            const mask = el('span', 'line-mask', parts.headline)
+            const line = el('span', 'line', mask)
+            line.textContent = text
+            parts.lines.push(line)
+          }
+        }
+        if (scene.price) {
+          parts.price = el('div', 'price', copy)
+          parts.price.textContent = scene.price
+          /* Long prices ("$12,500") step down so they never run off the sides. */
+          const length = String(scene.price).length
+          if (length > 4) {
+            parts.price.style.fontSize = `${Math.max(110, Math.round(204 * (4.6 / length)))}px`
+          }
+        }
+        if (scene.sub) {
+          parts.sub = el('p', 'sub', copy)
+          parts.sub.textContent = scene.sub
+        }
+        return parts
+      }
+
+      const animateCopy = (parts, at) => {
+        if (parts.eyebrow) {
+          tl.fromTo(
+            parts.eyebrow,
+            { opacity: 0, y: 14 },
+            { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' },
+            at + 0.3,
+          )
+        }
+        if (parts.lines.length) {
+          tl.to(parts.lines, { y: '0%', duration: 1, ease: 'expo.out', stagger: 0.12 }, at + 0.55)
+        }
+        if (parts.price) {
+          tl.fromTo(
+            parts.price,
+            { opacity: 0, y: 26 },
+            { opacity: 1, y: 0, duration: 1, ease: 'expo.out' },
+            at + 0.9,
+          )
+        }
+        if (parts.sub) {
+          tl.fromTo(
+            parts.sub,
+            { opacity: 0, y: 18 },
+            { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' },
+            at + 1.15,
+          )
+        }
+      }
+
+      // ── Illustrated night scene ──────────────────────────────────────
+
+      const MULTICOLOR = ['red', 'green', 'blue', 'amber', 'purple']
+      const MULTICOLOR_GLOW = ['#ff3b30', '#27c86a', '#3b82f6', '#ffb000', '#d44df0']
+
+      /*
+       * A house at dusk: layered tree lines for depth, warm windows, and a
+       * roofline of real C9 bulbs hung on a sagging run with a soft bloom.
+       */
+      const buildLights = (scene, root, at, duration) => {
+        const color = scene.bulbColor || 'warm-white'
+        const bulbSrc = (index) =>
+          color === 'multicolor'
+            ? `assets/brand/c9-${MULTICOLOR[index % MULTICOLOR.length]}.png`
+            : `assets/brand/c9-${color}.png`
+        const bloomOf = (index) =>
+          color === 'multicolor'
+            ? MULTICOLOR_GLOW[index % MULTICOLOR_GLOW.length]
+            : color === 'bright-white'
+              ? '#dbe9ff'
+              : '#ffbe73'
+
+        const art = el('div', 'scene-art', root)
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        svg.setAttribute('viewBox', '0 0 1080 1920')
+        svg.setAttribute('style', 'position:absolute;inset:0;width:100%;height:100%')
+        svg.innerHTML = `
+          <defs>
+            <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1b2b3a" />
+              <stop offset="100%" stop-color="#0d1824" />
+            </linearGradient>
+            <linearGradient id="roof" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#22323f" />
+              <stop offset="100%" stop-color="#14212c" />
+            </linearGradient>
+            <radialGradient id="window-glow">
+              <stop offset="0%" stop-color="#ffcf8a" stop-opacity="0.95" />
+              <stop offset="60%" stop-color="#ffb35c" stop-opacity="0.45" />
+              <stop offset="100%" stop-color="#ffb35c" stop-opacity="0" />
+            </radialGradient>
+            <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#101d22" />
+              <stop offset="100%" stop-color="#070d12" />
+            </linearGradient>
+          </defs>
+
+          <!-- far tree line -->
+          <g opacity="0.5" fill="#0b1720">
+            <path d="M-20 1465 l70 -150 70 150z M90 1480 l56 -120 56 120z M190 1462 l64 -140 64 140z
+                     M300 1486 l50 -108 50 108z M840 1470 l62 -134 62 134z M950 1484 l54 -116 54 116z
+                     M1046 1462 l60 -132 60 132z" />
+          </g>
+          <!-- near tree line -->
+          <g opacity="0.85" fill="#08131a">
+            <path d="M-30 1530 l86 -196 86 196z M120 1548 l70 -160 70 160z M900 1540 l78 -178 78 178z
+                     M1030 1556 l66 -150 66 150z" />
+          </g>
+
+          <!-- ground -->
+          <rect x="0" y="1520" width="1080" height="400" fill="url(#ground)" />
+          <ellipse cx="540" cy="1546" rx="470" ry="46" fill="#16252c" opacity="0.7" />
+
+          <!-- house: main gable plus a lower wing, so it reads as a real elevation -->
+          <rect x="250" y="1150" width="580" height="392" fill="url(#wall)" />
+          <path d="M214 1158 L540 940 L866 1158 Z" fill="url(#roof)" />
+          <rect x="760" y="1268" width="250" height="274" fill="#16242f" />
+          <path d="M734 1276 L886 1176 L1038 1276 Z" fill="#1b2a36" />
+          <rect x="624" y="1010" width="52" height="120" fill="#16242f" />
+
+          <!-- warm windows and porch -->
+          <circle cx="366" cy="1300" r="120" fill="url(#window-glow)" opacity="0.55" />
+          <circle cx="714" cy="1300" r="120" fill="url(#window-glow)" opacity="0.5" />
+          <rect x="316" y="1258" width="100" height="84" rx="6" fill="#f0bd78" opacity="0.88" />
+          <rect x="664" y="1258" width="100" height="84" rx="6" fill="#f0bd78" opacity="0.8" />
+          <rect x="508" y="1372" width="86" height="170" rx="5" fill="#0a131a" />
+          <circle cx="551" cy="1372" r="74" fill="url(#window-glow)" opacity="0.45" />
+          <rect x="860" y="1352" width="74" height="70" rx="5" fill="#f0bd78" opacity="0.55" />
+        `
+        art.append(svg)
+        tl.fromTo(art, { scale: 1.04, y: 24 }, { scale: 1, y: 0, duration: duration, ease: 'sine.out' }, at)
+
+        /* Hang the run along the two rakes, with a little sag between clips. */
+        const APEX = { x: 540, y: 946 }
+        const EAVES = [
+          { x: 216, y: 1158 },
+          { x: 864, y: 1158 },
+        ]
+        const PER_SIDE = 13
+        const wire = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+        wire.setAttribute('fill', 'none')
+        wire.setAttribute('stroke', '#060d13')
+        wire.setAttribute('stroke-width', '5')
+        wire.setAttribute(
+          'd',
+          `M${EAVES[0].x} ${EAVES[0].y} L${APEX.x} ${APEX.y} L${EAVES[1].x} ${EAVES[1].y}`,
+        )
+        svg.append(wire)
+
+        for (let step = 0; step <= PER_SIDE; step += 1) {
+          for (const eave of EAVES) {
+            const t = step / PER_SIDE
+            const x = APEX.x + (eave.x - APEX.x) * t
+            /* sag: strongest between clips, none at the ends */
+            const sag = Math.sin(t * Math.PI * PER_SIDE) * 3
+            const y = APEX.y + (eave.y - APEX.y) * t + sag
+
+            const bloom = el('div', 'bulb-bloom', art)
+            bloom.style.left = `${x - 90}px`
+            bloom.style.top = `${y - 66}px`
+            bloom.style.background = `radial-gradient(circle, ${bloomOf(step)}8c 0%, ${bloomOf(step)}24 24%, rgba(0,0,0,0) 62%)`
+
+            const bulb = el('img', 'bulb', art)
+            bulb.src = bulbSrc(step)
+            bulb.alt = ''
+            bulb.style.left = `${x - 22}px`
+            bulb.style.top = `${y - 4}px`
+
+            /* Lights come on in a wave from the apex, then settle and breathe. */
+            const lightAt = at + 0.7 + step * 0.075
+            tl.fromTo(
+              bulb,
+              { opacity: 0, scale: 0.72 },
+              { opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out' },
+              lightAt,
+            )
+            tl.fromTo(
+              bloom,
+              { opacity: 0, scale: 0.7 },
+              { opacity: 0.66, scale: 1, duration: 0.6, ease: 'power2.out' },
+              lightAt,
+            )
+            tl.to(
+              bloom,
+              {
+                opacity: 0.48,
+                duration: 2.1,
+                ease: 'sine.inOut',
+                yoyo: true,
+                repeat: Math.ceil(duration / 4),
+              },
+              lightAt + 0.6,
+            )
+          }
+        }
+      }
+
+      /** Photography leads: a slow push-in, graded, with the copy over a scrim. */
+      const buildPhoto = (scene, root, at, duration) => {
+        const photo = el('div', 'photo', root)
+        photo.style.backgroundImage = `url("${String(scene.photoUrl || '').replaceAll('"', '%22')}")`
+        el('div', 'photo-grade', root)
+        tl.fromTo(
+          photo,
+          { scale: 1.04, y: 10 },
+          { scale: 1.14, y: -26, duration: duration + 0.6, ease: 'none' },
+          at,
+        )
+      }
+
+      const buildSignoff = (scene, root, at) => {
+        const block = el('div', 'signoff', root)
+        const logo = el('img', 'signoff-logo', block)
+        logo.src = 'assets/brand/christmas-logo.svg'
+        logo.alt = ''
+        const phone = el('div', 'phone', block)
+        phone.textContent = scene.sub || ''
+        const rule = el('div', 'rule', block)
+        const cta = el('div', 'cta', block)
+        cta.textContent = scene.headline || ''
+
+        tl.fromTo(
+          logo,
+          { opacity: 0, y: 26, scale: 0.97 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'expo.out' },
+          at + 0.25,
+        )
+        tl.fromTo(
+          phone,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' },
+          at + 0.75,
+        )
+        tl.fromTo(rule, { width: 0 }, { width: 420, duration: 1, ease: 'power2.out' }, at + 0.95)
+        tl.fromTo(cta, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.out' }, at + 1.15)
+      }
+
+      // ── Lay the scenes out ───────────────────────────────────────────
+
+      let cursor = 0
+      for (const [index, scene] of scenes.entries()) {
+        const duration = sceneDuration(scene)
+        const root = el('div', 'scene', stage)
+        root.id = `scene-${index + 1}`
+
+        /* Art and words are separate layers that fade together. */
+        const words = el('div', 'scene', copyLayer)
+        words.id = `scene-${index + 1}-copy`
+
+        if (scene.type === 'lights') {
+          buildLights(scene, root, cursor, duration)
+          animateCopy(copyBlock(scene, words, { top: true }), cursor)
+        } else if (scene.type === 'photo') {
+          buildPhoto(scene, root, cursor, duration)
+          animateCopy(copyBlock(scene, words), cursor)
+        } else if (scene.type === 'signoff') {
+          buildSignoff(scene, words, cursor)
+        } else {
+          animateCopy(copyBlock(scene, words, { center: true }), cursor)
+        }
+
+        /* Long, soft cross-fades — a hard cut on a still night scene looks cheap. */
+        for (const layer of [root, words]) {
+          tl.fromTo(
+            layer,
+            { opacity: 0 },
+            { opacity: 1, duration: index === 0 ? 0.8 : 0.9, ease: 'power1.inOut' },
+            cursor,
+          )
+          if (index < scenes.length - 1) {
+            tl.to(layer, { opacity: 0, duration: 0.9, ease: 'power1.inOut' }, cursor + duration - 0.45)
+          }
+        }
+
+        cursor += duration
+      }
+
+      window.__timelines = window.__timelines || {}
+      window.__timelines['main'] = tl
+      tl.seek(0)
+    </script>
+  </body>
+</html>

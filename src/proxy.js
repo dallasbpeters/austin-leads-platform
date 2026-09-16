@@ -6,6 +6,8 @@ import { getAllSites } from '@/lib/platform/content'
 
 const protectedPaths = [
   '/dashboard',
+  '/reels',
+  '/social',
   '/analytics',
   '/crm',
   '/quotes',
@@ -20,6 +22,8 @@ const protectedPaths = [
 ]
 const protectedApiPrefixes = [
   '/api/domains',
+  '/api/reels',
+  '/api/social',
   '/api/publish-jobs',
   '/api/analytics',
   '/api/crm',
@@ -33,6 +37,8 @@ const protectedApiPrefixes = [
 /** Routes that must not set `data-public-site` on `<html>` (operator / API). */
 const OPERATOR_SHELL_PREFIXES = [
   '/dashboard',
+  '/reels',
+  '/social',
   '/analytics',
   '/crm',
   '/quotes',

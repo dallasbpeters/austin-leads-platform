@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   PenSquare,
   Settings2,
+  Share2,
   ShieldCheck,
   Sparkles,
   TrendingUp,
@@ -43,6 +44,7 @@ const workspaceItems = [
   { href: '/hero-pages', label: 'Hero Pages', icon: ImagePlus },
   { href: '/publish', label: 'Publish', icon: PenSquare },
   { href: '/videos', label: 'Videos', icon: Clapperboard },
+  { href: '/social', label: 'Social accounts', icon: Share2 },
   { href: '/documents', label: 'Documents', icon: FileSignature },
   { href: '/domains', label: 'Domains', icon: Globe2 },
   { href: '/users', label: 'Users', icon: ShieldCheck },
@@ -59,6 +61,7 @@ const quotesWorkspaceItems = [
 const quotesChristmasItems = [
   { href: '/christmas/invoices', label: 'Invoices', icon: FileText },
   { href: '/christmas/mockup', label: 'Lights mockup', icon: Camera },
+  { href: '/reels', label: 'Reel studio', icon: Clapperboard },
 ]
 
 const nestedItems = {
@@ -74,6 +77,7 @@ const christmasItems = [
   { href: '/christmas', label: 'Jobs', icon: UsersRound },
   { href: '/christmas/invoices', label: 'Invoices', icon: FileText },
   { href: '/christmas/mockup', label: 'Lights mockup', icon: Camera },
+  { href: '/reels', label: 'Reel studio', icon: Clapperboard },
   { href: '/christmas/slots', label: 'Slots', icon: Sparkles },
 ]
 
