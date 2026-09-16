@@ -58,8 +58,8 @@ html:not([data-cloud-tone]),
   );
   --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
   --cloud-section-background: oklab(62.12% -0.01006 -0.16663);
-  --cloud-section-foreground: #082f43;
-  --cloud-section-muted: #16485d;
+  --cloud-section-foreground: oklch(98.397% 0.00632 255.755);
+  --cloud-section-muted: oklch(91.99% 0.03404 263.604deg);
   --cloud-section-eyebrow: #f0f0ef;
   --gradient-sky-a: oklch(88.282% 0.04208 263.03deg);
   --gradient-sky-b: oklch(83.981% 0.07972 275.157deg);
