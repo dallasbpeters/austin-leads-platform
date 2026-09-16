@@ -36,7 +36,7 @@ function SheetShell({ title, onClose, children }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/70" role="dialog">
       <button aria-label="Close" className="flex-1" onClick={onClose} type="button" />
-      <div className="mx-auto max-h-[86dvh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border-t border-white/10 bg-[#0d1524] pb-[max(24px,env(safe-area-inset-bottom))]">
+      <div className="mx-auto max-h-[86dvh] w-full max-w-2xl overflow-x-hidden overflow-y-auto rounded-t-3xl border-t border-white/10 bg-[#0d1524] pb-[max(24px,env(safe-area-inset-bottom))]">
         <div className="sticky top-0 flex items-center justify-between border-b border-white/10 bg-[#0d1524] px-5 py-4">
           <h2 className="text-base font-semibold">{title}</h2>
           <button
@@ -109,7 +109,18 @@ function PhotoPicker({ photos, selectedId, onPick, onClose }) {
             type="button"
           >
             {/* oxlint-disable-next-line next/no-img-element -- Sanity CDN thumbnail, already sized */}
-            <img alt={photo.name} className="size-full object-cover" loading="lazy" src={photo.thumb} />
+            <img
+              alt={photo.name}
+              className="size-full object-cover"
+              loading="lazy"
+              src={photo.thumb}
+              style={{ width: '100%', height: '100%' }}
+            />
+            {photo.christmas ? (
+              <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/60 px-2 py-0.5 text-[10px] tracking-wide text-[#f0c987] uppercase">
+                Christmas
+              </span>
+            ) : null}
             {photo.id === selectedId ? (
               <span className="absolute top-2 right-2 grid size-6 place-items-center rounded-full bg-[#f0c987] text-black">
                 <Check className="size-4" />
@@ -140,7 +151,12 @@ function SceneEditor({ scene, photos, onChange, onRemove, onClose }) {
           >
             {scene.photo ? (
               // oxlint-disable-next-line next/no-img-element -- Sanity CDN thumbnail, already sized
-              <img alt="" className="size-16 rounded-lg object-cover" src={scene.photo.thumb} />
+              <img
+                alt=""
+                className="size-16 shrink-0 rounded-lg object-cover"
+                src={scene.photo.thumb}
+                style={{ width: 64, height: 64 }}
+              />
             ) : (
               <span className="grid size-16 place-items-center rounded-lg bg-white/10">
                 <ImageIcon className="size-6 text-white/60" />
@@ -376,8 +392,8 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
     })
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col gap-5 px-4 pt-[max(20px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]">
-      <header className="grid gap-3">
+    <div className="mx-auto flex min-h-dvh w-full max-w-2xl min-w-0 flex-col gap-5 overflow-x-clip px-4 pt-[max(20px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]">
+      <header className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Film className="size-5 text-[#f0c987]" />
@@ -428,11 +444,11 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
 
       <ReelPreview scenes={renderScenes} />
 
-      <section className="grid gap-2">
+      <section className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2">
         <h2 className="text-sm text-white/55">Scenes</h2>
         {scenes.map((scene, index) => (
           <div
-            className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-2"
+            className="flex min-w-0 items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-2"
             key={scene.id}
           >
             <button

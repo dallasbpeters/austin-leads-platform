@@ -205,6 +205,9 @@
       .line-mask {
         display: block;
         overflow: hidden;
+        /* room for descenders (g, p, y) inside the wipe mask */
+        padding-bottom: 0.12em;
+        margin-bottom: -0.12em;
       }
 
       .line {
@@ -221,11 +224,16 @@
         color: rgba(246, 244, 239, 0.74);
       }
 
+      /* The gradient paints only inside the text box, and this serif's figures
+         reach above and below it — so the box gets real headroom, or the tops
+         and tails of the numbers are cut off. */
       .price {
-        margin-top: 34px;
+        margin-top: 18px;
+        padding: 0.1em 0.06em 0.16em;
         font-family: 'Bespoke Serif', Georgia, serif;
         font-size: 204px;
-        line-height: 0.96;
+        line-height: 1.12;
+        white-space: nowrap;
         font-weight: 500;
         letter-spacing: -0.045em;
         background: linear-gradient(180deg, #ffe6b0 0%, #f0c987 46%, #c98f3f 100%);
@@ -486,6 +494,11 @@
         if (scene.price) {
           parts.price = el('div', 'price', copy)
           parts.price.textContent = scene.price
+          /* Long prices ("$12,500") step down so they never run off the sides. */
+          const length = String(scene.price).length
+          if (length > 4) {
+            parts.price.style.fontSize = `${Math.max(110, Math.round(204 * (4.6 / length)))}px`
+          }
         }
         if (scene.sub) {
           parts.sub = el('p', 'sub', copy)

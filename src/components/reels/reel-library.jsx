@@ -59,7 +59,7 @@ export default function ReelLibrary({ currentId, onClose }) {
   return (
     <div aria-modal="true" className="fixed inset-0 z-50 flex flex-col justify-end bg-black/70" role="dialog">
       <button aria-label="Close" className="flex-1" onClick={onClose} type="button" />
-      <div className="mx-auto max-h-[86dvh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border-t border-white/10 bg-[#0d1524] pb-[max(24px,env(safe-area-inset-bottom))]">
+      <div className="mx-auto max-h-[86dvh] w-full max-w-2xl overflow-x-hidden overflow-y-auto rounded-t-3xl border-t border-white/10 bg-[#0d1524] pb-[max(24px,env(safe-area-inset-bottom))]">
         <div className="sticky top-0 flex items-center justify-between border-b border-white/10 bg-[#0d1524] px-5 py-4">
           <h2 className="text-base font-semibold">My reels</h2>
           <button
@@ -72,7 +72,7 @@ export default function ReelLibrary({ currentId, onClose }) {
           </button>
         </div>
 
-        <div className="grid gap-2 px-5 py-5">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-2 px-5 py-5">
           {state.loading ? <Loader2 className="mx-auto size-6 animate-spin text-white/50" /> : null}
           {state.error ? <p className="text-sm text-red-300">{state.error}</p> : null}
           {!state.loading && !state.error && !state.reels.length ? (
@@ -83,7 +83,7 @@ export default function ReelLibrary({ currentId, onClose }) {
             const cover = coverOf(reel)
             return (
               <div
-                className={`flex items-center gap-3 rounded-2xl border p-2 ${
+                className={`flex min-w-0 items-center gap-3 rounded-2xl border p-2 ${
                   reel.id === currentId ? 'border-[#f0c987]/60 bg-[#f0c987]/10' : 'border-white/10 bg-white/5'
                 }`}
                 key={reel.id}
@@ -95,7 +95,12 @@ export default function ReelLibrary({ currentId, onClose }) {
                   <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/10">
                     {cover ? (
                       // oxlint-disable-next-line next/no-img-element -- Sanity CDN thumbnail, already sized
-                      <img alt="" className="size-full object-cover" src={cover} />
+                      <img
+                        alt=""
+                        className="size-full object-cover"
+                        src={cover}
+                        style={{ width: '100%', height: '100%' }}
+                      />
                     ) : (
                       <Film className="size-5 text-white/50" />
                     )}

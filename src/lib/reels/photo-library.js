@@ -11,7 +11,7 @@ import { getSanityServerClient } from '@/sanity/client'
  * left out and the newest come first.
  */
 
-const PHOTOS = groq`*[_type == "sanity.imageAsset" && metadata.dimensions.width >= 1200] | order(_createdAt desc)[0...120]{
+const PHOTOS = groq`*[_type == "sanity.imageAsset" && (metadata.dimensions.width >= 1200 || _id in $christmas)] | order(_createdAt desc)[0...140]{
   _id,
   url,
   originalFilename,
@@ -19,6 +19,32 @@ const PHOTOS = groq`*[_type == "sanity.imageAsset" && metadata.dimensions.width 
   "height": metadata.dimensions.height,
   "lqip": metadata.lqip
 }`
+
+/*
+ * The night shoot from when the Christmas site was built. These lead the
+ * picker; everything else in the library (solar, roofing, sky) follows.
+ */
+const CHRISTMAS_SHOOT = [
+  'image-6e4b4edddedc8423ae78c9ba7497d3fedb5944f1-2752x1536-jpg',
+  'image-8eaa2868330f06196bd72f08333ad266f7864d9c-2752x1536-jpg',
+  'image-2c5ed6379b54702bafed9d586759caf5f5c6bc7b-2752x1536-jpg',
+  'image-2a2bd1bdab153651717c89acc37200dfd678c3e9-2752x1536-jpg',
+  'image-fd45d11315d54cb4da8225a7e2672ae4cb8f1afe-2752x1536-jpg',
+  'image-aba35750a2a51a6152854b9de84ea55dd16637bc-2752x1536-jpg',
+  'image-0d98b6ccfa44f0f2ef70e51e9c2b22971d1961ea-2752x1536-jpg',
+  'image-b528fa1080e2087777a86d086a86415aac2f41c1-2752x1536-jpg',
+  'image-4070d9a394cda9a6300cbd6aaf663793235ec1f0-5157x3438-jpg',
+  'image-b0addc1822e47fdfd2309e4fd28b37b72e1ca6e0-2048x2048-jpg',
+  'image-4a79ba244af11829d58a145b5bb990a011d19065-2048x2048-jpg',
+  'image-4eb81391f8a8a1264b415df507b5dee49a2a20ec-2048x2048-jpg',
+  'image-fcdc425a32c589e74d44a763a2fe68bce8c72efd-2048x2048-jpg',
+  'image-13ca14812d7457f0ca50c18ca0cf14725d6cdca0-3934x5245-jpg',
+]
+
+const christmasRank = (id) => {
+  const index = CHRISTMAS_SHOOT.indexOf(id)
+  return index === -1 ? Number.POSITIVE_INFINITY : index
+}
 
 /** A thumbnail that is small enough to scroll through on a phone. */
 export const thumbUrl = (url) => `${url}?w=320&h=420&fit=crop&auto=format`
@@ -31,12 +57,15 @@ export async function listReelPhotos() {
   if (!client) {
     return []
   }
-  const assets = await client.fetch(PHOTOS, {}, { next: { revalidate: 300 } })
-  return assets.map((asset) => ({
+  const assets = await client.fetch(PHOTOS, { christmas: CHRISTMAS_SHOOT }, { next: { revalidate: 300 } })
+  // Stable sort: the Christmas shoot first, in its own order; the rest stay newest-first.
+  const ordered = assets.toSorted((a, b) => christmasRank(a._id) - christmasRank(b._id))
+  return ordered.map((asset) => ({
     id: asset._id,
     name: asset.originalFilename || 'Photo',
     thumb: thumbUrl(asset.url),
     src: renderUrl(asset.url),
     lqip: asset.lqip || null,
+    christmas: CHRISTMAS_SHOOT.includes(asset._id),
   }))
 }
