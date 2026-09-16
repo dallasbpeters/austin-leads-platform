@@ -26,10 +26,12 @@ import { CHRISTMAS_LIGHT_COLORS, CHRISTMAS_SERVICE_TYPES } from '@/lib/christmas
 import {
   bulbRadiusForScale,
   defaultBulbRadius,
+  defaultWreathSize,
   distance,
   estimateMockup,
   hitTestShape,
   insertPoint,
+  isPlacedItem,
   minPointsFor,
   MOCKUP_LINE_ITEMS_STORAGE_KEY,
   mockupToLineItems,
@@ -39,6 +41,8 @@ import {
   ROOFLINE,
   shapeAt,
   WARM_WHITE,
+  wreathHandle,
+  wreathSizeFromHandle,
 } from '@/lib/christmas/mockup-geometry'
 import { loadMockupAssets, paintMockup } from '@/lib/christmas/mockup-render'
 
@@ -259,6 +263,17 @@ function useMockupEditor(canvasRef, zoom) {
    */
   const onSelectedTap = (event, point) => {
     const tolerance = reach()
+    if (isPlacedItem(selected.service)) {
+      if (distance(wreathHandle(selected), point) <= tolerance) {
+        beginDrag(event, { kind: 'resize', id: selected.id })
+        return true
+      }
+      if (hitTestShape(selected, point, tolerance)) {
+        beginDrag(event, { kind: 'move', id: selected.id, last: point })
+        return true
+      }
+      return false
+    }
     const vertex = nearestVertex(selected.points, point, tolerance)
     if (vertex !== -1) {
       beginDrag(event, { kind: 'shape', id: selected.id, vertex, start: point, moved: false })
@@ -300,7 +315,16 @@ function useMockupEditor(canvasRef, zoom) {
       setSelectedId(tapped?.id || null)
       return
     }
-    setDraft({ id: newId(), service, color, seed: Math.floor(Math.random() * 1e9), points: [point] })
+    const shape = { id: newId(), service, color, seed: Math.floor(Math.random() * 1e9), points: [point] }
+    if (isPlacedItem(service)) {
+      // A wreath is placed in one tap and stays picked, so it can be dragged and sized right away.
+      const size = defaultWreathSize(image.width, image.height, pxPerFoot)
+      setShapes((current) => [...current, { ...shape, size }])
+      setSelectedId(shape.id)
+      beginDrag(event, { kind: 'move', id: shape.id, last: point })
+      return
+    }
+    setDraft(shape)
   }
 
   const updateShape = (id, change) =>
@@ -328,6 +352,8 @@ function useMockupEditor(canvasRef, zoom) {
         dragRef.current = { kind: 'shape', id: drag.id, vertex: drag.insertAt, moved: true }
         setActiveVertex(null)
       }
+    } else if (drag.kind === 'resize') {
+      updateShape(drag.id, (shape) => ({ ...shape, size: wreathSizeFromHandle(shape, point) }))
     } else if (drag.kind === 'move') {
       const dx = point.x - drag.last.x
       const dy = point.y - drag.last.y
@@ -420,6 +446,9 @@ function useMockupEditor(canvasRef, zoom) {
     )
   }
 
+  const setSelectedSize = (size) =>
+    setShapes((current) => current.map((shape) => (shape.id === selectedId ? { ...shape, size } : shape)))
+
   const setAllColors = (next) => {
     setColor(next)
     setDraft((current) => current && { ...current, color: next })
@@ -479,6 +508,8 @@ function useMockupEditor(canvasRef, zoom) {
     finishDraft,
     canFinish: isFinishable(draft),
     selectedService: selected?.service || null,
+    selectedSize: selected && isPlacedItem(selected.service) ? selected.size : null,
+    setSelectedSize,
     canRemoveDot: Boolean(activeDot) && selected.points.length > minPointsFor(selected.service),
     removeActiveVertex,
     cancelDraft: () => setDraft(null),
@@ -1006,6 +1037,16 @@ export default function ChristmasMockupClient({ invoice = null, savedMockup = nu
               step={0.5}
               value={editor.bulbRadius}
             />
+            {editor.selectedSize ? (
+              <LabeledSlider
+                id="wreath-size-label"
+                label="Wreath size"
+                max={Math.round(Math.min(editor.image.width, editor.image.height) * 0.6)}
+                min={20}
+                onChange={editor.setSelectedSize}
+                value={editor.selectedSize}
+              />
+            ) : null}
             <ShapeList
               bulbRadius={editor.bulbRadius}
               onRemove={editor.removeShape}

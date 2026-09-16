@@ -8,12 +8,13 @@ import {
 } from '@/lib/christmas/invoice-calc'
 
 describe('christmas quote service options', () => {
-  it('offers exactly the four service types', () => {
+  it('offers exactly the five service types', () => {
     expect(CHRISTMAS_SERVICE_TYPES).toStrictEqual([
       'Tree lights',
       'Stake lights',
       'Roofline / ridge',
       'Garland',
+      'Wreath',
     ])
   })
 

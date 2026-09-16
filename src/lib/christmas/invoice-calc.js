@@ -13,7 +13,13 @@
  */
 
 /** The only four service types we sell — used as the line item category on quotes. */
-export const CHRISTMAS_SERVICE_TYPES = ['Tree lights', 'Stake lights', 'Roofline / ridge', 'Garland']
+export const CHRISTMAS_SERVICE_TYPES = [
+  'Tree lights',
+  'Stake lights',
+  'Roofline / ridge',
+  'Garland',
+  'Wreath',
+]
 
 /** The only three bulb colors we offer. */
 export const CHRISTMAS_LIGHT_COLORS = ['Warm white', 'Multicolor', 'Bright white']

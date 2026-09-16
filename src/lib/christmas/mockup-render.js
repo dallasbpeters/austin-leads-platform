@@ -16,11 +16,13 @@ import {
   bulbsForShape,
   GARLAND,
   isAreaService,
+  isPlacedItem,
   pixelsPerFoot,
   pointsAlongPolyline,
   ROOFLINE,
   seededRandom,
   STAKE_LIGHTS,
+  wreathHandle,
 } from '@/lib/christmas/mockup-geometry'
 
 const SPILL_SCALE = 6
@@ -73,16 +75,17 @@ const loadImage = async (src) => {
 }
 
 /**
- * Loads the C9 and garland art. Drawing falls back to the vector bulbs and
+ * Loads the C9, garland and wreath art. Drawing falls back to the vector bulbs and
  * needles if this hasn't finished (or failed), so the page never blocks on it.
  */
 export async function loadMockupAssets() {
   const names = [...new Set(Object.values(C9_ART))]
-  const [garland, ...bulbs] = await Promise.all([
+  const [garland, wreath, ...bulbs] = await Promise.all([
     loadImage(`${ASSET_BASE}/garland.webp`),
+    loadImage(`${ASSET_BASE}/wreath.webp`),
     ...names.map((name) => loadImage(`${ASSET_BASE}/c9-${name}.png`)),
   ])
-  return { garland, c9: Object.fromEntries(names.map((name, index) => [name, bulbs[index]])) }
+  return { garland, wreath, c9: Object.fromEntries(names.map((name, index) => [name, bulbs[index]])) }
 }
 
 // ─── Sprites ─────────────────────────────────────────────────────────────────
@@ -198,7 +201,9 @@ const quantize = (value) => Math.max(1, Math.round(value * 2) / 2)
  */
 function layoutBulbs(shape, radius, pxPerFoot) {
   const random = seededRandom(shape.seed || 1)
-  const mini = isAreaService(shape.service) || shape.service === GARLAND
+  const mini = isAreaService(shape.service) || shape.service === GARLAND || isPlacedItem(shape.service)
+  // Wreath lights are smaller than the bulb-size slider: they sit in the greenery.
+  const sizeScale = isPlacedItem(shape.service) ? 0.7 : 1
   let points = bulbsForShape(shape, radius, pxPerFoot)
 
   if (shape.service === GARLAND) {
@@ -220,7 +225,11 @@ function layoutBulbs(shape, radius, pxPerFoot) {
       // Roofline C9s hang from the clip; stake bulbs stand up on the stake.
       hang: shape.service === ROOFLINE,
       intensity: (behind ? 0.45 : 0.82) + random() * 0.18,
-      size: radius * (behind ? 0.6 : 0.85 + random() * 0.2) * (shape.service === STAKE_LIGHTS ? 1.35 : 1),
+      size:
+        radius *
+        sizeScale *
+        (behind ? 0.6 : 0.85 + random() * 0.2) *
+        (shape.service === STAKE_LIGHTS ? 1.35 : 1),
     }
   })
 }
@@ -328,8 +337,35 @@ function drawStakes(ctx, bulbs) {
   ctx.restore()
 }
 
+const WREATH_GREENS = ['#1c3a20', '#28502c', '#356638']
+
+/** The wreath photo centered on its point; a drawn ring stands in until the art loads. */
+function drawWreath(ctx, shape, art) {
+  const [center] = shape.points
+  const size = shape.size || 0
+  if (!center || !size) {
+    return
+  }
+  if (art) {
+    const height = size * (art.height / art.width)
+    ctx.drawImage(art, center.x - size / 2, center.y - height / 2, size, height)
+    return
+  }
+  ctx.save()
+  WREATH_GREENS.forEach((green, index) => {
+    ctx.strokeStyle = green
+    ctx.lineWidth = size * (0.24 - index * 0.06)
+    ctx.beginPath()
+    ctx.arc(center.x, center.y, size * 0.36, 0, Math.PI * 2)
+    ctx.stroke()
+  })
+  ctx.restore()
+}
+
 function drawPhysical(ctx, shape, bulbs, radius, assets) {
-  if (shape.service === GARLAND) {
+  if (isPlacedItem(shape.service)) {
+    drawWreath(ctx, shape, assets?.wreath)
+  } else if (shape.service === GARLAND) {
     drawGarland(ctx, shape, radius, assets)
   } else if (shape.service === STAKE_LIGHTS) {
     drawStakes(ctx, bulbs)
@@ -492,6 +528,29 @@ function drawGuides(ctx, shape, guideScale, closed, activeIndex = -1) {
   ctx.restore()
 }
 
+/* A picked wreath: a dashed box and a corner handle to resize it. */
+function drawItemGuides(ctx, shape, guideScale) {
+  const [center] = shape.points
+  if (!center || !shape.size) {
+    return
+  }
+  const half = shape.size / 2
+  const handle = wreathHandle(shape)
+  ctx.save()
+  ctx.lineWidth = 2 * guideScale
+  ctx.setLineDash([8 * guideScale, 6 * guideScale])
+  ctx.strokeStyle = 'rgba(255, 208, 107, 0.95)'
+  ctx.strokeRect(center.x - half, center.y - half, shape.size, shape.size)
+  ctx.setLineDash([])
+  ctx.fillStyle = '#ffd06b'
+  ctx.strokeStyle = '#040a17'
+  ctx.lineWidth = 1.5 * guideScale
+  const side = 14 * guideScale
+  ctx.fillRect(handle.x - side / 2, handle.y - side / 2, side, side)
+  ctx.strokeRect(handle.x - side / 2, handle.y - side / 2, side, side)
+  ctx.restore()
+}
+
 /* The measuring line: cyan so it never reads as lights, with end ticks and its length. */
 function drawScaleGuide(ctx, points, feet, guideScale) {
   const [a, b] = points
@@ -575,7 +634,9 @@ export function paintMockup(
     return
   }
   const selected = shapes.find((shape) => shape.id === selectedId)
-  if (selected) {
+  if (selected && isPlacedItem(selected.service)) {
+    drawItemGuides(ctx, selected, guideScale)
+  } else if (selected) {
     drawGuides(ctx, selected, guideScale, isAreaService(selected.service), activeDot?.index ?? -1)
   }
   if (draft) {
