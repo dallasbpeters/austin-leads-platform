@@ -1,0 +1,449 @@
+<!doctype html>
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"headline","type":"string","label":"Headline","default":"Your roofline. Lit."},
+    {"id":"subhead","type":"string","label":"Sub-headline","default":"No ladder. No tangled box of lights."},
+    {"id":"offer","type":"string","label":"Offer chip","default":"Booking Central Texas now"},
+    {"id":"cta","type":"string","label":"Call to action","default":"Free estimate · No pressure"},
+    {"id":"phone","type":"string","label":"Phone","default":"(512) 775-0561"},
+    {"id":"bulbColor","type":"enum","label":"Bulb color","default":"warm-white","options":[
+      {"value":"warm-white","label":"Warm white"},
+      {"value":"multicolor","label":"Multicolor"},
+      {"value":"bright-white","label":"Bright white"}
+    ]}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Switzer';
+        src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'Bespoke Serif';
+        src: url('assets/fonts/BespokeSerif-Variable.woff2') format('woff2');
+        font-weight: 100 900;
+        font-display: block;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #040a17;
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        font-family: 'Switzer', system-ui, sans-serif;
+        color: #f4f7f4;
+        overflow: hidden;
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* ── Sky, stars, snow ─────────────────────────────────────────── */
+
+      .sky {
+        background:
+          radial-gradient(120% 70% at 50% 8%, #123a4d 0%, rgba(8, 20, 38, 0) 62%),
+          linear-gradient(180deg, #071427 0%, #040a17 55%, #02060f 100%);
+      }
+
+      .stars circle {
+        fill: #dce9ff;
+      }
+
+      .snow span {
+        position: absolute;
+        display: block;
+        border-radius: 50%;
+        background: #ffffff;
+        opacity: 0.85;
+        filter: blur(0.4px);
+      }
+
+      /* ── The house ────────────────────────────────────────────────── */
+
+      .house-wrap {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+      }
+
+      .house {
+        width: 1080px;
+        height: 900px;
+      }
+
+      /* ── Lights ───────────────────────────────────────────────────── */
+
+      .bulb {
+        position: absolute;
+        width: 46px;
+        transform-origin: 50% 8%;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      .bulb-glow {
+        position: absolute;
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        opacity: 0;
+        mix-blend-mode: screen;
+        will-change: opacity, transform;
+      }
+
+      /* ── Copy ─────────────────────────────────────────────────────── */
+
+      .copy {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 150px 84px 0;
+        text-align: center;
+      }
+
+      .offer {
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 34px;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 208, 107, 0.55);
+        background: rgba(255, 208, 107, 0.1);
+        color: #ffd06b;
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0;
+      }
+
+      .offer::before {
+        content: '';
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ffd06b;
+        box-shadow: 0 0 18px 4px rgba(255, 208, 107, 0.7);
+      }
+
+      .headline {
+        margin-top: 46px;
+        font-family: 'Bespoke Serif', Georgia, serif;
+        font-size: 128px;
+        line-height: 1.02;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+        text-shadow: 0 18px 60px rgba(2, 8, 20, 0.85);
+      }
+
+      .headline span {
+        display: inline-block;
+        opacity: 0;
+        will-change: transform, opacity;
+      }
+
+      .subhead {
+        margin-top: 34px;
+        font-size: 44px;
+        line-height: 1.32;
+        color: #cfe3d4;
+        text-wrap: balance;
+        opacity: 0;
+      }
+
+      /* ── Sign-off ─────────────────────────────────────────────────── */
+
+      .signoff {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 84px 190px;
+        text-align: center;
+      }
+
+      .signoff-logo {
+        width: 420px;
+        opacity: 0;
+      }
+
+      .phone {
+        margin-top: 30px;
+        font-size: 74px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        opacity: 0;
+      }
+
+      .cta {
+        margin-top: 18px;
+        font-size: 36px;
+        color: #cfe3d4;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="13"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!-- Sky -->
+      <div class="clip sky" id="sky" data-start="0" data-duration="13" data-track-index="0">
+        <svg class="stars" width="1080" height="1920" viewBox="0 0 1080 1920" aria-hidden="true">
+          <circle cx="120" cy="180" r="2.5" opacity="0.7" />
+          <circle cx="320" cy="96" r="2" opacity="0.5" />
+          <circle cx="520" cy="220" r="3" opacity="0.8" />
+          <circle cx="760" cy="140" r="2" opacity="0.6" />
+          <circle cx="940" cy="260" r="2.5" opacity="0.7" />
+          <circle cx="210" cy="420" r="2" opacity="0.45" />
+          <circle cx="880" cy="520" r="2.5" opacity="0.5" />
+          <circle cx="640" cy="60" r="2" opacity="0.55" />
+        </svg>
+      </div>
+
+      <!-- Snow (positions are fixed, never random — renders must be deterministic) -->
+      <div class="clip snow" id="snow" data-start="0" data-duration="13" data-track-index="1"></div>
+
+      <!-- House -->
+      <div class="clip house-wrap" id="house-scene" data-start="0" data-duration="13" data-track-index="2">
+        <svg class="house" viewBox="0 0 1080 900" aria-hidden="true">
+          <!-- ground -->
+          <rect x="0" y="806" width="1080" height="94" fill="#0b1b16" />
+          <!-- shrubs -->
+          <ellipse cx="146" cy="812" rx="118" ry="58" fill="#0e2a1f" />
+          <ellipse cx="934" cy="812" rx="132" ry="62" fill="#0e2a1f" />
+          <!-- body -->
+          <rect x="196" y="452" width="688" height="360" fill="#15212c" />
+          <!-- roof -->
+          <path d="M150 460 L540 214 L930 460 Z" fill="#1d2b38" />
+          <!-- fascia the bulbs clip to -->
+          <path d="M150 460 L540 214 L930 460" fill="none" stroke="#0d161e" stroke-width="16" />
+          <!-- door -->
+          <rect x="488" y="612" width="104" height="200" rx="6" fill="#0c141b" />
+          <!-- windows -->
+          <rect x="286" y="548" width="132" height="104" rx="8" fill="#0c141b" />
+          <rect x="662" y="548" width="132" height="104" rx="8" fill="#0c141b" />
+        </svg>
+      </div>
+
+      <!-- Light spill on the house, under the bulbs -->
+      <div class="clip" id="spill" data-start="1" data-duration="12" data-track-index="3"></div>
+
+      <!-- Bulbs along the roofline -->
+      <div class="clip" id="lights" data-start="1" data-duration="12" data-track-index="4"></div>
+
+      <!-- Copy -->
+      <div class="clip copy" id="copy-block" data-start="2.4" data-duration="6.4" data-track-index="5">
+        <div class="offer" id="offer" data-var-text="offer">Booking Central Texas now</div>
+        <h1 class="headline" id="headline"><span>Your roofline. Lit.</span></h1>
+        <p class="subhead" id="subhead" data-var-text="subhead">No ladder. No tangled box of lights.</p>
+      </div>
+
+      <!-- Sign-off -->
+      <div class="clip signoff" id="signoff-block" data-start="9" data-duration="4" data-track-index="6">
+        <img class="signoff-logo" id="logo" src="assets/brand/christmas-logo-reversed.svg" alt="" />
+        <div class="phone" id="phone" data-var-text="phone">(512) 775-0561</div>
+        <div class="cta" id="cta" data-var-text="cta">Free estimate · No pressure</div>
+      </div>
+    </div>
+
+    <script>
+      const { headline, bulbColor } = window.__hyperframes.getVariables()
+
+      /* ── Snow: fixed grid, nudged by a seeded shuffle so it never repeats visibly ── */
+      const seeded = (seed) => {
+        let state = seed
+        return () => {
+          state = (state * 16807) % 2147483647
+          return (state - 1) / 2147483646
+        }
+      }
+
+      const snowRandom = seeded(20261225)
+      const snow = document.getElementById('snow')
+      const flakes = []
+      for (let index = 0; index < 70; index += 1) {
+        const flake = document.createElement('span')
+        const size = 4 + Math.round(snowRandom() * 9)
+        flake.style.width = `${size}px`
+        flake.style.height = `${size}px`
+        flake.style.left = `${Math.round(snowRandom() * 1080)}px`
+        flake.style.top = `${Math.round(-200 + snowRandom() * 1900)}px`
+        flake.style.opacity = `${0.25 + snowRandom() * 0.55}`
+        snow.append(flake)
+        flakes.push({ node: flake, drift: (snowRandom() - 0.5) * 120, fall: 1500 + snowRandom() * 900 })
+      }
+
+      /* ── Bulbs: evenly spaced along both roof rakes, hung from the fascia ── */
+      const MULTICOLOR = ['red', 'green', 'blue', 'amber', 'purple']
+      const bulbArt = (index) =>
+        bulbColor === 'multicolor'
+          ? `assets/brand/c9-${MULTICOLOR[index % MULTICOLOR.length]}.png`
+          : `assets/brand/c9-${bulbColor}.png`
+      const glowColor = (index) => {
+        if (bulbColor === 'multicolor') {
+          return ['#ff2b2b', '#1fd65f', '#3b82f6', '#ffb000', '#e447ff'][index % 5]
+        }
+        return bulbColor === 'bright-white' ? '#eef6ff' : '#ffc46b'
+      }
+
+      /* Roof apex and eaves in root pixels — the house SVG sits flush to the bottom. */
+      const HOUSE_TOP = 1920 - 900
+      const APEX = { x: 540, y: HOUSE_TOP + 214 }
+      const LEFT_EAVE = { x: 150, y: HOUSE_TOP + 460 }
+      const RIGHT_EAVE = { x: 930, y: HOUSE_TOP + 460 }
+      const PER_SIDE = 15
+
+      const lights = document.getElementById('lights')
+      const spill = document.getElementById('spill')
+      const bulbs = []
+
+      const hangBulb = (from, to, step, order) => {
+        const t = step / PER_SIDE
+        const x = from.x + (to.x - from.x) * t
+        const y = from.y + (to.y - from.y) * t
+
+        const glow = document.createElement('div')
+        glow.className = 'bulb-glow'
+        glow.style.left = `${x - 95}px`
+        glow.style.top = `${y - 60}px`
+        glow.style.background = `radial-gradient(circle, ${glowColor(order)}cc 0%, ${glowColor(order)}33 32%, rgba(0,0,0,0) 70%)`
+        spill.append(glow)
+
+        const bulb = document.createElement('img')
+        bulb.className = 'bulb'
+        bulb.src = bulbArt(order)
+        bulb.alt = ''
+        bulb.style.left = `${x - 23}px`
+        bulb.style.top = `${y - 6}px`
+        lights.append(bulb)
+
+        bulbs.push({ bulb, glow })
+      }
+
+      /* Hang from the apex outwards on both sides, so the roofline lights up like a real run. */
+      for (let step = 0; step <= PER_SIDE; step += 1) {
+        hangBulb(APEX, LEFT_EAVE, step, step)
+        hangBulb(APEX, RIGHT_EAVE, step, step)
+      }
+
+      /* ── Headline: one word at a time ── */
+      const headlineNode = document.getElementById('headline')
+      headlineNode.textContent = ''
+      for (const [index, word] of String(headline).split(/\s+/).entries()) {
+        const span = document.createElement('span')
+        span.textContent = word
+        span.style.marginRight = '0.28em'
+        span.dataset.wordIndex = String(index)
+        headlineNode.append(span)
+      }
+
+      /* ── Timeline ── */
+      const tl = gsap.timeline({ paused: true })
+
+      tl.fromTo('.sky', { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.out' }, 0)
+      tl.fromTo(
+        '.house',
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out' },
+        0.15,
+      )
+
+      for (const flake of flakes) {
+        tl.fromTo(flake.node, { y: -160 }, { y: flake.fall, x: flake.drift, duration: 13, ease: 'none' }, 0)
+      }
+
+      /* Bulbs pop on in pairs from the apex outward, with a warm flicker settle. */
+      bulbs.forEach(({ bulb, glow }, index) => {
+        const at = 1.1 + Math.floor(index / 2) * 0.06
+        tl.fromTo(
+          bulb,
+          { opacity: 0, scale: 0.4 },
+          { opacity: 1, scale: 1, duration: 0.26, ease: 'back.out(2.4)' },
+          at,
+        )
+        tl.fromTo(
+          glow,
+          { opacity: 0, scale: 0.6 },
+          { opacity: 0.95, scale: 1, duration: 0.34, ease: 'power2.out' },
+          at,
+        )
+        tl.to(glow, { opacity: 0.72, duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: 5 }, at + 0.4)
+      })
+
+      tl.fromTo(
+        '#offer',
+        { opacity: 0, y: -18 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+        2.6,
+      )
+      tl.fromTo(
+        '#headline span',
+        { opacity: 0, y: 46, rotateX: -40 },
+        { opacity: 1, y: 0, rotateX: 0, duration: 0.62, ease: 'power3.out', stagger: 0.13 },
+        2.9,
+      )
+      tl.fromTo(
+        '#subhead',
+        { opacity: 0, y: 26 },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+        3.9,
+      )
+
+      /* Copy clears out before the sign-off lands. */
+      tl.to(
+        ['#offer', '#headline span', '#subhead'],
+        { opacity: 0, y: -24, duration: 0.45, ease: 'power2.in' },
+        8.1,
+      )
+
+      tl.fromTo(
+        '#logo',
+        { opacity: 0, y: 30, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' },
+        9.2,
+      )
+      tl.fromTo(
+        '#phone',
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' },
+        9.6,
+      )
+      tl.fromTo('#cta', { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, 9.95)
+
+      window.__timelines = window.__timelines || {}
+      window.__timelines['main'] = tl
+      tl.seek(0)
+    </script>
+  </body>
+</html>

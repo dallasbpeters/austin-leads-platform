@@ -46,6 +46,7 @@
     "video:yt:auth": "node --env-file=.env.local scripts/youtube-auth.mjs",
     "video:yt:push": "node --env-file=.env.local scripts/youtube-upload.mjs",
     "video:seed": "node --env-file=.env.local scripts/seed-video-project.mjs",
+    "reels:assets": "node scripts/sync-reel-assets.mjs",
     "video:render:push": "node --env-file=.env.local scripts/push-render.mjs"
   },
   "dependencies": {
