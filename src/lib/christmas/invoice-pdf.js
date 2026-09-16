@@ -206,236 +206,302 @@ const OrnamentRow = ({ size = 12, marginRight = 8 }) =>
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
-const s = StyleSheet.create({
-  /* paddingBottom clears the footer, which is pinned to the bottom of every page. */
-  page: { fontSize: 9, color: INK, backgroundColor: CREAM, fontFamily: 'Switzer', paddingBottom: 44 },
-  headerBand: {
-    backgroundColor: SPRUCE,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 9,
+/*
+ * Three densities. A quote is rendered at the first one that fits inside the
+ * page budget (see `renderChristmasInvoicePdf`), so a long list of lights
+ * tightens up instead of spilling onto another page.
+ */
+const DENSITIES = [
+  {
+    rowPadding: 4.5,
+    tableFont: 8,
+    bodyFont: 8,
+    noticeFont: 7.5,
+    logo: 68,
+    headerPad: 8,
+    gap: 8,
+    details: true,
   },
-  lightsStrip: { flexDirection: 'row', justifyContent: 'center', marginBottom: 2 },
-  slimHeaderBand: {
-    backgroundColor: SPRUCE,
-    paddingHorizontal: 20,
-    paddingVertical: 9,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  {
+    rowPadding: 3.2,
+    tableFont: 7.4,
+    bodyFont: 7.4,
+    noticeFont: 7,
+    logo: 56,
+    headerPad: 6,
+    gap: 6,
+    details: true,
   },
-  slimHeaderTitle: { color: CREAM_TEXT, fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
-  slimHeaderMeta: { color: MUTED_CREAM, fontSize: 8.5 },
-  headerRow: { flexDirection: 'row', alignItems: 'stretch', justifyContent: 'space-between' },
-  brandBlock: { flex: 1, paddingRight: 12, flexDirection: 'row', alignItems: 'center' },
-  logoChip: {
-    marginRight: 12,
-    maxWidth: 230,
+  {
+    rowPadding: 2.4,
+    tableFont: 6.9,
+    bodyFont: 7,
+    noticeFont: 6.6,
+    logo: 48,
+    headerPad: 5,
+    gap: 5,
+    details: true,
   },
-  logo: { width: 68, height: 68, objectFit: 'contain' },
-  brandMeta: { flex: 1 },
-  brandName: { color: CREAM_TEXT, fontSize: 16, fontFamily: 'Switzer Bold' },
-  brandTagline: { color: MUTED_CREAM, fontSize: 9.5, marginTop: 2, lineHeight: 1.4 },
-  contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 3 },
-  contactIcon: { width: 12, alignItems: 'center' },
-  contactText: { color: MUTED_CREAM, fontSize: 8, marginLeft: 5 },
-  invoiceBox: {
-    width: 200,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+  // Last resort for a very long list: the details column goes, since its words are already in the description.
+  {
+    rowPadding: 2,
+    tableFont: 6.6,
+    bodyFont: 6.8,
+    noticeFont: 6.4,
+    logo: 44,
+    headerPad: 4,
+    gap: 4,
+    details: false,
   },
-  invoiceTitle: {
-    fontSize: 18,
-    fontWeight: 800,
-    fontFamily: 'Switzer Bold',
-    color: CREAM,
-    letterSpacing: 1.5,
-  },
-  invoiceMetaRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
-  metaLabel: { fontSize: 7, color: CREAM, letterSpacing: 0.5 },
-  metaValue: { fontSize: 8, fontFamily: 'Switzer Bold', color: CREAM, marginTop: 1 },
-  quoteValidText: { fontSize: 7, color: MUTED_CREAM, marginTop: 4 },
+]
 
-  body: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 6 },
-  billToRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  billToBlock: { flex: 1, paddingRight: 16 },
-  label: { fontSize: 8, fontFamily: 'Switzer Bold', color: ORANGE, letterSpacing: 1.5 },
-  customerName: { fontSize: 12.5, fontFamily: 'Switzer Bold', color: INK, marginTop: 3 },
-  customerDetail: { fontSize: 8.5, color: MUTED, marginTop: 1, lineHeight: 1.45 },
-  metaBlock: { width: 210 },
-  metaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 2.5,
-    borderBottomWidth: 1,
-    borderBottomColor: LINE,
-  },
-  metaBlockLabel: { fontSize: 8.5, color: MUTED, letterSpacing: 0.5 },
-  metaBlockValue: { fontSize: 8.5, fontFamily: 'Switzer Bold', color: INK },
+/** The density the document being built is using — set alongside `s`. */
+let density = DENSITIES[0]
 
-  table: {
-    marginTop: 8,
-    backgroundColor: PAPER,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: PINE,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-  },
-  th: { color: '#ffffff', fontSize: 8, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
-  thDesc: { flex: 1, paddingRight: 8 },
-  thFeet: { width: 48, textAlign: 'right', paddingRight: 8 },
-  thUnit: { width: 60, textAlign: 'right', paddingRight: 8 },
-  thPrice: { width: 62, textAlign: 'right', paddingRight: 8 },
-  thEarlyPrice: { width: 62, textAlign: 'right', paddingRight: 8 },
-  thNotes: { width: 100 },
-  tableRow: {
-    flexDirection: 'row',
-    paddingVertical: 4.5,
-    paddingHorizontal: 10,
-    borderTopWidth: 1,
-    borderTopColor: LINE,
-  },
-  tableRowAlt: { backgroundColor: PANEL },
-  tdDesc: { flex: 1, fontSize: 8, paddingRight: 8 },
-  tdFeet: { width: 48, textAlign: 'right', fontSize: 8.5, paddingRight: 8 },
-  tdUnit: { width: 60, textAlign: 'right', fontSize: 8.5, paddingRight: 8 },
-  tdPrice: { width: 62, textAlign: 'right', fontSize: 8.5, fontFamily: 'Switzer Bold', paddingRight: 8 },
-  tdEarlyPrice: {
-    width: 62,
-    textAlign: 'right',
-    fontSize: 8.5,
-    fontFamily: 'Switzer Bold',
-    color: PINE,
-    paddingRight: 8,
-  },
-  tdNotes: { width: 100, fontSize: 7.5, color: MUTED },
-  emptyTable: { padding: 14, alignItems: 'center' },
-  emptyTableText: { fontSize: 9.5, color: MUTED },
+const createStyles = (d) =>
+  StyleSheet.create({
+    /* paddingBottom clears the footer, which is pinned to the bottom of every page. */
+    page: { fontSize: 9, color: INK, backgroundColor: CREAM, fontFamily: 'Switzer', paddingBottom: 44 },
+    headerBand: {
+      backgroundColor: SPRUCE,
+      paddingHorizontal: 20,
+      paddingTop: d.headerPad,
+      paddingBottom: d.headerPad + 1,
+    },
+    lightsStrip: { flexDirection: 'row', justifyContent: 'center', marginBottom: 2 },
+    slimHeaderBand: {
+      backgroundColor: SPRUCE,
+      paddingHorizontal: 20,
+      paddingVertical: 9,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    slimHeaderTitle: { color: CREAM_TEXT, fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
+    slimHeaderMeta: { color: MUTED_CREAM, fontSize: 8.5 },
+    headerRow: { flexDirection: 'row', alignItems: 'stretch', justifyContent: 'space-between' },
+    brandBlock: { flex: 1, paddingRight: 12, flexDirection: 'row', alignItems: 'center' },
+    logoChip: {
+      marginRight: 12,
+      maxWidth: 230,
+    },
+    logo: { width: d.logo, height: d.logo, objectFit: 'contain' },
+    brandMeta: { flex: 1 },
+    brandName: { color: CREAM_TEXT, fontSize: 16, fontFamily: 'Switzer Bold' },
+    brandTagline: { color: MUTED_CREAM, fontSize: 9.5, marginTop: 2, lineHeight: 1.4 },
+    contactRow: { flexDirection: 'row', alignItems: 'center', marginTop: 3 },
+    contactIcon: { width: 12, alignItems: 'center' },
+    contactText: { color: MUTED_CREAM, fontSize: 8, marginLeft: 5 },
+    invoiceBox: {
+      width: 200,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+    },
+    invoiceTitle: {
+      fontSize: 18,
+      fontWeight: 800,
+      fontFamily: 'Switzer Bold',
+      color: CREAM,
+      letterSpacing: 1.5,
+    },
+    invoiceMetaRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 },
+    metaLabel: { fontSize: 7, color: CREAM, letterSpacing: 0.5 },
+    metaValue: { fontSize: 8, fontFamily: 'Switzer Bold', color: CREAM, marginTop: 1 },
+    quoteValidText: { fontSize: 7, color: MUTED_CREAM, marginTop: 4 },
 
-  pricingSection: { marginTop: 10 },
-  pricingLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
-  pricingLabel: { fontSize: 8.5, color: MUTED },
-  pricingValue: { fontSize: 8.5, fontFamily: 'Switzer Bold', color: INK },
-  contractCostBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: PINE,
-    borderRadius: 4,
-    paddingVertical: 7,
-    paddingHorizontal: 10,
-    marginTop: 7,
-  },
-  contractCostLabel: { color: '#ffffff', fontSize: 9, fontFamily: 'Switzer Bold', letterSpacing: 1 },
-  contractCostValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Switzer Bold' },
-  saveBanner: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: GOLD,
-    borderRadius: 4,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    marginTop: 6,
-  },
-  saveBannerText: { fontSize: 8, fontFamily: 'Switzer Bold', color: INK },
+    body: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 6 },
+    billToRow: { flexDirection: 'row', justifyContent: 'space-between' },
+    billToBlock: { flex: 1, paddingRight: 16 },
+    label: { fontSize: 8, fontFamily: 'Switzer Bold', color: ORANGE, letterSpacing: 1.5 },
+    customerName: { fontSize: 12.5, fontFamily: 'Switzer Bold', color: INK, marginTop: 3 },
+    customerDetail: { fontSize: 8.5, color: MUTED, marginTop: 1, lineHeight: 1.45 },
+    metaBlock: { width: 210 },
+    metaRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 2.5,
+      borderBottomWidth: 1,
+      borderBottomColor: LINE,
+    },
+    metaBlockLabel: { fontSize: 8.5, color: MUTED, letterSpacing: 0.5 },
+    metaBlockValue: { fontSize: 8.5, fontFamily: 'Switzer Bold', color: INK },
 
-  paymentTermsBlock: { marginTop: 8 },
-  paymentTermsTable: {
-    marginTop: 6,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  paymentTermsRow: {
-    flexDirection: 'row',
-    backgroundColor: '#fff6b8',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#e8d97a',
-  },
-  paymentTermsRowFirst: { borderTopWidth: 0 },
-  paymentTermsLabel: { flex: 1, fontSize: 8.5, color: INK },
-  paymentTermsAmount: {
-    width: 90,
-    fontSize: 8.5,
-    fontFamily: 'Switzer Bold',
-    color: INK,
-    textAlign: 'right',
-  },
+    table: {
+      marginTop: d.gap,
+      backgroundColor: PAPER,
+      borderWidth: 1,
+      borderColor: LINE,
+      borderRadius: 4,
+      overflow: 'hidden',
+    },
+    tableHeader: {
+      flexDirection: 'row',
+      backgroundColor: PINE,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+    },
+    th: { color: '#ffffff', fontSize: 8, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
+    thDesc: { flex: 1, paddingRight: 8 },
+    thFeet: { width: 48, textAlign: 'right', paddingRight: 8 },
+    thUnit: { width: 60, textAlign: 'right', paddingRight: 8 },
+    thPrice: { width: 62, textAlign: 'right', paddingRight: 8 },
+    thEarlyPrice: { width: 62, textAlign: 'right', paddingRight: 8 },
+    thNotes: { width: 100 },
+    tableRow: {
+      flexDirection: 'row',
+      paddingVertical: d.rowPadding,
+      paddingHorizontal: 10,
+      borderTopWidth: 1,
+      borderTopColor: LINE,
+    },
+    tableRowAlt: { backgroundColor: PANEL },
+    tdDesc: { flex: 1, fontSize: d.tableFont, paddingRight: 8 },
+    tdFeet: { width: 48, textAlign: 'right', fontSize: d.tableFont, paddingRight: 8 },
+    tdUnit: { width: 60, textAlign: 'right', fontSize: d.tableFont, paddingRight: 8 },
+    tdPrice: {
+      width: 62,
+      textAlign: 'right',
+      fontSize: d.tableFont,
+      fontFamily: 'Switzer Bold',
+      paddingRight: 8,
+    },
+    tdEarlyPrice: {
+      width: 62,
+      textAlign: 'right',
+      fontSize: 8.5,
+      fontFamily: 'Switzer Bold',
+      color: PINE,
+      paddingRight: 8,
+    },
+    tdNotes: { width: 100, fontSize: 7.5, color: MUTED },
+    emptyTable: { padding: 14, alignItems: 'center' },
+    emptyTableText: { fontSize: 9.5, color: MUTED },
 
-  totalsRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 },
-  totalsCard: { width: 240 },
-  totalLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
-  totalLabel: { fontSize: 9.5, color: MUTED },
-  totalValue: { fontSize: 9.5, fontFamily: 'Switzer Bold', color: INK },
-  balanceLine: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: ORANGE,
-    borderRadius: 4,
-    paddingVertical: 7,
-    paddingHorizontal: 10,
-    marginTop: 5,
-  },
-  balanceLabel: { color: '#ffffff', fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 1 },
-  balanceValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Switzer Bold' },
+    pricingSection: { marginTop: d.gap },
+    pricingLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
+    pricingLabel: { fontSize: 8.5, color: MUTED },
+    pricingValue: { fontSize: 8.5, fontFamily: 'Switzer Bold', color: INK },
+    contractCostBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: PINE,
+      borderRadius: 4,
+      paddingVertical: 7,
+      paddingHorizontal: 10,
+      marginTop: 7,
+    },
+    contractCostLabel: { color: '#ffffff', fontSize: 9, fontFamily: 'Switzer Bold', letterSpacing: 1 },
+    contractCostValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Switzer Bold' },
+    saveBanner: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: GOLD,
+      borderRadius: 4,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      marginTop: 6,
+    },
+    saveBannerText: { fontSize: 8, fontFamily: 'Switzer Bold', color: INK },
 
-  notesBlock: { marginTop: 6 },
-  mockupPicture: { marginTop: 10, width: '100%', maxHeight: 560, objectFit: 'contain', borderRadius: 6 },
-  mockupCaption: { fontSize: 8.5, color: MUTED, lineHeight: 1.4, marginTop: 8 },
-  sectionTitleRow: { flexDirection: 'row', alignItems: 'center' },
-  sectionTitle: {
-    fontSize: 8,
-    fontFamily: 'Switzer Bold',
-    color: PINE,
-    letterSpacing: 1.5,
-    marginLeft: 6,
-  },
-  termsText: { fontSize: 8, color: MUTED, lineHeight: 1.3, marginTop: 3 },
-  notesText: { fontSize: 8, color: INK, lineHeight: 1.3, marginTop: 3 },
+    paymentTermsBlock: { marginTop: d.gap },
+    paymentTermsTable: {
+      marginTop: 6,
+      borderWidth: 1,
+      borderColor: LINE,
+      borderRadius: 4,
+      overflow: 'hidden',
+    },
+    paymentTermsRow: {
+      flexDirection: 'row',
+      backgroundColor: '#fff6b8',
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderTopWidth: 1,
+      borderTopColor: '#e8d97a',
+    },
+    paymentTermsRowFirst: { borderTopWidth: 0 },
+    paymentTermsLabel: { flex: 1, fontSize: 8.5, color: INK },
+    paymentTermsAmount: {
+      width: 90,
+      fontSize: 8.5,
+      fontFamily: 'Switzer Bold',
+      color: INK,
+      textAlign: 'right',
+    },
 
-  closingBlock: {},
-  noticeSection: { marginTop: 6, flexDirection: 'row', gap: 6 },
-  noticeBox: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: INK,
-    paddingVertical: 3.5,
-    paddingHorizontal: 8,
-  },
-  noticeBoxNoBorderTop: {},
-  noticeHeading: { fontSize: 8, fontFamily: 'Switzer Bold', color: INK, lineHeight: 1.25 },
-  noticeBody: { fontSize: 7.5, color: INK, lineHeight: 1.3, marginTop: 2 },
+    totalsRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10 },
+    totalsCard: { width: 240 },
+    totalLine: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
+    totalLabel: { fontSize: 9.5, color: MUTED },
+    totalValue: { fontSize: 9.5, fontFamily: 'Switzer Bold', color: INK },
+    balanceLine: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: ORANGE,
+      borderRadius: 4,
+      paddingVertical: 7,
+      paddingHorizontal: 10,
+      marginTop: 5,
+    },
+    balanceLabel: { color: '#ffffff', fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 1 },
+    balanceValue: { color: '#ffffff', fontSize: 13, fontFamily: 'Switzer Bold' },
 
-  footerBand: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: SPRUCE,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  footerLeft: { flexDirection: 'row', alignItems: 'center' },
-  footerText: { color: MUTED_CREAM, fontSize: 9.5 },
-  footerRight: { color: GOLD, fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
-  footerPage: { color: MUTED_CREAM, fontSize: 8, marginRight: 10 },
-})
+    notesBlock: { marginTop: d.gap - 2 },
+    mockupPicture: { marginTop: 10, width: '100%', maxHeight: 560, objectFit: 'contain', borderRadius: 6 },
+    mockupCaption: { fontSize: 8.5, color: MUTED, lineHeight: 1.4, marginTop: 8 },
+    sectionTitleRow: { flexDirection: 'row', alignItems: 'center' },
+    sectionTitle: {
+      fontSize: 8,
+      fontFamily: 'Switzer Bold',
+      color: PINE,
+      letterSpacing: 1.5,
+      marginLeft: 6,
+    },
+    termsText: { fontSize: d.bodyFont, color: MUTED, lineHeight: 1.3, marginTop: 3 },
+    notesText: { fontSize: d.bodyFont, color: INK, lineHeight: 1.3, marginTop: 3 },
+
+    closingBlock: {},
+    noticeSection: { marginTop: d.gap - 2, flexDirection: 'row', gap: 6 },
+    noticeBox: {
+      flex: 1,
+      borderWidth: 1,
+      borderColor: INK,
+      paddingVertical: 3.5,
+      paddingHorizontal: 8,
+    },
+    noticeBoxNoBorderTop: {},
+    noticeHeading: { fontSize: d.noticeFont, fontFamily: 'Switzer Bold', color: INK, lineHeight: 1.25 },
+    noticeBody: { fontSize: d.noticeFont - 0.4, color: INK, lineHeight: 1.3, marginTop: 2 },
+
+    footerBand: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: SPRUCE,
+      paddingVertical: 8,
+      paddingHorizontal: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 10,
+    },
+    footerLeft: { flexDirection: 'row', alignItems: 'center' },
+    footerText: { color: MUTED_CREAM, fontSize: 9.5 },
+    footerRight: { color: GOLD, fontSize: 10, fontFamily: 'Switzer Bold', letterSpacing: 0.5 },
+    footerPage: { color: MUTED_CREAM, fontSize: 8, marginRight: 10 },
+  })
+
+/*
+ * The styles for the document being built. Swapped right before the element
+ * tree is created (which is synchronous, so a second render in the same
+ * process can never steal another document's styles).
+ */
+let s = createStyles(DENSITIES[0])
 
 // ─── Small building blocks ───────────────────────────────────────────────────
 
@@ -609,7 +675,7 @@ function buildLineItemsTable(computed) {
       h(Text, { style: [s.th, s.thUnit] }, 'UNIT PRICE'),
       h(Text, { style: [s.th, s.thPrice] }, 'PRICE'),
       h(Text, { style: [s.th, s.thEarlyPrice] }, 'EARLY PRICE'),
-      h(Text, { style: [s.th, s.thNotes] }, 'DETAILS/NOTES'),
+      density.details ? h(Text, { style: [s.th, s.thNotes] }, 'DETAILS/NOTES') : null,
     )
 
   return h(
@@ -630,7 +696,7 @@ function buildLineItemsTable(computed) {
             h(Text, { style: s.tdUnit }, money(item.unitPriceCents)),
             h(Text, { style: s.tdPrice }, money(item.priceCents)),
             h(Text, { style: s.tdEarlyPrice }, money(item.earlyPriceCents)),
-            h(Text, { style: s.tdNotes }, lineItemMeta(item) || '—'),
+            density.details ? h(Text, { style: s.tdNotes }, lineItemMeta(item) || '—') : null,
           ),
         )
       : h(
@@ -891,6 +957,9 @@ function buildMockupPage({ picture, invoice, company, logo, inputs }) {
  * @param {Buffer|null} [options.mockupPicture] Lights mockup JPEG, added as a second page
  */
 export function ChristmasInvoiceDocument(invoice, options = {}) {
+  // Synchronous: the tree below captures these style objects as it is built.
+  density = DENSITIES[Math.min(options.density || 0, DENSITIES.length - 1)]
+  s = createStyles(density)
   const company = options.company || getChristmasCompanyInfo()
   const logo = options.logo || resolveLogoPath(company.logoUrl)
   const inputs = invoice.data?.inputs || {}
@@ -957,14 +1026,13 @@ async function loadMockupPicture(invoiceId) {
   }
 }
 
-/**
- * Render an invoice to a PDF Buffer. Includes the invoice's lights mockup
- * picture unless `options.mockupPicture` is given (pass null to leave it out).
- */
-export async function renderChristmasInvoicePdf(invoice, options = {}) {
-  const mockupPicture =
-    options.mockupPicture === undefined ? await loadMockupPicture(invoice.id) : options.mockupPicture
-  const instance = pdf(ChristmasInvoiceDocument(invoice, { ...options, mockupPicture }))
+/** Pages in a rendered PDF buffer. */
+function countPages(buffer) {
+  return (buffer.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length
+}
+
+async function renderAtDensity(invoice, options, level) {
+  const instance = pdf(ChristmasInvoiceDocument(invoice, { ...options, density: level }))
   const blob = await instance.toBlob().catch(() => null)
   if (blob) {
     return Buffer.from(await blob.arrayBuffer())
@@ -978,6 +1046,34 @@ export async function renderChristmasInvoicePdf(invoice, options = {}) {
   buffer.on('data', (chunk) => chunks.push(chunk))
   await finished(buffer)
   return Buffer.concat(chunks)
+}
+
+/* A quote is two pages; the lights mockup, when there is one, adds its own. */
+const MAX_QUOTE_PAGES = 2
+
+/**
+ * Render an invoice to a PDF Buffer. Includes the invoice's lights mockup
+ * picture unless `options.mockupPicture` is given (pass null to leave it out).
+ *
+ * The quote is re-rendered at a tighter density if it runs past two pages, so
+ * a long list of lights never turns into a third page of leftovers.
+ */
+export async function renderChristmasInvoicePdf(invoice, options = {}) {
+  const mockupPicture =
+    options.mockupPicture === undefined ? await loadMockupPicture(invoice.id) : options.mockupPicture
+  const budget = MAX_QUOTE_PAGES + (mockupPicture ? 1 : 0)
+
+  let rendered = null
+  for (let level = 0; level < DENSITIES.length; level += 1) {
+    rendered = await renderAtDensity(invoice, { ...options, mockupPicture }, level)
+    if (countPages(rendered) <= budget) {
+      return rendered
+    }
+  }
+  console.warn(
+    `[christmas/invoice-pdf] ${invoice.invoiceNumber} still needs ${countPages(rendered)} pages at the tightest density.`,
+  )
+  return rendered
 }
 
 export function christmasInvoiceFileName(invoice) {
