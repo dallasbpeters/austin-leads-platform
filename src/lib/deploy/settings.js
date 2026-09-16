@@ -122,6 +122,17 @@ export const DEPLOY_SETTINGS = [
 
 export const findSetting = (key) => DEPLOY_SETTINGS.find((setting) => setting.key === key) || null
 
+/*
+ * Keys and tokens are plain ASCII. A paste from a terminal or a chat can carry
+ * box-drawing characters, smart quotes, or line breaks around them; drop
+ * anything that could never be part of a key.
+ */
+export const cleanPastedValue = (raw) =>
+  String(raw ?? '')
+    .replaceAll(/[^\u0020-\u007E]/g, '')
+    .trim()
+    .replaceAll(/^["'`]+|["'`]+$/g, '')
+
 const isLocal = () => process.env.NODE_ENV !== 'production'
 
 /* In local dev the values also go to .env.local, so the dev server matches. */
@@ -147,7 +158,13 @@ async function safely(task) {
 export async function deploySettingsStatus() {
   const [vercel, railway] = await Promise.all([
     vercelReady() ? safely(listVercelEnv) : { error: 'VERCEL_TOKEN is not set.' },
-    railwayReady() ? safely(listRailwayKeys) : { error: 'Add the Railway project token first.' },
+    railwayReady()
+      ? safely(listRailwayKeys)
+      : {
+          error: (process.env.RAILWAY_TOKEN || '').trim()
+            ? 'The saved Railway token is not a real token (it has no token ID in it). Paste it again.'
+            : 'Add the Railway project token first.',
+        },
   ])
   const vercelKeys = new Set((vercel.value || []).map((entry) => entry.key))
   const railwayKeys = new Set(railway.value || [])
@@ -189,7 +206,7 @@ export async function applySetting(key, rawValue, { generate = false } = {}) {
   if (generate && setting.kind !== 'generate') {
     throw new Error(`${key} is pasted, not generated.`)
   }
-  const value = generate ? randomBytes(32).toString('hex') : String(rawValue ?? '').trim()
+  const value = generate ? randomBytes(32).toString('hex') : cleanPastedValue(rawValue)
   if (!value) {
     throw new Error('Enter a value first.')
   }

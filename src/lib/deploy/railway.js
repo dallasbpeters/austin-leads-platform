@@ -8,15 +8,23 @@
 const API = 'https://backboard.railway.com/graphql/v2'
 const env = (name) => (process.env[name] || '').trim()
 
+/*
+ * Railway tokens are UUIDs. A paste can drag in stray characters (box-drawing
+ * lines from a terminal, quotes, spaces), and a header can only carry plain
+ * ASCII, so read the UUID out of whatever was saved.
+ */
+const UUID = /[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/i
+const railwayToken = () => env('RAILWAY_TOKEN').match(UUID)?.[0] || ''
+
 export const RENDERER_REPO = 'dallasbpeters/austin-leads-platform'
 export const RENDERER_DOCKERFILE = 'services/reel-renderer/Dockerfile'
 
-export const railwayReady = () => Boolean(env('RAILWAY_TOKEN'))
+export const railwayReady = () => Boolean(railwayToken())
 
 async function gql(query, variables = {}) {
   const response = await fetch(API, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Project-Access-Token': env('RAILWAY_TOKEN') },
+    headers: { 'Content-Type': 'application/json', 'Project-Access-Token': railwayToken() },
     body: JSON.stringify({ query, variables }),
     cache: 'no-store',
   })

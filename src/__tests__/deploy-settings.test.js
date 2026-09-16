@@ -48,3 +48,11 @@ describe('deploy settings', () => {
     expect(JSON.stringify(status)).not.toContain('"value"')
   })
 })
+
+describe('pasted values', () => {
+  it('drops terminal box lines, quotes and line breaks', async () => {
+    const { cleanPastedValue } = await import('@/lib/deploy/settings')
+    expect(cleanPastedValue('──── \n "abc-123"\n────')).toBe('abc-123')
+    expect(cleanPastedValue('  sk_live  ')).toBe('sk_live')
+  })
+})
