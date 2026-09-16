@@ -102,6 +102,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'm.bbb.org',
+        port: '',
+      },
+      {
+        protocol: 'https',
         hostname: 'randomuser.me',
         port: '',
       },

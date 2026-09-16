@@ -112,7 +112,7 @@ const NavList = ({ items, onNavigate }) => (
 const PhoneLink = ({ inSheet = false, prefix = null }) => (
   <div className="site-header__phone-wrapper">
     <a href={SITE_PHONE_HREF} className={cn('site-header__phone', inSheet && 'site-header__phone--sheet')}>
-      <span> Call us at:</span>
+      <span> Call:</span>
       <Phone className="site-header__phone-icon" strokeWidth={2} aria-hidden="true" />
       <span>
         {prefix ? `${prefix} ` : null}

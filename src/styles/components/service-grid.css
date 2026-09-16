@@ -53,6 +53,7 @@
 
 .service-grid__link {
   border-radius: 1rem;
+  corner-shape: squircle;
 }
 
 .service-grid__link:focus-visible {
@@ -129,7 +130,7 @@
   position: absolute;
   inset: 0;
   z-index: 3;
-  padding: 3px;
+  padding: 6px;
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
@@ -162,7 +163,7 @@
   inset-inline: 0;
   bottom: 0;
   z-index: 2;
-  padding: 1rem;
+  padding: 2rem;
   border-radius: inherit;
   color: var(--color-white);
 }
@@ -195,7 +196,7 @@
 }
 
 .service-grid__eyebrow {
-  margin: 0;
+  margin: 1em 0;
   font-family: var(--font-mono);
   font-weight: 700;
   line-height: 1.1;
