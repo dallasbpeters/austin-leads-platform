@@ -90,7 +90,7 @@ export function getChristmasCompanyInfo() {
 // `logoUrl` (from invoice settings) is a path relative to /public, e.g.
 // "/images/tx-christmas-logo-full.png" — resolve it to a real file on disk.
 function resolveLogoPath(logoUrl) {
-  const relative = String(logoUrl || '/christmas-logo-reversed.svg').trim() || '/christmas-logo-reversed.svg'
+  const relative = String(logoUrl || '/christmas-logo.svg').trim() || '/christmas-logo.svg'
   const candidate = path.join(process.cwd(), 'public', relative.replace(/^\/+/, ''))
   return existsSync(candidate) ? candidate : null
 }

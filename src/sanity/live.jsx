@@ -1,7 +1,7 @@
 import { createClient } from 'next-sanity'
 import { defineLive } from 'next-sanity/live'
 
-import { apiVersion, canonicalStudioUrl, dataset, projectId, useCdn } from './env'
+import { apiVersion, dataset, projectId, runtimeStudioUrl, useCdn } from './env'
 
 const viewerToken =
   process.env.SANITY_VIEWER_TOKEN ||
@@ -17,8 +17,10 @@ const liveConfig =
           dataset,
           apiVersion,
           useCdn,
+          // `enabled` defaults to false; without it live content carries no edit links.
           stega: {
-            studioUrl: canonicalStudioUrl,
+            enabled: true,
+            studioUrl: runtimeStudioUrl,
           },
         }),
         browserToken: viewerToken,

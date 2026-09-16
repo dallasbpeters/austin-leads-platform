@@ -3,12 +3,12 @@ import { createClient } from 'next-sanity'
 
 import {
   apiVersion,
-  canonicalStudioUrl,
   contextApiVersion,
   contextOrganizationId,
   dataset,
   isSanityConfigured,
   projectId,
+  runtimeStudioUrl,
   useCdn,
 } from './env'
 
@@ -81,9 +81,15 @@ export function getSanityServerClient({ preview = false, stega = preview } = {})
     token: preview ? viewerToken : undefined,
     useCdn: preview ? false : useCdn,
     perspective: preview ? 'drafts' : 'published',
+    /*
+     * `enabled` is off by default in @sanity/client, so passing only
+     * `studioUrl` encoded nothing — which left Vercel's visual editor (and
+     * Sanity Presentation) with no source map to click on.
+     */
     stega: stega
       ? {
-          studioUrl: canonicalStudioUrl,
+          enabled: true,
+          studioUrl: runtimeStudioUrl,
         }
       : false,
   })

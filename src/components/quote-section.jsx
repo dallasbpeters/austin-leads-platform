@@ -3,6 +3,7 @@
 import { cva } from 'class-variance-authority'
 import { useEffect, useRef, useState } from 'react'
 
+import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -53,7 +54,8 @@ export default function QuoteSection({
   const sectionRef = useRef(null)
   const [revealedCount, setRevealedCount] = useState(0)
   const wasFullyRevealedRef = useRef(false)
-  const words = quoteText.split(/\s+/)
+  // Split per word for the reveal, so the invisible edit markers have to come off first.
+  const words = String(cleanRuntimeString(quoteText) || '').split(/\s+/)
   const totalWords = words.length
   const wordColors = quoteWordColors[variant] || quoteWordColors.default
 

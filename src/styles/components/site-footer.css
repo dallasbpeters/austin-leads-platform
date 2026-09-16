@@ -115,6 +115,7 @@
 
 .site-footer__heading {
   color: var(--color-white);
+  margin-block-start: 1em;
 }
 
 .site-footer__list {
