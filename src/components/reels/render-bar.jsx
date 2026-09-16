@@ -14,6 +14,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { AlertTriangle, Download, Film, Loader2, Share2 } from 'lucide-react'
 
+import PostPanel from '@/components/reels/post-panel'
+import { defaultCaption } from '@/lib/reels/scenes'
+
 const POLL_MS = 2500
 
 const STATUS_TEXT = {
@@ -155,6 +158,7 @@ export default function RenderBar({ scenes, seconds, initialUrl = null, onRender
               Download
             </a>
           </div>
+          <PostPanel initialCaption={defaultCaption(scenes)} videoUrl={job.url} />
         </div>
       ) : null}
     </section>

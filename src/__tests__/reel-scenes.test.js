@@ -34,3 +34,24 @@ describe('what the voice says', () => {
     expect(scene.id).toBeUndefined()
   })
 })
+
+describe('reel caption and posting', () => {
+  it('builds a caption from the reel', async () => {
+    const { defaultCaption } = await import('@/lib/reels/scenes')
+    const caption = defaultCaption([
+      { type: 'photo', headline: 'Your house. Lit.', sub: 'We hang it' },
+      { type: 'offer', headline: 'Starting at', price: '$300' },
+      { type: 'signoff', sub: '(512) 775-0561', headline: 'Free estimate' },
+    ])
+    expect(caption).toContain('Your house. Lit. We hang it.')
+    expect(caption).toContain('Starting at $300.')
+    expect(caption).toContain('(512) 775-0561')
+  })
+
+  it('only posts videos from Vercel Blob', async () => {
+    const { isPostableVideoUrl } = await import('@/lib/social/publish')
+    expect(isPostableVideoUrl('https://abc.public.blob.vercel-storage.com/reels/x.mp4')).toBe(true)
+    expect(isPostableVideoUrl('https://evil.example.com/x.mp4')).toBe(false)
+    expect(isPostableVideoUrl('not a url')).toBe(false)
+  })
+})

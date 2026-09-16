@@ -13,6 +13,7 @@ public
 src
 docs
 scripts
+!scripts/sync-reel-assets.mjs
 videos/*/renders
 videos/*/snapshots
 videos/*/capture

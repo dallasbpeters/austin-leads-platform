@@ -158,3 +158,20 @@ export const toRenderScenes = (scenes) =>
 /** A one-line summary for the scene strip. */
 export const sceneSummary = (scene) =>
   scene.headline || scene.price || scene.eyebrow || sceneTypeOf(scene).label
+
+const CAPTION_TAGS = '#ChristmasLights #TexasChristmasLights #CentralTexas #HolidayLights'
+
+/** A starting caption from the reel's own words: the opening line, the price, and how to book. */
+export function defaultCaption(scenes) {
+  const opening = scenes.find((scene) => clean(scene.headline) && scene.type !== 'signoff')
+  const offer = scenes.find((scene) => scene.type === 'offer' && clean(scene.price))
+  const signoff = scenes.find((scene) => scene.type === 'signoff')
+  return [
+    opening ? [sentence(opening.headline), sentence(opening.sub)].filter(Boolean).join(' ') : '',
+    offer ? sentence(`${clean(offer.headline)} ${clean(offer.price)}`.trim()) : '',
+    signoff?.sub ? `Free estimate, no pressure: ${clean(signoff.sub)}` : 'Free estimate, no pressure.',
+    CAPTION_TAGS,
+  ]
+    .filter(Boolean)
+    .join('\n\n')
+}
