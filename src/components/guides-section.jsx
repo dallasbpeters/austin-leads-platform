@@ -82,7 +82,7 @@ export default function GuidesSection({ section = null, page = null, sectionId =
 
   return (
     <CloudSectionBackground
-      className="guides cloud-theme-section--editorial solar-grid-bg"
+      className="guides cloud-theme-section--editorial"
       showClouds={showClouds}
       {...getDevSectionAttributes({
         id: sectionId,

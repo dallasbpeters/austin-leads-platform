@@ -12,6 +12,21 @@
  * post-holiday removal.
  */
 
+/** The only four service types we sell — used as the line item category on quotes. */
+export const CHRISTMAS_SERVICE_TYPES = ['Tree lights', 'Stake lights', 'Roofline / ridge', 'Garland']
+
+/** The only three bulb colors we offer. */
+export const CHRISTMAS_LIGHT_COLORS = ['Warm white', 'Multicolor', 'Bright white']
+
+/*
+ * Invoices saved before these lists existed hold free-text values. Keep an
+ * unknown saved value selectable so opening an old invoice doesn't blank it.
+ */
+export function optionsWithCurrent(options, current) {
+  const value = String(current || '').trim()
+  return value && !options.includes(value) ? [...options, value] : options
+}
+
 export const CHRISTMAS_PACKAGE_PRESETS = [
   {
     id: 'roofline',
@@ -20,7 +35,12 @@ export const CHRISTMAS_PACKAGE_PRESETS = [
     description: 'Roofline and gutter runs.',
     included: ['Professional installation', 'Mid-season bulb service', 'Post-holiday removal'],
     lineItems: [
-      { description: 'Roofline & gutter LED light installation', quantity: 1, unitPriceCents: 30_000 },
+      {
+        category: 'Roofline / ridge',
+        description: 'Roofline & gutter LED light installation',
+        quantity: 1,
+        unitPriceCents: 30_000,
+      },
       { description: 'Mid-season bulb service', quantity: 1, unitPriceCents: 0 },
       { description: 'Post-holiday removal', quantity: 1, unitPriceCents: 0 },
     ],

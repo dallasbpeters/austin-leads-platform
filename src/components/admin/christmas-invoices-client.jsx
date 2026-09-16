@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
+  Camera,
   Download,
   Eye,
   History,
@@ -38,7 +39,14 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 
-import { computeChristmasInvoice, presetLineItems } from '@/lib/christmas/invoice-calc'
+import {
+  CHRISTMAS_LIGHT_COLORS,
+  CHRISTMAS_SERVICE_TYPES,
+  computeChristmasInvoice,
+  optionsWithCurrent,
+  presetLineItems,
+} from '@/lib/christmas/invoice-calc'
+import { MOCKUP_LINE_ITEMS_STORAGE_KEY, parseMockupHandoff } from '@/lib/christmas/mockup-geometry'
 
 // ─── Formatters / helpers ────────────────────────────────────────────────────
 
@@ -262,6 +270,61 @@ const preloadEditingId = (preloadInvoice, editId) => (editId && preloadInvoice ?
 
 const isLoadingInvoice = (loadingInvoiceId, invoice) => Boolean(invoice) && loadingInvoiceId === invoice.id
 
+const LINE_ITEMS_SECTION_ID = 'invoice-line-items'
+
+/*
+ * "Add lights to a quote" on the mockup page stashes one line per service +
+ * color. A new invoice starts from just those lines (a custom package); an
+ * existing invoice gets them added to its lines. The stash is cleared right
+ * away so a refresh doesn't add them twice.
+ *
+ * Returns a ref holding a mockup id to link once a *new* invoice is saved.
+ */
+function useMockupLineItems({ fromMockup, isExistingInvoice, setForm, setMessage }) {
+  const pendingMockupIdRef = useRef(null)
+
+  useEffect(() => {
+    if (!fromMockup) {
+      return
+    }
+    let handoff
+    try {
+      handoff = parseMockupHandoff(localStorage.getItem(MOCKUP_LINE_ITEMS_STORAGE_KEY))
+      localStorage.removeItem(MOCKUP_LINE_ITEMS_STORAGE_KEY)
+    } catch {
+      return
+    }
+    if (!handoff.items.length) {
+      return
+    }
+    pendingMockupIdRef.current = isExistingInvoice ? null : handoff.mockupId
+    const mockupLines = handoff.items.map(presetItemToFormLineItem)
+    setForm((current) =>
+      isExistingInvoice
+        ? {
+            ...current,
+            lineItems: [
+              ...current.lineItems.filter((item) => item.description || Number(item.unitPrice) > 0),
+              ...mockupLines,
+            ],
+          }
+        : { ...current, packageId: 'custom', packageLabel: 'Custom Package', lineItems: mockupLines },
+    )
+    const count = handoff.items.length
+    setMessage(
+      `Added ${count} line${count === 1 ? '' : 's'} from the lights mockup. Check the prices below, then save.`,
+    )
+    // Let the new lines render, then bring them into view.
+    requestAnimationFrame(() =>
+      document
+        .querySelector(`#${LINE_ITEMS_SECTION_ID}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+    )
+  }, [fromMockup])
+
+  return pendingMockupIdRef
+}
+
 // ─── Small presentational pieces ─────────────────────────────────────────────
 
 function IntegrationResultsCard({ results }) {
@@ -354,6 +417,23 @@ function JobberPushCard({ invoice, onPush, pushing, result }) {
   )
 }
 
+function OptionSelect({ id, value, options, placeholder, onChange }) {
+  return (
+    <Select onValueChange={onChange} value={value}>
+      <SelectTrigger id={id}>
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {optionsWithCurrent(options, value).map((option) => (
+          <SelectItem key={option} value={option}>
+            {option}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
+}
+
 function LineItemRow({ item, index, onChange, onRemove }) {
   const itemAmountCents = inputToCents(item.unitPrice) * (Number(item.quantity) || 0)
   return (
@@ -370,14 +450,15 @@ function LineItemRow({ item, index, onChange, onRemove }) {
         />
       </div>
       <div className="flex flex-wrap items-end gap-2">
-        <div className="grid min-w-28 flex-1 gap-1">
+        <div className="grid min-w-36 flex-1 gap-1">
           <Label className="text-muted-foreground text-xs" htmlFor={`li-category-${index}`}>
-            Category
+            Service
           </Label>
-          <Input
+          <OptionSelect
             id={`li-category-${index}`}
-            onChange={(event) => onChange('category', event.target.value)}
-            placeholder="Roofline lights"
+            onChange={(value) => onChange('category', value)}
+            options={CHRISTMAS_SERVICE_TYPES}
+            placeholder="Pick a service"
             value={item.category}
           />
         </div>
@@ -392,14 +473,15 @@ function LineItemRow({ item, index, onChange, onRemove }) {
             value={item.location}
           />
         </div>
-        <div className="grid min-w-24 flex-1 gap-1">
+        <div className="grid min-w-32 flex-1 gap-1">
           <Label className="text-muted-foreground text-xs" htmlFor={`li-color-${index}`}>
             Color
           </Label>
-          <Input
+          <OptionSelect
             id={`li-color-${index}`}
-            onChange={(event) => onChange('color', event.target.value)}
-            placeholder="Warm white"
+            onChange={(value) => onChange('color', value)}
+            options={CHRISTMAS_LIGHT_COLORS}
+            placeholder="Pick a color"
             value={item.color}
           />
         </div>
@@ -448,6 +530,69 @@ function LineItemRow({ item, index, onChange, onRemove }) {
         </Button>
       </div>
     </div>
+  )
+}
+
+/*
+ * Opens the lights mockup for this invoice. A saved invoice links its mockup
+ * (and shows the saved picture); an unsaved one can still open a scratch
+ * mockup, but saving needs an invoice to attach to.
+ */
+function MockupCard({ invoiceId, refreshKey = 0 }) {
+  const [mockup, setMockup] = useState(null)
+
+  useEffect(() => {
+    setMockup(null)
+    if (!invoiceId) {
+      return
+    }
+    const controller = new AbortController()
+    const load = async () => {
+      try {
+        const response = await fetch(`/api/christmas/invoices/${invoiceId}/mockup`, {
+          signal: controller.signal,
+        })
+        const payload = await response.json()
+        setMockup(payload.mockup || null)
+      } catch {
+        // No thumbnail is fine — the button still opens the mockup.
+      }
+    }
+    load()
+    return () => controller.abort()
+  }, [invoiceId, refreshKey])
+
+  const href = invoiceId ? `/christmas/mockup?invoice=${invoiceId}` : '/christmas/mockup'
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Lights mockup</CardTitle>
+        <CardDescription>
+          {invoiceId
+            ? 'Show the customer their house with lights, and save it with this invoice.'
+            : 'Save the invoice first to keep a mockup with it.'}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {mockup ? (
+          <Link className="block overflow-hidden rounded-xl border" href={href}>
+            {/* oxlint-disable-next-line next/no-img-element -- auth-gated API image; next/image can't fetch it */}
+            <img
+              alt="Saved lights mockup"
+              className="max-h-64 w-full object-contain"
+              src={`/api/christmas/invoices/${invoiceId}/mockup/rendered?v=${encodeURIComponent(mockup.updatedAt)}`}
+            />
+          </Link>
+        ) : null}
+        <Button asChild size="sm" variant="outline">
+          <Link href={href}>
+            <Camera className="mr-1.5 size-4" />
+            {mockup ? 'Edit mockup' : 'Open lights mockup'}
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -759,6 +904,7 @@ const ChristmasInvoicesClient = ({
   templates = [],
   editId = null,
   dupeId = null,
+  fromMockup,
   zohoConnected = false,
   zohoAuthEnabled = false,
 }) => {
@@ -791,6 +937,14 @@ const ChristmasInvoicesClient = ({
   const [sendMessage, setSendMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [sendResults, setSendResults] = useState(null)
+
+  const pendingMockupIdRef = useMockupLineItems({
+    fromMockup,
+    isExistingInvoice: Boolean(preloadEditingId(preloadInvoice, editId)),
+    setForm,
+    setMessage,
+  })
+  const [mockupRefresh, setMockupRefresh] = useState(0)
 
   const previewTimerRef = useRef(null)
   const previewUrlRef = useRef(null)
@@ -828,7 +982,7 @@ const ChristmasInvoicesClient = ({
         const response = await fetch('/api/christmas/invoices/preview-pdf', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ inputs: formToInputs(form) }),
+          body: JSON.stringify({ inputs: formToInputs(form), invoiceId: editingId || undefined }),
           signal: controller.signal,
         })
         if (response.ok) {
@@ -858,7 +1012,7 @@ const ChristmasInvoicesClient = ({
       clearTimeout(previewTimerRef.current)
       controller.abort()
     }
-  }, [form])
+  }, [form, editingId, mockupRefresh])
 
   useEffect(
     () => () => {
@@ -972,6 +1126,25 @@ const ChristmasInvoicesClient = ({
 
   const openDuplicate = (invoice) => openLoadedInvoice(invoice, { asDuplicate: true })
 
+  /* A new invoice started from a mockup gets tied to that mockup on its first save. */
+  const linkPendingMockup = async (invoiceId) => {
+    const mockupId = pendingMockupIdRef.current
+    if (!mockupId) {
+      return
+    }
+    pendingMockupIdRef.current = null
+    try {
+      await fetch(`/api/christmas/invoices/${invoiceId}/mockup/link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mockupId }),
+      })
+      setMockupRefresh((tick) => tick + 1)
+    } catch (error) {
+      console.error('[christmas/invoices] linking the mockup failed', error)
+    }
+  }
+
   const persistInvoice = async () => {
     if (!form.customerFirstName.trim()) {
       throw new Error('Customer first name is required')
@@ -995,6 +1168,7 @@ const ChristmasInvoicesClient = ({
     setInvoices((list) => [data.invoice, ...list.filter((item) => item.id !== data.invoice.id)])
     setMessage(editingId ? 'Invoice updated.' : 'Invoice created.')
     setEditingId(data.invoice.id)
+    await linkPendingMockup(data.invoice.id)
     return data.invoice
   }
 
@@ -1173,10 +1347,11 @@ const ChristmasInvoicesClient = ({
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
                   <Label htmlFor="colorLights">Color lights</Label>
-                  <Input
+                  <OptionSelect
                     id="colorLights"
-                    onChange={(event) => update('colorLights', event.target.value)}
-                    placeholder="Multi Colored"
+                    onChange={(value) => update('colorLights', value)}
+                    options={CHRISTMAS_LIGHT_COLORS}
+                    placeholder="Pick a color"
                     value={form.colorLights}
                   />
                 </div>
@@ -1317,7 +1492,9 @@ const ChristmasInvoicesClient = ({
             </CardContent>
           </Card>
 
-          <Card>
+          <MockupCard invoiceId={editingId} refreshKey={mockupRefresh} />
+
+          <Card className="scroll-mt-6" id={LINE_ITEMS_SECTION_ID}>
             <CardHeader>
               <CardTitle className="text-base">Package & line items</CardTitle>
               <CardDescription>

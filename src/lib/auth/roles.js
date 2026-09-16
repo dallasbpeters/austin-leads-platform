@@ -2,7 +2,7 @@
 export const PLATFORM_ROLES = ['admin', 'quotes']
 
 /** Paths a `quotes` user may open in the admin console. */
-export const QUOTES_ALLOWED_PATH_PREFIXES = ['/crm', '/quotes', '/christmas/invoices']
+export const QUOTES_ALLOWED_PATH_PREFIXES = ['/crm', '/quotes', '/christmas/invoices', '/christmas/mockup']
 
 /** API prefixes a `quotes` user may call. */
 export const QUOTES_ALLOWED_API_PREFIXES = [

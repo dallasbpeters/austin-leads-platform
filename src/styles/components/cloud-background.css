@@ -40,10 +40,10 @@
 
 /*
  * Sky tone resolves through inherited custom properties, from the nearest
- * ancestor carrying `data-cloud-tone`. `cloudToneBootstrapScript` stamps the
- * visitor's local phase onto `<html>` before the first paint, so cloud
- * sections render their final colors immediately rather than starting on the
- * day palette and transitioning once React mounts. A section may still set the
+ * ancestor carrying `data-cloud-tone`. The server stamps the visitor's phase
+ * onto `<html>` from the `cloud-tone` cookie, so cloud sections render their
+ * final colors on the first paint rather than starting on the day palette and
+ * transitioning once React mounts. A section may still set the
  * attribute itself to override the tone for its own subtree — because these
  * are inherited properties, the nearest declaration wins with no specificity
  * juggling required.
@@ -377,4 +377,16 @@ html:not([data-cloud-tone]),
   .cloud-background__scroll {
     transform: none;
   }
+}
+
+/*
+ * A cloud section's background IS the sky. A grid drawn over it disappears in
+ * the day palette and reads as bright lines at dusk and night, so the grid
+ * utility is switched off inside cloud sections wherever it lands.
+ */
+.cloud-theme-section.solar-grid-bg,
+.cloud-theme-section .solar-grid-bg,
+.cloud-theme-section.radial-grid-bg,
+.cloud-theme-section .radial-grid-bg {
+  background-image: none;
 }
