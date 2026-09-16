@@ -454,7 +454,7 @@ export function SavedMockupsDialog({ open, onOpenChange }) {
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Saved mockups</DialogTitle>
           <DialogDescription>Open one to keep working on it.</DialogDescription>
@@ -464,21 +464,32 @@ export function SavedMockupsDialog({ open, onOpenChange }) {
         {!state.loading && !state.error && !state.mockups.length ? (
           <p className="text-muted-foreground text-sm">No saved mockups yet.</p>
         ) : null}
-        <ul className="grid gap-3 sm:grid-cols-2">
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {state.mockups.map((mockup) => (
             <li key={mockup.id}>
               <a
                 aria-label={`Open ${mockup.title || 'untitled mockup'}`}
                 className="hover:border-primary block overflow-hidden rounded-xl border"
                 href={`/christmas/mockup?id=${mockup.id}`}
+                // Base styles revert link underlines inside dialogs; this card is a tile, not a text link.
+                style={{ textDecoration: 'none' }}
               >
-                {/* oxlint-disable-next-line next/no-img-element -- auth-gated API image; next/image can't fetch it */}
-                <img
-                  alt=""
-                  className="bg-muted aspect-video w-full object-cover"
-                  loading="lazy"
-                  src={`/api/christmas/invoices/mockups/${mockup.id}/rendered?v=${encodeURIComponent(mockup.updatedAt)}`}
-                />
+                {/*
+                 * The thumbnail is pinned inside a fixed-ratio box: base styles
+                 * revert img width inside dialogs, so a plain w-full class here
+                 * would leave the photo at its full size.
+                 */}
+                <span className="relative block aspect-video w-full overflow-hidden bg-slate-900">
+                  {/* oxlint-disable-next-line next/no-img-element -- auth-gated API image; next/image can't fetch it */}
+                  <img
+                    alt=""
+                    className="absolute inset-0 object-contain"
+                    loading="lazy"
+                    // Inline, because base styles revert img width/height inside dialogs and beat utility classes.
+                    style={{ width: '100%', height: '100%' }}
+                    src={`/api/christmas/invoices/mockups/${mockup.id}/rendered?v=${encodeURIComponent(mockup.updatedAt)}`}
+                  />
+                </span>
                 <span className="block p-2 text-sm">
                   <span className="block truncate font-medium">{mockup.title || 'Untitled'}</span>
                   <span className="text-muted-foreground block truncate text-xs">
