@@ -10,12 +10,14 @@
  *   node scripts/sync-reel-assets.mjs
  */
 
-import { copyFile, mkdir, readdir } from 'node:fs/promises'
+import { copyFile, cp, mkdir, readdir, rm } from 'node:fs/promises'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const PROJECT = path.join(ROOT, 'videos/christmas-reels/assets')
+const ROOT = path.resolve(import.meta.dirname, '..')
+const PROJECT_DIR = path.join(ROOT, 'videos/christmas-reels')
+const PROJECT = path.join(PROJECT_DIR, 'assets')
+/* The builder's live preview plays the real composition in an iframe, so the browser needs to reach it. */
+const PUBLIC_COPY = path.join(ROOT, 'public/reels/christmas-reels')
 
 /** [from public/, to assets/] */
 const FILES = [
@@ -23,11 +25,14 @@ const FILES = [
   ['images/tx-christmas-logo.svg', 'brand/tx-christmas-logo.svg'],
   ['fonts/Switzer-Variable.woff2', 'fonts/Switzer-Variable.woff2'],
   ['fonts/BespokeSerif-Variable.woff2', 'fonts/BespokeSerif-Variable.woff2'],
+  // A stand-in job photo, so a photo scene previews before anyone uploads one.
+  ['images/tx-christmas-hero-collage.png', 'brand/sample-photo.png'],
 ]
 
 async function copyBulbs() {
   const from = path.join(ROOT, 'public/christmas-mockup')
-  const names = (await readdir(from)).filter((name) => name.startsWith('c9-') && name.endsWith('.png'))
+  const entries = await readdir(from)
+  const names = entries.filter((name) => name.startsWith('c9-') && name.endsWith('.png'))
   await mkdir(path.join(PROJECT, 'brand'), { recursive: true })
   for (const name of names) {
     await copyFile(path.join(from, name), path.join(PROJECT, 'brand', name))
@@ -42,8 +47,15 @@ async function main() {
     await copyFile(path.join(ROOT, 'public', from), target)
   }
   const bulbs = await copyBulbs()
+
+  await rm(PUBLIC_COPY, { recursive: true, force: true })
+  await mkdir(PUBLIC_COPY, { recursive: true })
+  await copyFile(path.join(PROJECT_DIR, 'index.html'), path.join(PUBLIC_COPY, 'index.html'))
+  await cp(PROJECT, path.join(PUBLIC_COPY, 'assets'), { recursive: true })
+
   console.log(
-    `[reel-assets] copied ${FILES.length} brand files and ${bulbs} bulb images into ${path.relative(ROOT, PROJECT)}`,
+    `[reel-assets] ${FILES.length} brand files + ${bulbs} bulbs into ${path.relative(ROOT, PROJECT)}; ` +
+      `composition staged in ${path.relative(ROOT, PUBLIC_COPY)}`,
   )
 }
 
