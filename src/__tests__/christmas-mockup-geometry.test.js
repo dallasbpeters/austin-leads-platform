@@ -18,6 +18,8 @@ import {
   removePoint,
   shapeAt,
   uprightAngle,
+  wreathHandle,
+  wreathSizeFromHandle,
 } from '@/lib/christmas/mockup-geometry'
 
 describe('bulbs along a line', () => {
@@ -275,5 +277,48 @@ describe('editing placed strings', () => {
     expect(insertPoint([{ x: 0 }, { x: 2 }], 1, { x: 1 })).toStrictEqual([{ x: 0 }, { x: 1 }, { x: 2 }])
     expect(removePoint(roof, 1).points).toHaveLength(2)
     expect(removePoint(tree, 0).points).toHaveLength(3)
+  })
+})
+
+describe('wreaths', () => {
+  const wreath = {
+    id: 'w',
+    service: 'Wreath',
+    color: 'Warm white',
+    seed: 3,
+    points: [{ x: 100, y: 100 }],
+    size: 80,
+  }
+
+  it('rings the wreath with lights', () => {
+    const bulbs = bulbsForShape(wreath, 3)
+    expect(bulbs.length).toBeGreaterThanOrEqual(8)
+    for (const bulb of bulbs) {
+      expect(Math.hypot(bulb.x - 100, bulb.y - 100)).toBeLessThan(40)
+    }
+  })
+
+  it('is hit anywhere inside it, and resizes from its corner handle', () => {
+    expect(hitTestShape(wreath, { x: 130, y: 100 }, 5)?.kind).toBe('inside')
+    expect(hitTestShape(wreath, { x: 150, y: 100 }, 5)).toBeNull()
+    expect(wreathHandle(wreath)).toStrictEqual({ x: 140, y: 140 })
+    expect(wreathSizeFromHandle(wreath, { x: 160, y: 120 })).toBe(120)
+    expect(wreathSizeFromHandle(wreath, { x: 101, y: 101 })).toBe(20)
+  })
+
+  it('is counted and priced without a scale', () => {
+    const estimate = estimateMockup([wreath, { ...wreath, id: 'w2' }], { rates: { Wreath: 8500 } })
+    expect(estimate.lines).toMatchObject([
+      { service: 'Wreath', quantity: 2, unit: 'wreaths', amountCents: 17_000 },
+    ])
+    expect(measureShape(wreath, null)).toBe(1)
+    expect(mockupToLineItems([wreath], { rates: { Wreath: 8500 } })).toMatchObject([
+      {
+        category: 'Wreath',
+        description: 'Wreath with warm white lights (1 wreath)',
+        quantity: 1,
+        unitPriceCents: 8500,
+      },
+    ])
   })
 })

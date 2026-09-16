@@ -38,7 +38,15 @@ const SERVICE_HINTS = {
   'Stake lights': 'Tap along the walkway or bed where stakes go, then tap Finish.',
   'Roofline / ridge': 'Tap each corner along the roofline or ridge, then tap Finish.',
   Garland: 'Tap along the railing, door, or porch edge, then tap Finish.',
+  Wreath: 'Tap where the wreath hangs.',
 }
+
+const SELECTED_HINTS = {
+  'Tree lights': 'Drag a dot to reshape, drag the edge to add a dot, drag inside to move the tree.',
+  Wreath: 'Drag the wreath to move it. Drag the corner square, or use Wreath size, to resize it.',
+}
+
+const RATE_UNIT = { stakes: 'stake', wreaths: 'wreath' }
 
 const SWATCH_CLASS = {
   'Warm white': 'bg-[#ffc46b]',
@@ -121,11 +129,12 @@ const toolbarHint = (draft, selectedService) => {
     return SERVICE_HINTS[draft.service]
   }
   if (selectedService) {
-    return selectedService === 'Tree lights'
-      ? 'Drag a dot to reshape, drag the edge to add a dot, drag inside to move the tree.'
-      : 'Drag a dot to move it, drag the line to add a bend, tap a dot then Remove dot.'
+    return (
+      SELECTED_HINTS[selectedService] ||
+      'Drag a dot to move it, drag the line to add a bend, tap a dot then Remove dot.'
+    )
   }
-  return 'Pick a service and tap the photo to start. Tap placed lights to edit them.'
+  return 'Pick a service and tap the photo to place it. Tap placed lights to edit them.'
 }
 
 export function DrawToolbar({
@@ -147,7 +156,7 @@ export function DrawToolbar({
         <Ruler className="mr-1.5 size-4" />
         {scaleFeet ? `Scale: ${Math.round(scaleFeet * 10) / 10} ft` : 'Set scale'}
       </Button>
-      {selectedService ? (
+      {selectedService && selectedService !== 'Wreath' ? (
         <Button disabled={!canRemoveDot} onClick={onRemoveDot} size="sm" variant="outline">
           <X className="mr-1.5 size-4" />
           Remove dot
@@ -292,7 +301,7 @@ function RateInput({ service, unit, cents, onCommit }) {
         placeholder="0"
         value={value}
       />
-      <span className="text-muted-foreground w-12">/ {unit === 'stakes' ? 'stake' : 'ft'}</span>
+      <span className="text-muted-foreground w-12">/ {RATE_UNIT[unit] || 'ft'}</span>
     </label>
   )
 }
@@ -305,7 +314,7 @@ export function EstimatePanel({ estimate, rates, ratesStatus, onRateChange, onMe
   if (!estimate.lines.length) {
     return null
   }
-  if (!estimate.measured) {
+  if (!estimate.measured && !estimate.lines.every((line) => line.counted)) {
     return (
       <section className="grid gap-2 rounded-xl border border-dashed p-3">
         <h2 className="text-sm font-medium">Estimate</h2>
