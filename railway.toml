@@ -2,6 +2,21 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "services/reel-renderer/Dockerfile"
+# Only rebuild when something the renderer image uses changes. Website-only
+# merges would otherwise queue a full Chrome + ffmpeg image build each time.
+watchPatterns = [
+  "railway.toml",
+  ".dockerignore",
+  "services/reel-renderer/**",
+  "videos/christmas-reels/**",
+  "scripts/sync-reel-assets.mjs",
+  "public/christmas-logo.svg",
+  "public/images/tx-christmas-logo.svg",
+  "public/images/tx-christmas-hero-collage.png",
+  "public/fonts/Switzer-Variable.woff2",
+  "public/fonts/BespokeSerif-Variable.woff2",
+  "public/christmas-mockup/**",
+]
 
 [deploy]
 healthcheckPath = "/health"
