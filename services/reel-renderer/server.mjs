@@ -108,11 +108,10 @@ async function renderJob(job) {
   const variablesPath = path.join(projectDir, 'reel-variables.json')
   await writeFile(variablesPath, JSON.stringify(job.variables || {}))
 
+  /* HyperFrames is installed in the image (see the Dockerfile), so no download per render. */
   const { stdout, stderr } = await run(
-    'npx',
+    process.env.HYPERFRAMES_BIN || 'hyperframes',
     [
-      '--yes',
-      'hyperframes@0.8.41',
       'render',
       '--quality',
       job.quality,
