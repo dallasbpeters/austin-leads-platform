@@ -46,7 +46,7 @@ COPY videos/christmas-reels ./videos/christmas-reels
 
 # Brand assets live in public/ (git-ignored inside videos/), so copy them in.
 COPY scripts/sync-reel-assets.mjs ./scripts/sync-reel-assets.mjs
-COPY public/christmas-logo-reversed.svg ./public/christmas-logo-reversed.svg
+COPY public/christmas-logo.svg ./public/christmas-logo.svg
 COPY public/images/tx-christmas-logo.svg ./public/images/tx-christmas-logo.svg
 COPY public/fonts/Switzer-Variable.woff2 public/fonts/BespokeSerif-Variable.woff2 ./public/fonts/
 COPY public/christmas-mockup ./public/christmas-mockup

@@ -21,7 +21,7 @@ const PUBLIC_COPY = path.join(ROOT, 'public/reels/christmas-reels')
 
 /** [from public/, to assets/] */
 const FILES = [
-  ['christmas-logo-reversed.svg', 'brand/christmas-logo-reversed.svg'],
+  ['christmas-logo.svg', 'brand/christmas-logo.svg'],
   ['images/tx-christmas-logo.svg', 'brand/tx-christmas-logo.svg'],
   ['fonts/Switzer-Variable.woff2', 'fonts/Switzer-Variable.woff2'],
   ['fonts/BespokeSerif-Variable.woff2', 'fonts/BespokeSerif-Variable.woff2'],
