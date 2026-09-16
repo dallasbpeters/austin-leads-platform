@@ -54,10 +54,21 @@ RUN node scripts/sync-reel-assets.mjs
 
 COPY services/reel-renderer/server.mjs services/reel-renderer/audio.mjs ./
 
-# Download the Chrome build HyperFrames pins, at build time rather than on the
-# first (user-facing) render.
-ENV HYPERFRAMES_HOME=/app/.hyperframes
-RUN npx --yes hyperframes@0.8.41 browser ensure
+# HyperFrames and the exact Chrome it pins are installed at build time.
+# `hyperframes browser ensure` can wait forever in a build (it hung for 30+
+# minutes on both Railway and GitHub), so Chrome comes straight from Chrome
+# for Testing and HyperFrames is pointed at it. Keep CHROME_VERSION in step
+# with the version HyperFrames pins when upgrading it.
+ARG HYPERFRAMES_VERSION=0.8.41
+ARG CHROME_VERSION=152.0.7977.30
+ENV HYPERFRAMES_NO_TELEMETRY=1 \
+    HYPERFRAMES_NO_UPDATE_CHECK=1 \
+    HYPERFRAMES_SKIP_SKILLS=1 \
+    HYPERFRAMES_HOME=/app/.hyperframes \
+    HYPERFRAMES_BROWSER_PATH=/opt/chrome/chrome-headless-shell/linux-${CHROME_VERSION}/chrome-headless-shell-linux64/chrome-headless-shell
+RUN npm install -g hyperframes@${HYPERFRAMES_VERSION} \
+  && npx --yes @puppeteer/browsers@2 install chrome-headless-shell@${CHROME_VERSION} --path /opt/chrome \
+  && test -x "$HYPERFRAMES_BROWSER_PATH"
 
 ENV NODE_ENV=production \
     PROJECTS_DIR=/app/videos \
