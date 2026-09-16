@@ -163,6 +163,13 @@ function SettingRow({ setting, onDone, disabled }) {
         </form>
       )}
 
+      {disabled ? (
+        <p className="text-xs text-amber-700">
+          {setting.targets.includes('railway')
+            ? 'Locked until Railway connects: save a working Railway project token above, then tap Redeploy site.'
+            : 'Locked until Vercel connects.'}
+        </p>
+      ) : null}
       {note?.ok ? <p className="text-xs text-emerald-700">{note.ok}</p> : null}
       {note?.error ? <p className="text-xs text-red-700">{note.error}</p> : null}
     </div>

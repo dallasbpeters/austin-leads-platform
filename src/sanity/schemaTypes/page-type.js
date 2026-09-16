@@ -3733,6 +3733,7 @@ const ctaSectionType = {
         ...canvasPurpose('Choose the visual style for this CTA section.'),
       },
     },
+    cloudVisibilityField,
     {
       name: 'avatarEyebrow',
       title: 'Avatar eyebrow',
