@@ -164,7 +164,7 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
       <div className="site-header__bar">
         <div className="site-header__inner">
           <Link href="/" aria-label="Texas Solar & Roofing Pros - Home" className="site-header__brand">
-            <Logo height={90} width={120} />
+            <Logo height={84} width={120} />
             <span className="sr-only">Texas Solar & Roofing Pros</span>
           </Link>
           <div className="site-header__nav">
