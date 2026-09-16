@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 
 import CaseStudyGallery from '@/components/case-study-gallery'
 import { getImageUrl } from '@/lib/platform/imageSource'
+import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 import { summarizeBilling } from '@/sanity/lib/caseStudies'
 
@@ -42,7 +43,7 @@ const initialsFor = (person) => {
   if (!person?.name) {
     return '··'
   }
-  return person.name
+  return String(cleanRuntimeString(person.name) || '')
     .split(/\s+/)
     .slice(0, 2)
     .map((part) => part[0])

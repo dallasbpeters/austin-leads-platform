@@ -61,7 +61,8 @@ function AvatarInfo({ avatarEyebrow, avatarName, avatarRole, avatarBlurb, isClou
 }
 
 function computeInitials(name) {
-  return String(name)
+  // Initials are built from single letters, so the edit markers have to come off first.
+  return String(cleanRuntimeString(name) || '')
     .trim()
     .split(/\s+/)
     .slice(0, 2)
