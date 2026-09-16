@@ -289,6 +289,7 @@ function normalizeCtaSection(section) {
     body: section.body,
     ctaLabel: section.ctaLabel,
     theme: section.theme,
+    cloudVisibility: section.cloudVisibility,
     avatarEyebrow: section.avatarEyebrow || section.personLabel,
     avatarName: section.avatarName || section.personName,
     avatarRole: section.avatarRole || section.personRole,
