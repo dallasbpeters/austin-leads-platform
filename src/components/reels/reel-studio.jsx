@@ -11,8 +11,9 @@
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { Check, Clock, Copy, Film, ImageIcon, Plus, Trash2, X } from 'lucide-react'
+import { Check, Clock, Copy, Film, FolderOpen, ImageIcon, Loader2, Plus, Save, Trash2, X } from 'lucide-react'
 
+import ReelLibrary from '@/components/reels/reel-library'
 import ReelPreview from '@/components/reels/reel-preview'
 import RenderBar from '@/components/reels/render-bar'
 import {
@@ -35,7 +36,7 @@ function SheetShell({ title, onClose, children }) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/70" role="dialog">
       <button aria-label="Close" className="flex-1" onClick={onClose} type="button" />
-      <div className="max-h-[86dvh] overflow-y-auto rounded-t-3xl border-t border-white/10 bg-[#0d1524] pb-[max(24px,env(safe-area-inset-bottom))]">
+      <div className="mx-auto max-h-[86dvh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border-t border-white/10 bg-[#0d1524] pb-[max(24px,env(safe-area-inset-bottom))]">
         <div className="sticky top-0 flex items-center justify-between border-b border-white/10 bg-[#0d1524] px-5 py-4">
           <h2 className="text-base font-semibold">{title}</h2>
           <button
@@ -247,12 +248,92 @@ function AddScene({ onAdd, onClose }) {
   )
 }
 
+// ─── Saving ──────────────────────────────────────────────────────────────────
+
+/*
+ * Keeps a reel in the database: a first save creates it (and puts its id in
+ * the address, so a refresh reopens it), later saves update it.
+ */
+function useReelSaving(initialReel) {
+  const [reelId, setReelId] = useState(initialReel?.id || null)
+  const [title, setTitle] = useState(initialReel?.title || '')
+  const [saving, setSaving] = useState(false)
+  const [status, setStatus] = useState(initialReel ? 'Saved' : '')
+
+  const send = (id, scenes) =>
+    fetch(id ? `/api/reels/saved/${id}` : '/api/reels/saved', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title.trim(), scenes }),
+    })
+
+  const save = async (scenes) => {
+    setSaving(true)
+    setStatus('')
+    try {
+      let response = await send(reelId, scenes)
+      let created = !reelId
+      // Deleted from My reels while still open: keep the work by saving it as new.
+      if (reelId && response.status === 404) {
+        response = await send(null, scenes)
+        created = true
+      }
+      const payload = await response.json()
+      if (!response.ok) {
+        throw new Error(payload.error || 'Save failed.')
+      }
+      if (created) {
+        setReelId(payload.reel.id)
+        window.history.replaceState(null, '', `/reels?id=${payload.reel.id}`)
+      }
+      setStatus('Saved')
+      return payload.reel.id
+    } catch (error) {
+      setStatus(error.message)
+      return null
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  /* Remembers the finished video on the saved reel, so it reopens with it. */
+  const recordRender = useCallback(
+    async (job) => {
+      if (!reelId || !job?.url) {
+        return
+      }
+      await fetch(`/api/reels/saved/${reelId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ renderJobId: job.id, renderUrl: job.url }),
+      }).catch(() => {})
+    },
+    [reelId],
+  )
+
+  return { reelId, title, setTitle, saving, status, setStatus, save, recordRender }
+}
+
 // ─── The studio ──────────────────────────────────────────────────────────────
 
-export default function ReelStudio({ photos = [] }) {
-  const [scenes, setScenes] = useState(STARTER_SCENES)
+export default function ReelStudio({ photos = [], initialReel = null }) {
+  const [scenes, setScenesState] = useState(() =>
+    initialReel?.scenes?.length ? initialReel.scenes : STARTER_SCENES(),
+  )
   const [openSceneId, setOpenSceneId] = useState(null)
   const [adding, setAdding] = useState(false)
+  const [libraryOpen, setLibraryOpen] = useState(false)
+  const saver = useReelSaving(initialReel)
+  const { setStatus } = saver
+
+  /* Any edit makes the saved copy stale. */
+  const setScenes = useCallback(
+    (update) => {
+      setScenesState(update)
+      setStatus((current) => (current === 'Saved' ? 'Unsaved changes' : current))
+    },
+    [setStatus],
+  )
 
   const renderScenes = useMemo(() => toRenderScenes(scenes), [scenes])
   const seconds = totalSeconds(scenes)
@@ -260,7 +341,7 @@ export default function ReelStudio({ photos = [] }) {
 
   const updateScene = useCallback(
     (next) => setScenes((current) => current.map((scene) => (scene.id === next.id ? next : scene))),
-    [],
+    [setScenes],
   )
 
   const addScene = (type) => {
@@ -296,15 +377,53 @@ export default function ReelStudio({ photos = [] }) {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col gap-5 px-4 pt-[max(20px,env(safe-area-inset-top))] pb-[max(24px,env(safe-area-inset-bottom))]">
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Film className="size-5 text-[#f0c987]" />
-          <h1 className="text-lg font-semibold">Reel studio</h1>
+      <header className="grid gap-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Film className="size-5 text-[#f0c987]" />
+            <h1 className="text-lg font-semibold">Reel studio</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 text-sm text-white/55">
+              <Clock className="size-4" />
+              <span className="font-mono tabular-nums">{seconds.toFixed(0)}s</span>
+            </span>
+            <button
+              className="flex h-10 items-center gap-1.5 rounded-full bg-white/10 px-3 text-sm active:scale-95"
+              onClick={() => setLibraryOpen(true)}
+              type="button"
+            >
+              <FolderOpen className="size-4" />
+              My reels
+            </button>
+          </div>
         </div>
-        <span className="flex items-center gap-1.5 text-sm text-white/55">
-          <Clock className="size-4" />
-          <span className="font-mono tabular-nums">{seconds.toFixed(0)}s</span>
-        </span>
+        <div className="flex items-center gap-2">
+          <input
+            aria-label="Reel name"
+            className="h-11 min-w-0 flex-1 rounded-xl border border-white/12 bg-white/5 px-4 text-base text-white placeholder:text-white/35 focus:border-[#f0c987] focus:outline-none"
+            onChange={(event) => {
+              saver.setTitle(event.target.value)
+              saver.setStatus((current) => (current === 'Saved' ? 'Unsaved changes' : current))
+            }}
+            placeholder="Name this reel"
+            value={saver.title}
+          />
+          <button
+            className="flex h-11 shrink-0 items-center gap-1.5 rounded-xl border border-white/15 px-4 text-sm active:scale-95 disabled:opacity-60"
+            disabled={saver.saving}
+            onClick={() => saver.save(scenes)}
+            type="button"
+          >
+            {saver.saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            Save
+          </button>
+        </div>
+        {saver.status ? (
+          <p className={`text-xs ${saver.status === 'Saved' ? 'text-emerald-300' : 'text-white/55'}`}>
+            {saver.status}
+          </p>
+        ) : null}
       </header>
 
       <ReelPreview scenes={renderScenes} />
@@ -377,7 +496,12 @@ export default function ReelStudio({ photos = [] }) {
         </button>
       </section>
 
-      <RenderBar scenes={renderScenes} seconds={seconds} />
+      <RenderBar
+        initialUrl={initialReel?.renderUrl || null}
+        onRendered={saver.recordRender}
+        scenes={renderScenes}
+        seconds={seconds}
+      />
 
       {openScene ? (
         <SceneEditor
@@ -390,6 +514,8 @@ export default function ReelStudio({ photos = [] }) {
       ) : null}
 
       {adding ? <AddScene onAdd={addScene} onClose={() => setAdding(false)} /> : null}
+
+      {libraryOpen ? <ReelLibrary currentId={saver.reelId} onClose={() => setLibraryOpen(false)} /> : null}
     </div>
   )
 }

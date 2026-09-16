@@ -22,8 +22,9 @@ const STATUS_TEXT = {
   uploading: 'Almost there…',
 }
 
-export default function RenderBar({ scenes, seconds }) {
-  const [job, setJob] = useState(null)
+export default function RenderBar({ scenes, seconds, initialUrl = null, onRendered }) {
+  /* A reopened reel shows its last finished video straight away. */
+  const [job, setJob] = useState(initialUrl ? { status: 'done', url: initialUrl } : null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [shareSupported, setShareSupported] = useState(false)
@@ -34,29 +35,33 @@ export default function RenderBar({ scenes, seconds }) {
     return () => clearTimeout(timerRef.current)
   }, [])
 
-  const poll = useCallback(async (id) => {
-    try {
-      const response = await fetch(`/api/reels/render/${id}`)
-      const payload = await response.json()
-      if (!response.ok) {
-        throw new Error(payload.error || 'The renderer stopped answering.')
-      }
-      setJob(payload.job)
-      if (payload.job.status === 'failed') {
-        setError(payload.job.error || 'The render failed.')
+  const poll = useCallback(
+    async (id) => {
+      try {
+        const response = await fetch(`/api/reels/render/${id}`)
+        const payload = await response.json()
+        if (!response.ok) {
+          throw new Error(payload.error || 'The renderer stopped answering.')
+        }
+        setJob(payload.job)
+        if (payload.job.status === 'failed') {
+          setError(payload.job.error || 'The render failed.')
+          setBusy(false)
+          return
+        }
+        if (payload.job.status === 'done') {
+          setBusy(false)
+          onRendered?.(payload.job)
+          return
+        }
+        timerRef.current = setTimeout(() => poll(id), POLL_MS)
+      } catch (pollError) {
+        setError(pollError.message)
         setBusy(false)
-        return
       }
-      if (payload.job.status === 'done') {
-        setBusy(false)
-        return
-      }
-      timerRef.current = setTimeout(() => poll(id), POLL_MS)
-    } catch (pollError) {
-      setError(pollError.message)
-      setBusy(false)
-    }
-  }, [])
+    },
+    [onRendered],
+  )
 
   const render = async () => {
     setBusy(true)
