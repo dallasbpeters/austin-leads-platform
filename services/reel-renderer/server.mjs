@@ -14,7 +14,7 @@
 import { exec } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { mkdir, rm, stat } from 'node:fs/promises'
+import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
 import { promisify } from 'node:util'
@@ -32,7 +32,7 @@ const RENDER_TIMEOUT_MS = Number(process.env.RENDER_TIMEOUT_MS) || 15 * 60 * 100
 
 /** Templates this worker will render. Anything else is refused, so a caller can't reach elsewhere on disk. */
 const TEMPLATES = {
-  'roofline-glow': { project: 'christmas-reels', label: 'Roofline lights up' },
+  'christmas-reels': { project: 'christmas-reels', label: 'Texas Christmas Lights reel' },
 }
 
 const jobs = new Map()
@@ -51,7 +51,7 @@ const readJsonBody = async (request) => {
   for await (const chunk of request) {
     chunks.push(chunk)
   }
-  return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}')
+  return JSON.parse(Buffer.concat(chunks).toString('utf-8') || '{}')
 }
 
 const authorized = (request) => Boolean(SHARED_SECRET) && request.headers['x-render-secret'] === SHARED_SECRET
@@ -61,12 +61,30 @@ const variablesArg = (variables) => JSON.stringify(variables || {})
 
 // ─── Rendering ───────────────────────────────────────────────────────────────
 
+/*
+ * The reel's length lives in the composition's root `data-duration`, and the
+ * CLI has no flag for it, so every render works on its own copy of the project
+ * with the total patched in.
+ */
+async function prepareProject(job, source) {
+  const seconds = Number(job.variables?.totalDuration) || 0
+  if (!seconds) {
+    return source
+  }
+  const workingDir = path.join(WORK_DIR, job.id)
+  await cp(source, workingDir, { recursive: true })
+  const entry = path.join(workingDir, 'index.html')
+  const html = await readFile(entry, 'utf-8')
+  await writeFile(entry, html.replaceAll(/data-duration="[\d.]+"/g, `data-duration="${seconds}"`))
+  return workingDir
+}
+
 async function renderJob(job) {
   const template = TEMPLATES[job.template]
-  const projectDir = path.join(PROJECTS_DIR, template.project)
   const outputPath = path.join(WORK_DIR, `${job.id}.mp4`)
 
   await mkdir(WORK_DIR, { recursive: true })
+  const projectDir = await prepareProject(job, path.join(PROJECTS_DIR, template.project))
 
   job.status = 'rendering'
   job.startedAt = Date.now()
@@ -100,6 +118,9 @@ async function renderJob(job) {
   })
 
   await rm(outputPath, { force: true })
+  if (projectDir.startsWith(WORK_DIR)) {
+    await rm(projectDir, { recursive: true, force: true })
+  }
 
   job.status = 'done'
   job.url = blob.url

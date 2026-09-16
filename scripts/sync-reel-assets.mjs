@@ -10,7 +10,7 @@
  *   node scripts/sync-reel-assets.mjs
  */
 
-import { copyFile, cp, mkdir, readdir, rm } from 'node:fs/promises'
+import { copyFile, cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
@@ -40,6 +40,54 @@ async function copyBulbs() {
   return names.length
 }
 
+/*
+ * The studio's live preview plays the composition in an iframe. It has to be a
+ * real page on this origin — a srcdoc frame has no address, so relative asset
+ * paths and the GSAP script tag both fail there. So we write a sibling
+ * `preview.html`: the same composition, plus a shim that stands in for the
+ * HyperFrames runtime, reads the scenes out of the URL hash, and answers seek
+ * messages from the studio.
+ */
+const PREVIEW_SHIM = `
+<script>
+  (() => {
+    const read = () => {
+      try {
+        return JSON.parse(decodeURIComponent(location.hash.slice(1)))
+      } catch {
+        return {}
+      }
+    }
+    window.__hyperframes = { getVariables: read }
+
+    // New scenes arrive as a new hash; the composition builds itself at load.
+    window.addEventListener('hashchange', () => location.reload())
+
+    window.addEventListener('message', (event) => {
+      const timeline = window.__timelines && window.__timelines.main
+      if (timeline && event.data && event.data.kind === 'reel:seek') {
+        timeline.seek(Math.max(0, event.data.seconds))
+      }
+    })
+
+    const announce = () => {
+      if (window.__timelines && window.__timelines.main) {
+        window.__timelines.main.seek(0)
+        parent.postMessage({ kind: 'reel:ready' }, '*')
+      } else {
+        requestAnimationFrame(announce)
+      }
+    }
+    requestAnimationFrame(announce)
+  })()
+</script>
+`
+
+async function writePreview(from, to) {
+  const html = await readFile(from, 'utf8')
+  await writeFile(to, html.replace('<head>', `<head>${PREVIEW_SHIM}`))
+}
+
 async function main() {
   for (const [from, to] of FILES) {
     const target = path.join(PROJECT, to)
@@ -52,10 +100,11 @@ async function main() {
   await mkdir(PUBLIC_COPY, { recursive: true })
   await copyFile(path.join(PROJECT_DIR, 'index.html'), path.join(PUBLIC_COPY, 'index.html'))
   await cp(PROJECT, path.join(PUBLIC_COPY, 'assets'), { recursive: true })
+  await writePreview(path.join(PUBLIC_COPY, 'index.html'), path.join(PUBLIC_COPY, 'preview.html'))
 
   console.log(
     `[reel-assets] ${FILES.length} brand files + ${bulbs} bulbs into ${path.relative(ROOT, PROJECT)}; ` +
-      `composition staged in ${path.relative(ROOT, PUBLIC_COPY)}`,
+      `composition + preview staged in ${path.relative(ROOT, PUBLIC_COPY)}`,
   )
 }
 
