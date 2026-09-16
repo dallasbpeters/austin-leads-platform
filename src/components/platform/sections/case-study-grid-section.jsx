@@ -3,6 +3,7 @@ import GuideCardGrid from '@/components/guide-card'
 import PortableTextContent from '@/components/portable-text-content'
 import { AutoFillGrid } from '@/components/ui/grid-container'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+import { sectionSetting } from '@/lib/platform/section-helpers'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 
 /**
@@ -96,7 +97,7 @@ export function CaseStudyGridSection({ section = null, sectionId = 'case-studies
 
   // Honour the layout choice at any count. Requiring two or more case studies made
   // the radio look broken while only one was published.
-  const useFeaturedLead = section?.layout !== 'grid'
+  const useFeaturedLead = sectionSetting(section?.layout) !== 'grid'
   const [lead, ...rest] = resolved
 
   // The featured lead is its own single-column grid rather than a bare GuideCard:
@@ -111,7 +112,7 @@ export function CaseStudyGridSection({ section = null, sectionId = 'case-studies
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/case-study-grid-section.jsx',
-        content: `${resolved.length} case studies from Sanity (${section?.layout === 'grid' ? 'even grid' : 'featured lead'})`,
+        content: `${resolved.length} case studies from Sanity (${sectionSetting(section?.layout) === 'grid' ? 'even grid' : 'featured lead'})`,
       })}
     >
       <DevTrace

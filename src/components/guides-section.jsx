@@ -5,6 +5,7 @@ import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { getSanityEditAttributes } from '@/lib/sanity/visualEditing'
 
+import { shouldShowClouds } from '@/lib/platform/section-helpers'
 import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import GuideCardGrid from './guide-card'
@@ -50,10 +51,6 @@ function getGuideCards(section, page, sectionKey) {
   }
 
   return section.items.map((item, index) => buildCardFromItem(item, index, page, sectionKey))
-}
-
-function shouldShowClouds(cloudVisibility) {
-  return !['hide', 'off', false].includes(cloudVisibility)
 }
 
 /**

@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 
+import { shouldShowClouds } from '@/lib/platform/section-helpers'
 import Card from './card'
 import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -79,10 +80,7 @@ export default function ResourcesSection({ section = null, sectionId = 'resource
   const body =
     section?.body ||
     'The most common solar and roofing questions, organized by category so you can find what you need faster.'
-  const showClouds =
-    section?.cloudVisibility !== 'hide' &&
-    section?.cloudVisibility !== 'off' &&
-    section?.cloudVisibility !== false
+  const showClouds = shouldShowClouds(section?.cloudVisibility)
 
   return (
     <CloudSectionBackground
