@@ -107,11 +107,51 @@ export const sceneSeconds = (scene) =>
 
 export const totalSeconds = (scenes) => scenes.reduce((sum, scene) => sum + sceneSeconds(scene), 0)
 
+const clean = (value) => String(value || '').trim()
+
+/* A spoken line should end like a sentence, so the voice pauses naturally. */
+const sentence = (value) => {
+  const text = clean(value)
+  return text && !/[.!?]$/.test(text) ? `${text}.` : text
+}
+
+/* "·" separates on-screen fragments; spoken, it reads better as a pause. */
+const speakable = (value) => clean(value).replaceAll(' · ', ', ').replaceAll('·', ',')
+
+/**
+ * What the voice says over a scene: its on-screen words, in reading order.
+ *
+ * @param {object} scene - A studio scene.
+ * @returns {string} The line to speak, or '' for a silent scene.
+ */
+export function spokenLine(scene) {
+  switch (scene?.type) {
+    case 'offer': {
+      return [
+        sentence(scene.eyebrow),
+        sentence(`${clean(scene.headline)} ${clean(scene.price)}`),
+        sentence(scene.sub),
+      ]
+        .filter(Boolean)
+        .join(' ')
+    }
+    case 'signoff': {
+      return [sentence(speakable(scene.headline)), scene.sub ? sentence(`Call ${clean(scene.sub)}`) : '']
+        .filter(Boolean)
+        .join(' ')
+    }
+    default: {
+      return [sentence(scene?.headline), sentence(scene?.sub)].filter(Boolean).join(' ')
+    }
+  }
+}
+
 /** Strips the studio's own bookkeeping before the scenes go to the renderer. */
 export const toRenderScenes = (scenes) =>
   scenes.map(({ id: _id, photo, ...scene }) => ({
     ...scene,
     duration: sceneSeconds(scene),
+    say: spokenLine(scene),
     ...(photo?.src ? { photoUrl: photo.src } : {}),
   }))
 

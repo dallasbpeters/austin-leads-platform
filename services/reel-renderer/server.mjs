@@ -11,7 +11,7 @@
  * keeps a small Railway box honest.
  */
 
-import { exec } from 'node:child_process'
+import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { cp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
@@ -21,7 +21,9 @@ import { promisify } from 'node:util'
 
 import { put } from '@vercel/blob'
 
-const run = promisify(exec)
+import { buildReelAudio, hasAudioKey } from './audio.mjs'
+
+const run = promisify(execFile)
 
 const PORT = Number(process.env.PORT) || 8080
 const SHARED_SECRET = process.env.RENDER_SHARED_SECRET || ''
@@ -56,26 +58,39 @@ const readJsonBody = async (request) => {
 
 const authorized = (request) => Boolean(SHARED_SECRET) && request.headers['x-render-secret'] === SHARED_SECRET
 
-/* Stringly-typed on purpose: HyperFrames takes variables as one JSON argument. */
-const variablesArg = (variables) => JSON.stringify(variables || {})
-
 // ─── Rendering ───────────────────────────────────────────────────────────────
 
 /*
- * The reel's length lives in the composition's root `data-duration`, and the
- * CLI has no flag for it, so every render works on its own copy of the project
- * with the total patched in.
+ * Every render works on its own copy of the project, because three things are
+ * written into it: the voice and music files, the <audio> tags that place them,
+ * and the reel's final length (the root `data-duration`, which the CLI has no
+ * flag for). Voice can also stretch scenes, so the scene list is rewritten too.
  */
 async function prepareProject(job, source) {
-  const seconds = Number(job.variables?.totalDuration) || 0
-  if (!seconds) {
-    return source
-  }
   const workingDir = path.join(WORK_DIR, job.id)
   await cp(source, workingDir, { recursive: true })
+
+  let scenes
+  try {
+    scenes = JSON.parse(job.variables?.scenes || '[]')
+  } catch {
+    scenes = []
+  }
+
+  job.status = 'voicing'
+  const audio = await buildReelAudio(scenes, workingDir)
+  job.audio = audio.audio
+  job.variables = { ...job.variables, scenes: JSON.stringify(audio.scenes), totalDuration: audio.total }
+  job.seconds = audio.total
+
   const entry = path.join(workingDir, 'index.html')
   const html = await readFile(entry, 'utf-8')
-  await writeFile(entry, html.replaceAll(/data-duration="[\d.]+"/g, `data-duration="${seconds}"`))
+  await writeFile(
+    entry,
+    html
+      .replaceAll(/data-duration="[\d.]+"/g, `data-duration="${audio.total}"`)
+      .replace('</body>', `${audio.markup}</body>`),
+  )
   return workingDir
 }
 
@@ -89,19 +104,31 @@ async function renderJob(job) {
   job.status = 'rendering'
   job.startedAt = Date.now()
 
-  const command = [
-    'npx --yes hyperframes@0.8.41 render',
-    `--quality ${job.quality}`,
-    `--fps ${job.fps}`,
-    `--variables '${variablesArg(job.variables).replaceAll("'", String.raw`'\''`)}'`,
-    `--output ${JSON.stringify(outputPath)}`,
-  ].join(' ')
+  /* Variables go in a file and arguments go as a list: no shell, no quoting. */
+  const variablesPath = path.join(projectDir, 'reel-variables.json')
+  await writeFile(variablesPath, JSON.stringify(job.variables || {}))
 
-  const { stdout, stderr } = await run(command, {
-    cwd: projectDir,
-    timeout: RENDER_TIMEOUT_MS,
-    maxBuffer: 16 * 1024 * 1024,
-  })
+  const { stdout, stderr } = await run(
+    'npx',
+    [
+      '--yes',
+      'hyperframes@0.8.41',
+      'render',
+      '--quality',
+      job.quality,
+      '--fps',
+      String(job.fps),
+      '--variables-file',
+      variablesPath,
+      '--output',
+      outputPath,
+    ],
+    {
+      cwd: projectDir,
+      timeout: RENDER_TIMEOUT_MS,
+      maxBuffer: 16 * 1024 * 1024,
+    },
+  )
   job.log = `${stdout}\n${stderr}`.slice(-4000)
 
   const { size } = await stat(outputPath)
@@ -178,6 +205,7 @@ const routes = {
     json(response, 200, {
       ok: true,
       templates: Object.keys(TEMPLATES),
+      audio: hasAudioKey() ? 'voice + music' : 'silent (no ELEVENLABS_API_KEY)',
       queued: queue.length,
       working,
     }),
@@ -227,6 +255,8 @@ const server = createServer(async (request, response) => {
           url: job.url || null,
           bytes: job.bytes || null,
           error: job.error || null,
+          audio: job.audio || null,
+          seconds: job.seconds || null,
         })
       : json(response, 404, { error: 'No such render' })
   }

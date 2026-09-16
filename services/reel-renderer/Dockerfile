@@ -52,7 +52,7 @@ COPY public/fonts/Switzer-Variable.woff2 public/fonts/BespokeSerif-Variable.woff
 COPY public/christmas-mockup ./public/christmas-mockup
 RUN node scripts/sync-reel-assets.mjs
 
-COPY services/reel-renderer/server.mjs ./server.mjs
+COPY services/reel-renderer/server.mjs services/reel-renderer/audio.mjs ./
 
 # Download the Chrome build HyperFrames pins, at build time rather than on the
 # first (user-facing) render.

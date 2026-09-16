@@ -18,6 +18,7 @@ const POLL_MS = 2500
 
 const STATUS_TEXT = {
   queued: 'Waiting for the renderer…',
+  voicing: 'Recording the voice and music…',
   rendering: 'Drawing the frames…',
   uploading: 'Almost there…',
 }
@@ -123,8 +124,15 @@ export default function RenderBar({ scenes, seconds, initialUrl = null, onRender
 
       {job?.status === 'done' && job.url ? (
         <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-3">
-          {/* oxlint-disable-next-line jsx-a11y/media-has-caption -- a silent reel with no speech */}
+          {/* oxlint-disable-next-line jsx-a11y/media-has-caption -- the spoken words are on screen as text */}
           <video className="w-full rounded-xl" controls playsInline src={job.url} />
+          {job.audio || job.seconds ? (
+            <p className="text-xs text-white/50">
+              {[job.seconds ? `${Number(job.seconds).toFixed(0)}s` : null, job.audio]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          ) : null}
           <div className="grid grid-cols-2 gap-2">
             {shareSupported ? (
               <button

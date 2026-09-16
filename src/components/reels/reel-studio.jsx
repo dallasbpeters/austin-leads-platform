@@ -11,7 +11,20 @@
 
 import { useCallback, useMemo, useState } from 'react'
 
-import { Check, Clock, Copy, Film, FolderOpen, ImageIcon, Loader2, Plus, Save, Trash2, X } from 'lucide-react'
+import {
+  Check,
+  Clock,
+  Copy,
+  Film,
+  FolderOpen,
+  ImageIcon,
+  Loader2,
+  Mic,
+  Plus,
+  Save,
+  Trash2,
+  X,
+} from 'lucide-react'
 
 import ReelLibrary from '@/components/reels/reel-library'
 import ReelPreview from '@/components/reels/reel-preview'
@@ -25,6 +38,7 @@ import {
   sceneSeconds,
   sceneSummary,
   sceneTypeOf,
+  spokenLine,
   STARTER_SCENES,
   toRenderScenes,
   totalSeconds,
@@ -201,6 +215,15 @@ function SceneEditor({ scene, photos, onChange, onRemove, onClose }) {
             </div>
           </fieldset>
         ) : null}
+
+        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+          <span className="mb-1 flex items-center gap-1.5 text-xs text-white/50">
+            <Mic className="size-3.5" />
+            The voice will say
+          </span>
+          <p className="text-sm text-white/80">{spokenLine(scene) || 'Nothing — this scene is silent.'}</p>
+          <p className="mt-1 text-xs text-white/40">If the line runs long, the scene stretches to fit it.</p>
+        </div>
 
         <label className="block" htmlFor="scene-seconds">
           <span className="mb-2 flex items-center justify-between text-sm text-white/60">
