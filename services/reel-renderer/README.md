@@ -15,12 +15,16 @@ It lives outside Vercel because a render needs Chrome, FFmpeg, and minutes of CP
 
 ### Environment
 
-| Variable                | Why                                                                                                      |
-| ----------------------- | -------------------------------------------------------------------------------------------------------- |
-| `RENDER_SHARED_SECRET`  | Every request must send it as `x-render-secret`. Without it the worker refuses everything but `/health`. |
-| `BLOB_READ_WRITE_TOKEN` | Vercel Blob token. The finished MP4 needs a public URL — that is what Instagram fetches.                 |
-| `PORT`                  | Set by Railway.                                                                                          |
-| `RENDER_TIMEOUT_MS`     | Optional. Default 15 minutes.                                                                            |
+| Variable                | Why                                                                                                       |
+| ----------------------- | --------------------------------------------------------------------------------------------------------- |
+| `RENDER_SHARED_SECRET`  | Every request must send it as `x-render-secret`. Without it the worker refuses everything but `/health`.  |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob token. The finished MP4 needs a public URL — that is what Instagram fetches.                  |
+| `PORT`                  | Set by Railway.                                                                                           |
+| `RENDER_TIMEOUT_MS`     | Optional. Default 15 minutes.                                                                             |
+| `ELEVENLABS_API_KEY`    | Voice, music and sound effects. Without it the reel renders silent and `/health` says so.                 |
+| `REEL_VOICE_ID`         | Optional. The ElevenLabs voice that reads the scenes.                                                     |
+| `REEL_MUSIC_PROMPT`     | Optional. Describes the soundtrack. Default is cozy instrumental Christmas music.                         |
+| `REEL_SFX`              | Optional. `off` renders with voice and music only. Effects are cached on disk under `WORK_DIR/sfx-cache`. |
 
 ## API
 
@@ -36,10 +40,18 @@ a time. When `callbackUrl` is set, the worker POSTs the same shape back to it.
 
 ## Templates
 
-| id              | What it is                                                                                                |
-| --------------- | --------------------------------------------------------------------------------------------------------- |
-| `roofline-glow` | Night scene: snow falls, the roofline lights up bulb by bulb, then the headline, then the logo and phone. |
+| id                | What it is                                                                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `christmas-reels` | Night scene: snow falls, words whip in one at a time, the price counts up in gold, the roofline lights and twinkles, then logo and phone. |
 
 A template is a HyperFrames project under `videos/`. Its fill-in-the-blank fields
 are declared in the composition's `data-composition-variables`, and arrive here as
 `variables`.
+
+## Sound
+
+`audio.mjs` asks ElevenLabs for one voice clip per scene, one music track the
+length of the reel, and four sound effects (bells, whoosh, chime, sting) placed on
+the composition's beats. The beat table lives in both `audio.mjs` and
+`videos/christmas-reels/index.html` — change them together. Music dips under the
+voice; effects never dip anything. Music or effects failing never fails the render.

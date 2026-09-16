@@ -87,6 +87,15 @@ export const DEPLOY_SETTINGS = [
     optional: true,
   },
   {
+    key: 'REEL_SFX',
+    group: 'Voice and music',
+    label: 'Sound effects',
+    help: 'Sleigh bells, whooshes and chimes from ElevenLabs. Blank is on; type off to render with voice and music only.',
+    targets: ['railway'],
+    kind: 'text',
+    optional: true,
+  },
+  {
     key: 'TIKTOK_CLIENT_KEY',
     group: 'TikTok',
     label: 'Client key',
