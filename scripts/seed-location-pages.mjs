@@ -236,7 +236,7 @@ function buildPage(city, siteId) {
     title: `What solar, a hail claim, and a reroof with panels cost in ${city.name}`,
     body: pt(
       `${p}-hero`,
-      `Something brought you here: ${city.bill}, an insurance letter after the last hail storm, a roof that is older than you would like with panels already on it, or a neighbor who just went solar. Here is what those jobs cost in ${city.name}, what drives the price, and what happens when you call. We do the solar and the electrical. For the roof itself we bring in licensed roofers we trust. No pressure. The estimate is free.`,
+      `Something brought you here: ${city.bill}, an insurance letter after the last hail storm, a roof that is older than you would like with panels already on it, or a neighbor who just went solar. Here is what those jobs cost in ${city.name}, what drives the price, and what happens when you call. We do the solar and the electrical, and we coordinate with select roofers when the roof is part of the job. No pressure. The estimate is free.`,
     ),
     metrics: [
       metric(`${p}-hero`, 'Your utility', city.utilityShort),
@@ -278,7 +278,7 @@ function buildPage(city, siteId) {
         eyebrow: 'Reroofs with panels',
         title: 'Working with roofers',
         icon: 'Home',
-        body: `Roofing is its own trade, so we do not replace roofs. We introduce you to a licensed ${city.name} roofer we know and stand behind, and we run the solar side: panels off, labeled and stored, reset on the new roof with fresh flashings and verified production. Their asphalt reroofs on a typical ${city.name} home run $12,000 to $25,000; ask them about Class 4 impact-rated shingles and the insurance discount those can earn. One introduction, two crews who talk to each other.`,
+        body: `We coordinate with select ${city.name} roofers we know and stand behind. You get one introduction, and we run the solar side: panels off, labeled and stored, reset on the new roof with fresh flashings and verified production. An asphalt reroof on a typical ${city.name} home runs $12,000 to $25,000; ask about Class 4 impact-rated shingles and the insurance discount those can earn. Two crews who talk to each other, so nothing falls through the gap.`,
         href: '/roofing-partners',
       }),
       item(`${p}-hl`, {
@@ -292,7 +292,7 @@ function buildPage(city, siteId) {
         eyebrow: 'Storm and insurance',
         title: 'Hail inspection and claim help',
         icon: 'Rain',
-        body: `You cannot see hail damage from the driveway. We get on the roof, photograph every slope, and write it up the way adjusters expect. If it is fine, we tell you it is fine. If it needs a claim, you will know before you call your carrier, and we meet the adjuster at the house. If the roof has to be replaced, we bring in a roofing partner and handle the panels ourselves.`,
+        body: `You cannot see hail damage from the driveway. We get on the roof, photograph every slope, and write it up the way adjusters expect. If it is fine, we tell you it is fine. If it needs a claim, you will know before you call your carrier, and we meet the adjuster at the house. If the roof has to be replaced, we coordinate with one of our select roofers and handle the panels ourselves.`,
         href: '/hail-damage',
       }),
     ],
@@ -310,7 +310,7 @@ function buildPage(city, siteId) {
       }),
       item(`${p}-steps`, {
         title: 'You see the numbers side by side',
-        body: `Solar only, solar with a battery, or solar plus a reroof with one of our roofing partners. Each option shows the installed price, what ${city.utilityShort} does to the payback, and what your bill should look like after. You decide.`,
+        body: `Solar only, solar with a battery, or solar plus a reroof with one of our select roofers. Each option shows the installed price, what ${city.utilityShort} does to the payback, and what your bill should look like after. You decide.`,
       }),
       item(`${p}-steps`, {
         title: `We pull the permit with ${city.permits.replace(/^the /, 'the ')}`,
@@ -333,7 +333,7 @@ function buildPage(city, siteId) {
       faq(
         `${p}-faq`,
         `Do I need a permit for solar in ${city.name}?`,
-        `Yes. We pull the solar and electrical permits with ${city.permits} as part of the job, and the system needs an interconnection agreement with your utility before it can be switched on. You sign; we file and follow up. If a roofer is replacing the roof, they pull the roofing permit, and we line up the schedules so the panels come off and go back on at the right time.`,
+        `Yes. We pull the solar and electrical permits with ${city.permits} as part of the job, and the system needs an interconnection agreement with your utility before it can be switched on. You sign; we file and follow up. When one of our select roofers is replacing the roof, they pull the roofing permit, and we line up the schedules so the panels come off and go back on at the right time.`,
       ),
       faq(
         `${p}-faq`,
@@ -382,7 +382,7 @@ function buildPage(city, siteId) {
     theme: 'light',
   })
 
-  const description = `Solar, hail claim help, and reroofs with trusted roofers in ${city.name}, TX. Real prices, what ${city.utilityShort} pays for solar, permits with ${city.permits.replace(/^the /, '')}, and what happens when you call. Free estimate, no pressure.`
+  const description = `Solar, hail claim help, and reroofs coordinated with select roofers in ${city.name}, TX. Real prices, what ${city.utilityShort} pays for solar, permits with ${city.permits.replace(/^the /, '')}, and what happens when you call. Free estimate, no pressure.`
 
   return {
     _id: `drafts.locationPage-${city.slug}`,
