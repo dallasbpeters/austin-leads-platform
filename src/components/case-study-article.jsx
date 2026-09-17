@@ -116,7 +116,7 @@ const KeyStats = ({ stats, edit }) => {
 const ArticleHeader = ({ title, dek, location, publishedAt, crew, keyStats, edit }) => {
   const place = placeLine(location)
   return (
-    <header className={`${SHELL} pt-40 pb-6`}>
+    <header className={`${SHELL} pb-6`}>
       {place ? (
         <p className={META} {...edit('location')}>
           {place}
