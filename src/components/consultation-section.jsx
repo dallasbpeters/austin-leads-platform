@@ -2,6 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { shouldShowClouds } from '@/lib/platform/section-helpers'
+import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -68,8 +69,11 @@ const AVATAR_TEXT_FIELDS = [
   ['avatarBlurb', 'avatarBlurb', 'personBlurb'],
 ]
 
-function getAvatarInitials(name) {
-  return String(name || '')
+export function getAvatarInitials(name) {
+  // Initials are built from single letters, so the edit markers have to come off
+  // first. Slicing a marker-carrying string can leave a lone invisible character,
+  // which the Studio overlay then fails to decode.
+  return String(cleanRuntimeString(name) || '')
     .trim()
     .split(/\s+/u)
     .slice(0, 2)
