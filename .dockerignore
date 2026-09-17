@@ -1,4 +1,6 @@
-# The renderer image only needs videos/christmas-reels and services/reel-renderer.
+# The renderer image only needs the reel templates and services/reel-renderer.
+# public/ is excluded, so every brand file a template loads must be let back in
+# below — a missing line here fails the build at its COPY, not at render time.
 .git
 .next
 node_modules
@@ -10,11 +12,16 @@ public
 !public/fonts
 !public/images
 !public/christmas-logo.svg
+!public/tx-solar-logo.svg
+!public/clouds
 !public/reel-music
 src
 docs
 scripts
 !scripts/sync-reel-assets.mjs
+# assets/ is built inside the image by sync-reel-assets.mjs. Shipping a
+# developer's copy would bake a stale file into the image.
+videos/*/assets
 videos/*/renders
 videos/*/snapshots
 videos/*/capture
