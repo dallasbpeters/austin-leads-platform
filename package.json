@@ -48,6 +48,16 @@
     "video:yt:push": "node --env-file=.env.local scripts/youtube-upload.mjs",
     "video:seed": "node --env-file=.env.local scripts/seed-video-project.mjs",
     "reels:assets": "node scripts/sync-reel-assets.mjs",
+    "reels:assets:brand": "node scripts/sync-reel-assets.mjs brand",
+    "reels:assets:christmas": "node scripts/sync-reel-assets.mjs christmas",
+    "reels:watch": "node scripts/watch-reel-assets.mjs",
+    "reels:watch:brand": "node scripts/watch-reel-assets.mjs brand",
+    "reels:watch:christmas": "node scripts/watch-reel-assets.mjs christmas",
+    "reels:check": "pnpm reels:check:brand && pnpm reels:check:christmas",
+    "reels:check:brand": "npx --yes hyperframes@0.8.46 check videos/brand-reels",
+    "reels:check:christmas": "npx --yes hyperframes@0.8.46 check videos/christmas-reels",
+    "reels:frames:brand": "npx --yes hyperframes@0.8.46 snapshot videos/brand-reels --frames 5",
+    "reels:frames:christmas": "npx --yes hyperframes@0.8.46 snapshot videos/christmas-reels --frames 5",
     "video:render:push": "node --env-file=.env.local scripts/push-render.mjs"
   },
   "dependencies": {

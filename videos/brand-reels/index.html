@@ -80,9 +80,7 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(90% 46% at 50% 96%, rgba(255, 208, 107, 0.12) 0%, rgba(255, 208, 107, 0) 66%),
-        radial-gradient(120% 62% at 50% 4%, #082f43 0%, rgba(8, 47, 67, 0) 58%),
-        linear-gradient(180deg, #e8f4fd 0%, #f0f7fb 42%, #e8f0f8 74%, #d0dce8 100%);
+        radial-gradient(90% 46% at 50% 96%, rgba(255, 208, 107, 0.12) 0%, rgb(2 163 255 / 0%) 66%), radial-gradient(120% 62% at 50% 4%, #05a5f8 0%, rgb(2 110 165 / 0%) 58%), linear-gradient(180deg, #008ffb 0%, #00a2ff 42%, #1b8dff 74%, #d0dce8 100%);
     }
 
     /* Film finishing: subtle vignette, fine grain, warm leak. */
@@ -768,7 +766,7 @@
 
     const buildSignoff = (scene, root, at) => {
       const block = el('div', 'signoff', root)
-          const logo = el('img', 'signoff-logo', block)
+      const logo = el('img', 'signoff-logo', block)
       logo.src = 'assets/brand/tx-solar-logo.svg'
       logo.alt = ''
       const phone = el('div', 'phone', block)
