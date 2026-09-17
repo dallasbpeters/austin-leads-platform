@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+    {"id":"scenes","type":"string","label":"Scenes (JSON)","default":"[{\"type\":\"photo\",\"duration\":5,\"eyebrow\":\"Austin, Texas\",\"headline\":\"What solar costs here\",\"sub\":\"Real ranges from recent Central Texas jobs.\"},{\"type\":\"offer\",\"duration\":5,\"eyebrow\":\"Installed, before any rebate\",\"headline\":\"A home system runs\",\"price\":\"$15,000-$30,000\",\"sub\":\"Yours depends on the roof and your real usage.\"},{\"type\":\"signoff\",\"duration\":5,\"headline\":\"Free estimate · No pressure\",\"sub\":\"512-400-3763\"}]"},
+    {"id":"totalDuration","type":"number","label":"Total seconds","default":15,"min":2,"max":90,"step":0.5}
+  ]'>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Switzer';
+      src: url('assets/fonts/Switzer-Variable.woff2') format('woff2');
+      font-weight: 100 900;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Bespoke Serif';
+      src: url('assets/fonts/BespokeSerif-Variable.woff2') format('woff2');
+      font-weight: 100 900;
+      font-display: block;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #f8fafc;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      font-family: 'Switzer', system-ui, sans-serif;
+      color: #0f172a;
+      overflow: hidden;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* A soft cloud band high in the sky. It drifts, it never loops hard. */
+    .cloud {
+      position: absolute;
+      top: 60px;
+      left: -10%;
+      width: 120%;
+      height: 760px;
+      opacity: 0.55;
+      pointer-events: none;
+      background: url('assets/cloud-sprite.png') no-repeat center top;
+      background-size: 100% auto;
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 52%, rgba(0, 0, 0, 0) 92%);
+      mask-image: linear-gradient(180deg, #000 0%, #000 52%, rgba(0, 0, 0, 0) 92%);
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    /* ── Daylight air ─────────────────────────────────────────────────────
+         Clean sky gradient, subtle warm haze, no night grade. */
+
+    .sky {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(90% 46% at 50% 96%, rgba(255, 208, 107, 0.12) 0%, rgba(255, 208, 107, 0) 66%),
+        radial-gradient(120% 62% at 50% 4%, #082f43 0%, rgba(8, 47, 67, 0) 58%),
+        linear-gradient(180deg, #e8f4fd 0%, #f0f7fb 42%, #e8f0f8 74%, #d0dce8 100%);
+    }
+
+    /* Film finishing: subtle vignette, fine grain, warm leak. */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(78% 62% at 50% 46%, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.18) 100%);
+    }
+
+    .grain {
+      position: absolute;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+      opacity: 0.06;
+      mix-blend-mode: overlay;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain-shift 0.5s steps(1) infinite;
+    }
+
+    @keyframes grain-shift {
+
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      20% {
+        transform: translate(-6%, 4%);
+      }
+
+      40% {
+        transform: translate(5%, -7%);
+      }
+
+      60% {
+        transform: translate(-4%, -3%);
+      }
+
+      80% {
+        transform: translate(7%, 5%);
+      }
+    }
+
+    .leak {
+      position: absolute;
+      inset: -20% -30%;
+      pointer-events: none;
+      opacity: 0.25;
+      mix-blend-mode: screen;
+      background: radial-gradient(52% 34% at 18% 6%,
+          rgba(255, 208, 107, 0.35) 0%,
+          rgba(255, 208, 107, 0) 70%);
+    }
+
+    /* A faint warm bloom under each cut and over the opening. Soft and wide:
+         it lifts the frame for a beat, it never flashes. */
+    .burst {
+      z-index: 40;
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: screen;
+      background: radial-gradient(75% 55% at 50% 46%,
+          rgba(255, 208, 107, 0.5) 0%,
+          rgba(255, 208, 107, 0) 80%);
+    }
+
+    /* ── Type ──────────────────────────────────────────────────────────
+         One gold eyebrow with hairlines, a serif headline whose words whip in
+         one after another, one supporting line that wipes up. */
+
+    /* Type sits above the vignette and grain, so nothing dulls the words. */
+    .copy {
+      z-index: 30;
+      position: absolute;
+      right: 72px;
+      bottom: 300px;
+      left: 72px;
+      text-align: center;
+    }
+
+    /* Words always land on the same calm dark bed, whatever is behind them:
+         a bright sky, a bright roof, a dark one. One reading contrast for all. */
+    .copy-scrim {
+      position: absolute;
+      inset: -150px -280px;
+      z-index: -1;
+      background:
+        radial-gradient(70% 50% at 50% 50%,
+          rgba(4, 10, 23, 0.9) 0%,
+          rgba(4, 10, 23, 0.88) 48%,
+          rgba(4, 10, 23, 0.68) 74%,
+          rgba(4, 10, 23, 0) 100%);
+    }
+
+    .copy--center {
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
+    }
+
+    .copy--top {
+      top: 190px;
+      bottom: auto;
+    }
+
+    .eyebrow {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      color: #ffd06b;
+      font-size: 36px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      opacity: 0;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 88px;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 208, 107, 0) 0%, rgba(255, 208, 107, 0.85) 100%);
+    }
+
+    .eyebrow::after {
+      background: linear-gradient(90deg, rgba(255, 208, 107, 0.85) 0%, rgba(255, 208, 107, 0) 100%);
+    }
+
+    .headline {
+      position: relative;
+      margin-top: 44px;
+      font-family: 'Bespoke Serif', Georgia, serif;
+      font-size: 150px;
+      line-height: 1.04;
+      font-weight: 400;
+      letter-spacing: -0.022em;
+      color: #ffffff;
+    }
+
+    .headline-line {
+      display: block;
+      white-space: nowrap;
+      /* headroom for the whip: words start 80px low and must not clip */
+      padding: 0.04em 0 0.1em;
+    }
+
+    /* Each word arrives on its own: hidden until its beat, then whips up. */
+    .word {
+      display: inline-block;
+      opacity: 0;
+      will-change: transform;
+      margin: 0 0.08em;
+    }
+
+    /* A masked box: the line wipes up inside it instead of popping. */
+    .line-mask {
+      display: block;
+      overflow: hidden;
+      /* room for descenders (g, p, y) inside the wipe mask */
+      padding-bottom: 0.12em;
+      margin-bottom: -0.12em;
+    }
+
+    .line {
+      display: block;
+      transform: translateY(105%);
+    }
+
+    .sub {
+      position: relative;
+      margin: 36px auto 0;
+      max-width: 920px;
+      font-size: 54px;
+      line-height: 1.3;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    /* The price counts up, then a gold sheen sweeps through the figures.
+         The gradient paints only inside the text box, and this serif's figures
+         reach above and below it — so the box gets real headroom, or the tops
+         and tails of the numbers are cut off. */
+    .price-wrap {
+      position: relative;
+      margin-top: 18px;
+    }
+
+    .price {
+      position: relative;
+      z-index: 2;
+      display: inline-block;
+      padding: 0.1em 0.06em 0.16em;
+      font-family: 'Bespoke Serif', Georgia, serif;
+      font-size: 250px;
+      line-height: 1.1;
+      white-space: nowrap;
+      font-weight: 500;
+      letter-spacing: -0.045em;
+      font-variant-numeric: tabular-nums;
+      background: linear-gradient(100deg, #c98f3f 0%, #f0c987 30%, #fff3d6 46%, #f0c987 62%, #c98f3f 100%);
+      background-size: 260% 100%;
+      background-position: 130% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      opacity: 0;
+    }
+
+    /* Savings green variant for positive figures. */
+    .price--savings {
+      background: linear-gradient(100deg, #008a5f 0%, #00bb7f 30%, #7fffd4 46%, #00bb7f 62%, #008a5f 100%);
+    }
+
+    /* Shine dots fly out from behind the price when it lands. */
+    .sparks {
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      top: 55%;
+      width: 0;
+      height: 0;
+    }
+
+    .spark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* ── Photo scene ──────────────────────────────────────────────── */
+
+    .photo {
+      position: absolute;
+      inset: -8%;
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1.04) contrast(1.04) brightness(0.96);
+    }
+
+    .photo-grade {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(70% 44% at 50% 30%, rgba(255, 208, 107, 0.1) 0%, rgba(255, 208, 107, 0) 70%),
+        linear-gradient(180deg,
+          rgba(8, 47, 67, 0.55) 0%,
+          rgba(8, 47, 67, 0.04) 34%,
+          rgba(8, 47, 67, 0.75) 100%);
+    }
+
+    /* ── Sign-off ─────────────────────────────────────────────────── */
+
+    .signoff {
+      z-index: 30;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 72px;
+      text-align: center;
+    }
+
+    .signoff-logo {
+      width: 540px;
+      opacity: 0;
+      filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.3));
+    }
+
+    .phone {
+      margin-top: 56px;
+      font-size: 104px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: #082f43;
+      opacity: 0;
+    }
+
+    .rule {
+      width: 420px;
+      height: 1px;
+      margin: 34px auto 0;
+      transform: scaleX(0);
+      background: linear-gradient(90deg,
+          rgba(234, 88, 12, 0) 0%,
+          rgba(234, 88, 12, 0.9) 50%,
+          rgba(234, 88, 12, 0) 100%);
+    }
+
+    .cta {
+      margin-top: 28px;
+      font-size: 44px;
+      letter-spacing: 0.06em;
+      color: rgba(15, 23, 42, 0.78);
+      opacity: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1080" data-height="1920">
+    <div class="clip" id="stage" data-start="0" data-duration="15" data-track-index="0">
+      <div class="sky" id="sky"></div>
+      <div class="cloud" id="cloud" data-layout-allow-overflow></div>
+      <div id="scenes"></div>
+      <!-- Finishing layers: translucent by design, so the checker is told the overlap is intentional. -->
+      <div class="leak" id="leak"></div>
+      <div class="vignette" id="vignette"></div>
+      <div class="grain" id="grain"></div>
+      <!-- Words live above the film finish, so vignette and grain never dull them. -->
+      <div id="copy-layer"></div>
+      <!-- The light burst covers every cut. -->
+      <div class="burst" id="burst"></div>
+    </div>
+  </div>
+
+  <script>
+    /*
+     * Scene engine.
+     *
+     * The builder at /reels sends a list of scenes; each one becomes DOM plus
+     * a slice of the timeline. Art direction rules that keep these postable:
+     * photography leads where there is a photo, words arrive one at a time
+     * and never fade in, cuts hide under a warm light burst, and every frame
+     * carries the same daylight grade — haze, vignette, grain.
+     *
+     * The renderer (services/reel-renderer/audio.mjs) places sound effects
+     * against the BEATS table below. Change a beat here and there together.
+     *
+     * Deterministic only: no Math.random, no Date.now, no endless repeats.
+     */
+
+    const { scenes: scenesRaw } = window.__hyperframes.getVariables()
+
+    const DEFAULT_SCENES = [
+      {
+        type: 'photo',
+        duration: 5,
+        eyebrow: 'Austin, Texas',
+        headline: 'What solar costs here',
+        sub: 'Real ranges from recent Central Texas jobs.',
+      },
+      { type: 'signoff', duration: 5, headline: 'Free estimate · No pressure', sub: '512-400-3763' },
+    ]
+
+    /* When things land inside a scene, in seconds from its start. */
+    const BEATS = {
+      eyebrow: 0.25,
+      headline: 0.5,
+      wordStep: 0.14,
+      price: 0.9,
+      priceCount: 0.9,
+      signoffLogo: 0.2,
+      signoffPhone: 0.7,
+      burst: 0.45,
+      hook: 1.2,
+    }
+
+    const F = 1 / 30
+
+    const parseScenes = (raw) => {
+      if (Array.isArray(raw)) {
+        return raw
+      }
+      try {
+        const parsed = JSON.parse(String(raw || ''))
+        return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_SCENES
+      } catch {
+        return DEFAULT_SCENES
+      }
+    }
+
+    const scenes = parseScenes(scenesRaw)
+    const sceneDuration = (scene) => Math.max(2, Number(scene.duration) || 4)
+    const totalDuration = scenes.reduce((sum, scene) => sum + sceneDuration(scene), 0)
+
+    const seeded = (seed) => {
+      let state = Math.floor(seed) % 2147483647 || 1
+      return () => {
+        state = (state * 16807) % 2147483647
+        return (state - 1) / 2147483646
+      }
+    }
+
+    /* A pure hash: the same index always gives the same number. */
+    const prand = (n) => {
+      const x = Math.sin(n * 127.1 + 311.7) * 43758.5453
+      return x - Math.floor(x)
+    }
+
+    const el = (tag, className, parent) => {
+      const node = document.createElement(tag)
+      if (className) {
+        node.className = className
+      }
+      if (parent) {
+        parent.append(node)
+      }
+      return node
+    }
+
+    const tl = gsap.timeline({ paused: true })
+    const stage = document.getElementById('scenes')
+    const copyLayer = document.getElementById('copy-layer')
+
+    // ── Cuts ─────────────────────────────────────────────────────────
+
+    /**
+     * A cut: the old scene lifts away, the new one settles in, and a faint
+     * warm bloom crosses the seam. Calm, no flash.
+     */
+    const cut = (outgoing, incoming, at) => {
+      for (const layer of outgoing) {
+        tl.to(layer, { opacity: 0, scale: 1.05, duration: 0.32, ease: 'power2.in' }, at - 0.32)
+      }
+      for (const layer of incoming) {
+        tl.fromTo(
+          layer,
+          { opacity: 0, scale: 1.06 },
+          { opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' },
+          at - 0.1,
+        )
+      }
+      tl.fromTo('#burst', { opacity: 0 }, { opacity: 0.24, duration: 0.22, ease: 'sine.in' }, at - 0.22)
+      tl.to('#burst', { opacity: 0, duration: 0.5, ease: 'sine.out' }, at)
+    }
+
+    // ── Copy ─────────────────────────────────────────────────────────
+
+    /* About this many letters of the 150px serif fit across the safe width. */
+    const LINE_BUDGET = 14
+    const HEADLINE_SIZE = 150
+    const HEADLINE_MIN = 96
+    const SAFE_WIDTH = 1080 - 72 * 2
+
+    /*
+     * Lines never wrap; a line that is still too wide steps the whole headline
+     * down instead. Measured once at build (layout, not motion), and again when
+     * the brand font has loaded, since the fallback serif is a little narrower.
+     */
+    const fitHeadline = (headline) => {
+      const fit = () => {
+        headline.style.fontSize = `${HEADLINE_SIZE}px`
+        const widest = Math.max(...[...headline.children].map((line) => line.scrollWidth), 1)
+        if (widest > SAFE_WIDTH) {
+          headline.style.fontSize = `${Math.max(HEADLINE_MIN, Math.floor(HEADLINE_SIZE * (SAFE_WIDTH / widest)))}px`
+        }
+      }
+      fit()
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fit)
+      }
+    }
+
+    /** Breaks a headline into lines that fit at 9:16: about LINE_BUDGET letters each. */
+    const headlineLines = (text) => {
+      const parts = String(text || '')
+        .split(/\s+/)
+        .filter(Boolean)
+      const lines = []
+      let line = []
+      let length = 0
+      for (const word of parts) {
+        const next = length + word.length + (line.length ? 1 : 0)
+        if (line.length && next > LINE_BUDGET) {
+          lines.push(line)
+          line = []
+          length = 0
+        }
+        line.push(word)
+        length += word.length + (line.length > 1 ? 1 : 0)
+      }
+      if (line.length) {
+        lines.push(line)
+      }
+      return lines
+    }
+
+    /** Reads "$1,250" as { prefix: "$", value: 1250, grouped: true, suffix: "" }, or null. */
+    const parsePrice = (text) => {
+      const match = String(text || '').match(/^([^\d]*)(\d[\d,]*)([^\d]*)$/)
+      if (!match) {
+        return null
+      }
+      const digits = match[2].replaceAll(',', '')
+      if (!digits || digits.length > 7) {
+        return null
+      }
+      return { prefix: match[1], value: Number(digits), grouped: match[2].includes(','), suffix: match[3] }
+    }
+
+    const formatPrice = (parsed, value) =>
+      `${parsed.prefix}${parsed.grouped ? Math.round(value).toLocaleString('en-US') : Math.round(value)}${parsed.suffix}`
+
+    const copyBlock = (scene, root, { center = false, top = false } = {}) => {
+      const position = center ? 'copy copy--center' : top ? 'copy copy--top' : 'copy'
+      const copy = el('div', position, root)
+      el('div', 'copy-scrim', copy).setAttribute('data-layout-allow-occlusion', '')
+      const parts = { words: [] }
+
+      if (scene.eyebrow) {
+        parts.eyebrow = el('div', 'eyebrow', copy)
+        parts.eyebrow.textContent = scene.eyebrow
+      }
+      if (scene.headline) {
+        parts.headline = el('h1', 'headline', copy)
+        for (const lineWords of headlineLines(scene.headline)) {
+          const line = el('span', 'headline-line', parts.headline)
+          for (const text of lineWords) {
+            const word = el('span', 'word', line)
+            word.textContent = text
+            parts.words.push(word)
+          }
+        }
+      }
+      if (parts.headline) {
+        fitHeadline(parts.headline)
+      }
+      if (scene.price) {
+        const wrap = el('div', 'price-wrap', copy)
+        parts.sparks = el('div', 'sparks', wrap)
+        parts.price = el('div', 'price', wrap)
+        parts.priceText = String(scene.price)
+        parts.price.textContent = parts.priceText
+        /* Savings green for positive savings figures. */
+        if (scene.priceType === 'savings') {
+          parts.price.classList.add('price--savings')
+        }
+        /* Long prices ("$12,500") step down so they never run off the sides. */
+        const length = parts.priceText.length
+        if (length > 4) {
+          parts.price.style.fontSize = `${Math.max(130, Math.round(250 * (4.6 / length)))}px`
+        }
+      }
+      if (scene.sub) {
+        parts.sub = el('p', 'sub', copy)
+        const mask = el('span', 'line-mask', parts.sub)
+        parts.subLine = el('span', 'line', mask)
+        parts.subLine.textContent = scene.sub
+      }
+      return parts
+    }
+
+    /** Shine dots fly out from behind the price the moment it lands. */
+    const sparkBurst = (field, at) => {
+      const COUNT = 26
+      const FLIGHT = 0.8
+      const palette = ['#ffe6b0', '#f0c987', '#ffffff', '#ffd06b']
+      const sparks = []
+      for (let index = 0; index < COUNT; index += 1) {
+        const dot = el('div', 'spark', field)
+        const size = 5 + prand(index * 3 + 1) * 6
+        dot.style.width = `${size.toFixed(1)}px`
+        dot.style.height = `${size.toFixed(1)}px`
+        dot.style.background = palette[index % palette.length]
+        const angle = prand(index * 5 + 2) * Math.PI * 2
+        const speed = 260 + prand(index * 7 + 3) * 420
+        sparks.push({ dot, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed * 0.55 })
+      }
+      const drive = { T: 0 }
+      tl.fromTo(
+        drive,
+        { T: 0 },
+        {
+          T: 1,
+          duration: FLIGHT,
+          ease: 'none',
+          immediateRender: false,
+          onUpdate: () => {
+            const t = drive.T * FLIGHT
+            const fade = Math.min(1, (1 - drive.T) / 0.35)
+            for (const spark of sparks) {
+              spark.dot.style.transform = `translate(${spark.vx * t}px, ${spark.vy * t + 40 * t * t}px)`
+              spark.dot.style.opacity = String(drive.T === 0 ? 0 : fade)
+            }
+          },
+        },
+        at,
+      )
+    }
+
+    /**
+     * Brings a copy block on. Eyebrow softens in, headline words whip up one
+     * after another, the price counts up and shines, the sub line wipes up.
+     * Returns when the last word settles, so callers can time what follows.
+     */
+    const animateCopy = (parts, at) => {
+      if (parts.eyebrow) {
+        tl.fromTo(
+          parts.eyebrow,
+          { opacity: 0, y: 10, filter: 'blur(14px)' },
+          { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' },
+          at + BEATS.eyebrow,
+        )
+      }
+
+      let cursor = at + BEATS.headline
+      parts.words.forEach((word, index) => {
+        const last = index === parts.words.length - 1
+        const travel = index === 0 || last ? 84 : 52
+        const duration = index === 0 || last ? 0.2 : 0.16
+        tl.set(word, { opacity: 1, y: travel }, cursor)
+        tl.to(word, { y: 0, duration, ease: 'power4.out' }, cursor)
+        /* Each word starts a frame before the last one settles: a wave, not a queue. */
+        cursor += Math.max(F * 2, BEATS.wordStep - index * F * 0.5)
+      })
+      const settled = parts.words.length ? cursor + 0.1 : at + BEATS.headline
+
+      if (parts.price) {
+        const priceAt = Math.max(at + BEATS.price, settled - 0.2)
+        const parsed = parsePrice(parts.priceText)
+        tl.fromTo(
+          parts.price,
+          { opacity: 0, y: 40, scale: 0.86 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out' },
+          priceAt,
+        )
+        if (parsed && parsed.value > 0) {
+          const counter = { value: 0 }
+          tl.fromTo(
+            counter,
+            { value: 0 },
+            {
+              value: parsed.value,
+              duration: BEATS.priceCount,
+              ease: 'power2.out',
+              /* Not rendered at build: the element keeps the real price until the count starts. */
+              immediateRender: false,
+              onUpdate: () => {
+                parts.price.textContent = formatPrice(parsed, counter.value)
+              },
+            },
+            priceAt,
+          )
+        }
+        const landed = priceAt + (parsed ? BEATS.priceCount : 0.3)
+        tl.fromTo(
+          parts.price,
+          { backgroundPosition: '130% 0' },
+          { backgroundPosition: '-30% 0', duration: 1.1, ease: 'power2.inOut' },
+          landed - 0.1,
+        )
+        tl.fromTo(
+          parts.price,
+          { scale: 1 },
+          { scale: 1.04, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 1 },
+          landed - 0.05,
+        )
+        sparkBurst(parts.sparks, landed - 0.05)
+      }
+
+      if (parts.subLine) {
+        const subAt = parts.price ? Math.max(settled, at + BEATS.price + 0.7) : settled
+        tl.to(parts.subLine, { y: '0%', duration: 0.7, ease: 'expo.out' }, subAt)
+      }
+      return settled
+    }
+
+    /** Photography leads: a slow push-in, graded, with the copy over a scrim. */
+    const buildPhoto = (scene, root, at, duration) => {
+      const photo = el('div', 'photo', root)
+      photo.style.backgroundImage = `url("${String(scene.photoUrl || '').replaceAll('"', '%22')}")`
+      el('div', 'photo-grade', root)
+      tl.fromTo(
+        photo,
+        { scale: 1.04, y: 10 },
+        { scale: 1.14, y: -26, duration: duration + 0.6, ease: 'none' },
+        at,
+      )
+    }
+
+    const buildSignoff = (scene, root, at) => {
+      const block = el('div', 'signoff', root)
+          const logo = el('img', 'signoff-logo', block)
+      logo.src = 'assets/brand/tx-solar-logo.svg'
+      logo.alt = ''
+      const phone = el('div', 'phone', block)
+      phone.textContent = scene.sub || ''
+      const rule = el('div', 'rule', block)
+      const cta = el('div', 'cta', block)
+      cta.textContent = scene.headline || ''
+
+      /* Logo pops, phone slams, rule draws, CTA settles — then it holds still. */
+      tl.fromTo(
+        logo,
+        { opacity: 0, scale: 0.6, y: 20 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: 'back.out(1.6)' },
+        at + BEATS.signoffLogo,
+      )
+      tl.set(phone, { opacity: 1, y: 96 }, at + BEATS.signoffPhone)
+      tl.to(phone, { y: 0, duration: 0.24, ease: 'power4.out' }, at + BEATS.signoffPhone)
+      tl.fromTo(
+        phone,
+        { scale: 1.06 },
+        { scale: 1, duration: 0.3, ease: 'power2.out' },
+        at + BEATS.signoffPhone + 0.2,
+      )
+      tl.fromTo(
+        rule,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.7, ease: 'power3.out' },
+        at + BEATS.signoffPhone + 0.2,
+      )
+      tl.fromTo(
+        cta,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+        at + BEATS.signoffPhone + 0.45,
+      )
+    }
+
+    // ── Lay the scenes out ───────────────────────────────────────────
+
+    let cursor = 0
+    let previous = []
+    for (const [index, scene] of scenes.entries()) {
+      const duration = sceneDuration(scene)
+      const root = el('div', 'scene', stage)
+      root.id = `scene-${index + 1}`
+
+      /* Art and words are separate layers that cut together. */
+      const words = el('div', 'scene', copyLayer)
+      words.id = `scene-${index + 1}-copy`
+
+      if (scene.type === 'photo') {
+        buildPhoto(scene, root, cursor, duration)
+        animateCopy(copyBlock(scene, words), cursor)
+      } else if (scene.type === 'signoff') {
+        buildSignoff(scene, words, cursor)
+      } else {
+        animateCopy(copyBlock(scene, words, { center: true }), cursor)
+      }
+
+      /* Scene one settles in from dark under a soft bloom — the hook. Every
+         later scene arrives on a cut. */
+      if (index === 0) {
+        for (const layer of [root, words]) {
+          tl.fromTo(
+            layer,
+            { opacity: 0, scale: 1.05 },
+            { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' },
+            0,
+          )
+        }
+        tl.fromTo(
+          '#burst',
+          { opacity: 0.45, scale: 1.2 },
+          { opacity: 0, scale: 1, duration: BEATS.hook, ease: 'power2.out' },
+          0,
+        )
+      } else {
+        cut(previous, [root, words], cursor)
+      }
+      previous = [root, words]
+
+      cursor += duration
+    }
+
+    /* The cloud band drifts once across the whole reel: seek-safe, no loop. */
+    tl.fromTo(
+      '#cloud',
+      { xPercent: -4, yPercent: 0 },
+      { xPercent: 4, yPercent: -2, duration: totalDuration, ease: 'none' },
+      0,
+    )
+
+    window.__timelines = window.__timelines || {}
+    window.__timelines['main'] = tl
+    tl.seek(0)
+  </script>
+</body>
+
+</html>
