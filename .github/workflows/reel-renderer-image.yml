@@ -26,6 +26,7 @@ on:
       - public/fonts/Switzer-Variable.woff2
       - public/fonts/BespokeSerif-Variable.woff2
       - public/christmas-mockup/**
+      - public/reel-music/**
   workflow_dispatch:
 
 concurrency:
