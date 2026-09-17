@@ -1,5 +1,6 @@
 import { getSolarGuideGridItems, getSolarGuidePages } from './guides.js'
 import { mainServices, roofingServices, servicePages, specialtyServices } from './service-catalog.js'
+import { serviceAreaSection, serviceCityScrollSection } from './service-coverage.js'
 
 const categories = {
   solarRoofing: 'Solar + Roofing',
@@ -644,6 +645,7 @@ export const pages = [
           alt: 'Solar installation crew working on a residential roof',
         },
       },
+      serviceAreaSection,
       {
         type: 'cta',
         title: 'Talk with our team.',
@@ -774,6 +776,7 @@ export const pages = [
           href: `/services/${service.slug}`,
         })),
       },
+      serviceCityScrollSection,
       {
         type: 'steps',
         title: 'How to pick the right starting point',

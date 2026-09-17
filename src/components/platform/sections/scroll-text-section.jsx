@@ -28,6 +28,7 @@ export const ScrollTextSection = ({ section, sectionId }) => {
     <section id={sectionId} className="section-shell section-shell--card">
       <ScrollText
         texts={scrollTexts}
+        linkedItems={section.linkedItems}
         numCopies={resolveNumericProp(section?.numCopies)}
         velocity={resolveNumericProp(section?.velocity)}
         direction={section.direction}

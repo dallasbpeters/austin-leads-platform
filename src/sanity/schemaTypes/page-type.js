@@ -1,6 +1,7 @@
 // oxlint-disable no-nested-ternary, func-style no-eq-null
 import { BlockContentIcon } from '@sanity/icons/BlockContent'
 import { CircleIcon } from '@sanity/icons/Circle'
+import { defineArrayMember, defineField } from 'sanity'
 
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 
@@ -3836,6 +3837,48 @@ const scrollTextSectionType = {
       of: [{ type: 'string' }],
       options: canvasPurpose('Texts to scroll.'),
     },
+    defineField({
+      name: 'linkedItems',
+      title: 'Linked city names',
+      type: 'array',
+      description:
+        'Optional single scrolling row. When set, replaces the plain text rows. Names without a published location page remain plain text.',
+      of: [
+        defineArrayMember({
+          name: 'scrollTextItem',
+          title: 'City name',
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'City name',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'page',
+              title: 'Location page',
+              type: 'reference',
+              to: [{ type: 'locationPage' }],
+              weak: true,
+              options: {
+                filter: ({ document }) => ({
+                  filter: 'site._ref == $siteId',
+                  params: { siteId: document.site?._ref || '' },
+                }),
+              },
+            }),
+          ],
+          preview: {
+            select: { title: 'label', subtitle: 'page.slug.current' },
+            prepare: ({ title, subtitle }) => ({
+              title: `City: ${title || 'Untitled'}`,
+              subtitle: subtitle ? `/${subtitle}` : 'Plain text',
+            }),
+          },
+        }),
+      ],
+    }),
     {
       name: 'fontSize',
       title: 'Font size',
@@ -4206,6 +4249,10 @@ const serviceAreaItemType = {
           { title: 'Bell County (Killeen)', value: 'bell' },
           { title: 'McLennan County (Waco)', value: 'mclennan' },
           { title: 'Tarrant County (Fort Worth)', value: 'tarrant' },
+          { title: 'Dallas County', value: 'dallas' },
+          { title: 'Ellis County (Waxahachie)', value: 'ellis' },
+          { title: 'Johnson County (Cleburne)', value: 'johnson' },
+          { title: 'Hill County (Hillsboro)', value: 'hill' },
           { title: 'Potter County (Amarillo)', value: 'potter' },
           { title: 'Randall County (Canyon)', value: 'randall' },
           { title: 'Lubbock County', value: 'lubbock' },

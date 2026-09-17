@@ -1,0 +1,54 @@
+.scroll-text__viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.scroll-text__link {
+  display: inline-block;
+  padding-block: 0.25rem;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0.25rem;
+}
+
+.scroll-text__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.scroll-text__link:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: -2px;
+}
+
+/* Keyboard users get one stationary, wrapping copy with every link visible. */
+.scroll-text:focus-within .scroll-text__track {
+  transform: none !important;
+}
+
+.scroll-text:focus-within .scroll-text__copy:first-child {
+  flex-shrink: 1 !important;
+  white-space: normal !important;
+  flex-wrap: wrap;
+}
+
+.scroll-text:focus-within .scroll-text__copy[aria-hidden='true'] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-text__track {
+    transform: none !important;
+  }
+
+  .scroll-text__copy:first-child {
+    flex-shrink: 1 !important;
+    white-space: normal !important;
+    flex-wrap: wrap;
+  }
+
+  .scroll-text__copy[aria-hidden='true'] {
+    display: none !important;
+  }
+}
