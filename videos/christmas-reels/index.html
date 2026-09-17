@@ -71,24 +71,39 @@
           linear-gradient(180deg, #0a1b2c 0%, #071322 42%, #050a12 74%, #04070d 100%);
       }
 
-      /* Snow in three depth layers: far grains, mid flakes, near bokeh. */
+      /* Snow in three depths, in front of the scene: soft-edged flakes (a gradient,
+         not a blur, so the edge stays soft at any size), plus glints and warm bokeh. */
       .flake {
         position: absolute;
         display: block;
         border-radius: 50%;
-        background: #ffffff;
+        background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.85) 38%, rgba(255, 255, 255, 0) 100%);
       }
 
       .flake--far {
-        filter: blur(0.4px);
-      }
-
-      .flake--mid {
-        filter: blur(1.4px);
+        background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0) 100%);
       }
 
       .flake--near {
-        filter: blur(7px);
+        background: radial-gradient(circle, rgba(255, 250, 240, 0.9) 0%, rgba(255, 250, 240, 0.5) 40%, rgba(255, 250, 240, 0) 100%);
+      }
+
+      /* Far-off points of light that twinkle in the cold. */
+      .glint {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.55);
+      }
+
+      /* Out-of-focus Christmas lights drifting past the lens. */
+      .bokeh {
+        position: absolute;
+        border-radius: 50%;
+        mix-blend-mode: screen;
+        pointer-events: none;
       }
 
       /* Film finishing: vignette, grain, and a slow warm leak across the top. */
@@ -143,18 +158,16 @@
         );
       }
 
-      /* The light burst: a warm bloom that flashes up at every scene change and
-         opens the reel. It sits above everything, so a cut hides under it. */
+      /* A faint warm bloom under each cut and over the opening. Soft and wide:
+         it lifts the frame for a beat, it never flashes. */
       .burst {
         z-index: 40;
         position: absolute;
-        inset: -10%;
+        inset: -20%;
         pointer-events: none;
         opacity: 0;
         mix-blend-mode: screen;
-        background:
-          radial-gradient(38% 22% at 50% 44%, rgba(255, 244, 214, 0.95) 0%, rgba(255, 244, 214, 0) 70%),
-          radial-gradient(70% 46% at 50% 50%, rgba(255, 190, 110, 0.85) 0%, rgba(255, 190, 110, 0) 72%);
+        background: radial-gradient(75% 55% at 50% 46%, rgba(255, 214, 160, 0.6) 0%, rgba(255, 214, 160, 0) 80%);
       }
 
       /* ── Type ──────────────────────────────────────────────────────────
@@ -325,25 +338,6 @@
           );
       }
 
-      /* A warm bar of light that sweeps across the photo as the headline lands. */
-      .sweep {
-        position: absolute;
-        top: -20%;
-        left: 0;
-        width: 340px;
-        height: 140%;
-        opacity: 0;
-        pointer-events: none;
-        mix-blend-mode: screen;
-        transform: translateX(-600px) skewX(-16deg);
-        background: linear-gradient(
-          90deg,
-          rgba(255, 214, 150, 0) 0%,
-          rgba(255, 214, 150, 0.55) 50%,
-          rgba(255, 214, 150, 0) 100%
-        );
-      }
-
       /* ── Illustrated night scene ──────────────────────────────────── */
 
       .scene-art {
@@ -429,8 +423,9 @@
     >
       <div class="clip" id="stage" data-start="0" data-duration="10" data-track-index="0">
         <div class="sky" id="sky"></div>
-        <div id="snow"></div>
         <div id="scenes"></div>
+        <!-- Snow falls in front of the scene, so a photo gets weather too. -->
+        <div id="snow"></div>
         <!-- Finishing layers: translucent by design, so the checker is told the overlap is intentional. -->
         <div class="leak" id="leak"></div>
         <div class="vignette" id="vignette"></div>
@@ -533,14 +528,18 @@
       const stage = document.getElementById('scenes')
       const copyLayer = document.getElementById('copy-layer')
 
-      // ── Snowfall, three depths ───────────────────────────────────────
+      // ── Snow, glints and bokeh ───────────────────────────────────────
 
       const snowRandom = seeded(20261225)
       const snow = document.getElementById('snow')
+
+      /* The whole field leans with a slow wind. */
+      tl.fromTo(snow, { x: -28 }, { x: 28, duration: totalDuration, ease: 'sine.inOut' }, 0)
+
       const LAYERS = [
-        { name: 'far', count: 48, size: [3, 6], opacity: [0.25, 0.5], speed: [0.55, 0.75] },
-        { name: 'mid', count: 26, size: [8, 14], opacity: [0.35, 0.6], speed: [0.8, 1] },
-        { name: 'near', count: 9, size: [26, 46], opacity: [0.16, 0.3], speed: [1.15, 1.45] },
+        { name: 'far', count: 72, size: [3, 6], opacity: [0.3, 0.6], speed: [0.5, 0.7], sway: [10, 26] },
+        { name: 'mid', count: 38, size: [8, 16], opacity: [0.42, 0.75], speed: [0.75, 1], sway: [24, 56] },
+        { name: 'near', count: 12, size: [34, 64], opacity: [0.14, 0.26], speed: [1.1, 1.4], sway: [50, 110] },
       ]
 
       for (const layer of LAYERS) {
@@ -552,13 +551,73 @@
           flake.style.left = `${(snowRandom() * 1080).toFixed(0)}px`
           flake.style.opacity = `${(layer.opacity[0] + snowRandom() * (layer.opacity[1] - layer.opacity[0])).toFixed(2)}`
           const speed = layer.speed[0] + snowRandom() * (layer.speed[1] - layer.speed[0])
+          /* Falls straight down at its own pace… */
           tl.fromTo(
             flake,
             { y: -300 - snowRandom() * 900 },
-            { y: 2200, x: (snowRandom() - 0.5) * 160, duration: totalDuration / speed, ease: 'none' },
+            { y: 2200, duration: totalDuration / speed, ease: 'none' },
             0,
           )
+          /* …while drifting side to side, each flake on its own rhythm. */
+          const sway = layer.sway[0] + snowRandom() * (layer.sway[1] - layer.sway[0])
+          const period = 1.4 + snowRandom() * 2.4
+          const swings = Math.max(1, Math.ceil(totalDuration / period))
+          tl.fromTo(
+            flake,
+            { x: -sway },
+            { x: sway, duration: period, ease: 'sine.inOut', yoyo: true, repeat: swings },
+            0,
+          )
+          /* Near flakes tumble: they breathe a little as they turn. */
+          if (layer.name === 'near') {
+            tl.fromTo(
+              flake,
+              { scale: 0.86 },
+              { scale: 1.16, duration: period * 0.7, ease: 'sine.inOut', yoyo: true, repeat: swings * 2 },
+              0,
+            )
+          }
         }
+      }
+
+      /* Glints: tiny far-off lights in the upper sky that twinkle. */
+      for (let index = 0; index < 22; index += 1) {
+        const glint = el('span', 'glint', snow)
+        glint.style.left = `${(snowRandom() * 1080).toFixed(0)}px`
+        glint.style.top = `${(60 + snowRandom() * 820).toFixed(0)}px`
+        const period = 0.8 + snowRandom() * 1.8
+        const blinks = Math.max(1, Math.ceil(totalDuration / period))
+        tl.fromTo(
+          glint,
+          { opacity: 0.05, scale: 0.5 },
+          { opacity: 0.7, scale: 1.1, duration: period, ease: 'sine.inOut', yoyo: true, repeat: blinks },
+          0,
+        )
+      }
+
+      /* Bokeh: out-of-focus Christmas lights drifting past, warm with a little colour. */
+      const BOKEH_TINTS = ['255, 214, 150', '255, 236, 200', '255, 200, 130']
+      for (let index = 0; index < 5; index += 1) {
+        const bokeh = el('span', 'bokeh', snow)
+        const size = 70 + snowRandom() * 90
+        const tint = BOKEH_TINTS[index % BOKEH_TINTS.length]
+        bokeh.style.width = `${size.toFixed(0)}px`
+        bokeh.style.height = `${size.toFixed(0)}px`
+        bokeh.style.left = `${(snowRandom() * 1080 - size / 2).toFixed(0)}px`
+        bokeh.style.background = `radial-gradient(circle, rgba(${tint}, 0.16) 0%, rgba(${tint}, 0.1) 60%, rgba(${tint}, 0.14) 78%, rgba(${tint}, 0) 100%)`
+        const period = 3 + snowRandom() * 3
+        tl.fromTo(
+          bokeh,
+          { y: -200 - snowRandom() * 1600 },
+          { y: 2100, duration: totalDuration * (1.6 + snowRandom() * 0.8), ease: 'none' },
+          0,
+        )
+        tl.fromTo(
+          bokeh,
+          { x: -40, opacity: 0.45 },
+          { x: 40, opacity: 0.85, duration: period, ease: 'sine.inOut', yoyo: true, repeat: Math.ceil(totalDuration / period) },
+          0,
+        )
       }
 
       /* The leak drifts, so the finish never sits perfectly still. */
@@ -569,17 +628,26 @@
         0,
       )
 
-      // ── Light burst ──────────────────────────────────────────────────
+      // ── Cuts ─────────────────────────────────────────────────────────
 
-      /** A warm flash: up fast, clears slower. Covers a cut at `at`. */
-      const burst = (at, peak = 0.95) => {
-        tl.fromTo(
-          '#burst',
-          { opacity: 0, scale: 0.9 },
-          { opacity: peak, scale: 1.02, duration: 0.16, ease: 'power2.in' },
-          Math.max(0, at - 0.16),
-        )
-        tl.to('#burst', { opacity: 0, scale: 1.12, duration: 0.42, ease: 'power2.out' }, at)
+      /**
+       * A cut: the old scene lifts away, the new one settles in, and a faint
+       * warm bloom crosses the seam. Calm, no flash.
+       */
+      const cut = (outgoing, incoming, at) => {
+        for (const layer of outgoing) {
+          tl.to(layer, { opacity: 0, scale: 1.05, duration: 0.32, ease: 'power2.in' }, at - 0.32)
+        }
+        for (const layer of incoming) {
+          tl.fromTo(
+            layer,
+            { opacity: 0, scale: 1.06 },
+            { opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' },
+            at - 0.1,
+          )
+        }
+        tl.fromTo('#burst', { opacity: 0 }, { opacity: 0.24, duration: 0.22, ease: 'sine.in' }, at - 0.22)
+        tl.to('#burst', { opacity: 0, duration: 0.5, ease: 'sine.out' }, at)
       }
 
       // ── Copy ─────────────────────────────────────────────────────────
@@ -938,26 +1006,17 @@
         }
       }
 
-      /** Photography leads: a slow push-in, graded, a light sweep, with the copy over a scrim. */
+      /** Photography leads: a slow push-in, graded, with the copy over a scrim. */
       const buildPhoto = (scene, root, at, duration) => {
         const photo = el('div', 'photo', root)
         photo.style.backgroundImage = `url("${String(scene.photoUrl || '').replaceAll('"', '%22')}")`
         el('div', 'photo-grade', root)
-        const sweep = el('div', 'sweep', root)
         tl.fromTo(
           photo,
           { scale: 1.04, y: 10 },
           { scale: 1.14, y: -26, duration: duration + 0.6, ease: 'none' },
           at,
         )
-        /* The sweep crosses as the first headline word lands. */
-        tl.fromTo(
-          sweep,
-          { x: -600, opacity: 0 },
-          { x: 1700, opacity: 1, duration: 1, ease: 'power2.inOut' },
-          at + BEATS.headline,
-        )
-        tl.to(sweep, { opacity: 0, duration: 0.3, ease: 'power1.out' }, at + BEATS.headline + 0.8)
       }
 
       const buildSignoff = (scene, root, at, duration) => {
@@ -1011,6 +1070,7 @@
       // ── Lay the scenes out ───────────────────────────────────────────
 
       let cursor = 0
+      let previous = []
       for (const [index, scene] of scenes.entries()) {
         const duration = sceneDuration(scene)
         const root = el('div', 'scene', stage)
@@ -1032,28 +1092,30 @@
           animateCopy(copyBlock(scene, words, { center: true }), cursor)
         }
 
-        /* Hard cuts, hidden under the light burst. The first scene opens under
-           a long bloom — the hook — instead of a fade. */
-        for (const layer of [root, words]) {
-          tl.set(layer, { opacity: 1 }, cursor)
-          if (index < scenes.length - 1) {
-            tl.set(layer, { opacity: 0 }, cursor + duration)
+        /* Scene one settles in from dark under a soft bloom — the hook. Every
+           later scene arrives on a cut. */
+        if (index === 0) {
+          for (const layer of [root, words]) {
+            tl.fromTo(
+              layer,
+              { opacity: 0, scale: 1.05 },
+              { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' },
+              0,
+            )
           }
+          tl.fromTo(
+            '#burst',
+            { opacity: 0.45, scale: 1.2 },
+            { opacity: 0, scale: 1, duration: BEATS.hook, ease: 'power2.out' },
+            0,
+          )
+        } else {
+          cut(previous, [root, words], cursor)
         }
-        if (index > 0) {
-          burst(cursor)
-        }
+        previous = [root, words]
 
         cursor += duration
       }
-
-      /* The hook: the reel opens inside a bulb's bloom that clears to reveal scene one. */
-      tl.fromTo(
-        '#burst',
-        { opacity: 1, scale: 1.3 },
-        { opacity: 0, scale: 1, duration: BEATS.hook, ease: 'power3.out' },
-        0,
-      )
 
       window.__timelines = window.__timelines || {}
       window.__timelines['main'] = tl
