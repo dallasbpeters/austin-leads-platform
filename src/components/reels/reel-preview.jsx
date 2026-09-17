@@ -15,12 +15,15 @@
  * relative asset paths and the GSAP script tag both fail inside one, and the
  * preview just sits there spinning.
  *
- * Sound is optional and off until asked for: browsers refuse to play audio
- * before a tap. When it is on, the render worker hands back one URL per voice
- * line, a music bed and the effects (`/api/reels/audio`), and this component
- * plays them off the same clock that seeks the frame. The worker also stretches
- * scenes that are too short for their line, so the frame gets those durations
- * and the picture matches what the render will do.
+ * Sound is optional and off until asked for. When it is on, the render worker
+ * hands back one URL per voice line, a music bed and the effects
+ * (`/api/reels/audio`), and a small Web Audio mixer plays them off the same
+ * clock that seeks the frame. Web Audio, not <audio> tags, on purpose: the tap
+ * on the speaker unlocks ONE audio context, and after that every browser lets
+ * clips start whenever the clock says so. Clips that arrive seconds after the
+ * tap, as these do, would otherwise be muted by autoplay rules. The worker also
+ * stretches scenes that are too short for their line, so the frame gets those
+ * durations and the picture matches what the render will do.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -39,24 +42,20 @@ const AUDIO_DELAY_MS = 1500
 const MUSIC_LEVEL = 0.32
 const MUSIC_UNDER_VOICE = 0.1
 const MUSIC_FADE_SECONDS = 1.4
-/* How far a clip may drift from the clock before it is nudged back. */
+/* How far a clip may drift from the clock before it is restarted in place. */
 const DRIFT_SECONDS = 0.25
 
 /** Total seconds of a scene list, matching the composition's own floor of 2s. */
 export const totalDuration = (scenes) =>
   scenes.reduce((sum, scene) => sum + Math.max(2, Number(scene.duration) || 4), 0)
 
-/** Turns a worker plan into clips this page can play: { el, start, seconds, volume, kind }. */
+/** Turns a worker plan into clips: { url, start, seconds, volume, kind }. */
 const clipsFromPlan = (plan) => {
   const clips = []
   const add = (url, start, seconds, volume, kind) => {
-    if (!url || seconds <= 0) {
-      return
+    if (url && seconds > 0) {
+      clips.push({ url, start, seconds, volume, kind })
     }
-    const el = new Audio(url)
-    el.preload = 'auto'
-    el.volume = volume
-    clips.push({ el, start, seconds, volume, kind })
   }
   for (const voice of plan.voices || []) {
     add(voice.url, voice.start, voice.seconds, 1, 'voice')
@@ -77,12 +76,120 @@ const musicLevelAt = (time, total, voiceActive) => {
   return left < MUSIC_FADE_SECONDS ? base * Math.max(0, left / MUSIC_FADE_SECONDS) : base
 }
 
+/**
+ * The mixer: decoded clips, and a source node for each one that is playing
+ * right now. `sync(seconds, running)` is called every frame and on every scrub;
+ * it starts, restarts or stops whatever the clock says.
+ */
+class ReelMixer {
+  constructor(context) {
+    this.context = context
+    this.buffers = new Map()
+    this.clips = []
+    this.total = 0
+    this.playing = new Map()
+  }
+
+  /** Fetches and decodes every clip the plan needs (once per URL), then adopts the plan. */
+  async load(plan) {
+    const clips = clipsFromPlan(plan)
+    await Promise.all(
+      [...new Set(clips.map((clip) => clip.url))].map(async (url) => {
+        if (this.buffers.has(url)) {
+          return
+        }
+        const response = await fetch(url)
+        if (!response.ok) {
+          throw new Error(`A sound clip could not be loaded (${response.status}).`)
+        }
+        this.buffers.set(url, await this.context.decodeAudioData(await response.arrayBuffer()))
+      }),
+    )
+    this.stopAll()
+    this.clips = clips
+    this.total = plan.total
+  }
+
+  stopAll() {
+    for (const node of this.playing.values()) {
+      this.stop(node)
+    }
+    this.playing.clear()
+  }
+
+  stop(node) {
+    node.dead = true
+    try {
+      node.source.stop()
+    } catch {
+      /* already ended */
+    }
+  }
+
+  start(clip, offset) {
+    const buffer = this.buffers.get(clip.url)
+    if (!buffer || offset >= buffer.duration) {
+      return null
+    }
+    const source = this.context.createBufferSource()
+    const gain = this.context.createGain()
+    source.buffer = buffer
+    gain.gain.value = clip.volume
+    source.connect(gain).connect(this.context.destination)
+    source.start(0, offset)
+    const node = { source, gain, startedAt: this.context.currentTime, offset, dead: false }
+    source.onended = () => {
+      if (this.playing.get(clip) === node) {
+        this.playing.delete(clip)
+      }
+    }
+    return node
+  }
+
+  sync(seconds, running) {
+    const voiceActive = this.clips.some(
+      (clip) => clip.kind === 'voice' && seconds >= clip.start && seconds < clip.start + clip.seconds,
+    )
+    for (const clip of this.clips) {
+      const local = seconds - clip.start
+      const shouldPlay = running && local >= 0 && local < clip.seconds
+      let node = this.playing.get(clip)
+      if (node && (!shouldPlay || node.dead)) {
+        this.stop(node)
+        this.playing.delete(clip)
+        node = null
+      }
+      if (node && shouldPlay) {
+        const expected = this.context.currentTime - node.startedAt + node.offset
+        if (Math.abs(expected - local) > DRIFT_SECONDS) {
+          this.stop(node)
+          this.playing.delete(clip)
+          node = null
+        }
+      }
+      if (!node && shouldPlay) {
+        node = this.start(clip, local)
+        if (node) {
+          this.playing.set(clip, node)
+        }
+      }
+      if (node && clip.kind === 'music') {
+        node.gain.gain.setTargetAtTime(
+          musicLevelAt(seconds, this.total, voiceActive),
+          this.context.currentTime,
+          0.06,
+        )
+      }
+    }
+  }
+}
+
 export default function ReelPreview({ scenes, className = '' }) {
   const frameRef = useRef(null)
   const stageRef = useRef(null)
   const rafRef = useRef(0)
   const startedAtRef = useRef(0)
-  const clipsRef = useRef([])
+  const mixerRef = useRef(null)
   const planRequestRef = useRef(0)
   const [src, setSrc] = useState('')
   const [ready, setReady] = useState(false)
@@ -91,6 +198,7 @@ export default function ReelPreview({ scenes, className = '' }) {
   const [scale, setScale] = useState(0.2)
   const [soundOn, setSoundOn] = useState(false)
   const [plan, setPlan] = useState(null)
+  /* idle → loading (worker) → decoding (browser) → ready | error */
   const [planState, setPlanState] = useState('idle')
   const [planError, setPlanError] = useState('')
 
@@ -112,7 +220,7 @@ export default function ReelPreview({ scenes, className = '' }) {
     // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [scenesKey, planFits, duration])
 
-  /* Sound on: ask the worker for the clips once the scenes have settled. */
+  /* Sound on: ask the worker for the clips once the scenes have settled, then decode them. */
   useEffect(() => {
     if (!soundOn) {
       return
@@ -123,6 +231,7 @@ export default function ReelPreview({ scenes, className = '' }) {
     setPlanState('loading')
     setPlanError('')
     const request = (planRequestRef.current += 1)
+    const stale = () => request !== planRequestRef.current
     const timer = setTimeout(async () => {
       try {
         const response = await fetch('/api/reels/audio', {
@@ -134,13 +243,18 @@ export default function ReelPreview({ scenes, className = '' }) {
         if (!response.ok) {
           throw new Error(payload.error || 'The renderer could not make the sound.')
         }
-        if (request !== planRequestRef.current) {
+        if (stale()) {
+          return
+        }
+        setPlanState('decoding')
+        await mixerRef.current?.load(payload.plan)
+        if (stale()) {
           return
         }
         setPlan({ ...payload.plan, key: scenesKey })
         setPlanState('ready')
       } catch (error) {
-        if (request !== planRequestRef.current) {
+        if (stale()) {
           return
         }
         setPlanState('error')
@@ -152,20 +266,6 @@ export default function ReelPreview({ scenes, className = '' }) {
     // `scenes` is what `scenesKey` stringifies; the key is the dependency that matters.
     // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [soundOn, scenesKey, plan])
-
-  /* Build the audio elements for the plan in use, and silence the old ones. */
-  useEffect(() => {
-    for (const clip of clipsRef.current) {
-      clip.el.pause()
-      clip.el.src = ''
-    }
-    clipsRef.current = planFits ? clipsFromPlan(plan) : []
-    return () => {
-      for (const clip of clipsRef.current) {
-        clip.el.pause()
-      }
-    }
-  }, [planFits, plan])
 
   /* The frame renders at 1080x1920 and is scaled down to whatever fits. */
   useEffect(() => {
@@ -198,37 +298,14 @@ export default function ReelPreview({ scenes, className = '' }) {
     frameRef.current?.contentWindow?.postMessage({ kind: 'reel:seek', seconds }, '*')
   }, [])
 
-  /**
-   * Lines every clip up with the clock. A clip inside its window plays from the
-   * right spot; one outside it is paused. Music dips under the voice.
-   */
-  const syncAudio = useCallback((seconds, running) => {
-    const clips = clipsRef.current
-    if (!clips.length) {
-      return
-    }
-    const total = clips.reduce((max, clip) => Math.max(max, clip.start + clip.seconds), 0)
-    const voiceActive = clips.some(
-      (clip) => clip.kind === 'voice' && seconds >= clip.start && seconds < clip.start + clip.seconds,
-    )
-    for (const clip of clips) {
-      const local = seconds - clip.start
-      const active = running && local >= 0 && local < clip.seconds
-      if (clip.kind === 'music') {
-        clip.el.volume = musicLevelAt(seconds, total, voiceActive)
+  const syncAudio = useCallback(
+    (seconds, running) => {
+      if (planFits) {
+        mixerRef.current?.sync(seconds, running)
       }
-      if (active) {
-        if (clip.el.paused) {
-          clip.el.currentTime = local
-          clip.el.play().catch(() => {})
-        } else if (Math.abs(clip.el.currentTime - local) > DRIFT_SECONDS) {
-          clip.el.currentTime = local
-        }
-      } else if (!clip.el.paused) {
-        clip.el.pause()
-      }
-    }
-  }, [])
+    },
+    [planFits],
+  )
 
   /* Playback: drive the composition's timeline off this page's clock. */
   useEffect(() => {
@@ -257,14 +334,36 @@ export default function ReelPreview({ scenes, className = '' }) {
     // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, playing, duration, seek, syncAudio])
 
-  /* Sound off: everything stops at once. */
+  /* Sound off, or a plan that no longer fits: everything stops at once. */
   useEffect(() => {
-    if (!soundOn) {
-      for (const clip of clipsRef.current) {
-        clip.el.pause()
+    if (!planFits) {
+      mixerRef.current?.stopAll()
+    }
+  }, [planFits])
+
+  useEffect(() => () => mixerRef.current?.stopAll(), [])
+
+  /* The speaker. The tap is what unlocks the audio context — browsers insist on it. */
+  const toggleSound = () => {
+    if (soundOn) {
+      setSoundOn(false)
+      return
+    }
+    if (!mixerRef.current) {
+      const Context = window.AudioContext || window.webkitAudioContext
+      if (!Context) {
+        setPlanState('error')
+        setPlanError('This browser cannot play the preview sound.')
+        return
+      }
+      mixerRef.current = new ReelMixer(new Context())
+      if (process.env.NODE_ENV !== 'production') {
+        window.__reelMixer = mixerRef.current
       }
     }
-  }, [soundOn])
+    mixerRef.current.context.resume().catch(() => {})
+    setSoundOn(true)
+  }
 
   const scrub = (seconds) => {
     setPlaying(false)
@@ -274,13 +373,15 @@ export default function ReelPreview({ scenes, className = '' }) {
   }
 
   const soundLabel =
-    planState === 'loading' && soundOn
+    soundOn && planState === 'loading'
       ? 'Recording the voice…'
-      : planState === 'error'
-        ? planError
-        : planFits
-          ? plan.audio
-          : ''
+      : soundOn && planState === 'decoding'
+        ? 'Loading the sound…'
+        : planState === 'error'
+          ? planError
+          : planFits
+            ? plan.audio
+            : ''
 
   return (
     <div className={`flex flex-col items-center gap-3 ${className}`}>
@@ -328,10 +429,10 @@ export default function ReelPreview({ scenes, className = '' }) {
           className={`grid size-11 shrink-0 place-items-center rounded-full active:scale-95 ${
             soundOn ? 'bg-[#f0c987] text-black' : 'bg-white/10'
           }`}
-          onClick={() => setSoundOn((current) => !current)}
+          onClick={toggleSound}
           type="button"
         >
-          {soundOn && planState === 'loading' ? (
+          {soundOn && (planState === 'loading' || planState === 'decoding') ? (
             <Loader2 className="size-5 animate-spin" />
           ) : soundOn ? (
             <Volume2 className="size-5" />
@@ -354,7 +455,7 @@ export default function ReelPreview({ scenes, className = '' }) {
         </span>
       </div>
       {soundLabel ? (
-        <p className={`text-xs ${planState === 'error' ? 'text-[#fb2c36]' : 'text-white/50'}`}>
+        <p className={`text-xs ${planState === 'error' ? 'text-[#ffd06b]' : 'text-white/50'}`}>
           {soundLabel}
         </p>
       ) : null}
