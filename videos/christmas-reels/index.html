@@ -690,6 +690,7 @@
             T: 1,
             duration: FLIGHT,
             ease: 'none',
+            immediateRender: false,
             onUpdate: () => {
               const t = drive.T * FLIGHT
               const fade = Math.min(1, (1 - drive.T) / 0.35)
@@ -748,6 +749,8 @@
                 value: parsed.value,
                 duration: BEATS.priceCount,
                 ease: 'power2.out',
+                /* Not rendered at build: the element keeps the real price until the count starts. */
+                immediateRender: false,
                 onUpdate: () => {
                   parts.price.textContent = formatPrice(parsed, counter.value)
                 },

@@ -66,7 +66,8 @@ const PREVIEW_SHIM = `
     window.addEventListener('message', (event) => {
       const timeline = window.__timelines && window.__timelines.main
       if (timeline && event.data && event.data.kind === 'reel:seek') {
-        timeline.seek(Math.max(0, event.data.seconds))
+        // \`false\` keeps callbacks firing: the price count-up and the sparks are onUpdate-driven.
+        timeline.seek(Math.max(0, event.data.seconds), false)
       }
     })
 
