@@ -37,9 +37,9 @@ const VOICE_MODEL = () => (process.env.REEL_VOICE_MODEL || '').trim() || 'eleven
 const VOICE_SPEED = () => Math.min(1.2, Math.max(0.7, Number(process.env.REEL_VOICE_SPEED) || 0.82))
 const MUSIC_PROMPT =
   process.env.REEL_MUSIC_PROMPT ||
-  'Classic Christmas holiday instrumental, unmistakably festive: jingling sleigh bells on every beat, ' +
-    'glockenspiel and celesta melody, warm strings and soft brass, a cozy fireside carol feel like a ' +
-    'traditional holiday song, medium tempo, joyful and heartwarming, no vocals, clean ending.'
+  'Christmas orchestral score, festive and heartfelt like a holiday film: sleigh bells on every beat, ' +
+    'lush warm strings, French horns, glockenspiel and tubular bells carrying a carol-like melody, ' +
+    'gentle choir pads, medium-slow tempo. Strictly no piano, no vocals, no jazz. Clean ending.'
 
 /* REEL_SFX=off renders with voice and music only. */
 export const sfxEnabled = () => (process.env.REEL_SFX || '').trim().toLowerCase() !== 'off'
