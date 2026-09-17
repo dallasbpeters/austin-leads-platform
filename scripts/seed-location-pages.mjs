@@ -236,7 +236,7 @@ function buildPage(city, siteId) {
     title: `What solar, a hail claim, and a reroof with panels cost in ${city.name}`,
     body: pt(
       `${p}-hero`,
-      `Something brought you here: ${city.bill}, an insurance letter after the last hail storm, a roof that is older than you would like with panels already on it, or a neighbor who just went solar. Here is what those jobs cost in ${city.name}, what drives the price, and what happens when you call. We do the solar and the electrical, and we coordinate with select roofers when the roof is part of the job. No pressure. The estimate is free.`,
+      `Most ${city.name} homeowners call us about one of three things: ${city.bill} that keeps climbing, an insurance letter after the last hail storm, or a roof that needs replacing with panels already on it. Here is what each of those costs in ${city.name}, what drives the price, and what happens when you call. We do the solar and the electrical, and we coordinate with select roofers when the roof is part of the job. No pressure. The estimate is free.`,
     ),
     metrics: [
       metric(`${p}-hero`, 'Your utility', city.utilityShort),
