@@ -27,8 +27,8 @@
   --color-primary-700: oklch(from var(--color-primary) 42% c h);
   --color-primary-800: oklch(from var(--color-primary) 22% c h);
   --color-primary-900: oklch(from var(--color-primary) 10% c h);
-  --color-secondary-50: oklch(from var(--color-secondary) 99% c h);
-  --color-secondary-100: oklch(from var(--color-secondary) 98% c h);
+  --color-secondary-50: var(--color-surface-elevated);
+  --color-secondary-100: #f8fafc;
   --color-secondary-200: oklch(from var(--color-secondary) 84% c h);
   --color-secondary-300: oklch(from var(--color-secondary) 74% c h);
   --color-secondary-400: oklch(from var(--color-secondary) 65% c h);

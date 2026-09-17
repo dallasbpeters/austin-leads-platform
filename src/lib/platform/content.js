@@ -115,6 +115,11 @@ export const sectionProjection = `
   amplitude,
   text,
   texts,
+  linkedItems[]{
+    _key,
+    label,
+    "slug": select(page->site._ref == ^.^.site._ref => page->slug.current)
+  },
   fontSize,
   textColor,
   showIcon,
@@ -804,6 +809,13 @@ const sanitizeSection = (section) => {
     amplitude: coerceNumberField(s.amplitude),
     text: Array.isArray(s.text) ? s.text.map(cleanRuntimeString).filter(Boolean) : s.text,
     texts: Array.isArray(s.texts) ? s.texts.map(cleanRuntimeString).filter(Boolean) : s.texts,
+    linkedItems: Array.isArray(s.linkedItems)
+      ? s.linkedItems.map((item) => ({
+          _key: cleanRuntimeString(item._key),
+          label: cleanRuntimeString(item.label),
+          slug: cleanRuntimeString(item.slug),
+        }))
+      : s.linkedItems,
     fontSize: coerceNumberField(s.fontSize),
     textColor: resolveSanityColorValue(s.textColor),
     showIcon: Boolean(s.showIcon),

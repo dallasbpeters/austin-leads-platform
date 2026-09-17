@@ -5,12 +5,13 @@ import {
   motion,
   useAnimationFrame,
   useMotionValue,
+  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   useVelocity,
 } from 'framer-motion'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { Fragment, useLayoutEffect, useRef, useState } from 'react'
 
 import TexasFlag from '@/components/texas-flag'
 
@@ -64,8 +65,28 @@ function renderTexasFlag(textColor, fontSize) {
   return <TexasFlag color={textColor} width={fontSize} height={fontSize} />
 }
 
+function CityNames({ items, duplicate = false }) {
+  return items.map((item) => (
+    <Fragment key={item._key}>
+      {item.slug ? (
+        <a
+          className="scroll-text__link"
+          href={`/${item.slug.replace(/^\/+/, '')}`}
+          tabIndex={duplicate ? -1 : undefined}
+        >
+          {item.label}
+        </a>
+      ) : (
+        <span>{item.label}</span>
+      )}
+      <span aria-hidden="true">{' • '}</span>
+    </Fragment>
+  ))
+}
+
 function VelocityText({
   children,
+  items,
   baseVelocity,
   startPosition,
   damping,
@@ -80,6 +101,8 @@ function VelocityText({
   style,
 }) {
   const copyRef = useRef(null)
+  const pausedRef = useRef(false)
+  const reduceMotion = useReducedMotion()
   const copyWidth = useElementWidth(copyRef)
   const baseX = useMotionValue(0)
   const { scrollY } = useScroll()
@@ -100,6 +123,9 @@ function VelocityText({
   const scrollDirectionRef = useRef(baseDirection)
 
   useAnimationFrame((_, delta) => {
+    if (pausedRef.current || reduceMotion) {
+      return
+    }
     const velocityValue = velocityFactor.get()
 
     if (velocityValue < 0) {
@@ -123,6 +149,8 @@ function VelocityText({
     spans.push(
       <span
         key={index}
+        className="scroll-text__copy"
+        aria-hidden={index > 0 ? true : undefined}
         ref={index === 0 ? copyRef : null}
         style={{
           flexShrink: 0,
@@ -135,7 +163,7 @@ function VelocityText({
           ...(showIcon ? { display: 'inline-flex', alignItems: 'center' } : {}),
         }}
       >
-        {children}
+        {items ? <CityNames items={items} duplicate={index > 0} /> : children}
         {showIcon ? renderOptionalIcon(icon, resolvedTextColor, fontSize) : null}
         {showFlag ? renderTexasFlag(resolvedTextColor, fontSize) : null}
       </span>,
@@ -143,15 +171,30 @@ function VelocityText({
   }
 
   return (
-    <div style={{ position: 'relative', overflow: 'hidden', width: '100%' }}>
+    <div
+      className="scroll-text__viewport"
+      onPointerEnter={() => {
+        pausedRef.current = true
+      }}
+      onPointerLeave={() => {
+        pausedRef.current = false
+      }}
+      onFocus={() => {
+        pausedRef.current = true
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) pausedRef.current = false
+      }}
+    >
       <motion.div
+        className="scroll-text__track"
         style={{
           x,
           display: 'flex',
           whiteSpace: 'nowrap',
           textAlign: 'center',
           backgroundColor: 'var(--color-primary)',
-          color: 'contrast-color(var(--color-primary))',
+          color: 'var(--primary-foreground)',
         }}
       >
         {spans}
@@ -163,6 +206,7 @@ function VelocityText({
 export default function ScrollVelocity(props) {
   const {
     texts = [{ text: 'Texas Solar and Roofing Pros' }, { text: 'Texas Solar and Roofing Pros' }],
+    linkedItems,
     showIcon = false,
     velocity = 100,
     direction = 'left',
@@ -175,7 +219,7 @@ export default function ScrollVelocity(props) {
     velocityOutputMin = 0,
     velocityOutputMax = 5,
     fontSize,
-    textColor = 'currentColor',
+    textColor,
     showFlag = false,
     style = {},
   } = props || {}
@@ -185,9 +229,11 @@ export default function ScrollVelocity(props) {
     output: [velocityOutputMin, velocityOutputMax],
   }
   const directionMultiplier = direction === 'left' ? 1 : -1
+  const rows = linkedItems?.length ? [{ items: linkedItems, icon: texts[0]?.icon }] : texts
 
   return (
     <div
+      className="scroll-text"
       style={{
         width: '100%',
         height: '100%',
@@ -196,7 +242,7 @@ export default function ScrollVelocity(props) {
         ...style,
       }}
     >
-      {texts.map((item, index) => {
+      {rows.map((item, index) => {
         const textContent = typeof item === 'string' ? item : item?.text
         const itemIcon = showFlag ? 'TexasFlag' : typeof item === 'string' ? undefined : item?.icon
         const rowMultiplier = index % 2 !== 0 ? -1 : 1
@@ -205,6 +251,7 @@ export default function ScrollVelocity(props) {
         return (
           <VelocityText
             key={index}
+            items={item?.items}
             baseVelocity={finalVelocity}
             startPosition={startPosition}
             damping={damping}

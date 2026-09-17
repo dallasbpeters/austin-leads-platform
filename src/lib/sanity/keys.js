@@ -366,6 +366,16 @@ function normalizeScrollTextSection(section) {
     _type: 'scrollTextSection',
     type: 'scrollText',
     text: Array.isArray(section.text) ? section.text : undefined,
+    linkedItems: Array.isArray(section.linkedItems)
+      ? section.linkedItems.map((item, index) =>
+          omitUndefined({
+            _key: item._key || createKey('scroll-item', index, item.label),
+            _type: 'scrollTextItem',
+            label: item.label,
+            page: item.page,
+          }),
+        )
+      : undefined,
     fontSize: section.fontSize,
     textColor: section.textColor,
     showIcon: section.showIcon,
