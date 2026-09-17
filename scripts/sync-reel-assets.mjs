@@ -29,6 +29,18 @@ const FILES = [
   ['images/tx-christmas-hero-collage.png', 'brand/sample-photo.png'],
 ]
 
+/* A chosen soundtrack, if the team has dropped one in: public/reel-music/christmas.mp3. */
+async function copyMusic() {
+  const from = path.join(ROOT, 'public/reel-music/christmas.mp3')
+  try {
+    await mkdir(path.join(PROJECT, 'music'), { recursive: true })
+    await copyFile(from, path.join(PROJECT, 'music', 'christmas.mp3'))
+    return true
+  } catch {
+    return false
+  }
+}
+
 async function copyBulbs() {
   const from = path.join(ROOT, 'public/christmas-mockup')
   const entries = await readdir(from)
@@ -66,7 +78,8 @@ const PREVIEW_SHIM = `
     window.addEventListener('message', (event) => {
       const timeline = window.__timelines && window.__timelines.main
       if (timeline && event.data && event.data.kind === 'reel:seek') {
-        timeline.seek(Math.max(0, event.data.seconds))
+        // \`false\` keeps callbacks firing: the price count-up and the sparks are onUpdate-driven.
+        timeline.seek(Math.max(0, event.data.seconds), false)
       }
     })
 
@@ -95,6 +108,7 @@ async function main() {
     await copyFile(path.join(ROOT, 'public', from), target)
   }
   const bulbs = await copyBulbs()
+  const music = await copyMusic()
 
   await rm(PUBLIC_COPY, { recursive: true, force: true })
   await mkdir(PUBLIC_COPY, { recursive: true })
@@ -103,7 +117,7 @@ async function main() {
   await writePreview(path.join(PUBLIC_COPY, 'index.html'), path.join(PUBLIC_COPY, 'preview.html'))
 
   console.log(
-    `[reel-assets] ${FILES.length} brand files + ${bulbs} bulbs into ${path.relative(ROOT, PROJECT)}; ` +
+    `[reel-assets] ${FILES.length} brand files + ${bulbs} bulbs${music ? ' + chosen music' : ''} into ${path.relative(ROOT, PROJECT)}; ` +
       `composition + preview staged in ${path.relative(ROOT, PUBLIC_COPY)}`,
   )
 }

@@ -116,7 +116,79 @@ const sentence = (value) => {
 }
 
 /* "·" separates on-screen fragments; spoken, it reads better as a pause. */
-const speakable = (value) => clean(value).replaceAll(' · ', ', ').replaceAll('·', ',')
+const speakable = (value) => spokenNumbers(clean(value).replaceAll(' · ', ', ').replaceAll('·', ','))
+
+const ONES = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
+  'eleven',
+  'twelve',
+  'thirteen',
+  'fourteen',
+  'fifteen',
+  'sixteen',
+  'seventeen',
+  'eighteen',
+  'nineteen',
+]
+const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+
+/** 1250 → "one thousand two hundred fifty". Whole numbers up to 999,999. */
+export function numberWords(value) {
+  const n = Math.round(Number(value))
+  if (!Number.isFinite(n) || n < 0 || n > 999_999) {
+    return String(value)
+  }
+  if (n < 20) {
+    return ONES[n]
+  }
+  if (n < 100) {
+    return `${TENS[Math.floor(n / 10)]}${n % 10 ? ` ${ONES[n % 10]}` : ''}`
+  }
+  if (n < 1000) {
+    return `${ONES[Math.floor(n / 100)]} hundred${n % 100 ? ` ${numberWords(n % 100)}` : ''}`
+  }
+  return `${numberWords(Math.floor(n / 1000))} thousand${n % 1000 ? ` ${numberWords(n % 1000)}` : ''}`
+}
+
+/** "$1,250" → "one thousand two hundred fifty dollars"; "$49.99" → "forty nine dollars and ninety nine cents". */
+const dollarsWords = (whole, cents) => {
+  const amount = Number(whole.replaceAll(',', ''))
+  const dollars = `${numberWords(amount)} ${amount === 1 ? 'dollar' : 'dollars'}`
+  if (!cents) {
+    return dollars
+  }
+  const pennies = Number(cents)
+  return pennies ? `${dollars} and ${numberWords(pennies)} ${pennies === 1 ? 'cent' : 'cents'}` : dollars
+}
+
+/** "(512) 775-0561" → "five one two, seven seven five, zero five six one": digit by digit, a pause per group. */
+const phoneWords = (text) =>
+  text
+    .split(/\D+/)
+    .filter(Boolean)
+    .map((group) => [...group].map((digit) => ONES[Number(digit)]).join(' '))
+    .join(', ')
+
+/**
+ * Numbers the voice would stumble on, rewritten as words: prices, phone
+ * numbers, and any bare whole number. The screen keeps the digits.
+ */
+export function spokenNumbers(text) {
+  return String(text || '')
+    .replace(/\$\s?(\d[\d,]*)(?:\.(\d{2}))?/g, (_match, whole, cents) => dollarsWords(whole, cents))
+    .replace(/\(?\b\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b/g, (match) => phoneWords(match))
+    .replace(/\b\d{1,3}(?:,\d{3})+\b|\b\d+\b/g, (match) => numberWords(match.replaceAll(',', '')))
+}
 
 /**
  * What the voice says over a scene: its on-screen words, in reading order.
@@ -128,20 +200,20 @@ export function spokenLine(scene) {
   switch (scene?.type) {
     case 'offer': {
       return [
-        sentence(scene.eyebrow),
-        sentence(`${clean(scene.headline)} ${clean(scene.price)}`),
-        sentence(scene.sub),
+        sentence(speakable(scene.eyebrow)),
+        sentence(speakable(`${clean(scene.headline)} ${clean(scene.price)}`)),
+        sentence(speakable(scene.sub)),
       ]
         .filter(Boolean)
         .join(' ')
     }
     case 'signoff': {
-      return [sentence(speakable(scene.headline)), scene.sub ? sentence(`Call ${clean(scene.sub)}`) : '']
+      return [sentence(speakable(scene.headline)), scene.sub ? sentence(`Call ${speakable(scene.sub)}`) : '']
         .filter(Boolean)
         .join(' ')
     }
     default: {
-      return [sentence(scene?.headline), sentence(scene?.sub)].filter(Boolean).join(' ')
+      return [sentence(speakable(scene?.headline)), sentence(speakable(scene?.sub))].filter(Boolean).join(' ')
     }
   }
 }

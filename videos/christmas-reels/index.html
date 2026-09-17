@@ -71,24 +71,54 @@
           linear-gradient(180deg, #0a1b2c 0%, #071322 42%, #050a12 74%, #04070d 100%);
       }
 
-      /* Snow in three depth layers: far grains, mid flakes, near bokeh. */
+      /* Snow in three depths, in front of the scene: soft-edged flakes (a gradient,
+         not a blur, so the edge stays soft at any size), plus glints and warm bokeh. */
       .flake {
         position: absolute;
         display: block;
         border-radius: 50%;
-        background: #ffffff;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(255, 255, 255, 0.85) 38%,
+          rgba(255, 255, 255, 0) 100%
+        );
       }
 
       .flake--far {
-        filter: blur(0.4px);
-      }
-
-      .flake--mid {
-        filter: blur(1.4px);
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(255, 255, 255, 0.9) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
       }
 
       .flake--near {
-        filter: blur(7px);
+        background: radial-gradient(
+          circle,
+          rgba(255, 250, 240, 0.9) 0%,
+          rgba(255, 250, 240, 0.5) 40%,
+          rgba(255, 250, 240, 0) 100%
+        );
+      }
+
+      /* Far-off points of light that twinkle in the cold. */
+      .glint {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.55);
+      }
+
+      /* Out-of-focus Christmas lights drifting past the lens. */
+      .bokeh {
+        position: absolute;
+        border-radius: 50%;
+        mix-blend-mode: screen;
+        pointer-events: none;
       }
 
       /* Film finishing: vignette, grain, and a slow warm leak across the top. */
@@ -143,17 +173,33 @@
         );
       }
 
+      /* A faint warm bloom under each cut and over the opening. Soft and wide:
+         it lifts the frame for a beat, it never flashes. */
+      .burst {
+        z-index: 40;
+        position: absolute;
+        inset: -20%;
+        pointer-events: none;
+        opacity: 0;
+        mix-blend-mode: screen;
+        background: radial-gradient(
+          75% 55% at 50% 46%,
+          rgba(255, 214, 160, 0.6) 0%,
+          rgba(255, 214, 160, 0) 80%
+        );
+      }
+
       /* ── Type ──────────────────────────────────────────────────────────
-         Restrained: one gold eyebrow with hairlines, a serif headline that
-         wipes up line by line, one supporting line. */
+         One gold eyebrow with hairlines, a serif headline whose words whip in
+         one after another, one supporting line that wipes up. */
 
       /* Type sits above the vignette and grain, so nothing dulls the words. */
       .copy {
         z-index: 30;
         position: absolute;
-        right: 96px;
-        bottom: 250px;
-        left: 96px;
+        right: 72px;
+        bottom: 300px;
+        left: 72px;
         text-align: center;
       }
 
@@ -174,10 +220,11 @@
         justify-content: center;
         gap: 22px;
         color: #f0c987;
-        font-size: 27px;
+        font-size: 36px;
         font-weight: 500;
-        letter-spacing: 0.34em;
+        letter-spacing: 0.3em;
         text-transform: uppercase;
+        opacity: 0;
       }
 
       .eyebrow::before,
@@ -193,15 +240,30 @@
       }
 
       .headline {
-        margin-top: 40px;
+        margin-top: 44px;
         font-family: 'Bespoke Serif', Georgia, serif;
-        font-size: 112px;
-        line-height: 1.06;
+        font-size: 150px;
+        line-height: 1.04;
         font-weight: 400;
         letter-spacing: -0.022em;
       }
 
-      /* Each line sits in a masked box, so it wipes up instead of popping. */
+      .headline-line {
+        display: block;
+        white-space: nowrap;
+        /* headroom for the whip: words start 80px low and must not clip */
+        padding: 0.04em 0 0.1em;
+      }
+
+      /* Each word arrives on its own: hidden until its beat, then whips up. */
+      .word {
+        display: inline-block;
+        opacity: 0;
+        will-change: transform;
+        margin: 0 0.08em;
+      }
+
+      /* A masked box: the line wipes up inside it instead of popping. */
       .line-mask {
         display: block;
         overflow: hidden;
@@ -216,30 +278,61 @@
       }
 
       .sub {
-        margin: 32px auto 0;
-        max-width: 780px;
-        font-size: 40px;
-        line-height: 1.34;
+        margin: 36px auto 0;
+        max-width: 920px;
+        font-size: 54px;
+        line-height: 1.3;
         font-weight: 400;
         color: rgba(246, 244, 239, 0.74);
       }
 
-      /* The gradient paints only inside the text box, and this serif's figures
+      /* The price counts up, then a gold sheen sweeps through the figures.
+         The gradient paints only inside the text box, and this serif's figures
          reach above and below it — so the box gets real headroom, or the tops
          and tails of the numbers are cut off. */
-      .price {
+      .price-wrap {
+        position: relative;
         margin-top: 18px;
+      }
+
+      .price {
+        position: relative;
+        z-index: 2;
+        display: inline-block;
         padding: 0.1em 0.06em 0.16em;
         font-family: 'Bespoke Serif', Georgia, serif;
-        font-size: 204px;
-        line-height: 1.12;
+        font-size: 250px;
+        line-height: 1.1;
         white-space: nowrap;
         font-weight: 500;
         letter-spacing: -0.045em;
-        background: linear-gradient(180deg, #ffe6b0 0%, #f0c987 46%, #c98f3f 100%);
+        font-variant-numeric: tabular-nums;
+        background: linear-gradient(100deg, #c98f3f 0%, #f0c987 30%, #fff3d6 46%, #f0c987 62%, #c98f3f 100%);
+        background-size: 260% 100%;
+        background-position: 130% 0;
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
+        opacity: 0;
+      }
+
+      /* Shine dots fly out from behind the price when it lands. */
+      .sparks {
+        position: absolute;
+        z-index: 1;
+        left: 50%;
+        top: 55%;
+        width: 0;
+        height: 0;
+      }
+
+      .spark {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        opacity: 0;
+        will-change: transform, opacity;
       }
 
       /* ── Photo scene ──────────────────────────────────────────────── */
@@ -270,6 +363,7 @@
       .scene-art {
         position: absolute;
         inset: 0;
+        transform-origin: 50% 62%;
       }
 
       .bulb {
@@ -298,26 +392,29 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 0 96px;
+        padding: 0 72px;
         text-align: center;
       }
 
       .signoff-logo {
-        width: 430px;
+        width: 540px;
+        opacity: 0;
         filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.6));
       }
 
       .phone {
-        margin-top: 52px;
-        font-size: 78px;
+        margin-top: 56px;
+        font-size: 104px;
         font-weight: 600;
         letter-spacing: -0.015em;
+        opacity: 0;
       }
 
       .rule {
-        width: 0;
+        width: 420px;
         height: 1px;
         margin: 34px auto 0;
+        transform: scaleX(0);
         background: linear-gradient(
           90deg,
           rgba(240, 201, 135, 0) 0%,
@@ -327,10 +424,11 @@
       }
 
       .cta {
-        margin-top: 26px;
-        font-size: 34px;
+        margin-top: 28px;
+        font-size: 44px;
         letter-spacing: 0.06em;
         color: rgba(246, 244, 239, 0.7);
+        opacity: 0;
       }
     </style>
   </head>
@@ -345,14 +443,17 @@
     >
       <div class="clip" id="stage" data-start="0" data-duration="10" data-track-index="0">
         <div class="sky" id="sky"></div>
-        <div id="snow"></div>
         <div id="scenes"></div>
+        <!-- Snow falls in front of the scene, so a photo gets weather too. -->
+        <div id="snow"></div>
         <!-- Finishing layers: translucent by design, so the checker is told the overlap is intentional. -->
         <div class="leak" id="leak"></div>
         <div class="vignette" id="vignette"></div>
         <div class="grain" id="grain"></div>
         <!-- Words live above the film finish, so vignette and grain never dull them. -->
         <div id="copy-layer"></div>
+        <!-- The light burst covers every cut. -->
+        <div class="burst" id="burst"></div>
       </div>
     </div>
 
@@ -362,11 +463,14 @@
        *
        * The builder at /reels sends a list of scenes; each one becomes DOM plus
        * a slice of the timeline. Art direction rules that keep these postable:
-       * photography leads where there is a photo, motion is slow and eased
-       * (no bounce), type wipes rather than pops, and every frame carries the
-       * same night grade — haze, vignette, grain.
+       * photography leads where there is a photo, words arrive one at a time
+       * and never fade in, cuts hide under a warm light burst, and every frame
+       * carries the same night grade — haze, vignette, grain.
        *
-       * Deterministic only: no Math.random, no Date.now.
+       * The renderer (services/reel-renderer/audio.mjs) places sound effects
+       * against the BEATS table below. Change a beat here and there together.
+       *
+       * Deterministic only: no Math.random, no Date.now, no endless repeats.
        */
 
       const { scenes: scenesRaw } = window.__hyperframes.getVariables()
@@ -382,6 +486,22 @@
         },
         { type: 'signoff', duration: 4, headline: 'Free estimate · No pressure', sub: '(512) 775-0561' },
       ]
+
+      /* When things land inside a scene, in seconds from its start. */
+      const BEATS = {
+        eyebrow: 0.25,
+        headline: 0.5,
+        wordStep: 0.14,
+        price: 0.9,
+        priceCount: 0.9,
+        lightsOn: 0.7,
+        signoffLogo: 0.2,
+        signoffPhone: 0.7,
+        burst: 0.45,
+        hook: 1.2,
+      }
+
+      const F = 1 / 30
 
       const parseScenes = (raw) => {
         if (Array.isArray(raw)) {
@@ -407,6 +527,12 @@
         }
       }
 
+      /* A pure hash: the same index always gives the same number. */
+      const prand = (n) => {
+        const x = Math.sin(n * 127.1 + 311.7) * 43758.5453
+        return x - Math.floor(x)
+      }
+
       const el = (tag, className, parent) => {
         const node = document.createElement(tag)
         if (className) {
@@ -422,14 +548,25 @@
       const stage = document.getElementById('scenes')
       const copyLayer = document.getElementById('copy-layer')
 
-      // ── Snowfall, three depths ───────────────────────────────────────
+      // ── Snow, glints and bokeh ───────────────────────────────────────
 
       const snowRandom = seeded(20261225)
       const snow = document.getElementById('snow')
+
+      /* The whole field leans with a slow wind. */
+      tl.fromTo(snow, { x: -28 }, { x: 28, duration: totalDuration, ease: 'sine.inOut' }, 0)
+
       const LAYERS = [
-        { name: 'far', count: 48, size: [3, 6], opacity: [0.25, 0.5], speed: [0.55, 0.75] },
-        { name: 'mid', count: 26, size: [8, 14], opacity: [0.35, 0.6], speed: [0.8, 1] },
-        { name: 'near', count: 9, size: [26, 46], opacity: [0.16, 0.3], speed: [1.15, 1.45] },
+        { name: 'far', count: 72, size: [3, 6], opacity: [0.3, 0.6], speed: [0.5, 0.7], sway: [10, 26] },
+        { name: 'mid', count: 38, size: [8, 16], opacity: [0.42, 0.75], speed: [0.75, 1], sway: [24, 56] },
+        {
+          name: 'near',
+          count: 12,
+          size: [34, 64],
+          opacity: [0.14, 0.26],
+          speed: [1.1, 1.4],
+          sway: [50, 110],
+        },
       ]
 
       for (const layer of LAYERS) {
@@ -441,13 +578,80 @@
           flake.style.left = `${(snowRandom() * 1080).toFixed(0)}px`
           flake.style.opacity = `${(layer.opacity[0] + snowRandom() * (layer.opacity[1] - layer.opacity[0])).toFixed(2)}`
           const speed = layer.speed[0] + snowRandom() * (layer.speed[1] - layer.speed[0])
+          /* Falls straight down at its own pace… */
           tl.fromTo(
             flake,
             { y: -300 - snowRandom() * 900 },
-            { y: 2200, x: (snowRandom() - 0.5) * 160, duration: totalDuration / speed, ease: 'none' },
+            { y: 2200, duration: totalDuration / speed, ease: 'none' },
             0,
           )
+          /* …while drifting side to side, each flake on its own rhythm. */
+          const sway = layer.sway[0] + snowRandom() * (layer.sway[1] - layer.sway[0])
+          const period = 1.4 + snowRandom() * 2.4
+          const swings = Math.max(1, Math.ceil(totalDuration / period))
+          tl.fromTo(
+            flake,
+            { x: -sway },
+            { x: sway, duration: period, ease: 'sine.inOut', yoyo: true, repeat: swings },
+            0,
+          )
+          /* Near flakes tumble: they breathe a little as they turn. */
+          if (layer.name === 'near') {
+            tl.fromTo(
+              flake,
+              { scale: 0.86 },
+              { scale: 1.16, duration: period * 0.7, ease: 'sine.inOut', yoyo: true, repeat: swings * 2 },
+              0,
+            )
+          }
         }
+      }
+
+      /* Glints: tiny far-off lights in the upper sky that twinkle. */
+      for (let index = 0; index < 22; index += 1) {
+        const glint = el('span', 'glint', snow)
+        glint.style.left = `${(snowRandom() * 1080).toFixed(0)}px`
+        glint.style.top = `${(60 + snowRandom() * 820).toFixed(0)}px`
+        const period = 0.8 + snowRandom() * 1.8
+        const blinks = Math.max(1, Math.ceil(totalDuration / period))
+        tl.fromTo(
+          glint,
+          { opacity: 0.05, scale: 0.5 },
+          { opacity: 0.7, scale: 1.1, duration: period, ease: 'sine.inOut', yoyo: true, repeat: blinks },
+          0,
+        )
+      }
+
+      /* Bokeh: out-of-focus Christmas lights drifting past, warm with a little colour. */
+      const BOKEH_TINTS = ['255, 214, 150', '255, 236, 200', '255, 200, 130']
+      for (let index = 0; index < 5; index += 1) {
+        const bokeh = el('span', 'bokeh', snow)
+        const size = 70 + snowRandom() * 90
+        const tint = BOKEH_TINTS[index % BOKEH_TINTS.length]
+        bokeh.style.width = `${size.toFixed(0)}px`
+        bokeh.style.height = `${size.toFixed(0)}px`
+        bokeh.style.left = `${(snowRandom() * 1080 - size / 2).toFixed(0)}px`
+        bokeh.style.background = `radial-gradient(circle, rgba(${tint}, 0.16) 0%, rgba(${tint}, 0.1) 60%, rgba(${tint}, 0.14) 78%, rgba(${tint}, 0) 100%)`
+        const period = 3 + snowRandom() * 3
+        tl.fromTo(
+          bokeh,
+          { y: -200 - snowRandom() * 1600 },
+          { y: 2100, duration: totalDuration * (1.6 + snowRandom() * 0.8), ease: 'none' },
+          0,
+        )
+        tl.fromTo(
+          bokeh,
+          { x: -40, opacity: 0.45 },
+          {
+            x: 40,
+            opacity: 0.85,
+            duration: period,
+            ease: 'sine.inOut',
+            yoyo: true,
+            repeat: Math.ceil(totalDuration / period),
+          },
+          0,
+        )
       }
 
       /* The leak drifts, so the finish never sits perfectly still. */
@@ -458,25 +662,99 @@
         0,
       )
 
+      // ── Cuts ─────────────────────────────────────────────────────────
+
+      /**
+       * A cut: the old scene lifts away, the new one settles in, and a faint
+       * warm bloom crosses the seam. Calm, no flash.
+       */
+      const cut = (outgoing, incoming, at) => {
+        for (const layer of outgoing) {
+          tl.to(layer, { opacity: 0, scale: 1.05, duration: 0.32, ease: 'power2.in' }, at - 0.32)
+        }
+        for (const layer of incoming) {
+          tl.fromTo(
+            layer,
+            { opacity: 0, scale: 1.06 },
+            { opacity: 1, scale: 1, duration: 0.55, ease: 'power3.out' },
+            at - 0.1,
+          )
+        }
+        tl.fromTo('#burst', { opacity: 0 }, { opacity: 0.24, duration: 0.22, ease: 'sine.in' }, at - 0.22)
+        tl.to('#burst', { opacity: 0, duration: 0.5, ease: 'sine.out' }, at)
+      }
+
       // ── Copy ─────────────────────────────────────────────────────────
 
-      /** Breaks a headline into masked lines: two or three words per line reads best at 9:16. */
+      /* About this many letters of the 150px serif fit across the safe width. */
+      const LINE_BUDGET = 14
+      const HEADLINE_SIZE = 150
+      const HEADLINE_MIN = 96
+      const SAFE_WIDTH = 1080 - 72 * 2
+
+      /*
+       * Lines never wrap; a line that is still too wide steps the whole headline
+       * down instead. Measured once at build (layout, not motion), and again when
+       * the brand font has loaded, since the fallback serif is a little narrower.
+       */
+      const fitHeadline = (headline) => {
+        const fit = () => {
+          headline.style.fontSize = `${HEADLINE_SIZE}px`
+          const widest = Math.max(...[...headline.children].map((line) => line.scrollWidth), 1)
+          if (widest > SAFE_WIDTH) {
+            headline.style.fontSize = `${Math.max(HEADLINE_MIN, Math.floor(HEADLINE_SIZE * (SAFE_WIDTH / widest)))}px`
+          }
+        }
+        fit()
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(fit)
+        }
+      }
+
+      /** Breaks a headline into lines that fit at 9:16: about LINE_BUDGET letters each. */
       const headlineLines = (text) => {
         const parts = String(text || '')
           .split(/\s+/)
           .filter(Boolean)
         const lines = []
-        const perLine = parts.length > 6 ? 3 : 2
-        for (let index = 0; index < parts.length; index += perLine) {
-          lines.push(parts.slice(index, index + perLine).join(' '))
+        let line = []
+        let length = 0
+        for (const word of parts) {
+          const next = length + word.length + (line.length ? 1 : 0)
+          if (line.length && next > LINE_BUDGET) {
+            lines.push(line)
+            line = []
+            length = 0
+          }
+          line.push(word)
+          length += word.length + (line.length > 1 ? 1 : 0)
+        }
+        if (line.length) {
+          lines.push(line)
         }
         return lines
       }
 
+      /** Reads "$1,250" as { prefix: "$", value: 1250, grouped: true, suffix: "" }, or null. */
+      const parsePrice = (text) => {
+        const match = String(text || '').match(/^([^\d]*)(\d[\d,]*)([^\d]*)$/)
+        if (!match) {
+          return null
+        }
+        const digits = match[2].replaceAll(',', '')
+        if (!digits || digits.length > 7) {
+          return null
+        }
+        return { prefix: match[1], value: Number(digits), grouped: match[2].includes(','), suffix: match[3] }
+      }
+
+      const formatPrice = (parsed, value) =>
+        `${parsed.prefix}${parsed.grouped ? Math.round(value).toLocaleString('en-US') : Math.round(value)}${parsed.suffix}`
+
       const copyBlock = (scene, root, { center = false, top = false } = {}) => {
         const position = center ? 'copy copy--center' : top ? 'copy copy--top' : 'copy'
         const copy = el('div', position, root)
-        const parts = { lines: [] }
+        const parts = { words: [] }
 
         if (scene.eyebrow) {
           parts.eyebrow = el('div', 'eyebrow', copy)
@@ -484,57 +762,152 @@
         }
         if (scene.headline) {
           parts.headline = el('h1', 'headline', copy)
-          for (const text of headlineLines(scene.headline)) {
-            const mask = el('span', 'line-mask', parts.headline)
-            const line = el('span', 'line', mask)
-            line.textContent = text
-            parts.lines.push(line)
+          for (const lineWords of headlineLines(scene.headline)) {
+            const line = el('span', 'headline-line', parts.headline)
+            for (const text of lineWords) {
+              const word = el('span', 'word', line)
+              word.textContent = text
+              parts.words.push(word)
+            }
           }
         }
+        if (parts.headline) {
+          fitHeadline(parts.headline)
+        }
         if (scene.price) {
-          parts.price = el('div', 'price', copy)
-          parts.price.textContent = scene.price
+          const wrap = el('div', 'price-wrap', copy)
+          parts.sparks = el('div', 'sparks', wrap)
+          parts.price = el('div', 'price', wrap)
+          parts.priceText = String(scene.price)
+          parts.price.textContent = parts.priceText
           /* Long prices ("$12,500") step down so they never run off the sides. */
-          const length = String(scene.price).length
+          const length = parts.priceText.length
           if (length > 4) {
-            parts.price.style.fontSize = `${Math.max(110, Math.round(204 * (4.6 / length)))}px`
+            parts.price.style.fontSize = `${Math.max(130, Math.round(250 * (4.6 / length)))}px`
           }
         }
         if (scene.sub) {
           parts.sub = el('p', 'sub', copy)
-          parts.sub.textContent = scene.sub
+          const mask = el('span', 'line-mask', parts.sub)
+          parts.subLine = el('span', 'line', mask)
+          parts.subLine.textContent = scene.sub
         }
         return parts
       }
 
+      /** Shine dots fly out from behind the price the moment it lands. */
+      const sparkBurst = (field, at) => {
+        const COUNT = 26
+        const FLIGHT = 0.8
+        const palette = ['#ffe6b0', '#f0c987', '#ffffff', '#ffd06b']
+        const sparks = []
+        for (let index = 0; index < COUNT; index += 1) {
+          const dot = el('div', 'spark', field)
+          const size = 5 + prand(index * 3 + 1) * 6
+          dot.style.width = `${size.toFixed(1)}px`
+          dot.style.height = `${size.toFixed(1)}px`
+          dot.style.background = palette[index % palette.length]
+          const angle = prand(index * 5 + 2) * Math.PI * 2
+          const speed = 260 + prand(index * 7 + 3) * 420
+          sparks.push({ dot, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed * 0.55 })
+        }
+        const drive = { T: 0 }
+        tl.fromTo(
+          drive,
+          { T: 0 },
+          {
+            T: 1,
+            duration: FLIGHT,
+            ease: 'none',
+            immediateRender: false,
+            onUpdate: () => {
+              const t = drive.T * FLIGHT
+              const fade = Math.min(1, (1 - drive.T) / 0.35)
+              for (const spark of sparks) {
+                spark.dot.style.transform = `translate(${spark.vx * t}px, ${spark.vy * t + 40 * t * t}px)`
+                spark.dot.style.opacity = String(drive.T === 0 ? 0 : fade)
+              }
+            },
+          },
+          at,
+        )
+      }
+
+      /**
+       * Brings a copy block on. Eyebrow softens in, headline words whip up one
+       * after another, the price counts up and shines, the sub line wipes up.
+       * Returns when the last word settles, so callers can time what follows.
+       */
       const animateCopy = (parts, at) => {
         if (parts.eyebrow) {
           tl.fromTo(
             parts.eyebrow,
-            { opacity: 0, y: 14 },
-            { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' },
-            at + 0.3,
+            { opacity: 0, y: 10, filter: 'blur(14px)' },
+            { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' },
+            at + BEATS.eyebrow,
           )
         }
-        if (parts.lines.length) {
-          tl.to(parts.lines, { y: '0%', duration: 1, ease: 'expo.out', stagger: 0.12 }, at + 0.55)
-        }
+
+        let cursor = at + BEATS.headline
+        parts.words.forEach((word, index) => {
+          const last = index === parts.words.length - 1
+          const travel = index === 0 || last ? 84 : 52
+          const duration = index === 0 || last ? 0.2 : 0.16
+          tl.set(word, { opacity: 1, y: travel }, cursor)
+          tl.to(word, { y: 0, duration, ease: 'power4.out' }, cursor)
+          /* Each word starts a frame before the last one settles: a wave, not a queue. */
+          cursor += Math.max(F * 2, BEATS.wordStep - index * F * 0.5)
+        })
+        const settled = parts.words.length ? cursor + 0.1 : at + BEATS.headline
+
         if (parts.price) {
+          const priceAt = Math.max(at + BEATS.price, settled - 0.2)
+          const parsed = parsePrice(parts.priceText)
           tl.fromTo(
             parts.price,
-            { opacity: 0, y: 26 },
-            { opacity: 1, y: 0, duration: 1, ease: 'expo.out' },
-            at + 0.9,
+            { opacity: 0, y: 40, scale: 0.86 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out' },
+            priceAt,
           )
-        }
-        if (parts.sub) {
+          if (parsed && parsed.value > 0) {
+            const counter = { value: 0 }
+            tl.fromTo(
+              counter,
+              { value: 0 },
+              {
+                value: parsed.value,
+                duration: BEATS.priceCount,
+                ease: 'power2.out',
+                /* Not rendered at build: the element keeps the real price until the count starts. */
+                immediateRender: false,
+                onUpdate: () => {
+                  parts.price.textContent = formatPrice(parsed, counter.value)
+                },
+              },
+              priceAt,
+            )
+          }
+          const landed = priceAt + (parsed ? BEATS.priceCount : 0.3)
           tl.fromTo(
-            parts.sub,
-            { opacity: 0, y: 18 },
-            { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' },
-            at + 1.15,
+            parts.price,
+            { backgroundPosition: '130% 0' },
+            { backgroundPosition: '-30% 0', duration: 1.1, ease: 'power2.inOut' },
+            landed - 0.1,
           )
+          tl.fromTo(
+            parts.price,
+            { scale: 1 },
+            { scale: 1.04, duration: 0.18, ease: 'power2.out', yoyo: true, repeat: 1 },
+            landed - 0.05,
+          )
+          sparkBurst(parts.sparks, landed - 0.05)
         }
+
+        if (parts.subLine) {
+          const subAt = parts.price ? Math.max(settled, at + BEATS.price + 0.7) : settled
+          tl.to(parts.subLine, { y: '0%', duration: 0.7, ease: 'expo.out' }, subAt)
+        }
+        return settled
       }
 
       // ── Illustrated night scene ──────────────────────────────────────
@@ -617,7 +990,8 @@
           <rect x="860" y="1352" width="74" height="70" rx="5" fill="#f0bd78" opacity="0.55" />
         `
         art.append(svg)
-        tl.fromTo(art, { scale: 1.04, y: 24 }, { scale: 1, y: 0, duration: duration, ease: 'sine.out' }, at)
+        /* A slow push toward the roofline: the camera leans in as the lights come on. */
+        tl.fromTo(art, { scale: 1, y: 0 }, { scale: 1.1, y: -30, duration: duration, ease: 'sine.inOut' }, at)
 
         /* Hang the run along the two rakes, with a little sag between clips. */
         const APEX = { x: 540, y: 946 }
@@ -636,8 +1010,12 @@
         )
         svg.append(wire)
 
+        const allOn = at + BEATS.lightsOn + PER_SIDE * 0.075 + 0.6
+        const twinkleWindow = at + duration - allOn - 0.4
+        const twinkles = twinkleWindow > 1.2 ? Math.min(6, Math.floor(twinkleWindow / 0.7)) : 0
+
         for (let step = 0; step <= PER_SIDE; step += 1) {
-          for (const eave of EAVES) {
+          for (const [side, eave] of EAVES.entries()) {
             const t = step / PER_SIDE
             const x = APEX.x + (eave.x - APEX.x) * t
             /* sag: strongest between clips, none at the ends */
@@ -655,12 +1033,12 @@
             bulb.style.left = `${x - 22}px`
             bulb.style.top = `${y - 4}px`
 
-            /* Lights come on in a wave from the apex, then settle and breathe. */
-            const lightAt = at + 0.7 + step * 0.075
+            /* Lights come on in a wave from the apex, with a tiny swing on the wire. */
+            const lightAt = at + BEATS.lightsOn + step * 0.075
             tl.fromTo(
               bulb,
-              { opacity: 0, scale: 0.72 },
-              { opacity: 1, scale: 1, duration: 0.45, ease: 'power2.out' },
+              { opacity: 0, scale: 0.72, rotation: side ? 6 : -6 },
+              { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: 'power2.out' },
               lightAt,
             )
             tl.fromTo(
@@ -669,17 +1047,22 @@
               { opacity: 0.66, scale: 1, duration: 0.6, ease: 'power2.out' },
               lightAt,
             )
-            tl.to(
-              bloom,
-              {
-                opacity: 0.48,
-                duration: 2.1,
-                ease: 'sine.inOut',
-                yoyo: true,
-                repeat: Math.ceil(duration / 4),
-              },
-              lightAt + 0.6,
-            )
+
+            /* Then a chase: every third bulb dips and comes back, on a shared beat. */
+            const lane = (step + side) % 3
+            for (let beat = 0; beat < twinkles; beat += 1) {
+              const twinkleAt = allOn + beat * 0.7 + lane * 0.23
+              tl.to(
+                bloom,
+                { opacity: 0.22, duration: 0.16, ease: 'power1.in', yoyo: true, repeat: 1 },
+                twinkleAt,
+              )
+              tl.to(
+                bulb,
+                { opacity: 0.6, scale: 0.94, duration: 0.16, ease: 'power1.in', yoyo: true, repeat: 1 },
+                twinkleAt,
+              )
+            }
           }
         }
       }
@@ -708,31 +1091,45 @@
         const cta = el('div', 'cta', block)
         cta.textContent = scene.headline || ''
 
+        /* Logo pops, phone slams, rule draws, CTA settles — then it holds still. */
         tl.fromTo(
           logo,
-          { opacity: 0, y: 26, scale: 0.97 },
-          { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'expo.out' },
-          at + 0.25,
+          { opacity: 0, scale: 0.6, y: 20 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.7, ease: 'back.out(1.6)' },
+          at + BEATS.signoffLogo,
         )
+        tl.set(phone, { opacity: 1, y: 96 }, at + BEATS.signoffPhone)
+        tl.to(phone, { y: 0, duration: 0.24, ease: 'power4.out' }, at + BEATS.signoffPhone)
         tl.fromTo(
           phone,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out' },
-          at + 0.75,
+          { scale: 1.06 },
+          { scale: 1, duration: 0.3, ease: 'power2.out' },
+          at + BEATS.signoffPhone + 0.2,
         )
-        tl.fromTo(rule, { width: 0 }, { width: 420, duration: 1, ease: 'power2.out' }, at + 0.95)
-        tl.fromTo(cta, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: 'power2.out' }, at + 1.15)
+        tl.fromTo(
+          rule,
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.7, ease: 'power3.out' },
+          at + BEATS.signoffPhone + 0.2,
+        )
+        tl.fromTo(
+          cta,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
+          at + BEATS.signoffPhone + 0.45,
+        )
       }
 
       // ── Lay the scenes out ───────────────────────────────────────────
 
       let cursor = 0
+      let previous = []
       for (const [index, scene] of scenes.entries()) {
         const duration = sceneDuration(scene)
         const root = el('div', 'scene', stage)
         root.id = `scene-${index + 1}`
 
-        /* Art and words are separate layers that fade together. */
+        /* Art and words are separate layers that cut together. */
         const words = el('div', 'scene', copyLayer)
         words.id = `scene-${index + 1}-copy`
 
@@ -748,18 +1145,27 @@
           animateCopy(copyBlock(scene, words, { center: true }), cursor)
         }
 
-        /* Long, soft cross-fades — a hard cut on a still night scene looks cheap. */
-        for (const layer of [root, words]) {
-          tl.fromTo(
-            layer,
-            { opacity: 0 },
-            { opacity: 1, duration: index === 0 ? 0.8 : 0.9, ease: 'power1.inOut' },
-            cursor,
-          )
-          if (index < scenes.length - 1) {
-            tl.to(layer, { opacity: 0, duration: 0.9, ease: 'power1.inOut' }, cursor + duration - 0.45)
+        /* Scene one settles in from dark under a soft bloom — the hook. Every
+           later scene arrives on a cut. */
+        if (index === 0) {
+          for (const layer of [root, words]) {
+            tl.fromTo(
+              layer,
+              { opacity: 0, scale: 1.05 },
+              { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' },
+              0,
+            )
           }
+          tl.fromTo(
+            '#burst',
+            { opacity: 0.45, scale: 1.2 },
+            { opacity: 0, scale: 1, duration: BEATS.hook, ease: 'power2.out' },
+            0,
+          )
+        } else {
+          cut(previous, [root, words], cursor)
         }
+        previous = [root, words]
 
         cursor += duration
       }

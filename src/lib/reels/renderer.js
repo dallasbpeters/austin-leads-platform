@@ -46,3 +46,12 @@ export const startRender = (reel) =>
 
 /** Where a queued render has got to, and its public URL once it's done. */
 export const renderStatus = (id) => callWorker(`/render/${encodeURIComponent(id)}`)
+
+/**
+ * Voice, music and effects for the studio preview, as playable URLs.
+ *
+ * @param {object[]} scenes - Scenes from the studio, with their `say` lines.
+ * @returns {Promise<object>} Fitted scenes plus every clip's URL and start time.
+ */
+export const previewAudio = (scenes) =>
+  callWorker('/audio', { method: 'POST', body: JSON.stringify({ scenes }) })
