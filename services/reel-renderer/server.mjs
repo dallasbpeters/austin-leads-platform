@@ -46,6 +46,7 @@ const PREVIEW_CONCURRENCY = 2
 /** Templates this worker will render. Anything else is refused, so a caller can't reach elsewhere on disk. */
 const TEMPLATES = {
   'christmas-reels': { project: 'christmas-reels', label: 'Texas Christmas Lights reel' },
+  'brand-reels': { project: 'brand-reels', label: 'Texas Solar and Roofing reel' },
 }
 
 const jobs = new Map()
@@ -272,13 +273,16 @@ const routes = {
     if (!scenes.length || scenes.length > 20) {
       return json(response, 400, { error: 'Send between 1 and 20 scenes.' })
     }
+    /* Each template brings its own music bed. An unnamed template is a caller
+     * that predates themes, so it gets the Christmas bed it always had. */
+    const template = TEMPLATES[body.template] || TEMPLATES['christmas-reels']
     await previewSlot()
     try {
       const plan = await previewAudio(scenes, {
         cacheDir: PREVIEW_CACHE_DIR,
         publish: publishClip,
         lookup: lookupClip,
-        musicFile: musicFileFor(path.join(PROJECTS_DIR, TEMPLATES['christmas-reels'].project)),
+        musicFile: musicFileFor(path.join(PROJECTS_DIR, template.project)),
       })
       return json(response, 200, plan)
     } finally {

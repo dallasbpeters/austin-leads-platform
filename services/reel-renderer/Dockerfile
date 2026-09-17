@@ -41,16 +41,19 @@ WORKDIR /app
 COPY services/reel-renderer/package.json services/reel-renderer/package-lock.json* ./
 RUN npm install --omit=dev
 
-# The template is baked in, so a render needs no network except the upload.
+# The templates are baked in, so a render needs no network except the upload.
 COPY videos/christmas-reels ./videos/christmas-reels
+COPY videos/brand-reels ./videos/brand-reels
 
 # Brand assets live in public/ (git-ignored inside videos/), so copy them in.
 COPY scripts/sync-reel-assets.mjs ./scripts/sync-reel-assets.mjs
 COPY public/christmas-logo.svg ./public/christmas-logo.svg
 COPY public/images/tx-christmas-logo.svg public/images/tx-christmas-hero-collage.png ./public/images/
+COPY public/tx-solar-logo.svg ./public/tx-solar-logo.svg
+COPY public/clouds/cloud-sprite.png ./public/clouds/cloud-sprite.png
 COPY public/fonts/Switzer-Variable.woff2 public/fonts/BespokeSerif-Variable.woff2 ./public/fonts/
 COPY public/christmas-mockup ./public/christmas-mockup
-# The chosen soundtrack, when the team has dropped one in (see README → Sound).
+# The chosen soundtracks, when the team has dropped them in (see README → Sound).
 COPY public/reel-music ./public/reel-music
 RUN node scripts/sync-reel-assets.mjs
 

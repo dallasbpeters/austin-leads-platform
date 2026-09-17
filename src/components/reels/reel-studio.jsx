@@ -34,15 +34,16 @@ import {
   makeScene,
   SCENE_MAX_SECONDS,
   SCENE_MIN_SECONDS,
-  SCENE_TYPES,
   sceneSeconds,
   sceneSummary,
   sceneTypeOf,
+  sceneTypesFor,
   spokenLine,
   STARTER_SCENES,
   toRenderScenes,
   totalSeconds,
 } from '@/lib/reels/scenes'
+import { DEFAULT_THEME, themeId, themeOf, THEMES } from '@/lib/reels/themes'
 
 // ─── Small pieces ────────────────────────────────────────────────────────────
 
@@ -147,9 +148,9 @@ function PhotoPicker({ photos, selectedId, onPick, onClose }) {
   )
 }
 
-function SceneEditor({ scene, photos, onChange, onRemove, onClose }) {
+function SceneEditor({ scene, theme, photos, onChange, onRemove, onClose }) {
   const [pickingPhoto, setPickingPhoto] = useState(false)
-  const definition = sceneTypeOf(scene)
+  const definition = sceneTypeOf(scene, theme)
   const set = (key, value) => onChange({ ...scene, [key]: value })
 
   return (
@@ -267,11 +268,11 @@ function SceneEditor({ scene, photos, onChange, onRemove, onClose }) {
   )
 }
 
-function AddScene({ onAdd, onClose }) {
+function AddScene({ theme, onAdd, onClose }) {
   return (
     <SheetShell onClose={onClose} title="Add a scene">
       <div className="grid gap-2">
-        {SCENE_TYPES.map((definition) => (
+        {sceneTypesFor(theme).map((definition) => (
           <button
             className="rounded-xl border border-white/12 bg-white/5 p-4 text-left active:scale-[0.99]"
             key={definition.type}
@@ -287,13 +288,52 @@ function AddScene({ onAdd, onClose }) {
   )
 }
 
+/**
+ * Which look this reel is being built in.
+ *
+ * It locks as soon as the reel has scenes. Switching would strip every scene the
+ * other theme cannot draw, and a half-emptied reel is worse than starting a new
+ * one. Before that first scene, switching reloads the page so the server can
+ * reorder the photo library for the new theme.
+ */
+function ThemePicker({ theme, locked, onPick }) {
+  return (
+    <div className="grid min-w-0 gap-1.5">
+      <div className="flex min-w-0 gap-2" role="group" aria-label="Reel theme">
+        {THEMES.map((entry) => {
+          const active = entry.id === theme
+          return (
+            <button
+              aria-pressed={active}
+              className={`min-w-0 flex-1 rounded-xl border px-3 py-2 text-left transition active:scale-[0.99] disabled:cursor-not-allowed ${
+                active ? 'border-[#f0c987] bg-[#f0c987]/10' : 'border-white/12 bg-white/5 disabled:opacity-40'
+              }`}
+              disabled={locked && !active}
+              key={entry.id}
+              onClick={() => onPick(entry.id)}
+              type="button"
+            >
+              <span className="block truncate text-sm font-medium">{entry.label}</span>
+            </button>
+          )
+        })}
+      </div>
+      <p className="text-xs text-white/45">
+        {locked
+          ? `${themeOf(theme).label} · locked once a reel has scenes. Start a new reel to switch.`
+          : themeOf(theme).hint}
+      </p>
+    </div>
+  )
+}
+
 // ─── Saving ──────────────────────────────────────────────────────────────────
 
 /*
  * Keeps a reel in the database: a first save creates it (and puts its id in
  * the address, so a refresh reopens it), later saves update it.
  */
-function useReelSaving(initialReel) {
+function useReelSaving(initialReel, theme) {
   const [reelId, setReelId] = useState(initialReel?.id || null)
   const [title, setTitle] = useState(initialReel?.title || '')
   const [saving, setSaving] = useState(false)
@@ -303,7 +343,7 @@ function useReelSaving(initialReel) {
     fetch(id ? `/api/reels/saved/${id}` : '/api/reels/saved', {
       method: id ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: title.trim(), scenes }),
+      body: JSON.stringify({ title: title.trim(), scenes, theme }),
     })
 
   const save = async (scenes) => {
@@ -355,14 +395,16 @@ function useReelSaving(initialReel) {
 
 // ─── The studio ──────────────────────────────────────────────────────────────
 
-export default function ReelStudio({ photos = [], initialReel = null }) {
+export default function ReelStudio({ photos = [], initialReel = null, initialTheme = DEFAULT_THEME }) {
+  /* A saved reel's own theme wins; a new one takes what the page resolved from `?theme=`. */
+  const theme = themeId(initialReel?.theme || initialTheme)
   const [scenes, setScenesState] = useState(() =>
-    initialReel?.scenes?.length ? initialReel.scenes : STARTER_SCENES(),
+    initialReel?.scenes?.length ? initialReel.scenes : STARTER_SCENES(theme),
   )
   const [openSceneId, setOpenSceneId] = useState(null)
   const [adding, setAdding] = useState(false)
   const [libraryOpen, setLibraryOpen] = useState(false)
-  const saver = useReelSaving(initialReel)
+  const saver = useReelSaving(initialReel, theme)
   const { setStatus } = saver
 
   /* Any edit makes the saved copy stale. */
@@ -374,6 +416,9 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
     [setStatus],
   )
 
+  /* Starter scenes are not the operator's work, so an untouched new reel may still switch theme. */
+  const themeLocked = Boolean(initialReel) || saver.reelId !== null || saver.status !== ''
+
   const renderScenes = useMemo(() => toRenderScenes(scenes), [scenes])
   const seconds = totalSeconds(scenes)
   const openScene = scenes.find((scene) => scene.id === openSceneId) || null
@@ -384,7 +429,7 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
   )
 
   const addScene = (type) => {
-    const scene = makeScene(type)
+    const scene = makeScene(type, theme)
     setScenes((current) => [...current, scene])
     setAdding(false)
     setOpenSceneId(scene.id)
@@ -393,7 +438,7 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
   const duplicateScene = (id) =>
     setScenes((current) => {
       const index = current.findIndex((scene) => scene.id === id)
-      const copy = { ...current[index], id: makeScene(current[index].type).id }
+      const copy = { ...current[index], id: makeScene(current[index].type, theme).id }
       return [...current.slice(0, index + 1), copy, ...current.slice(index + 1)]
     })
 
@@ -458,6 +503,15 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
             Save
           </button>
         </div>
+        <ThemePicker
+          locked={themeLocked}
+          onPick={(next) => {
+            if (next !== theme) {
+              window.location.href = `/reels?theme=${next}`
+            }
+          }}
+          theme={theme}
+        />
         {saver.status ? (
           <p className={`text-xs ${saver.status === 'Saved' ? 'text-emerald-300' : 'text-white/55'}`}>
             {saver.status}
@@ -465,7 +519,7 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
         ) : null}
       </header>
 
-      <ReelPreview scenes={renderScenes} />
+      <ReelPreview scenes={renderScenes} theme={theme} />
 
       <section className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2">
         <h2 className="text-sm text-white/55">Scenes</h2>
@@ -488,9 +542,9 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
                 )}
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-base">{sceneSummary(scene)}</span>
+                <span className="block truncate text-base">{sceneSummary(scene, theme)}</span>
                 <span className="block text-xs text-white/45">
-                  {sceneTypeOf(scene).label} · {sceneSeconds(scene).toFixed(1)}s
+                  {sceneTypeOf(scene, theme).label} · {sceneSeconds(scene).toFixed(1)}s
                 </span>
               </span>
             </button>
@@ -540,6 +594,7 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
         onRendered={saver.recordRender}
         scenes={renderScenes}
         seconds={seconds}
+        theme={theme}
       />
 
       {openScene ? (
@@ -549,10 +604,11 @@ export default function ReelStudio({ photos = [], initialReel = null }) {
           onRemove={() => removeScene(openScene.id)}
           photos={photos}
           scene={openScene}
+          theme={theme}
         />
       ) : null}
 
-      {adding ? <AddScene onAdd={addScene} onClose={() => setAdding(false)} /> : null}
+      {adding ? <AddScene onAdd={addScene} onClose={() => setAdding(false)} theme={theme} /> : null}
 
       {libraryOpen ? <ReelLibrary currentId={saver.reelId} onClose={() => setLibraryOpen(false)} /> : null}
     </div>

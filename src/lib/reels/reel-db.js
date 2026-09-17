@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto'
 
 import { getSql } from '../db/pool.js'
+import { themeId } from './themes.js'
 
 /*
  * Saved reels — a name, the scene list, and the last finished render.
@@ -25,9 +26,22 @@ async function runReelMigrations() {
     )
   `
   await sql`CREATE INDEX IF NOT EXISTS christmas_reels_updated_at_idx ON christmas_reels (updated_at DESC)`
+  /*
+   * The table predates themes, so every row already in it is a Christmas reel.
+   * The column default says so, which is why an old reel still opens, previews
+   * and renders exactly as it did. The table keeps its name: renaming it would
+   * be a migration with nothing to gain.
+   */
+  /* The default is written out, not interpolated: Postgres takes no parameter in
+   * DDL. A test asserts it still equals DEFAULT_THEME so the two cannot drift. */
+  await sql`
+    ALTER TABLE christmas_reels
+    ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'christmas'
+  `
 }
 
-const SCHEMA_PROMISE_KEY = '__christmasReelsSchemaReady_v1__'
+/* Bumped with the theme column, so a warm server re-runs the migration once. */
+const SCHEMA_PROMISE_KEY = '__christmasReelsSchemaReady_v2__'
 
 async function migrateOnce() {
   try {
@@ -52,6 +66,7 @@ const rowToReel = (row) =>
     ? {
         id: row.id,
         title: row.title || '',
+        theme: themeId(row.theme),
         scenes: Array.isArray(row.scenes) ? row.scenes : [],
         renderJobId: row.render_job_id || null,
         renderUrl: row.render_url || null,
@@ -75,22 +90,23 @@ export async function getReel(id) {
   return rowToReel(rows[0])
 }
 
-export async function createReel({ title, scenes, createdBy }) {
+export async function createReel({ title, scenes, theme, createdBy }) {
   const sql = getSql()
   const rows = await sql`
-    INSERT INTO christmas_reels (id, title, scenes, created_by)
-    VALUES (${newId()}, ${title || ''}, ${JSON.stringify(scenes)}, ${createdBy || null})
+    INSERT INTO christmas_reels (id, title, scenes, theme, created_by)
+    VALUES (${newId()}, ${title || ''}, ${JSON.stringify(scenes)}, ${themeId(theme)}, ${createdBy || null})
     RETURNING *
   `
   return rowToReel(rows[0])
 }
 
-export async function updateReel(id, { title, scenes }) {
+export async function updateReel(id, { title, scenes, theme }) {
   const sql = getSql()
   const rows = await sql`
     UPDATE christmas_reels SET
       title      = ${title || ''},
       scenes     = ${JSON.stringify(scenes)},
+      theme      = ${themeId(theme)},
       updated_at = NOW()
     WHERE id = ${id}
     RETURNING *

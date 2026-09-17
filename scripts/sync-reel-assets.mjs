@@ -7,49 +7,78 @@
  * already live in public/, so this is a copy rather than a second source of
  * truth. Run it after a fresh clone, and the Docker build runs it too.
  *
- *   node scripts/sync-reel-assets.mjs
+ *   node scripts/sync-reel-assets.mjs           # both themes
+ *   node scripts/sync-reel-assets.mjs christmas # christmas only
+ *   node scripts/sync-reel-assets.mjs brand     # brand only
  */
 
 import { copyFile, cp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
-const PROJECT_DIR = path.join(ROOT, 'videos/christmas-reels')
-const PROJECT = path.join(PROJECT_DIR, 'assets')
-/* The builder's live preview plays the real composition in an iframe, so the browser needs to reach it. */
-const PUBLIC_COPY = path.join(ROOT, 'public/reels/christmas-reels')
 
-/** [from public/, to assets/] */
-const FILES = [
-  ['christmas-logo.svg', 'brand/christmas-logo.svg'],
-  ['images/tx-christmas-logo.svg', 'brand/tx-christmas-logo.svg'],
-  ['fonts/Switzer-Variable.woff2', 'fonts/Switzer-Variable.woff2'],
-  ['fonts/BespokeSerif-Variable.woff2', 'fonts/BespokeSerif-Variable.woff2'],
-  // A stand-in job photo, so a photo scene previews before anyone uploads one.
-  ['images/tx-christmas-hero-collage.png', 'brand/sample-photo.png'],
-]
+/** Theme configuration: what to copy and where to stage it. */
+const THEMES = {
+  christmas: {
+    projectDir: path.join(ROOT, 'videos/christmas-reels'),
+    publicCopy: path.join(ROOT, 'public/reels/christmas-reels'),
+    files: [
+      ['christmas-logo.svg', 'brand/christmas-logo.svg'],
+      ['images/tx-christmas-logo.svg', 'brand/tx-christmas-logo.svg'],
+      ['fonts/Switzer-Variable.woff2', 'fonts/Switzer-Variable.woff2'],
+      ['fonts/BespokeSerif-Variable.woff2', 'fonts/BespokeSerif-Variable.woff2'],
+      ['images/tx-christmas-hero-collage.png', 'brand/sample-photo.png'],
+    ],
+    musicFile: 'christmas.mp3',
+    bulbDir: 'christmas-mockup',
+    bulbPrefix: 'c9-',
+  },
+  brand: {
+    projectDir: path.join(ROOT, 'videos/brand-reels'),
+    publicCopy: path.join(ROOT, 'public/reels/brand-reels'),
+    files: [
+      ['tx-solar-logo.svg', 'brand/tx-solar-logo.svg'],
+      ['fonts/Switzer-Variable.woff2', 'fonts/Switzer-Variable.woff2'],
+      ['fonts/BespokeSerif-Variable.woff2', 'fonts/BespokeSerif-Variable.woff2'],
+      // A stand-in job photo, so a photo scene previews before anyone uploads one.
+      ['images/tx-christmas-hero-collage.png', 'brand/sample-photo.png'],
+      // Cloud sprite for daylight sky animation.
+      ['clouds/cloud-sprite.png', 'cloud-sprite.png'],
+    ],
+    musicFile: 'brand.mp3',
+    bulbDir: null,
+    bulbPrefix: null,
+  },
+}
 
-/* A chosen soundtrack, if the team has dropped one in: public/reel-music/christmas.mp3. */
-async function copyMusic() {
-  const from = path.join(ROOT, 'public/reel-music/christmas.mp3')
+/* A chosen soundtrack, if the team has dropped one in: public/reel-music/<file>. */
+async function copyMusic(root, projectAssets, musicFile) {
+  const from = path.join(root, 'public/reel-music', musicFile)
   try {
-    await mkdir(path.join(PROJECT, 'music'), { recursive: true })
-    await copyFile(from, path.join(PROJECT, 'music', 'christmas.mp3'))
+    await mkdir(path.join(projectAssets, 'music'), { recursive: true })
+    await copyFile(from, path.join(projectAssets, 'music', musicFile))
     return true
   } catch {
     return false
   }
 }
 
-async function copyBulbs() {
-  const from = path.join(ROOT, 'public/christmas-mockup')
-  const entries = await readdir(from)
-  const names = entries.filter((name) => name.startsWith('c9-') && name.endsWith('.png'))
-  await mkdir(path.join(PROJECT, 'brand'), { recursive: true })
-  for (const name of names) {
-    await copyFile(path.join(from, name), path.join(PROJECT, 'brand', name))
+async function copyBulbs(root, projectAssets, bulbDir, bulbPrefix) {
+  if (!bulbDir || !bulbPrefix) {
+    return 0
   }
-  return names.length
+  const from = path.join(root, 'public', bulbDir)
+  try {
+    const entries = await readdir(from)
+    const names = entries.filter((name) => name.startsWith(bulbPrefix) && name.endsWith('.png'))
+    await mkdir(path.join(projectAssets, 'brand'), { recursive: true })
+    for (const name of names) {
+      await copyFile(path.join(from, name), path.join(projectAssets, 'brand', name))
+    }
+    return names.length
+  } catch {
+    return 0
+  }
 }
 
 /*
@@ -101,25 +130,49 @@ async function writePreview(from, to) {
   await writeFile(to, html.replace('<head>', `<head>${PREVIEW_SHIM}`))
 }
 
-async function main() {
-  for (const [from, to] of FILES) {
-    const target = path.join(PROJECT, to)
-    await mkdir(path.dirname(target), { recursive: true })
-    await copyFile(path.join(ROOT, 'public', from), target)
-  }
-  const bulbs = await copyBulbs()
-  const music = await copyMusic()
+async function syncTheme(root, themeName, theme) {
+  const projectDir = theme.projectDir
+  const projectAssets = path.join(projectDir, 'assets')
+  const publicCopy = theme.publicCopy
 
-  await rm(PUBLIC_COPY, { recursive: true, force: true })
-  await mkdir(PUBLIC_COPY, { recursive: true })
-  await copyFile(path.join(PROJECT_DIR, 'index.html'), path.join(PUBLIC_COPY, 'index.html'))
-  await cp(PROJECT, path.join(PUBLIC_COPY, 'assets'), { recursive: true })
-  await writePreview(path.join(PUBLIC_COPY, 'index.html'), path.join(PUBLIC_COPY, 'preview.html'))
+  // Copy brand files
+  for (const [from, to] of theme.files) {
+    const target = path.join(projectAssets, to)
+    await mkdir(path.dirname(target), { recursive: true })
+    await copyFile(path.join(root, 'public', from), target)
+  }
+
+  // Copy bulbs (Christmas only)
+  const bulbs = await copyBulbs(root, projectAssets, theme.bulbDir, theme.bulbPrefix)
+
+  // Copy music (optional)
+  const music = await copyMusic(root, projectAssets, theme.musicFile)
+
+  // Stage preview for the studio iframe
+  await rm(publicCopy, { recursive: true, force: true })
+  await mkdir(publicCopy, { recursive: true })
+  await copyFile(path.join(projectDir, 'index.html'), path.join(publicCopy, 'index.html'))
+  await cp(projectAssets, path.join(publicCopy, 'assets'), { recursive: true })
+  await writePreview(path.join(publicCopy, 'index.html'), path.join(publicCopy, 'preview.html'))
 
   console.log(
-    `[reel-assets] ${FILES.length} brand files + ${bulbs} bulbs${music ? ' + chosen music' : ''} into ${path.relative(ROOT, PROJECT)}; ` +
-      `composition + preview staged in ${path.relative(ROOT, PUBLIC_COPY)}`,
+    `[reel-assets] ${themeName}: ${theme.files.length} brand files + ${bulbs} bulbs${music ? ' + chosen music' : ''} into ${path.relative(root, projectAssets)}; ` +
+      `composition + preview staged in ${path.relative(root, publicCopy)}`,
   )
+}
+
+async function main() {
+  const arg = process.argv[2]
+  const themesToSync = arg ? [arg] : Object.keys(THEMES)
+
+  for (const themeName of themesToSync) {
+    const theme = THEMES[themeName]
+    if (!theme) {
+      console.error(`Unknown theme: ${themeName}. Available: ${Object.keys(THEMES).join(', ')}`)
+      process.exit(1)
+    }
+    await syncTheme(ROOT, themeName, theme)
+  }
 }
 
 await main()

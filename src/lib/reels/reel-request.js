@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { safeAuth } from '@/lib/auth/session'
+import { themeHasScene, themeId } from '@/lib/reels/themes'
 
 /* A reel is a handful of scenes; anything past this is a mistake or abuse. */
 const MAX_SCENES = 20
@@ -14,7 +15,7 @@ export async function reelUser() {
   return session?.user || null
 }
 
-/** Validates a save body. Returns `{ error }` or `{ title, scenes }`. */
+/** Validates a save body. Returns `{ error }` or `{ title, scenes, theme }`. */
 export async function readReelBody(request) {
   let body
   try {
@@ -29,8 +30,17 @@ export async function readReelBody(request) {
   if (scenes.length > MAX_SCENES) {
     return { error: `A reel can have up to ${MAX_SCENES} scenes.` }
   }
+  /* An unknown theme normalises to the default rather than failing: a reel is
+   * the operator's work, and a bad theme id is our bug, not something to lose
+   * their scenes over. A scene the theme cannot draw IS worth refusing, because
+   * the composition would silently skip it and the render would come back short. */
+  const theme = themeId(body?.theme)
+  const stray = scenes.find((scene) => scene?.type && !themeHasScene(theme, scene.type))
+  if (stray) {
+    return { error: `The ${theme} theme has no "${stray.type}" scene.` }
+  }
   const title = String(body?.title || '')
     .trim()
     .slice(0, MAX_TITLE)
-  return { title, scenes }
+  return { title, scenes, theme }
 }
