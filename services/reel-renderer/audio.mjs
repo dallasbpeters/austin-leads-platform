@@ -20,7 +20,7 @@
 
 import { execFile } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import { promisify } from 'node:util'
@@ -195,8 +195,49 @@ export function fitScenesToVoice(scenes, clips) {
   return { scenes: fitted, cues, total: cursor }
 }
 
-async function makeMusic(total, audioDir) {
+/*
+ * A chosen track beats a generated one: when the project ships a music file
+ * (assets/music/christmas.mp3, or REEL_MUSIC_FILE), every reel uses it and
+ * ElevenLabs Music is never called. The render cuts it to the reel's length
+ * with a fade; the preview plays the whole bed and fades it in the browser.
+ */
+export const musicFileFor = (projectDir) => {
+  const chosen = (process.env.REEL_MUSIC_FILE || '').trim()
+  return chosen || path.join(projectDir, 'assets', 'music', 'christmas.mp3')
+}
+
+const exists = (file) =>
+  stat(file)
+    .then((info) => info.isFile())
+    .catch(() => false)
+
+/** Cuts `source` to `seconds` with a fade-out, into `target`. */
+export async function trimMusic(source, seconds, target) {
+  const fade = Math.min(1.4, seconds / 2)
+  await run('ffmpeg', [
+    '-y',
+    '-loglevel',
+    'error',
+    '-i',
+    source,
+    '-t',
+    seconds.toFixed(2),
+    '-af',
+    `afade=t=out:st=${(seconds - fade).toFixed(2)}:d=${fade.toFixed(2)}`,
+    '-c:a',
+    'libmp3lame',
+    '-b:a',
+    '128k',
+    target,
+  ])
+  return target
+}
+
+async function makeMusic(total, audioDir, chosenFile) {
   const file = path.join(audioDir, 'music.mp3')
+  if (chosenFile && (await exists(chosenFile))) {
+    return trimMusic(chosenFile, total, file)
+  }
   await writeFile(file, await musicBytes(total))
   return file
 }
@@ -320,7 +361,11 @@ export function audioMarkup({ cues, total, musicFile, sfx = [], projectDir }) {
  * @param {string} projectDir - The render's own copy of the project.
  * @returns {Promise<{ scenes: object[], total: number, markup: string, audio: string }>} What to write back.
  */
-export async function buildReelAudio(scenes, projectDir) {
+export async function buildReelAudio(
+  scenes,
+  projectDir,
+  { musicFile: chosenMusic = musicFileFor(projectDir) } = {},
+) {
   const plain = () => {
     const total = scenes.reduce((sum, scene) => sum + (Number(scene.duration) || 4), 0)
     return { scenes, total, markup: '', audio: 'silent (no ELEVENLABS_API_KEY)' }
@@ -338,7 +383,7 @@ export async function buildReelAudio(scenes, projectDir) {
   let musicFile = null
   let musicNote = 'music'
   try {
-    musicFile = await makeMusic(fitted.total, audioDir)
+    musicFile = await makeMusic(fitted.total, audioDir, chosenMusic)
   } catch (error) {
     // A reel with a voice and no music still ships; the job log says why.
     console.error('[reel-renderer] music failed, continuing without it:', error.message)
@@ -444,7 +489,7 @@ export function previewPlan({ scenes, clips, music, sfxFiles }) {
  * @param {{ cacheDir: string, publish: Function, lookup?: Function }} store - Where clips live and how they get a URL.
  * @returns {Promise<object>} A `previewPlan` plus an `audio` summary line.
  */
-export async function previewAudio(scenes, { cacheDir, publish, lookup }) {
+export async function previewAudio(scenes, { cacheDir, publish, lookup, musicFile: chosenMusic = '' }) {
   if (!hasAudioKey()) {
     return {
       ...previewPlan({ scenes, clips: [], music: null, sfxFiles: null }),
@@ -469,11 +514,18 @@ export async function previewAudio(scenes, { cacheDir, publish, lookup }) {
   let music = null
   let musicNote = 'music'
   try {
-    music = await cachedClip({
-      ...store,
-      key: `bed-${hashOf(MUSIC_PROMPT, MUSIC_BED_SECONDS)}`,
-      make: () => musicBytes(MUSIC_BED_SECONDS),
-    })
+    const chosen = chosenMusic && (await exists(chosenMusic)) ? await stat(chosenMusic) : null
+    music = chosen
+      ? await cachedClip({
+          ...store,
+          key: `bed-file-${hashOf(path.basename(chosenMusic), chosen.size, chosen.mtimeMs)}`,
+          make: () => readFile(chosenMusic),
+        })
+      : await cachedClip({
+          ...store,
+          key: `bed-${hashOf(MUSIC_PROMPT, MUSIC_BED_SECONDS)}`,
+          make: () => musicBytes(MUSIC_BED_SECONDS),
+        })
   } catch (error) {
     console.error('[reel-renderer] preview music failed:', error.message)
     musicNote = `no music (${error.message.slice(0, 80)})`

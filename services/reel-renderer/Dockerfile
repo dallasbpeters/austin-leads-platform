@@ -50,6 +50,8 @@ COPY public/christmas-logo.svg ./public/christmas-logo.svg
 COPY public/images/tx-christmas-logo.svg public/images/tx-christmas-hero-collage.png ./public/images/
 COPY public/fonts/Switzer-Variable.woff2 public/fonts/BespokeSerif-Variable.woff2 ./public/fonts/
 COPY public/christmas-mockup ./public/christmas-mockup
+# The chosen soundtrack, when the team has dropped one in (see README → Sound).
+COPY public/reel-music ./public/reel-music
 RUN node scripts/sync-reel-assets.mjs
 
 COPY services/reel-renderer/server.mjs services/reel-renderer/audio.mjs ./

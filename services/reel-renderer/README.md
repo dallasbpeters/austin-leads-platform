@@ -71,6 +71,13 @@ are declared in the composition's `data-composition-variables`, and arrive here 
 
 ## Sound
 
+**Use a chosen song instead of generated music:** download the track from ElevenLabs
+(or anywhere you hold the licence) as MP3 and save it as `public/reel-music/christmas.mp3`.
+Commit it. Every reel then uses that song: the render cuts it to length with a fade,
+the preview plays it as the bed, and ElevenLabs Music is never called. `REEL_MUSIC_FILE`
+can point at a different path on the worker. With no file, music is generated from
+`REEL_MUSIC_PROMPT`.
+
 `audio.mjs` asks ElevenLabs for one voice clip per scene, one music track the
 length of the reel, and three sound effects (bells, whoosh, chime) placed on
 the composition's beats. The beat table lives in both `audio.mjs` and

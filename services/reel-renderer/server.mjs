@@ -21,7 +21,7 @@ import { promisify } from 'node:util'
 
 import { list, put } from '@vercel/blob'
 
-import { buildReelAudio, hasAudioKey, previewAudio } from './audio.mjs'
+import { buildReelAudio, hasAudioKey, musicFileFor, previewAudio } from './audio.mjs'
 
 const run = promisify(execFile)
 
@@ -278,6 +278,7 @@ const routes = {
         cacheDir: PREVIEW_CACHE_DIR,
         publish: publishClip,
         lookup: lookupClip,
+        musicFile: musicFileFor(path.join(PROJECTS_DIR, TEMPLATES['christmas-reels'].project)),
       })
       return json(response, 200, plan)
     } finally {

@@ -90,7 +90,7 @@ export const DEPLOY_SETTINGS = [
     key: 'REEL_MUSIC_PROMPT',
     group: 'Voice and music',
     label: 'Music style',
-    help: 'Describes the soundtrack. Blank uses cozy instrumental Christmas music.',
+    help: 'Describes generated music. Ignored when public/reel-music/christmas.mp3 is in the repo: that song is used instead.',
     targets: ['railway'],
     kind: 'text',
     optional: true,
