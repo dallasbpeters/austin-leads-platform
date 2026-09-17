@@ -72,7 +72,7 @@ are declared in the composition's `data-composition-variables`, and arrive here 
 ## Sound
 
 `audio.mjs` asks ElevenLabs for one voice clip per scene, one music track the
-length of the reel, and four sound effects (bells, whoosh, chime, sting) placed on
+length of the reel, and three sound effects (bells, whoosh, chime) placed on
 the composition's beats. The beat table lives in both `audio.mjs` and
 `videos/christmas-reels/index.html` — change them together. Music dips under the
 voice; effects never dip anything. Music or effects failing never fails the render.

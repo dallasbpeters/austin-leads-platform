@@ -10,12 +10,12 @@ const scenes = [
 ]
 
 describe('where the sound effects go', () => {
-  it('opens on bells, whooshes under every cut, chimes on the price, stings on the logo', () => {
+  it('opens on bells, whooshes under every cut, chimes on the price, and leaves the logo quiet', () => {
     const cues = sfxCues(scenes)
     expect(cues[0]).toEqual({ kind: 'bells', at: 0 })
     expect(cues.filter((cue) => cue.kind === 'whoosh').map((cue) => cue.at)).toEqual([4.88, 9.88, 15.88])
     expect(cues.filter((cue) => cue.kind === 'bells').map((cue) => cue.at)).toEqual([0, 10.7])
-    expect(cues.find((cue) => cue.kind === 'sting')).toEqual({ kind: 'sting', at: 16.2 })
+    expect(cues.find((cue) => cue.kind === 'sting')).toBeUndefined()
     const chime = cues.find((cue) => cue.kind === 'chime')
     /* price lands 0.9s after it appears at 0.9s into the offer scene, minus a hair */
     expect(chime.at).toBeCloseTo(5 + 0.9 + 0.9 - 0.05, 5)
@@ -114,7 +114,7 @@ describe('the preview plan', () => {
       url: 'https://blob/bells.mp3',
       volume: 0.5,
     })
-    expect(plan.sfx.find((cue) => cue.kind === 'sting').at).toBe(18.2)
+    expect(plan.sfx.find((cue) => cue.kind === 'sting')).toBeUndefined()
   })
 
   it('is silent with no clips and no effects', () => {

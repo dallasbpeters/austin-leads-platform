@@ -6,7 +6,8 @@
  * Then one instrumental track the length of the whole reel, and a handful of
  * sound effects placed on the composition's beats: sleigh bells for the opening
  * bloom and the roofline lighting up, a whoosh under each light-burst cut, a
- * chime when the price lands, a short sting under the logo. Everything lands
+ * chime when the price lands. Nothing plays under the logo: the sign-off is
+ * voice and music only. Everything lands
  * in the render's own copy of the project as static <audio> elements, because
  * HyperFrames' mixer reads authored audio, plus a small script that dips the
  * music under the voice and fades it out at the end.
@@ -32,10 +33,13 @@ const KEY = () => (process.env.ELEVENLABS_API_KEY || '').trim()
 /* A warm, festive voice. Override with REEL_VOICE_ID once the shortlist is chosen. */
 const VOICE_ID = () => (process.env.REEL_VOICE_ID || '').trim() || '21m00Tcm4TlvDq8ikWAM'
 const VOICE_MODEL = () => (process.env.REEL_VOICE_MODEL || '').trim() || 'eleven_multilingual_v2'
+/* Unhurried, like a neighbour talking: 1 is ElevenLabs' normal pace; 0.7 is the slowest it allows. */
+const VOICE_SPEED = () => Math.min(1.2, Math.max(0.7, Number(process.env.REEL_VOICE_SPEED) || 0.82))
 const MUSIC_PROMPT =
   process.env.REEL_MUSIC_PROMPT ||
-  'Warm, cozy instrumental Christmas music for a short social ad: gentle sleigh bells, soft piano, ' +
-    'light strings, hopeful and inviting, steady tempo, no vocals, clean ending.'
+  'Classic Christmas holiday instrumental, unmistakably festive: jingling sleigh bells on every beat, ' +
+    'glockenspiel and celesta melody, warm strings and soft brass, a cozy fireside carol feel like a ' +
+    'traditional holiday song, medium tempo, joyful and heartwarming, no vocals, clean ending.'
 
 /* REEL_SFX=off renders with voice and music only. */
 export const sfxEnabled = () => (process.env.REEL_SFX || '').trim().toLowerCase() !== 'off'
@@ -59,10 +63,9 @@ const BEATS = {
   price: 0.9,
   priceCount: 0.9,
   lightsOn: 0.7,
-  signoffLogo: 0.2,
 }
 
-/** The four sounds a reel uses. `seconds` is what we ask ElevenLabs for. */
+/** The three sounds a reel uses. `seconds` is what we ask ElevenLabs for. */
 export const SFX = {
   bells: {
     seconds: 3,
@@ -82,12 +85,6 @@ export const SFX = {
     volume: 0.6,
     prompt:
       'A single warm bright bell chime with a soft glowing tail, pleasant and clean, like a gift being revealed',
-  },
-  sting: {
-    seconds: 2.5,
-    volume: 0.55,
-    prompt:
-      'A short warm festive orchestral sting, gentle sleigh bells and a soft chime resolving, uplifting, clean ending',
   },
 }
 
@@ -144,7 +141,13 @@ const voiceBytes = (text) =>
   elevenlabs(`/v1/text-to-speech/${VOICE_ID()}?output_format=mp3_44100_128`, {
     text,
     model_id: VOICE_MODEL(),
-    voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.2, use_speaker_boost: true },
+    voice_settings: {
+      stability: 0.55,
+      similarity_boost: 0.75,
+      style: 0.1,
+      use_speaker_boost: true,
+      speed: VOICE_SPEED(),
+    },
   })
 
 /** An instrumental bed of about `seconds`, as MP3 bytes. */
@@ -221,9 +224,6 @@ export function sfxCues(scenes) {
     }
     if (scene.type === 'lights') {
       cues.push({ kind: 'bells', at: cursor + BEATS.lightsOn })
-    }
-    if (scene.type === 'signoff') {
-      cues.push({ kind: 'sting', at: cursor + BEATS.signoffLogo })
     }
     if (scene.price) {
       /* The price lands when its count finishes, after the headline words settle. */
@@ -461,7 +461,7 @@ export async function previewAudio(scenes, { cacheDir, publish, lookup }) {
     }
     return cachedClip({
       ...store,
-      key: `vo-${hashOf(VOICE_ID(), VOICE_MODEL(), text)}`,
+      key: `vo-${hashOf(VOICE_ID(), VOICE_MODEL(), VOICE_SPEED(), text)}`,
       make: () => voiceBytes(text),
     })
   })

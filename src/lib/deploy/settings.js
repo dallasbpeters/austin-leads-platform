@@ -78,6 +78,15 @@ export const DEPLOY_SETTINGS = [
     optional: true,
   },
   {
+    key: 'REEL_VOICE_SPEED',
+    group: 'Voice and music',
+    label: 'Voice speed',
+    help: 'How fast the voice reads. 0.7 is slowest, 1 is normal, 1.2 is fastest. Blank is 0.82, unhurried.',
+    targets: ['railway'],
+    kind: 'text',
+    optional: true,
+  },
+  {
     key: 'REEL_MUSIC_PROMPT',
     group: 'Voice and music',
     label: 'Music style',

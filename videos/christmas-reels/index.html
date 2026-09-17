@@ -1080,7 +1080,7 @@
         )
       }
 
-      const buildSignoff = (scene, root, at, duration) => {
+      const buildSignoff = (scene, root, at) => {
         const block = el('div', 'signoff', root)
         const logo = el('img', 'signoff-logo', block)
         logo.src = 'assets/brand/christmas-logo.svg'
@@ -1091,7 +1091,7 @@
         const cta = el('div', 'cta', block)
         cta.textContent = scene.headline || ''
 
-        /* Logo pops, phone slams, rule draws, CTA settles — then the block breathes. */
+        /* Logo pops, phone slams, rule draws, CTA settles — then it holds still. */
         tl.fromTo(
           logo,
           { opacity: 0, scale: 0.6, y: 20 },
@@ -1118,14 +1118,6 @@
           { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
           at + BEATS.signoffPhone + 0.45,
         )
-        const breaths = Math.max(0, Math.floor((duration - 1.6) / 1.4))
-        if (breaths > 0) {
-          tl.to(
-            block,
-            { scale: 1.015, duration: 0.7, ease: 'sine.inOut', yoyo: true, repeat: breaths * 2 - 1 },
-            at + 1.4,
-          )
-        }
       }
 
       // ── Lay the scenes out ───────────────────────────────────────────
@@ -1148,7 +1140,7 @@
           buildPhoto(scene, root, cursor, duration)
           animateCopy(copyBlock(scene, words), cursor)
         } else if (scene.type === 'signoff') {
-          buildSignoff(scene, words, cursor, duration)
+          buildSignoff(scene, words, cursor)
         } else {
           animateCopy(copyBlock(scene, words, { center: true }), cursor)
         }
