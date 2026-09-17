@@ -127,7 +127,7 @@ const CITIES = [
     buybackShort:
       'City-owned utility. The credit for power you send back is set by Georgetown, not a retail plan.',
     roofNote:
-      'Sun City and the neighborhoods along Williams Drive were built fast in the late 1990s and 2000s, so a lot of Georgetown roofs are hitting 20 to 25 years at the same time. Older homes downtown often have steeper pitches and metal accents that change how a roof is priced.',
+      'Sun City and the neighborhoods along Williams Drive were built fast in the late 1990s and 2000s, so a lot of Georgetown roofs are hitting 20 to 25 years at the same time. Older homes downtown often have steeper pitches and metal accents that change how a roofer prices the job.',
     hailNote:
       'Williamson County took hail in 2021, 2023 and 2024. Georgetown was in the path more than once. A roof that has been through two storms can pass from the street and still fail an inspection.',
     hoaNote:
@@ -190,7 +190,7 @@ const CITIES = [
       'Most of Kyle is served by Pedernales Electric Cooperative. As a co-op member you do not pick a retail plan; PEC sets the rules and pays a set credit for power your panels send back. That credit is lower than what you pay for power, so we size Kyle systems to what the house uses in daylight, or add a battery to keep the rest.',
     buybackShort: 'PEC co-op. Size to daytime use, or add a battery, to make solar pencil out.',
     roofNote:
-      'Plum Creek, Waterleaf and the subdivisions along FM 1626 went up between 2005 and 2020. Many of those roofs are one-layer three-tab shingle, which is the cheapest roof to replace and the easiest to upgrade to an impact-rated shingle when the time comes.',
+      'Plum Creek, Waterleaf and the subdivisions along FM 1626 went up between 2005 and 2020. Many of those roofs are one-layer three-tab shingle, which is the simplest kind for a roofer to replace and to upgrade to an impact-rated shingle when the time comes.',
     hailNote:
       'Hays County was hit in 2021 and in the spring storms of 2024. Kyle roofs from the mid-2000s were the ones we saw fail most often.',
     hoaNote:
@@ -233,10 +233,10 @@ function buildPage(city, siteId) {
     _type: 'heroSection',
     type: 'hero',
     eyebrow: `Solar and roofing in ${city.name}`,
-    title: `What a roof, a solar system, and a hail claim cost in ${city.name}`,
+    title: `What solar, a hail claim, and a reroof with panels cost in ${city.name}`,
     body: pt(
       `${p}-hero`,
-      `Something brought you here: ${city.bill}, an insurance letter after the last hail storm, a roof that is older than you would like, or a neighbor who just put panels up. Here is what those jobs cost in ${city.name}, what drives the price, and what happens when you call. No pressure. The estimate is free.`,
+      `Something brought you here: ${city.bill}, an insurance letter after the last hail storm, a roof that is older than you would like with panels already on it, or a neighbor who just went solar. Here is what those jobs cost in ${city.name}, what drives the price, and what happens when you call. We do the solar and the electrical. For the roof itself we bring in licensed roofers we trust. No pressure. The estimate is free.`,
     ),
     metrics: [
       metric(`${p}-hero`, 'Your utility', city.utilityShort),
@@ -275,11 +275,11 @@ function buildPage(city, siteId) {
     ),
     items: [
       item(`${p}-hl`, {
-        eyebrow: 'Roofing',
-        title: 'Roof replacement and repair',
+        eyebrow: 'Reroofs with panels',
+        title: 'Working with roofers',
         icon: 'Home',
-        body: `A full asphalt shingle replacement on a typical ${city.name} home runs $12,000 to $25,000. Size, pitch, how many layers come off, and whether you step up to a Class 4 impact-rated shingle move the number. Class 4 shingles can also earn an insurance discount; ask your carrier what they pay for it. If your roof has five good years left, we will say so.`,
-        href: '/roofing',
+        body: `Roofing is its own trade, so we do not replace roofs. We introduce you to a licensed ${city.name} roofer we know and stand behind, and we run the solar side: panels off, labeled and stored, reset on the new roof with fresh flashings and verified production. Their asphalt reroofs on a typical ${city.name} home run $12,000 to $25,000; ask them about Class 4 impact-rated shingles and the insurance discount those can earn. One introduction, two crews who talk to each other.`,
+        href: '/roofing-partners',
       }),
       item(`${p}-hl`, {
         eyebrow: 'Solar',
@@ -292,7 +292,7 @@ function buildPage(city, siteId) {
         eyebrow: 'Storm and insurance',
         title: 'Hail inspection and claim help',
         icon: 'Rain',
-        body: `You cannot see hail damage from the driveway. We get on the roof, photograph every slope, and write it up the way adjusters expect. If it is fine, we tell you it is fine. If it needs a claim, you will know before you call your carrier, and we meet the adjuster at the house.`,
+        body: `You cannot see hail damage from the driveway. We get on the roof, photograph every slope, and write it up the way adjusters expect. If it is fine, we tell you it is fine. If it needs a claim, you will know before you call your carrier, and we meet the adjuster at the house. If the roof has to be replaced, we bring in a roofing partner and handle the panels ourselves.`,
         href: '/hail-damage',
       }),
     ],
@@ -310,7 +310,7 @@ function buildPage(city, siteId) {
       }),
       item(`${p}-steps`, {
         title: 'You see the numbers side by side',
-        body: `Roof only, solar only, or both together. Each option shows the installed price, what ${city.utilityShort} does to the payback, and what your bill should look like after. You decide.`,
+        body: `Solar only, solar with a battery, or solar plus a reroof with one of our roofing partners. Each option shows the installed price, what ${city.utilityShort} does to the payback, and what your bill should look like after. You decide.`,
       }),
       item(`${p}-steps`, {
         title: `We pull the permit with ${city.permits.replace(/^the /, 'the ')}`,
@@ -318,7 +318,7 @@ function buildPage(city, siteId) {
       }),
       item(`${p}-steps`, {
         title: 'Install, inspect, switch on',
-        body: `A roof takes one to two days. Solar takes one to two more, then a city inspection and a utility meter swap, which is the step that waits the longest. We stay on it until the system is live and the bill shows the change.`,
+        body: `If the roof comes first, we take the panels off, the roofer works, and we reset the array on the new roof. A solar install takes one to two days, then a city inspection and a utility meter swap, which is the step that waits the longest. We stay on it until the system is live and the bill shows the change.`,
       }),
     ],
   })
@@ -332,8 +332,8 @@ function buildPage(city, siteId) {
       faq(`${p}-faq`, `What does ${city.utilityShort} pay me for solar power I do not use?`, city.buyback),
       faq(
         `${p}-faq`,
-        `Do I need a permit for a new roof or solar in ${city.name}?`,
-        `Yes to both. We pull them with ${city.permits} as part of the job. Solar also needs an interconnection agreement with your utility before the system can be switched on. You sign; we file and follow up.`,
+        `Do I need a permit for solar in ${city.name}?`,
+        `Yes. We pull the solar and electrical permits with ${city.permits} as part of the job, and the system needs an interconnection agreement with your utility before it can be switched on. You sign; we file and follow up. If a roofer is replacing the roof, they pull the roofing permit, and we line up the schedules so the panels come off and go back on at the right time.`,
       ),
       faq(
         `${p}-faq`,
@@ -376,13 +376,13 @@ function buildPage(city, siteId) {
     title: `Tell us what is going on with your ${city.name} house`,
     body: pt(
       `${p}-cta`,
-      `Send a recent electric bill, a photo of the roof, or just the street. We will come out, look, and give you straight numbers for ${city.name}. Free estimate. No pressure. No commitment.`,
+      `Call 512-400-3763, or send a recent electric bill, a photo of the roof, or just the street. We will come out, look, and give you straight numbers for ${city.name}. Free estimate. No pressure. No commitment.`,
     ),
     ctaLabel: 'Get a free estimate',
     theme: 'light',
   })
 
-  const description = `Roof replacement, solar, and hail claim help in ${city.name}, TX. Real prices, what ${city.utilityShort} pays for solar, permits with ${city.permits.replace(/^the /, '')}, and what happens when you call. Free estimate, no pressure.`
+  const description = `Solar, hail claim help, and reroofs with trusted roofers in ${city.name}, TX. Real prices, what ${city.utilityShort} pays for solar, permits with ${city.permits.replace(/^the /, '')}, and what happens when you call. Free estimate, no pressure.`
 
   return {
     _id: `drafts.locationPage-${city.slug}`,
