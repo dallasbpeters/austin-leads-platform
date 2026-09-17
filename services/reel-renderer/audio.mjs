@@ -19,7 +19,7 @@
 
 import { execFile } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { copyFile, mkdir, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { setTimeout as sleep } from 'node:timers/promises'
 import { promisify } from 'node:util'
@@ -139,6 +139,30 @@ async function pool(items, limit, worker) {
   return results
 }
 
+/** One spoken line, as MP3 bytes. */
+const voiceBytes = (text) =>
+  elevenlabs(`/v1/text-to-speech/${VOICE_ID()}?output_format=mp3_44100_128`, {
+    text,
+    model_id: VOICE_MODEL(),
+    voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.2, use_speaker_boost: true },
+  })
+
+/** An instrumental bed of about `seconds`, as MP3 bytes. */
+const musicBytes = (seconds) =>
+  elevenlabs('/v1/music?output_format=mp3_44100_128', {
+    prompt: MUSIC_PROMPT,
+    music_length_ms: Math.max(3000, Math.round(seconds * 1000)),
+    force_instrumental: true,
+  })
+
+/** One sound effect from the SFX table, as MP3 bytes. */
+const sfxBytes = (kind) =>
+  elevenlabs('/v1/sound-generation?output_format=mp3_44100_128', {
+    text: SFX[kind].prompt,
+    duration_seconds: SFX[kind].seconds,
+    prompt_influence: 0.4,
+  })
+
 async function makeVoice(scenes, audioDir) {
   return pool(scenes, VOICE_CONCURRENCY, async (scene, index) => {
     const text = String(scene.say || '').trim()
@@ -146,12 +170,7 @@ async function makeVoice(scenes, audioDir) {
       return null
     }
     const file = path.join(audioDir, `vo-${index + 1}.mp3`)
-    const audio = await elevenlabs(`/v1/text-to-speech/${VOICE_ID()}?output_format=mp3_44100_128`, {
-      text,
-      model_id: VOICE_MODEL(),
-      voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.2, use_speaker_boost: true },
-    })
-    await writeFile(file, audio)
+    await writeFile(file, await voiceBytes(text))
     return { file, seconds: await secondsOf(file) }
   })
 }
@@ -165,7 +184,7 @@ export function fitScenesToVoice(scenes, clips) {
     const minimum = clip ? LEAD_IN + clip.seconds + TAIL : 0
     const duration = Math.max(Number(scene.duration) || 4, Math.ceil(minimum * 2) / 2)
     if (clip) {
-      cues.push({ index, start: cursor + LEAD_IN, seconds: clip.seconds, file: clip.file })
+      cues.push({ index, start: cursor + LEAD_IN, seconds: clip.seconds, file: clip.file, url: clip.url })
     }
     cursor += duration
     return { ...scene, duration }
@@ -175,12 +194,7 @@ export function fitScenesToVoice(scenes, clips) {
 
 async function makeMusic(total, audioDir) {
   const file = path.join(audioDir, 'music.mp3')
-  const audio = await elevenlabs('/v1/music?output_format=mp3_44100_128', {
-    prompt: MUSIC_PROMPT,
-    music_length_ms: Math.max(3000, Math.round(total * 1000)),
-    force_instrumental: true,
-  })
-  await writeFile(file, audio)
+  await writeFile(file, await musicBytes(total))
   return file
 }
 
@@ -238,12 +252,7 @@ async function makeSfx(kinds, audioDir) {
     try {
       await copyFile(cached, target)
     } catch {
-      const audio = await elevenlabs('/v1/sound-generation?output_format=mp3_44100_128', {
-        text: spec.prompt,
-        duration_seconds: spec.seconds,
-        prompt_influence: 0.4,
-      })
-      await writeFile(cached, audio)
+      await writeFile(cached, await sfxBytes(kind))
       await copyFile(cached, target)
     }
     files[kind] = { file: target, seconds: await secondsOf(target) }
@@ -356,5 +365,143 @@ export async function buildReelAudio(scenes, projectDir) {
     total: fitted.total,
     markup: audioMarkup({ cues: fitted.cues, total: fitted.total, musicFile, sfx, projectDir }),
     audio: `${fitted.cues.length} voice clip${fitted.cues.length === 1 ? '' : 's'} + ${musicNote} + ${sfxNote}`,
+  }
+}
+
+// ─── Preview audio ───────────────────────────────────────────────────────────
+//
+// The studio wants to hear a reel before it renders. Nothing is rendered: each
+// clip is made once, keyed by what made it, published to a URL the browser can
+// play, and remembered. Typing a new headline re-records that one line only.
+
+/* The preview music is one shared bed, cut to length in the browser. */
+const MUSIC_BED_SECONDS = 48
+
+const hashOf = (...parts) => createHash('sha1').update(parts.join('|')).digest('hex').slice(0, 20)
+const round = (value) => Math.round(value * 100) / 100
+
+/**
+ * A clip made once and reused. Looks on disk, then wherever `lookup` says
+ * (the Blob store, after a redeploy), and only then pays ElevenLabs.
+ */
+async function cachedClip({ key, cacheDir, make, publish, lookup }) {
+  const meta = path.join(cacheDir, `${key}.json`)
+  try {
+    return JSON.parse(await readFile(meta, 'utf8'))
+  } catch {
+    /* not on disk yet */
+  }
+  let url = lookup ? await lookup(key).catch(() => null) : null
+  let seconds
+  if (url) {
+    seconds = await secondsOf(url)
+  } else {
+    const file = path.join(cacheDir, `${key}.mp3`)
+    await writeFile(file, await make())
+    seconds = await secondsOf(file)
+    url = await publish(file, key)
+  }
+  const clip = { url, seconds }
+  await writeFile(meta, JSON.stringify(clip))
+  return clip
+}
+
+/**
+ * Lays the preview out: fitted scenes plus where every clip starts. Pure.
+ *
+ * @param {{ scenes: object[], clips: (object|null)[], music: object|null, sfxFiles: object|null }} parts
+ * @returns {{ scenes: object[], total: number, voices: object[], music: object|null, sfx: object[] }}
+ */
+export function previewPlan({ scenes, clips, music, sfxFiles }) {
+  const fitted = fitScenesToVoice(scenes, clips)
+  const cues = sfxFiles ? sfxCues(fitted.scenes) : []
+  return {
+    scenes: fitted.scenes,
+    total: fitted.total,
+    voices: fitted.cues.map((cue) => ({
+      index: cue.index,
+      start: round(cue.start),
+      seconds: round(cue.seconds),
+      url: cue.url,
+    })),
+    music: music ? { url: music.url, seconds: round(music.seconds) } : null,
+    sfx: cues
+      .filter((cue) => sfxFiles[cue.kind])
+      .map((cue) => ({
+        kind: cue.kind,
+        at: round(cue.at),
+        seconds: round(sfxFiles[cue.kind].seconds),
+        url: sfxFiles[cue.kind].url,
+        volume: SFX[cue.kind].volume,
+      })),
+  }
+}
+
+/**
+ * Voice, music bed and effects for the studio preview, as URLs.
+ *
+ * @param {object[]} scenes - Studio scenes, each with an optional `say`.
+ * @param {{ cacheDir: string, publish: Function, lookup?: Function }} store - Where clips live and how they get a URL.
+ * @returns {Promise<object>} A `previewPlan` plus an `audio` summary line.
+ */
+export async function previewAudio(scenes, { cacheDir, publish, lookup }) {
+  if (!hasAudioKey()) {
+    return {
+      ...previewPlan({ scenes, clips: [], music: null, sfxFiles: null }),
+      audio: 'silent (no ELEVENLABS_API_KEY)',
+    }
+  }
+  await mkdir(cacheDir, { recursive: true })
+  const store = { cacheDir, publish, lookup }
+
+  const clips = await pool(scenes, VOICE_CONCURRENCY, async (scene) => {
+    const text = String(scene.say || '').trim()
+    if (!text) {
+      return null
+    }
+    return cachedClip({
+      ...store,
+      key: `vo-${hashOf(VOICE_ID(), VOICE_MODEL(), text)}`,
+      make: () => voiceBytes(text),
+    })
+  })
+
+  let music = null
+  let musicNote = 'music'
+  try {
+    music = await cachedClip({
+      ...store,
+      key: `bed-${hashOf(MUSIC_PROMPT, MUSIC_BED_SECONDS)}`,
+      make: () => musicBytes(MUSIC_BED_SECONDS),
+    })
+  } catch (error) {
+    console.error('[reel-renderer] preview music failed:', error.message)
+    musicNote = `no music (${error.message.slice(0, 80)})`
+  }
+
+  let sfxFiles = null
+  let sfxNote = 'no sfx (REEL_SFX=off)'
+  if (sfxEnabled()) {
+    try {
+      const entries = await pool(Object.keys(SFX), SFX_CONCURRENCY, async (kind) => [
+        kind,
+        await cachedClip({
+          ...store,
+          key: `sfx-${kind}-${hashOf(kind, SFX[kind].prompt, SFX[kind].seconds)}`,
+          make: () => sfxBytes(kind),
+        }),
+      ])
+      sfxFiles = Object.fromEntries(entries)
+      sfxNote = 'sfx'
+    } catch (error) {
+      console.error('[reel-renderer] preview sound effects failed:', error.message)
+      sfxNote = `no sfx (${error.message.slice(0, 80)})`
+    }
+  }
+
+  const plan = previewPlan({ scenes, clips, music, sfxFiles })
+  return {
+    ...plan,
+    audio: `${plan.voices.length} voice clip${plan.voices.length === 1 ? '' : 's'} + ${musicNote} + ${sfxNote}`,
   }
 }

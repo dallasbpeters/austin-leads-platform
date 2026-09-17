@@ -47,7 +47,14 @@ GET  /health                      → { ok, templates, queued, working }
 POST /render                      → 202 { id, status, position }
      { template, variables, quality?, fps?, callbackUrl? }
 GET  /render/:id                  → { id, status, url, bytes, error }
+POST /audio                       → 200 { scenes, total, voices, music, sfx, audio }
+     { scenes }                     the studio preview's sound, as URLs; nothing is rendered
+GET  /files/…                     → local mode only: the MP4s and preview clips this process keeps
 ```
+
+`/audio` makes each voice line, one 48 s music bed and the four effects once, keyed
+by what made them, and remembers the URL under `WORK_DIR/preview-cache` (and on Blob
+in production, so a redeploy does not pay again). The same scenes twice cost one call.
 
 `status` is queued → rendering → uploading → done, or failed. Renders run one at
 a time. When `callbackUrl` is set, the worker POSTs the same shape back to it.

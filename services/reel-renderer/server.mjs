@@ -14,14 +14,14 @@
 import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { cp, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
+import { copyFile, cp, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
 import { promisify } from 'node:util'
 
-import { put } from '@vercel/blob'
+import { list, put } from '@vercel/blob'
 
-import { buildReelAudio, hasAudioKey } from './audio.mjs'
+import { buildReelAudio, hasAudioKey, previewAudio } from './audio.mjs'
 
 const run = promisify(execFile)
 
@@ -38,6 +38,10 @@ const RENDER_TIMEOUT_MS = Number(process.env.RENDER_TIMEOUT_MS) || 15 * 60 * 100
  */
 const PUBLIC_URL = (process.env.PUBLIC_URL || `http://localhost:${PORT}`).replace(/\/$/, '')
 const FILES_DIR = path.join(WORK_DIR, 'files')
+/* Preview clips (voice lines, the music bed, effects) and their URLs, keyed by what made them. */
+const PREVIEW_CACHE_DIR = path.join(WORK_DIR, 'preview-cache')
+/* Previews are seconds of API time, not minutes of Chrome, so a couple may run at once. */
+const PREVIEW_CONCURRENCY = 2
 
 /** Templates this worker will render. Anything else is refused, so a caller can't reach elsewhere on disk. */
 const TEMPLATES = {
@@ -168,6 +172,44 @@ async function renderJob(job) {
   job.finishedAt = Date.now()
 }
 
+// ─── Preview audio ───────────────────────────────────────────────────────────
+
+/** Gives a cached clip a URL the browser can play: Blob in production, this process locally. */
+async function publishClip(file, key) {
+  if (BLOB_TOKEN) {
+    const blob = await put(`reels/audio/${key}.mp3`, createReadStream(file), {
+      access: 'public',
+      contentType: 'audio/mpeg',
+      token: BLOB_TOKEN,
+      addRandomSuffix: false,
+    })
+    return blob.url
+  }
+  await mkdir(path.join(FILES_DIR, 'audio'), { recursive: true })
+  await copyFile(file, path.join(FILES_DIR, 'audio', `${key}.mp3`))
+  return `${PUBLIC_URL}/files/audio/${key}.mp3`
+}
+
+/** After a redeploy the disk is empty but Blob is not: find a clip made before. */
+async function lookupClip(key) {
+  if (!BLOB_TOKEN) {
+    return null
+  }
+  const { blobs } = await list({ prefix: `reels/audio/${key}`, token: BLOB_TOKEN, limit: 1 })
+  return blobs[0]?.url || null
+}
+
+let previewing = 0
+const previewWaiters = []
+const previewSlot = () =>
+  previewing < PREVIEW_CONCURRENCY
+    ? (previewing += 1)
+    : new Promise((resolve) => previewWaiters.push(resolve)).then(() => (previewing += 1))
+const releasePreviewSlot = () => {
+  previewing -= 1
+  previewWaiters.shift()?.()
+}
+
 /** Tells the site the job finished, if it asked to be told. Failure here never fails the render. */
 async function notify(job) {
   if (!job.callbackUrl) {
@@ -224,6 +266,25 @@ const routes = {
       working,
     }),
 
+  'POST /audio': async (request, response) => {
+    const body = await readJsonBody(request)
+    const scenes = Array.isArray(body.scenes) ? body.scenes : []
+    if (!scenes.length || scenes.length > 20) {
+      return json(response, 400, { error: 'Send between 1 and 20 scenes.' })
+    }
+    await previewSlot()
+    try {
+      const plan = await previewAudio(scenes, {
+        cacheDir: PREVIEW_CACHE_DIR,
+        publish: publishClip,
+        lookup: lookupClip,
+      })
+      return json(response, 200, plan)
+    } finally {
+      releasePreviewSlot()
+    }
+  },
+
   'POST /render': async (request, response) => {
     const body = await readJsonBody(request)
     if (!TEMPLATES[body.template]) {
@@ -256,14 +317,34 @@ const server = createServer(async (request, response) => {
   const key = `${request.method} ${url.pathname}`
 
   /* Local-mode files are public by design: the id is a UUID and the browser needs to fetch them. */
-  const fileMatch = url.pathname.match(/^\/files\/([\w-]+\.mp4)$/)
+  const fileMatch = url.pathname.match(/^\/files\/((?:audio\/)?[\w-]+\.(mp4|mp3))$/)
   if (request.method === 'GET' && fileMatch) {
     const file = path.join(FILES_DIR, fileMatch[1])
     try {
       const { size } = await stat(file)
+      const type = fileMatch[2] === 'mp3' ? 'audio/mpeg' : 'video/mp4'
+      /* Browsers seek inside media with Range requests; without them a scrub sticks at 0. */
+      const range = /^bytes=(\d*)-(\d*)$/.exec(request.headers.range || '')
+      if (range) {
+        const start = range[1] ? Number(range[1]) : 0
+        const end = range[2] ? Math.min(Number(range[2]), size - 1) : size - 1
+        if (start >= size || start > end) {
+          response.writeHead(416, { 'Content-Range': `bytes */${size}` })
+          return response.end()
+        }
+        response.writeHead(206, {
+          'Content-Type': type,
+          'Content-Length': end - start + 1,
+          'Content-Range': `bytes ${start}-${end}/${size}`,
+          'Accept-Ranges': 'bytes',
+          'Access-Control-Allow-Origin': '*',
+        })
+        return createReadStream(file, { start, end }).pipe(response)
+      }
       response.writeHead(200, {
-        'Content-Type': 'video/mp4',
+        'Content-Type': type,
         'Content-Length': size,
+        'Accept-Ranges': 'bytes',
         'Access-Control-Allow-Origin': '*',
       })
       createReadStream(file).pipe(response)

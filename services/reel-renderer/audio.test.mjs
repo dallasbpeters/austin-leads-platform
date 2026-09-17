@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { audioMarkup, fitScenesToVoice, sfxCues } from './audio.mjs'
+import { audioMarkup, fitScenesToVoice, previewPlan, sfxCues } from './audio.mjs'
 
 const scenes = [
   { type: 'photo', duration: 5, headline: 'Your house. Lit.' },
@@ -78,5 +78,47 @@ describe('the audio markup', () => {
   it('renders nothing extra when there are no effects', () => {
     const markup = audioMarkup({ cues: [], total: 4, musicFile: null, projectDir: '/work/job' })
     expect(markup.trim()).toBe('')
+  })
+})
+
+describe('the preview plan', () => {
+  it('fits scenes to their lines and hands back every clip with a start and a URL', () => {
+    const plan = previewPlan({
+      scenes,
+      clips: [
+        null,
+        { url: 'https://blob/vo-a.mp3', seconds: 6 },
+        null,
+        { url: 'https://blob/vo-b.mp3', seconds: 1 },
+      ],
+      music: { url: 'https://blob/bed.mp3', seconds: 48.2 },
+      sfxFiles: {
+        bells: { url: 'https://blob/bells.mp3', seconds: 3 },
+        whoosh: { url: 'https://blob/whoosh.mp3', seconds: 1 },
+        chime: { url: 'https://blob/chime.mp3', seconds: 1.5 },
+        sting: { url: 'https://blob/sting.mp3', seconds: 2.5 },
+      },
+    })
+    /* a 6 s line needs 0.35 + 6 + 0.45 = 6.8 → the 5 s offer scene grows to 7 s */
+    expect(plan.scenes.map((scene) => scene.duration)).toEqual([5, 7, 6, 4])
+    expect(plan.total).toBe(22)
+    expect(plan.voices).toEqual([
+      { index: 1, start: 5.35, seconds: 6, url: 'https://blob/vo-a.mp3' },
+      { index: 3, start: 18.35, seconds: 1, url: 'https://blob/vo-b.mp3' },
+    ])
+    expect(plan.music).toEqual({ url: 'https://blob/bed.mp3', seconds: 48.2 })
+    expect(plan.sfx[0]).toEqual({
+      kind: 'bells',
+      at: 0,
+      seconds: 3,
+      url: 'https://blob/bells.mp3',
+      volume: 0.5,
+    })
+    expect(plan.sfx.find((cue) => cue.kind === 'sting').at).toBe(18.2)
+  })
+
+  it('is silent with no clips and no effects', () => {
+    const plan = previewPlan({ scenes, clips: [], music: null, sfxFiles: null })
+    expect(plan).toMatchObject({ total: 20, voices: [], music: null, sfx: [] })
   })
 })
