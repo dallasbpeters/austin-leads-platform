@@ -16,6 +16,7 @@ import { AlertTriangle, Download, Film, Loader2, Share2 } from 'lucide-react'
 
 import PostPanel from '@/components/reels/post-panel'
 import { defaultCaption } from '@/lib/reels/scenes'
+import { DEFAULT_THEME, themeOf } from '@/lib/reels/themes'
 
 const POLL_MS = 2500
 
@@ -26,7 +27,8 @@ const STATUS_TEXT = {
   uploading: 'Almost there…',
 }
 
-export default function RenderBar({ scenes, seconds, initialUrl = null, onRendered }) {
+export default function RenderBar({ scenes, seconds, initialUrl = null, onRendered, theme = DEFAULT_THEME }) {
+  const look = themeOf(theme)
   /* A reopened reel shows its last finished video straight away. */
   const [job, setJob] = useState(initialUrl ? { status: 'done', url: initialUrl } : null)
   const [error, setError] = useState('')
@@ -75,7 +77,7 @@ export default function RenderBar({ scenes, seconds, initialUrl = null, onRender
       const response = await fetch('/api/reels/render', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scenes }),
+        body: JSON.stringify({ scenes, theme }),
       })
       const payload = await response.json()
       if (!response.ok) {
@@ -95,9 +97,9 @@ export default function RenderBar({ scenes, seconds, initialUrl = null, onRender
     }
     try {
       const blob = await fetch(job.url).then((response) => response.blob())
-      const file = new File([blob], 'christmas-reel.mp4', { type: 'video/mp4' })
+      const file = new File([blob], look.downloadName, { type: 'video/mp4' })
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Texas Christmas Lights' })
+        await navigator.share({ files: [file], title: look.shareTitle })
       } else {
         window.open(job.url, '_blank', 'noopener')
       }
@@ -151,14 +153,14 @@ export default function RenderBar({ scenes, seconds, initialUrl = null, onRender
               className={`flex items-center justify-center gap-2 rounded-xl border border-white/15 py-3 text-sm ${
                 shareSupported ? '' : 'col-span-2'
               }`}
-              download="christmas-reel.mp4"
+              download={look.downloadName}
               href={job.url}
             >
               <Download className="size-4" />
               Download
             </a>
           </div>
-          <PostPanel initialCaption={defaultCaption(scenes)} videoUrl={job.url} />
+          <PostPanel initialCaption={defaultCaption(scenes, theme)} videoUrl={job.url} />
         </div>
       ) : null}
     </section>

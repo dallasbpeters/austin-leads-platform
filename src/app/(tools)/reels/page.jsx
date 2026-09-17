@@ -4,6 +4,7 @@ import ReelStudio from '@/components/reels/reel-studio'
 import { safeAuth } from '@/lib/auth/session'
 import { listReelPhotos } from '@/lib/reels/photo-library'
 import { ensureReelTables, getReel } from '@/lib/reels/reel-db'
+import { themeId } from '@/lib/reels/themes'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,16 +21,28 @@ export default async function ReelsPage({ searchParams }) {
   const params = await searchParams
   const reelId = typeof params?.id === 'string' ? params.id : null
 
-  const [photos, initialReel] = await Promise.all([
-    listReelPhotos().catch((error) => {
-      console.error('[reels] photo library unavailable', error)
-      return []
-    }),
-    reelId ? loadReel(reelId) : null,
-  ])
+  /*
+   * The photo order depends on the theme, so the reel is loaded first. A saved
+   * reel brings its own theme; a new one takes it from `?theme=`, which is how
+   * the studio's picker asks for a different starting look.
+   */
+  const initialReel = reelId ? await loadReel(reelId) : null
+  const theme = themeId(initialReel?.theme || params?.theme)
 
-  /* A fresh studio per reel, so switching reels never mixes their scenes. */
-  return <ReelStudio initialReel={initialReel} key={initialReel?.id || 'new'} photos={photos} />
+  const photos = await listReelPhotos({ theme }).catch((error) => {
+    console.error('[reels] photo library unavailable', error)
+    return []
+  })
+
+  /* A fresh studio per reel and per theme, so switching never mixes their scenes. */
+  return (
+    <ReelStudio
+      initialReel={initialReel}
+      initialTheme={theme}
+      key={initialReel?.id || `new-${theme}`}
+      photos={photos}
+    />
+  )
 }
 
 async function loadReel(id) {

@@ -2,6 +2,8 @@ import { groq } from 'next-sanity'
 
 import { getSanityServerClient } from '@/sanity/client'
 
+import { themeOf } from './themes'
+
 /*
  * The photo library behind the reel studio.
  *
@@ -52,14 +54,24 @@ export const thumbUrl = (url) => `${url}?w=320&h=420&fit=crop&auto=format`
 /** The size a render should pull: big enough for 1080x1920, small enough to fetch fast. */
 export const renderUrl = (url) => `${url}?w=1400&fit=max&auto=format`
 
-export async function listReelPhotos() {
+/**
+ * Every photo a reel can use, best-first.
+ *
+ * @param {{ theme?: string }} [options] - The reel's theme. The Christmas theme
+ *   floats its night shoot to the top; every other theme leaves them in date
+ *   order, where a lit roofline is just an old photo rather than the first thing
+ *   an operator sees.
+ */
+export async function listReelPhotos({ theme } = {}) {
   const client = getSanityServerClient({ preview: false, stega: false })
   if (!client) {
     return []
   }
   const assets = await client.fetch(PHOTOS, { christmas: CHRISTMAS_SHOOT }, { next: { revalidate: 300 } })
   // Stable sort: the Christmas shoot first, in its own order; the rest stay newest-first.
-  const ordered = assets.toSorted((a, b) => christmasRank(a._id) - christmasRank(b._id))
+  const ordered = themeOf(theme).ranksChristmasPhotosFirst
+    ? assets.toSorted((a, b) => christmasRank(a._id) - christmasRank(b._id))
+    : assets
   return ordered.map((asset) => ({
     id: asset._id,
     name: asset.originalFilename || 'Photo',

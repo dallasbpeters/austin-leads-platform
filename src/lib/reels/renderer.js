@@ -5,6 +5,8 @@
  * server, and the worker's address can change without touching the client.
  */
 
+import { themeProject } from './themes'
+
 const WORKER_URL = (process.env.REEL_RENDERER_URL || '').replace(/\/$/, '')
 const SECRET = process.env.RENDER_SHARED_SECRET || ''
 
@@ -27,14 +29,14 @@ async function callWorker(path, init = {}) {
 /**
  * Queues a render.
  *
- * @param {{ scenes: object[], quality?: string }} reel - Scenes from the studio.
+ * @param {{ scenes: object[], theme?: string, quality?: string }} reel - Scenes from the studio.
  * @returns {Promise<{ id: string, status: string }>} The queued job.
  */
 export const startRender = (reel) =>
   callWorker('/render', {
     method: 'POST',
     body: JSON.stringify({
-      template: 'christmas-reels',
+      template: themeProject(reel.theme),
       quality: reel.quality || 'looks',
       fps: 30,
       variables: {
@@ -51,7 +53,11 @@ export const renderStatus = (id) => callWorker(`/render/${encodeURIComponent(id)
  * Voice, music and effects for the studio preview, as playable URLs.
  *
  * @param {object[]} scenes - Scenes from the studio, with their `say` lines.
+ * @param {string} [theme] - Which theme's music bed to mix under the voice.
  * @returns {Promise<object>} Fitted scenes plus every clip's URL and start time.
  */
-export const previewAudio = (scenes) =>
-  callWorker('/audio', { method: 'POST', body: JSON.stringify({ scenes }) })
+export const previewAudio = (scenes, theme) =>
+  callWorker('/audio', {
+    method: 'POST',
+    body: JSON.stringify({ scenes, template: themeProject(theme) }),
+  })

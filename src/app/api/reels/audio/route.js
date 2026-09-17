@@ -7,7 +7,7 @@ export const runtime = 'nodejs'
 
 const MAX_SCENES = 20
 
-/** POST { scenes } — the voice, music and effects for the studio preview, as URLs. */
+/** POST { scenes, theme } — the voice, music and effects for the studio preview, as URLs. */
 export async function POST(request) {
   const session = await safeAuth()
   if (!session?.user) {
@@ -36,7 +36,7 @@ export async function POST(request) {
   }
 
   try {
-    return NextResponse.json({ plan: await previewAudio(scenes) })
+    return NextResponse.json({ plan: await previewAudio(scenes, body?.theme) })
   } catch (error) {
     console.error('[reels] preview audio failed', error)
     return NextResponse.json({ error: error.message }, { status: 502 })

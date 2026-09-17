@@ -5,7 +5,7 @@ import { hasRenderer, startRender } from '@/lib/reels/renderer'
 
 export const runtime = 'nodejs'
 
-/** POST { scenes } — queue a render on the worker and hand back its job id. */
+/** POST { scenes, theme, quality } — queue a render on the worker and hand back its job id. */
 export async function POST(request) {
   const session = await safeAuth()
   if (!session?.user) {
@@ -31,7 +31,7 @@ export async function POST(request) {
   }
 
   try {
-    const job = await startRender({ scenes, quality: body?.quality })
+    const job = await startRender({ scenes, theme: body?.theme, quality: body?.quality })
     return NextResponse.json({ job })
   } catch (error) {
     console.error('[reels] render failed to queue', error)

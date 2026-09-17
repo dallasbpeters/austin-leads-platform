@@ -30,7 +30,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Loader2, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react'
 
-const PREVIEW_URL = '/reels/christmas-reels/preview.html'
+import { DEFAULT_THEME, themeOf } from '@/lib/reels/themes'
+
+/* Each theme stages its own preview copy; see scripts/sync-reel-assets.mjs. */
 const FRAME_WIDTH = 1080
 const FRAME_HEIGHT = 1920
 /* New scenes reload the frame, so wait for a pause in the typing. */
@@ -190,7 +192,8 @@ class ReelMixer {
   }
 }
 
-export default function ReelPreview({ scenes, className = '' }) {
+export default function ReelPreview({ scenes, className = '', theme = DEFAULT_THEME }) {
+  const previewUrl = themeOf(theme).previewUrl
   const frameRef = useRef(null)
   const stageRef = useRef(null)
   const rafRef = useRef(0)
@@ -219,12 +222,12 @@ export default function ReelPreview({ scenes, className = '' }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       const variables = { scenes: JSON.stringify(frameScenes), totalDuration: duration }
-      setSrc(`${PREVIEW_URL}#${encodeURIComponent(JSON.stringify(variables))}`)
+      setSrc(`${previewUrl}#${encodeURIComponent(JSON.stringify(variables))}`)
     }, REBUILD_DELAY_MS)
     return () => clearTimeout(timer)
     // frameScenes is derived from scenesKey + planFits; the string key is the cheaper dependency.
     // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [scenesKey, planFits, duration])
+  }, [scenesKey, planFits, duration, previewUrl])
 
   /* Sound on: ask the worker for the clips once the scenes have settled, then decode them. */
   useEffect(() => {
@@ -243,7 +246,7 @@ export default function ReelPreview({ scenes, className = '' }) {
         const response = await fetch('/api/reels/audio', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ scenes }),
+          body: JSON.stringify({ scenes, theme }),
         })
         const payload = await response.json()
         if (!response.ok) {
@@ -271,7 +274,7 @@ export default function ReelPreview({ scenes, className = '' }) {
     return () => clearTimeout(timer)
     // `scenes` is what `scenesKey` stringifies; the key is the dependency that matters.
     // oxlint-disable-next-line react-hooks/exhaustive-deps
-  }, [soundOn, scenesKey, plan])
+  }, [soundOn, scenesKey, plan, theme])
 
   /* The frame renders at 1080x1920 and is scaled down to whatever fits. */
   useEffect(() => {

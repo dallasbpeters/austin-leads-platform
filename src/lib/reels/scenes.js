@@ -1,10 +1,17 @@
 /*
- * The scene vocabulary, shared by the builder and the composition.
+ * The scene vocabulary, shared by the builder and the compositions.
  *
- * `videos/christmas-reels/index.html` reads exactly these `type` values and
+ * Every `videos/<project>/index.html` reads exactly these `type` values and
  * fields; this file is what the UI builds its forms from. Add a scene type in
  * both places or it will not render.
+ *
+ * A theme picks which of these types it can draw, and overrides the wording of
+ * their defaults and placeholders — see `src/lib/reels/themes.js`. The bare
+ * `SCENE_TYPES` export below stays the Christmas vocabulary so nothing that
+ * predates themes changes behaviour.
  */
+
+import { DEFAULT_THEME, themeOf } from './themes'
 
 const newId = () =>
   typeof crypto !== 'undefined' && crypto.randomUUID
@@ -79,25 +86,126 @@ export const BULB_COLORS = [
   { value: 'bright-white', label: 'Bright white' },
 ]
 
-export const sceneTypeOf = (scene) =>
-  SCENE_TYPES.find((entry) => entry.type === scene?.type) || SCENE_TYPES[0]
+/**
+ * Wording a theme puts over the shared vocabulary, keyed by scene type.
+ *
+ * Only what differs is listed. `placeholders` retitles a field's example text;
+ * `defaults` is what a freshly added scene is filled with. A theme that says
+ * nothing about a type gets the Christmas wording, which is what the bare
+ * `SCENE_TYPES` list above already holds.
+ */
+const THEME_COPY = {
+  brand: {
+    photo: {
+      hint: 'A job photo, graded and slowly pushed in, with your words over it.',
+      placeholders: {
+        eyebrow: 'Austin, Texas',
+        headline: 'What solar costs here',
+        sub: 'Real ranges from recent Central Texas jobs.',
+      },
+      defaults: {
+        duration: 5,
+        eyebrow: 'Austin, Texas',
+        headline: 'What solar costs here',
+        sub: 'Real ranges from recent Central Texas jobs.',
+      },
+    },
+    offer: {
+      label: 'Price card',
+      hint: 'One figure on a brand panel. No photo needed.',
+      placeholders: {
+        eyebrow: 'Installed, before any rebate',
+        headline: 'A home system runs',
+        price: '$15,000-$30,000',
+        sub: 'Yours depends on the roof and your real usage.',
+      },
+      defaults: {
+        duration: 5,
+        eyebrow: 'Installed, before any rebate',
+        headline: 'A home system runs',
+        price: '$15,000-$30,000',
+        sub: 'Yours depends on the roof and your real usage.',
+      },
+    },
+    text: {
+      hint: 'One statement on a brand panel.',
+      placeholders: {
+        eyebrow: 'Austin Energy',
+        headline: '$2,500 back, then 9.91 cents a kWh',
+        sub: 'The credit shows up as a line on the same bill.',
+      },
+      defaults: {
+        duration: 5,
+        eyebrow: 'Austin Energy',
+        headline: '$2,500 back, then 9.91 cents a kWh',
+        sub: 'The credit shows up as a line on the same bill.',
+      },
+    },
+    signoff: {
+      placeholders: { sub: '512-400-3763', headline: 'Free estimate · No pressure' },
+      defaults: { duration: 5, sub: '512-400-3763', headline: 'Free estimate · No pressure' },
+    },
+  },
+}
 
-export const makeScene = (type) => {
-  const definition = SCENE_TYPES.find((entry) => entry.type === type) || SCENE_TYPES[0]
+/* Applies a theme's wording to one shared scene definition. */
+const dressed = (definition, copy) => {
+  if (!copy) {
+    return definition
+  }
+  return {
+    ...definition,
+    ...(copy.label ? { label: copy.label } : {}),
+    ...(copy.hint ? { hint: copy.hint } : {}),
+    fields: definition.fields.map((field) =>
+      copy.placeholders?.[field.id] ? { ...field, placeholder: copy.placeholders[field.id] } : field,
+    ),
+    defaults: copy.defaults ? { ...definition.defaults, ...copy.defaults } : definition.defaults,
+  }
+}
+
+/**
+ * The scene types a theme can draw, in the theme's own words.
+ *
+ * @param {string} [theme] - A theme id. Unknown ids fall back to the default.
+ * @returns {object[]} Scene definitions, in the theme's declared order.
+ */
+export const sceneTypesFor = (theme = DEFAULT_THEME) => {
+  const entry = themeOf(theme)
+  const copy = THEME_COPY[entry.id]
+  return entry.sceneTypes
+    .map((type) => SCENE_TYPES.find((definition) => definition.type === type))
+    .filter(Boolean)
+    .map((definition) => dressed(definition, copy?.[definition.type]))
+}
+
+export const sceneTypeOf = (scene, theme = DEFAULT_THEME) => {
+  const types = sceneTypesFor(theme)
+  return types.find((entry) => entry.type === scene?.type) || types[0]
+}
+
+export const makeScene = (type, theme = DEFAULT_THEME) => {
+  const types = sceneTypesFor(theme)
+  const definition = types.find((entry) => entry.type === type) || types[0]
   return { id: newId(), type: definition.type, ...definition.defaults }
 }
 
 /** What the studio starts with: a photo, a price, a sign-off. */
-export const STARTER_SCENES = () => [
-  {
-    ...makeScene('photo'),
-    eyebrow: 'Central Texas',
-    headline: 'Your house. Lit.',
-    sub: 'We hang it, we service it, we take it down.',
-  },
-  makeScene('offer'),
-  makeScene('signoff'),
-]
+export const STARTER_SCENES = (theme = DEFAULT_THEME) => {
+  if (themeOf(theme).id === 'brand') {
+    return [makeScene('photo', theme), makeScene('offer', theme), makeScene('signoff', theme)]
+  }
+  return [
+    {
+      ...makeScene('photo', theme),
+      eyebrow: 'Central Texas',
+      headline: 'Your house. Lit.',
+      sub: 'We hang it, we service it, we take it down.',
+    },
+    makeScene('offer', theme),
+    makeScene('signoff', theme),
+  ]
+}
 
 export const SCENE_MIN_SECONDS = 2
 export const SCENE_MAX_SECONDS = 12
@@ -228,13 +336,11 @@ export const toRenderScenes = (scenes) =>
   }))
 
 /** A one-line summary for the scene strip. */
-export const sceneSummary = (scene) =>
-  scene.headline || scene.price || scene.eyebrow || sceneTypeOf(scene).label
-
-const CAPTION_TAGS = '#ChristmasLights #TexasChristmasLights #CentralTexas #HolidayLights'
+export const sceneSummary = (scene, theme = DEFAULT_THEME) =>
+  scene.headline || scene.price || scene.eyebrow || sceneTypeOf(scene, theme).label
 
 /** A starting caption from the reel's own words: the opening line, the price, and how to book. */
-export function defaultCaption(scenes) {
+export function defaultCaption(scenes, theme = DEFAULT_THEME) {
   const opening = scenes.find((scene) => clean(scene.headline) && scene.type !== 'signoff')
   const offer = scenes.find((scene) => scene.type === 'offer' && clean(scene.price))
   const signoff = scenes.find((scene) => scene.type === 'signoff')
@@ -242,7 +348,7 @@ export function defaultCaption(scenes) {
     opening ? [sentence(opening.headline), sentence(opening.sub)].filter(Boolean).join(' ') : '',
     offer ? sentence(`${clean(offer.headline)} ${clean(offer.price)}`.trim()) : '',
     signoff?.sub ? `Free estimate, no pressure: ${clean(signoff.sub)}` : 'Free estimate, no pressure.',
-    CAPTION_TAGS,
+    themeOf(theme).captionTags,
   ]
     .filter(Boolean)
     .join('\n\n')
