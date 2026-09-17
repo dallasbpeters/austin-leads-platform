@@ -343,12 +343,8 @@ export default function ReelPreview({ scenes, className = '' }) {
 
   useEffect(() => () => mixerRef.current?.stopAll(), [])
 
-  /* The speaker. The tap is what unlocks the audio context — browsers insist on it. */
-  const toggleSound = () => {
-    if (soundOn) {
-      setSoundOn(false)
-      return
-    }
+  /* Any tap can turn sound on. The tap is what unlocks the audio context — browsers insist on it. */
+  const enableSound = () => {
     if (!mixerRef.current) {
       const Context = window.AudioContext || window.webkitAudioContext
       if (!Context) {
@@ -363,6 +359,16 @@ export default function ReelPreview({ scenes, className = '' }) {
     }
     mixerRef.current.context.resume().catch(() => {})
     setSoundOn(true)
+  }
+
+  const toggleSound = () => (soundOn ? setSoundOn(false) : enableSound())
+
+  /* Play is a tap too: the first one brings the sound with it. */
+  const togglePlaying = () => {
+    if (!(soundOn || mixerRef.current)) {
+      enableSound()
+    }
+    setPlaying((current) => !current)
   }
 
   const scrub = (seconds) => {
@@ -404,13 +410,26 @@ export default function ReelPreview({ scenes, className = '' }) {
             <Loader2 className="size-8 animate-spin text-white/50" />
           </div>
         )}
+        {ready && !soundOn && planState !== 'error' ? (
+          <button
+            aria-label="Tap for sound"
+            className="absolute inset-0 flex items-end justify-center pb-6"
+            onClick={enableSound}
+            type="button"
+          >
+            <span className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur">
+              <VolumeX className="size-4" />
+              Tap for sound
+            </span>
+          </button>
+        ) : null}
       </div>
 
       <div className="flex w-full max-w-[min(86vw,380px)] items-center gap-3">
         <button
           aria-label={playing ? 'Pause' : 'Play'}
           className="grid size-11 shrink-0 place-items-center rounded-full bg-white/10 active:scale-95"
-          onClick={() => setPlaying((current) => !current)}
+          onClick={togglePlaying}
           type="button"
         >
           {playing ? <Pause className="size-5" /> : <Play className="size-5" />}
