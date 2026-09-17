@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
+import { cleanRuntimeString } from '@/lib/sanity/stega'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
 
@@ -11,10 +12,18 @@ export default function StorySection({ section = null, sectionId = 'how-it-works
   const intervalRef = useRef(null)
   const [activeWordCount, setActiveWordCount] = useState(0)
   const title = section?.title || ''
+  // This section reveals the copy one word at a time, so the string gets cut into
+  // per-word spans. Sanity's invisible click-to-edit markers are not whitespace, so
+  // the word split scatters them across spans and some spans end up holding nothing
+  // but markers. The Studio overlay then fails to decode those fragments. Strip the
+  // markers before splitting; the section trades click-to-edit for the word reveal.
   const body =
-    portableTextToPlainText(section?.body) ||
+    cleanRuntimeString(portableTextToPlainText(section?.body)) ||
     'Tree branches, water heaters, and shock electric bills. That is where most people start. We help you sort out the rest.'
-  const emphasis = portableTextToPlainText(section?.subtitle) || section?.subheading || 'One step at a time.'
+  const emphasis =
+    cleanRuntimeString(portableTextToPlainText(section?.subtitle)) ||
+    cleanRuntimeString(section?.subheading) ||
+    'One step at a time.'
 
   const bodyWords = useMemo(() => body.match(/\S+|\s+/g) || [], [body])
   const emphasisWords = useMemo(() => emphasis.match(/\S+|\s+/g) || [], [emphasis])
