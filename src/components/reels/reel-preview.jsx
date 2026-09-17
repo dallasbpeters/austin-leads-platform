@@ -61,7 +61,8 @@ const clipsFromPlan = (plan) => {
     add(voice.url, voice.start, voice.seconds, 1, 'voice')
   }
   if (plan.music) {
-    add(plan.music.url, 0, Math.min(plan.music.seconds, plan.total), MUSIC_LEVEL, 'music')
+    /* The bed runs the whole reel; a short song loops (see ReelMixer.start). */
+    add(plan.music.url, 0, plan.total, MUSIC_LEVEL, 'music')
   }
   for (const effect of plan.sfx || []) {
     add(effect.url, effect.at, Math.min(effect.seconds, plan.total - effect.at), effect.volume, 'sfx')
@@ -128,15 +129,20 @@ class ReelMixer {
 
   start(clip, offset) {
     const buffer = this.buffers.get(clip.url)
-    if (!buffer || offset >= buffer.duration) {
+    if (!buffer) {
+      return null
+    }
+    const loops = clip.kind === 'music'
+    if (!loops && offset >= buffer.duration) {
       return null
     }
     const source = this.context.createBufferSource()
     const gain = this.context.createGain()
     source.buffer = buffer
+    source.loop = loops
     gain.gain.value = clip.volume
     source.connect(gain).connect(this.context.destination)
-    source.start(0, offset)
+    source.start(0, loops ? offset % buffer.duration : offset)
     const node = { source, gain, startedAt: this.context.currentTime, offset, dead: false }
     source.onended = () => {
       if (this.playing.get(clip) === node) {

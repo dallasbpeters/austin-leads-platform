@@ -211,13 +211,15 @@ const exists = (file) =>
     .then((info) => info.isFile())
     .catch(() => false)
 
-/** Cuts `source` to `seconds` with a fade-out, into `target`. */
+/** Cuts `source` to `seconds` with a fade-out, into `target`. A short song loops to fill. */
 export async function trimMusic(source, seconds, target) {
   const fade = Math.min(1.4, seconds / 2)
   await run('ffmpeg', [
     '-y',
     '-loglevel',
     'error',
+    '-stream_loop',
+    '-1',
     '-i',
     source,
     '-t',
