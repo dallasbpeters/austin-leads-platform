@@ -17,11 +17,11 @@ const INTERNAL_PATH_PREFIXES = new Set(['api', '_next', 'studio', '_site'])
  * parameter — so that Sanity's document resolver can read it as a route param.
  * (DocumentResolverContext.path strips query strings before the resolver runs.)
  *
- * The app proxy in {@link ../proxy.js} (`trySitePrefixRewrite`) rewrites these paths back to the
- * standard /?__site=<slug> format that the frontend renderer expects.
+ * The app proxy in {@link ../proxy.js} (`trySitePrefixRewrite`) rewrites these paths to the
+ * tenant route the frontend renders from.
  *
  *   /_site/tx-christmaslights/services/windows
- *   → (middleware) → /services/windows?__site=tx-christmaslights
+ *   → (proxy) → /tenant/tx-christmaslights/services/windows
  */
 function tenantHref(siteSlug, path = '/') {
   const safePath = path.startsWith('/') ? path : `/${path}`

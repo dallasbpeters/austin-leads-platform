@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 
 import { canQuotesRoleAccessPath, defaultAdminHomePath, isQuotesRole } from '@/lib/auth/roles'
 import { getAllSites } from '@/lib/platform/content'
+import { getSanityServerClient } from '@/sanity/client'
 
 const protectedPaths = [
   '/dashboard',
@@ -34,7 +35,7 @@ const protectedApiPrefixes = [
   '/api/users',
 ]
 
-/** Routes that must not set `data-public-site` on `<html>` (operator / API). */
+/** Operator / API routes. Never rewritten to a tenant, and never reachable through `/_site/`. */
 const OPERATOR_SHELL_PREFIXES = [
   '/dashboard',
   '/reels',
@@ -88,7 +89,7 @@ function allowPublicSiteParamOverride(request) {
 }
 
 /**
- * @returns {{ siteSlug: string, pagePath: string } | null}
+ * @returns {{ siteSlug: string, pagePath: string } | null} The tenant and page path, or null for other paths.
  */
 function parseSitePrefixRewrite(pathname) {
   const SITE_PREFIX = '/_site/'
@@ -114,15 +115,115 @@ function parseSitePrefixRewrite(pathname) {
   return { siteSlug, pagePath }
 }
 
+/*
+ * ─── Tenant routing ─────────────────────────────────────────────────────────
+ * The same pattern as Vercel's Platforms starter: every public page request is
+ * rewritten from `example.com/about` to `/tenant/<site-slug>/about`. The pages
+ * under `src/app/(site)/tenant/[site]` read the tenant from that route param
+ * instead of from request headers, which is what lets them be cached.
+ */
+const TENANT_PREFIX = '/tenant'
+const PRIMARY_SITE_SLUG = 'texas-solar-and-roofing-pros'
+
+/** Paths served by something other than a tenant page. */
+const NON_TENANT_PREFIXES = [
+  '/api',
+  '/ingest',
+  '/cards',
+  '/sign',
+  '/sign-in',
+  '/studio',
+  '/_next',
+  '/.well-known',
+  '/robots.txt',
+  '/sitemap.xml',
+]
+
+/** Files in `public/` (`/logo.png`, `/fonts/x.woff2`, `/llms.txt`) have an extension. */
+const FILE_EXTENSION = /\.[a-z0-9]+$/iu
+
+function isTenantPagePath(pathname) {
+  if (FILE_EXTENSION.test(pathname)) {
+    return false
+  }
+  if (isOperatorShellPath(pathname) || pathRequiresAuth(pathname)) {
+    return false
+  }
+  return !NON_TENANT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+}
+
+function rewriteToTenant(request, siteSlug, pagePath) {
+  const url = request.nextUrl.clone()
+  url.pathname = `${TENANT_PREFIX}/${encodeURIComponent(siteSlug)}${pagePath === '/' ? '' : pagePath}`
+  url.searchParams.delete('__site')
+  return NextResponse.rewrite(url)
+}
+
+/*
+ * Host → site slug. Sanity is checked first, the same order as
+ * `resolveSiteByHost`, because some tenants (Texas Christmas Lights) exist only
+ * in Sanity. Answers are kept for five minutes per server instance so the
+ * lookup does not run on every request.
+ */
+const HOST_LOOKUP_TTL_MS = 5 * 60 * 1000
+const hostSlugCache = new Map()
+
+async function lookupSiteSlugInSanity(host) {
+  const cached = hostSlugCache.get(host)
+  if (cached && cached.expires > Date.now()) {
+    return cached.slug
+  }
+
+  let slug = cached?.slug ?? null
+  try {
+    const client = getSanityServerClient()
+    if (client) {
+      slug = await client.fetch(
+        '*[_type == "site" && ($host == primaryDomain || $host in aliases)][0].slug.current',
+        { host },
+      )
+    }
+  } catch {
+    // Keep the last known answer; fall through to the local site list otherwise.
+  }
+
+  hostSlugCache.set(host, { slug, expires: Date.now() + HOST_LOOKUP_TTL_MS })
+  return slug
+}
+
+async function resolveTenantSlug(host) {
+  const normalizedHost = normalizeHost(host)
+  const sanitySlug = await lookupSiteSlugInSanity(normalizedHost)
+  if (sanitySlug) {
+    return sanitySlug
+  }
+
+  const localSite = getAllSites().find(
+    (candidate) => candidate.primaryDomain === normalizedHost || candidate.aliases?.includes(normalizedHost),
+  )
+  // Preview deployments (*.vercel.app) and unknown hosts serve the primary site,
+  // the same fallback `resolveSiteByHost` uses.
+  return localSite?.slug ?? PRIMARY_SITE_SLUG
+}
+
 /**
- * Sanity Presentation uses `/_site/{slug}/…` so Studio can read `:site` in the preview URL.
- * Rewrites to `pagePath?__site=` for the public catch-all and sets `x-alp-preview-site-slug`
- * for `data-public-site` in `src/app/layout.jsx`.
+ * Sanity Presentation uses `/_site/{slug}/…` so Studio can read `:site` in the
+ * preview URL, and `/preview/{slug}/…` is the operator preview link. Both go
+ * straight to that tenant's pages.
  *
  * @see `src/sanity/presentation.js`
  */
 function trySitePrefixRewrite(request) {
   const { pathname } = request.nextUrl
+
+  if (pathname.startsWith('/preview/')) {
+    const [siteSlug, ...rest] = pathname.slice('/preview/'.length).split('/')
+    if (siteSlug) {
+      const pagePath = `/${rest.filter(Boolean).join('/')}`
+      return rewriteToTenant(request, decodeURIComponent(siteSlug), pagePath)
+    }
+  }
+
   const parsed = parseSitePrefixRewrite(pathname)
   if (!parsed) {
     return null
@@ -130,63 +231,24 @@ function trySitePrefixRewrite(request) {
 
   const { siteSlug, pagePath } = parsed
 
-  if (isOperatorShellPath(pagePath) || pathRequiresAuth(pagePath)) {
+  if (isOperatorShellPath(pagePath) || pathRequiresAuth(pagePath) || !allowPublicSiteParamOverride(request)) {
     const home = request.nextUrl.clone()
     home.pathname = '/'
     home.search = ''
     return NextResponse.redirect(home)
   }
 
-  if (!allowPublicSiteParamOverride(request)) {
-    const home = request.nextUrl.clone()
-    home.pathname = '/'
-    home.search = ''
-    return NextResponse.redirect(home)
-  }
-
-  const url = request.nextUrl.clone()
-  url.pathname = pagePath
-  if (!url.searchParams.has('__site')) {
-    url.searchParams.set('__site', siteSlug)
-  }
-
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-alp-preview-site-slug', siteSlug)
-
-  return NextResponse.rewrite(url, { request: { headers: requestHeaders } })
+  return rewriteToTenant(request, siteSlug, pagePath)
 }
 
-function nextWithAlpHeaders(request) {
-  const requestHeaders = new Headers(request.headers)
-  const { pathname } = request.nextUrl
-  const url = request.nextUrl
+async function rewritePublicRequest(request) {
+  const { nextUrl } = request
+  const override = allowPublicSiteParamOverride(request) ? nextUrl.searchParams.get('__site')?.trim() : null
+  const siteSlug =
+    override ||
+    (await resolveTenantSlug(request.headers.get('x-forwarded-host') || request.headers.get('host')))
 
-  if (isOperatorShellPath(pathname)) {
-    requestHeaders.set('x-alp-operator-shell', '1')
-    return NextResponse.next({ request: { headers: requestHeaders } })
-  }
-
-  let previewSlug = null
-
-  if (pathname.startsWith('/preview/')) {
-    const parts = pathname.split('/').filter(Boolean)
-    if (parts[0] === 'preview' && parts[1]) {
-      previewSlug = parts[1]
-    }
-  }
-
-  if (!previewSlug && allowPublicSiteParamOverride(request)) {
-    const q = url.searchParams.get('__site')?.trim()
-    if (q) {
-      previewSlug = q
-    }
-  }
-
-  if (previewSlug) {
-    requestHeaders.set('x-alp-preview-site-slug', previewSlug)
-  }
-
-  return NextResponse.next({ request: { headers: requestHeaders } })
+  return rewriteToTenant(request, siteSlug, nextUrl.pathname)
 }
 
 function normalizeHost(host) {
@@ -260,10 +322,12 @@ export async function proxy(request) {
     return siteRewrite
   }
 
-  const requiresAuth = pathRequiresAuth(pathname)
+  if (isTenantPagePath(pathname)) {
+    return rewritePublicRequest(request)
+  }
 
-  if (!requiresAuth) {
-    return nextWithAlpHeaders(request)
+  if (!pathRequiresAuth(pathname)) {
+    return NextResponse.next()
   }
 
   if (isLoggedIn) {
@@ -273,7 +337,7 @@ export async function proxy(request) {
       }
       return NextResponse.redirect(new URL('/quotes', nextUrl))
     }
-    return nextWithAlpHeaders(request)
+    return NextResponse.next()
   }
 
   if (pathname.startsWith('/api/')) {
@@ -287,17 +351,10 @@ export async function proxy(request) {
   return NextResponse.redirect(signInUrl)
 }
 
+/*
+ * Prefetch requests must run the proxy too: a prefetched public link that skips
+ * the tenant rewrite would load a path with no page behind it.
+ */
 export const config = {
   matcher: ['/((?!_next|favicon.ico).*)'],
-  missing: [
-    {
-      type: 'header',
-      key: 'next-router-prefetch',
-    },
-    {
-      type: 'header',
-      key: 'purpose',
-      value: 'prefetch',
-    },
-  ],
 }
