@@ -1,11 +1,10 @@
 // oxlint-disable func-style no-nested-ternary unicorn/no-array-for-each
 import Image from 'next/image'
 
-import Script from 'next/script'
-
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
+import ElfsightReviewsEmbed from './elfsight-reviews-embed'
 
 export default function Testimonials({ section = null, sectionId = 'testimonials-homepage' }) {
   // The same review referenced twice in a section renders two cards keyed alike,
@@ -37,12 +36,7 @@ export default function Testimonials({ section = null, sectionId = 'testimonials
           className="mask-t-to-75% object-cover object-[0_-s100%]"
         />
       ) : null}
-      <Script src="https://elfsightcdn.com/platform.js" async></Script>
-      <div
-        className="elfsight-app-a47faa40-0d7d-4ae2-bf46-e4e63e4bf10a"
-        data-elfsight-app-lazy
-        data-third-party-embed="elfsight-reviews"
-      ></div>
+      <ElfsightReviewsEmbed appId="a47faa40-0d7d-4ae2-bf46-e4e63e4bf10a" />
     </section>
   )
 }

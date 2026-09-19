@@ -64,7 +64,7 @@
 .solar-hero__layout {
   display: grid;
   width: 100%;
-  align-items: end;
+  align-items: center;
   gap: 3rem;
   padding-bottom: 3rem;
 }
@@ -88,7 +88,7 @@
   display: inline-flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1em;
 }
 
 .solar-hero__pulse {

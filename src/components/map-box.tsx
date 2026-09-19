@@ -1,7 +1,7 @@
 'use client'
 
 import type { Feature, FeatureCollection, Geometry } from 'geojson'
-import mapboxgl from 'mapbox-gl'
+import type mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useEffect, useMemo, useRef } from 'react'
 
@@ -61,23 +61,18 @@ const TX_CENTER: [number, number] = [-99.5, 31]
 const TX_ZOOM = 5.2
 
 // Tight Texas bounds used for fitBounds when no counties are configured
-const TX_BOUNDS = new mapboxgl.LngLatBounds([-106.65, 25.84], [-93.51, 36.5])
+const TX_BOUNDS: mapboxgl.LngLatBoundsLike = [
+  [-106.65, 25.84],
+  [-93.51, 36.5],
+]
+
+// Start loading mapbox-gl a little before the map scrolls into view. The library is
+// ~1.8 MB and takes seconds to parse on a phone, so it must not load with the page.
+const LOAD_AHEAD_MARGIN = '400px'
 
 const CENTER_OFFSET_PADDING = { top: 48, bottom: 48, left: 48, right: 48 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function boundsFromFeatures(features: Feature[]): mapboxgl.LngLatBounds | null {
-  if (!features.length) {
-    return null
-  }
-  const bounds = new mapboxgl.LngLatBounds()
-  features.forEach((f) => {
-    extractCoords(f.geometry as Geometry).forEach(([lng, lat]) => bounds.extend([lng, lat]))
-  })
-  return bounds
-}
-
 function extractCoords(geometry: Geometry): [number, number][] {
   if (geometry.type === 'Polygon') {
     return geometry.coordinates[0] as [number, number][]
@@ -86,6 +81,27 @@ function extractCoords(geometry: Geometry): [number, number][] {
     return geometry.coordinates.flatMap((p) => p[0]) as [number, number][]
   }
   return []
+}
+function boundsFromFeatures(features: Feature[]): mapboxgl.LngLatBoundsLike | null {
+  let minLng = Infinity
+  let minLat = Infinity
+  let maxLng = -Infinity
+  let maxLat = -Infinity
+  features.forEach((f) => {
+    extractCoords(f.geometry as Geometry).forEach(([lng, lat]) => {
+      minLng = Math.min(minLng, lng)
+      minLat = Math.min(minLat, lat)
+      maxLng = Math.max(maxLng, lng)
+      maxLat = Math.max(maxLat, lat)
+    })
+  })
+  if (minLng === Infinity) {
+    return null
+  }
+  return [
+    [minLng, minLat],
+    [maxLng, maxLat],
+  ]
 }
 
 function buildFilter(fipsList: string[]): mapboxgl.FilterSpecification {
@@ -152,119 +168,148 @@ export const MapBox = ({
       return
     }
 
-    mapboxgl.accessToken = token
+    let cancelled = false
+    let mapInstance: mapboxgl.Map | null = null
 
-    const map = new mapboxgl.Map({
-      container,
-      style: MAP_STYLE,
-      center: TX_CENTER,
-      zoom: TX_ZOOM,
-      attributionControl: false,
-      scrollZoom: false,
-    })
-
-    mapRef.current = map
-
-    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
-    map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right')
-
-    const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 12 })
-
-    // This is a flat choropleth, so terrain is pure overhead — turn it off.
-    //
-    // Note: the console message `Couldn't find terrain source "mapbox-dem"` is a
-    // non-fatal mapbox-gl *warning* and is NOT caused by a missing source. The style
-    // does define `mapbox-dem`, but it also imports mapbox://styles/mapbox/standard,
-    // and GL v3 resolves terrain sources per import scope — a root-level `terrain`
-    // block gets looked up in the basemap scope, misses, and warns. Rendering is
-    // unaffected. To silence it for good, delete the terrain block from the style in
-    // Mapbox Studio; then this handler can go away too.
-    map.once('style.load', () => {
-      try {
-        map.setTerrain(null)
-      } catch {}
-    })
-
-    map.on('load', async () => {
-      try {
-        const res = await fetch(COUNTIES_URL)
-        if (!res.ok) {
-          throw new Error(`/api/counties/texas returned ${res.status}`)
-        }
-        const txGeoJSON = (await res.json()) as FeatureCollection
-        const txFeatures = txGeoJSON.features
-
-        // Use the ref so we always have the latest county list here, even if
-        // areas arrived after mount but before the style finished loading.
-        const fips = configuredFipsRef.current
-        const accent = accentColor || FALLBACK_ACCENT
-
-        map.addSource('tx-counties', { type: 'geojson', data: txGeoJSON })
-
-        // All county outlines — geographic context
-        map.addLayer({
-          id: 'counties-line',
-          type: 'line',
-          source: 'tx-counties',
-          paint: { 'line-color': 'rgba(0,0,0,0.15)', 'line-width': 0.6 },
-        })
-
-        // Configured county fills
-        map.addLayer({
-          id: 'counties-fill',
-          type: 'fill',
-          source: 'tx-counties',
-          filter: buildFilter(fips),
-          paint: { 'fill-color': accent, 'fill-opacity': 0.55 },
-        })
-
-        // Configured county borders
-        map.addLayer({
-          id: 'counties-line-active',
-          type: 'line',
-          source: 'tx-counties',
-          filter: buildFilter(fips),
-          paint: { 'line-color': accent, 'line-width': 2, 'line-opacity': 1 },
-        })
-
-        txFeaturesRef.current = txFeatures
-
-        // Fit to configured counties; fall back to full Texas view
-        if (fips.length > 0) {
-          const active = txFeatures.filter((f) => fips.includes(String(f.id)))
-          const bounds = boundsFromFeatures(active)
-          if (bounds) {
-            map.fitBounds(bounds, { padding: CENTER_OFFSET_PADDING, maxZoom: 9, duration: 0 })
-          }
-        } else {
-          map.fitBounds(TX_BOUNDS, { padding: CENTER_OFFSET_PADDING, duration: 0 })
-        }
-
-        // Tooltip
-        map.on('mouseenter', 'counties-fill', (e) => {
-          map.getCanvas().style.cursor = 'pointer'
-          if (!e.features?.length) {
-            return
-          }
-          const f = (e.features[0] as unknown as Feature).properties?.fips as string
-          const area = fipsToArea.get(f)
-          const meta = FIPS_TO_META.get(f)
-          const name = area?.displayName ?? meta?.city ?? meta?.name ?? 'County'
-          popup.setLngLat(e.lngLat).setHTML(`<strong style="font-size:0.8125rem">${name}</strong>`).addTo(map)
-        })
-        map.on('mousemove', 'counties-fill', (e) => popup.setLngLat(e.lngLat))
-        map.on('mouseleave', 'counties-fill', () => {
-          map.getCanvas().style.cursor = ''
-          popup.remove()
-        })
-      } catch (error) {
-        console.error('[MapBox] Failed to load counties GeoJSON:', error)
+    const initMap = async () => {
+      const { default: mapboxgl } = await import('mapbox-gl')
+      if (cancelled) {
+        return
       }
-    })
+
+      mapboxgl.accessToken = token
+
+      const map = new mapboxgl.Map({
+        container,
+        style: MAP_STYLE,
+        center: TX_CENTER,
+        zoom: TX_ZOOM,
+        attributionControl: false,
+        scrollZoom: false,
+      })
+
+      mapInstance = map
+      mapRef.current = map
+
+      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
+      map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right')
+
+      const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 12 })
+
+      // This is a flat choropleth, so terrain is pure overhead — turn it off.
+      //
+      // Note: the console message `Couldn't find terrain source "mapbox-dem"` is a
+      // non-fatal mapbox-gl *warning* and is NOT caused by a missing source. The style
+      // does define `mapbox-dem`, but it also imports mapbox://styles/mapbox/standard,
+      // and GL v3 resolves terrain sources per import scope — a root-level `terrain`
+      // block gets looked up in the basemap scope, misses, and warns. Rendering is
+      // unaffected. To silence it for good, delete the terrain block from the style in
+      // Mapbox Studio; then this handler can go away too.
+      map.once('style.load', () => {
+        try {
+          map.setTerrain(null)
+        } catch {
+          // Style has no terrain to clear; nothing to do.
+        }
+      })
+
+      map.on('load', async () => {
+        try {
+          const res = await fetch(COUNTIES_URL)
+          if (!res.ok) {
+            throw new Error(`/api/counties/texas returned ${res.status}`)
+          }
+          const txGeoJSON = (await res.json()) as FeatureCollection
+          const txFeatures = txGeoJSON.features
+
+          // Use the ref so we always have the latest county list here, even if
+          // areas arrived after mount but before the style finished loading.
+          const fips = configuredFipsRef.current
+          const accent = accentColor || FALLBACK_ACCENT
+
+          map.addSource('tx-counties', { type: 'geojson', data: txGeoJSON })
+
+          // All county outlines — geographic context
+          map.addLayer({
+            id: 'counties-line',
+            type: 'line',
+            source: 'tx-counties',
+            paint: { 'line-color': 'rgba(0,0,0,0.15)', 'line-width': 0.6 },
+          })
+
+          // Configured county fills
+          map.addLayer({
+            id: 'counties-fill',
+            type: 'fill',
+            source: 'tx-counties',
+            filter: buildFilter(fips),
+            paint: { 'fill-color': accent, 'fill-opacity': 0.55 },
+          })
+
+          // Configured county borders
+          map.addLayer({
+            id: 'counties-line-active',
+            type: 'line',
+            source: 'tx-counties',
+            filter: buildFilter(fips),
+            paint: { 'line-color': accent, 'line-width': 2, 'line-opacity': 1 },
+          })
+
+          txFeaturesRef.current = txFeatures
+
+          // Fit to configured counties; fall back to full Texas view
+          if (fips.length > 0) {
+            const active = txFeatures.filter((f) => fips.includes(String(f.id)))
+            const bounds = boundsFromFeatures(active)
+            if (bounds) {
+              map.fitBounds(bounds, { padding: CENTER_OFFSET_PADDING, maxZoom: 9, duration: 0 })
+            }
+          } else {
+            map.fitBounds(TX_BOUNDS, { padding: CENTER_OFFSET_PADDING, duration: 0 })
+          }
+
+          // Tooltip
+          map.on('mouseenter', 'counties-fill', (e) => {
+            map.getCanvas().style.cursor = 'pointer'
+            if (!e.features?.length) {
+              return
+            }
+            const f = (e.features[0] as unknown as Feature).properties?.fips as string
+            const area = fipsToArea.get(f)
+            const meta = FIPS_TO_META.get(f)
+            const name = area?.displayName ?? meta?.city ?? meta?.name ?? 'County'
+            popup
+              .setLngLat(e.lngLat)
+              .setHTML(`<strong style="font-size:0.8125rem">${name}</strong>`)
+              .addTo(map)
+          })
+          map.on('mousemove', 'counties-fill', (e) => popup.setLngLat(e.lngLat))
+          map.on('mouseleave', 'counties-fill', () => {
+            map.getCanvas().style.cursor = ''
+            popup.remove()
+          })
+        } catch (error) {
+          console.error('[MapBox] Failed to load counties GeoJSON:', error)
+        }
+      })
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect()
+          initMap()
+        }
+      },
+      { rootMargin: LOAD_AHEAD_MARGIN },
+    )
+    observer.observe(container)
 
     return () => {
+      cancelled = true
+      observer.disconnect()
       txFeaturesRef.current = []
-      map.remove()
+      mapInstance?.remove()
       mapRef.current = null
     }
   }, [])
