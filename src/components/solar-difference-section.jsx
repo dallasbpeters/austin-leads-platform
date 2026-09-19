@@ -75,16 +75,16 @@ const SolarDifferenceSection = ({ section = null, sectionId = 'solar-difference'
                 }}
               >
                 <div className="solar-difference__card-head">
-                  <span className="solar-difference__card-number text-size-200">
+                  <span className="solar-difference__card-number text-size-300">
                     {item.number || String(index + 1).padStart(2, '0')}
                   </span>
-                  <span className="solar-difference__card-eyebrow text-size-200">
+                  <span className="solar-difference__card-eyebrow text-size-300">
                     {item.eyebrow || item.title}
                   </span>
                 </div>
                 <div className="solar-difference__card-body">
                   <div>
-                    <h3 className="solar-difference__card-title text-fluid-700">{item.title}</h3>
+                    <h3 className="solar-difference__card-title text-fluid-600">{item.title}</h3>
                     {itemBody ? (
                       <p className="solar-difference__card-copy text-size-200">{itemBody}</p>
                     ) : null}

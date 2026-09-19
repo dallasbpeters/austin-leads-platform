@@ -1,5 +1,5 @@
 import { groq, stegaClean } from 'next-sanity'
-import { draftMode, headers } from 'next/headers'
+import { draftMode } from 'next/headers'
 
 import { isHeroSectionBlock } from '@/lib/platform/section-helpers'
 import { withSectionKeys } from '@/lib/sanity/keys'
@@ -1811,13 +1811,6 @@ export const resolveSiteByHost = async (host) => {
   }
 }
 
-export const resolveCurrentSite = async () => {
-  const requestHeaders = await headers()
-  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
-
-  return resolveSiteByHost(host)
-}
-
 const describePageRequest = (site, slugParts) => `site "${site.slug}" (${getPageKey(slugParts) || '/'})`
 
 /**
@@ -1886,7 +1879,6 @@ export const getPageForRequest = async (site, slugParts = []) => {
     const siteSlugs = getEquivalentSiteSlugs(site.slug)
     const requestedSlug = getPageKey(slugParts)
     const isHomepageRequest = requestedSlug === ''
-    const homepageFetchOptions = isHomepageRequest ? { cache: 'no-store' } : fetchOptions
     const pageQuery = isHomepageRequest
       ? groq`*[
           _type in ["page", "servicePage", "locationPage", "post"] &&
@@ -2055,7 +2047,7 @@ export const getPageForRequest = async (site, slugParts = []) => {
       isDraft,
       query: pageQuery,
       params: { siteSlugs, slug: requestedSlug || '/' },
-      fetchOptions: homepageFetchOptions,
+      fetchOptions,
     })
 
     if (rawPage) {
@@ -2190,12 +2182,19 @@ export const getSitemapEntriesForSite = async (site) => {
   return localEntries
 }
 
-export const getHeroPages = async ({ stega = false } = {}) => {
+/**
+ * @param {object} [options] - Read options.
+ * @param {boolean} [options.stega] - Encode Visual Editing source maps.
+ * @param {boolean} [options.fresh] - Skip the cache. The admin editor needs its own
+ *   edits back immediately; public pages must not, or they cannot be cached.
+ * @returns {Promise<object[]>} Hero page records, Sanity first, fixtures as a fallback.
+ */
+export const getHeroPages = async ({ stega = false, fresh = true } = {}) => {
   const localHeroPages = pages
     .map((page) => toHeroPageRecord(page, getSiteBySlug(page.siteSlug)))
     .filter(Boolean)
 
-  const { client } = await getSanityReadContext({ stega })
+  const { client, fetchOptions } = await getSanityReadContext({ stega })
 
   if (!client) {
     return localHeroPages
@@ -2268,7 +2267,7 @@ export const getHeroPages = async ({ stega = false } = {}) => {
         }
       }`,
       {},
-      { cache: 'no-store' },
+      fresh ? { cache: 'no-store' } : fetchOptions,
     )
 
     return Array.isArray(heroPages)
@@ -2331,7 +2330,7 @@ export const getLaunchChecklist = async () => {
 }
 
 export const getHeroHomepageForSite = async (siteSlug) => {
-  const heroPages = await getHeroPages({ stega: true })
+  const heroPages = await getHeroPages({ stega: true, fresh: false })
   const equivalentSlugs = getEquivalentSiteSlugs(siteSlug)
   const sitePages = heroPages.filter((page) => equivalentSlugs.includes(page.site?.slug))
 

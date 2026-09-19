@@ -1,5 +1,4 @@
 // oxlint-disable func-style unicorn/prefer-array-find
-import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
 import App from '@/App'
@@ -17,7 +16,6 @@ import {
   getPrimaryUrl,
   isPrimarySiteSlug,
   resolveNavigationForSite,
-  resolveSiteByHost,
   resolveSiteBySlug,
 } from '@/lib/platform/content'
 import { getHeroImageUrl } from '@/lib/platform/imageSource'
@@ -26,45 +24,13 @@ import { SHARE_DESCRIPTION_MAX, SHARE_TITLE_MAX, truncateForShare } from '@/lib/
 import { getCaseStudiesForSite } from '@/sanity/lib/caseStudies'
 
 /**
- * Sanity Presentation passes ?__site=<slug> so the multi-tenant renderer can
- * serve any tenant through the configured preview origin (localhost in dev,
- * primary domain in prod).
- *
- * Security: the override is only honoured when:
- *   a) Next.js draft mode is active, OR
- *   b) The request host is localhost/127.0.0.1 (local dev only)
- *
- * This prevents public production traffic from spoofing the site parameter
- * while still allowing local Presentation previews before draft mode is
- * explicitly enabled.
+ * Public pages get their tenant from the `[site]` route param, which
+ * `src/proxy.js` fills in from the request host (or from the gated
+ * `/_site/:slug` and `?__site=` Presentation overrides). Nothing here reads
+ * request headers, so the pages can be cached.
  */
-async function resolveCurrentSite(searchParams) {
-  const requestHeaders = await headers()
-  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host') ?? ''
-  const isLocalHost = host.includes('localhost') || host.startsWith('127.0.0.1')
-
-  const { isEnabled: isDraftMode } = await import('next/headers').then((m) => m.draftMode())
-  const allowOverride = isDraftMode || isLocalHost
-
-  const siteOverride = allowOverride ? (searchParams?.__site ?? null) : null
-  if (siteOverride) {
-    const overrideSite = await resolveSiteBySlug(siteOverride)
-    if (overrideSite) {
-      return overrideSite
-    }
-  }
-
-  return resolveSiteByHost(host)
-}
-
-function getCurrentOrigin(host, forwardedProto) {
-  if (!host) {
-    return null
-  }
-
-  const protocol =
-    forwardedProto || (host.includes('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https')
-  return `${protocol}://${host}`
+async function resolveSiteForPage(siteSlug) {
+  return siteSlug ? resolveSiteBySlug(siteSlug) : null
 }
 
 function getOriginFromAbsoluteUrl(url) {
@@ -204,12 +170,13 @@ function buildOgImageUrl(origin, site, page, pathname) {
   return url.toString()
 }
 
-function resolveIndexableHost(normalizedHost, site) {
-  return (
-    normalizedHost === site.primaryDomain ||
-    site.aliases?.includes(normalizedHost) ||
-    normalizedHost === `www.${site.primaryDomain}`
-  )
+/**
+ * Only the production deployment may be indexed. Preview deployments share the
+ * same cached pages, so the host cannot decide this any more; canonical URLs
+ * still point every copy at the site's own domain.
+ */
+function isIndexableDeployment() {
+  return process.env.VERCEL_ENV === undefined || process.env.VERCEL_ENV === 'production'
 }
 
 function buildNotFoundMetadata(site) {
@@ -243,8 +210,8 @@ function resolveFacebookAppId() {
   return (process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || process.env.FACEBOOK_APP_ID || '').trim()
 }
 
-function resolveCurrentOriginValue(host, forwardedProto, canonical) {
-  return getCurrentOrigin(host, forwardedProto) || getOriginFromAbsoluteUrl(canonical) || canonical
+function resolveCurrentOriginValue(canonical) {
+  return getOriginFromAbsoluteUrl(canonical) || canonical
 }
 
 function resolveTitleSeo(page, site) {
@@ -297,17 +264,14 @@ function buildPageMetadataObject({
   }
 }
 
-export async function buildMetadataForCurrentSite(slugParts = [], searchParams = {}) {
-  const requestHeaders = await headers()
-  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
-  const site = await resolveCurrentSite(searchParams)
+export async function buildMetadataForSite(siteSlug, slugParts = []) {
+  const site = await resolveSiteForPage(siteSlug)
 
   if (!site) {
     return { title: 'Not found', robots: { index: false, follow: false } }
   }
 
   const page = await getPageForRequest(site, slugParts)
-  const normalizedHost = (host || '').toLowerCase()
 
   if (!page) {
     return buildNotFoundMetadata(site)
@@ -317,7 +281,7 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
   const isGuidePage = computeIsGuidePage(page, pathname)
   const fallbackCanonical = getPrimaryUrl(site, pathname)
   const canonical = resolveCanonicalUrl({ page, site, pathname, fallbackCanonical })
-  const currentOrigin = resolveCurrentOriginValue(host, requestHeaders.get('x-forwarded-proto'), canonical)
+  const currentOrigin = resolveCurrentOriginValue(canonical)
   const title = resolveTitleSeo(page, site)
   const description = resolveDescriptionSeo(page, site)
 
@@ -330,7 +294,7 @@ export async function buildMetadataForCurrentSite(slugParts = [], searchParams =
     canonical,
     facebookAppId: resolveFacebookAppId(),
     page,
-    shouldIndex: resolveShouldIndex(resolveIndexableHost(normalizedHost, site), page, site),
+    shouldIndex: resolveShouldIndex(isIndexableDeployment(), page, site),
   })
 }
 
@@ -438,8 +402,8 @@ async function renderGenericSitePage(site, slugParts) {
   )
 }
 
-export async function renderCurrentSitePage(slugParts = [], searchParams = {}) {
-  const site = await resolveCurrentSite(searchParams)
+export async function renderSitePage(siteSlug, slugParts = []) {
+  const site = await resolveSiteForPage(siteSlug)
 
   if (!site) {
     notFound()

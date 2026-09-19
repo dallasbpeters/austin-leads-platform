@@ -32,15 +32,9 @@ export const getMillisecondsUntilNextHour = (date) => {
   return nextHour.getTime() - date.getTime()
 }
 
-/** Cookie the visitor's browser writes so the server can stamp the sky phase in the first HTML. */
-export const CLOUD_TONE_COOKIE = 'cloud-tone'
-
-export const CLOUD_TONES = ['day', 'dusk', 'night']
-
 /**
- * Validates a stored sky phase.
- *
- * @param {string | undefined} value - Raw cookie value.
- * @returns {'day' | 'dusk' | 'night' | null} The phase, or null when unusable.
+ * Runs in <head> before first paint so the sky phase is right on the very first
+ * frame. It mirrors `getLocalCloudTone`. The server cannot know the visitor's
+ * clock, and reading a cookie there would stop every public page from caching.
  */
-export const normalizeCloudTone = (value) => (CLOUD_TONES.includes(value) ? value : null)
+export const CLOUD_TONE_INLINE_SCRIPT = `(function(){try{var h=new Date().getHours();document.documentElement.dataset.cloudTone=h>=7&&h<18?'day':h===5||h===6||h===18||h===19?'dusk':'night'}catch(e){}})()`

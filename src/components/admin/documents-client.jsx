@@ -21,7 +21,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 import PdfPreviewSurface from '@/components/admin/pdf-preview-surface'
-import Logo from '@/components/logo'
+import LogoInline from '@/components/logo-inline'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -244,7 +244,7 @@ async function createGeneratedPdfFile({ title, client, summary, notes }) {
       const logoBytes = await response.arrayBuffer()
       return await pdfDoc.embedPng(logoBytes)
     } catch {
-      const logoMarkup = renderToStaticMarkup(<Logo height={96} width={118} />)
+      const logoMarkup = renderToStaticMarkup(<LogoInline height={96} width={118} />)
       const logoSvgUrl = URL.createObjectURL(new Blob([logoMarkup], { type: 'image/svg+xml;charset=utf-8' }))
 
       try {
