@@ -20,12 +20,17 @@
   border-bottom: 1px solid color-mix(in oklch, var(--border) 80%, transparent);
 }
 
+.faq__item h3 {
+  margin: 0;
+}
+
 .faq__item:last-child {
   border-bottom: 0;
 }
 
 .faq__question {
   color: var(--foreground);
+  margin-bottom: 0;
 }
 
 .faq__answer {
