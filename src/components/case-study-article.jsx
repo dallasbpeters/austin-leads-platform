@@ -13,7 +13,7 @@ import { summarizeBilling } from '@/sanity/lib/caseStudies'
    staying in the same utility vocabulary as the rest of the site sections.   */
 
 const SHELL = 'mx-auto w-full max-w-5xl pt-20 px-4 md:px-6'
-const SECTION = 'py-14 md:py-20'
+const SECTION = 'py-4'
 const META = 'text-muted-foreground text-xs font-semibold tracking-[0.14em] uppercase'
 const H2 = 'text-foreground mb-8 text-2xl font-medium tracking-normal md:text-3xl'
 const SUBKEY = 'text-muted-foreground mb-2 block text-[11px] font-semibold tracking-[0.16em] uppercase'
@@ -460,7 +460,7 @@ const RelatedProjects = ({ projects, edit }) => {
     return null
   }
   return (
-    <section className={`${SHELL} ${SECTION}`} data-od-id="case-related">
+    <section className={`${SHELL} ${SECTION} pb-12`} data-od-id="case-related">
       <h2 className={H2}>Other jobs nearby</h2>
       <div className="grid gap-6 md:grid-cols-3" {...edit('relatedProjects')}>
         {projects.map((project) => (

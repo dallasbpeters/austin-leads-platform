@@ -6,6 +6,10 @@
 
 .about-profile {
   background: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
+  margin-inline: auto;
+  padding: 5rem 0.75rem;
+  display: grid;
+  place-content: center;
 }
 
 .about-profile__layout {
@@ -15,14 +19,12 @@
   gap: 1.5rem;
   max-width: 80rem;
   margin-inline: auto;
-  padding: 5rem 0.75rem;
+  padding: 1rem 0.75rem;
 }
 
-@media (width >= 48rem) {
-  .about-profile__layout {
-    grid-template-columns: 1fr 1fr;
-    padding-inline: var(--spacing-xx-large);
-  }
+.about-profile__copy {
+  padding: var(--spacing-xx-large);
+  max-width: 48rem;
 }
 
 @media (width >= 64rem) {
@@ -37,6 +39,16 @@
   align-content: start;
   gap: 1.5rem;
   max-width: 80rem;
+}
+
+@media (width >= 48rem) {
+  .about-profile__people {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    align-content: start;
+    gap: 1.5rem;
+    max-width: 80rem;
+  }
 }
 
 .about-profile__card {
@@ -134,12 +146,7 @@
 .about-profile__wash {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, var(--color-black) 15%, rgb(11 59 66 / 20%), transparent);
-}
-
-.about-profile__copy {
-  max-width: 48rem;
-  margin-bottom: 2.5rem;
+  background: linear-gradient(to top, var(--color-primary) 15%, rgb(11 59 66 / 20%), transparent);
 }
 
 .about-profile__badge {

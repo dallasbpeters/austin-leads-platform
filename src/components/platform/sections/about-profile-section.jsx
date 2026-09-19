@@ -54,6 +54,17 @@ export function AboutProfileSection({ section, sectionId }) {
         markup="src/components/platform/sections/about-profile-section.jsx"
         content={`about profile section from ${section?._type || 'page section'}`}
       />
+      <div className="about-profile__copy">
+        {section.eyebrow ? (
+          <Badge variant="outline" className="about-profile__badge">
+            {section.eyebrow}
+          </Badge>
+        ) : null}
+        <h2 className="about-profile__title text-fluid-500">{section.title}</h2>
+        {section.body ? (
+          <PortableTextContent as="div" value={section.body} className="about-profile__body text-size-100" />
+        ) : null}
+      </div>
       <div className="about-profile__layout">
         <div className="about-profile__people">
           {people.map((person, index) => {
@@ -144,21 +155,6 @@ export function AboutProfileSection({ section, sectionId }) {
               </Card>
             )
           })}
-        </div>
-        <div className="about-profile__copy">
-          {section.eyebrow ? (
-            <Badge variant="outline" className="about-profile__badge">
-              {section.eyebrow}
-            </Badge>
-          ) : null}
-          <h2 className="about-profile__title text-fluid-500">{section.title}</h2>
-          {section.body ? (
-            <PortableTextContent
-              as="div"
-              value={section.body}
-              className="about-profile__body text-size-100"
-            />
-          ) : null}
         </div>
       </div>
     </section>

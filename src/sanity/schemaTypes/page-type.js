@@ -1870,7 +1870,6 @@ const aboutProfileSectionType = {
       title: 'People',
       type: 'array',
       of: [{ type: 'aboutProfilePerson' }],
-      validation: (Rule) => Rule.max(2),
       options: canvasPurpose('Profile cards shown in this section.'),
     },
   ]),

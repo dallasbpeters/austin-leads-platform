@@ -1,6 +1,6 @@
 'use client'
 
-import { DotArrowUp, Facebook, Mail, Phone } from 'iconoir-react'
+import { DotArrowUp, Facebook, Instagram, Mail, Phone } from 'iconoir-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -19,6 +19,12 @@ const footerServices = [
 const contactLinks = [
   { href: SITE_PHONE_HREF, icon: Phone, label: SITE_PHONE_DISPLAY },
   { href: `mailto:${SITE_EMAIL}`, icon: Mail, label: SITE_EMAIL },
+  {
+    href: `https://www.instagram.com/texassolarandroofingpros/`,
+    icon: Instagram,
+    label: 'Follow us on Instagram',
+    external: true,
+  },
   { href: SITE_FACEBOOK_URL, icon: Facebook, label: 'Follow us on Facebook', external: true },
 ]
 
