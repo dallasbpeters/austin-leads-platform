@@ -134,11 +134,9 @@ export function SiteSwitcherNavigator() {
       if (!siteId) {
         return
       }
-      router.navigateIntent('create', {
-        type: 'caseStudy',
-        template: 'caseStudy-by-site',
-        siteId,
-      })
+      // Template parameters travel as the intent payload (second tuple item).
+      // A flat `siteId` param is dropped, which leaves the template a reference with no _ref.
+      router.navigateIntent('create', [{ type: 'caseStudy', template: 'caseStudy-by-site' }, { siteId }])
     },
     [router],
   )

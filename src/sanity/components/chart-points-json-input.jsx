@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { PatchEvent, set, useClient, useFormCallbacks, useGetFormValue } from 'sanity'
+import { set, useClient, useGetFormValue } from 'sanity'
 
 const ACCEPTED_FILE_TYPES = '.json,application/json'
 
@@ -366,8 +366,7 @@ const buildNextSectionsForChartImport = async ({
 }
 
 export default function ChartPointsJsonInput(props) {
-  const { value, renderDefault, path = [] } = props
-  const { onChange: patchDocument } = useFormCallbacks()
+  const { value, renderDefault, path = [], onChange } = props
   const getFormValue = useGetFormValue()
   const client = useClient({ apiVersion: '2024-08-01' })
   const [jsonText, setJsonText] = useState('')
@@ -376,20 +375,6 @@ export default function ChartPointsJsonInput(props) {
   const [importing, setImporting] = useState(false)
 
   const currentCount = useMemo(() => (Array.isArray(value) ? value.length : 0), [value])
-  const parentPath = useMemo(() => path.slice(0, -1), [path])
-
-  function scheduleBodyPatch(config) {
-    if (config?.body === undefined) {
-      return
-    }
-    window.setTimeout(() => {
-      try {
-        patchDocument(PatchEvent.from([set(ensurePortableTextKeys(config.body), [...parentPath, 'body'])]))
-      } catch {
-        setStatus((s) => `${s} Body not updated — fix portable text in Studio.`)
-      }
-    }, 80)
-  }
 
   async function saveToSanityApi(points, siblingNoBody, config) {
     const docId = getFormValue([])?._id
@@ -440,12 +425,9 @@ export default function ChartPointsJsonInput(props) {
       const siblingNoBody = siblingEntries.filter(([key]) => key !== 'body')
 
       try {
-        const patches = [set(points, path)]
-        for (const [key, fieldValue] of siblingNoBody) {
-          patches.push(set(patchValueForChartConfig(key, fieldValue), [...parentPath, key]))
-        }
-        patchDocument(PatchEvent.from(patches))
-        scheduleBodyPatch(cfg)
+        // Patches from this input are relative to chartPoints. Sibling fields and body
+        // are saved through the API below, which Studio picks up via its listener.
+        onChange(set(points))
 
         const { saved, bodySkipped, docId, sectionKey } = await saveToSanityApi(points, siblingNoBody, cfg)
         if (!saved && docId != null) {
@@ -470,7 +452,7 @@ export default function ChartPointsJsonInput(props) {
         setImporting(false)
       }
     },
-    [client, getFormValue, parentPath, patchDocument, path],
+    [client, getFormValue, onChange, path],
   )
 
   const handleApplyJson = () => {

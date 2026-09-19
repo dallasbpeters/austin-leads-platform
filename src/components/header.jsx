@@ -63,21 +63,22 @@ const NavList = ({ items, onNavigate }) => (
 
       if (isAnchor) {
         return (
-          <Button
+          <Link
             variant="primary"
             key={key}
             href={href}
             onClick={onNavigate}
+            scroll={true}
             className={cn('btn site-header__link text-size-100 site-header__link--cta', itemClassName)}
           >
             <LinkInner>{label}</LinkInner>
-          </Button>
+          </Link>
         )
       }
 
       if (shouldOpenExternal) {
         return (
-          <a
+          <Link
             key={key}
             href={href}
             onClick={onNavigate}
@@ -86,7 +87,7 @@ const NavList = ({ items, onNavigate }) => (
             className={cn('btn site-header__link text-size-100', itemClassName)}
           >
             <LinkInner>{label}</LinkInner>
-          </a>
+          </Link>
         )
       }
 
@@ -111,14 +112,14 @@ const NavList = ({ items, onNavigate }) => (
  */
 const PhoneLink = ({ inSheet = false, prefix = null }) => (
   <div className="site-header__phone-wrapper">
-    <a href={SITE_PHONE_HREF} className={cn('site-header__phone', inSheet && 'site-header__phone--sheet')}>
+    <Link href={SITE_PHONE_HREF} className={cn('site-header__phone', inSheet && 'site-header__phone--sheet')}>
       <span> Call:</span>
       <Phone className="site-header__phone-icon" strokeWidth={2} aria-hidden="true" />
       <span>
         {prefix ? `${prefix} ` : null}
         {SITE_PHONE_DISPLAY}
       </span>
-    </a>
+    </Link>
   </div>
 )
 

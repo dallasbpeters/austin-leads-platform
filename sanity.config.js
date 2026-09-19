@@ -99,8 +99,8 @@ export default defineConfig({
         title: 'Case study for a site',
         schemaType: 'caseStudy',
         parameters: [{ name: 'siteId', type: 'string' }],
-        value: ({ siteId }) => ({
-          site: { _type: 'reference', _ref: siteId },
+        value: ({ siteId } = {}) => ({
+          ...(siteId ? { site: { _type: 'reference', _ref: siteId } } : {}),
           publishedAt: new Date().toISOString(),
         }),
       },

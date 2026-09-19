@@ -185,7 +185,7 @@ export const presentationLocations = {
       siteSlug: 'slug.current',
     },
     resolve: (doc) => {
-      if (!doc.siteSlug) {
+      if (!doc?.siteSlug) {
         return noLocations
       }
 
@@ -322,8 +322,11 @@ export const presentationLocations = {
       title: 'title',
     },
     resolve: (doc) => {
-      if (!doc.slug) {
-        return noLocations
+      if (!doc?.slug) {
+        return {
+          ...noLocations,
+          message: 'No page yet. Add a slug to publish this at /projects/<slug>.',
+        }
       }
 
       return {
