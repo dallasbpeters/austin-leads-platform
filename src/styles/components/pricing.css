@@ -3,7 +3,7 @@
  */
 
 .pricing {
-  padding: 3.5rem 0.75rem;
+  padding: 3.5rem;
   border-bottom: 1px solid var(--border);
   background: var(--color-white);
 }
@@ -44,7 +44,7 @@
 
 .pricing__title {
   margin: 0 0 1rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   line-height: 1.25;
   letter-spacing: normal;
   text-wrap: balance;
@@ -90,7 +90,7 @@
 
 .pricing__step-title {
   margin: 0 0 0.25rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   letter-spacing: normal;
   color: var(--foreground);
 }
@@ -105,7 +105,7 @@
 
 .pricing__step-amount {
   margin: 0 0 0.5rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   line-height: 1.25;
   color: var(--foreground);
 }
@@ -124,7 +124,7 @@
 
 .pricing__callout-title {
   margin: 0 0 0.5rem;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-weight: 700;
   letter-spacing: normal;
   color: var(--color-green-900);
