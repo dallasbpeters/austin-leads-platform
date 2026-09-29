@@ -38,7 +38,6 @@ export function usePublishManager({ initialJobs, sites }) {
       await createPublishJob(form)
       posthog.capture('admin_publish_job_created', {
         site_slug: form.siteSlug,
-        job_title: form.title,
       })
       setForm((current) => ({
         ...current,

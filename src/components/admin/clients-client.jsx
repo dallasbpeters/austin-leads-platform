@@ -1,6 +1,7 @@
 'use client'
 
 import { AlertTriangle, LoaderCircle, Plus, RefreshCw, Search, UserRound } from 'lucide-react'
+import posthog from 'posthog-js'
 import { useMemo, useState } from 'react'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -83,6 +84,7 @@ export default function ClientsClient({ initialClients, clientDbReady, dbConfigu
         throw new Error(data?.error || 'Unable to save client.')
       }
       setClients((current) => [data.client, ...current.filter((client) => client.id !== data.client.id)])
+      posthog.capture('client_created')
       setForm(emptyClient)
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Unable to save client.')

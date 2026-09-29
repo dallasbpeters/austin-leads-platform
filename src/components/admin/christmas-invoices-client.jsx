@@ -1,10 +1,6 @@
 // oxlint-disable react-hooks/exhaustive-deps
 'use client'
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
-
 import {
   Camera,
   Download,
@@ -21,6 +17,10 @@ import {
   Upload,
   X,
 } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
 import { Badge } from '@/components/ui/badge'
@@ -1164,6 +1164,7 @@ const ChristmasInvoicesClient = ({
     if (!response.ok) {
       throw new Error(data.error || `Save failed (HTTP ${response.status})`)
     }
+    posthog.capture('invoice_saved', { operation: editingId ? 'updated' : 'created' })
     setIntegrationResults(data.results)
     setInvoices((list) => [data.invoice, ...list.filter((item) => item.id !== data.invoice.id)])
     setMessage(editingId ? 'Invoice updated.' : 'Invoice created.')
@@ -1243,6 +1244,7 @@ const ChristmasInvoicesClient = ({
       if (!response.ok) {
         throw new Error(payload.error || 'Send failed')
       }
+      posthog.capture('invoice_emailed')
       setSendResults(payload.results)
       if (payload.invoice) {
         setInvoices((list) => [payload.invoice, ...list.filter((item) => item.id !== payload.invoice.id)])

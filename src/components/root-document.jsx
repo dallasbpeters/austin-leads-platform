@@ -7,7 +7,7 @@ import { draftMode } from 'next/headers'
 
 import '../styles/globals.css'
 
-import { PostHogProvider } from '@/app/providers'
+import { AnalyticsProvider } from '@/app/providers'
 import { CLOUD_TONE_INLINE_SCRIPT } from '@/components/cloud-tone'
 import CloudToneSync from '@/components/cloud-tone-sync'
 import ViewTransitionWrapper from '@/components/view-transition-wrapper'
@@ -101,7 +101,7 @@ export default async function RootDocument({ children, publicSite = null, analyt
         </nav>
         <CloudToneSync />
         <ViewTransitionWrapper />
-        <PostHogProvider siteSlug={analyticsSiteSlug}>{children}</PostHogProvider>
+        <AnalyticsProvider siteSlug={analyticsSiteSlug}>{children}</AnalyticsProvider>
         {shouldShowVercelToolbar ? <VercelToolbar /> : null}
         {isDraftMode ? <SanityLive /> : null}
         {isDraftMode ? <VisualEditing /> : null}

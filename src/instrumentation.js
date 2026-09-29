@@ -10,7 +10,12 @@ export async function register() {
     return
   }
 
-  const { checkSanityWriteToken } = await import('./sanity/write-token-health')
+  const [{ checkSanityWriteToken }] = await Promise.all([
+    import('./sanity/write-token-health'),
+    // Initializes only the dedicated PostHog workflow-log provider. Existing
+    // console and application loggers remain outside this export.
+    import('./lib/posthog-logs'),
+  ])
 
   await checkSanityWriteToken()
 }

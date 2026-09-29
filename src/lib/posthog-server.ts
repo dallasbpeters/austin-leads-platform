@@ -16,8 +16,6 @@ import { PostHog } from 'posthog-node'
  * env var so any external integration that still uses it keeps working.
  */
 
-const PUBLIC_HOST = 'https://us.i.posthog.com'
-
 const parsePostHogKeyMap = (): Record<string, string> => {
   const raw = process.env.NEXT_PUBLIC_POSTHOG_KEYS
   if (!raw) {
@@ -59,8 +57,6 @@ const clientCache = new Map<string, PostHog>()
 export const getPostHogClient = (siteSlug?: string | null): PostHog | null => {
   const key = resolveKey(siteSlug)
   if (!key) {
-    // Only warn in actual `pnpm dev` runs. Vitest sets NODE_ENV=test and
-    // intentionally omits the key, so warning there just pollutes CI/stderr.
     if (process.env.NODE_ENV === 'development') {
       console.warn(
         `[posthog-server] no key for site "${siteSlug ?? '(default)'}". ` +
@@ -70,11 +66,22 @@ export const getPostHogClient = (siteSlug?: string | null): PostHog | null => {
     return null
   }
 
+  const host = process.env.POSTHOG_HOST?.trim()
+  if (!host) {
+    if (process.env.NODE_ENV === 'development') {
+      throw new Error(
+        'POSTHOG_HOST variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once POSTHOG_HOST is configured',
+      )
+    }
+    return null
+  }
+
   if (!clientCache.has(key)) {
     clientCache.set(
       key,
       new PostHog(key, {
-        host: process.env.POSTHOG_HOST || PUBLIC_HOST,
+        host,
+        privacyMode: false,
         flushAt: 1,
         flushInterval: 0,
       }),

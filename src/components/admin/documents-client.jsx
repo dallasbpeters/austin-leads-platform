@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+import posthog from 'posthog-js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 
@@ -1316,6 +1317,12 @@ export default function DocumentsClient({
         throw new Error(data?.error || 'Unable to create the signature request.')
       }
 
+      posthog.capture('signature_request_sent', {
+        delivery_method: sendEmail ? 'email' : 'link',
+        recipient_count: recipients.length,
+        signature_field_count: builderFields.filter((field) => field.type === 'signature').length,
+        source_mode: sourceMode,
+      })
       setResult(data)
       setRequests((current) => [data.request, ...current.filter((request) => request.id !== data.request.id)])
       if (data.documentAsset) {

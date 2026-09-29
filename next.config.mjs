@@ -6,6 +6,7 @@ const PROJECT_ROOT = import.meta.dirname
 const sanityProjectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'xuhfhjna'
 const sanityDataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 const sanityApiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-10-21'
+const posthogAssetHost = process.env.POSTHOG_HOST?.trim().replace('.i.posthog.com', '-assets.i.posthog.com')
 
 const withPathWildcard = (destination) => {
   if (!destination) {
@@ -174,7 +175,10 @@ const nextConfig = {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
       },
-      // Proxy PostHog event ingestion through the app domain.
+      // Proxy PostHog ingestion and session-replay traffic through the app domain.
+      ...(posthogAssetHost
+        ? [{ source: '/ingest/array/:path*', destination: `${posthogAssetHost}/array/:path*` }]
+        : []),
       {
         source: '/ingest/:path*',
         destination: 'https://us.i.posthog.com/:path*',

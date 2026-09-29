@@ -1,7 +1,11 @@
+import { randomUUID } from 'node:crypto'
+
 import { createGroq } from '@ai-sdk/groq'
+import { withTracing } from '@posthog/ai'
 import { sanityInsightsIntegration } from '@sanity/context/ai-sdk'
 import { generateText } from 'ai'
 
+import { getPostHogClient } from '@/lib/posthog-server'
 import { sanityContextClient } from '@/sanity/client'
 
 /*
@@ -104,7 +108,7 @@ function buildTelemetry(job) {
  *   when the model call fails. Never throws, so a failed draft leaves the job
  *   intact rather than losing it.
  */
-export async function generatePublishDraft(job) {
+export async function generatePublishDraft(job, distinctId) {
   const apiKey = resolveApiKey()
   if (!apiKey) {
     return {
@@ -114,11 +118,21 @@ export async function generatePublishDraft(job) {
   }
 
   const telemetry = buildTelemetry(job)
+  const posthog = getPostHogClient(job.siteSlug)
 
   try {
     const groq = createGroq({ apiKey })
+    const model = groq(PUBLISH_MODEL)
+    const tracedModel = posthog
+      ? withTracing(model, {
+          posthog,
+          posthogTraceId: randomUUID(),
+          posthogProperties: { $ai_session_id: `publish-job-${job.id}` },
+          ...(distinctId ? { posthogDistinctId: distinctId } : {}),
+        })
+      : model
     const { text } = await generateText({
-      model: groq(PUBLISH_MODEL),
+      model: tracedModel,
       system: SYSTEM_RULES,
       prompt: buildPrompt(job),
       temperature: 0.6,
@@ -142,5 +156,7 @@ export async function generatePublishDraft(job) {
   } catch (error) {
     console.error('[publish] draft generation failed', error)
     return { ok: false, error: error.message || 'Draft generation failed.' }
+  } finally {
+    await posthog?.flush()
   }
 }

@@ -1,12 +1,15 @@
 // oxlint-disable unicorn/no-useless-undefined
-import { sanityInsightsIntegration } from '@sanity/context/ai-sdk'
+import { randomUUID } from 'node:crypto'
 
 import { anthropic } from '@ai-sdk/anthropic'
 import { createGroq } from '@ai-sdk/groq'
 import { createMCPClient } from '@ai-sdk/mcp'
+import { withTracing } from '@posthog/ai'
+import { sanityInsightsIntegration } from '@sanity/context/ai-sdk'
 import { convertToModelMessages, stepCountIs, streamText } from 'ai'
 
 import { safeAuth } from '@/lib/auth/session'
+import { getPostHogClient } from '@/lib/posthog-server'
 import { sanityContextClient } from '@/sanity/client'
 import { contextMcpApiVersion, contextMcpName, contextOrganizationId, dataset, projectId } from '@/sanity/env'
 
@@ -84,6 +87,8 @@ const INSIGHTS_AGENT = 'austin-leads-studio-agent'
 const SANITY_MCP_ENDPOINT_NAME = 'sanity-mcp'
 
 const MAX_STEPS = 20
+
+const toAiSessionId = (value) => String(value).replace(/[^A-Za-z0-9_~.@()!'|:-]/g, '-')
 
 const BASE_SYSTEM_PROMPT = `You are a **Sanity CMS assistant** for the Austin Leads Platform (Texas Solar and Roofing Pros). You help **editors and operators** work with **documents and structure** in the dataset—not end-site visitors.
 
@@ -389,6 +394,17 @@ export const POST = async (request) => {
   }
 
   const { endpoint, model, messages, documentFocus, documentContext, systemPromptExtra, threadId } = validated
+  const session = await safeAuth()
+  const posthog = getPostHogClient()
+  const conversationId = threadId || messages[0]?.id || randomUUID()
+  const tracedModel = posthog
+    ? withTracing(model, {
+        posthog,
+        posthogTraceId: randomUUID(),
+        posthogProperties: { $ai_session_id: `sanity-agent-${toAiSessionId(conversationId)}` },
+        ...(session?.user?.id ? { posthogDistinctId: session.user.id } : {}),
+      })
+    : model
 
   let mcpClient = null
   let writeClient = null
@@ -466,14 +482,14 @@ export const POST = async (request) => {
     })
 
     const result = streamText({
-      model,
+      model: tracedModel,
       system,
       messages: await convertToModelMessages(messages),
       tools: mcpTools,
       stopWhen: stepCountIs(MAX_STEPS),
       experimental_telemetry: buildInsightsTelemetry(threadId, messages, mcpEndpoints),
       onFinish: async () => {
-        await Promise.allSettled([mcpClient?.close(), writeClient?.close()])
+        await Promise.allSettled([mcpClient?.close(), writeClient?.close(), posthog?.flush()])
       },
     })
 
@@ -488,7 +504,7 @@ export const POST = async (request) => {
       },
     })
   } catch (error) {
-    await Promise.allSettled([mcpClient?.close(), writeClient?.close()])
+    await Promise.allSettled([mcpClient?.close(), writeClient?.close(), posthog?.flush()])
     console.error('[api/chat]', error)
     return jsonWithCors(
       request,

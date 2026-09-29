@@ -51,3 +51,4 @@ videos/**/.DS_Store
 
 # Staged copy of the reel composition for the /reels live preview (built by scripts/sync-reel-assets.mjs)
 public/reels/
+.env.production.local

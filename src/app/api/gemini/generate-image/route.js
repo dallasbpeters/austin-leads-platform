@@ -1,9 +1,14 @@
 import './sync-gemini-env.js'
 
+import { randomUUID } from 'node:crypto'
 import { setTimeout as delay } from 'node:timers/promises'
 
-import { GoogleGenAI } from '@google/genai'
+import { GoogleGenAI as NativeGoogleGenAI } from '@google/genai'
+import { GoogleGenAI as PostHogGoogleGenAI } from '@posthog/ai/gemini'
 import { NextResponse } from 'next/server'
+
+import { safeAuth } from '@/lib/auth/session'
+import { getPostHogClient } from '@/lib/posthog-server'
 
 /*
  * Local replacement for `sanity-plugin-gemini-ai-images-nextjs/route`, which
@@ -82,7 +87,7 @@ const describeEmptyResponse = (response, candidate) => {
  * @param {{ prompt: string, aspectRatio?: string, mode?: string, baseImage?: string }} options - Generation options.
  * @returns {Promise<{ imageData: string, mimeType: string }>} Base64 image payload.
  */
-const generateSingleImage = async (client, { prompt, aspectRatio, mode, baseImage }) => {
+const generateSingleImage = async (client, posthogContext, { prompt, aspectRatio, mode, baseImage }) => {
   const imageConfig = aspectRatio ? { aspectRatio } : {}
   const isEdit = mode === 'edit' && baseImage
 
@@ -97,6 +102,7 @@ const generateSingleImage = async (client, { prompt, aspectRatio, mode, baseImag
     ],
     /* Ask for an image in both modes. Without this the edit path could come back as prose. */
     config: { imageConfig, responseModalities: ['Image'] },
+    ...(posthogContext ?? {}),
   })
 
   const candidate = response?.candidates?.[0]
@@ -149,7 +155,7 @@ const buildSeriesPrompt = ({ prompt, consistencyPrompt, variation, hasBaseImage 
  * @param {object} body - Parsed request body.
  * @returns {Promise<NextResponse>} A single-, partial-, or total-failure response.
  */
-const generateSeries = async (client, body) => {
+const generateSeries = async (client, posthogContext, body) => {
   const { prompt, aspectRatio, mode, baseImage, series } = body
   const { quantity, consistencyPrompt, variations } = series
 
@@ -173,7 +179,7 @@ const generateSeries = async (client, body) => {
 
   for (const [index, variation] of cappedVariations.entries()) {
     try {
-      const result = await generateSingleImage(client, {
+      const result = await generateSingleImage(client, posthogContext, {
         aspectRatio,
         baseImage,
         mode,
@@ -236,6 +242,8 @@ export const POST = async (request) => {
     return jsonResponse({ error: 'Gemini API not configured' }, 500)
   }
 
+  const posthog = getPostHogClient()
+
   try {
     const body = await request.json()
 
@@ -243,14 +251,25 @@ export const POST = async (request) => {
       return jsonResponse({ error: 'Prompt is required' }, 400)
     }
 
-    const client = new GoogleGenAI({ apiKey: geminiApiKey })
+    const session = await safeAuth()
+    const posthogContext = posthog
+      ? {
+          posthogTraceId: randomUUID(),
+          posthogProperties: { $ai_session_id: `gemini-image-${randomUUID()}` },
+          ...(session?.user?.id ? { posthogDistinctId: session.user.id } : {}),
+        }
+      : null
+    const client = posthog
+      ? new PostHogGoogleGenAI({ apiKey: geminiApiKey, posthog })
+      : new NativeGoogleGenAI({ apiKey: geminiApiKey })
+    const response = body.series
+      ? await generateSeries(client, posthogContext, body)
+      : jsonResponse(await generateSingleImage(client, posthogContext, body))
 
-    if (body.series) {
-      return await generateSeries(client, body)
-    }
-
-    return jsonResponse(await generateSingleImage(client, body))
+    await posthog?.flush()
+    return response
   } catch (error) {
+    await posthog?.flush()
     console.error('Image generation failed:', error)
     return jsonResponse({ error: error?.message || 'Image generation failed' }, 500)
   }

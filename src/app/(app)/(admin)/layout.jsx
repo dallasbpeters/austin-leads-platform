@@ -3,6 +3,7 @@ import { JetBrains_Mono, Outfit } from 'next/font/google'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
+import { PostHogIdentifyUser } from '@/app/providers'
 import AdminBodyScrollLock from '@/components/admin/admin-body-scroll-lock'
 import AdminNav from '@/components/admin/admin-nav'
 import SignOutButton from '@/components/admin/sign-out-button'
@@ -40,6 +41,7 @@ export default async function AdminLayout({ children }) {
 
   return (
     <SidebarProvider>
+      <PostHogIdentifyUser user={user} />
       <div
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} admin-theme flex h-svh w-full overflow-hidden antialiased`}
       >

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { requireAdminRequest } from '@/lib/auth/guards'
+import { safeAuth } from '@/lib/auth/session'
 import { publishPageToSanity } from '@/lib/platform/content'
 import {
   ensurePublishJobsTable,
@@ -28,8 +29,8 @@ export async function GET(_request, { params }) {
   return job ? NextResponse.json({ job }) : NextResponse.json({ error: 'Job not found.' }, { status: 404 })
 }
 
-async function handleRegenerate(job) {
-  const draft = await generatePublishDraft(job)
+async function handleRegenerate(job, distinctId) {
+  const draft = await generatePublishDraft(job, distinctId)
   if (!draft.ok) {
     return updatePublishJob(job.id, { status: 'failed', error: draft.error || draft.reason })
   }
@@ -85,6 +86,7 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ error: 'Database is not configured' }, { status: 503 })
   }
 
+  const session = await safeAuth()
   const { jobId } = await params
 
   let body = {}
@@ -119,7 +121,8 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ job: updated })
     }
 
-    const updated = action === 'publish' ? await handlePublish(job) : await handleRegenerate(job)
+    const updated =
+      action === 'publish' ? await handlePublish(job) : await handleRegenerate(job, session?.user?.id)
     return NextResponse.json({ job: updated, publishResult: updated.publishResult ?? null })
   } catch (error) {
     console.error('[publish] update failed', error)

@@ -74,12 +74,11 @@ export default function SignInForm({
 
       if (result?.error) {
         setError('The admin credentials were not accepted.')
-        posthog.capture('admin_sign_in_failed', { email })
+        posthog.capture('admin_sign_in_failed')
         return
       }
 
-      posthog.identify(String(email), { email: String(email) })
-      posthog.capture('admin_sign_in_success', { email })
+      posthog.capture('admin_sign_in_success')
       router.push(result?.url || callbackUrl)
       router.refresh()
     })

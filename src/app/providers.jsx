@@ -1,53 +1,9 @@
 'use client'
 
 import posthog from 'posthog-js'
-import { PostHogProvider as PHProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
-
-const DEFAULT_POSTHOG_KEY = 'phc_adMRNqeoByZifxH3nDyCgZfjnMFIUIDnjKbytwTRNIk'
-// Route through the app's own domain so content blockers can't identify the scripts.
-// next.config.mjs rewrites /ingest/* → us.i.posthog.com/* and
-// /ingest/static/* → us-assets.i.posthog.com/static/*
-const DEFAULT_POSTHOG_HOST = '/ingest'
-
-/**
- * Parse NEXT_PUBLIC_POSTHOG_KEYS once. Expected format:
- * {"txchristmaslights":"phc_xxx","texas-solar-and-roofing-pros":"phc_yyy"}
- */
-const parsePostHogKeyMap = () => {
-  const raw = process.env.NEXT_PUBLIC_POSTHOG_KEYS
-  if (!raw) {
-    return {}
-  }
-  try {
-    const parsed = JSON.parse(raw)
-    return parsed && typeof parsed === 'object' ? parsed : {}
-  } catch {
-    return {}
-  }
-}
-
-const POSTHOG_KEY_MAP = parsePostHogKeyMap()
-
-const resolvePostHogKey = (siteSlug) => {
-  if (siteSlug && POSTHOG_KEY_MAP[siteSlug]) {
-    return POSTHOG_KEY_MAP[siteSlug]
-  }
-  return process.env.NEXT_PUBLIC_POSTHOG_KEY || DEFAULT_POSTHOG_KEY
-}
-
-const resolveBrowserPostHogHost = () => {
-  const configuredHost = process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim()
-  if (!configuredHost) {
-    return DEFAULT_POSTHOG_HOST
-  }
-
-  // Browser events must stay on the local `/ingest` proxy so tenant domains
-  // never receive raw PostHog SDK requests like `/array/<key>/config`.
-  return configuredHost.startsWith('/') ? configuredHost : DEFAULT_POSTHOG_HOST
-}
 
 const TRACKABLE_BUTTON_SELECTOR = [
   'button',
@@ -115,36 +71,26 @@ const getSafeHrefPath = (element) => {
   }
 }
 
-export const PostHogProvider = ({ children, siteSlug }) => {
+export const PostHogIdentifyUser = ({ user }) => {
   useEffect(() => {
-    const key = resolvePostHogKey(siteSlug)
-    const host = resolveBrowserPostHogHost()
-
-    if (!key || !host) {
+    if (!user?.id) {
       return
     }
 
-    posthog.init(key, {
-      api_host: host,
-      ui_host: 'https://us.posthog.com',
-      defaults: '2026-01-30',
-      capture_pageview: false, // manual pageview tracking below
-      loaded: (instance) => {
-        // Stamp every event with the active site so per-site dashboards can
-        // group/filter without each call-site repeating `site_slug:` props.
-        // Call sites are free to still pass `site_slug` explicitly — explicit
-        // props override super properties when both are set.
-        instance.register({ site_slug: siteSlug || 'unknown' })
-        if (typeof window !== 'undefined') {
-          window.posthog = instance
-        }
-      },
+    posthog.identify(String(user.id), {
+      email: user.email || undefined,
+      name: user.name || undefined,
+      role: user.role || undefined,
     })
+  }, [user?.email, user?.id, user?.name, user?.role])
 
-    if (typeof window !== 'undefined') {
-      window.posthog = posthog
-    }
-  }, [])
+  return null
+}
+
+export const AnalyticsProvider = ({ children, siteSlug }) => {
+  useEffect(() => {
+    posthog.register({ site_slug: siteSlug || 'unknown' })
+  }, [siteSlug])
 
   // Manual page view tracking — fires on initial mount and on every
   // `popstate` (back/forward) so SPA navigation is captured in both
@@ -305,5 +251,5 @@ export const PostHogProvider = ({ children, siteSlug }) => {
     return () => window.removeEventListener('scroll', throttledScroll)
   }, [])
 
-  return <PHProvider client={posthog}>{children}</PHProvider>
+  return children
 }

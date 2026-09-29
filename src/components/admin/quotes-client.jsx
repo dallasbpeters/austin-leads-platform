@@ -1,9 +1,5 @@
 'use client'
 
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { Children, cloneElement, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-
 import {
   Copy,
   Download,
@@ -19,6 +15,10 @@ import {
   Plus,
   Zap,
 } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
+import { Children, cloneElement, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import SystemLayoutEditor from '@/components/admin/system-layout-editor'
 import ZohoContactTypeahead from '@/components/admin/zoho-contact-typeahead'
@@ -1192,6 +1192,7 @@ export default function QuotesClient({
     if (!response.ok) {
       throw new Error(payload.error || 'Save failed')
     }
+    posthog.capture('quote_saved', { operation: editingId ? 'updated' : 'created' })
     setNotice(buildSaveNotice(editingId, payload.quote.quoteNumber, payload.results))
     setSavedQuote(payload.quote)
     setEditingId(payload.quote.id)
@@ -1253,6 +1254,7 @@ export default function QuotesClient({
     setSendResults(null)
     try {
       const results = await sendQuoteEmail(sendTarget.id, sendEmail, sendMessage)
+      posthog.capture('quote_emailed')
       setSendResults(results)
       await refreshQuotes()
     } catch (sendError) {
