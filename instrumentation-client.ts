@@ -20,7 +20,7 @@ if (!projectToken || !apiHost) {
     api_host: apiHost,
     capture_pageview: true,
     capture_exceptions: true,
-    defaults: '2026-01-30',
+    defaults: '2026-05-30',
     debug: process.env.NODE_ENV === 'development',
     tracing_headers: [window.location.hostname],
   })
