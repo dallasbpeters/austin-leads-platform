@@ -202,7 +202,6 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
           <div className="site-header__sheet-panel">
             <div className="site-header__sheet-list">
               <NavList items={navItems} onNavigate={closeNav} />
-              <PhoneLink inSheet prefix="Call us:" />
             </div>
           </div>
         </div>
