@@ -281,7 +281,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
         slug: '',
         description: '',
       }))
-      if (!nextPages.find((page) => page.id === data.page.id)) {
+      if (!nextPages.some((page) => page.id === data.page.id)) {
         setPages((current) => [data.page, ...current])
       }
       setMessage(`Created ${data.page.title}.`)

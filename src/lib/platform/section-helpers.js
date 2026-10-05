@@ -1,13 +1,6 @@
 import { cleanRuntimeString } from '../sanity/stega'
 
 /**
- * Match a homepage/page hero block from Sanity sections.
- * Older or Canvas-sourced docs may omit the hidden `type` field and only set `_type: 'heroSection'`.
- */
-export const isHeroSectionBlock = (section) =>
-  Boolean(section && (sectionSetting(section.type) === 'hero' || section._type === 'heroSection'))
-
-/**
  * Reads a section setting (an enum like `hide`, `dark`, `grid`) safely.
  *
  * In draft mode Sanity encodes invisible edit markers into every string it
@@ -19,6 +12,13 @@ export const isHeroSectionBlock = (section) =>
  * @returns {unknown} The value with any edit markers removed.
  */
 export const sectionSetting = (value) => cleanRuntimeString(value)
+
+/**
+ * Match a homepage/page hero block from Sanity sections.
+ * Older or Canvas-sourced docs may omit the hidden `type` field and only set `_type: 'heroSection'`.
+ */
+export const isHeroSectionBlock = (section) =>
+  Boolean(section && (sectionSetting(section.type) === 'hero' || section._type === 'heroSection'))
 
 /**
  * Whether a section should draw the decorative cloud layer.

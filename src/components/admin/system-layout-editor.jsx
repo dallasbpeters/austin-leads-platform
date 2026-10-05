@@ -170,7 +170,12 @@ export default function SystemLayoutEditor({ address = '', mode = 'map', layout,
       const normalized = normalizeLayout(nextLayout)
       layoutRef.current = normalized
       setPanels(normalized.panels)
-      emit({ layout: normalized, ...(options.imageUrl != null ? { imageUrl: options.imageUrl } : {}) })
+      emit({
+        layout: normalized,
+        ...(options.imageUrl !== null && options.imageUrl !== undefined
+          ? { imageUrl: options.imageUrl }
+          : {}),
+      })
     },
     [emit],
   )

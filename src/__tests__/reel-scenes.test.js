@@ -62,8 +62,8 @@ describe('reel caption and posting', () => {
 
   it('only posts videos from Vercel Blob', async () => {
     const { isPostableVideoUrl } = await import('@/lib/social/publish')
-    expect(isPostableVideoUrl('https://abc.public.blob.vercel-storage.com/reels/x.mp4')).toBe(true)
-    expect(isPostableVideoUrl('https://evil.example.com/x.mp4')).toBe(false)
-    expect(isPostableVideoUrl('not a url')).toBe(false)
+    expect(isPostableVideoUrl('https://abc.public.blob.vercel-storage.com/reels/x.mp4')).toBeTruthy()
+    expect(isPostableVideoUrl('https://evil.example.com/x.mp4')).toBeFalsy()
+    expect(isPostableVideoUrl('not a url')).toBeFalsy()
   })
 })

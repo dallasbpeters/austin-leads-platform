@@ -33,7 +33,7 @@ export const UTILITY_REBATE_DEFAULTS = {
   Other: 0,
 }
 
-export const UTILITY_PROVIDER_OPTIONS = [...Object.keys(UTILITY_REBATE_DEFAULTS)]
+export const UTILITY_PROVIDER_OPTIONS = Object.keys(UTILITY_REBATE_DEFAULTS)
 
 // Monthly share of annual production for Central Texas (sums to 1).
 // Derived from a PVWatts v8 run for the Austin area.

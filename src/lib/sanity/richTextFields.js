@@ -53,15 +53,12 @@ export function normalizeRichTextFields(value) {
     return value
   }
 
-  const next = { ...value }
+  const next = Object.fromEntries(
+    Object.entries(value).filter(([key, fieldValue]) => !(OBJECT_FIELD_KEYS.has(key) && fieldValue === null)),
+  )
 
   for (const key of Object.keys(next)) {
     const fieldValue = next[key]
-
-    if (OBJECT_FIELD_KEYS.has(key) && fieldValue === null) {
-      delete next[key]
-      continue
-    }
 
     if (RICH_TEXT_KEYS.has(key)) {
       next[key] = textToPortableText(fieldValue)

@@ -188,6 +188,15 @@ const AlertsSection = ({ alerts }) => {
   )
 }
 
+const StatBox = ({ label, value }) => {
+  return (
+    <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
+      <div className="font-semibold text-white">{label}</div>
+      <div className="mt-1">{value}</div>
+    </div>
+  )
+}
+
 const HailLayerStats = ({ hailLayer }) => {
   if (!hailLayer) {
     return null
@@ -206,15 +215,6 @@ const HailLayerStats = ({ hailLayer }) => {
         label="Legend"
         value="Orange = radar hail signature, cyan = storm report, orange dot = property"
       />
-    </div>
-  )
-}
-
-const StatBox = ({ label, value }) => {
-  return (
-    <div className="rounded-xl border border-white/12 bg-white/6 px-4 py-3 text-sm text-white/72">
-      <div className="font-semibold text-white">{label}</div>
-      <div className="mt-1">{value}</div>
     </div>
   )
 }

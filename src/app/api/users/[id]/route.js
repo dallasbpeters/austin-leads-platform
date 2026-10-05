@@ -16,9 +16,9 @@ const requireAdmin = async () => {
 }
 
 export const GET = async (_req, { params }) => {
-  const { error } = await requireAdmin()
-  if (error) {
-    return error
+  const { error: authError } = await requireAdmin()
+  if (authError) {
+    return authError
   }
   const { id } = await params
 
@@ -36,9 +36,9 @@ export const GET = async (_req, { params }) => {
 }
 
 export const PATCH = async (req, { params }) => {
-  const { session, error } = await requireAdmin()
-  if (error) {
-    return error
+  const { session, error: authError } = await requireAdmin()
+  if (authError) {
+    return authError
   }
   const { id } = await params
 
@@ -81,9 +81,9 @@ export const PATCH = async (req, { params }) => {
 }
 
 export const DELETE = async (_req, { params }) => {
-  const { session, error } = await requireAdmin()
-  if (error) {
-    return error
+  const { session, error: authError } = await requireAdmin()
+  if (authError) {
+    return authError
   }
   const { id } = await params
 

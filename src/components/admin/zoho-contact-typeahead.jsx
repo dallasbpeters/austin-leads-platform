@@ -49,7 +49,7 @@ export default function ZohoContactTypeahead({
       setResults([])
       setLoading(false)
       setError(null)
-      return undefined
+      return
     }
 
     const controller = new AbortController()
@@ -76,11 +76,11 @@ export default function ZohoContactTypeahead({
         setResults(Array.isArray(payload.contacts) ? payload.contacts : [])
         setOpen(true)
         setActiveIndex(-1)
-      } catch (err) {
-        if (err?.name === 'AbortError') {
+      } catch (requestError) {
+        if (requestError?.name === 'AbortError') {
           return
         }
-        setError(err.message || 'Search failed')
+        setError(requestError.message || 'Search failed')
         setResults([])
       } finally {
         setLoading(false)
@@ -196,6 +196,7 @@ export default function ZohoContactTypeahead({
           <ul
             className="bg-popover border-border absolute z-50 mt-1 max-h-64 w-full overflow-auto rounded-md border py-1 shadow-md"
             id={`${listId}-listbox`}
+            // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role -- combobox pattern: a <ul role="listbox"> of role="option" buttons
             role="listbox"
           >
             {error ? (

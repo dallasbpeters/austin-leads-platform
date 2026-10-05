@@ -10,9 +10,9 @@ const requireAdmin = async () => {
 }
 
 export const GET = async () => {
-  const { error } = await requireAdmin()
-  if (error) {
-    return error
+  const { error: authError } = await requireAdmin()
+  if (authError) {
+    return authError
   }
 
   try {
@@ -26,9 +26,9 @@ export const GET = async () => {
 }
 
 export const POST = async (req) => {
-  const { error } = await requireAdmin()
-  if (error) {
-    return error
+  const { error: authError } = await requireAdmin()
+  if (authError) {
+    return authError
   }
 
   let body

@@ -195,7 +195,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // Known profile-only consent cannot call Contacts/search — drop tokens so UI
       // shows Connect Zoho. (OAuth refresh never expands scopes.)
-      if (token.zohoScope != null && !zohoScopeAllowsContactSearch(token.zohoScope)) {
+      if (
+        token.zohoScope !== null &&
+        token.zohoScope !== undefined &&
+        !zohoScopeAllowsContactSearch(token.zohoScope)
+      ) {
         token.zohoAccessToken = undefined
         token.zohoRefreshToken = undefined
         token.zohoExpiresAt = 0
@@ -245,7 +249,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.zohoConnected =
           Boolean(token.zohoRefreshToken || token.zohoAccessToken) &&
           !token.zohoNeedsReauth &&
-          (token.zohoScope == null || zohoScopeAllowsContactSearch(token.zohoScope))
+          (token.zohoScope === null ||
+            token.zohoScope === undefined ||
+            zohoScopeAllowsContactSearch(token.zohoScope))
         session.user.zohoNeedsReauth = Boolean(token.zohoNeedsReauth)
       }
 

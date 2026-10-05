@@ -48,7 +48,7 @@ export const getSanityAssetUrl = (imageField, options) => {
   return buildSanityImageUrl(imageField, options)
 }
 
-export const getHeroImageUrl = (imageField, fallbackImage = null, options) => {
+export const getHeroImageUrl = (imageField, fallbackImage, options) => {
   const fromAsset = buildSanityImageUrl(imageField, options)
   if (fromAsset) {
     return fromAsset
@@ -62,7 +62,7 @@ export const getHeroImageUrl = (imageField, fallbackImage = null, options) => {
   )
 }
 
-export const getImageUrl = (imageField, fallbackImage = null, options) => {
+export const getImageUrl = (imageField, fallbackImage, options) => {
   const fromAsset = buildSanityImageUrl(imageField, options)
   if (fromAsset) {
     return fromAsset

@@ -22,7 +22,7 @@ const ZIMMERMAN = {
   systemPrice: 32_130,
 }
 
-describe('computeQuote', () => {
+describe(computeQuote, () => {
   it('computes system size from panel count and wattage', () => {
     const result = computeQuote(ZIMMERMAN)
     expect(result.systemSizeKw).toBe(9.135)
@@ -64,7 +64,9 @@ describe('computeQuote', () => {
     expect(custom.rebate).toBe(1200)
     expect(custom.rebateLabel).toBe('Custom Energy Co Rebate')
     expect(custom.netSystemPrice).toBe(ZIMMERMAN.systemPrice - 1200)
+  })
 
+  it('lets an explicit zero rebate override the provider default', () => {
     const overridden = computeQuote({
       ...ZIMMERMAN,
       utilityProvider: 'Austin Energy',
@@ -126,12 +128,12 @@ describe('computeQuote', () => {
   })
 })
 
-describe('isAustinEnergy', () => {
+describe(isAustinEnergy, () => {
   it('matches variants', () => {
-    expect(isAustinEnergy('Austin Energy')).toBe(true)
-    expect(isAustinEnergy('austin  energy')).toBe(true)
-    expect(isAustinEnergy('Oncor')).toBe(false)
-    expect(isAustinEnergy('')).toBe(false)
+    expect(isAustinEnergy('Austin Energy')).toBeTruthy()
+    expect(isAustinEnergy('austin  energy')).toBeTruthy()
+    expect(isAustinEnergy('Oncor')).toBeFalsy()
+    expect(isAustinEnergy('')).toBeFalsy()
   })
 })
 
@@ -141,7 +143,7 @@ describe('panel geometry', () => {
     const size = PANEL_SIZES['72-portrait']
     const ring = panelCornerRing(-97.74, 30.27, size.widthM, size.heightM, 45)
     expect(ring).toHaveLength(5)
-    expect(ring[0]).toEqual(ring[4])
+    expect(ring[0]).toStrictEqual(ring[4])
   })
 
   it('scales panel footprints', async () => {
@@ -151,6 +153,6 @@ describe('panel geometry', () => {
     const scaled = panelSizeMeta('72-portrait', 2)
     expect(scaled.widthM).toBeCloseTo(base.widthM * 2)
     expect(scaled.heightM).toBeCloseTo(base.heightM * 2)
-    expect(clampPanelScale(undefined)).toBe(PANEL_SCALE_DEFAULT)
+    expect(clampPanelScale()).toBe(PANEL_SCALE_DEFAULT)
   })
 })
