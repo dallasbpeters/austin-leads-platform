@@ -129,7 +129,6 @@ export default defineConfig({
       files: ['src/components/ui/**'],
       rules: {
         'no-shadow': 'off',
-        'no-use-before-define': 'off',
         'no-param-reassign': 'off',
         eqeqeq: 'off',
         'no-eq-null': 'off',
