@@ -1,20 +1,16 @@
 import { NextResponse } from 'next/server'
 
-import { safeAuth } from '@/lib/auth/session'
+import { requireAdminRequest } from '@/lib/auth/guards'
 import { ensureQuotesTable, hasQuoteDatabase } from '@/lib/quotes/db'
 import { syncQuoteEmailStatuses } from '@/lib/quotes/email-status'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
-/*
- * Brings quotes that still read "sent" up to date with Resend. The quote
- * history Refresh button calls this before it reloads the list.
- */
 export async function POST() {
-  const session = await safeAuth()
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const denied = await requireAdminRequest()
+  if (denied) {
+    return denied
   }
   if (!hasQuoteDatabase()) {
     return NextResponse.json({ error: 'Database is not configured' }, { status: 503 })

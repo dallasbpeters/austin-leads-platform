@@ -296,16 +296,16 @@ export async function applyEmailEvent({ resendEmailId, type, occurredAt }) {
  * window. These are the rows a missed webhook leaves behind; the window keeps
  * old ids, which Resend may no longer hold, out of every refresh.
  */
-export async function listQuotesAwaitingDelivery({ lookbackDays = 30, limit = 20 } = {}) {
+export async function listQuotesAwaitingDelivery() {
   const sql = getSql()
   const rows = await sql`
-    SELECT id, quote_number, status, sent_at, emailed_to, resend_email_id, email_status
+    SELECT id, status, resend_email_id, email_status
     FROM solar_quotes
     WHERE resend_email_id IS NOT NULL
       AND COALESCE(email_status, 'sent') IN ('sent', 'delivery_delayed')
-      AND sent_at >= NOW() - make_interval(days => ${lookbackDays})
+      AND sent_at >= NOW() - INTERVAL '30 days'
     ORDER BY sent_at DESC
-    LIMIT ${limit}
+    LIMIT 20
   `
   return rows.map(rowToQuote)
 }

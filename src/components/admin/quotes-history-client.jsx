@@ -175,14 +175,10 @@ export default function QuotesHistoryClient({ initialQuotes = [], dbConfigured, 
 
   const syncDeliveryAndRefresh = async () => {
     setSyncingDelivery(true)
-    try {
-      await fetch('/api/quotes/email-status', { method: 'POST' })
-    } catch {
-      // Non-fatal: the list still reloads with the stored status.
-    } finally {
-      await refreshQuotes()
-      setSyncingDelivery(false)
-    }
+    // Non-fatal: the list still reloads with the stored status.
+    await fetch('/api/quotes/email-status', { method: 'POST' }).catch(() => null)
+    await refreshQuotes()
+    setSyncingDelivery(false)
   }
 
   const openSendDialog = (quote) => {

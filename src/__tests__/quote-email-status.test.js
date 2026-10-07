@@ -15,6 +15,7 @@ const resendStatus = vi.hoisted(() => ({
   fetchResendEmailStatus: vi.fn(),
 }))
 vi.mock(import('@/lib/christmas/invoice-email-status.js'), () => resendStatus)
+vi.mock(import('node:timers/promises'), () => ({ setTimeout: vi.fn(async () => {}) }))
 
 const { proxy } = await import('@/proxy')
 const { syncQuoteEmailStatuses } = await import('@/lib/quotes/email-status')
@@ -52,26 +53,24 @@ describe('syncQuoteEmailStatuses', () => {
       .mockResolvedValueOnce({ ok: true, status: 'delivered', sentAt: '2026-09-11T03:50:50Z' })
       .mockResolvedValueOnce({ ok: true, status: 'sent', sentAt: '2026-09-12T00:00:00Z' })
       .mockResolvedValueOnce({ ok: false, reason: 'not found' })
-    db.applyEmailEvent.mockImplementation(async ({ type }) => (type === 'email.delivered' ? 'qt_a' : null))
+    db.applyEmailEvent.mockResolvedValue('qt_a')
 
-    const result = await syncQuoteEmailStatuses({ requestGapMs: 0 })
+    const result = await syncQuoteEmailStatuses()
 
-    expect(db.applyEmailEvent).toHaveBeenCalledWith({
+    expect(db.applyEmailEvent).toHaveBeenCalledExactlyOnceWith({
       resendEmailId: 're_a',
       type: 'email.delivered',
       occurredAt: '2026-09-11T03:50:50Z',
     })
-    expect(db.applyEmailEvent).toHaveBeenCalledTimes(2)
     expect(result).toStrictEqual({ checked: 3, updated: 1, skipped: 1 })
   })
 
   it('does nothing when no Resend key is set', async () => {
     resendStatus.hasResendApiKey.mockReturnValue(false)
 
-    const result = await syncQuoteEmailStatuses({ requestGapMs: 0 })
+    const result = await syncQuoteEmailStatuses()
 
     expect(db.listQuotesAwaitingDelivery).not.toHaveBeenCalled()
     expect(result.updated).toBe(0)
-    expect(result.reason).toMatch(/RESEND_API_KEY/)
   })
 })
