@@ -171,6 +171,20 @@ export default function QuotesHistoryClient({ initialQuotes = [], dbConfigured, 
     }
   }, [])
 
+  const [syncingDelivery, setSyncingDelivery] = useState(false)
+
+  const syncDeliveryAndRefresh = async () => {
+    setSyncingDelivery(true)
+    try {
+      await fetch('/api/quotes/email-status', { method: 'POST' })
+    } catch {
+      // Non-fatal: the list still reloads with the stored status.
+    } finally {
+      await refreshQuotes()
+      setSyncingDelivery(false)
+    }
+  }
+
   const openSendDialog = (quote) => {
     setSendTarget(quote)
     setSendEmail(quote.customerEmail || '')
@@ -246,8 +260,8 @@ export default function QuotesHistoryClient({ initialQuotes = [], dbConfigured, 
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={refreshQuotes} size="sm" variant="outline">
-            <RefreshCw className="mr-1.5 size-4" /> Refresh
+          <Button disabled={syncingDelivery} onClick={syncDeliveryAndRefresh} size="sm" variant="outline">
+            <RefreshCw className={`mr-1.5 size-4${syncingDelivery ? ' animate-spin' : ''}`} /> Refresh
           </Button>
           <Button onClick={() => router.push('/quotes')} size="sm">
             <Plus className="mr-1.5 size-4" /> New quote

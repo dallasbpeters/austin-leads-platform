@@ -35,6 +35,12 @@ const protectedApiPrefixes = [
   '/api/users',
 ]
 
+/*
+ * Webhooks inside a protected prefix. The caller is an outside service with no
+ * session, so the route verifies the request signature itself.
+ */
+const PUBLIC_API_PATHS = new Set(['/api/quotes/email-events'])
+
 /** Operator / API routes. Never rewritten to a tenant, and never reachable through `/_site/`. */
 const OPERATOR_SHELL_PREFIXES = [
   '/dashboard',
@@ -66,7 +72,7 @@ function isOperatorShellPath(pathname) {
 }
 
 function pathRequiresAuth(pathname) {
-  if (!pathname) {
+  if (!pathname || PUBLIC_API_PATHS.has(pathname)) {
     return false
   }
   return (

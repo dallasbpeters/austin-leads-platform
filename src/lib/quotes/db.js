@@ -291,6 +291,25 @@ export async function applyEmailEvent({ resendEmailId, type, occurredAt }) {
   return null
 }
 
+/*
+ * Emailed quotes that still read "sent" (or "delayed") inside the lookback
+ * window. These are the rows a missed webhook leaves behind; the window keeps
+ * old ids, which Resend may no longer hold, out of every refresh.
+ */
+export async function listQuotesAwaitingDelivery({ lookbackDays = 30, limit = 20 } = {}) {
+  const sql = getSql()
+  const rows = await sql`
+    SELECT id, quote_number, status, sent_at, emailed_to, resend_email_id, email_status
+    FROM solar_quotes
+    WHERE resend_email_id IS NOT NULL
+      AND COALESCE(email_status, 'sent') IN ('sent', 'delivery_delayed')
+      AND sent_at >= NOW() - make_interval(days => ${lookbackDays})
+    ORDER BY sent_at DESC
+    LIMIT ${limit}
+  `
+  return rows.map(rowToQuote)
+}
+
 export async function markQuoteSheetSynced(id) {
   const sql = getSql()
   await sql`
