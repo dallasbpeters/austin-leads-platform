@@ -32,7 +32,7 @@ describe('StorySection word reveal', () => {
       }),
     )
     const empties = spansOf(html).filter((t) => t.length > 0 && t.replace(INVISIBLE, '') === '')
-    expect(empties).toEqual([])
+    expect(empties).toStrictEqual([])
     expect(html).not.toContain(MARKERS)
   })
 
@@ -47,6 +47,6 @@ describe('StorySection word reveal', () => {
   it('falls back to local copy when Sanity has nothing', () => {
     const html = renderToStaticMarkup(createElement(StorySection, { section: null }))
     expect(html).toContain('Tree')
-    expect(INVISIBLE.test(html)).toBe(false)
+    expect(INVISIBLE.test(html)).toBeFalsy()
   })
 })

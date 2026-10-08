@@ -13,7 +13,7 @@ describe('service coverage content', () => {
     const matches = serviceAreaSection.areas.map((area) =>
       counties.counties.find((county) => county.key === area.countyKey),
     )
-    expect(matches.every(Boolean)).toBe(true)
+    expect(matches.every(Boolean)).toBeTruthy()
     expect(new Set(matches.map((county) => county.fips)).size).toBe(13)
     expect(matches.find((county) => county.key === 'dallas').fips).toBe('48113')
     expect(matches.find((county) => county.key === 'bexar').fips).toBe('48029')
@@ -21,7 +21,7 @@ describe('service coverage content', () => {
 
   it('preserves all six location references through seed normalization', () => {
     const [section] = withSectionKeys([serviceCityScrollSection])
-    expect(section.linkedItems.filter((item) => item.page).map((item) => item.page._ref)).toEqual([
+    expect(section.linkedItems.filter((item) => item.page).map((item) => item.page._ref)).toStrictEqual([
       'locationPage-austin',
       'locationPage-round-rock',
       'locationPage-georgetown',
@@ -29,7 +29,7 @@ describe('service coverage content', () => {
       'locationPage-pflugerville',
       'locationPage-kyle',
     ])
-    expect(section.linkedItems.every((item) => item._key && item._type === 'scrollTextItem')).toBe(true)
+    expect(section.linkedItems.every((item) => item._key && item._type === 'scrollTextItem')).toBeTruthy()
     expect(pages.find((page) => page.id === 'page-solar-home').sections).toContain(serviceAreaSection)
     expect(pages.find((page) => page.id === 'page-services').sections).toContain(serviceCityScrollSection)
   })

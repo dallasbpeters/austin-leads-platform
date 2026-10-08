@@ -205,7 +205,9 @@ const previewWaiters = []
 const previewSlot = () =>
   previewing < PREVIEW_CONCURRENCY
     ? (previewing += 1)
-    : new Promise((resolve) => previewWaiters.push(resolve)).then(() => (previewing += 1))
+    : new Promise((resolve) => {
+        previewWaiters.push(resolve)
+      }).then(() => (previewing += 1))
 const releasePreviewSlot = () => {
   previewing -= 1
   previewWaiters.shift()?.()

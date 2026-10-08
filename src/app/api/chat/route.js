@@ -88,7 +88,7 @@ const SANITY_MCP_ENDPOINT_NAME = 'sanity-mcp'
 
 const MAX_STEPS = 20
 
-const toAiSessionId = (value) => String(value).replace(/[^A-Za-z0-9_~.@()!'|:-]/g, '-')
+const toAiSessionId = (value) => String(value).replaceAll(/[^A-Za-z0-9_~.@()!'|:-]/g, '-')
 
 const BASE_SYSTEM_PROMPT = `You are a **Sanity CMS assistant** for the Austin Leads Platform (Texas Solar and Roofing Pros). You help **editors and operators** work with **documents and structure** in the dataset—not end-site visitors.
 

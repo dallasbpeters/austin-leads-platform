@@ -36,10 +36,13 @@ describe('what the voice says', () => {
 })
 
 describe('numbers the voice can say', () => {
-  it('turns prices, phone numbers and counts into words', () => {
+  it('turns counts into words', () => {
     expect(numberWords(1250)).toBe('one thousand two hundred fifty')
     expect(numberWords(0)).toBe('zero')
     expect(numberWords(115)).toBe('one hundred fifteen')
+  })
+
+  it('turns prices and phone numbers into words', () => {
     expect(spokenNumbers('Starting at $1,250')).toBe('Starting at one thousand two hundred fifty dollars')
     expect(spokenNumbers('$49.99 a month')).toBe('forty nine dollars and ninety nine cents a month')
     expect(spokenNumbers('Call 512-775-0561')).toBe('Call five one two, seven seven five, zero five six one')

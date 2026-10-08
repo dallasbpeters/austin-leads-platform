@@ -16,7 +16,7 @@ describe('theme registry', () => {
     // reel-db.js spells 'christmas' out in DDL, because Postgres takes no
     // parameter there. This assertion is what stops the two from drifting.
     expect(DEFAULT_THEME).toBe('christmas')
-    expect(themeOf(undefined).id).toBe('christmas')
+    expect(themeOf().id).toBe('christmas')
     expect(themeOf(null).id).toBe('christmas')
     expect(themeId('nonsense')).toBe('christmas')
   })
@@ -39,26 +39,31 @@ describe('theme registry', () => {
     const known = new Set(SCENE_TYPES.map((entry) => entry.type))
     for (const theme of THEMES) {
       expect(theme.sceneTypes.length).toBeGreaterThan(0)
-      expect(theme.sceneTypes.every((type) => known.has(type))).toBe(true)
+      expect(theme.sceneTypes.every((type) => known.has(type))).toBeTruthy()
     }
   })
 
   it('keeps the drawn-house scene out of the brand theme', () => {
-    expect(themeHasScene('christmas', 'lights')).toBe(true)
-    expect(themeHasScene('brand', 'lights')).toBe(false)
+    expect(themeHasScene('christmas', 'lights')).toBeTruthy()
+    expect(themeHasScene('brand', 'lights')).toBeFalsy()
   })
 })
 
 describe('theme-aware scene vocabulary', () => {
   it('offers only the scene types the chosen theme can draw', () => {
-    expect(sceneTypesFor('christmas').map((entry) => entry.type)).toEqual([
+    expect(sceneTypesFor('christmas').map((entry) => entry.type)).toStrictEqual([
       'photo',
       'offer',
       'text',
       'signoff',
       'lights',
     ])
-    expect(sceneTypesFor('brand').map((entry) => entry.type)).toEqual(['photo', 'offer', 'text', 'signoff'])
+    expect(sceneTypesFor('brand').map((entry) => entry.type)).toStrictEqual([
+      'photo',
+      'offer',
+      'text',
+      'signoff',
+    ])
   })
 
   it('leaves the christmas wording exactly as it was', () => {
@@ -89,8 +94,8 @@ describe('theme-aware scene vocabulary', () => {
   it('starts each theme with a photo, a price and a sign-off it can draw', () => {
     for (const theme of THEMES) {
       const scenes = STARTER_SCENES(theme.id)
-      expect(scenes.map((scene) => scene.type)).toEqual(['photo', 'offer', 'signoff'])
-      expect(scenes.every((scene) => themeHasScene(theme.id, scene.type))).toBe(true)
+      expect(scenes.map((scene) => scene.type)).toStrictEqual(['photo', 'offer', 'signoff'])
+      expect(scenes.every((scene) => themeHasScene(theme.id, scene.type))).toBeTruthy()
     }
   })
 
