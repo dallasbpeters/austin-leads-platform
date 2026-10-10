@@ -5,7 +5,20 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-function Slider({ className, defaultValue, value, min = 0, max = 100, 'aria-label': ariaLabel, ...props }) {
+/* The Radix Root renders a role-less <span>, and ARIA forbids a naming attribute
+ * there (axe: aria-prohibited-attr). The accessible name belongs on each Thumb,
+ * which is the role="slider" element, so the two naming props are pulled off the
+ * root here and applied per thumb below. */
+function Slider({
+  className,
+  defaultValue,
+  value,
+  min = 0,
+  max = 100,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
+  ...props
+}) {
   const _values = React.useMemo(
     () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min]),
     [value, defaultValue, min],
@@ -18,7 +31,6 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, 'aria-labe
       value={value}
       min={min}
       max={max}
-      aria-label={ariaLabel}
       className={cn(
         'relative flex w-full touch-none items-center select-none data-disabled:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
         className,
@@ -49,7 +61,8 @@ function Slider({ className, defaultValue, value, min = 0, max = 100, 'aria-labe
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={`slider-thumb-${index}`}
-          aria-label={ariaLabel || `Value ${_values[index]}`}
+          aria-label={ariaLabel || (ariaLabelledBy ? undefined : `Value ${_values[index]}`)}
+          aria-labelledby={ariaLabelledBy}
           className="bg-secondary border-secondary shadow-theme-sm ring-secondary/50 block size-4 shrink-0 rounded-full border transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
         />
       ))}
