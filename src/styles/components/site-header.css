@@ -11,24 +11,19 @@
 
 .site-header {
   position: sticky;
-  top: 0;
+  inset-block-start: 0;
   inset-inline: 0;
   z-index: 50;
   width: 100%;
   color: var(--foreground);
 }
 
-@media (width >= 40rem) {
-  .site-header {
-    top: 0;
-  }
-}
-
 .site-header__bar {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 1rem 1.75rem;
+  padding-block: 1rem;
+  padding-inline: 1.75rem;
   background: var(--color-warm-bg);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(8px);
@@ -55,7 +50,8 @@
   display: grid;
   place-content: end;
   align-items: center;
-  padding: var(--spacing-medium) var(--spacing-x-large);
+  padding-block: var(--spacing-medium);
+  padding-inline: var(--spacing-x-large);
 }
 
 .site-header__brand {
@@ -83,15 +79,11 @@
   align-items: flex-start;
   justify-content: flex-start;
   gap: 0.5rem;
-  padding: 1rem 0.5rem;
-  border-radius: 999px;
+  padding-block: 1rem;
+  padding-inline: 0.5rem;
+  border-radius: var(--radius-pill);
   font-variation-settings: 'wght' 450;
   color: var(--color-primary);
-  background: transparent;
-}
-
-.site-header__link:hover {
-  color: var(--primary);
   background: transparent;
 }
 
@@ -100,7 +92,8 @@
   height: 2.75rem;
   align-items: center;
   justify-content: center;
-  padding: 0 1rem;
+  padding-block: 0;
+  padding-inline: 1rem;
   font-variation-settings: 'wght' 500;
   color: var(--color-white);
   background: var(--primary);
@@ -110,11 +103,6 @@
   .site-header__link--cta {
     height: 2.25rem;
   }
-}
-
-.site-header__link--cta:hover {
-  color: var(--color-white);
-  background: color-mix(in oklch, var(--primary) 80%, transparent);
 }
 
 .site-header__link-inner {
@@ -131,7 +119,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--primary-foreground);
@@ -144,13 +132,14 @@
     text-decoration-color 200ms ease-out;
 }
 
-.site-header__phone:hover {
-  text-decoration-color: var(--primary);
+/* The ring is the box-shadow; the outline stays transparent (not none) so forced-colors mode can repaint it. */
+.site-header__phone:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 2px var(--secondary);
 }
 
-.site-header__phone:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--secondary);
+.site-header__phone:active {
+  scale: 0.97;
 }
 
 .site-header__phone--sheet {
@@ -168,17 +157,34 @@
 }
 
 .site-header__toggle {
-  margin-left: auto;
-  padding: 1.375rem 1.5rem;
-}
-
-.site-header__toggle:hover {
-  background: transparent;
+  margin-inline-start: auto;
+  padding-block: 1.375rem;
+  padding-inline: 1.5rem;
 }
 
 @media (width >= 64rem) {
   .site-header__toggle {
     display: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-header__link:hover {
+    color: var(--primary);
+    background: transparent;
+  }
+
+  .site-header__link--cta:hover {
+    color: var(--color-white);
+    background: color-mix(in oklch, var(--primary) 80%, transparent);
+  }
+
+  .site-header__phone:hover {
+    text-decoration-color: var(--primary);
+  }
+
+  .site-header__toggle:hover {
+    background: transparent;
   }
 }
 
@@ -198,10 +204,6 @@
   opacity: 1;
   scale: 1;
   filter: blur(0);
-  transition:
-    opacity 200ms cubic-bezier(0.2, 0, 0, 1),
-    scale 200ms cubic-bezier(0.2, 0, 0, 1),
-    filter 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .site-header__toggle-glyph--hidden {
@@ -220,9 +222,6 @@
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  transition:
-    grid-template-rows 300ms ease-out,
-    opacity 300ms ease-out;
 }
 
 .site-header__sheet--open {
@@ -236,6 +235,7 @@
   }
 }
 
+/* Stays `hidden`: the clip is the moving edge of the sheet and must also contain a focused link. */
 .site-header__sheet-clip {
   min-height: 0;
   overflow: hidden;
@@ -243,8 +243,9 @@
 
 .site-header__sheet-panel {
   width: 100%;
-  padding: 0.5rem 1rem 2rem;
-  border-bottom: 1px solid var(--border);
+  padding-block: 0.5rem 2rem;
+  padding-inline: 1rem;
+  border-block-end: 1px solid var(--border);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
 }
@@ -260,12 +261,9 @@
 .site-header__sheet-list {
   display: grid;
   gap: 0.25rem;
-  margin-top: 0.5rem;
+  margin-block-start: 0.5rem;
   opacity: 0;
   translate: 0 -0.25rem;
-  transition:
-    translate 200ms ease-out,
-    opacity 200ms ease-out;
 }
 
 .site-header__sheet--open .site-header__sheet-list {
@@ -273,10 +271,24 @@
   translate: 0 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .site-header__toggle-glyph,
-  .site-header__sheet,
+/* The glyph swap, the sheet unroll and the list rise only ease when motion is welcome. */
+@media (prefers-reduced-motion: no-preference) {
+  .site-header__toggle-glyph {
+    transition:
+      opacity 200ms cubic-bezier(0.2, 0, 0, 1),
+      scale 200ms cubic-bezier(0.2, 0, 0, 1),
+      filter 200ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .site-header__sheet {
+    transition:
+      grid-template-rows 300ms ease-out,
+      opacity 300ms ease-out;
+  }
+
   .site-header__sheet-list {
-    transition: none;
+    transition:
+      translate 200ms ease-out,
+      opacity 200ms ease-out;
   }
 }

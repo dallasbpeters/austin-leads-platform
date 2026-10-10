@@ -4,7 +4,7 @@
  */
 
 .solar-adoption {
-  padding-top: 5rem;
+  padding-block-start: var(--space-section-compact);
   background: var(--background);
   color: var(--foreground);
 }
@@ -13,7 +13,8 @@
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
-  padding: 1rem 1rem 2.5rem;
+  padding-block: 1rem 2.5rem;
+  padding-inline: 1rem;
 }
 
 @media (width >= 40rem) {
@@ -25,7 +26,7 @@
 @media (width >= 64rem) {
   .solar-adoption__inner {
     padding-inline: 2rem;
-    padding-top: 3rem;
+    padding-block-start: 3rem;
   }
 }
 
@@ -42,7 +43,8 @@
 }
 
 .solar-adoption__eyebrow {
-  margin: 0 0 1.25rem;
+  margin-block: 0 1.25rem;
+  margin-inline: 0;
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -61,14 +63,14 @@
 
 .solar-adoption__lede {
   max-width: 28rem;
-  padding-top: 0.5rem;
+  padding-block-start: 0.5rem;
   line-height: 2rem;
   color: color-mix(in oklch, var(--primary-foreground) 40%, transparent);
 }
 
 @media (width >= 64rem) {
   .solar-adoption__lede {
-    padding-top: 3rem;
+    padding-block-start: 3rem;
   }
 }
 
@@ -92,7 +94,7 @@
 .solar-adoption__roof {
   position: absolute;
   inset-inline: 0;
-  bottom: 0;
+  inset-block-end: 0;
   height: 56%;
 }
 
@@ -104,7 +106,7 @@
 .solar-adoption__panels {
   position: absolute;
   inset-inline: 0;
-  bottom: 7%;
+  inset-block-end: 7%;
   width: min(110rem, 96vw);
   margin-inline: auto;
   will-change: transform;
@@ -120,7 +122,7 @@
 .solar-adoption__fade {
   position: absolute;
   inset-inline: 0;
-  bottom: 0;
+  inset-block-end: 0;
   height: 6.25rem;
   pointer-events: none;
   background: linear-gradient(to bottom, transparent, var(--color-black));
@@ -128,7 +130,8 @@
 
 /* Reason cards */
 .adoption-reasons {
-  padding: 5rem 1rem;
+  padding-block: var(--space-section-compact);
+  padding-inline: 1rem;
   background: var(--color-black);
 }
 

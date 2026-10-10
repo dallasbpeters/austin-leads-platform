@@ -14,9 +14,9 @@
 
 .consult {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   padding-block: 4rem;
-  scroll-margin-top: 9.5rem;
+  scroll-margin-block-start: var(--scroll-offset-header);
 }
 
 .consult__shell {
@@ -47,7 +47,8 @@
 .consult__card {
   --consult-card-surface: oklch(from var(--color-primary) 28% calc(c * 1.05) h);
 
-  padding: 2.5rem 1.5rem;
+  padding-block: 2.5rem;
+  padding-inline: 1.5rem;
   border: 1px solid color-mix(in oklab, var(--color-white) 12%, transparent);
   border-radius: var(--radius-md);
   background-color: color-mix(in oklab, var(--consult-card-surface) 93%, transparent);
@@ -57,7 +58,8 @@
 
 @media (width >= 48rem) {
   .consult__card {
-    padding: 3.5rem 3rem;
+    padding-block: 3.5rem;
+    padding-inline: 3rem;
   }
 }
 
@@ -67,7 +69,8 @@
 }
 
 .consult__heading {
-  margin: 0 0 1rem;
+  margin-block: 0 1rem;
+  margin-inline: 0;
   line-height: 1em;
   color: var(--color-white);
 }
@@ -80,13 +83,13 @@
 }
 
 .consult__cta {
-  margin-top: 2rem;
+  margin-block-start: 2rem;
 }
 
 /* Advisor card */
 .consult__person {
   max-width: 36rem;
-  margin-top: 2rem;
+  margin-block-start: 2rem;
 }
 
 .consult__person-row {
@@ -113,7 +116,7 @@
 }
 
 .consult__person-eyebrow {
-  margin-bottom: 0.25rem;
+  margin-block-end: 0.25rem;
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -130,7 +133,7 @@
 }
 
 .consult__person-blurb {
-  margin-top: 0.75rem;
+  margin-block-start: 0.75rem;
   line-height: 1.5rem;
   color: color-mix(in oklab, var(--color-white) 80%, transparent);
 }

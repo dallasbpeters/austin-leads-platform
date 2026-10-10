@@ -36,11 +36,11 @@
   position: relative;
   display: block;
   width: 100%;
-  margin-bottom: 0.75rem;
+  margin-block-end: 0.75rem;
   padding: 0;
   border: 0;
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow: clip;
   break-inside: avoid;
   cursor: zoom-in;
   box-shadow: var(--shadow-md);
@@ -49,12 +49,8 @@
 
 @media (width >= 48rem) {
   .gallery__tile {
-    margin-bottom: 1rem;
+    margin-block-end: 1rem;
   }
-}
-
-.gallery__tile:hover {
-  box-shadow: var(--shadow-xl);
 }
 
 .gallery__tile:focus-visible {
@@ -62,22 +58,38 @@
   outline-offset: 2px;
 }
 
+.gallery__tile:active {
+  scale: 0.98;
+}
+
 .gallery__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 300ms ease-out;
 }
 
-.gallery__tile:hover .gallery__image {
-  transform: scale(1.1);
+@media (hover: hover) and (pointer: fine) {
+  .gallery__tile:hover {
+    box-shadow: var(--shadow-xl);
+  }
+
+  .gallery__tile:hover .gallery__image {
+    transform: scale(1.1);
+  }
+}
+
+/* The photo zoom only eases when motion is welcome; the shadow fade stays. */
+@media (prefers-reduced-motion: no-preference) {
+  .gallery__image {
+    transition: transform 300ms ease-out;
+  }
 }
 
 .gallery__fade {
   position: absolute;
   inset-inline: 0;
-  bottom: 0;
+  inset-block-end: 0;
   height: 66%;
   pointer-events: none;
   background: linear-gradient(to top, oklch(0% 0 0deg / 75%), oklch(0% 0 0deg / 30%), transparent);
@@ -86,9 +98,9 @@
 .gallery__caption {
   position: absolute;
   inset-inline: 0;
-  bottom: 0;
+  inset-block-end: 0;
   padding: 1rem;
-  text-align: left;
+  text-align: start;
   color: var(--color-white);
   pointer-events: none;
 }
@@ -100,7 +112,8 @@
 }
 
 .gallery__caption-meta {
-  margin: 0.125rem 0 0;
+  margin-block: 0.125rem 0;
+  margin-inline: 0;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: color-mix(in oklch, var(--color-white) 85%, transparent);
@@ -136,7 +149,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  outline: none;
+  outline: 2px solid transparent;
   user-select: none;
 }
 
@@ -154,7 +167,7 @@
 .gallery-lightbox__bar {
   position: absolute;
   inset-inline: 0;
-  top: 0;
+  inset-block-start: 0;
   z-index: 10;
   display: flex;
   align-items: center;
@@ -180,7 +193,7 @@
   width: 2.5rem;
   height: 2.5rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--color-white);
   background: color-mix(in oklch, var(--color-white) 10%, transparent);
   backdrop-filter: blur(8px);
@@ -188,13 +201,19 @@
   transition: background-color 150ms ease-out;
 }
 
-.gallery-lightbox__button:hover {
-  background: color-mix(in oklch, var(--color-white) 20%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .gallery-lightbox__button:hover {
+    background: color-mix(in oklch, var(--color-white) 20%, transparent);
+  }
 }
 
 .gallery-lightbox__button:focus-visible {
-  outline: none;
+  outline: 2px solid transparent;
   box-shadow: 0 0 0 2px color-mix(in oklch, var(--color-white) 60%, transparent);
+}
+
+.gallery-lightbox__button:active {
+  scale: 0.95;
 }
 
 .gallery-lightbox__button-icon {
@@ -212,7 +231,7 @@
 .gallery-lightbox__caption {
   z-index: 10;
   max-width: 92vw;
-  margin-top: 1.5rem;
+  margin-block-start: 1.5rem;
   text-align: center;
   color: var(--color-white);
 }
@@ -223,7 +242,8 @@
 }
 
 .gallery-lightbox__caption-meta {
-  margin: 0.25rem 0 0;
+  margin-block: 0.25rem 0;
+  margin-inline: 0;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: color-mix(in oklch, var(--color-white) 70%, transparent);
@@ -231,18 +251,18 @@
 
 .gallery-lightbox__nav {
   position: absolute;
-  top: 50%;
+  inset-block-start: 50%;
   width: 3rem;
   height: 3rem;
   translate: 0 -50%;
 }
 
 .gallery-lightbox__nav--prev {
-  left: 0.5rem;
+  inset-inline-start: 0.5rem;
 }
 
 .gallery-lightbox__nav--next {
-  right: 0.5rem;
+  inset-inline-end: 0.5rem;
 }
 
 .gallery-lightbox__nav-icon {
@@ -257,11 +277,11 @@
   }
 
   .gallery-lightbox__nav--prev {
-    left: 1.5rem;
+    inset-inline-start: 1.5rem;
   }
 
   .gallery-lightbox__nav--next {
-    right: 1.5rem;
+    inset-inline-end: 1.5rem;
   }
 
   .gallery-lightbox__nav-icon {
@@ -271,7 +291,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gallery__image,
   .gallery__tile {
     transition: none;
   }
@@ -286,10 +305,10 @@
 .gallery__intro {
   display: grid;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-block-end: 2rem;
 }
 
 .gallery__subtitle {
-  margin-bottom: 1rem;
+  margin-block-end: 1rem;
   color: var(--foreground);
 }

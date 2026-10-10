@@ -125,7 +125,7 @@ html:not([data-cloud-tone]),
   position: absolute;
   z-index: 1;
   inset: 0;
-  overflow: hidden;
+  overflow: clip;
   background: var(--cloud-tone-layer);
   background-size: 100% 100%;
   pointer-events: none;
@@ -235,8 +235,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -3s;
   --cloud-drift-duration: 23s;
 
-  top: -11%;
-  left: -8%;
+  inset-block-start: -11%;
+  inset-inline-start: -8%;
 }
 
 .cloud-background__cloud--two {
@@ -245,8 +245,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -7s;
   --cloud-drift-duration: 28s;
 
-  top: 5%;
-  right: 5%;
+  inset-block-start: 5%;
+  inset-inline-end: 5%;
   width: clamp(9rem, 19vw, 20rem);
 }
 
@@ -256,8 +256,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -4s;
   --cloud-drift-duration: 20s;
 
-  top: 42%;
-  left: 13%;
+  inset-block-start: 42%;
+  inset-inline-start: 13%;
   width: clamp(8rem, 15vw, 17rem);
 }
 
@@ -267,8 +267,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -10s;
   --cloud-drift-duration: 31s;
 
-  right: -6%;
-  bottom: -12%;
+  inset-inline-end: -6%;
+  inset-block-end: -12%;
 }
 
 .cloud-background__cloud--five {
@@ -277,8 +277,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -6s;
   --cloud-drift-duration: 26s;
 
-  bottom: 2%;
-  left: -3%;
+  inset-block-end: 2%;
+  inset-inline-start: -3%;
   width: clamp(8rem, 17vw, 19rem);
 }
 
@@ -288,8 +288,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -9s;
   --cloud-drift-duration: 34s;
 
-  top: 34%;
-  right: 31%;
+  inset-block-start: 34%;
+  inset-inline-end: 31%;
   width: clamp(7rem, 12vw, 14rem);
 }
 
@@ -299,8 +299,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -8s;
   --cloud-drift-duration: 25s;
 
-  top: 23%;
-  left: 45%;
+  inset-block-start: 23%;
+  inset-inline-start: 45%;
   width: clamp(7rem, 13vw, 15rem);
 }
 
@@ -310,8 +310,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -5s;
   --cloud-drift-duration: 29s;
 
-  right: 17%;
-  bottom: 8%;
+  inset-inline-end: 17%;
+  inset-block-end: 8%;
   width: clamp(9rem, 18vw, 20rem);
 }
 
@@ -321,8 +321,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -2s;
   --cloud-drift-duration: 21s;
 
-  top: -8%;
-  right: 32%;
+  inset-block-start: -8%;
+  inset-inline-end: 32%;
   width: clamp(6rem, 11vw, 13rem);
 }
 
@@ -332,8 +332,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -11s;
   --cloud-drift-duration: 32s;
 
-  bottom: -3%;
-  left: 38%;
+  inset-block-end: -3%;
+  inset-inline-start: 38%;
   width: clamp(7rem, 14vw, 16rem);
 }
 
@@ -343,8 +343,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -6s;
   --cloud-drift-duration: 24s;
 
-  top: 56%;
-  left: 59%;
+  inset-block-start: 56%;
+  inset-inline-start: 59%;
   width: clamp(6rem, 10vw, 12rem);
 }
 
@@ -354,8 +354,8 @@ html:not([data-cloud-tone]),
   --cloud-delay: -12s;
   --cloud-drift-duration: 35s;
 
-  right: -4%;
-  bottom: 29%;
+  inset-inline-end: -4%;
+  inset-block-end: 29%;
   width: clamp(7rem, 13vw, 15rem);
 }
 

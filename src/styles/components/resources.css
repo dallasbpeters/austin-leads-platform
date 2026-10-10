@@ -5,8 +5,8 @@
 .resources {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
-  padding-block: 6rem;
+  overflow: clip;
+  padding-block: var(--space-section);
 }
 
 .resources__shell {
@@ -18,7 +18,8 @@
 
 .resources__intro {
   max-width: 48rem;
-  margin: 0 auto 4rem;
+  margin-block: 0 4rem;
+  margin-inline: auto;
   text-align: center;
 }
 
@@ -60,23 +61,35 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 500ms ease-out;
 }
 
-.resources__card:hover .resources__image {
-  transform: scale(1.05);
+/* The photo zoom only runs for a real pointer and only when motion is welcome. */
+@media (hover: hover) and (pointer: fine) {
+  .resources__card:hover .resources__image {
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .resources__image {
+    transition: transform 500ms ease-out;
+  }
+}
+
+.resources__card:active {
+  scale: 0.98;
 }
 
 .resources__wash {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, var(--color-charade), rgb(11 59 66 / 20%), transparent);
+  background: linear-gradient(to top, var(--color-charade), var(--wash-deep), transparent);
 }
 
 .resources__copy {
   position: absolute;
   inset-inline: 0;
-  bottom: 0;
+  inset-block-end: 0;
   padding: 2rem;
   color: var(--color-white);
 }
@@ -87,8 +100,8 @@
   justify-content: center;
   width: 3.5rem;
   height: 3.5rem;
-  margin-bottom: 1rem;
-  border-radius: 999px;
+  margin-block-end: 1rem;
+  border-radius: var(--radius-pill);
   background: color-mix(in oklch, var(--color-white) 20%, transparent);
   backdrop-filter: blur(4px);
 }
@@ -105,13 +118,7 @@
 }
 
 .resources__card-copy {
-  margin-top: 0.25rem;
+  margin-block-start: 0.25rem;
   font-weight: 600;
   color: color-mix(in oklch, var(--color-white) 70%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .resources__image {
-    transition: none;
-  }
 }

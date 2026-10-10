@@ -11,13 +11,14 @@
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
-  padding: 6rem 1rem 8rem;
+  padding-block: var(--space-section) 8rem;
+  padding-inline: 1rem;
 }
 
 @media (width >= 40rem) {
   .solar-difference__inner {
     padding-inline: 1.5rem;
-    padding-top: 8rem;
+    padding-block-start: 8rem;
   }
 }
 
@@ -30,7 +31,7 @@
 .solar-difference__intro {
   display: grid;
   gap: 2rem;
-  margin-bottom: 5rem;
+  margin-block-end: 5rem;
 }
 
 @media (width >= 64rem) {
@@ -49,14 +50,14 @@
 }
 
 .solar-difference__lede {
-  padding-top: 0.75rem;
+  padding-block-start: 0.75rem;
   line-height: 2rem;
   color: var(--color-neutral-900);
 }
 
 @media (width >= 64rem) {
   .solar-difference__lede {
-    padding-top: 3rem;
+    padding-block-start: 3rem;
   }
 }
 
@@ -66,8 +67,9 @@
 
 .solar-difference__card {
   position: sticky;
-  overflow: hidden;
-  padding: 2rem 1.5rem 3rem;
+  overflow: clip;
+  padding-block: 2rem 3rem;
+  padding-inline: 1.5rem;
   border-radius: 2rem;
 }
 
@@ -80,7 +82,8 @@
 
 @media (width >= 64rem) {
   .solar-difference__card {
-    padding: 2.5rem 4rem 4rem;
+    padding-block: 2.5rem 4rem;
+    padding-inline: 4rem;
   }
 }
 
@@ -88,7 +91,7 @@
   display: flex;
   align-items: center;
   gap: 1.75rem;
-  margin-bottom: 6rem;
+  margin-block-end: 6rem;
 }
 
 .solar-difference__card-number {
@@ -119,14 +122,15 @@
 
 .solar-difference__card-copy {
   max-width: 36rem;
-  margin: 2rem 0 0;
+  margin-block: 2rem 0;
+  margin-inline: 0;
   line-height: 2rem;
 }
 
 .solar-difference__card-media {
   position: relative;
   min-height: 22rem;
-  overflow: hidden;
+  overflow: clip;
   border-radius: 1.5rem;
   background: color-mix(in oklch, var(--color-white) 8%, transparent);
 }

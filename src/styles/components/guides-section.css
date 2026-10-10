@@ -5,8 +5,8 @@
 .guides {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
-  padding-block: 6rem;
+  overflow: clip;
+  padding-block: var(--space-section);
 }
 
 .guides__shell {
@@ -19,7 +19,7 @@
 }
 
 .guides__intro {
-  margin-bottom: 2rem;
+  margin-block-end: 2rem;
 }
 
 .guides__title {
@@ -29,21 +29,21 @@
 
 .guides__body {
   max-width: 48rem;
-  margin-top: 0.75rem;
+  margin-block-start: 0.75rem;
   line-height: 1.75rem;
 }
 
 .guides__footer {
   display: flex;
   justify-content: flex-end;
-  margin-top: 2rem;
+  margin-block-start: 2rem;
 }
 
 .guides__all-link {
   height: 2.5rem;
   padding-inline: 3rem;
   border: 1px solid var(--primary);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-family: var(--font-accent);
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -52,7 +52,9 @@
   background: var(--background);
 }
 
-.guides__all-link:hover {
-  color: var(--primary-foreground);
-  background: var(--primary);
+@media (hover: hover) and (pointer: fine) {
+  .guides__all-link:hover {
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
 }

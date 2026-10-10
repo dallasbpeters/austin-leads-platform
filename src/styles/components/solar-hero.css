@@ -8,7 +8,7 @@
   position: relative;
   display: grid;
   place-content: center stretch;
-  overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font-accent);
   color: var(--color-text);
 }
@@ -52,7 +52,8 @@
   align-items: end;
   width: min(80rem, calc(100% - 3rem));
   margin-inline: auto;
-  padding: 5rem 0.5rem 0;
+  padding-block: 5rem 0;
+  padding-inline: 0.5rem;
 }
 
 @media (width >= 48rem) {
@@ -66,7 +67,7 @@
   width: 100%;
   align-items: center;
   gap: 3rem;
-  padding-bottom: 3rem;
+  padding-block-end: 3rem;
 }
 
 @media (width >= 64rem) {
@@ -88,7 +89,7 @@
   display: inline-flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1em;
+  margin-block-end: 1em;
 }
 
 .solar-hero__pulse {
@@ -101,7 +102,7 @@
 .solar-hero__pulse-ring {
   position: absolute;
   inset: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--color-wattle);
   opacity: 0.75;
 }
@@ -110,7 +111,7 @@
   position: relative;
   width: 0.75rem;
   height: 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--color-wattle);
 }
 
@@ -122,7 +123,8 @@
 
 /* Headline */
 .solar-hero__title {
-  margin: 0 0 2.5rem;
+  margin-block: 0 2.5rem;
+  margin-inline: 0;
   font-family: var(--font-display);
   font-size: var(--text-size-700);
   line-height: 1 !important;
@@ -131,7 +133,7 @@
 }
 
 .solar-hero__title--single {
-  margin-bottom: 0.75rem;
+  margin-block-end: 0.75rem;
   line-height: 1.25 !important;
 }
 
@@ -142,7 +144,7 @@
 
 .solar-hero__body {
   max-width: 42rem;
-  margin-bottom: 2.5rem;
+  margin-block-end: 2.5rem;
   line-height: 1.75rem;
 }
 
@@ -184,7 +186,8 @@
 }
 
 .solar-hero__metric {
-  padding: 0.75rem 1rem;
+  padding-block: 0.75rem;
+  padding-inline: 1rem;
   border: 1px solid;
   border-radius: var(--radius-xl);
 }
@@ -209,13 +212,13 @@
 .solar-hero__card-bars {
   display: flex;
   gap: 0.5rem;
-  margin-top: 1.5rem;
+  margin-block-start: 1.5rem;
 }
 
 .solar-hero__card-bar {
   width: 0.5rem;
   height: 0.25rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--primary);
 }
 

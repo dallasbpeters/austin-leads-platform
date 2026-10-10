@@ -94,7 +94,7 @@
   }
 
   .bg-gradient {
-    background: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
+    background: var(--gradient-sky-paper);
   }
 
   .bg-surface {
@@ -226,8 +226,10 @@
     box-shadow: var(--shadow-brand);
   }
 
-  .hover-shadow-color-primary:hover {
-    box-shadow: var(--shadow-brand-hover);
+  @media (hover: hover) and (pointer: fine) {
+    .hover-shadow-color-primary:hover {
+      box-shadow: var(--shadow-brand-hover);
+    }
   }
 
   .shadow-theme-xs {
@@ -258,8 +260,10 @@
     box-shadow: var(--shadow-brand);
   }
 
-  .hover-shadow-theme-brand:hover {
-    box-shadow: var(--shadow-brand-hover);
+  @media (hover: hover) and (pointer: fine) {
+    .hover-shadow-theme-brand:hover {
+      box-shadow: var(--shadow-brand-hover);
+    }
   }
 
   .border-color-button-secondary {
@@ -275,8 +279,10 @@
     accent-color: var(--color-primary);
   }
 
-  .hover-text-primary:hover {
-    color: var(--color-primary);
+  @media (hover: hover) and (pointer: fine) {
+    .hover-text-primary:hover {
+      color: var(--color-primary);
+    }
   }
 
   .solar-shell {
@@ -301,9 +307,9 @@
     background-size: 24px 24px;
   }
 
+  /* Fade is always on; the rise only plays for people who have not asked for less motion. */
   .solar-fade-up {
     opacity: 0;
-    transform: translateY(1rem);
     animation: solar-fade-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
@@ -314,15 +320,28 @@
   .solar-k-word {
     display: inline-block;
     opacity: 0;
-    transform: translateY(6px);
-    transition:
-      opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .solar-k-word.is-active {
     opacity: 1;
-    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .solar-fade-up {
+      transform: translateY(1rem);
+    }
+
+    .solar-k-word {
+      transform: translateY(6px);
+      transition:
+        opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .solar-k-word.is-active {
+      transform: translateY(0);
+    }
   }
 
   .solar-range::-webkit-slider-thumb {
@@ -330,7 +349,7 @@
     width: 1rem;
     height: 1rem;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--color-primary);
     box-shadow: 0 0 0 4px oklch(from var(--color-primary) 65% c h / 18%);
     cursor: pointer;
@@ -340,7 +359,7 @@
     width: 1rem;
     height: 1rem;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--color-primary);
     box-shadow: 0 0 0 4px oklch(from var(--color-primary) 65% c h / 18%);
     cursor: pointer;
@@ -348,13 +367,13 @@
 
   .solar-range::-webkit-slider-runnable-track {
     height: 0.35rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: oklch(from var(--color-secondary) 88% calc(c * 0.9) h / 24%);
   }
 
   .solar-range::-moz-range-track {
     height: 0.35rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: oklch(from var(--color-secondary) 88% calc(c * 0.9) h / 24%);
   }
 }
@@ -367,15 +386,18 @@
 }
 
 @layer utilities {
-  .animate-marquee {
-    animation: marquee var(--duration, 40s) linear infinite;
-  }
-
   .animate-border {
     animation: border 4s linear infinite;
   }
 
-  .animate-marquee-vertical {
-    animation: marquee-vertical var(--duration, 40s) linear infinite;
+  /* A marquee is continuous movement, so it is opt-in; the first copy stays readable in place. */
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-marquee {
+      animation: marquee var(--duration, 40s) linear infinite;
+    }
+
+    .animate-marquee-vertical {
+      animation: marquee-vertical var(--duration, 40s) linear infinite;
+    }
   }
 }

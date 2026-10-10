@@ -1,11 +1,11 @@
 /**
  * .section-shell block: the container most Sanity sections share. A bottom
- * hairline, the page background, a centered column with responsive gutters,
- * and an intro group of eyebrow, title, subtitle and body.
+ * hairline, the page background, a centered column with a fluid gutter, and
+ * an intro group of eyebrow, title, subtitle and body.
  */
 
 .section-shell {
-  border-bottom: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+  border-block-end: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
   background: var(--background);
 }
 
@@ -14,39 +14,29 @@
 }
 
 .section-shell--accent-top {
-  border-bottom: 0;
-  border-top: 4px solid var(--primary);
+  border-block-end: 0;
+  border-block-start: 4px solid var(--primary);
 }
 
 .section-shell__inner {
   max-width: 80rem;
   margin-inline: auto;
-  padding: 5rem 0.75rem;
+  padding-block: 5rem;
+  padding-inline: var(--gutter-page);
 }
 
 .section-shell__inner--narrow {
   max-width: 64rem;
 }
 
-@media (width >= 48rem) {
-  .section-shell__inner {
-    padding-inline: 1.5rem;
-  }
-}
-
-@media (width >= 64rem) {
-  .section-shell__inner {
-    padding-inline: 2.5rem;
-  }
-}
-
 .section-shell__intro {
   max-width: 48rem;
-  margin-bottom: 2.5rem;
+  margin-block-end: 2.5rem;
 }
 
 .section-shell__eyebrow {
-  margin: 0 0 1rem;
+  margin-block: 0 1rem;
+  margin-inline: 0;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -54,7 +44,7 @@
 }
 
 .section-shell__eyebrow--muted {
-  margin-bottom: 0.5rem;
+  margin-block-end: 0.5rem;
   font-weight: 400;
   letter-spacing: 0.22em;
   color: var(--muted-foreground);
@@ -67,13 +57,13 @@
 }
 
 .section-shell__subtitle {
-  margin-top: 1rem;
+  margin-block-start: 1rem;
   line-height: 2rem;
   color: color-mix(in oklch, var(--foreground) 80%, transparent);
 }
 
 .section-shell__body {
-  margin-top: 1rem;
+  margin-block-start: 1rem;
   line-height: 2rem;
   color: var(--muted-foreground);
 }
@@ -94,7 +84,7 @@
 }
 
 .section-shell__title--after-badge {
-  margin-top: 1.25rem;
+  margin-block-start: 1.25rem;
 }
 
 .section-shell--card {
@@ -102,7 +92,7 @@
 }
 
 .section-shell--transparent {
-  border-bottom: 0;
+  border-block-end: 0;
   background: transparent;
 }
 

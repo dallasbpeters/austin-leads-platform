@@ -20,30 +20,33 @@
   }
 
   .card--surface-strong {
-    overflow: hidden;
+    overflow: clip;
     border: 1px solid var(--color-border);
     background-color: var(--color-surface-elevated);
     box-shadow: var(--shadow-lg);
   }
 
+  /* Only ever holds absolutely positioned media, so clipping needs no formatting context. */
   .card--media {
-    overflow: hidden;
+    overflow: clip;
   }
 
   .card--color {
-    color: white;
+    color: var(--color-white);
   }
 
   .card--dark-glass {
     border: 1px solid;
-    border-color: rgb(255 255 255 / 30%);
-    background: rgb(255 255 255 / 5%);
-    color: white;
+    border-color: color-mix(in oklch, var(--color-white) 30%, transparent);
+    background: color-mix(in oklch, var(--color-white) 5%, transparent);
+    color: var(--color-white);
     box-shadow: none;
     transition: background-color 150ms ease;
   }
 
-  .card--dark-glass:hover {
-    background: rgb(255 255 255 / 10%);
+  @media (hover: hover) and (pointer: fine) {
+    .card--dark-glass:hover {
+      background: color-mix(in oklch, var(--color-white) 10%, transparent);
+    }
   }
 }

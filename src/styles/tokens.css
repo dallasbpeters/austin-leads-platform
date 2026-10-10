@@ -155,6 +155,23 @@
   --spacing-large: 0.5rem;
   --spacing-x-large: 0.75rem;
   --spacing-xx-large: 1rem;
+
+  /*
+   * Shared public layout and shape tokens. Literals only: a token that
+   * derives from `--color-primary` must live where the tenant sets it, because
+   * `var()` inside a custom property resolves on the declaring element.
+   */
+  --radius-pill: 999px;
+
+  /* Section gutter. Equals the old 0.75 / 1.5 / 2.5rem ladder at 375, 768 and 1280px and glides between. */
+  --gutter-page: clamp(0.75rem, -1.5rem + 6.25vw, 2.5rem);
+  --space-section: 6rem;
+  --space-section-compact: 5rem;
+
+  /* Anchor targets sit this far below the sticky header. */
+  --scroll-offset-header: 9.5rem;
+  --gradient-sky-paper: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
+  --wash-deep: rgb(11 59 66 / 20%);
 }
 
 /*

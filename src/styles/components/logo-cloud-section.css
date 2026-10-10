@@ -3,8 +3,8 @@
  */
 
 .logo-cloud-section__intro {
-  padding-top: 4rem;
-  text-align: left;
+  padding-block-start: 4rem;
+  text-align: start;
 }
 
 .logo-cloud-section__title {
@@ -13,7 +13,7 @@
 }
 
 .logo-cloud-section__body {
-  margin-top: 1rem;
+  margin-block-start: 1rem;
   margin-inline: auto;
   line-height: 2rem;
   color: var(--muted-foreground);

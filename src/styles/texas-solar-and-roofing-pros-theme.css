@@ -137,7 +137,3 @@
   --shadow-brand: 0 10px 24px oklch(from var(--color-primary) 65% c h / 20%);
   --shadow-brand-lover: 3px 3px 0 0 oklch(from var(--color-primary) 65% c h / 22%);
 }
-
-.jobber-inline-work-request {
-  width: 100%;
-}

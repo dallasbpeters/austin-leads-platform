@@ -3,7 +3,8 @@
  */
 
 .incentives {
-  padding: 6rem 0.75rem;
+  padding-block: var(--space-section);
+  padding-inline: 0.75rem;
   background: var(--color-warm-bg);
 }
 
@@ -55,7 +56,7 @@
 .incentives__media {
   position: relative;
   height: 400px;
-  overflow: hidden;
+  overflow: clip;
   border-radius: 1.5rem;
 }
 
