@@ -1725,14 +1725,6 @@ export const resolveNavigationForSite = (site) => {
   return getNavigationForSite(site?.slug || '')
 }
 
-const getEquivalentSiteIds = (site) => {
-  const equivalentSlugs = getEquivalentSiteSlugs(site.slug)
-
-  return sites
-    .filter((candidate) => equivalentSlugs.includes(candidate.slug))
-    .map((candidate) => candidate.id)
-}
-
 export const resolveSiteByHost = async (host) => {
   const normalizedHost = normalizeHost(host)
   const isLocalHost = normalizedHost === 'localhost' || normalizedHost === '127.0.0.1'
@@ -2121,9 +2113,10 @@ export const getPageForRequest = async (site, slugParts = []) => {
 }
 
 export const getSitemapEntriesForSite = async (site) => {
-  const localSiteIds = new Set(getEquivalentSiteIds(site))
+  // Fixture pages carry `siteSlug`; the ids only exist on site records.
+  const localSiteSlugs = new Set(getEquivalentSiteSlugs(site.slug))
   const localEntries = pages
-    .filter((page) => localSiteIds.has(page.siteId) && page.slug !== '404' && page?.seo?.noIndex !== true)
+    .filter((page) => localSiteSlugs.has(page.siteSlug) && page.slug !== '404' && page?.seo?.noIndex !== true)
     .map((page) => ({
       slug: page.slug,
       pageType: page.pageType,
@@ -2544,15 +2537,94 @@ const buildFaqGraphNode = (canonicalUrl, faqSection) => {
   }
 }
 
-const buildOrganizationNode = (site, organizationId) => {
+const hasOrganizationValue = (value) => {
+  if (Array.isArray(value)) {
+    return value.length > 0
+  }
+  if (value && typeof value === 'object') {
+    return Object.values(value).some(hasOrganizationValue)
+  }
+  return typeof value === 'string' ? value.trim().length > 0 : value !== null && value !== undefined
+}
+
+const compactOrganization = (organization) =>
+  Object.fromEntries(Object.entries(organization || {}).filter(([, value]) => hasOrganizationValue(value)))
+
+/**
+ * Public business identity for a site: the Sanity `organization` object with
+ * the local fixture filling any field editors have not set yet. Shared by
+ * JSON-LD, the Markdown and lightweight HTML representations, and the contact
+ * page so every surface states the same name, phone, email, and address.
+ *
+ * @param {object} site
+ * @returns {{ name: string, type: string, description?: string, phone?: string, email?: string, serviceArea?: string[], address?: object, contactType?: string, sameAs?: string[] }}
+ */
+export const resolveSiteOrganization = (site) => {
+  const localOrganization = getSiteBySlug(site?.slug)?.organization ?? {}
+  const merged = {
+    ...compactOrganization(localOrganization),
+    ...compactOrganization(site?.organization),
+  }
+
   return {
-    '@type': selectFirstTruthy(site.organization?.type, 'LocalBusiness'),
+    ...merged,
+    name: selectFirstTruthy(merged.name, site?.name),
+    type: selectFirstTruthy(merged.type, 'LocalBusiness'),
+    description: selectFirstTruthy(merged.description, site?.seo?.description),
+  }
+}
+
+const buildPostalAddressNode = (address) => {
+  if (!hasOrganizationValue(address)) {
+    return
+  }
+  return {
+    '@type': 'PostalAddress',
+    streetAddress: address.streetAddress,
+    addressLocality: address.addressLocality,
+    addressRegion: address.addressRegion,
+    postalCode: address.postalCode,
+    addressCountry: selectFirstTruthy(address.addressCountry, 'US'),
+  }
+}
+
+/*
+ * `Organization` is always listed literally so generic consumers recognise the
+ * publisher, with the more specific business type (RoofingContractor,
+ * ProfessionalService, …) alongside it.
+ */
+const buildOrganizationNode = (site, organizationId) => {
+  const organization = resolveSiteOrganization(site)
+  const specificType = organization.type
+  const types =
+    specificType && specificType !== 'Organization' ? ['Organization', specificType] : ['Organization']
+  const url = getPrimaryUrl(site, '/')
+  const contactPoint =
+    organization.phone || organization.email
+      ? [
+          {
+            '@type': 'ContactPoint',
+            contactType: selectFirstTruthy(organization.contactType, 'customer service'),
+            telephone: organization.phone,
+            email: organization.email,
+            areaServed: organization.serviceArea,
+            availableLanguage: 'en',
+          },
+        ]
+      : undefined
+
+  return {
+    '@type': types,
     '@id': organizationId,
-    name: selectFirstTruthy(site.organization?.name, site.name),
-    url: getPrimaryUrl(site, '/'),
-    telephone: site.organization?.phone,
-    email: site.organization?.email,
-    areaServed: site.organization?.serviceArea,
+    name: organization.name,
+    description: organization.description,
+    url,
+    telephone: organization.phone,
+    email: organization.email,
+    address: buildPostalAddressNode(organization.address),
+    areaServed: organization.serviceArea,
+    contactPoint,
+    sameAs: organization.sameAs,
   }
 }
 

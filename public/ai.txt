@@ -5,9 +5,15 @@
 #   /robots.txt   crawl rules (authoritative — this file mirrors it)
 #   /llms.txt     structured content index written for language models
 #   /sitemap.xml  full URL list
+#   /developers   developer and agent resources (Markdown negotiation, no public API)
+#   /contact      phone, email, address, service area, response times
 #
-# Last updated: 2026-08-22
+# Markdown: every public page returns Markdown when the request prefers it
+#   (Accept: text/markdown). Responses carry Vary: Accept.
+#
+# Last updated: 2026-10-10
 # Questions, licensing, or removal requests: info@texassolarandroofingpros.com
+#   Texas Solar and Roofing Pros, 1700 Pagedale Cove, Cedar Park, TX 78613, (512) 775-0561
 
 # ─────────────────────────────────────────────────────────────
 # Summary

@@ -165,6 +165,21 @@ const nextConfig = {
 
     return config
   },
+  /*
+   * Public page URLs have three bodies chosen from the `Accept` header (the
+   * designed page, Markdown, lightweight HTML — see `src/proxy.js`). Shared
+   * caches must key on it. Route handlers set `Vary` themselves; this covers
+   * the designed pages, whose cached response headers replace anything the
+   * proxy sets. Files, `/_next`, `/api` and `/ingest` are left alone.
+   */
+  headers() {
+    return [
+      {
+        source: '/((?!api/|_next/|ingest/|.*\\..*).*)',
+        headers: [{ key: 'Vary', value: 'Accept' }],
+      },
+    ]
+  },
   rewrites() {
     return [
       // `/_site/:site/…` (Sanity Presentation) is rewritten by `src/proxy.js`

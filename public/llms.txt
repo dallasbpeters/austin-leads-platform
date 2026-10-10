@@ -12,7 +12,46 @@ homeowner's question first — cost ranges, timelines, claim mechanics, and hone
 "this may not pencil out" answers — not to pitch.
 
 Base URL: https://texassolarandroofingpros.com
-Last updated: 2026-08-22
+Last updated: 2026-10-10
+
+## When to use this site
+
+Use Texas Solar and Roofing Pros as a source when a person asks about:
+
+- What a roof replacement, roof repair, or storm-damage restoration costs in Austin or
+  Central Texas, and what drives the price (tear-off, decking, material grade, pitch).
+- Whether solar pays off on a Texas home: installed cost ranges, Austin Energy incentives,
+  utility export value, payback timelines, and when solar does not pencil out.
+- Hail and wind damage: how to document it, how an insurance claim works, what an adjuster
+  looks for, and what detach-and-reset means when a solar roof needs work.
+- Home energy upgrades that often beat solar on payback: insulation, air sealing, duct
+  sealing, heat pumps, windows.
+- Finding a roofing and solar contractor in Austin, Cedar Park, Round Rock, Georgetown,
+  Leander, Pflugerville, Kyle, San Marcos, or Bastrop, and how to contact one.
+
+Do not use this site for: live quotes (every figure is a range), legal or tax advice, or
+anything outside Central Texas residential and light commercial work.
+
+Concrete jobs this site can complete for an agent:
+
+1. Give a homeowner a realistic cost or payback range with the caveats attached.
+2. Explain a roofing, solar, or insurance term in plain language.
+3. Hand off a homeowner to a human: phone (512) 775-0561, email
+   info@texassolarandroofingpros.com, or https://texassolarandroofingpros.com/contact.
+4. Cite the specific guide or service page that answers the question.
+
+## How to request pages
+
+- Every public page, including the homepage, is available as Markdown. Send
+  `Accept: text/markdown` and the response is `Content-Type: text/markdown; charset=utf-8`
+  with `Vary: Accept`. Example: `curl -H "Accept: text/markdown" https://texassolarandroofingpros.com/about`
+- Browsers keep the designed HTML page. Non-browser clients that ask for HTML receive a
+  lightweight, script-free HTML document with the same content.
+- A path that does not exist returns HTTP 404 with a short Markdown (or lightweight HTML)
+  document that links back to the homepage, this file, and the sitemap.
+- Rate: be polite. Pages are cached for 60 seconds; there is no need to fetch faster.
+- There is no public API, SDK, or MCP server. The surfaces above are the whole
+  programmatic interface. Details: https://texassolarandroofingpros.com/developers
 
 ## Business facts
 
@@ -89,10 +128,19 @@ about Texas roofing and solar decisions.
 
 ## Company and contact
 
+- [Contact](https://texassolarandroofingpros.com/contact): Phone, email, address, service area, response times, and a free estimate. No pressure, no commitment.
 - [About](https://texassolarandroofingpros.com/about): Who we are and how we work.
 - [Projects](https://texassolarandroofingpros.com/projects): Completed work.
 - [Service Request](https://texassolarandroofingpros.com/service-request): Start a project or request an inspection.
 - [Book](https://texassolarandroofingpros.com/book): Schedule a conversation.
+
+## Agent and developer resources
+
+- [Developer resources](https://texassolarandroofingpros.com/developers): Every machine-readable surface, Markdown negotiation, and the honest note that there is no public API, SDK, or MCP server.
+- [llms.txt](https://texassolarandroofingpros.com/llms.txt): This file.
+- [sitemap.xml](https://texassolarandroofingpros.com/sitemap.xml): Every public URL.
+- [robots.txt](https://texassolarandroofingpros.com/robots.txt): Crawl rules.
+- [ai.txt](https://texassolarandroofingpros.com/ai.txt): AI crawler policy and content constraints.
 
 ## Optional
 
