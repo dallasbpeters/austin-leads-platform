@@ -628,6 +628,13 @@ function buildContinuationHeader(invoice) {
   })
 }
 
+const getTemplateLabel = (key) => {
+  if (key === 'christmas-classic' || !key) {
+    return 'Christmas Lights — Classic'
+  }
+  return key
+}
+
 function buildBillTo(inputs, customerName) {
   const addressParts = [
     inputs.propertyAddress,
@@ -910,13 +917,6 @@ function buildFooter() {
       h(Text, { style: s.footerRight }, 'MERRY & BRIGHT'),
     ),
   )
-}
-
-const getTemplateLabel = (key) => {
-  if (key === 'christmas-classic' || !key) {
-    return 'Christmas Lights — Classic'
-  }
-  return key
 }
 
 /** Second page: the customer's house with their lights, from the lights mockup. */

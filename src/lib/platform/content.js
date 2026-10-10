@@ -685,6 +685,33 @@ const sanitizeAction = (action) => {
   }
 }
 
+const resolveSanityColorValue = (value) => {
+  if (!value) {
+    return value
+  }
+
+  if (value?.color) {
+    return resolveSanityColorValue(value.color)
+  }
+
+  if (typeof value === 'string') {
+    return cleanRuntimeString(value)
+  }
+
+  if (typeof value?.hex === 'string' && value.hex.trim()) {
+    return cleanRuntimeString(value.hex)
+  }
+
+  const rgb = value?.rgb
+
+  if (rgb && Number.isFinite(rgb.r) && Number.isFinite(rgb.g) && Number.isFinite(rgb.b)) {
+    const alpha = Number.isFinite(rgb.a) ? rgb.a : 1
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
+  }
+
+  return value
+}
+
 const sanitizeItem = (item) => {
   if (!item) {
     return item
@@ -719,33 +746,6 @@ const sanitizePerson = (person) => {
   }
 }
 
-const resolveSanityColorValue = (value) => {
-  if (!value) {
-    return value
-  }
-
-  if (value?.color) {
-    return resolveSanityColorValue(value.color)
-  }
-
-  if (typeof value === 'string') {
-    return cleanRuntimeString(value)
-  }
-
-  if (typeof value?.hex === 'string' && value.hex.trim()) {
-    return cleanRuntimeString(value.hex)
-  }
-
-  const rgb = value?.rgb
-
-  if (rgb && Number.isFinite(rgb.r) && Number.isFinite(rgb.g) && Number.isFinite(rgb.b)) {
-    const alpha = Number.isFinite(rgb.a) ? rgb.a : 1
-    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`
-  }
-
-  return value
-}
-
 const coerceNumberField = (value) => {
   if (typeof value === 'number') {
     return value
@@ -754,6 +754,27 @@ const coerceNumberField = (value) => {
     return Number(value)
   }
   return value
+}
+
+const sanitizeReview = (review) => {
+  if (!review) {
+    return review
+  }
+
+  return {
+    ...review,
+    id: cleanRuntimeString(review.id),
+    author: review.author,
+    reviewerLocation: review.reviewerLocation,
+    body: review.body,
+    stars: typeof review.stars === 'number' ? review.stars : review.stars ? Number(review.stars) : null,
+    reviewerPhoto: review.reviewerPhoto
+      ? {
+          ...review.reviewerPhoto,
+          alt: cleanRuntimeString(review.reviewerPhoto.alt),
+        }
+      : null,
+  }
 }
 
 const sanitizeSection = (section) => {
@@ -953,6 +974,16 @@ const guideGridItemMatchesTargetPath = (itemHref, targetPath) => {
   return false
 }
 
+const PRIMARY_SITE_SLUGS = ['texas-solar-and-roofing-pros']
+
+export const isPrimarySiteSlug = (siteSlug) => {
+  return PRIMARY_SITE_SLUGS.includes(siteSlug)
+}
+
+const getEquivalentSiteSlugs = (siteSlug) => {
+  return isPrimarySiteSlug(siteSlug) ? PRIMARY_SITE_SLUGS : [siteSlug]
+}
+
 /**
  * Pick guide card color/category from any Guide Grid section on any page for this site.
  * @param {string} targetPath pathname like `/guides/solar-warranties-texas`
@@ -1002,27 +1033,6 @@ const getGuideCardMetaForTargetPath = async ({ client, fetchOptions, siteSlug, t
     }
   } catch {
     return { color: '', category: '', updatedAt: '' }
-  }
-}
-
-const sanitizeReview = (review) => {
-  if (!review) {
-    return review
-  }
-
-  return {
-    ...review,
-    id: cleanRuntimeString(review.id),
-    author: review.author,
-    reviewerLocation: review.reviewerLocation,
-    body: review.body,
-    stars: typeof review.stars === 'number' ? review.stars : review.stars ? Number(review.stars) : null,
-    reviewerPhoto: review.reviewerPhoto
-      ? {
-          ...review.reviewerPhoto,
-          alt: cleanRuntimeString(review.reviewerPhoto.alt),
-        }
-      : null,
   }
 }
 
@@ -1465,12 +1475,11 @@ const syncServiceGridSectionItems = async ({ client, fetchOptions, page, siteSlu
   const serviceSlugs = [
     ...new Set(
       page.sections
-        .filter((section) => section.type === 'serviceGrid')
-        .flatMap((section) => [
-          ...(section.items || []),
-          ...(section.roofingItems || []),
-          ...(section.secondaryItems || []),
-        ])
+        .flatMap((section) =>
+          section.type === 'serviceGrid'
+            ? [...(section.items || []), ...(section.roofingItems || []), ...(section.secondaryItems || [])]
+            : [],
+        )
         .map((item) => slugFromHref(item?.href))
         .filter(Boolean),
     ),
@@ -1572,16 +1581,6 @@ const normalizeHost = (host) => {
     .replace(/^https?:\/\//, '')
     .replace(/:\d+$/, '')
     .toLowerCase()
-}
-
-const PRIMARY_SITE_SLUGS = ['texas-solar-and-roofing-pros']
-
-export const isPrimarySiteSlug = (siteSlug) => {
-  return PRIMARY_SITE_SLUGS.includes(siteSlug)
-}
-
-const getEquivalentSiteSlugs = (siteSlug) => {
-  return isPrimarySiteSlug(siteSlug) ? PRIMARY_SITE_SLUGS : [siteSlug]
 }
 
 export const getAllSites = () => {

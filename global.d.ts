@@ -1,6 +1,6 @@
-declare module '*.css'
-
 import type { DefaultSession, DefaultUser } from 'next-auth'
+
+declare module '*.css'
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {

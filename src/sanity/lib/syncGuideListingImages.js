@@ -71,7 +71,7 @@ function resolveGuideSlug(guideDoc) {
   if (typeof guideDoc?.slug === 'string') {
     return guideDoc.slug.trim()
   }
-  if (guideDoc?.slug?.current != null) {
+  if (guideDoc?.slug?.current !== null && guideDoc?.slug?.current !== undefined) {
     return String(guideDoc.slug.current).trim()
   }
   return ''

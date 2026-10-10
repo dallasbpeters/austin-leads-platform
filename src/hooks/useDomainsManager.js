@@ -46,13 +46,6 @@ export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
     setDomains(initialDomains)
   }, [initialDomains])
 
-  useEffect(() => {
-    if (!vercelEnabled) {
-      return
-    }
-    refreshDomains()
-  }, [vercelEnabled])
-
   const refreshDomains = async () => {
     setError('')
     setLoading(true)
@@ -62,12 +55,19 @@ export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
       if (data.syncError) {
         setError(data.syncError)
       }
-    } catch (error) {
-      setError(error.message || 'Unable to refresh domains.')
+    } catch (requestError) {
+      setError(requestError.message || 'Unable to refresh domains.')
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (!vercelEnabled) {
+      return
+    }
+    refreshDomains()
+  }, [vercelEnabled])
 
   const addRedirectDomain = async (event) => {
     event.preventDefault()
@@ -77,8 +77,8 @@ export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
       await createDomainRecord(redirectForm)
       setRedirectForm(buildDefaultDomainForm())
       await refreshDomains()
-    } catch (error) {
-      setError(error.message || 'Unable to add redirect domain.')
+    } catch (requestError) {
+      setError(requestError.message || 'Unable to add redirect domain.')
     } finally {
       setLoading(false)
     }
@@ -94,8 +94,8 @@ export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
       setLastCreatedSite(result)
       setSiteForm(buildDefaultSiteForm())
       await refreshDomains()
-    } catch (error) {
-      setError(error.message || 'Unable to create landing page.')
+    } catch (requestError) {
+      setError(requestError.message || 'Unable to create landing page.')
     } finally {
       setLoading(false)
     }
@@ -107,8 +107,8 @@ export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
     try {
       await verifyDomainRecord(domain)
       await refreshDomains()
-    } catch (error) {
-      setError(error.message || 'Unable to verify domain.')
+    } catch (requestError) {
+      setError(requestError.message || 'Unable to verify domain.')
     } finally {
       setLoading(false)
     }
@@ -143,24 +143,22 @@ export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
     setError('')
     setLoading(true)
     try {
-      if (editForm.createSite && editForm.siteSlug && editForm.siteName) {
-        await createSiteRecord({
-          domain,
-          name: editForm.siteName,
-          slug: editForm.siteSlug,
-          category: editForm.siteCategory,
-        })
-      } else {
-        await updateDomainRecordRequest(domain, {
-          siteSlug: editForm.siteSlug,
-          tier: editForm.tier,
-          redirectTarget: editForm.redirectTarget,
-        })
-      }
+      await (editForm.createSite && editForm.siteSlug && editForm.siteName
+        ? createSiteRecord({
+            domain,
+            name: editForm.siteName,
+            slug: editForm.siteSlug,
+            category: editForm.siteCategory,
+          })
+        : updateDomainRecordRequest(domain, {
+            siteSlug: editForm.siteSlug,
+            tier: editForm.tier,
+            redirectTarget: editForm.redirectTarget,
+          }))
       await refreshDomains()
       cancelEditing()
-    } catch (error) {
-      setError(error.message || 'Unable to save domain.')
+    } catch (requestError) {
+      setError(requestError.message || 'Unable to save domain.')
     } finally {
       setLoading(false)
     }
@@ -175,8 +173,8 @@ export const useDomainsManager = ({ initialDomains, vercelEnabled }) => {
       if (editingDomain === domain) {
         cancelEditing()
       }
-    } catch (error) {
-      setError(error.message || 'Unable to delete domain.')
+    } catch (requestError) {
+      setError(requestError.message || 'Unable to delete domain.')
     } finally {
       setLoading(false)
     }

@@ -49,7 +49,7 @@ describe('social token storage', () => {
     vi.stubEnv('SOCIAL_TOKEN_KEY', 'a-long-test-secret')
     const writes = []
     let stored = null
-    vi.doMock('../lib/db/pool.js', () => ({
+    vi.doMock(import('../lib/db/pool.js'), () => ({
       getSql:
         () =>
         (strings, ...values) => {
@@ -74,7 +74,7 @@ describe('social token storage', () => {
 
   it('refuses to store tokens without a key', async () => {
     vi.stubEnv('SOCIAL_TOKEN_KEY', '')
-    vi.doMock('../lib/db/pool.js', () => ({ getSql: () => () => Promise.resolve([]) }))
+    vi.doMock(import('../lib/db/pool.js'), () => ({ getSql: () => () => Promise.resolve([]) }))
     const db = await import('@/lib/social/accounts-db')
     expect(db.hasTokenKey()).toBeFalsy()
     await expect(db.saveSocialAccount('tiktok', { accessToken: 'x' })).rejects.toThrow('SOCIAL_TOKEN_KEY')

@@ -60,12 +60,12 @@ export const QUOTE_SHEET_COLUMNS = [
   'CO2 Offset (tons)',
 ]
 
-const blank = (value) => (value == null || value === '' ? '' : value)
+const blank = (value) => (value === null || value === undefined || value === '' ? '' : value)
 
 /** Combine equipment description + qty into one cell, e.g. "Mission Solar · 435W · Qty 21". */
 const equipmentCell = (...parts) =>
   parts
-    .map((part) => (part == null || part === '' ? '' : String(part).trim()))
+    .map((part) => (part === null || part === undefined || part === '' ? '' : String(part).trim()))
     .filter(Boolean)
     .join(' · ')
 

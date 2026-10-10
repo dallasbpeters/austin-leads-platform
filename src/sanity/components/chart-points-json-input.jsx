@@ -33,7 +33,7 @@ function ensureListKeys(items, prefix = 'item') {
     if (!item || typeof item !== 'object') {
       return item
     }
-    const existing = item._key != null && String(item._key).trim()
+    const existing = item._key !== null && item._key !== undefined && String(item._key).trim()
     const key = existing ? String(item._key) : `${prefix}-${index}-${Date.now().toString(36)}`
     return { ...item, _key: key }
   })
@@ -228,8 +228,13 @@ function patchValueForChartConfig(key, fieldValue) {
   return fieldValue.map((row, index) => ({
     _type: 'energyChartAreaSeriesItem',
     _key: typeof row?._key === 'string' && row._key ? row._key : generateKey(index),
-    title: row?.title != null && String(row.title).trim() ? String(row.title).trim() : `Series ${index + 1}`,
-    ...(row?.color != null && String(row.color).trim() !== '' ? { color: row.color } : {}),
+    title:
+      row?.title !== null && row?.title !== undefined && String(row.title).trim()
+        ? String(row.title).trim()
+        : `Series ${index + 1}`,
+    ...(row?.color !== null && row?.color !== undefined && String(row.color).trim() !== ''
+      ? { color: row.color }
+      : {}),
   }))
 }
 
@@ -297,6 +302,37 @@ function ensurePortableTextKeys(value) {
   })
 }
 
+const buildNextSectionsForChartImport = async ({
+  client,
+  docId,
+  sectionKey,
+  points,
+  siblingNoBody,
+  config,
+  includeBody,
+}) => {
+  const doc = await client.getDocument(docId)
+  const sections = Array.isArray(doc?.sections) ? [...doc.sections] : null
+  if (!sections?.length) {
+    throw new Error('Could not read sections for this document.')
+  }
+  const idx = sections.findIndex((s) => s && s._key === sectionKey)
+  if (idx === -1) {
+    throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
+  }
+  const prev = sections[idx]
+  const nextSection = { ...prev, chartPoints: ensureListKeys(points, 'chart-point') }
+  for (const [key, fieldValue] of siblingNoBody) {
+    nextSection[key] = patchValueForChartConfig(key, fieldValue)
+  }
+  if (includeBody && config?.body !== undefined) {
+    nextSection.body = config.body
+  }
+  nextSection.chartPoints = ensureListKeys(nextSection.chartPoints, 'chart-point')
+  nextSection.chartAreaSeries = ensureListKeys(nextSection.chartAreaSeries, 'area-series')
+  return sections.map((s, i) => (i === idx ? nextSection : s))
+}
+
 async function persistChartImportToSanity({ client, docId, sectionKey, points, siblingNoBody, config }) {
   const keyedPoints = ensureListKeys(points, 'chart-point')
   const base = `sections[_key=="${escapeKeyForJsonMatch(sectionKey)}"]`
@@ -334,37 +370,6 @@ async function persistChartImportToSanity({ client, docId, sectionKey, points, s
   return { bodySkipped }
 }
 
-const buildNextSectionsForChartImport = async ({
-  client,
-  docId,
-  sectionKey,
-  points,
-  siblingNoBody,
-  config,
-  includeBody,
-}) => {
-  const doc = await client.getDocument(docId)
-  const sections = Array.isArray(doc?.sections) ? [...doc.sections] : null
-  if (!sections?.length) {
-    throw new Error('Could not read sections for this document.')
-  }
-  const idx = sections.findIndex((s) => s && s._key === sectionKey)
-  if (idx === -1) {
-    throw new Error(`Chart section (_key "${sectionKey}") not found in sections.`)
-  }
-  const prev = sections[idx]
-  const nextSection = { ...prev, chartPoints: ensureListKeys(points, 'chart-point') }
-  for (const [key, fieldValue] of siblingNoBody) {
-    nextSection[key] = patchValueForChartConfig(key, fieldValue)
-  }
-  if (includeBody && config?.body !== undefined) {
-    nextSection.body = config.body
-  }
-  nextSection.chartPoints = ensureListKeys(nextSection.chartPoints, 'chart-point')
-  nextSection.chartAreaSeries = ensureListKeys(nextSection.chartAreaSeries, 'area-series')
-  return sections.map((s, i) => (i === idx ? nextSection : s))
-}
-
 export default function ChartPointsJsonInput(props) {
   const { value, renderDefault, path = [], onChange } = props
   const getFormValue = useGetFormValue()
@@ -392,8 +397,8 @@ export default function ChartPointsJsonInput(props) {
         config,
       })
       return { saved: true, bodySkipped }
-    } catch (error) {
-      const msg = error?.message || String(error)
+    } catch (importError) {
+      const msg = importError?.message || String(importError)
       setError(
         `Sanity save failed: ${msg} Open the page from Structure (desk) if you are only in Preview, then try again.`,
       )
@@ -430,7 +435,7 @@ export default function ChartPointsJsonInput(props) {
         onChange(set(points))
 
         const { saved, bodySkipped, docId, sectionKey } = await saveToSanityApi(points, siblingNoBody, cfg)
-        if (!saved && docId != null) {
+        if (!saved && docId !== null && docId !== undefined) {
           reportApiError(docId, sectionKey)
         } else if (saved) {
           const bodySkippedNote = bodySkipped
@@ -444,8 +449,8 @@ export default function ChartPointsJsonInput(props) {
             } Saved to Sanity.${bodySkippedNote}`,
           )
         }
-      } catch (error) {
-        const message = error?.message || 'Import failed.'
+      } catch (importError) {
+        const message = importError?.message || 'Import failed.'
         setError(message)
         setStatus('')
       } finally {

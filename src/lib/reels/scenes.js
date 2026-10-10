@@ -157,8 +157,8 @@ const dressed = (definition, copy) => {
     ...definition,
     ...(copy.label ? { label: copy.label } : {}),
     ...(copy.hint ? { hint: copy.hint } : {}),
-    fields: definition.fields.map((field) =>
-      copy.placeholders?.[field.id] ? { ...field, placeholder: copy.placeholders[field.id] } : field,
+    fields: definition.fields.map((entry) =>
+      copy.placeholders?.[entry.id] ? { ...entry, placeholder: copy.placeholders[entry.id] } : entry,
     ),
     defaults: copy.defaults ? { ...definition.defaults, ...copy.defaults } : definition.defaults,
   }
@@ -293,9 +293,9 @@ const phoneWords = (text) =>
  */
 export function spokenNumbers(text) {
   return String(text || '')
-    .replace(/\$\s?(\d[\d,]*)(?:\.(\d{2}))?/g, (_match, whole, cents) => dollarsWords(whole, cents))
-    .replace(/\(?\b\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b/g, (match) => phoneWords(match))
-    .replace(/\b\d{1,3}(?:,\d{3})+\b|\b\d+\b/g, (match) => numberWords(match.replaceAll(',', '')))
+    .replaceAll(/\$\s?(\d[\d,]*)(?:\.(\d{2}))?/g, (_match, whole, cents) => dollarsWords(whole, cents))
+    .replaceAll(/\(?\b\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b/g, (match) => phoneWords(match))
+    .replaceAll(/\b\d{1,3}(?:,\d{3})+\b|\b\d+\b/g, (match) => numberWords(match.replaceAll(',', '')))
 }
 
 /**

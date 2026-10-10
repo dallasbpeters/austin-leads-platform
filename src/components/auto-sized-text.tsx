@@ -4,6 +4,20 @@ import React, { useLayoutEffect, useRef } from 'react'
 
 import { cn } from '../lib/utils'
 
+const SizedChild = styled('div')`
+  display: inline-block;
+`
+
+const ITERATION_LIMIT = 20
+
+// The maximum difference strongly affects the number of iterations required.
+// A value of 10 means that matches are often found in fewer than 5 iterations.
+// A value of 5 raises it to 6-7. A value of 1 brings it closer to 10. A value of
+// 0 never converges.
+// Note that on modern computers, even with 6x CPU throttling the iterations usually
+// finish in under 5ms.
+const MAXIMUM_DIFFERENCE = 1 // px
+
 interface Props {
   children: React.ReactNode
   className?: string
@@ -15,6 +29,33 @@ export function AutoSizedText({ children, className }: Props) {
   const fontSize = useRef<number>(0)
   const fontSizeLowerBound = useRef<number>(0)
   const fontSizeUpperBound = useRef<number>(0)
+
+  const adjustFontSize = (childDimensions: Dimensions, parentDimensions: Dimensions) => {
+    const childElement = childRef.current
+
+    if (!childElement) {
+      return
+    }
+
+    let newFontSize
+
+    if (childDimensions.width > parentDimensions.width || childDimensions.height > parentDimensions.height) {
+      // The element is bigger than the parent, scale down
+      newFontSize = (fontSizeLowerBound.current + fontSize.current) / 2
+      fontSizeUpperBound.current = fontSize.current
+    } else if (
+      childDimensions.width < parentDimensions.width ||
+      childDimensions.height < parentDimensions.height
+    ) {
+      // The element is smaller than the parent, scale up
+      newFontSize = (fontSizeUpperBound.current + fontSize.current) / 2
+      fontSizeLowerBound.current = fontSize.current
+    }
+
+    // Store font size in a ref so we don't have to measure styles to get it
+    fontSize.current = newFontSize
+    childElement.style.fontSize = `${newFontSize}px`
+  }
 
   useLayoutEffect(() => {
     const childElement = childRef.current // This is `SizedChild`
@@ -96,53 +137,12 @@ export function AutoSizedText({ children, className }: Props) {
     }
   }, [])
 
-  const adjustFontSize = (childDimensions: Dimensions, parentDimensions: Dimensions) => {
-    const childElement = childRef.current
-
-    if (!childElement) {
-      return
-    }
-
-    let newFontSize
-
-    if (childDimensions.width > parentDimensions.width || childDimensions.height > parentDimensions.height) {
-      // The element is bigger than the parent, scale down
-      newFontSize = (fontSizeLowerBound.current + fontSize.current) / 2
-      fontSizeUpperBound.current = fontSize.current
-    } else if (
-      childDimensions.width < parentDimensions.width ||
-      childDimensions.height < parentDimensions.height
-    ) {
-      // The element is smaller than the parent, scale up
-      newFontSize = (fontSizeUpperBound.current + fontSize.current) / 2
-      fontSizeLowerBound.current = fontSize.current
-    }
-
-    // Store font size in a ref so we don't have to measure styles to get it
-    fontSize.current = newFontSize
-    childElement.style.fontSize = `${newFontSize}px`
-  }
-
   return (
     <SizedChild ref={childRef} className={cn(className)}>
       {children}
     </SizedChild>
   )
 }
-
-const SizedChild = styled('div')`
-  display: inline-block;
-`
-
-const ITERATION_LIMIT = 20
-
-// The maximum difference strongly affects the number of iterations required.
-// A value of 10 means that matches are often found in fewer than 5 iterations.
-// A value of 5 raises it to 6-7. A value of 1 brings it closer to 10. A value of
-// 0 never converges.
-// Note that on modern computers, even with 6x CPU throttling the iterations usually
-// finish in under 5ms.
-const MAXIMUM_DIFFERENCE = 1 // px
 
 interface Dimensions {
   height: number

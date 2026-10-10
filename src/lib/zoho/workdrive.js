@@ -232,8 +232,13 @@ export async function findOrCreateClientInvoicesFolder(clientName, parentOverrid
 /**
  * Save a Christmas invoice PDF to WorkDrive under {Customer Name}/Invoices/.
  */
-export async function saveInvoicePdfToWorkdrive({ clientName, fileName, buffer, parentFolderId }) {
-  const folder = await findOrCreateClientInvoicesFolder(clientName, parentFolderId)
+export async function saveInvoicePdfToWorkdrive({
+  clientName,
+  fileName,
+  buffer,
+  parentFolderId: invoiceParentFolderId,
+}) {
+  const folder = await findOrCreateClientInvoicesFolder(clientName, invoiceParentFolderId)
   const upload = await uploadPdfToFolder({ folderId: folder.folderId, fileName, buffer })
   return {
     folderId: folder.folderId,
@@ -246,13 +251,23 @@ export async function saveInvoicePdfToWorkdrive({ clientName, fileName, buffer, 
 /**
  * Best-effort Christmas invoice WorkDrive sync — never throws.
  */
-export async function syncInvoicePdfToWorkdrive({ clientName, fileName, buffer, parentFolderId }) {
+export async function syncInvoicePdfToWorkdrive({
+  clientName,
+  fileName,
+  buffer,
+  parentFolderId: invoiceParentFolderId,
+}) {
   const status = getZohoWorkdriveConfigStatus()
-  if (!status.ok && !parentFolderId?.trim()) {
+  if (!status.ok && !invoiceParentFolderId?.trim()) {
     return { skipped: true, reason: status.reason }
   }
   try {
-    const saved = await saveInvoicePdfToWorkdrive({ clientName, fileName, buffer, parentFolderId })
+    const saved = await saveInvoicePdfToWorkdrive({
+      clientName,
+      fileName,
+      buffer,
+      parentFolderId: invoiceParentFolderId,
+    })
     return {
       ok: true,
       folder: saved.folderName,

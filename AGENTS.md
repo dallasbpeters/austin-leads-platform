@@ -190,8 +190,17 @@ This project uses **Ultracite**, a zero-config preset that enforces strict code 
 - **Format code**: `pnpm dlx ultracite fix`
 - **Check for issues**: `pnpm dlx ultracite check`
 - **Diagnose setup**: `pnpm dlx ultracite doctor`
+- **Lint**: After making changes, run `pnpm lint` and fix all errors. This is a required gate (see below).
 
 Oxlint + Oxfmt (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
+
+### Lint Gate (Required)
+
+- Run `pnpm lint` after every repository change.
+- Work is incomplete until `pnpm lint` exits with zero errors.
+- Fix the code. Do not bypass a finding by lowering rule severity, editing ignores or lint config, or adding disable comments.
+- Any exception must be narrow (one line or block), documented in a comment next to the code, and explicitly approved by the user or coordinator before the work is marked done.
+- Report the lint result in your final handoff (for example: `pnpm lint` → 0 errors). If you could not run it, say so and why.
 
 ---
 

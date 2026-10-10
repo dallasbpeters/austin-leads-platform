@@ -174,17 +174,6 @@ export const getAnalyticsGoal = (goalId) => {
   return analyticsGoals.find((goal) => goal.id === goalId) ?? null
 }
 
-export const getAnalyticsOverview = () => {
-  const providers = getAnalyticsProviders()
-
-  return {
-    connectedProviders: providers.filter((provider) => provider.connected).length,
-    configuredGoals: analyticsGoals.filter((goal) => goal.status === 'active').length,
-    liveReportingSources: providers.filter((provider) => provider.readAccess === 'available').length,
-    providersNeedingAction: providers.filter((provider) => !provider.connected).length,
-  }
-}
-
 export const getAnalyticsProviders = () => {
   const googleAnalytics = getGoogleAnalyticsConfig()
   const ga4ReportingReady = hasGoogleAnalyticsReportingConfig()
@@ -248,4 +237,15 @@ export const getAnalyticsProviders = () => {
         : 'Set GOOGLE_SITE_VERIFICATION so the domains can be verified with Google.',
     },
   ]
+}
+
+export const getAnalyticsOverview = () => {
+  const providers = getAnalyticsProviders()
+
+  return {
+    connectedProviders: providers.filter((provider) => provider.connected).length,
+    configuredGoals: analyticsGoals.filter((goal) => goal.status === 'active').length,
+    liveReportingSources: providers.filter((provider) => provider.readAccess === 'available').length,
+    providersNeedingAction: providers.filter((provider) => !provider.connected).length,
+  }
 }

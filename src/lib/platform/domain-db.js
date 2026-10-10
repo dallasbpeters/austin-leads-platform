@@ -51,45 +51,6 @@ export const ensureDomainRecordsTable = async () => {
   `
 }
 
-export const seedInitialDomainRecords = async () => {
-  if (!hasDomainDatabase()) {
-    return
-  }
-
-  await ensureDomainRecordsTable()
-
-  for (const record of initialDomainRecords) {
-    await upsertDomainRecordDb(record)
-  }
-}
-
-export const listDomainRecordsDb = async () => {
-  const sql = getSql()
-  await ensureDomainRecordsTable()
-
-  const rows = await sql`
-    SELECT *
-    FROM domain_records
-    ORDER BY domain ASC
-  `
-
-  return rows.map(normalizeDomainRow)
-}
-
-export const getDomainRecordDb = async (domain) => {
-  const sql = getSql()
-  await ensureDomainRecordsTable()
-
-  const [row] = await sql`
-    SELECT *
-    FROM domain_records
-    WHERE domain = ${domain}
-    LIMIT 1
-  `
-
-  return normalizeDomainRow(row)
-}
-
 export const upsertDomainRecordDb = async (domainRecord) => {
   const sql = getSql()
   await ensureDomainRecordsTable()
@@ -136,6 +97,45 @@ export const upsertDomainRecordDb = async (domainRecord) => {
       git_branch = EXCLUDED.git_branch,
       source = EXCLUDED.source
     RETURNING *
+  `
+
+  return normalizeDomainRow(row)
+}
+
+export const seedInitialDomainRecords = async () => {
+  if (!hasDomainDatabase()) {
+    return
+  }
+
+  await ensureDomainRecordsTable()
+
+  for (const record of initialDomainRecords) {
+    await upsertDomainRecordDb(record)
+  }
+}
+
+export const listDomainRecordsDb = async () => {
+  const sql = getSql()
+  await ensureDomainRecordsTable()
+
+  const rows = await sql`
+    SELECT *
+    FROM domain_records
+    ORDER BY domain ASC
+  `
+
+  return rows.map(normalizeDomainRow)
+}
+
+export const getDomainRecordDb = async (domain) => {
+  const sql = getSql()
+  await ensureDomainRecordsTable()
+
+  const [row] = await sql`
+    SELECT *
+    FROM domain_records
+    WHERE domain = ${domain}
+    LIMIT 1
   `
 
   return normalizeDomainRow(row)

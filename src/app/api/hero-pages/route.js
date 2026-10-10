@@ -65,8 +65,8 @@ function buildHeroPageSections(site, title, description) {
   ])
 }
 
-async function fetchOrCreateSanitySite(sanityWriteClient, siteId) {
-  const existing = await sanityWriteClient.fetch(
+async function fetchOrCreateSanitySite(client, siteId) {
+  const existing = await client.fetch(
     groq`*[_type == "site" && _id == $siteId && tier == "hero"][0]{
       _id,
       "id": _id,
@@ -87,7 +87,7 @@ async function fetchOrCreateSanitySite(sanityWriteClient, siteId) {
     return null
   }
 
-  await sanityWriteClient.createIfNotExists({
+  await client.createIfNotExists({
     _id: fixtureSite.id,
     _type: 'site',
     name: fixtureSite.name,
@@ -114,8 +114,8 @@ async function fetchOrCreateSanitySite(sanityWriteClient, siteId) {
   }
 }
 
-async function checkDuplicatePage(sanityWriteClient, siteId, slug) {
-  const existing = await sanityWriteClient.fetch(
+async function checkDuplicatePage(client, siteId, slug) {
+  const existing = await client.fetch(
     groq`*[
       _type in ["page", "servicePage", "locationPage"] &&
       site._ref == $siteId &&

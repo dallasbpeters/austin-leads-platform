@@ -7,6 +7,16 @@ import {
   listLeadSubmissions,
 } from '@/lib/leads/db'
 
+const serializeCrmError = (error) => {
+  if (!error) {
+    return null
+  }
+  const message = error?.message || String(error)
+  const code = error?.code || error?.name || null
+  const cause = error?.cause?.message || error?.cause?.code || null
+  return { message, code, cause }
+}
+
 export const metadata = {
   title: 'CRM | Austin Leads Platform',
 }
@@ -57,14 +67,4 @@ export default async function CrmPage() {
       dbError={dbError}
     />
   )
-}
-
-const serializeCrmError = (error) => {
-  if (!error) {
-    return null
-  }
-  const message = error?.message || String(error)
-  const code = error?.code || error?.name || null
-  const cause = error?.cause?.message || error?.cause?.code || null
-  return { message, code, cause }
 }

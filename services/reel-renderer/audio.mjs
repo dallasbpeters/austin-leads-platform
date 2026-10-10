@@ -276,7 +276,7 @@ export function sfxCues(scenes) {
     }
     cursor += duration
   }
-  return cues.sort((a, b) => a.at - b.at)
+  return cues.toSorted((a, b) => a.at - b.at)
 }
 
 /** One file per sound kind, from the cache when we have it, else from ElevenLabs. */

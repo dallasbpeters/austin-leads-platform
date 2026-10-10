@@ -12,19 +12,19 @@ import { getAvatarInitials } from '@/components/consultation-section'
  */
 const STEGA = '\u200B\u200C\u200D\u200B\u200C\u200D'
 
-describe('getAvatarInitials', () => {
+describe(getAvatarInitials, () => {
   const invisible = /[\u200B-\u200F\u2060\uFEFF]/
 
   it('returns plain letters when the name carries edit markers', () => {
     const initials = getAvatarInitials(`Dallas${STEGA} Peters${STEGA}`)
     expect(initials).toBe('DP')
-    expect(invisible.test(initials)).toBe(false)
+    expect(invisible.test(initials)).toBeFalsy()
   })
 
   it('never emits an invisible character when markers lead the name', () => {
     const initials = getAvatarInitials(`${STEGA}Dallas Peters`)
     expect(initials).toBe('DP')
-    expect(invisible.test(initials)).toBe(false)
+    expect(invisible.test(initials)).toBeFalsy()
   })
 
   it('still works on a plain name', () => {

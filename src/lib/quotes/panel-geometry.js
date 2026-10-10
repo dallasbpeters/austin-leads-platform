@@ -4,8 +4,8 @@
  */
 
 export const PANEL_SIZES = {
-  '60-portrait': { label: '60-cell · portrait', widthM: 1.0, heightM: 1.68 },
-  '60-landscape': { label: '60-cell · landscape', widthM: 1.68, heightM: 1.0 },
+  '60-portrait': { label: '60-cell · portrait', widthM: 1, heightM: 1.68 },
+  '60-landscape': { label: '60-cell · landscape', widthM: 1.68, heightM: 1 },
   '72-portrait': { label: '72-cell · portrait', widthM: 1.05, heightM: 2.1 },
   '72-landscape': { label: '72-cell · landscape', widthM: 2.1, heightM: 1.05 },
   commercial: { label: 'Commercial', widthM: 1.3, heightM: 2.4 },

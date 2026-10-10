@@ -115,12 +115,12 @@ class ReelMixer {
 
   stopAll() {
     for (const node of this.playing.values()) {
-      this.stop(node)
+      ReelMixer.stop(node)
     }
     this.playing.clear()
   }
 
-  stop(node) {
+  static stop(node) {
     node.dead = true
     try {
       node.source.stop()
@@ -146,11 +146,11 @@ class ReelMixer {
     source.connect(gain).connect(this.context.destination)
     source.start(0, loops ? offset % buffer.duration : offset)
     const node = { source, gain, startedAt: this.context.currentTime, offset, dead: false }
-    source.onended = () => {
+    source.addEventListener('ended', () => {
       if (this.playing.get(clip) === node) {
         this.playing.delete(clip)
       }
-    }
+    })
     return node
   }
 
@@ -163,14 +163,14 @@ class ReelMixer {
       const shouldPlay = running && local >= 0 && local < clip.seconds
       let node = this.playing.get(clip)
       if (node && (!shouldPlay || node.dead)) {
-        this.stop(node)
+        ReelMixer.stop(node)
         this.playing.delete(clip)
         node = null
       }
       if (node && shouldPlay) {
         const expected = this.context.currentTime - node.startedAt + node.offset
         if (Math.abs(expected - local) > DRIFT_SECONDS) {
-          this.stop(node)
+          ReelMixer.stop(node)
           this.playing.delete(clip)
           node = null
         }
@@ -239,7 +239,8 @@ export default function ReelPreview({ scenes, className = '', theme = DEFAULT_TH
     }
     setPlanState('loading')
     setPlanError('')
-    const request = (planRequestRef.current += 1)
+    planRequestRef.current += 1
+    const request = planRequestRef.current
     const stale = () => request !== planRequestRef.current
     const timer = setTimeout(async () => {
       try {
