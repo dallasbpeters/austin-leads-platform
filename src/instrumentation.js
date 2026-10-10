@@ -10,12 +10,16 @@ export async function register() {
     return
   }
 
-  const [{ checkSanityWriteToken }] = await Promise.all([
+  const [{ checkSanityWriteToken }, { installVaryAcceptHook }] = await Promise.all([
     import('./sanity/write-token-health'),
+    import('./lib/platform/vary-accept'),
     // Initializes only the dedicated PostHog workflow-log provider. Existing
     // console and application loggers remain outside this export.
     import('./lib/posthog-logs'),
   ])
+
+  // Designed public pages must answer with `Accept` in `Vary`; see that module.
+  installVaryAcceptHook()
 
   await checkSanityWriteToken()
 }

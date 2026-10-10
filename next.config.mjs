@@ -169,8 +169,9 @@ const nextConfig = {
    * Public page URLs have three bodies chosen from the `Accept` header (the
    * designed page, Markdown, lightweight HTML — see `src/proxy.js`). Shared
    * caches must key on it. Route handlers set `Vary` themselves; this covers
-   * the designed pages, whose cached response headers replace anything the
-   * proxy sets. Files, `/_next`, `/api` and `/ingest` are left alone.
+   * the designed pages when self-hosted. On Vercel the page's own `Vary` wins
+   * over this rule, so `src/lib/platform/vary-accept.js` adds `Accept` from
+   * inside the render. Files, `/_next`, `/api` and `/ingest` are left alone.
    */
   headers() {
     return [

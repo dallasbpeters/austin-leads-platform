@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { canQuotesRoleAccessPath, defaultAdminHomePath, isQuotesRole } from '@/lib/auth/roles'
 import { resolvePublicRepresentation } from '@/lib/platform/agent-content'
 import { getAllSites } from '@/lib/platform/content'
+import { DESIGNED_PAGE_REPRESENTATION, PUBLIC_REPRESENTATION_HEADER } from '@/lib/platform/vary-accept'
 import { getSanityServerClient } from '@/sanity/client'
 
 const protectedPaths = [
@@ -153,11 +154,18 @@ function isTenantPagePath(pathname) {
   return !NON_TENANT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
 }
 
-function rewriteToTenant(request, siteSlug, pagePath) {
+function rewriteToTenant(request, siteSlug, pagePath, requestHeaders) {
   const url = request.nextUrl.clone()
   url.pathname = `${TENANT_PREFIX}/${encodeURIComponent(siteSlug)}${pagePath === '/' ? '' : pagePath}`
   url.searchParams.delete('__site')
-  return NextResponse.rewrite(url)
+  if (!requestHeaders) {
+    return NextResponse.rewrite(url)
+  }
+  const headers = new Headers(request.headers)
+  for (const [name, value] of Object.entries(requestHeaders)) {
+    headers.set(name, value)
+  }
+  return NextResponse.rewrite(url, { request: { headers } })
 }
 
 /*
@@ -284,7 +292,12 @@ async function rewritePublicRequest(request) {
     return rewriteToAgentRoute(request, siteSlug, nextUrl.pathname, 'html')
   }
 
-  const response = rewriteToTenant(request, siteSlug, nextUrl.pathname)
+  // The designed page writes its own `Vary` inside the render, where this
+  // response header cannot reach it on Vercel. The request header lets the
+  // server-side hook in `src/lib/platform/vary-accept.js` add `Accept` there.
+  const response = rewriteToTenant(request, siteSlug, nextUrl.pathname, {
+    [PUBLIC_REPRESENTATION_HEADER]: DESIGNED_PAGE_REPRESENTATION,
+  })
   response.headers.set('Vary', 'Accept')
   return response
 }
