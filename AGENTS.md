@@ -122,6 +122,24 @@ Do not treat this as a generic marketing site repo.
   - public solar page behavior
   - admin shadcn/Tailwind usage
 - Run `pnpm build` after meaningful UI or routing changes.
+- Run `pnpm lint` before you call any change complete. See the lint gate below.
+
+## Lint Gate (Required)
+
+Every change to this repository must pass `pnpm lint` before it is complete.
+
+- Run `pnpm lint` after you finish editing and before you hand off.
+- Work is **incomplete** until `pnpm lint` exits with zero errors. Do not add new warnings either.
+- Fix the code, not the rules. Do **not** bypass a finding by:
+  - lowering or turning off a rule's severity
+  - adding files or paths to an ignore list
+  - editing lint config (for example `.oxlintrc.json` or the Ultracite preset) to make the finding go away
+  - adding disable comments (`// oxlint-disable`, `// eslint-disable`, `// biome-ignore`, or similar)
+- A legitimate exception is possible, but it must be:
+  - **narrow** — scoped to one line or one block, never a whole file or rule
+  - **documented** — a comment next to it saying why the rule does not apply
+  - **explicitly approved** — called out in the handoff and accepted by the user or coordinator before the work is marked done
+- Your final handoff must report the lint result (for example: `pnpm lint` → 0 errors, 0 warnings). If you could not run it, say so and why.
 
 ## Environment Variables
 
@@ -190,7 +208,7 @@ This project uses **Ultracite**, a zero-config preset that enforces strict code 
 - **Format code**: `pnpm dlx ultracite fix`
 - **Check for issues**: `pnpm dlx ultracite check`
 - **Diagnose setup**: `pnpm dlx ultracite doctor`
-- **Lint**: After making changes, run `pnpm lint` and fix all errors.
+- **Lint**: After making changes, run `pnpm lint` and fix all errors. This is a hard gate — see [Lint Gate (Required)](#lint-gate-required). Do not silence findings with config changes or disable comments.
 
 Oxlint + Oxfmt (the underlying engine) provides robust linting and formatting. Most issues are automatically fixable.
 
