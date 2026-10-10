@@ -6,6 +6,7 @@ import {
   escapeMarkdown,
   extractHtmlText,
   isBrowserNavigation,
+  isNextRouterRequest,
   measureHtmlContentRatio,
   parseAcceptHeader,
   prefersMarkdown,
@@ -140,6 +141,38 @@ describe('Accept negotiation', () => {
     expect(
       resolvePublicRepresentation({ method: 'POST', getHeader: headersOf({ accept: 'text/markdown' }) }),
     ).toBe('page')
+  })
+
+  it('keeps Next.js router fetches on the designed page as the proxy sees them', () => {
+    /* Next.js strips `rsc` / `next-router-*` before the proxy runs; `next-url` survives. */
+    const routerFetch = {
+      'user-agent': CHROME_UA,
+      accept: '*/*',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-site': 'same-origin',
+    }
+    expect(isNextRouterRequest(headersOf({ ...routerFetch, 'next-url': '/' }))).toBeTruthy()
+    expect(isNextRouterRequest(headersOf(routerFetch))).toBeFalsy()
+    expect(
+      resolvePublicRepresentation({
+        method: 'GET',
+        getHeader: headersOf({ ...routerFetch, 'next-url': '/' }),
+      }),
+    ).toBe('page')
+    expect(
+      resolvePublicRepresentation({
+        method: 'GET',
+        getHeader: headersOf({
+          ...routerFetch,
+          'next-url': '/about',
+          'next-router-segment-prefetch': '/_tree',
+        }),
+      }),
+    ).toBe('page')
+    expect(resolvePublicRepresentation({ method: 'GET', getHeader: headersOf(routerFetch) })).toBe(
+      'lightweight-html',
+    )
   })
 })
 
