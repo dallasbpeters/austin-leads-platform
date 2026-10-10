@@ -2,6 +2,7 @@ import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 
 import { canQuotesRoleAccessPath, defaultAdminHomePath, isQuotesRole } from '@/lib/auth/roles'
+import { resolvePublicRepresentation } from '@/lib/platform/agent-content'
 import { getAllSites } from '@/lib/platform/content'
 import { getSanityServerClient } from '@/sanity/client'
 
@@ -247,6 +248,29 @@ function trySitePrefixRewrite(request) {
   return rewriteToTenant(request, siteSlug, pagePath)
 }
 
+/*
+ * ─── Agent representations ──────────────────────────────────────────────────
+ * The same public URL has three bodies, chosen from the request headers:
+ * the designed page for browsers, Markdown for clients that prefer
+ * `text/markdown`, and a lightweight HTML document for non-browser HTML
+ * clients. The last two live under `/agent/<format>/<site>/…` route handlers,
+ * which are internal: a direct request to `/agent/…` is a tenant page path and
+ * 404s, so the only way in is this rewrite. Every variant carries
+ * `Vary: Accept` so shared caches keep them apart.
+ *
+ * @see `src/lib/platform/agent-content.js`
+ */
+const AGENT_ROUTE_PREFIX = '/agent'
+
+function rewriteToAgentRoute(request, siteSlug, pagePath, format) {
+  const url = request.nextUrl.clone()
+  url.pathname = `${AGENT_ROUTE_PREFIX}/${format}/${encodeURIComponent(siteSlug)}${pagePath === '/' ? '' : pagePath}`
+  url.searchParams.delete('__site')
+  const response = NextResponse.rewrite(url)
+  response.headers.set('Vary', 'Accept')
+  return response
+}
+
 async function rewritePublicRequest(request) {
   const { nextUrl } = request
   const override = allowPublicSiteParamOverride(request) ? nextUrl.searchParams.get('__site')?.trim() : null
@@ -254,7 +278,21 @@ async function rewritePublicRequest(request) {
     override ||
     (await resolveTenantSlug(request.headers.get('x-forwarded-host') || request.headers.get('host')))
 
-  return rewriteToTenant(request, siteSlug, nextUrl.pathname)
+  const representation = resolvePublicRepresentation({
+    method: request.method,
+    getHeader: (name) => request.headers.get(name),
+  })
+
+  if (representation === 'markdown') {
+    return rewriteToAgentRoute(request, siteSlug, nextUrl.pathname, 'markdown')
+  }
+  if (representation === 'lightweight-html') {
+    return rewriteToAgentRoute(request, siteSlug, nextUrl.pathname, 'html')
+  }
+
+  const response = rewriteToTenant(request, siteSlug, nextUrl.pathname)
+  response.headers.set('Vary', 'Accept')
+  return response
 }
 
 function normalizeHost(host) {

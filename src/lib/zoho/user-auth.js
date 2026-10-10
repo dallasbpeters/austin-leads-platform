@@ -105,7 +105,11 @@ export async function getZohoUserAccessFromRequest(request) {
   }
 
   // Known-insufficient consent (e.g. profile-only login before CRM scopes were added).
-  if (token.zohoScope != null && !zohoScopeAllowsContactSearch(token.zohoScope)) {
+  if (
+    token.zohoScope !== null &&
+    token.zohoScope !== undefined &&
+    !zohoScopeAllowsContactSearch(token.zohoScope)
+  ) {
     return {
       connected: false,
       needsZohoAuth: true,

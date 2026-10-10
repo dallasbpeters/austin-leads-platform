@@ -25,7 +25,7 @@ describe('where the sound effects go', () => {
     const a = sfxCues(scenes)
     const b = sfxCues(scenes)
     expect(a).toEqual(b)
-    expect(a.map((cue) => cue.at)).toEqual([...a.map((cue) => cue.at)].sort((x, y) => x - y))
+    expect(a.map((cue) => cue.at)).toEqual(a.map((cue) => cue.at).toSorted((x, y) => x - y))
   })
 
   it('waits for long headlines before the chime', () => {

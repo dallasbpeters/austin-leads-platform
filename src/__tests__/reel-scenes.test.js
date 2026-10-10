@@ -36,10 +36,13 @@ describe('what the voice says', () => {
 })
 
 describe('numbers the voice can say', () => {
-  it('turns prices, phone numbers and counts into words', () => {
+  it('turns counts into words', () => {
     expect(numberWords(1250)).toBe('one thousand two hundred fifty')
     expect(numberWords(0)).toBe('zero')
     expect(numberWords(115)).toBe('one hundred fifteen')
+  })
+
+  it('turns prices and phone numbers into words', () => {
     expect(spokenNumbers('Starting at $1,250')).toBe('Starting at one thousand two hundred fifty dollars')
     expect(spokenNumbers('$49.99 a month')).toBe('forty nine dollars and ninety nine cents a month')
     expect(spokenNumbers('Call 512-775-0561')).toBe('Call five one two, seven seven five, zero five six one')
@@ -62,8 +65,8 @@ describe('reel caption and posting', () => {
 
   it('only posts videos from Vercel Blob', async () => {
     const { isPostableVideoUrl } = await import('@/lib/social/publish')
-    expect(isPostableVideoUrl('https://abc.public.blob.vercel-storage.com/reels/x.mp4')).toBe(true)
-    expect(isPostableVideoUrl('https://evil.example.com/x.mp4')).toBe(false)
-    expect(isPostableVideoUrl('not a url')).toBe(false)
+    expect(isPostableVideoUrl('https://abc.public.blob.vercel-storage.com/reels/x.mp4')).toBeTruthy()
+    expect(isPostableVideoUrl('https://evil.example.com/x.mp4')).toBeFalsy()
+    expect(isPostableVideoUrl('not a url')).toBeFalsy()
   })
 })

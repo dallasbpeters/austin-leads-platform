@@ -46,6 +46,9 @@ import {
 } from '@/lib/christmas/mockup-geometry'
 import { loadMockupAssets, paintMockup } from '@/lib/christmas/mockup-render'
 
+const isTypingTarget = (target) =>
+  Boolean(target?.closest?.('input, textarea, select, [contenteditable="true"]'))
+
 /* Long edge cap — fast on an iPad, sharp enough to text a customer, small enough to save. */
 const MAX_PHOTO_EDGE = 2000
 
@@ -534,9 +537,6 @@ function useMockupEditor(canvasRef, zoom) {
 
 const MIN_ZOOM = 1
 const MAX_ZOOM = 8
-
-const isTypingTarget = (target) =>
-  Boolean(target?.closest?.('input, textarea, select, [contenteditable="true"]'))
 
 /*
  * Scroll (or trackpad pinch) zooms toward the pointer. Holding the space bar —

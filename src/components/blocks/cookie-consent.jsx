@@ -24,6 +24,7 @@ const CookieConsent = React.forwardRef(
 
     const handleAccept = React.useCallback(() => {
       setIsOpen(false)
+      // oxlint-disable-next-line unicorn/no-document-cookie -- plain cookie write; the Cookie Store API is not available in every browser yet
       document.cookie = 'cookieConsent=true; expires=Fri, 31 Dec 9999 23:59:59 GMT'
       setTimeout(() => {
         setHide(true)

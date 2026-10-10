@@ -505,6 +505,7 @@ function HeroSitePagesList({ selectedSite, selectedPage, sitePages, selectPage }
 
             return (
               <button
+                aria-label={page.title}
                 className={cn(
                   'w-full rounded-xl border px-4 py-4 text-left transition-colors',
                   active

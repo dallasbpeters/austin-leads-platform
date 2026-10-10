@@ -102,7 +102,7 @@ const generateSingleImage = async (client, posthogContext, { prompt, aspectRatio
     ],
     /* Ask for an image in both modes. Without this the edit path could come back as prose. */
     config: { imageConfig, responseModalities: ['Image'] },
-    ...(posthogContext ?? {}),
+    ...posthogContext,
   })
 
   const candidate = response?.candidates?.[0]

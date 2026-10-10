@@ -51,8 +51,10 @@ function quoteNotes(quote) {
   const parts = [
     `Quote ${quote.quoteNumber}`,
     address ? `Property: ${address}` : null,
-    sizeKw != null ? `System: ${sizeKw} kW` : null,
-    netPrice != null ? `Net price: $${Number(netPrice).toLocaleString('en-US')}` : null,
+    sizeKw !== null && sizeKw !== undefined ? `System: ${sizeKw} kW` : null,
+    netPrice !== null && netPrice !== undefined
+      ? `Net price: $${Number(netPrice).toLocaleString('en-US')}`
+      : null,
   ]
   return parts.filter(Boolean).join(' · ')
 }

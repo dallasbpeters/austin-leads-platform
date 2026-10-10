@@ -16,12 +16,11 @@ import { quotePdfFileName, renderQuotePdf } from './pdf.js'
 export async function syncQuoteIntegrations(quote, options = {}) {
   const includeWorkdrive = options.includeWorkdrive !== false
   const results = {
-    sheet: null,
+    sheet: await syncQuoteToSheet(quote),
     crm: null,
     workdrive: null,
   }
 
-  results.sheet = await syncQuoteToSheet(quote)
   if (results.sheet.ok) {
     await markQuoteSheetSynced(quote.id)
   }

@@ -263,6 +263,41 @@ const texasSolarNavigation = [
   { href: '#consultation', label: 'Contact', variant: 'button' },
 ]
 
+/*
+ * Published business identity for the primary site. Mirrors the `organization`
+ * object on the Sanity `site` document (`src/sanity/schemaTypes/siteType.js`);
+ * change both together or a reseed will undo the edit.
+ */
+const texasSolarOrganization = {
+  name: 'Texas Solar and Roofing Pros',
+  type: 'RoofingContractor',
+  description:
+    'Roofing, solar, storm-damage restoration, and home energy-efficiency work for homeowners in Austin and Central Texas. Honest cost ranges, free estimates, and no pressure.',
+  phone: '(512) 775-0561',
+  email: 'info@texassolarandroofingpros.com',
+  contactType: 'customer service',
+  serviceArea: [
+    'Austin, Texas',
+    'Cedar Park, Texas',
+    'Round Rock, Texas',
+    'Georgetown, Texas',
+    'Leander, Texas',
+    'Pflugerville, Texas',
+    'Kyle, Texas',
+    'San Marcos, Texas',
+    'Bastrop, Texas',
+    'Central Texas',
+  ],
+  address: {
+    streetAddress: '1700 Pagedale Cove',
+    addressLocality: 'Cedar Park',
+    addressRegion: 'TX',
+    postalCode: '78613',
+    addressCountry: 'US',
+  },
+  sameAs: ['https://www.facebook.com/profile.php?id=61591392153401'],
+}
+
 export const sites = portfolioDomains.map((entry, index) => {
   const tier = tierMap[entry.tier]
   const brand = brandByCategory[entry.category]
@@ -294,13 +329,16 @@ export const sites = portfolioDomains.map((entry, index) => {
       eyebrow: tier === 'hero' ? 'Featured Site' : tier === 'landing' ? 'Focused Site' : 'Redirect Domain',
       ...brand,
     },
-    organization: {
-      name: title,
-      type: entry.category === 'roofing' ? 'RoofingContractor' : 'ProfessionalService',
-      serviceArea: ['Austin', 'Texas'],
-      phone: `(512) 555-${String(1100 + index).padStart(4, '0')}`,
-      email: `hello@${entry.domain}`,
-    },
+    organization:
+      slug === 'texas-solar-and-roofing-pros'
+        ? texasSolarOrganization
+        : {
+            name: title,
+            type: entry.category === 'roofing' ? 'RoofingContractor' : 'ProfessionalService',
+            serviceArea: ['Austin', 'Texas'],
+            phone: `(512) 555-${String(1100 + index).padStart(4, '0')}`,
+            email: `hello@${entry.domain}`,
+          },
   }
 })
 
@@ -1734,6 +1772,204 @@ We may use trusted providers for hosting, analytics, CRM, email, form handling, 
     ],
   },
   ...servicePages,
+  {
+    id: 'page-contact',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'contact',
+    title: 'Contact Texas Solar and Roofing Pros',
+    description:
+      'Call, email, or request a free estimate from Texas Solar and Roofing Pros in Cedar Park. Roofing, solar, storm damage, and energy upgrades across Austin and Central Texas. No pressure, no commitment.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'hero',
+        eyebrow: 'Contact',
+        title: 'Talk with a real person about your roof, your bill, or the last storm.',
+        body: 'Call (512) 775-0561 or email info@texassolarandroofingpros.com. We are based at 1700 Pagedale Cove, Cedar Park, TX 78613 and work with homeowners across Austin and Central Texas. Every estimate is free, and nobody will push you toward work your house does not need.',
+        metrics: [
+          { label: 'Phone', value: '(512) 775-0561' },
+          { label: 'Email', value: 'info@texassolarandroofingpros.com' },
+          { label: 'Estimate', value: 'Free, no commitment' },
+        ],
+        actions: [
+          { label: 'Call (512) 775-0561', href: 'tel:+15127750561', variant: 'default' },
+          { label: 'Email us', href: 'mailto:info@texassolarandroofingpros.com', variant: 'secondary' },
+        ],
+      },
+      {
+        type: 'story',
+        eyebrow: 'How to reach us',
+        title: 'Phone, email, or the form. Pick whichever is easiest.',
+        body: `Phone: (512) 775-0561. Email: info@texassolarandroofingpros.com. Mailing address: Texas Solar and Roofing Pros, 1700 Pagedale Cove, Cedar Park, TX 78613.
+
+We serve homeowners in Austin, Cedar Park, Round Rock, Georgetown, Leander, Pflugerville, Kyle, San Marcos, Bastrop, and the surrounding Central Texas counties. If you are a little outside that area, ask anyway. We will tell you honestly whether we can help or who can.
+
+We aim to reply to every call and email within one business day. During hail season the phones get busy, so if you have not heard back by the next business day, call again and we will move you to the front of the line.`,
+      },
+      {
+        type: 'highlights',
+        title: 'What happens after you reach out',
+        items: [
+          {
+            title: 'A short conversation first',
+            body: 'We ask what brought you here: a leak, a storm, a high electric bill, or a solar quote you want a second opinion on. That tells us who should call you back and what to bring.',
+          },
+          {
+            title: 'A free on-site look when it helps',
+            body: 'Roof inspections and solar site checks are free. We photograph what we find, explain it in plain language, and leave the photos with you whether or not you hire us.',
+          },
+          {
+            title: 'A written estimate with real ranges',
+            body: 'You get numbers in writing, with the things that move them spelled out: roof complexity, material grade, shade, utility export rate, and insurance coverage. No limited-time pricing, no pressure.',
+          },
+        ],
+      },
+      {
+        type: 'faq',
+        title: 'Contact questions',
+        items: [
+          {
+            question: 'Is the estimate really free?',
+            answer:
+              'Yes. Roof inspections, solar site checks, and written estimates cost nothing and come with no commitment. If your roof or home does not need the work, we say so.',
+          },
+          {
+            question: 'How fast will someone get back to me?',
+            answer:
+              'Usually within one business day. After a major hail event, it can take a little longer, so call again if you have not heard from us by the next business day.',
+          },
+          {
+            question: 'Do you handle insurance claims?',
+            answer:
+              'We document storm damage, meet the adjuster when you want us there, and explain what the claim covers. You stay in control of the claim and the decision.',
+          },
+          {
+            question: 'What areas do you serve?',
+            answer:
+              'Austin and Central Texas, including Cedar Park, Round Rock, Georgetown, Leander, Pflugerville, Kyle, San Marcos, and Bastrop. Ask about anywhere else; we will give you a straight answer.',
+          },
+        ],
+      },
+      {
+        type: 'cta',
+        title: 'Request a free estimate',
+        body: 'Tell us what is going on with the house. We will call or email back, usually within one business day. No pressure and no commitment.',
+        ctaLabel: 'Request a free estimate',
+      },
+    ],
+  },
+  {
+    id: 'page-developers',
+    siteSlug: 'texas-solar-and-roofing-pros',
+    slug: 'developers',
+    title: 'Texas Solar and Roofing Pros Developer Resources',
+    description:
+      'Texas Solar and Roofing Pros for developers and AI agents: llms.txt, sitemap.xml, robots.txt, ai.txt, Markdown responses on every public page, contact details, and an honest note that there is no public API, SDK, or MCP server.',
+    pageType: 'page',
+    templateLevel: 'hero',
+    sections: [
+      {
+        type: 'hero',
+        eyebrow: 'Developers and AI agents',
+        title: 'Texas Solar and Roofing Pros: resources for developers and AI agents',
+        body: 'This page lists every machine-readable surface the site publishes and how to request it. The site is a read-only source of facts about roofing, solar, storm damage, and home-energy work in Austin and Central Texas. There is no public API, SDK, or MCP server; the resources below are the whole programmatic surface.',
+        metrics: [
+          { label: 'Markdown', value: 'Every public page' },
+          { label: 'Index', value: '/llms.txt' },
+          { label: 'Public API', value: 'None' },
+        ],
+        actions: [
+          { label: 'Open llms.txt', href: '/llms.txt', variant: 'default' },
+          { label: 'Open sitemap.xml', href: '/sitemap.xml', variant: 'secondary' },
+        ],
+      },
+      {
+        type: 'highlights',
+        title: 'Published resources',
+        items: [
+          {
+            title: '/llms.txt',
+            body: 'A structured index written for language models: what the company does, when to use this site, current incentive facts, and a link to every service page and guide. Start here.',
+          },
+          {
+            title: '/sitemap.xml',
+            body: 'Every public URL with last-modified dates. Rebuilt on request from the published content, so new pages appear as soon as they are live.',
+          },
+          {
+            title: '/robots.txt',
+            body: 'Crawl rules. Public pages are open to search engines and to named AI crawlers (GPTBot, ClaudeBot, PerplexityBot and their user agents). /api/, /studio/, and the style guide are off limits.',
+          },
+          {
+            title: '/ai.txt',
+            body: 'AI crawler policy and content constraints: quote with attribution and a link to the specific page, treat cost figures as Central Texas ranges, and never present the expired federal solar tax credit as available.',
+          },
+          {
+            title: 'Markdown on every public page',
+            body: 'Send Accept: text/markdown to any public page, including the homepage, and the response is Markdown with Content-Type text/markdown; charset=utf-8 and Vary: Accept. Missing pages return a 404 Markdown document with recovery links.',
+          },
+          {
+            title: 'Lightweight HTML for non-browser clients',
+            body: 'HTTP clients that are not browsers and ask for HTML receive a plain, script-free HTML document with one H1, sequential headings, and the same content as the designed page. Browser navigations still get the full designed page.',
+          },
+        ],
+      },
+      {
+        type: 'steps',
+        title: 'How to request Markdown',
+        items: [
+          {
+            title: 'Ask for text/markdown',
+            body: 'curl -H "Accept: text/markdown" https://texassolarandroofingpros.com/ returns the homepage as Markdown. Any public path works the same way, for example /about, /services, /guides, or /contact.',
+          },
+          {
+            title: 'Check the response headers',
+            body: 'A Markdown response carries Content-Type: text/markdown; charset=utf-8 and Vary: Accept, so caches keep the Markdown and HTML versions apart. HTML responses carry Vary: Accept too.',
+          },
+          {
+            title: 'Handle 404s',
+            body: 'A path that does not exist returns HTTP 404 with a short Markdown document that links to the homepage, /llms.txt, and /sitemap.xml so an agent can recover without guessing.',
+          },
+          {
+            title: 'Attribute and link',
+            body: 'When you quote a figure, attribute it to Texas Solar and Roofing Pros and link the specific service page or guide, not the homepage. Say that cost and incentive numbers vary by roof, usage, utility, and carrier.',
+          },
+        ],
+      },
+      {
+        type: 'faq',
+        title: 'Developer questions',
+        items: [
+          {
+            question: 'Is there a public API, SDK, or MCP server?',
+            answer:
+              'No. The site publishes read-only content: HTML, Markdown, llms.txt, sitemap.xml, robots.txt, and ai.txt. There is no authenticated API, no client library, and no Model Context Protocol server. If one is published later, it will be listed on this page and in /llms.txt first.',
+          },
+          {
+            question: 'Can I submit a lead or quote request programmatically?',
+            answer:
+              'No. Homeowners reach us through the website form, by phone at (512) 775-0561, or by email at info@texassolarandroofingpros.com. Automated submissions are not supported.',
+          },
+          {
+            question: 'Who do I contact about crawling, licensing, or removal?',
+            answer:
+              'Email info@texassolarandroofingpros.com. Texas Solar and Roofing Pros, 1700 Pagedale Cove, Cedar Park, TX 78613, (512) 775-0561.',
+          },
+          {
+            question: 'Which facts change most often?',
+            answer:
+              'Utility export rates and local rebates. Austin Energy currently offers a one-time $2,500 solar rebate plus Value of Solar bill credits at 9.91 cents per kWh; verify both with the utility at quote time. The federal residential solar tax credit expired December 31, 2025 and should not appear in current estimates.',
+          },
+        ],
+      },
+      {
+        type: 'cta',
+        title: 'Talk with the team',
+        body: 'Questions about the content or how it may be used? Call (512) 775-0561 or email info@texassolarandroofingpros.com.',
+        ctaLabel: 'Contact us',
+      },
+    ],
+  },
   {
     id: 'page-solar-guides',
     siteSlug: 'texas-solar-and-roofing-pros',

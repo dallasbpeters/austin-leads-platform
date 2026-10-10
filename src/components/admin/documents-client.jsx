@@ -160,7 +160,9 @@ function renderBuilderFieldCard(field, isSelected = false) {
   )
 }
 
-function buildDocusealFields(fields, pageSize = { width: 612, height: 792 }) {
+const DEFAULT_DOCUSEAL_PAGE_SIZE = { width: 612, height: 792 }
+
+function buildDocusealFields(fields, pageSize = DEFAULT_DOCUSEAL_PAGE_SIZE) {
   const pageWidth = Number(pageSize.width) || 612
   const pageHeight = Number(pageSize.height) || 792
 

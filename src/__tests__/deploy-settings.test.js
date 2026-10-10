@@ -7,9 +7,13 @@ const railway = vi.hoisted(() => ({
 }))
 const vercel = vi.hoisted(() => ({ setVercelEnv: vi.fn(), listVercelEnv: vi.fn(), vercelReady: vi.fn() }))
 
-vi.mock('@/lib/deploy/railway', () => railway)
-vi.mock('@/lib/deploy/vercel-env', () => vercel)
-vi.mock('node:fs', () => ({ existsSync: () => false, readFileSync: () => '', writeFileSync: vi.fn() }))
+vi.mock(import('@/lib/deploy/railway'), () => railway)
+vi.mock(import('@/lib/deploy/vercel-env'), () => vercel)
+vi.mock(import('node:fs'), () => ({
+  existsSync: () => false,
+  readFileSync: () => '',
+  writeFileSync: vi.fn(),
+}))
 
 const { applySetting, deploySettingsStatus } = await import('@/lib/deploy/settings')
 
@@ -25,7 +29,7 @@ describe('deploy settings', () => {
     const railwayValue = railway.setRailwayVars.mock.calls[0][0].RENDER_SHARED_SECRET
     expect(railwayValue).toMatch(/^[\da-f]{64}$/)
     expect(vercel.setVercelEnv).toHaveBeenCalledWith('RENDER_SHARED_SECRET', railwayValue, { secret: true })
-    expect(result).toEqual({ wrote: ['Railway', 'Vercel'], redeploy: ['vercel'] })
+    expect(result).toStrictEqual({ wrote: ['Railway', 'Vercel'], redeploy: ['vercel'] })
   })
 
   it('refuses unknown keys, blank values and generating a pasted key', async () => {

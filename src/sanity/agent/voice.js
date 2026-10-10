@@ -83,5 +83,5 @@ export const AUDIENCE = `You are writing for Texas homeowners who already have a
  */
 export const escapeAgentTemplateVars = (text = '') =>
   String(text)
-    .replace(/\$(?=\d)/g, 'USD ')
-    .replace(/\$(?=[A-Za-z_])/g, '＄')
+    .replaceAll(/\$(?=\d)/g, 'USD ')
+    .replaceAll(/\$(?=[A-Za-z_])/g, '＄')

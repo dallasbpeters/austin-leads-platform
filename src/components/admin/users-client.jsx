@@ -100,8 +100,8 @@ const UsersClient = ({
         })
         setUsers((prev) => prev.map((u) => (u.id === saved.id ? saved : u)))
         setEditing(null)
-      } catch (error) {
-        setError(error.message)
+      } catch (requestError) {
+        setError(requestError.message)
       }
     })
   }
@@ -127,8 +127,8 @@ const UsersClient = ({
         await apiPatchUser(user.id, { password: passwordValues.password })
         setResettingPassword(null)
         setPasswordValues({ password: '', confirm: '' })
-      } catch (error) {
-        setError(error.message)
+      } catch (requestError) {
+        setError(requestError.message)
       }
     })
   }
@@ -142,8 +142,8 @@ const UsersClient = ({
       try {
         await apiDeleteUser(user.id)
         setUsers((prev) => prev.filter((u) => u.id !== user.id))
-      } catch (error) {
-        setError(error.message)
+      } catch (requestError) {
+        setError(requestError.message)
       }
     })
   }
@@ -154,8 +154,8 @@ const UsersClient = ({
       try {
         const { user: saved } = await apiPatchUser(user.id, { isActive: nextActive })
         setUsers((prev) => prev.map((u) => (u.id === saved.id ? saved : u)))
-      } catch (error) {
-        setError(error.message)
+      } catch (requestError) {
+        setError(requestError.message)
       }
     })
   }
@@ -181,8 +181,8 @@ const UsersClient = ({
         setUsers((prev) => [...prev, created])
         setNewUser({ email: '', name: '', password: '', isActive: true })
         setAddOpen(false)
-      } catch (error) {
-        setError(error.message)
+      } catch (requestError) {
+        setError(requestError.message)
       }
     })
   }

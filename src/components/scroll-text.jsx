@@ -183,7 +183,9 @@ function VelocityText({
         pausedRef.current = true
       }}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) pausedRef.current = false
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          pausedRef.current = false
+        }
       }}
     >
       <motion.div

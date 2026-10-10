@@ -1,3 +1,8 @@
+# Required repo secrets (values never appear in this file or in logs):
+#   NEXT_PUBLIC_POSTHOG_KEY, POSTHOG_HOST — src/lib/posthog-logs.js throws at
+#   `next dev` startup when either is missing, so Playwright never starts.
+#   Add with: gh secret set NEXT_PUBLIC_POSTHOG_KEY ; gh secret set POSTHOG_HOST
+
 name: Playwright Tests
 on:
   push:
@@ -18,6 +23,9 @@ jobs:
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
+        env:
+          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
