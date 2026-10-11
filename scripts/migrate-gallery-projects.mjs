@@ -14,7 +14,9 @@
  *
  * Order is preserved. Sections that already have `projects[]` keep them and get
  * the converted images appended after them. Walks published and draft versions
- * (raw perspective). Idempotent: sections with no `images[]` are skipped.
+ * (raw perspective). Idempotent: an image whose `_key` already exists as a
+ * project `_key` was converted on an earlier `--keep-legacy` run and is not
+ * added again, so a later plain run only clears `images[]`.
  *
  * Usage:
  *   node --env-file=.env.local scripts/migrate-gallery-projects.mjs [--dry-run] [--keep-legacy]
@@ -108,7 +110,13 @@ export function migrateSection(section) {
     return null
   }
   const existing = Array.isArray(section.projects) ? section.projects : []
-  const converted = images.map((image, index) => legacyImageToProject(image, index, text(section.title)))
+  const existingKeys = new Set(existing.map((project) => project?._key).filter(Boolean))
+  const converted = images
+    .map((image, index) => legacyImageToProject(image, index, text(section.title)))
+    .filter((project) => !existingKeys.has(project._key))
+  if (converted.length === 0 && keepLegacy) {
+    return null
+  }
   const next = { ...section, projects: [...existing, ...converted] }
   if (!keepLegacy) {
     delete next.images
