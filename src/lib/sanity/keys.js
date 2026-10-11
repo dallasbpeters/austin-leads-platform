@@ -677,6 +677,17 @@ export function withSectionKeys(sections) {
       }
     }
 
+    if (Array.isArray(normalizedSection?.projects)) {
+      keyedSection.projects = withObjectArrayKeys(normalizedSection.projects, 'gallery-project').map(
+        (project) => ({
+          ...project,
+          photos: Array.isArray(project?.photos)
+            ? withObjectArrayKeys(project.photos, `${project._key}-photo`, 'altText')
+            : project?.photos,
+        }),
+      )
+    }
+
     return keyedSection
   })
 }

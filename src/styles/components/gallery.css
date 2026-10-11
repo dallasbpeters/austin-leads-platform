@@ -1,6 +1,7 @@
 /**
- * .gallery block: masonry photo grid with a lightbox. Tile heights come from
- * a cycled list set inline by gallery-section.jsx, so neighbours never match.
+ * .gallery block: masonry grid of project covers with a per-project lightbox.
+ * Tile heights come from a cycled list set inline by gallery-section.jsx, so
+ * neighbours never match.
  */
 
 .gallery__grid {
@@ -86,6 +87,28 @@
   }
 }
 
+.gallery__count {
+  position: absolute;
+  inset-inline-end: 0.75rem;
+  inset-block-start: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-block: 0.25rem;
+  padding-inline: 0.5rem;
+  border-radius: var(--radius-pill);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-white);
+  background: oklch(0% 0 0deg / 55%);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.gallery__count-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
 .gallery__fade {
   position: absolute;
   inset-inline: 0;
@@ -148,9 +171,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+
+  /* Top padding clears the absolutely positioned bar (padding + 2.75rem button). */
+  padding-block: 4.75rem 1rem;
+  padding-inline: 1rem;
   outline: 2px solid transparent;
   user-select: none;
+
+  /* Horizontal drags are swipes between photos; vertical scroll stays native. */
+  touch-action: pan-y;
+}
+
+@media (width >= 48rem) {
+  .gallery-lightbox__content {
+    padding-block: 5.75rem 1.5rem;
+  }
 }
 
 .gallery-lightbox__overlay[data-state='open'],
@@ -181,17 +216,36 @@
   }
 }
 
+.gallery-lightbox__bar-text {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.125rem 0.75rem;
+  padding-inline-end: 1rem;
+}
+
+.gallery-lightbox__title {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-white);
+}
+
 .gallery-lightbox__count {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.025em;
+  white-space: nowrap;
   color: color-mix(in oklch, var(--color-white) 70%, transparent);
 }
 
+/* 44px minimum so the close control is comfortable on touch screens. */
 .gallery-lightbox__button {
   display: grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border: 0;
   border-radius: var(--radius-pill);
   color: var(--color-white);
@@ -221,17 +275,38 @@
   height: 1.25rem;
 }
 
+.gallery-lightbox__figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+  margin: 0;
+}
+
+/*
+ * The photo is sized by its own aspect ratio and capped to the viewport, so it is
+ * never stretched or cropped. The block cap leaves room for the top bar and a
+ * two-line caption; the inline cap keeps clear of the prev/next controls.
+ */
 .gallery-lightbox__image {
-  max-width: 92vw;
-  max-height: 82vh;
+  width: auto;
+  height: auto;
+  max-width: min(92vw, 100%);
+  max-height: calc(100dvh - 12.5rem);
   object-fit: contain;
   box-shadow: var(--shadow-2xl);
+}
+
+@media (width >= 48rem) {
+  .gallery-lightbox__image {
+    max-width: min(84vw, 100%);
+  }
 }
 
 .gallery-lightbox__caption {
   z-index: 10;
   max-width: 92vw;
-  margin-block-start: 1.5rem;
+  margin-block-start: 1rem;
   text-align: center;
   color: var(--color-white);
 }

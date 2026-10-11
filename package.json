@@ -32,6 +32,7 @@
     "db:studio": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs studio --config=drizzle.config.ts",
     "zoho:exchange": "node --env-file=.env.development.local scripts/zoho-exchange-code.mjs",
     "sanity:repair-sections": "node --env-file=.env.local scripts/repair-section-types.mjs",
+    "sanity:migrate-gallery-projects": "node --env-file=.env.local scripts/migrate-gallery-projects.mjs",
     "vercel:env:push": "node --env-file=.env.local scripts/push-env-to-vercel.mjs .env.local",
     "vercel:env:push:dry": "node --env-file=.env.local scripts/push-env-to-vercel.mjs .env.local --dry-run",
     "generate:favicons": "node scripts/generate-favicons.mjs",
