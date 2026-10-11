@@ -163,8 +163,8 @@
    */
   --radius-pill: 999px;
 
-  /* Section gutter. Equals the old 0.75 / 1.5 / 2.5rem ladder at 375, 768 and 1280px and glides between. */
-  --gutter-page: clamp(0.75rem, -1.5rem + 6.25vw, 2.5rem);
+  /* Section gutter. A stepped ladder, not a clamp, so edges match the prior layout exactly at every width. */
+  --gutter-page: 0.75rem;
   --space-section: 6rem;
   --space-section-compact: 5rem;
 
@@ -172,6 +172,18 @@
   --scroll-offset-header: 9.5rem;
   --gradient-sky-paper: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
   --wash-deep: rgb(11 59 66 / 20%);
+}
+
+@media (width >= 48rem) {
+  :root {
+    --gutter-page: 1.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  :root {
+    --gutter-page: 2.5rem;
+  }
 }
 
 /*
