@@ -125,11 +125,6 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'hoirqrkdgbmvpwutwuwj.supabase.co',
-        port: '',
-      },
-      {
-        protocol: 'https',
         hostname: 'unicorn.studio',
         port: '',
       },
