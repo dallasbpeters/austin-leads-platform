@@ -52,7 +52,9 @@
   align-items: end;
   width: min(80rem, calc(100% - 3rem));
   margin-inline: auto;
-  padding-block: 5rem 0;
+
+  /* Clear a fixed header (generic shell) while keeping the 5rem floor of the sticky solar shell. */
+  padding-block: max(5rem, calc(var(--site-header-offset) + 1.5rem)) 0;
   padding-inline: 0.5rem;
 }
 

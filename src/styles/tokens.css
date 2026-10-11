@@ -170,8 +170,21 @@
 
   /* Anchor targets sit this far below the sticky header. */
   --scroll-offset-header: 9.5rem;
+
+  /*
+   * Bottom edge of a fixed public header, measured from the top of the viewport.
+   * 0 for the sticky solar header (it already takes up flow space). The generic
+   * header is fixed, so generic-header.jsx measures its bar and writes the real
+   * value here; the :has() fallback below covers the first paint before hydration.
+   */
+  --site-header-offset: 0px;
   --gradient-sky-paper: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
   --wash-deep: rgb(11 59 66 / 20%);
+}
+
+/* Pre-hydration estimate for the fixed generic header (bar + top inset). */
+:root:has(.generic-header) {
+  --site-header-offset: 5.75rem;
 }
 
 @media (width >= 48rem) {
