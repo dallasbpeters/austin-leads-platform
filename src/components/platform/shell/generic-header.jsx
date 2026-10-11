@@ -92,6 +92,7 @@ const SiteLogo = ({ site, logoUrl, logoAlt, usingChristmasWordmarkFallback }) =>
 const GenericHeader = ({ site, navigation = EMPTY_NAVIGATION }) => {
   const [openNav, setOpenNav] = React.useState(false)
   const [, setConsultationInView] = React.useState(false)
+  const barRef = React.useRef(null)
   const mobileMenuId = 'site-mobile-nav'
 
   const { logoUrl, logoAlt, usingChristmasWordmarkFallback, isChristmas } = buildLogoConfig(site)
@@ -116,6 +117,31 @@ const GenericHeader = ({ site, navigation = EMPTY_NAVIGATION }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  /*
+   * The nav is fixed, so nothing below reserves room for it. Publish the bar's
+   * bottom edge as --site-header-offset so the hero can pad past it. Only the
+   * bar is measured: the mobile sheet grows the nav when open and must not
+   * push the page down. Logo height comes from Sanity, so this cannot be a
+   * static token.
+   */
+  React.useEffect(() => {
+    const bar = barRef.current
+    if (!bar || typeof ResizeObserver === 'undefined') {
+      return
+    }
+    const root = document.documentElement
+    const publish = () => {
+      root.style.setProperty('--site-header-offset', `${Math.ceil(bar.getBoundingClientRect().bottom)}px`)
+    }
+    const observer = new ResizeObserver(publish)
+    observer.observe(bar)
+    publish()
+    return () => {
+      observer.disconnect()
+      root.style.removeProperty('--site-header-offset')
+    }
+  }, [])
+
   React.useEffect(() => {
     const section = document.querySelector(`#${CONSULTATION_ANCHOR_ID}`)
     if (!section || typeof IntersectionObserver === 'undefined') {
@@ -135,7 +161,7 @@ const GenericHeader = ({ site, navigation = EMPTY_NAVIGATION }) => {
     <>
       <nav
         id="site-top"
-        className="text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
+        className="generic-header text-foreground fixed left-[50%] z-50 mx-auto w-full max-w-400 -translate-x-1/2 transform px-0 sm:top-0 md:top-2 md:px-4"
         {...getDevSectionAttributes({
           id: 'site-header',
           markup: 'src/components/platform/shell/generic-header.jsx',
@@ -143,6 +169,7 @@ const GenericHeader = ({ site, navigation = EMPTY_NAVIGATION }) => {
         })}
       >
         <div
+          ref={barRef}
           className={
             isChristmas
               ? 'bg-card/95 mx-auto w-full rounded-none px-5 py-2 shadow-sm backdrop-blur-sm md:rounded-full'
