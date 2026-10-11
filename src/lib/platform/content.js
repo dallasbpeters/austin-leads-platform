@@ -295,7 +295,34 @@ export const sectionProjection = `
     paymentDue,
     amount
   },
-  // gallerySection: array of galleryImage (image with altText + neighborhood/year/package metadata).
+  // gallerySection: projects[] of galleryProject, each with an ordered photos[] of galleryPhoto.
+  projects[]{
+    _key,
+    _type,
+    title,
+    neighborhood,
+    year,
+    package,
+    photos[]{
+      _key,
+      _type,
+      crop,
+      hotspot,
+      altText,
+      caption,
+      asset->{
+        _id,
+        url,
+        metadata{
+          dimensions{
+            width,
+            height
+          }
+        }
+      }
+    }
+  },
+  // gallerySection (legacy): flat images[] of galleryImage; rendered as one-photo projects.
   images[]{
     _key,
     crop,

@@ -3422,6 +3422,113 @@ const galleryImageType = {
   },
 }
 
+const galleryPhotoType = {
+  name: 'galleryPhoto',
+  title: 'Gallery Photo',
+  type: 'image',
+  options: {
+    hotspot: true,
+    collapsible: false,
+  },
+  fields: [
+    {
+      name: 'altText',
+      title: 'Alt text',
+      type: 'string',
+      validation: (Rule) => Rule.required().error('Every gallery photo needs alt text.'),
+      options: canvasPurpose('Describes the photo for screen readers and SEO. Required.'),
+    },
+    {
+      name: 'caption',
+      title: 'Caption',
+      type: 'string',
+      options: canvasPurpose('Optional short caption shown under this photo in the lightbox.'),
+    },
+  ],
+  preview: {
+    select: {
+      altText: 'altText',
+      caption: 'caption',
+      asset: 'asset',
+    },
+    prepare({ altText, caption, asset }) {
+      return {
+        title: altText || caption || 'Gallery photo',
+        subtitle: altText && caption ? caption : undefined,
+        media: asset,
+      }
+    },
+  },
+}
+
+const galleryProjectType = {
+  name: 'galleryProject',
+  title: 'Gallery Project',
+  type: 'object',
+  fields: [
+    {
+      name: 'title',
+      title: 'Project title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      options: canvasPurpose('Name of this install (e.g. "The Johnson home" or "West Lake roofline").'),
+    },
+    {
+      name: 'neighborhood',
+      title: 'Neighborhood',
+      type: 'string',
+      options: canvasPurpose(
+        'Where this project was completed (e.g. "South Austin", "Westlake"). Shown as a caption.',
+      ),
+    },
+    {
+      name: 'year',
+      title: 'Year',
+      type: 'number',
+      validation: (Rule) => Rule.integer().min(1900).max(2100),
+      options: canvasPurpose('The year the project was completed.'),
+    },
+    {
+      name: 'package',
+      title: 'Package',
+      type: 'string',
+      options: canvasPurpose(
+        'Service package or tier for this project (e.g. "Premium", "Holiday Spectacular").',
+      ),
+    },
+    {
+      name: 'photos',
+      title: 'Photos',
+      type: 'array',
+      of: [{ type: 'galleryPhoto' }],
+      validation: (Rule) => Rule.required().min(1).error('Add at least one photo to the project.'),
+      options: canvasPurpose(
+        'Ordered photos for this project. The first photo is the cover shown in the gallery grid; the rest open in the lightbox.',
+      ),
+    },
+  ],
+  preview: {
+    select: {
+      title: 'title',
+      neighborhood: 'neighborhood',
+      year: 'year',
+      package: 'package',
+      photos: 'photos',
+      media: 'photos.0',
+    },
+    prepare({ title, neighborhood, year, package: pkg, photos, media }) {
+      const photoCount = arrayCount(photos)
+      const meta = [neighborhood, year, pkg].filter(Boolean).join(' · ')
+      const countLabel = `${photoCount} photo${photoCount === 1 ? '' : 's'}`
+      return {
+        title: title || neighborhood || 'Gallery project',
+        subtitle: [meta, countLabel].filter(Boolean).join(' · '),
+        media,
+      }
+    },
+  },
+}
+
 const gallerySectionType = {
   name: 'gallerySection',
   title: 'Gallery Section',
@@ -3453,25 +3560,55 @@ const gallerySectionType = {
       options: canvasPurpose('Optional supporting line shown above the gallery grid.'),
     },
     {
+      name: 'projects',
+      title: 'Projects',
+      type: 'array',
+      of: [{ type: 'galleryProject' }],
+      validation: (Rule) =>
+        Rule.custom((projects, context) => {
+          const legacyImages = arrayCount(context?.parent?.images)
+          if (arrayCount(projects) > 0 || legacyImages > 0) {
+            return true
+          }
+          return 'Add at least one project.'
+        }),
+      options: canvasPurpose(
+        "Projects shown in the masonry gallery. Each project holds one or more photos; the first photo is its cover and clicking it opens a lightbox with that project's photos.",
+      ),
+    },
+    {
       name: 'images',
-      title: 'Images',
+      title: 'Legacy images',
+      description:
+        'Older single-photo gallery entries. They still render as one-photo projects. Move them into Projects (or run scripts/migrate-gallery-projects.mjs) and clear this list.',
       type: 'array',
       of: [{ type: 'galleryImage' }],
-      validation: (Rule) => Rule.required().min(1),
-      options: canvasPurpose(
-        'Photos to display in the masonry gallery. Each photo can be tagged with neighborhood, year, and package.',
-      ),
+      hidden: ({ parent }) => arrayCount(parent?.images) === 0,
+      readOnly: ({ parent }) => arrayCount(parent?.projects) > 0,
+      options: canvasExclude,
     },
   ]),
   preview: {
     select: {
       title: 'title',
       eyebrow: 'eyebrow',
+      projects: 'projects',
       images: 'images',
     },
-    prepare({ title, eyebrow, images }) {
-      const itemCount = arrayCount(images)
-      const tail = [eyebrow, `${itemCount || 0} images`].filter(Boolean).join(' · ')
+    prepare({ title, eyebrow, projects, images }) {
+      const projectCount = arrayCount(projects) + arrayCount(images)
+      const photoCount =
+        (Array.isArray(projects) ? projects : []).reduce(
+          (total, project) => total + arrayCount(project?.photos),
+          0,
+        ) + arrayCount(images)
+      const tail = [
+        eyebrow,
+        `${projectCount} project${projectCount === 1 ? '' : 's'}`,
+        `${photoCount} photo${photoCount === 1 ? '' : 's'}`,
+      ]
+        .filter(Boolean)
+        .join(' · ')
       return {
         title: title || 'Gallery section',
         subtitle: pageSectionListSubtitle('Gallery section', tail),
@@ -5197,6 +5334,8 @@ export default [
   uploadedVideoType,
   bandColorStopType,
   galleryImageType,
+  galleryPhotoType,
+  galleryProjectType,
   gallerySectionType,
   pricingNoteItemType,
   pricingSectionType,

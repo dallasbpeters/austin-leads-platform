@@ -1,34 +1,29 @@
 'use client'
 
-import { NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
+import { MultiplePages, NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
 import Image from 'next/image'
 import { Dialog } from 'radix-ui'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
+import { countGalleryPhotos, getGalleryProjects, getProjectMetaLine } from '@/lib/platform/gallery-projects'
 import { buildSanityImageUrl } from '@/lib/platform/imageSource'
-import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
-
-// Shared fallback so `images` keeps a stable identity when the section has none.
-// A fresh `[]` per render would change the neighbour-preload effect's dependencies
-// on every render and re-run it forever.
-const EMPTY_IMAGES = []
+import { cleanRuntimeString } from '@/lib/sanity/stega'
 
 // Cycled heights produce the masonry rhythm. The order is intentionally
 // non-monotonic so neighbouring tiles never sit at matching heights and the
 // columns end up offset from each other.
 const MASONRY_HEIGHTS_REM = [16, 12, 18, 14, 13, 15, 20, 11, 14, 18, 12, 16]
 
-const getImageCaption = (item) => {
-  const neighborhood = cleanRuntimeString(item?.neighborhood || '')
-  const packageName = cleanRuntimeString(item?.package || '')
-  const year = typeof item?.year === 'number' ? String(item.year) : cleanRuntimeString(item?.year || '')
-  return { neighborhood, year, packageName }
-}
+const LIGHTBOX_IMAGE_WIDTH = 2400
+// Fallback intrinsic size when an asset has no stored dimensions; only the ratio matters.
+const FALLBACK_IMAGE_WIDTH = 1600
+const FALLBACK_IMAGE_HEIGHT = 1200
+// A horizontal drag shorter than this is a tap, not a swipe.
+const SWIPE_THRESHOLD_PX = 48
 
-const resolveImageAlt = (item, index, fallback) =>
-  cleanRuntimeString(item?.altText || item?.alt || fallback) || `gallery photo ${index + 1}`
+const wrapIndex = (index, count) => ((index % count) + count) % count
 
 function GalleryHeader({ section }) {
   return (
@@ -48,45 +43,49 @@ function GalleryHeader({ section }) {
   )
 }
 
-function GalleryTile({ item, index, title, onClick }) {
-  const src = buildSanityImageUrl(item, { width: 1200 })
+function ProjectTile({ project, index, onClick }) {
+  const src = buildSanityImageUrl(project.cover.image, { width: 1200 })
   if (!src) {
     return null
   }
 
-  const alt = resolveImageAlt(item, index, title)
   const height = `${MASONRY_HEIGHTS_REM[index % MASONRY_HEIGHTS_REM.length]}rem`
-  const { neighborhood, year, packageName } = getImageCaption(item)
-  const hasCaption = Boolean(neighborhood || year || packageName)
+  const meta = getProjectMetaLine(project)
+  const photoCount = project.photos.length
+  const hasCaption = Boolean(project.title || meta)
+  const countLabel = `${photoCount} photo${photoCount === 1 ? '' : 's'}`
 
   return (
     <button
       type="button"
-      key={buildRuntimeKey('gallery-image', item?._key, item?.asset?._ref, index)}
       onClick={onClick}
-      aria-label={`Open ${alt}`}
+      aria-label={photoCount > 1 ? `Open ${project.name}, ${countLabel}` : `Open ${project.name}`}
+      aria-haspopup="dialog"
       className="gallery__tile"
       style={{ height }}
+      data-gallery-project={project.key}
     >
       <Image
         src={src}
-        alt={alt}
+        alt={project.cover.alt}
         height={1000}
         width={1000}
         loading="lazy"
         decoding="async"
         className="gallery__image"
       />
+      {photoCount > 1 ? (
+        <span className="gallery__count text-size-80" aria-hidden="true">
+          <MultiplePages className="gallery__count-icon" strokeWidth={2} />
+          {photoCount}
+        </span>
+      ) : null}
       {hasCaption ? (
         <>
           <div className="gallery__fade" />
           <div className="gallery__caption">
-            {neighborhood ? <p className="gallery__caption-title text-size-100">{neighborhood}</p> : null}
-            {year || packageName ? (
-              <p className="gallery__caption-meta text-size-80">
-                {[year, packageName].filter(Boolean).join(' · ')}
-              </p>
-            ) : null}
+            {project.title ? <p className="gallery__caption-title text-size-100">{project.title}</p> : null}
+            {meta ? <p className="gallery__caption-meta text-size-80">{meta}</p> : null}
           </div>
         </>
       ) : null}
@@ -94,77 +93,117 @@ function GalleryTile({ item, index, title, onClick }) {
   )
 }
 
-function GalleryLightbox({
-  isOpen,
-  onOpenChange,
-  lightboxIndex,
-  imageCount,
-  images,
-  title,
-  handlePrev,
-  handleNext,
-}) {
-  const activeImage = isOpen ? images[lightboxIndex] : null
-  const activeSrc = activeImage ? buildSanityImageUrl(activeImage, { width: 2400 }) : null
-  const activeAlt = activeImage ? resolveImageAlt(activeImage, lightboxIndex, title) : ''
-  const activeCaption = activeImage ? getImageCaption(activeImage) : null
-  const hasActiveCaption = Boolean(
-    activeCaption && (activeCaption.neighborhood || activeCaption.year || activeCaption.packageName),
+function LightboxPhoto({ photo, src }) {
+  return (
+    <Image
+      key={src}
+      src={src}
+      alt={photo.alt}
+      width={photo.width || FALLBACK_IMAGE_WIDTH}
+      height={photo.height || FALLBACK_IMAGE_HEIGHT}
+      sizes="92vw"
+      quality={90}
+      priority
+      className="gallery-lightbox__image"
+      draggable={false}
+    />
   )
+}
+
+function GalleryLightbox({ project, photoIndex, onOpenChange, onPrev, onNext, onCloseAutoFocus }) {
+  const isOpen = project !== null
+  const photo = isOpen ? project.photos[photoIndex] : null
+  const count = isOpen ? project.photos.length : 0
+  const src = photo ? buildSanityImageUrl(photo.image, { width: LIGHTBOX_IMAGE_WIDTH }) : ''
+  const meta = isOpen ? getProjectMetaLine(project) : ''
+  const hasControls = count > 1
+  const swipeStartX = useRef(null)
+
+  const handlePointerDown = useCallback((event) => {
+    swipeStartX.current = event.pointerType === 'mouse' ? null : event.clientX
+  }, [])
+
+  const handlePointerUp = useCallback(
+    (event) => {
+      const startX = swipeStartX.current
+      swipeStartX.current = null
+      if (startX === null || !hasControls) {
+        return
+      }
+      const delta = event.clientX - startX
+      if (Math.abs(delta) < SWIPE_THRESHOLD_PX) {
+        return
+      }
+      if (delta < 0) {
+        onNext()
+      } else {
+        onPrev()
+      }
+    },
+    [hasControls, onNext, onPrev],
+  )
+
+  const handlePointerCancel = useCallback(() => {
+    swipeStartX.current = null
+  }, [])
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="gallery-lightbox__overlay" />
-        <Dialog.Content aria-describedby={undefined} className="gallery-lightbox__content">
-          <Dialog.Title className="sr-only">{title || 'Gallery image viewer'}</Dialog.Title>
+        <Dialog.Content
+          aria-describedby={undefined}
+          className="gallery-lightbox__content"
+          onCloseAutoFocus={onCloseAutoFocus}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          data-gallery-lightbox=""
+        >
+          <Dialog.Title className="sr-only">{project?.name || 'Gallery photo viewer'}</Dialog.Title>
           <div className="gallery-lightbox__bar">
-            <span className="gallery-lightbox__count text-size-90">
-              {(lightboxIndex ?? 0) + 1} / {imageCount}
-            </span>
+            <div className="gallery-lightbox__bar-text">
+              {project?.name ? (
+                <span className="gallery-lightbox__title text-size-90">{project.name}</span>
+              ) : null}
+              <span className="gallery-lightbox__count text-size-90">
+                <span aria-hidden="true">{`${photoIndex + 1} / ${count}`}</span>
+                <span className="sr-only" aria-live="polite">{`Photo ${photoIndex + 1} of ${count}`}</span>
+              </span>
+            </div>
             <Dialog.Close asChild>
               <button type="button" aria-label="Close gallery" className="gallery-lightbox__button">
                 <Xmark className="gallery-lightbox__button-icon" strokeWidth={2.2} />
               </button>
             </Dialog.Close>
           </div>
-          {activeSrc ? (
-            <Image
-              key={activeSrc}
-              src={activeSrc}
-              alt={activeAlt}
-              height={400}
-              width={400}
-              className="gallery-lightbox__image"
-              draggable={false}
-            />
-          ) : null}
-          {hasActiveCaption ? (
-            <div className="gallery-lightbox__caption">
-              {activeCaption.neighborhood ? (
-                <p className="gallery-lightbox__caption-title text-fluid-200">{activeCaption.neighborhood}</p>
+          {photo && src ? (
+            <figure className="gallery-lightbox__figure">
+              <LightboxPhoto photo={photo} src={src} />
+              {photo.caption || meta ? (
+                <figcaption className="gallery-lightbox__caption">
+                  {photo.caption ? (
+                    <p className="gallery-lightbox__caption-title text-fluid-200">{photo.caption}</p>
+                  ) : null}
+                  {meta ? <p className="gallery-lightbox__caption-meta text-size-80">{meta}</p> : null}
+                </figcaption>
               ) : null}
-              {activeCaption.year || activeCaption.packageName ? (
-                <p className="gallery-lightbox__caption-meta text-size-80">
-                  {[activeCaption.year, activeCaption.packageName].filter(Boolean).join(' · ')}
-                </p>
-              ) : null}
-            </div>
+            </figure>
           ) : null}
-          {imageCount > 1 ? (
+          {hasControls ? (
             <>
               <button
                 type="button"
-                aria-label="Previous image"
-                onClick={handlePrev}
+                aria-label="Previous photo"
+                onClick={onPrev}
                 className="gallery-lightbox__button gallery-lightbox__nav gallery-lightbox__nav--prev"
               >
                 <NavArrowLeft className="gallery-lightbox__nav-icon" strokeWidth={2} />
               </button>
               <button
                 type="button"
-                aria-label="Next image"
-                onClick={handleNext}
+                aria-label="Next photo"
+                onClick={onNext}
                 className="gallery-lightbox__button gallery-lightbox__nav gallery-lightbox__nav--next"
               >
                 <NavArrowRight className="gallery-lightbox__nav-icon" strokeWidth={2} />
@@ -178,29 +217,56 @@ function GalleryLightbox({
 }
 
 export function GallerySection({ section, sectionId }) {
-  const images = Array.isArray(section?.images) ? section.images : EMPTY_IMAGES
+  const projects = useMemo(() => getGalleryProjects(section), [section])
   const title = cleanRuntimeString(section?.title || '')
 
-  const [lightboxIndex, setLightboxIndex] = useState(null)
-  const isOpen = lightboxIndex !== null
-  const imageCount = images.length
+  // `active` is the open project + photo; `null` means the lightbox is closed.
+  const [active, setActive] = useState(null)
+  // The tile that opened the lightbox. Radix would hand focus to a Dialog.Trigger,
+  // but the tiles open the dialog programmatically, so we restore focus ourselves.
+  const openerRef = useRef(null)
+  const activeProject = active === null ? null : (projects[active.projectIndex] ?? null)
+  const photoIndex = active?.photoIndex ?? 0
+  const activeCount = activeProject?.photos.length ?? 0
 
   const handleOpenChange = useCallback((open) => {
     if (!open) {
-      setLightboxIndex(null)
+      setActive(null)
     }
   }, [])
 
-  const handlePrev = useCallback(() => {
-    setLightboxIndex((current) => (current === null ? null : (current - 1 + imageCount) % imageCount))
-  }, [imageCount])
+  const openProject = useCallback((event, projectIndex) => {
+    openerRef.current = event.currentTarget
+    setActive({ projectIndex, photoIndex: 0 })
+  }, [])
 
-  const handleNext = useCallback(() => {
-    setLightboxIndex((current) => (current === null ? null : (current + 1) % imageCount))
-  }, [imageCount])
+  const handleCloseAutoFocus = useCallback((event) => {
+    event.preventDefault()
+    openerRef.current?.focus({ preventScroll: true })
+    openerRef.current = null
+  }, [])
+
+  const step = useCallback(
+    (direction) => {
+      setActive((current) => {
+        if (current === null) {
+          return current
+        }
+        const count = projects[current.projectIndex]?.photos.length ?? 0
+        if (count < 2) {
+          return current
+        }
+        return { ...current, photoIndex: wrapIndex(current.photoIndex + direction, count) }
+      })
+    },
+    [projects],
+  )
+
+  const handlePrev = useCallback(() => step(-1), [step])
+  const handleNext = useCallback(() => step(1), [step])
 
   useEffect(() => {
-    if (!isOpen) {
+    if (activeProject === null) {
       return
     }
     const handleKeyDown = (event) => {
@@ -214,25 +280,29 @@ export function GallerySection({ section, sectionId }) {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, handlePrev, handleNext])
+  }, [activeProject, handlePrev, handleNext])
 
+  // Warm the neighbouring photos so arrowing through a project feels instant.
   useEffect(() => {
-    if (!isOpen || imageCount < 2) {
+    if (activeProject === null || activeCount < 2) {
       return
     }
-    const neighbours = [(lightboxIndex + 1) % imageCount, (lightboxIndex - 1 + imageCount) % imageCount]
-    neighbours.forEach((index) => {
-      const src = buildSanityImageUrl(images[index], { width: 2400 })
+    const neighbours = [wrapIndex(photoIndex + 1, activeCount), wrapIndex(photoIndex - 1, activeCount)]
+    for (const index of neighbours) {
+      const src = buildSanityImageUrl(activeProject.photos[index].image, { width: LIGHTBOX_IMAGE_WIDTH })
       if (src) {
         const img = new window.Image()
         img.src = src
       }
-    })
-  }, [isOpen, lightboxIndex, images, imageCount])
+    }
+  }, [activeProject, activeCount, photoIndex])
 
-  if (imageCount === 0) {
+  if (projects.length === 0) {
     return null
   }
+
+  const photoCount = countGalleryPhotos(projects)
+  const trace = `gallery section with ${projects.length} projects, ${photoCount} photos`
 
   return (
     <section
@@ -240,36 +310,30 @@ export function GallerySection({ section, sectionId }) {
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/platform/sections/gallery-section.jsx',
-        content: `gallery section with ${imageCount} images`,
+        content: trace,
       })}
     >
-      <DevTrace
-        markup="src/components/platform/sections/gallery-section.jsx"
-        content={`gallery section with ${imageCount} images`}
-      />
+      <DevTrace markup="src/components/platform/sections/gallery-section.jsx" content={trace} />
       <div className="section-shell__inner">
-        <GalleryHeader section={section} />
+        <GalleryHeader section={{ ...section, title }} />
         <div className="gallery__grid">
-          {images.map((item, index) => (
-            <GalleryTile
-              key={buildRuntimeKey('gallery-image', item?._key, item?.asset?._ref, index)}
-              item={item}
+          {projects.map((project, index) => (
+            <ProjectTile
+              key={project.key}
+              project={project}
               index={index}
-              title={title}
-              onClick={() => setLightboxIndex(index)}
+              onClick={(event) => openProject(event, index)}
             />
           ))}
         </div>
       </div>
       <GalleryLightbox
-        isOpen={isOpen}
+        project={activeProject}
+        photoIndex={photoIndex}
         onOpenChange={handleOpenChange}
-        lightboxIndex={lightboxIndex}
-        imageCount={imageCount}
-        images={images}
-        title={title}
-        handlePrev={handlePrev}
-        handleNext={handleNext}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        onCloseAutoFocus={handleCloseAutoFocus}
       />
     </section>
   )
