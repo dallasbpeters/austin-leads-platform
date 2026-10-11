@@ -3,12 +3,22 @@
   navigation: auto;
 }
 
-::view-transition-old(root) {
-  animation: 300ms ease-out both view-transition-old;
+/* The zoom-and-blur is motion. Without it the new page simply replaces the old one. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: 300ms ease-out both view-transition-old;
+  }
+
+  ::view-transition-new(root) {
+    animation: 300ms ease-out both view-transition-new;
+  }
 }
 
-::view-transition-new(root) {
-  animation: 300ms ease-out both view-transition-new;
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }
 
 @keyframes view-transition-old {
@@ -52,12 +62,4 @@
 
 ::view-transition-new(header-excluded) {
   animation: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
 }

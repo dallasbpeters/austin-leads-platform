@@ -12,8 +12,8 @@
 .site-footer {
   position: relative;
   width: 100%;
-  overflow: hidden;
-  border-top: 1px solid color-mix(in oklch, var(--color-white) 10%, transparent);
+  overflow: clip;
+  border-block-start: 1px solid color-mix(in oklch, var(--color-white) 10%, transparent);
   background: var(--primary);
   color: var(--color-primary-200);
 }
@@ -23,9 +23,11 @@
   z-index: 2;
   max-width: 80rem;
   margin-inline: auto;
-  padding: 3rem 1rem;
+  padding-block: 3rem;
+  padding-inline: 1rem;
 }
 
+/* This ladder dips at 40rem, so no single clamp reproduces it; the steps stay. */
 @media (width >= 40rem) {
   .site-footer__inner {
     padding-inline: 0.75rem;
@@ -50,7 +52,7 @@
 }
 
 .site-footer__grid--meta {
-  margin-top: 2.5rem;
+  margin-block-start: 2.5rem;
 }
 
 @media (width >= 48rem) {
@@ -69,7 +71,7 @@
 
   /* Lines the Services heading up with the brand name beside the logo. */
   .site-footer__col--services {
-    margin-top: 2.75rem;
+    margin-block-start: 2.75rem;
   }
 }
 
@@ -79,14 +81,20 @@
   transition: color 200ms ease-out;
 }
 
-.site-footer__link:hover,
 .site-footer__link:focus-visible {
   color: var(--color-white);
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 2px var(--secondary);
 }
 
-.site-footer__link:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--secondary);
+.site-footer__link:active {
+  scale: 0.97;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-footer__link:hover {
+    color: var(--color-white);
+  }
 }
 
 .site-footer__brand {
@@ -106,11 +114,11 @@
 
 .site-footer__tagline {
   max-width: 28rem;
-  margin-top: 0.75rem;
+  margin-block-start: 0.75rem;
 }
 
 .site-footer__contact {
-  margin-top: 1rem;
+  margin-block-start: 1rem;
 }
 
 .site-footer__heading {
@@ -121,7 +129,8 @@
 .site-footer__list {
   display: grid;
   gap: 0.5rem;
-  margin: 0.75rem 0 0;
+  margin-block: 0.75rem 0;
+  margin-inline: 0;
   padding: 0;
   list-style: none;
 }
@@ -149,7 +158,8 @@
 }
 
 .site-footer__crawlers {
-  margin: 0.5rem 0 0;
+  margin-block: 0.5rem 0;
+  margin-inline: 0;
   color: color-mix(in oklch, var(--color-primary-200) 70%, transparent);
 }
 
@@ -181,8 +191,8 @@
 
 .site-footer__watermark {
   position: absolute;
-  bottom: 2.5rem;
-  left: 0;
+  inset-block-end: 2.5rem;
+  inset-inline-start: 0;
   display: table;
   pointer-events: none;
   text-align: center;
@@ -193,17 +203,14 @@
   color: color-mix(in oklch, var(--color-white) 6%, transparent);
 }
 
+/* Sun, flag red and tan keep their :root values; only the blues and the surface change on the brand band. */
 .site-footer .logo {
-  --logo-navy-950: #fff;
-  --logo-navy-900: #fff;
-  --logo-navy-800: #fff;
-  --logo-navy-700: #fff;
-  --logo-steel: #fff;
-  --logo-grey-400: #fff;
-  --logo-grey-300: #fff;
-  --logo-sun: var(--color-amber-400);
-  --logo-sun-deep: oklch(78.52% 0.1663 73.7deg);
+  --logo-navy-950: var(--color-white);
+  --logo-navy-900: var(--color-white);
+  --logo-navy-800: var(--color-white);
+  --logo-navy-700: var(--color-white);
+  --logo-steel: var(--color-white);
+  --logo-grey-400: var(--color-white);
+  --logo-grey-300: var(--color-white);
   --logo-surface: var(--primary);
-  --logo-flag-red: #de1017;
-  --logo-tan: #dbbda4;
 }

@@ -9,8 +9,11 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Smooth in-page scrolling is motion, so it is opt-in. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {

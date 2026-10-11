@@ -16,7 +16,7 @@
     box-shadow: 2px 2px 0 0 color-mix(in oklch, var(--color-primary) 54%, white 3%);
     color: var(--color-white);
     position: relative;
-    overflow: hidden;
+    overflow: clip;
     isolation: isolate;
   }
 
@@ -34,16 +34,13 @@
     pointer-events: none;
     clip-path: circle(0% at 0% 100%);
     background-color: color-mix(in oklch, var(--color-primary) 54%, black 10%);
-    transition: clip-path 0.25s ease-in-out;
   }
 
-  .btn--primary:hover::after {
-    clip-path: circle(150% at 0% 100%);
-  }
-
-  .btn--primary:hover {
-    box-shadow: var(--shadow-brand-hover);
-    background-color: var(--color-primary-700);
+  /* The fill sweeps in from the corner only when motion is welcome; otherwise it appears at once. */
+  @media (prefers-reduced-motion: no-preference) {
+    .btn--primary::after {
+      transition: clip-path 0.25s ease-in-out;
+    }
   }
 
   .btn--secondary {
@@ -65,24 +62,6 @@
     }
   }
 
-  .btn--secondary:hover {
-    --btn-secondary-bg: color-mix(in oklch, var(--color-ceramic) 72%, var(--color-secondary-300) 28%);
-    --btn-secondary-border: color-mix(in oklch, var(--color-secondary-300) 70%, var(--color-ceramic) 30%);
-
-    background-color: var(--btn-secondary-bg);
-    border-color: var(--btn-secondary-border);
-  }
-
-  @supports (color: color-contrast(white vs black)) {
-    .btn--secondary:hover {
-      color: color-contrast(
-        var(--btn-secondary-bg) vs var(--color-secondary-950),
-        var(--color-text-strong),
-        var(--color-white)
-      );
-    }
-  }
-
   /*
    * For buttons sitting on a dark brand band (.consult and the dark CTA
    * blocks). White on Deep Sky, and the label is the theme's strongest text
@@ -94,32 +73,64 @@
     color: var(--color-text-strong);
   }
 
-  .btn--inverse:hover {
-    border-color: color-mix(in oklch, var(--color-white) 88%, var(--color-secondary) 12%);
-    background-color: color-mix(in oklch, var(--color-white) 88%, var(--color-secondary) 12%);
-  }
-
   .btn--tertiary {
     background-color: var(--color-voodoo);
     color: var(--color-white);
   }
 
-  .btn--tertiary:hover {
-    background-color: oklch(from var(--color-voodoo) 50% c h);
+  /* Hover styles only where a hover exists, so a tap never leaves one stuck. */
+  @media (hover: hover) and (pointer: fine) {
+    .btn--primary:hover::after {
+      clip-path: circle(150% at 0% 100%);
+    }
+
+    .btn--primary:hover {
+      box-shadow: var(--shadow-brand-hover);
+      background-color: var(--color-primary-700);
+    }
+
+    .btn--secondary:hover {
+      --btn-secondary-bg: color-mix(in oklch, var(--color-ceramic) 72%, var(--color-secondary-300) 28%);
+      --btn-secondary-border: color-mix(in oklch, var(--color-secondary-300) 70%, var(--color-ceramic) 30%);
+
+      background-color: var(--btn-secondary-bg);
+      border-color: var(--btn-secondary-border);
+    }
+
+    @supports (color: color-contrast(white vs black)) {
+      .btn--secondary:hover {
+        color: color-contrast(
+          var(--btn-secondary-bg) vs var(--color-secondary-950),
+          var(--color-text-strong),
+          var(--color-white)
+        );
+      }
+    }
+
+    .btn--inverse:hover {
+      border-color: color-mix(in oklch, var(--color-white) 88%, var(--color-secondary) 12%);
+      background-color: color-mix(in oklch, var(--color-white) 88%, var(--color-secondary) 12%);
+    }
+
+    .btn--tertiary:hover {
+      background-color: oklch(from var(--color-voodoo) 50% c h);
+    }
   }
 
   .btn--md {
     min-height: 2.4rem;
-    padding: 0.5rem 1.5rem;
+    padding-block: 0.5rem;
+    padding-inline: 1.5rem;
   }
 
   .btn--lg {
     min-height: 3.5rem;
-    padding: 1rem 2rem;
+    padding-block: 1rem;
+    padding-inline: 2rem;
   }
 
   .btn--pill {
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
   }
 
   .btn--rounded {

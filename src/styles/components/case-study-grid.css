@@ -7,10 +7,10 @@
 }
 
 .case-study-grid__title {
-  margin-bottom: 1rem;
+  margin-block-end: 1rem;
   font-weight: 700;
 }
 
 .case-study-grid__lead {
-  margin-bottom: 1.5rem;
+  margin-block-end: 1.5rem;
 }

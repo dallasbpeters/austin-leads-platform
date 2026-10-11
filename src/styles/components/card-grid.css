@@ -8,17 +8,17 @@
 }
 
 .card-grid__inner {
-  padding-bottom: 6rem;
+  padding-block-end: var(--space-section);
 }
 
 .card-grid__intro {
   display: grid;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-block-end: 2rem;
 }
 
 .card-grid__subtitle {
-  margin-bottom: 1rem;
+  margin-block-end: 1rem;
   color: var(--foreground);
 }
 
@@ -37,7 +37,7 @@
 
 .card-grid__item {
   position: relative;
-  overflow: hidden;
+  overflow: clip;
   padding: 1.5rem;
   border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
   border-radius: 1rem;
@@ -56,15 +56,15 @@
   align-items: center;
   width: 3rem;
   height: 3rem;
-  margin-bottom: 1rem;
-  border-radius: 999px;
+  margin-block-end: 1rem;
+  border-radius: var(--radius-pill);
   color: var(--primary);
 }
 
 @media (width >= 48rem) {
   .card-grid__item--reverse .card-grid__icon {
     display: flex;
-    margin-right: auto;
+    margin-inline-end: auto;
   }
 }
 
@@ -74,7 +74,8 @@
 }
 
 .card-grid__eyebrow {
-  margin: 0 0 0.5rem;
+  margin-block: 0 0.5rem;
+  margin-inline: 0;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted-foreground);
@@ -88,7 +89,7 @@
 
 .card-grid__body {
   max-width: 70ch;
-  margin-top: 0.75rem;
+  margin-block-start: 0.75rem;
   line-height: 1.75rem;
   color: var(--muted-foreground);
 }

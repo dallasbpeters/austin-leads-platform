@@ -110,15 +110,14 @@
   .h5,
   h6,
   .h6 {
-    margin-bottom: 1rem;
+    margin-block-end: 1rem;
     font-weight: 700;
     line-height: 1.15;
     letter-spacing: -0.022em;
   }
 
   p {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-block: 1rem;
   }
 
   small {
@@ -175,10 +174,20 @@
     text-decoration: none;
     cursor: pointer;
     transition:
-      transform 200ms ease-out,
       box-shadow 200ms ease-out,
       background-color 200ms ease-out,
       color 200ms ease-out;
+  }
+
+  /* The press scale eases only when motion is welcome; colour and shadow fade either way. */
+  @media (prefers-reduced-motion: no-preference) {
+    .btn {
+      transition:
+        transform 200ms ease-out,
+        box-shadow 200ms ease-out,
+        background-color 200ms ease-out,
+        color 200ms ease-out;
+    }
   }
 
   .google-sans {

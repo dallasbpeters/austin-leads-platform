@@ -5,15 +5,15 @@
  */
 
 .guide-grid-section__header {
-  scroll-margin-top: 7rem;
+  scroll-margin-block-start: 7rem;
 }
 
 @media (width >= 48rem) {
   .guide-grid-section__header {
-    scroll-margin-top: 8rem;
+    scroll-margin-block-start: 8rem;
   }
 }
 
 .guide-grid-section__title {
-  margin-bottom: 1rem;
+  margin-block-end: 1rem;
 }

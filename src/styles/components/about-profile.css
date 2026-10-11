@@ -5,9 +5,10 @@
  */
 
 .about-profile {
-  background: linear-gradient(188deg, #fffbf0 3.24%, #a5c9ff 110.59%);
+  background: var(--gradient-sky-paper);
   margin-inline: auto;
-  padding: 5rem 0.75rem;
+  padding-block: var(--space-section-compact);
+  padding-inline: 0.75rem;
   display: grid;
   place-content: center;
 }
@@ -19,7 +20,8 @@
   gap: 1.5rem;
   max-width: 80rem;
   margin-inline: auto;
-  padding: 1rem 0.75rem;
+  padding-block: 1rem;
+  padding-inline: 0.75rem;
 }
 
 .about-profile__copy {
@@ -56,7 +58,7 @@
   grid-template-columns: 1fr;
   align-content: space-between;
   align-items: end;
-  padding-top: var(--spacing-xx-large);
+  padding-block-start: var(--spacing-xx-large);
   height: 500px;
   background-blend-mode: multiply;
 }
@@ -127,7 +129,7 @@
 .about-profile__cert-badge {
   width: 4.5rem;
   height: 4.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   object-fit: contain;
   background: var(--color-white);
 }
@@ -146,7 +148,7 @@
 .about-profile__wash {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, var(--color-primary) 15%, rgb(11 59 66 / 20%), transparent);
+  background: linear-gradient(to top, var(--color-primary) 15%, var(--wash-deep), transparent);
 }
 
 .about-profile__badge {
@@ -156,14 +158,14 @@
 }
 
 .about-profile__title {
-  margin-top: 1.25rem;
+  margin-block-start: 1.25rem;
   line-height: 1;
   letter-spacing: normal;
   color: var(--foreground);
 }
 
 .about-profile__body {
-  margin-top: 0.5rem;
+  margin-block-start: 0.5rem;
   line-height: 2rem;
   color: var(--muted-foreground);
 }

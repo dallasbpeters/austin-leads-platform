@@ -1,3 +1,4 @@
+/* Stays `hidden`: a focused link inside must be able to pull the viewport into view. */
 .scroll-text__viewport {
   position: relative;
   overflow: hidden;
@@ -12,9 +13,15 @@
   border-radius: 0.25rem;
 }
 
-.scroll-text__link:hover {
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
+@media (hover: hover) and (pointer: fine) {
+  .scroll-text__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+}
+
+.scroll-text__link:active {
+  scale: 0.97;
 }
 
 .scroll-text__link:focus-visible {

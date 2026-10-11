@@ -3,7 +3,7 @@
  */
 
 .steps {
-  border-bottom: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+  border-block-end: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
   background-color: var(--color-secondary-100);
 }
 
@@ -20,8 +20,7 @@
 }
 
 .steps__card {
-  padding-top: 3rem;
-  padding-bottom: 2rem;
+  padding-block: 3rem 2rem;
   border-color: color-mix(in oklch, var(--border) 80%, transparent);
   background: var(--card);
 }
@@ -34,7 +33,7 @@
   width: 2rem;
   height: 2rem;
   border-color: var(--primary);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--secondary-foreground);
   background: var(--primary);
   box-shadow: 0 0 0 1px var(--primary);
