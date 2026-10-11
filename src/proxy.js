@@ -290,6 +290,9 @@ async function rewritePublicRequest(request) {
     return rewriteToAgentRoute(request, siteSlug, nextUrl.pathname, 'html')
   }
 
+  // Self-hosted Next appends this to the `Vary` the page writes. On Vercel the
+  // page's own `Vary` wins, so `src/lib/platform/vary-accept.js` adds `Accept`
+  // where Next writes it.
   const response = rewriteToTenant(request, siteSlug, nextUrl.pathname)
   response.headers.set('Vary', 'Accept')
   return response

@@ -118,6 +118,30 @@ export function isBrowserNavigation(getHeader) {
 const AGENT_SAFE_METHODS = new Set(['GET', 'HEAD'])
 
 /**
+ * Whether the request comes from the Next.js app router: a client-side
+ * navigation, a prefetch, or a server action. Those must always reach the
+ * designed page, or the router falls back to a full document load.
+ *
+ * The proxy cannot rely on the `RSC` / `Next-Router-*` headers: Next.js strips
+ * them before the proxy runs (`FLIGHT_HEADERS` in its middleware adapter) and
+ * restores them afterwards, and it also drops the `_rsc` query. The router
+ * sends `Next-Url` with every navigation and prefetch, and that header is
+ * left alone, so it is the signal that works both self-hosted and on Vercel.
+ * The stripped headers are still checked for callers outside the proxy.
+ *
+ * @param {(name: string) => string | null | undefined} getHeader
+ */
+export function isNextRouterRequest(getHeader) {
+  return Boolean(
+    getHeader('next-url') ||
+    getHeader('rsc') ||
+    getHeader('next-router-prefetch') ||
+    getHeader('next-router-segment-prefetch') ||
+    getHeader('next-action'),
+  )
+}
+
+/**
  * Decide which representation a public page request receives.
  *
  * - `markdown`: the client prefers `text/markdown`.
@@ -133,7 +157,7 @@ export function resolvePublicRepresentation({ method = 'GET', getHeader }) {
   if (!AGENT_SAFE_METHODS.has(String(method).toUpperCase())) {
     return 'page'
   }
-  if (getHeader('rsc') || getHeader('next-router-prefetch') || getHeader('next-action')) {
+  if (isNextRouterRequest(getHeader)) {
     return 'page'
   }
   if (prefersMarkdown(getHeader('accept'))) {
