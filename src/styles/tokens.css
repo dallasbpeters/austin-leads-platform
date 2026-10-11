@@ -182,14 +182,22 @@
   --wash-deep: rgb(11 59 66 / 20%);
 }
 
-/* Pre-hydration estimate for the fixed generic header (bar + top inset). */
+/*
+ * Pre-hydration estimate for the fixed generic header (bar + top inset), kept
+ * within 1px of the measured value so the hero copy does not jump on hydrate:
+ * 83px below 48rem (bar only), 91px at 48rem and up (bar + 0.5rem top inset).
+ */
 :root:has(.generic-header) {
-  --site-header-offset: 5.75rem;
+  --site-header-offset: 5.1875rem;
 }
 
 @media (width >= 48rem) {
   :root {
     --gutter-page: 1.5rem;
+  }
+
+  :root:has(.generic-header) {
+    --site-header-offset: 5.6875rem;
   }
 }
 
