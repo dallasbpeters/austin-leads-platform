@@ -101,3 +101,77 @@ test.describe('public header never covers the hero copy', () => {
     }
   }
 })
+
+/*
+ * Hydration regression: the CSS fallback for --site-header-offset must land
+ * within 1px of the value generic-header.jsx measures, or the hero copy jumps
+ * while JavaScript loads. Compared on both sides of the 48rem breakpoint.
+ */
+const HYDRATION_VIEWPORTS = [
+  { label: 'mobile', width: 375, height: 667 },
+  { label: 'tablet', width: 768, height: 1024 },
+]
+
+/** Largest shift the first hero line may make between first paint and hydration, in CSS px. */
+const MAX_HYDRATION_SHIFT = 1
+
+/** Waits for the hero copy's entrance animation (solar-fade-up) so the read is its resting position. */
+const settleHeroCopy = (page: import('@playwright/test').Page) =>
+  page.evaluate(() =>
+    Promise.all(
+      (document.querySelector('.solar-hero__copy')?.getAnimations() ?? []).map((animation) =>
+        animation.finished.catch(() => null),
+      ),
+    ),
+  )
+
+test.describe('generic header hydration does not move the hero copy', () => {
+  for (const viewport of HYDRATION_VIEWPORTS) {
+    test(`christmas home (Presentation route) @ ${viewport.label} ${viewport.width}x${viewport.height}`, async ({
+      browser,
+      page,
+    }) => {
+      const path = '/_site/txchristmaslights'
+
+      // First paint: no JavaScript, so only the CSS fallback positions the hero.
+      const staticContext = await browser.newContext({
+        viewport: { width: viewport.width, height: viewport.height },
+        javaScriptEnabled: false,
+      })
+      const staticPage = await staticContext.newPage()
+      const staticResponse = await staticPage.goto(path, { waitUntil: 'load' })
+      const staticStatus = staticResponse?.status() ?? 0
+      if (staticStatus === 200) {
+        await settleHeroCopy(staticPage)
+      }
+      const staticProbe = await measure(staticPage)
+      await staticContext.close()
+
+      test.skip(
+        staticStatus === 404 || staticProbe.site !== 'txchristmaslights',
+        `tenant "txchristmaslights" is not resolvable here (status ${staticStatus}, site ${staticProbe.site})`,
+      )
+      expect(staticStatus, 'route should render without JavaScript').toBe(200)
+      expect(staticProbe.headerKind).toBe('fixed')
+      expect(staticProbe.firstLine, 'hero eyebrow or title should render without JavaScript').not.toBeNull()
+
+      // Hydrated: the header has published its measured offset.
+      await page.setViewportSize({ width: viewport.width, height: viewport.height })
+      await page.goto(path, { waitUntil: 'networkidle' })
+      await page.locator('.solar-hero__eyebrow, .solar-hero__title').first().waitFor()
+      // Let the header publish its measured offset and the hero copy settle.
+      await page.waitForTimeout(500)
+      await settleHeroCopy(page)
+      const hydratedProbe = await measure(page)
+      expect(hydratedProbe.headerKind).toBe('fixed')
+      expect(hydratedProbe.firstLine, 'hero eyebrow or title should render after hydration').not.toBeNull()
+
+      const staticTop = (staticProbe.firstLine as { top: number }).top
+      const hydratedTop = (hydratedProbe.firstLine as { top: number }).top
+      expect(
+        Math.abs(hydratedTop - staticTop),
+        'hero copy should not shift on hydration',
+      ).toBeLessThanOrEqual(MAX_HYDRATION_SHIFT)
+    })
+  }
+})
