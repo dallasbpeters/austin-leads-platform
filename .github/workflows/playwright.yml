@@ -2,6 +2,10 @@
 #   NEXT_PUBLIC_POSTHOG_KEY, POSTHOG_HOST — src/lib/posthog-logs.js throws at
 #   `next dev` startup when either is missing, so Playwright never starts.
 #   Add with: gh secret set NEXT_PUBLIC_POSTHOG_KEY ; gh secret set POSTHOG_HOST
+# NEXT_PUBLIC_POSTHOG_HOST is not a secret (same `/ingest` path as .env.example).
+#   instrumentation-client.ts throws in the browser at `next dev` startup when it
+#   is missing, which aborts React hydration: pages still render, but nothing is
+#   clickable, so any test that interacts with the page fails.
 
 name: Playwright Tests
 on:
@@ -25,6 +29,7 @@ jobs:
       - name: Run Playwright tests
         env:
           NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}
+          NEXT_PUBLIC_POSTHOG_HOST: /ingest
           POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: pnpm exec playwright test
       - uses: actions/upload-artifact@v4

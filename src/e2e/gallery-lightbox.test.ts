@@ -15,13 +15,32 @@ const VIEWPORTS = [
   { label: 'desktop', width: 1440, height: 900 },
 ] as const
 
-const openFirstProject = async (page: Page) => {
+/**
+ * Fail loudly on browser-side exceptions. A script that throws during startup
+ * (for example a missing NEXT_PUBLIC_* variable in instrumentation-client.ts)
+ * aborts React hydration: the page still renders, but no button has a handler,
+ * and the only symptom would be a confusing "dialog not visible" timeout.
+ */
+const collectPageErrors = (page: Page) => {
+  const errors: string[] = []
+  page.on('pageerror', (error) => errors.push(error.message))
+  return errors
+}
+
+const openFirstProject = async (page: Page, pageErrors: string[]) => {
   const tile = page.locator('.gallery__tile').first()
   await tile.scrollIntoViewIfNeeded()
-  await tile.focus()
-  await tile.press('Enter')
   const dialog = page.getByRole('dialog')
-  await expect(dialog).toBeVisible()
+  // `load` fires before hydration finishes on a cold dev server, and a keypress
+  // on a not-yet-hydrated button is dropped. Keep pressing until React answers.
+  await expect(async () => {
+    // A startup exception means hydration will never finish: surface it instead
+    // of a bare "dialog not visible" timeout.
+    expect(pageErrors).toStrictEqual([])
+    await tile.focus()
+    await tile.press('Enter')
+    await expect(dialog).toBeVisible({ timeout: 2000 })
+  }).toPass({ timeout: 30_000 })
   return { tile, dialog }
 }
 
@@ -35,6 +54,7 @@ const parseCount = async (dialog: ReturnType<Page['getByRole']>) => {
 test.describe('gallery projects lightbox', () => {
   for (const viewport of VIEWPORTS) {
     test(`${viewport.label}: opens a large uncropped lightbox for one project`, async ({ page }) => {
+      const pageErrors = collectPageErrors(page)
       await page.setViewportSize({ width: viewport.width, height: viewport.height })
       await page.goto(GALLERY_PATH, { waitUntil: 'load' })
 
@@ -43,7 +63,7 @@ test.describe('gallery projects lightbox', () => {
       const tileCount = await tiles.count()
       expect(tileCount).toBeGreaterThan(0)
 
-      const { tile, dialog } = await openFirstProject(page)
+      const { tile, dialog } = await openFirstProject(page, pageErrors)
       const count = await parseCount(dialog)
       expect(count.index).toBe(1)
       expect(count.total).toBeGreaterThan(0)
@@ -93,19 +113,21 @@ test.describe('gallery projects lightbox', () => {
       await page.keyboard.press('Escape')
       await expect(dialog).toBeHidden()
       await expect(tile).toBeFocused()
+      expect(pageErrors).toStrictEqual([])
     })
   }
 
   test('desktop: the grid matches the project count and the close button restores focus', async ({
     page,
   }) => {
+    const pageErrors = collectPageErrors(page)
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto(GALLERY_PATH, { waitUntil: 'load' })
     const section = page.locator('section.gallery')
     await section.scrollIntoViewIfNeeded()
     await page.screenshot({ path: 'test-results/gallery-grid-desktop.png', fullPage: false })
 
-    const { tile, dialog } = await openFirstProject(page)
+    const { tile, dialog } = await openFirstProject(page, pageErrors)
     await dialog.getByRole('button', { name: 'Close gallery' }).click()
     await expect(dialog).toBeHidden()
     await expect(tile).toBeFocused()
@@ -115,5 +137,6 @@ test.describe('gallery projects lightbox', () => {
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
       .analyze()
     expect(results.violations).toStrictEqual([])
+    expect(pageErrors).toStrictEqual([])
   })
 })
