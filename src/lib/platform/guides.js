@@ -1,3 +1,39 @@
+import { dataset, projectId } from '../../sanity/env.js'
+
+/**
+ * Guide hero / card images live in the production Sanity dataset as uploaded
+ * image assets. Both the `heroImage.urls.*` fallback and the `heroAsset` /
+ * `imageAsset` reference point at the same asset, so reseeding never reintroduces
+ * a URL on a host we no longer control.
+ */
+const SANITY_IMAGE_CDN_BASE = `https://cdn.sanity.io/images/${projectId}/${dataset}`
+
+function createSanityGuideImage({ assetId, alt }) {
+  return {
+    assetId,
+    alt,
+    url: `${SANITY_IMAGE_CDN_BASE}/${assetId.replace(/^image-/, '').replace(/-(\w+)$/, '.$1')}`,
+  }
+}
+
+function createSanityImageAsset({ assetId, alt }) {
+  return {
+    _type: 'image',
+    asset: { _type: 'reference', _ref: assetId },
+    altText: alt,
+  }
+}
+
+export const HOW_SOLAR_WORKS_IMAGE = createSanityGuideImage({
+  assetId: 'image-32e04704af401cd29a2444f7fe31dcddaa64598b-1360x1024-png',
+  alt: 'Modern Austin home with rooftop solar panels in warm afternoon light',
+})
+
+export const SOLAR_COSTS_IMAGE = createSanityGuideImage({
+  assetId: 'image-8fcd9d85e477e7949833dc1e5e7e587b9ab522fc-1360x1024-png',
+  alt: 'Calculator, utility bill, and warm-toned tabletop still life',
+})
+
 function createStaticHeroImage({
   alt,
   color = '#d7c2ad',
@@ -53,11 +89,12 @@ export const solarGuides = [
     description:
       'A practical guide to how residential solar works in Texas — how power moves through the home, what the grid still does, and what to understand before comparing proposals.',
     image: createStaticHeroImage({
-      alt: 'Modern Austin home with rooftop solar panels in warm afternoon light',
+      alt: HOW_SOLAR_WORKS_IMAGE.alt,
       color: '#c97a46',
       description: 'Editorial exterior of a modern Austin home with rooftop solar panels.',
-      url: 'https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/7c81dc6c-677b-458c-9c27-a3d6ff08395d_1600w.png',
+      url: HOW_SOLAR_WORKS_IMAGE.url,
     }),
+    imageAsset: createSanityImageAsset(HOW_SOLAR_WORKS_IMAGE),
     sections: [
       {
         _type: 'pageSection',
@@ -66,11 +103,12 @@ export const solarGuides = [
         title: 'How solar actually works on a Texas home',
         body: 'The useful version is understanding where the power goes, when the grid still matters, what changes on the bill, and why two systems with the same panel count can perform very differently depending on roof layout and inverter design.',
         heroImage: createStaticHeroImage({
-          alt: 'Modern Austin home with rooftop solar panels in warm afternoon light',
+          alt: HOW_SOLAR_WORKS_IMAGE.alt,
           color: '#c97a46',
           description: 'Editorial exterior of a modern Austin home with rooftop solar panels.',
-          url: 'https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/7c81dc6c-677b-458c-9c27-a3d6ff08395d_1600w.png',
+          url: HOW_SOLAR_WORKS_IMAGE.url,
         }),
+        heroAsset: createSanityImageAsset(HOW_SOLAR_WORKS_IMAGE),
         metrics: [
           { _type: 'pageMetric', label: 'Best for', value: 'First-time research' },
           { _type: 'pageMetric', label: 'Reading time', value: '12 min' },
@@ -218,11 +256,12 @@ export const solarGuides = [
     description:
       'A detailed guide to solar project cost in Texas — installed price per watt, financing structure, export assumptions, and the questions to ask before trusting any payback estimate.',
     image: createStaticHeroImage({
-      alt: 'Calculator, utility bill, and warm-toned tabletop still life',
+      alt: SOLAR_COSTS_IMAGE.alt,
       color: '#d59b53',
       description: 'Editorial still life with energy bill papers and a calculator.',
-      url: 'https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/1619b254-4925-4861-ae23-ae515f16291f_1600w.png',
+      url: SOLAR_COSTS_IMAGE.url,
     }),
+    imageAsset: createSanityImageAsset(SOLAR_COSTS_IMAGE),
     sections: [
       {
         _type: 'pageSection',
@@ -231,11 +270,12 @@ export const solarGuides = [
         title: 'What homeowners should actually expect solar to cost',
         body: 'The real answer is not a national average and it is not the monthly payment on a postcard. It is the installed price, expected production, export value, and financing structure. All of those things vary by project.',
         heroImage: createStaticHeroImage({
-          alt: 'Calculator, utility bill, and warm-toned tabletop still life',
+          alt: SOLAR_COSTS_IMAGE.alt,
           color: '#d59b53',
           description: 'Editorial still life with energy bill papers and a calculator.',
-          url: 'https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/1619b254-4925-4861-ae23-ae515f16291f_1600w.png',
+          url: SOLAR_COSTS_IMAGE.url,
         }),
+        heroAsset: createSanityImageAsset(SOLAR_COSTS_IMAGE),
         metrics: [
           { _type: 'pageMetric', label: 'Focus', value: 'Project economics' },
           { _type: 'pageMetric', label: 'Reading time', value: '12 min' },
@@ -1523,6 +1563,7 @@ export function getSolarGuideGridItems() {
     body: guide.cardCopy,
     href: `/guides/${guide.slug}`,
     image: guide.image,
+    imageAsset: guide.imageAsset,
     icon: guide.icon,
   }))
 }
