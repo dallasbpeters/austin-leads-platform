@@ -172,8 +172,19 @@
   align-items: center;
   justify-content: center;
 
-  /* Top padding clears the absolutely positioned bar (padding + 2.75rem button). */
-  padding-block: 4.75rem 1rem;
+  /*
+   * The photo's size caps. Phones and tablets: nearly full width, with room
+   * above for the bar and below for the caption and the prev/next row. Read by
+   * .gallery-lightbox__image.
+   */
+  --gallery-lightbox-max-inline: min(92vw, 100vw - 2rem);
+  --gallery-lightbox-max-block: calc(100dvh - 14rem);
+
+  /*
+   * Top padding clears the absolutely positioned bar (padding + 2.75rem button).
+   * Bottom padding clears the prev/next row (1rem + 3rem button + gap).
+   */
+  padding-block: 4.75rem;
   padding-inline: 1rem;
   outline: 2px solid transparent;
   user-select: none;
@@ -184,7 +195,20 @@
 
 @media (width >= 48rem) {
   .gallery-lightbox__content {
-    padding-block: 5.75rem 1.5rem;
+    --gallery-lightbox-max-block: calc(100dvh - 15rem);
+
+    padding-block-start: 5.75rem;
+  }
+}
+
+/* Desktop: prev/next move to the sides, so the bottom row is no longer needed. */
+@media (width >= 64rem) {
+  .gallery-lightbox__content {
+    /* 84vw, but never under the side prev/next buttons (1.5rem inset + 3.5rem + gap). */
+    --gallery-lightbox-max-inline: min(84vw, 100vw - 11rem);
+    --gallery-lightbox-max-block: calc(100dvh - 12.5rem);
+
+    padding-block-end: 1.5rem;
   }
 }
 
@@ -284,23 +308,28 @@
 }
 
 /*
- * The photo is sized by its own aspect ratio and capped to the viewport, so it is
- * never stretched or cropped. The block cap leaves room for the top bar and a
- * two-line caption; the inline cap keeps clear of the prev/next controls.
+ * The photo fills the largest box that fits both caps at its own aspect ratio
+ * (--gallery-photo-ratio, set inline by gallery-section.jsx), so it is never
+ * stretched or cropped. The size comes only from the viewport. It must not
+ * depend on the downloaded file: with `width: auto` a Retina screen (or a
+ * smaller srcset candidate) showed the photo at a fraction of the screen.
+ *
+ * Two classes on purpose: base.css reverts width/max-width/height on every
+ * `[role='dialog'] img` for Sanity Studio dialogs. One class loses to that
+ * selector, and the photo fell back to the file's own pixel size.
  */
-.gallery-lightbox__image {
-  width: auto;
+.gallery-lightbox__content .gallery-lightbox__image {
+  --gallery-photo-ratio-value: var(--gallery-photo-ratio, 4 / 3);
+
+  width: min(
+    var(--gallery-lightbox-max-inline),
+    var(--gallery-lightbox-max-block) * (var(--gallery-photo-ratio-value))
+  );
+  max-width: none;
   height: auto;
-  max-width: min(92vw, 100%);
-  max-height: calc(100dvh - 12.5rem);
+  aspect-ratio: var(--gallery-photo-ratio-value);
   object-fit: contain;
   box-shadow: var(--shadow-2xl);
-}
-
-@media (width >= 48rem) {
-  .gallery-lightbox__image {
-    max-width: min(84vw, 100%);
-  }
 }
 
 .gallery-lightbox__caption {
@@ -324,20 +353,20 @@
   color: color-mix(in oklch, var(--color-white) 70%, transparent);
 }
 
+/* Phones and tablets: prev/next sit in a row under the photo so they never cover it. */
 .gallery-lightbox__nav {
   position: absolute;
-  inset-block-start: 50%;
+  inset-block-end: 1rem;
   width: 3rem;
   height: 3rem;
-  translate: 0 -50%;
 }
 
 .gallery-lightbox__nav--prev {
-  inset-inline-start: 0.5rem;
+  inset-inline-start: 1rem;
 }
 
 .gallery-lightbox__nav--next {
-  inset-inline-end: 0.5rem;
+  inset-inline-end: 1rem;
 }
 
 .gallery-lightbox__nav-icon {
@@ -345,10 +374,12 @@
   height: 1.5rem;
 }
 
-@media (width >= 48rem) {
+@media (width >= 64rem) {
   .gallery-lightbox__nav {
+    inset-block: 50% auto;
     width: 3.5rem;
     height: 3.5rem;
+    translate: 0 -50%;
   }
 
   .gallery-lightbox__nav--prev {

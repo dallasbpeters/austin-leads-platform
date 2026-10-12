@@ -94,14 +94,18 @@ function ProjectTile({ project, index, onClick }) {
 }
 
 function LightboxPhoto({ photo, src }) {
+  const width = photo.width || FALLBACK_IMAGE_WIDTH
+  const height = photo.height || FALLBACK_IMAGE_HEIGHT
   return (
     <Image
       key={src}
       src={src}
       alt={photo.alt}
-      width={photo.width || FALLBACK_IMAGE_WIDTH}
-      height={photo.height || FALLBACK_IMAGE_HEIGHT}
-      sizes="92vw"
+      width={width}
+      height={height}
+      // The CSS sizes the photo from the viewport and this ratio, not from the file.
+      style={{ '--gallery-photo-ratio': width / height }}
+      sizes="(min-width: 768px) 84vw, 92vw"
       quality={90}
       priority
       className="gallery-lightbox__image"

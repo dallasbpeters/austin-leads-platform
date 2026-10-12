@@ -15,6 +15,15 @@ const VIEWPORTS = [
   { label: 'desktop', width: 1440, height: 900 },
 ] as const
 
+// Sizes the lightbox photo must fill (phones, laptop, desktop, large monitor).
+const LIGHTBOX_FILL_SIZES = [
+  { width: 375, height: 812 },
+  { width: 414, height: 896 },
+  { width: 1440, height: 900 },
+  { width: 1920, height: 1080 },
+  { width: 2184, height: 1584 },
+] as const
+
 /**
  * Fail loudly on browser-side exceptions. A script that throws during startup
  * (for example a missing NEXT_PUBLIC_* variable in instrumentation-client.ts)
@@ -114,6 +123,67 @@ test.describe('gallery projects lightbox', () => {
       await expect(dialog).toBeHidden()
       await expect(tile).toBeFocused()
       expect(pageErrors).toStrictEqual([])
+    })
+  }
+
+  // Retina screens (deviceScaleFactor 2) are where the photo used to shrink: a
+  // global `[role='dialog'] img` revert in base.css let the downloaded file's own
+  // pixel size win. Size must come from the viewport, at every density.
+  for (const size of LIGHTBOX_FILL_SIZES) {
+    test(`${size.width}x${size.height} @2x: the photo fills the lightbox`, async ({ browser }) => {
+      const context = await browser.newContext({
+        viewport: { width: size.width, height: size.height },
+        deviceScaleFactor: 2,
+      })
+      const page = await context.newPage()
+      const pageErrors = collectPageErrors(page)
+      await page.goto(GALLERY_PATH, { waitUntil: 'load' })
+      const { dialog } = await openFirstProject(page, pageErrors)
+      await page.keyboard.press('Escape')
+      await expect(dialog).toBeHidden()
+
+      // Every project: a square cover hits the height cap either way, so only
+      // the wide photos showed the bug.
+      const tiles = page.locator('.gallery__tile')
+      const tileCount = await tiles.count()
+      for (let index = 0; index < tileCount; index += 1) {
+        const tile = tiles.nth(index)
+        await tile.scrollIntoViewIfNeeded()
+        await tile.click()
+        await expect(dialog).toBeVisible()
+        const image = dialog.locator('.gallery-lightbox__image')
+        await expect
+          .poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0))
+          .toBe(true)
+
+        const fill = await image.evaluate((img: HTMLImageElement) => {
+          const content = img.closest('.gallery-lightbox__content') as HTMLElement
+          const styles = getComputedStyle(content)
+          const caption = content.querySelector('.gallery-lightbox__caption')
+          const captionSpace = caption
+            ? caption.getBoundingClientRect().height +
+              Number.parseFloat(getComputedStyle(caption).marginBlockStart)
+            : 0
+          const availableHeight =
+            content.clientHeight -
+            Number.parseFloat(styles.paddingBlockStart) -
+            Number.parseFloat(styles.paddingBlockEnd) -
+            captionSpace
+          const box = img.getBoundingClientRect()
+          return { width: box.width, height: box.height, availableHeight }
+        })
+        expect(
+          fill.width >= size.width * 0.7 || fill.height >= fill.availableHeight * 0.7,
+          `project ${index + 1}: photo ${Math.round(fill.width)}x${Math.round(fill.height)} in ${size.width}x${size.height} (available height ${Math.round(fill.availableHeight)})`,
+        ).toBeTruthy()
+        expect(fill.width).toBeLessThanOrEqual(size.width)
+        expect(fill.height).toBeLessThanOrEqual(size.height)
+
+        await page.keyboard.press('Escape')
+        await expect(dialog).toBeHidden()
+      }
+      expect(pageErrors).toStrictEqual([])
+      await context.close()
     })
   }
 
