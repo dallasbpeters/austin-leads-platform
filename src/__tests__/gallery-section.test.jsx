@@ -127,7 +127,7 @@ describe(GallerySection, () => {
       expect(
         within(dialog).getByText('The Johnson home', { selector: '.gallery-lightbox__title' }),
       ).toBeTruthy()
-      expect(within(dialog).getByText('Photo 1 of 3')).toBeTruthy()
+      expect(within(dialog).getByText('Photo 1 of 3, project 1 of 2')).toBeTruthy()
       expect(activeAlt(dialog)).toBe('Front of the Johnson home')
       expect(activeImage(dialog).getAttribute('width')).toBe('2752')
       expect(activeImage(dialog).getAttribute('height')).toBe('1536')
@@ -137,35 +137,63 @@ describe(GallerySection, () => {
       renderGallery()
       const { dialog } = openProject(JOHNSON)
       fireEvent.click(within(dialog).getByRole('button', { name: 'Next photo' }))
-      expect(within(dialog).getByText('Photo 2 of 3')).toBeTruthy()
+      expect(within(dialog).getByText('Photo 2 of 3, project 1 of 2')).toBeTruthy()
       expect(activeAlt(dialog)).toBe('Side yard')
       expect(activeImage(dialog).getAttribute('width')).toBe('1536')
       expect(activeImage(dialog).getAttribute('height')).toBe('2752')
       expect(within(dialog).getByText('Side yard wrap')).toBeTruthy()
     })
 
-    it('wraps around with the arrow keys and the previous button, inside this project only', () => {
+    it('steps photo by photo with the arrow keys, then into the next project', () => {
       renderGallery()
       const { dialog } = openProject(JOHNSON)
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       expect(activeAlt(dialog)).toBe('Back patio')
+      expect(within(dialog).getByText('Project 1 of 2')).toBeTruthy()
+      // Last photo of the Johnson home → first photo of the Hutto roofline.
       fireEvent.keyDown(window, { key: 'ArrowRight' })
-      expect(activeAlt(dialog)).toBe('Front of the Johnson home')
-      fireEvent.keyDown(window, { key: 'ArrowLeft' })
-      expect(activeAlt(dialog)).toBe('Back patio')
-      fireEvent.click(within(dialog).getByRole('button', { name: 'Previous photo' }))
-      expect(activeAlt(dialog)).toBe('Side yard')
-      expect(within(dialog).queryByAltText('Roofline in Hutto')).toBeNull()
+      expect(activeAlt(dialog)).toBe('Roofline in Hutto')
+      expect(
+        within(dialog).getByText('Hutto roofline', { selector: '.gallery-lightbox__title' }),
+      ).toBeTruthy()
+      expect(within(dialog).getByText('Photo 1 of 1, project 2 of 2')).toBeTruthy()
     })
 
-    it('hides the previous/next controls for a single-photo project', () => {
+    it('wraps from the last project to the first, and from the first back to the last', () => {
       renderGallery()
       const { dialog } = openProject(HUTTO)
+      expect(within(dialog).getByText('Project 2 of 2')).toBeTruthy()
+      // Last project → first project, first photo.
+      fireEvent.keyDown(window, { key: 'ArrowRight' })
+      expect(activeAlt(dialog)).toBe('Front of the Johnson home')
+      expect(within(dialog).getByText('Project 1 of 2')).toBeTruthy()
+      // Back from the first photo of the first project → last photo of the last project.
+      fireEvent.keyDown(window, { key: 'ArrowLeft' })
       expect(activeAlt(dialog)).toBe('Roofline in Hutto')
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Previous photo' }))
+      expect(activeAlt(dialog)).toBe('Back patio')
+    })
+
+    it('shows the previous/next controls on a single-photo project and moves to the neighbours', () => {
+      renderGallery()
+      const { dialog } = openProject(HUTTO)
+      expect(within(dialog).getByText('Photo 1 of 1, project 2 of 2')).toBeTruthy()
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Next photo' }))
+      expect(activeAlt(dialog)).toBe('Front of the Johnson home')
+      expect(within(dialog).getByText('Project 1 of 2')).toBeTruthy()
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Previous photo' }))
+      expect(activeAlt(dialog)).toBe('Roofline in Hutto')
+      fireEvent.keyDown(window, { key: 'ArrowLeft' })
+      expect(activeAlt(dialog)).toBe('Back patio')
+    })
+
+    it('hides the previous/next controls when the whole gallery has one photo', () => {
+      renderGallery({ ...section, projects: [section.projects[1]] })
+      const { dialog } = openProject(HUTTO)
       expect(within(dialog).queryByRole('button', { name: 'Next photo' })).toBeNull()
       expect(within(dialog).queryByRole('button', { name: 'Previous photo' })).toBeNull()
-      expect(within(dialog).getByText('Photo 1 of 1')).toBeTruthy()
+      expect(within(dialog).getByText('Photo 1 of 1, project 1 of 1')).toBeTruthy()
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       expect(activeAlt(dialog)).toBe('Roofline in Hutto')
     })
@@ -203,6 +231,18 @@ describe(GallerySection, () => {
 
       fireEvent.pointerDown(dialog, { pointerType: 'mouse', clientX: 300 })
       fireEvent.pointerUp(dialog, { pointerType: 'mouse', clientX: 100 })
+      expect(activeAlt(dialog)).toBe('Front of the Johnson home')
+    })
+
+    it('swipes across project boundaries in both directions', () => {
+      renderGallery()
+      const { dialog } = openProject(JOHNSON)
+      // Swiping back from the first photo crosses into the last project.
+      fireEvent.pointerDown(dialog, { pointerType: 'touch', clientX: 100 })
+      fireEvent.pointerUp(dialog, { pointerType: 'touch', clientX: 260 })
+      expect(activeAlt(dialog)).toBe('Roofline in Hutto')
+      fireEvent.pointerDown(dialog, { pointerType: 'touch', clientX: 300 })
+      fireEvent.pointerUp(dialog, { pointerType: 'touch', clientX: 120 })
       expect(activeAlt(dialog)).toBe('Front of the Johnson home')
     })
   })

@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test, type Page } from '@playwright/test'
+import { expect, type Locator, type Page, test } from '@playwright/test'
 
 /**
  * The Texas Christmas Lights homepage carries the only live gallery section, so
@@ -36,8 +36,7 @@ const collectPageErrors = (page: Page) => {
   return errors
 }
 
-const openFirstProject = async (page: Page, pageErrors: string[]) => {
-  const tile = page.locator('.gallery__tile').first()
+const openProjectTile = async (page: Page, pageErrors: string[], tile: Locator) => {
   await tile.scrollIntoViewIfNeeded()
   const dialog = page.getByRole('dialog')
   // `load` fires before hydration finishes on a cold dev server, and a keypress
@@ -53,12 +52,38 @@ const openFirstProject = async (page: Page, pageErrors: string[]) => {
   return { tile, dialog }
 }
 
-const parseCount = async (dialog: ReturnType<Page['getByRole']>) => {
+const openFirstProject = (page: Page, pageErrors: string[]) =>
+  openProjectTile(page, pageErrors, page.locator('.gallery__tile').first())
+
+/** "Photo 2 of 5, project 3 of 16" → photo index/total and project index/total. */
+const parseCount = async (dialog: Locator) => {
   const text = (await dialog.locator('.gallery-lightbox__count .sr-only').textContent()) ?? ''
-  const match = text.match(/Photo (\d+) of (\d+)/)
-  expect(match).not.toBeNull()
-  return { index: Number(match?.[1]), total: Number(match?.[2]) }
+  const match = text.match(/Photo (\d+) of (\d+), project (\d+) of (\d+)/)
+  expect(match, text).not.toBeNull()
+  return {
+    index: Number(match?.[1]),
+    total: Number(match?.[2]),
+    project: Number(match?.[3]),
+    projects: Number(match?.[4]),
+  }
 }
+
+/** Wait until the live count text reports the given photo and project. */
+const expectPosition = async (dialog: Locator, project: number, index: number) => {
+  await expect(dialog.locator('.gallery-lightbox__count .sr-only')).toContainText(
+    new RegExp(`^Photo ${index} of \\d+, project ${project} of \\d+$`),
+  )
+}
+
+const waitForPhoto = async (dialog: Locator) => {
+  const image = dialog.locator('.gallery-lightbox__image')
+  await expect
+    .poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0))
+    .toBe(true)
+}
+
+const noOverlap = (a: { x: number; y: number; width: number; height: number }, b: typeof a) =>
+  a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y
 
 test.describe('gallery projects lightbox', () => {
   for (const viewport of VIEWPORTS) {
@@ -77,12 +102,17 @@ test.describe('gallery projects lightbox', () => {
       expect(count.index).toBe(1)
       expect(count.total).toBeGreaterThan(0)
 
-      // Only this project's photos: the controls show up only when it has several.
+      // Prev/next walk the whole gallery, so they show whenever it has more than one photo.
       const nextButton = dialog.getByRole('button', { name: 'Next photo' })
-      await expect(nextButton).toHaveCount(count.total > 1 ? 1 : 0)
+      const prevButton = dialog.getByRole('button', { name: 'Previous photo' })
+      const galleryHasSeveralPhotos = count.total > 1 || count.projects > 1
+      await expect(nextButton).toHaveCount(galleryHasSeveralPhotos ? 1 : 0)
+      await expect(prevButton).toHaveCount(galleryHasSeveralPhotos ? 1 : 0)
 
       const image = dialog.locator('.gallery-lightbox__image')
       await expect(image).toBeVisible()
+      // The ratio check below reads naturalWidth/naturalHeight: wait for the file.
+      await waitForPhoto(dialog)
       const box = await image.boundingBox()
       expect(box).not.toBeNull()
       const naturalRatio = await image.evaluate(
@@ -104,13 +134,30 @@ test.describe('gallery projects lightbox', () => {
         fullPage: false,
       })
 
+      if (galleryHasSeveralPhotos) {
+        // 44px+ touch targets at the screen edges, never over the photo.
+        for (const button of [prevButton, nextButton]) {
+          const buttonBox = await button.boundingBox()
+          expect(buttonBox).not.toBeNull()
+          expect(buttonBox?.width ?? 0).toBeGreaterThanOrEqual(44)
+          expect(buttonBox?.height ?? 0).toBeGreaterThanOrEqual(44)
+          expect(
+            noOverlap(buttonBox as NonNullable<typeof buttonBox>, box as NonNullable<typeof box>),
+          ).toBeTruthy()
+        }
+        const prevBox = await prevButton.boundingBox()
+        const nextBox = await nextButton.boundingBox()
+        expect(prevBox?.x ?? Number.NaN).toBeLessThanOrEqual(32)
+        expect((nextBox?.x ?? Number.NaN) + (nextBox?.width ?? 0)).toBeGreaterThanOrEqual(viewport.width - 32)
+      }
+
       if (count.total > 1) {
         await page.keyboard.press('ArrowRight')
-        expect((await parseCount(dialog)).index).toBe(2)
+        await expectPosition(dialog, 1, 2)
         await page.keyboard.press('ArrowLeft')
-        expect((await parseCount(dialog)).index).toBe(1)
+        await expectPosition(dialog, 1, 1)
         await nextButton.click()
-        expect((await parseCount(dialog)).index).toBe(2)
+        await expectPosition(dialog, 1, 2)
       }
 
       const results = await new AxeBuilder({ page })
@@ -186,6 +233,103 @@ test.describe('gallery projects lightbox', () => {
       await context.close()
     })
   }
+
+  test('a one-photo project: the arrow and the keyboard reach the next project', async ({ page }) => {
+    const pageErrors = collectPageErrors(page)
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(GALLERY_PATH, { waitUntil: 'load' })
+    const tiles = page.locator('.gallery__tile')
+    await expect(tiles.first()).toBeVisible()
+    const tileCount = await tiles.count()
+    test.skip(tileCount < 2, 'needs at least two projects')
+    const singles = tiles.filter({ hasNot: page.locator('.gallery__count') })
+    test.skip((await singles.count()) === 0, 'no one-photo project in the live content')
+    const single = singles.first()
+    const singleName = (await single.getAttribute('aria-label')) ?? ''
+
+    const { dialog } = await openProjectTile(page, pageErrors, single)
+    const start = await parseCount(dialog)
+    expect(start.total).toBe(1)
+    expect(start.projects).toBe(tileCount)
+    const title = dialog.locator('.gallery-lightbox__title')
+    await expect(dialog.locator('.gallery-lightbox__position')).toHaveText(
+      `Project ${start.project} of ${tileCount}`,
+    )
+    const next = start.project === tileCount ? 1 : start.project + 1
+
+    await dialog.getByRole('button', { name: 'Next photo' }).click()
+    await expectPosition(dialog, next, 1)
+    await expect(dialog.locator('.gallery-lightbox__position')).toHaveText(`Project ${next} of ${tileCount}`)
+    await expect(title).not.toHaveText(singleName.replace(/^Open /, ''))
+
+    await page.keyboard.press('ArrowLeft')
+    await expectPosition(dialog, start.project, 1)
+    await page.keyboard.press('ArrowRight')
+    await expectPosition(dialog, next, 1)
+
+    await waitForPhoto(dialog)
+    await page.screenshot({
+      path: 'test-results/gallery-lightbox-cross-project-desktop.png',
+      fullPage: false,
+    })
+    expect(pageErrors).toStrictEqual([])
+  })
+
+  test('wraps from the last project to the first and back', async ({ page }) => {
+    const pageErrors = collectPageErrors(page)
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(GALLERY_PATH, { waitUntil: 'load' })
+    const tiles = page.locator('.gallery__tile')
+    await expect(tiles.first()).toBeVisible()
+    const tileCount = await tiles.count()
+    test.skip(tileCount < 2, 'needs at least two projects')
+
+    const { dialog } = await openProjectTile(page, pageErrors, tiles.last())
+    const last = await parseCount(dialog)
+    expect(last.project).toBe(tileCount)
+    // Step to the last photo of the last project, then one more wraps to the start.
+    for (let index = last.index; index < last.total; index += 1) {
+      await page.keyboard.press('ArrowRight')
+    }
+    await expectPosition(dialog, tileCount, last.total)
+    await page.keyboard.press('ArrowRight')
+    await expectPosition(dialog, 1, 1)
+    await waitForPhoto(dialog)
+    await page.screenshot({ path: 'test-results/gallery-lightbox-cross-project-phone.png', fullPage: false })
+    // Back from the first photo of the first project → last photo of the last project.
+    // The Next dev badge (dev server only) floats over the bottom-left corner on
+    // phones, so a real pointer click lands on it: fire the click on the button.
+    await dialog.getByRole('button', { name: 'Previous photo' }).dispatchEvent('click')
+    await expectPosition(dialog, tileCount, last.total)
+    expect(pageErrors).toStrictEqual([])
+  })
+
+  test('a multi-photo project steps photo by photo, then into the next project', async ({ page }) => {
+    const pageErrors = collectPageErrors(page)
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(GALLERY_PATH, { waitUntil: 'load' })
+    const tiles = page.locator('.gallery__tile')
+    await expect(tiles.first()).toBeVisible()
+    const tileCount = await tiles.count()
+    const multis = tiles.filter({ has: page.locator('.gallery__count') })
+    // Live content decides this: the unit test covers the same path with fixtures.
+    test.skip((await multis.count()) === 0, 'no multi-photo project in the live content')
+    test.skip(tileCount < 2, 'needs at least two projects')
+
+    const { dialog } = await openProjectTile(page, pageErrors, multis.first())
+    const start = await parseCount(dialog)
+    expect(start.total).toBeGreaterThan(1)
+    for (let index = 2; index <= start.total; index += 1) {
+      await page.keyboard.press('ArrowRight')
+      await expectPosition(dialog, start.project, index)
+    }
+    const next = start.project === tileCount ? 1 : start.project + 1
+    await page.keyboard.press('ArrowRight')
+    await expectPosition(dialog, next, 1)
+    await page.keyboard.press('ArrowLeft')
+    await expectPosition(dialog, start.project, start.total)
+    expect(pageErrors).toStrictEqual([])
+  })
 
   test('desktop: the grid matches the project count and the close button restores focus', async ({
     page,

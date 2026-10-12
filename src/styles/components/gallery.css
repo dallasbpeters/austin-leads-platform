@@ -264,6 +264,14 @@
   color: color-mix(in oklch, var(--color-white) 70%, transparent);
 }
 
+/* "Project 3 of 16": where this project sits in the whole gallery loop. */
+.gallery-lightbox__position {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  color: color-mix(in oklch, var(--color-white) 55%, transparent);
+}
+
 /* 44px minimum so the close control is comfortable on touch screens. */
 .gallery-lightbox__button {
   display: grid;
