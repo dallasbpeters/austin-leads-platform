@@ -25,6 +25,24 @@ const SWIPE_THRESHOLD_PX = 48
 
 const wrapIndex = (index, count) => ((index % count) + count) % count
 
+/**
+ * The photo one step away from `current`, walking through every project in
+ * order. Past the last photo of a project comes the first photo of the next
+ * project; before the first photo comes the last photo of the previous one.
+ * The ends wrap around, so the whole gallery is one loop.
+ */
+const stepPosition = (projects, current, direction) => {
+  const { projectIndex, photoIndex } = current
+  const count = projects[projectIndex]?.photos.length ?? 0
+  const nextPhotoIndex = photoIndex + direction
+  if (nextPhotoIndex >= 0 && nextPhotoIndex < count) {
+    return { projectIndex, photoIndex: nextPhotoIndex }
+  }
+  const nextProjectIndex = wrapIndex(projectIndex + direction, projects.length)
+  const nextCount = projects[nextProjectIndex]?.photos.length ?? 0
+  return { projectIndex: nextProjectIndex, photoIndex: direction > 0 ? 0 : Math.max(nextCount - 1, 0) }
+}
+
 function GalleryHeader({ section }) {
   return (
     <div className="section-shell__intro gallery__intro">
@@ -114,13 +132,22 @@ function LightboxPhoto({ photo, src }) {
   )
 }
 
-function GalleryLightbox({ project, photoIndex, onOpenChange, onPrev, onNext, onCloseAutoFocus }) {
+function GalleryLightbox({
+  project,
+  projectIndex,
+  projectCount,
+  photoIndex,
+  hasControls,
+  onOpenChange,
+  onPrev,
+  onNext,
+  onCloseAutoFocus,
+}) {
   const isOpen = project !== null
   const photo = isOpen ? project.photos[photoIndex] : null
   const count = isOpen ? project.photos.length : 0
   const src = photo ? buildSanityImageUrl(photo.image, { width: LIGHTBOX_IMAGE_WIDTH }) : ''
   const meta = isOpen ? getProjectMetaLine(project) : ''
-  const hasControls = count > 1
   const swipeStartX = useRef(null)
 
   const handlePointerDown = useCallback((event) => {
@@ -172,7 +199,12 @@ function GalleryLightbox({ project, photoIndex, onOpenChange, onPrev, onNext, on
               ) : null}
               <span className="gallery-lightbox__count text-size-90">
                 <span aria-hidden="true">{`${photoIndex + 1} / ${count}`}</span>
-                <span className="sr-only" aria-live="polite">{`Photo ${photoIndex + 1} of ${count}`}</span>
+                <span className="sr-only" aria-live="polite">
+                  {`Photo ${photoIndex + 1} of ${count}, project ${projectIndex + 1} of ${projectCount}`}
+                </span>
+              </span>
+              <span className="gallery-lightbox__position text-size-80" aria-hidden="true">
+                {`Project ${projectIndex + 1} of ${projectCount}`}
               </span>
             </div>
             <Dialog.Close asChild>
@@ -231,7 +263,8 @@ export function GallerySection({ section, sectionId }) {
   const openerRef = useRef(null)
   const activeProject = active === null ? null : (projects[active.projectIndex] ?? null)
   const photoIndex = active?.photoIndex ?? 0
-  const activeCount = activeProject?.photos.length ?? 0
+  // Prev/next walk the whole gallery, so they show whenever there is anywhere to go.
+  const hasControls = countGalleryPhotos(projects) > 1
 
   const handleOpenChange = useCallback((open) => {
     if (!open) {
@@ -252,18 +285,12 @@ export function GallerySection({ section, sectionId }) {
 
   const step = useCallback(
     (direction) => {
-      setActive((current) => {
-        if (current === null) {
-          return current
-        }
-        const count = projects[current.projectIndex]?.photos.length ?? 0
-        if (count < 2) {
-          return current
-        }
-        return { ...current, photoIndex: wrapIndex(current.photoIndex + direction, count) }
-      })
+      if (!hasControls) {
+        return
+      }
+      setActive((current) => (current === null ? current : stepPosition(projects, current, direction)))
     },
-    [projects],
+    [projects, hasControls],
   )
 
   const handlePrev = useCallback(() => step(-1), [step])
@@ -286,20 +313,21 @@ export function GallerySection({ section, sectionId }) {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [activeProject, handlePrev, handleNext])
 
-  // Warm the neighbouring photos so arrowing through a project feels instant.
+  // Warm the neighbouring photos so arrowing through the gallery feels instant.
   useEffect(() => {
-    if (activeProject === null || activeCount < 2) {
+    if (active === null || !hasControls) {
       return
     }
-    const neighbours = [wrapIndex(photoIndex + 1, activeCount), wrapIndex(photoIndex - 1, activeCount)]
-    for (const index of neighbours) {
-      const src = buildSanityImageUrl(activeProject.photos[index].image, { width: LIGHTBOX_IMAGE_WIDTH })
+    for (const direction of [1, -1]) {
+      const neighbour = stepPosition(projects, active, direction)
+      const photo = projects[neighbour.projectIndex]?.photos[neighbour.photoIndex]
+      const src = photo ? buildSanityImageUrl(photo.image, { width: LIGHTBOX_IMAGE_WIDTH }) : ''
       if (src) {
         const img = new window.Image()
         img.src = src
       }
     }
-  }, [activeProject, activeCount, photoIndex])
+  }, [active, hasControls, projects])
 
   if (projects.length === 0) {
     return null
@@ -333,7 +361,10 @@ export function GallerySection({ section, sectionId }) {
       </div>
       <GalleryLightbox
         project={activeProject}
+        projectIndex={active?.projectIndex ?? 0}
+        projectCount={projects.length}
         photoIndex={photoIndex}
+        hasControls={hasControls}
         onOpenChange={handleOpenChange}
         onPrev={handlePrev}
         onNext={handleNext}
