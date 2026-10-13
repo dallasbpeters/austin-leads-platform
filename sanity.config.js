@@ -49,8 +49,9 @@ export default defineConfig({
     /* Renamed in @sanity/context v2. The plugin itself is deprecated: endpoint
      * config and Insights now live in the Context app (Sanity Dashboard ->
      * Apps -> Sanity Labs). Kept registered because the dataset still holds a
-     * `sanity.agentContext` document; drop it once that is migrated. */
-    contextPlugin(),
+     * `sanity.agentContext` document; drop it once that is migrated. The
+     * "Agent Insights" tab is off: it only showed a notice that Insights moved. */
+    contextPlugin({ insights: { enabled: false } }),
     assist({ fieldActions: austinAssistFieldActions }),
     guideImageSyncPlugin(),
     colorInput(),
