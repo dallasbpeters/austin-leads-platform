@@ -54,7 +54,7 @@ export default function LeadCaptureForm({ context }) {
 
   return (
     <div ref={formRef}>
-      <JobberWorkRequestEmbed formId={formId} />
+      <JobberWorkRequestEmbed formId={formId} requestFormUrl={context?.jobberRequestFormUrl} />
     </div>
   )
 }

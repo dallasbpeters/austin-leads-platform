@@ -126,6 +126,7 @@ function buildLeadContext(page, section, site) {
     pagePath: slug ? `/${slug}` : '/',
     pageTitle: page?.title || section?.title || 'Guide CTA',
     metadata: { entryPoint: 'guide-cta-banner' },
+    jobberRequestFormUrl: site?.jobber?.requestFormUrl || '',
   }
 }
 

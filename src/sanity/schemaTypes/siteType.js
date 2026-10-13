@@ -184,6 +184,33 @@ export default {
       ],
     },
     {
+      name: 'jobber',
+      title: 'Jobber',
+      type: 'object',
+      description:
+        'The Jobber request form this site opens from "Get a free quote", the consultation form, and /service-request. Paste the share link from Jobber → Settings → Requests. Mirrors `texasSolarJobber` in src/lib/platform/fixtures.js; keep both in step.',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        {
+          name: 'requestFormUrl',
+          title: 'Request form link',
+          type: 'url',
+          description:
+            'Example: https://clienthub.getjobber.com/hubs/<hub id>/public/requests/<form id>/new. The embed link (…/embedded_work_request_form?form_id=…) also works. Leave empty to use the form built into the code.',
+          validation: (Rule) =>
+            Rule.uri({ scheme: ['https'] }).custom((value) => {
+              if (!value) {
+                return true
+              }
+              const isJobber =
+                /^https:\/\/clienthub\.getjobber\.com\/(hubs|client_hubs)\/[0-9a-f-]+\//i.test(value) &&
+                /(\/public\/requests\/\d+\/new|form_id=\d+)/i.test(value)
+              return isJobber || 'Paste a Jobber request form link from clienthub.getjobber.com.'
+            }),
+        },
+      ],
+    },
+    {
       name: 'organization',
       title: 'Organization',
       type: 'object',

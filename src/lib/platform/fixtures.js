@@ -264,6 +264,16 @@ const texasSolarNavigation = [
 ]
 
 /*
+ * Jobber request form for the primary site. Mirrors the `jobber` object on the
+ * Sanity `site` document (`src/sanity/schemaTypes/siteType.js`); the Sanity
+ * value wins when it is set, this is the fallback when Sanity is unreachable.
+ */
+const texasSolarJobber = {
+  requestFormUrl:
+    'https://clienthub.getjobber.com/hubs/e25e6086-5e48-4c5d-8588-8aa08968b7d6/public/requests/4895670/new',
+}
+
+/*
  * Published business identity for the primary site. Mirrors the `organization`
  * object on the Sanity `site` document (`src/sanity/schemaTypes/siteType.js`);
  * change both together or a reseed will undo the edit.
@@ -321,6 +331,7 @@ export const sites = portfolioDomains.map((entry, index) => {
     redirectTarget: tier === 'redirect' ? redirectTargetByCategory[entry.category] : null,
     leadForm: tier === 'redirect' ? null : buildLeadForm(entry.domain, categories[entry.category], title),
     navigation: slug === 'texas-solar-and-roofing-pros' ? texasSolarNavigation : [],
+    jobber: slug === 'texas-solar-and-roofing-pros' ? texasSolarJobber : null,
     seo: {
       title,
       description: getSiteSeoDescription(slug, title, categories[entry.category]),

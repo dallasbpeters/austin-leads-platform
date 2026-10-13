@@ -3,6 +3,8 @@
 
 import { useEffect, useId, useRef } from 'react'
 
+import { buildJobberEmbedUrl, parseJobberRequestFormUrl } from '@/lib/platform/jobber-request-form'
+
 const JOBBER_CLIENT_HUB_ID = 'e25e6086-5e48-4c5d-8588-8aa08968b7d6'
 const JOBBER_SCRIPT_URL =
   'https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js'
@@ -15,15 +17,28 @@ export const JOBBER_FORM_IDS = {
   customLights: '4925324',
 }
 
-function getJobberFormUrl(formId) {
-  return `https://clienthub.getjobber.com/client_hubs/${JOBBER_CLIENT_HUB_ID}/public/work_request/embedded_work_request_form?form_id=${formId}`
+/**
+ * The form to embed. A request form link from the site's Sanity settings wins;
+ * otherwise the form id built into the code.
+ * @param {string | null | undefined} requestFormUrl Jobber share or embed link.
+ * @param {string} formId Fallback form id.
+ * @returns {{ hubId: string, formId: string }} The hub and form to load.
+ */
+export function resolveJobberForm(requestFormUrl, formId = JOBBER_FORM_IDS.default) {
+  return parseJobberRequestFormUrl(requestFormUrl) ?? { hubId: JOBBER_CLIENT_HUB_ID, formId }
 }
 
-export default function JobberWorkRequestEmbed({ className = '', formId = JOBBER_FORM_IDS.default }) {
+export default function JobberWorkRequestEmbed({
+  className = '',
+  formId = JOBBER_FORM_IDS.default,
+  requestFormUrl = null,
+}) {
   const containerRef = useRef(null)
   const hasLoadedRef = useRef(false)
   const uniqueId = useId().replaceAll(/[^a-zA-Z0-9_-]/g, '')
-  const targetId = `${JOBBER_CLIENT_HUB_ID}-${formId}-${uniqueId}`
+  const form = resolveJobberForm(requestFormUrl, formId)
+  const targetId = `${form.hubId}-${form.formId}-${uniqueId}`
+  const formUrl = buildJobberEmbedUrl(form)
 
   useEffect(() => {
     const container = containerRef.current
@@ -46,9 +61,9 @@ export default function JobberWorkRequestEmbed({ className = '', formId = JOBBER
     script.src = JOBBER_SCRIPT_URL
     script.async = true
     script.setAttribute('clienthub_id', targetId)
-    script.setAttribute('form_url', getJobberFormUrl(formId))
+    script.setAttribute('form_url', formUrl)
     document.body.append(script)
-  }, [formId, targetId])
+  }, [formUrl, targetId])
 
   return (
     <div

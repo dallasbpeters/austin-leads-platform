@@ -26,6 +26,7 @@ const HailMapPage = async ({ params }) => {
     sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
     pagePath: '/hail-map',
     pageTitle: 'Hail map + roof review',
+    jobberRequestFormUrl: site?.jobber?.requestFormUrl || '',
     metadata: {
       entryPoint: 'hail-map-page',
     },

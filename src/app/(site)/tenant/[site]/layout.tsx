@@ -73,7 +73,10 @@ const TenantRootLayout = async ({ children, params }: TenantLayoutProps) => {
           icon={<Mail className="size-8" width={48} height={48} aria-hidden />}
           buttonLabel="Get a free quote"
           title="Get a free quote"
-          context={{ sourceSection: 'contact_fab' }}
+          context={{
+            sourceSection: 'contact_fab',
+            ...(site?.jobber?.requestFormUrl ? { jobberRequestFormUrl: site.jobber.requestFormUrl } : {}),
+          }}
         />
       </div>
     </RootDocument>
