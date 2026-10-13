@@ -59,6 +59,7 @@ function buildLeadContext(site, content, pagePath, pageTitle) {
     sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
     sourceSection: content.sourceSection,
     sourceType: 'consultation',
+    jobberRequestFormUrl: site?.jobber?.requestFormUrl || '',
   }
 }
 

@@ -27,7 +27,7 @@ const ServiceRequestPage = async ({ params }) => {
         {/* The request form is a third-party embed with no heading of its own,
             so the page needs one to be navigable. */}
         <h1 className="text-size-500">Request service</h1>
-        <JobberWorkRequestEmbed />
+        <JobberWorkRequestEmbed requestFormUrl={site.jobber?.requestFormUrl} />
       </main>
       <Footer />
     </>
