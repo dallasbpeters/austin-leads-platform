@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 
 import { safeAuth } from '@/lib/auth/session'
 import { syncQuoteToCrm } from '@/lib/quotes/crm'
@@ -10,6 +10,7 @@ import {
   markQuoteUploaded,
 } from '@/lib/quotes/db'
 import { hasQuoteEmailConfig, sendQuoteEmail } from '@/lib/quotes/email'
+import { checkQuoteDeliveryAfterSend } from '@/lib/quotes/email-status'
 import { quotePdfFileName, renderQuotePdf } from '@/lib/quotes/pdf'
 import { syncQuoteToSheet } from '@/lib/zoho/sheet'
 import { syncQuotePdfToWorkdrive } from '@/lib/zoho/workdrive'
@@ -71,6 +72,7 @@ export async function POST(request, { params }) {
     try {
       const sent = await sendQuoteEmail({ quote, pdfBuffer, fileName, to, message })
       await markQuoteSent(id, { emailedTo: sent.to, resendEmailId: sent.id })
+      after(() => checkQuoteDeliveryAfterSend(id))
       results.email = { ok: true, to: sent.to }
     } catch (error) {
       console.error('[quotes] email failed', error)
