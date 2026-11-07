@@ -273,6 +273,11 @@
   }
 }
 
+/* The white quote button skips .btn--primary's navy hover sweep, which hid its dark label. */
+.site-header__link--cta::after {
+  display: none;
+}
+
 .site-header__link-inner {
   display: inline-flex;
   max-width: 100%;
