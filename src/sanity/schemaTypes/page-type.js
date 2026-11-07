@@ -4759,6 +4759,14 @@ const solarFitInputType = {
       hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
     },
     { name: 'help', title: 'Help text', type: 'string' },
+    {
+      name: 'hideWhenRoofFound',
+      title: 'Hide when the roof is found',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'For questions Google answers from the address, like shade or roof direction. They show only when the roof cannot be mapped.',
+    },
   ],
   preview: {
     select: { title: 'label', key: 'key', kind: 'kind' },

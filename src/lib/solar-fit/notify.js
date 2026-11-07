@@ -87,6 +87,7 @@ export async function sendSolarFitEmails({ lead, model, result, siteName }) {
       ['Email', lead.email],
       ['Phone', lead.phone || 'Not provided'],
       ['Address', lead.address || 'Not provided'],
+      ['Roof (Google Solar)', lead.roofSummary || 'Not mapped'],
       [
         'Good fit?',
         result.qualifies === null ? 'Not scored' : result.qualifies ? 'Yes' : 'Needs a closer look',
@@ -143,6 +144,7 @@ export async function appendSolarFitRow({ lead, model, result, pagePath }) {
     Email: lead.email,
     Phone: lead.phone || '',
     Address: lead.address || '',
+    Roof: lead.roofSummary || '',
     'Good Fit': result.qualifies === null ? '' : result.qualifies ? 'Yes' : 'Review',
     Page: pagePath,
     ...Object.fromEntries(answerRows(model, result)),

@@ -5,8 +5,17 @@ import { useId, useMemo, useState } from 'react'
 
 import { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
-import { computeModel, defaultValues, formatOutput, resolveModel } from '@/lib/solar-fit/model'
+import {
+  computeModel,
+  defaultValues,
+  formatOutput,
+  resolveModel,
+  roofExtras,
+  suggestedPanels,
+} from '@/lib/solar-fit/model'
 import { cn } from '@/lib/utils'
+
+import { AddressSearch, RoofMap } from './solar-fit-roof'
 
 /**
  * "See if solar is right for you": questions on the left, live results on the
@@ -20,7 +29,47 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   // Starting values fill in any question the visitor has not touched, so a
   // question added in Studio shows up (with its starting value) right away.
   const answers = useMemo(() => ({ ...defaultValues(model), ...edited }), [model, edited])
-  const result = useMemo(() => computeModel(model, answers), [model, answers])
+  // The roof step: { placeId, address, roof, zoom } once an address is picked.
+  const [roofState, setRoofState] = useState({ status: 'idle' })
+  const [panelCount, setPanelCount] = useState(0)
+  const roof = roofState.roof || null
+  const extras = useMemo(() => roofExtras(roof, panelCount), [roof, panelCount])
+  const result = useMemo(() => computeModel(model, answers, extras), [model, answers, extras])
+  // Questions marked "hide when the roof is found" (like shade) step aside once Google has the roof.
+  const visibleInputs = model.inputs.filter((input) => !(roof && input.hideWhenRoofFound))
+
+  async function onPickAddress({ placeId, text, session }) {
+    setRoofState({ status: 'loading', address: text })
+    try {
+      const response = await fetch(
+        `/api/solar-fit/roof?placeId=${encodeURIComponent(placeId)}&session=${session}`,
+      )
+      const body = await response.json()
+      if (!response.ok) {
+        throw new Error(body.error || 'Lookup failed')
+      }
+      const found = body.roof?.panels?.length ? body.roof : null
+      setRoofState({
+        status: found ? 'found' : 'none',
+        placeId,
+        address: body.address || text,
+        roof: found,
+        zoom: body.zoom,
+      })
+      if (found) {
+        // Start with enough panels to cover their usage, when the form asks for it.
+        const yearly =
+          Number(answers.consumption) > 0
+            ? Number(answers.consumption) * 12
+            : Number(answers.bill) > 0
+              ? (Number(answers.bill) / 0.13) * 12
+              : 0
+        setPanelCount(yearly ? suggestedPanels(found, yearly) : Math.ceil(found.panels.length / 2))
+      }
+    } catch (error) {
+      setRoofState({ status: 'error', address: text, message: error instanceof Error ? error.message : '' })
+    }
+  }
   const [status, setStatus] = useState({ state: 'idle', message: '' })
   const fieldId = useId()
 
@@ -49,6 +98,8 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
           company: form.get('company'),
           consent: form.get('consent') === 'on',
           answers,
+          placeId: roofState.placeId || '',
+          panelCount: roof ? panelCount : 0,
           pageId: page?._id || page?.id || '',
           sectionKey: section?._key || '',
           pagePath: typeof window === 'undefined' ? '' : window.location.pathname,
@@ -94,7 +145,36 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
 
         <div className="solar-calculator__frame grid-frame">
           <div className="solar-calculator__inputs">
-            {model.inputs.map((input) => (
+            <div className="solar-calculator__field">
+              <label className="solar-calculator__label">Your home address</label>
+              <AddressSearch picked={roofState.address} onPick={onPickAddress} />
+              <p className="solar-fit__help">
+                {roofState.status === 'loading'
+                  ? 'Finding your roof…'
+                  : roofState.status === 'none'
+                    ? 'We could not map that roof from the air, so the answers below set the estimate.'
+                    : roofState.status === 'error'
+                      ? roofState.message || 'We could not look that up. The answers below set the estimate.'
+                      : 'We map your roof from satellite imagery and place the panels for you.'}
+              </p>
+            </div>
+            {roof ? (
+              <div className="solar-calculator__field">
+                <label htmlFor={`${fieldId}-panels`} className="solar-calculator__label">
+                  Panels: {panelCount} of {roof.panels.length} that fit
+                </label>
+                <input
+                  id={`${fieldId}-panels`}
+                  type="range"
+                  min={1}
+                  max={roof.panels.length}
+                  value={panelCount}
+                  onChange={(event) => setPanelCount(Number(event.target.value))}
+                  className="solar-fit__slider"
+                />
+              </div>
+            ) : null}
+            {visibleInputs.map((input) => (
               <div key={input.key} className="solar-calculator__field">
                 <label htmlFor={`${fieldId}-${input.key}`} className="solar-calculator__label">
                   {input.label}
@@ -143,6 +223,9 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
           </div>
 
           <div className="solar-calculator__outputs">
+            {roof ? (
+              <RoofMap roof={roof} zoom={roofState.zoom} count={panelCount} address={roofState.address} />
+            ) : null}
             {highlights.length ? (
               <div className="solar-calculator__system">
                 {highlights.map((output) => (

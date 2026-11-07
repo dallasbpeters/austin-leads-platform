@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 
 import { createLeadSubmission, ensureLeadSubmissionsTable, hasLeadDatabase } from '@/lib/leads/db'
-import { computeModel, resolveModel } from '@/lib/solar-fit/model'
+import { isInTexas, placeLocation, roofAt } from '@/lib/solar-fit/google'
+import { computeModel, resolveModel, roofExtras } from '@/lib/solar-fit/model'
 import { appendSolarFitRow, sendSolarFitEmails } from '@/lib/solar-fit/notify'
 import { sanityServerClient } from '@/sanity/client'
 
@@ -18,7 +19,7 @@ const SECTION_QUERY = `*[_id == $pageId][0]{
   "siteSlug": site->slug.current,
   "sourceDomain": site->primaryDomain,
   "section": sections[_key == $sectionKey][0]{
-    fitInputs[]{ key, label, kind, defaultValue, min, max, step, prefix, suffix, options[]{ label, value } },
+    fitInputs[]{ key, label, kind, defaultValue, min, max, step, prefix, suffix, hideWhenRoofFound, options[]{ label, value } },
     fitConstants[]{ key, label, value },
     fitOutputs[]{ key, label, formula, format, decimals, detail, highlight },
     qualifyFormula,
@@ -68,8 +69,28 @@ export async function POST(request) {
       ? await sanityServerClient.fetch(SECTION_QUERY, { pageId, sectionKey }).catch(() => null)
       : null
 
+  // The roof is looked up again here (cached), so the panel numbers can't be edited in the browser.
+  let roof = null
+  const placeId = clean(payload.placeId, 300)
+  if (placeId) {
+    try {
+      const place = await placeLocation(placeId)
+      lead.address = place.address || lead.address
+      if (Number.isFinite(place.lat) && isInTexas(place.lat, place.lng)) {
+        roof = await roofAt(place.lat, place.lng)
+      }
+    } catch (error) {
+      console.warn('[solar-fit] roof lookup on submit failed', error)
+    }
+  }
+  const panelCount = roof ? Math.min(Number(payload.panelCount) || 0, roof.panels.length) : 0
+  const extras = roofExtras(roof, panelCount)
+  lead.roofSummary = roof
+    ? `${extras.roofPanels} panels, ${extras.roofSystemKw.toFixed(1)} kW, about ${Math.round(extras.roofYearlyKwh).toLocaleString('en-US')} kWh a year`
+    : ''
+
   const model = resolveModel(page?.section)
-  const result = computeModel(model, payload.answers || {})
+  const result = computeModel(model, payload.answers || {}, extras)
   const siteName = page?.siteName || 'Texas Solar and Roofing Pros'
   const pagePath = clean(payload.pagePath, 200) || '/solar-costs'
 
@@ -91,6 +112,7 @@ export async function POST(request) {
         answers: result.values,
         results: Object.fromEntries(result.outputs.map((output) => [output.key, output.value])),
         qualifies: result.qualifies,
+        roof: roof ? { placeId, ...extras } : null,
       },
     })
     leadId = submission.id

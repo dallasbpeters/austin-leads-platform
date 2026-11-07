@@ -301,7 +301,7 @@ export const sectionProjection = `
     "imageUrl": image.asset->url
   },
   // solarFitSection: the "See if solar is right for you" questions and formulas.
-  fitInputs[]{ _key, key, label, kind, defaultValue, min, max, step, prefix, suffix, help, options[]{ label, value } },
+  fitInputs[]{ _key, key, label, kind, defaultValue, min, max, step, prefix, suffix, hideWhenRoofFound, help, options[]{ label, value } },
   fitConstants[]{ _key, key, label, value },
   fitOutputs[]{ _key, key, label, formula, format, decimals, detail, highlight },
   qualifyFormula,

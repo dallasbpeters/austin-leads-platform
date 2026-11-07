@@ -253,12 +253,14 @@ function cleanValue(input, raw) {
  * output above it. A broken formula yields an `error` on that output instead of
  * stopping the rest.
  */
-export function computeModel(model, rawValues = {}) {
+export function computeModel(model, rawValues = {}, extras = {}) {
   const values = Object.fromEntries(
     model.inputs.map((input) => [input.key, cleanValue(input, rawValues[input.key])]),
   )
   const scope = {
     ...Object.fromEntries(model.constants.map((constant) => [constant.key, constant.value])),
+    ...roofExtras(null),
+    ...extras,
     ...values,
   }
 
@@ -322,4 +324,52 @@ export function formatOutput(output) {
       return number
     }
   }
+}
+
+/*
+ * Roof values from the address step (Google Solar API). Formulas can use these
+ * names like any question; with no address, or no roof data, roofFound is 0
+ * and the rest are 0, so a formula can fall back to the questions:
+ *   roofFound ? roofSystemKw : consumption * 12 / sunFactor
+ */
+export const ROOF_VALUES = [
+  { key: 'roofFound', label: 'Roof found (1 yes, 0 no)' },
+  { key: 'roofPanels', label: 'Panels on their roof' },
+  { key: 'roofSystemKw', label: 'System size from their roof (kW)' },
+  { key: 'roofYearlyKwh', label: 'Yearly power from their roof (kWh)' },
+  { key: 'roofSunHours', label: 'Sun hours per year on their roof' },
+]
+
+// Solar API reports DC energy; about 85% reaches the house as AC.
+const DC_TO_AC = 0.85
+
+/** The roof values for the best `count`-panel layout (Google lists panels best first). */
+export function roofExtras(roof, count) {
+  if (!roof?.panels?.length) {
+    return { roofFound: 0, roofPanels: 0, roofSystemKw: 0, roofYearlyKwh: 0, roofSunHours: 0 }
+  }
+  const panels = Math.max(1, Math.min(Math.round(count) || 1, roof.panels.length))
+  const yearlyDc = roof.panels.slice(0, panels).reduce((sum, panel) => sum + panel.yearlyKwhDc, 0)
+  return {
+    roofFound: 1,
+    roofPanels: panels,
+    roofSystemKw: (panels * roof.panelWatts) / 1000,
+    roofYearlyKwh: yearlyDc * DC_TO_AC,
+    roofSunHours: roof.sunHoursPerYear,
+  }
+}
+
+/** The fewest panels that cover a yearly usage (kWh), or every panel that fits. */
+export function suggestedPanels(roof, yearlyKwh) {
+  if (!roof?.panels?.length) {
+    return 0
+  }
+  let total = 0
+  for (const [index, panel] of roof.panels.entries()) {
+    total += panel.yearlyKwhDc * DC_TO_AC
+    if (total >= yearlyKwh) {
+      return index + 1
+    }
+  }
+  return roof.panels.length
 }

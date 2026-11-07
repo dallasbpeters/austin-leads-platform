@@ -10,6 +10,7 @@ import {
   defaultValues,
   formatOutput,
   resolveModel,
+  ROOF_VALUES,
 } from '../../lib/solar-fit/model'
 
 /*
@@ -312,6 +313,11 @@ export function FormulaInput(props) {
             <NameButtons
               title={isQualify ? 'Results' : 'Results above this one'}
               items={results}
+              onInsert={insert}
+            />
+            <NameButtons
+              title="Roof (from the address; 0 when no roof is found)"
+              items={ROOF_VALUES.map((item) => ({ insert: item.key, label: item.label, hint: item.key }))}
               onInsert={insert}
             />
             <NameButtons title="Math" items={OPERATOR_HELP} onInsert={insert} />
