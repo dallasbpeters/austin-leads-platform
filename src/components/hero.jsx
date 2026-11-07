@@ -21,15 +21,6 @@ import PortableTextContent from './portable-text-content'
  * the section type plus its slugified title ("See what solar could save"), so
  * a bare `#calculator` matched nothing on the rendered page.
  */
-const FALLBACK_HERO_ACTIONS = [
-  { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'default' },
-  {
-    label: 'See how the math works',
-    href: '/#calculator-see-what-solar-could-save',
-    variant: 'secondary',
-  },
-]
-
 function resolveHeroMediaMode(heroVideoSource, explicitHeroMediaMode, hasHeroSlides) {
   if (explicitHeroMediaMode === 'clouds') {
     return 'clouds'
@@ -121,7 +112,8 @@ function resolveHeroActions(heroSection) {
   const configured = (Array.isArray(heroSection?.actions) ? heroSection.actions : [])
     .map((action) => ({ ...action, href: cleanRuntimeHref(action?.href) }))
     .filter((action) => action.href && action.label)
-  return configured.length ? configured : FALLBACK_HERO_ACTIONS
+  // No fallback buttons: a hero without actions in Sanity shows none.
+  return configured
 }
 
 function resolveHeroMetrics(heroSection) {
@@ -524,7 +516,7 @@ export default function Hero({
               />
             ) : null}
             {/* Glass cards, when set, are the hero's calls to action. */}
-            {heroCards.length === 0 ? (
+            {heroCards.length === 0 && heroActions.length > 0 ? (
               <div className="solar-hero__actions">
                 <div className="solar-hero__action-group">
                   <HeroActions actions={heroActions} textColor={heroTextColor} />
