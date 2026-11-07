@@ -48,7 +48,7 @@
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: color-mix(in oklch, var(--primary-foreground) 40%, transparent);
+  color: var(--muted-foreground);
 }
 
 .solar-adoption__title {
@@ -65,7 +65,7 @@
   max-width: 28rem;
   padding-block-start: 0.5rem;
   line-height: 2rem;
-  color: color-mix(in oklch, var(--primary-foreground) 40%, transparent);
+  color: var(--muted-foreground);
 }
 
 @media (width >= 64rem) {

@@ -15,6 +15,53 @@
   background-image: none !important;
 }
 
+/*
+ * Text that contrasts with a custom section colour. SectionSurface works out
+ * whether the colour is light or dark and adds one of these; they repoint the
+ * text tokens every section reads, so headings, body copy and muted lines
+ * all flip together. Browsers with contrast-color() also set the base colour
+ * from the background directly.
+ */
+.section-surface--on-light {
+  --foreground: #0f172a;
+  --color-text-strong: #0f172a;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+  --muted-foreground: #475569;
+  --cloud-section-foreground: #0f172a;
+  --cloud-section-muted: #475569;
+  --consult-fg: #0f172a;
+  --consult-copy: #334155;
+  --consult-soft: #475569;
+  --testimonials-ink: #0f172a;
+  --testimonials-muted: #475569;
+
+  color: #0f172a;
+}
+
+.section-surface--on-dark {
+  --foreground: #fff;
+  --color-text-strong: #fff;
+  --color-text: #fff;
+  --color-text-muted: oklch(100% 0 0deg / 72%);
+  --muted-foreground: oklch(100% 0 0deg / 72%);
+  --cloud-section-foreground: #fff;
+  --cloud-section-muted: oklch(100% 0 0deg / 72%);
+  --consult-fg: #fff;
+  --consult-copy: oklch(100% 0 0deg / 82%);
+  --consult-soft: oklch(100% 0 0deg / 70%);
+  --testimonials-ink: #fff;
+  --testimonials-muted: oklch(100% 0 0deg / 72%);
+
+  color: #fff;
+}
+
+@supports (color: contrast-color(white)) {
+  .section-surface--custom {
+    color: contrast-color(var(--surface-bg, white));
+  }
+}
+
 .section-surface__content {
   position: relative;
   z-index: 10;

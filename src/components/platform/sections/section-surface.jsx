@@ -1,9 +1,12 @@
 import Image from 'next/image'
 
 import { buildSanityImageUrl } from '@/lib/platform/imageSource'
+import { surfaceTone } from '@/lib/platform/surface-tone'
+import { cleanRuntimeString } from '@/lib/sanity/stega'
+import { cn } from '@/lib/utils'
 
 const getSectionSurfaceBackground = (section) => {
-  const backgroundColor = section?.sectionBackgroundColor || null
+  const backgroundColor = cleanRuntimeString(section?.sectionBackgroundColor) || null
   const backgroundImage = section?.sectionBackgroundImage || null
   const imageUrl = backgroundImage ? buildSanityImageUrl(backgroundImage, { width: 2400 }) : ''
 
@@ -25,10 +28,16 @@ const SectionSurface = ({ section, children }) => {
     return children
   }
 
+  // Text on a custom colour flips to whichever of dark or light contrasts with it.
+  const tone = background.backgroundColor ? surfaceTone(background.backgroundColor) : null
+
   return (
     <div
-      className="section-surface section-surface--custom"
-      style={{ backgroundColor: background.backgroundColor || undefined }}
+      className={cn('section-surface section-surface--custom', tone && `section-surface--on-${tone}`)}
+      style={{
+        backgroundColor: background.backgroundColor || undefined,
+        '--surface-bg': background.backgroundColor || undefined,
+      }}
     >
       {background.imageUrl ? (
         <div className="section-surface__image-wrapper">
