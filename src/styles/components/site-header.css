@@ -55,9 +55,10 @@
   .site-header {
     --inset: calc(var(--spacing) * 3);
 
-    /* Lines up with the page gridlines (page-grid.css). */
-    left: calc((100% - var(--page-frame)) / 2);
-    right: calc((100% - var(--page-frame)) / 2);
+    /* Nearly full width, so as many links as possible fit in the bar before
+     * any move into the menu; capped at 120rem on very wide screens. */
+    left: max(var(--inset), calc((100% - 120rem) / 2));
+    right: max(var(--inset), calc((100% - 120rem) / 2));
   }
 
   .site-header__bar {
