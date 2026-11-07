@@ -142,6 +142,34 @@ const toNumber = (value, fallback = 0) => {
   return value === '' || value === null || value === undefined || !Number.isFinite(parsed) ? fallback : parsed
 }
 
+const YES_NO_OPTIONS = [
+  { label: 'Yes', value: 1 },
+  { label: 'No', value: 0 },
+]
+
+/*
+ * Pick-one answers use their number when they have one, else their own text,
+ * so formulas can say roofType == "Metal". Yes / No questions are 1 and 0.
+ */
+function normalizeInput(input) {
+  if (input.kind === 'yesno') {
+    return { ...input, options: YES_NO_OPTIONS, defaultValue: toNumber(input.defaultValue, 1) === 0 ? 0 : 1 }
+  }
+  if (input.kind === 'select') {
+    const options = (input.options || [])
+      .filter((option) => option?.label)
+      .map((option) => ({
+        label: option.label,
+        value:
+          typeof option.value === 'number' && Number.isFinite(option.value) ? option.value : option.label,
+      }))
+    const fallback = options[0]?.value ?? ''
+    const listed = options.find((option) => String(option.value) === String(input.defaultValue))
+    return { ...input, options, defaultValue: listed ? listed.value : fallback }
+  }
+  return { ...input, defaultValue: toNumber(input.defaultValue, 0) }
+}
+
 /**
  * The section's model, filled in from DEFAULT_MODEL only where the section is
  * empty. Questions show as soon as an editor adds them; the built-in math only
@@ -159,14 +187,7 @@ export function resolveModel(section) {
   const constants = (section?.fitConstants || []).filter((constant) => constant?.key)
 
   return {
-    inputs: (inputs.length ? inputs : DEFAULT_MODEL.inputs).map((input) => ({
-      ...input,
-      defaultValue: toNumber(input.defaultValue, input.options?.[0]?.value ?? 0),
-      options: (input.options || []).map((option) => ({
-        label: option.label,
-        value: toNumber(option.value),
-      })),
-    })),
+    inputs: (inputs.length ? inputs : DEFAULT_MODEL.inputs).map(normalizeInput),
     constants: constants.length
       ? constants.map((constant) => ({ ...constant, value: toNumber(constant.value) }))
       : DEFAULT_MODEL.constants,
@@ -184,9 +205,10 @@ export function defaultValues(model) {
 
 /** Clamps an answer to its input's range, and to a listed option for selects. */
 function cleanValue(input, raw) {
-  if (input.kind === 'select') {
-    const value = toNumber(raw, input.defaultValue)
-    return input.options.some((option) => option.value === value) ? value : input.defaultValue
+  if (input.kind === 'select' || input.kind === 'yesno') {
+    // Form fields send text, so match on text and keep the option's own value.
+    const match = input.options.find((option) => String(option.value) === String(raw))
+    return match ? match.value : input.defaultValue
   }
   let value = toNumber(raw, input.defaultValue)
   if (typeof input.min === 'number') {
@@ -242,6 +264,9 @@ export function computeModel(model, rawValues = {}) {
 export function formatOutput(output) {
   if (output.value === null || output.value === undefined) {
     return '—'
+  }
+  if (typeof output.value === 'string') {
+    return output.value
   }
   const decimals = typeof output.decimals === 'number' ? output.decimals : 0
   const number = output.value.toLocaleString('en-US', {

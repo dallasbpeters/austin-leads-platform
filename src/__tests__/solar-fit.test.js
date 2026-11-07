@@ -20,6 +20,15 @@ describe(evaluateFormula, () => {
     expect(evaluateFormula('round(10 / 3, 2)', scope)).toBe(3.33)
   })
 
+  it('compares text answers without caring about case', () => {
+    const scope = { north: 'Yes', roof: 'Metal shingle' }
+    expect(evaluateFormula('north == "yes" ? 0.8 : 1', scope)).toBe(0.8)
+    expect(evaluateFormula("roof != 'Tile'", scope)).toBe(1)
+    expect(evaluateFormula('roof == "Tile" ? "Check the tiles" : "Standard install"', scope)).toBe(
+      'Standard install',
+    )
+  })
+
   it('computes a standard loan payment', () => {
     // $20,000 at 6% for 10 years is about $222.04 a month.
     expect(evaluateFormula('payment(20000, 0.06, 10)', {})).toBeCloseTo(222.04, 2)
@@ -35,7 +44,7 @@ describe(evaluateFormula, () => {
     expect(() => evaluateFormula('alert(1)', {})).toThrow(FormulaError)
     expect(() => evaluateFormula('process.exit()', {})).toThrow(FormulaError)
     expect(() => evaluateFormula('a; b', { a: 1, b: 2 })).toThrow(FormulaError)
-    expect(() => evaluateFormula('"text"', {})).toThrow(FormulaError)
+    expect(() => evaluateFormula('"unclosed', {})).toThrow(FormulaError)
     expect(() => evaluateFormula('2 +', {})).toThrow(FormulaError)
   })
 })
@@ -79,6 +88,33 @@ describe(computeModel, () => {
     expect(model.inputs.map((input) => input.key)).toEqual(['north'])
     expect(model.outputs).toEqual([])
     expect(computeModel(model, {}).values).toEqual({ north: 1 })
+  })
+
+  it('treats Yes / No as 1 and 0 and pick-one answers without a number as their text', () => {
+    const model = resolveModel({
+      fitInputs: [
+        { key: 'north', label: 'Faces north?', kind: 'yesno' },
+        {
+          key: 'roof',
+          label: 'Roof type',
+          kind: 'select',
+          options: [{ label: 'Shingle' }, { label: 'Metal' }],
+        },
+      ],
+      fitOutputs: [
+        { key: 'factor', label: 'Factor', formula: 'north ? 0.8 : 1', format: 'number', decimals: 1 },
+        {
+          key: 'note',
+          label: 'Note',
+          formula: 'roof == "metal" ? "Metal is great" : "Standard"',
+          format: 'text',
+        },
+      ],
+    })
+    // Form fields send strings; the model maps them back to each option's value.
+    const result = computeModel(model, { north: '0', roof: 'Metal' })
+    expect(result.values).toEqual({ north: 0, roof: 'Metal' })
+    expect(result.outputs.map((output) => formatOutput(output))).toEqual(['1.0', 'Metal is great'])
   })
 
   it('falls back to the default model when the section is empty', () => {

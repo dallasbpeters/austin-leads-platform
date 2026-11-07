@@ -11,6 +11,7 @@
  *   systemKw >= 10 ? 2.45 : 2.75           comparisons and a ? b : c
  *   owner == 1 && creditScore >= 650       && || and !
  *   payment(netCost, apr, termYears)       monthly loan payment
+ *   north == "Yes" ? 0.9 : 1               text in quotes; == and != ignore case
  */
 
 const FUNCTIONS = {
@@ -56,7 +57,7 @@ export class FormulaError extends Error {
 }
 
 const TOKEN_PATTERN =
-  /\s*(?:(\d+(?:\.\d+)?|\.\d+)|([A-Za-z_][A-Za-z0-9_]*)|(>=|<=|==|!=|&&|\|\||[-+*/%^(),?:<>!]))/uy
+  /\s*(?:"([^"]*)"|'([^']*)'|(\d+(?:\.\d+)?|\.\d+)|([A-Za-z_][A-Za-z0-9_]*)|(>=|<=|==|!=|&&|\|\||[-+*/%^(),?:<>!]))/uy
 
 function tokenize(source) {
   const tokens = []
@@ -72,8 +73,10 @@ function tokenize(source) {
     if (!match) {
       throw new FormulaError(`Unexpected character "${source[index]}" at position ${index + 1}`)
     }
-    const [, number, name, op] = match
-    if (number !== undefined) {
+    const [, doubleQuoted, singleQuoted, number, name, op] = match
+    if (doubleQuoted !== undefined || singleQuoted !== undefined) {
+      tokens.push({ type: 'string', value: doubleQuoted ?? singleQuoted })
+    } else if (number !== undefined) {
       tokens.push({ type: 'number', value: Number(number) })
     } else if (name !== undefined) {
       tokens.push({ type: 'name', value: name })
@@ -119,6 +122,9 @@ function parse(source) {
 
     if (token.type === 'number') {
       return { kind: 'number', value: token.value }
+    }
+    if (token.type === 'string') {
+      return { kind: 'string', value: token.value }
     }
     if (token.type === 'name') {
       if (isOp('(')) {
@@ -190,40 +196,50 @@ function parse(source) {
   return tree
 }
 
+// Text answers take part in == and != (ignoring case and spaces at the ends);
+// everywhere else a value counts as a number, and text that is not a number as 0.
+const num = (value) => (typeof value === 'string' ? Number(value) || 0 : value)
+const same = (a, b) =>
+  typeof a === 'string' || typeof b === 'string'
+    ? String(a).trim().toLowerCase() === String(b).trim().toLowerCase()
+    : a === b
+
 const BINARY = {
-  '+': (a, b) => a + b,
-  '-': (a, b) => a - b,
-  '*': (a, b) => a * b,
-  '/': (a, b) => (b === 0 ? 0 : a / b),
-  '%': (a, b) => (b === 0 ? 0 : a % b),
-  '^': (a, b) => a ** b,
-  '<': (a, b) => Number(a < b),
-  '>': (a, b) => Number(a > b),
-  '<=': (a, b) => Number(a <= b),
-  '>=': (a, b) => Number(a >= b),
-  '==': (a, b) => Number(a === b),
-  '!=': (a, b) => Number(a !== b),
+  '+': (a, b) => num(a) + num(b),
+  '-': (a, b) => num(a) - num(b),
+  '*': (a, b) => num(a) * num(b),
+  '/': (a, b) => (num(b) === 0 ? 0 : num(a) / num(b)),
+  '%': (a, b) => (num(b) === 0 ? 0 : num(a) % num(b)),
+  '^': (a, b) => num(a) ** num(b),
+  '<': (a, b) => Number(num(a) < num(b)),
+  '>': (a, b) => Number(num(a) > num(b)),
+  '<=': (a, b) => Number(num(a) <= num(b)),
+  '>=': (a, b) => Number(num(a) >= num(b)),
+  '==': (a, b) => Number(same(a, b)),
+  '!=': (a, b) => Number(!same(a, b)),
   '&&': (a, b) => Number(Boolean(a) && Boolean(b)),
   '||': (a, b) => Number(Boolean(a) || Boolean(b)),
 }
 
 function evaluateNode(node, scope) {
   switch (node.kind) {
-    case 'number': {
+    case 'number':
+    case 'string': {
       return node.value
     }
     case 'name': {
       if (!Object.hasOwn(scope, node.name)) {
         throw new FormulaError(`Unknown value "${node.name}"`)
       }
-      return Number(scope[node.name]) || 0
+      const value = scope[node.name]
+      return typeof value === 'string' ? value : Number(value) || 0
     }
     case 'unary': {
       const value = evaluateNode(node.operand, scope)
       if (node.op === '!') {
         return Number(!value)
       }
-      return node.op === '-' ? -value : value
+      return node.op === '-' ? -num(value) : num(value)
     }
     case 'binary': {
       return BINARY[node.op](evaluateNode(node.left, scope), evaluateNode(node.right, scope))
@@ -234,7 +250,7 @@ function evaluateNode(node, scope) {
         : evaluateNode(node.alternate, scope)
     }
     case 'call': {
-      return FUNCTIONS[node.name](...node.args.map((arg) => evaluateNode(arg, scope)))
+      return FUNCTIONS[node.name](...node.args.map((arg) => num(evaluateNode(arg, scope))))
     }
     default: {
       throw new FormulaError('Unknown formula part')
@@ -242,9 +258,16 @@ function evaluateNode(node, scope) {
   }
 }
 
-/** Evaluates one formula against named values. Throws FormulaError on bad syntax or unknown names. */
+/**
+ * Evaluates one formula against named values: a number, or text when the
+ * formula picks a text answer (like "Battery + solar"). Throws FormulaError on
+ * bad syntax or unknown names.
+ */
 export function evaluateFormula(source, scope) {
   const result = evaluateNode(parse(String(source || '0')), scope)
+  if (typeof result === 'string') {
+    return result
+  }
   return Number.isFinite(result) ? result : 0
 }
 

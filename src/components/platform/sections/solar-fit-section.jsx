@@ -100,7 +100,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                 <label htmlFor={`${fieldId}-${input.key}`} className="solar-calculator__label">
                   {input.label}
                 </label>
-                {input.kind === 'select' ? (
+                {input.kind === 'select' || input.kind === 'yesno' ? (
                   <select
                     id={`${fieldId}-${input.key}`}
                     className="solar-calculator__input"

@@ -4655,7 +4655,7 @@ const FORMULA_KEY_RULE = (Rule) =>
     .regex(/^[A-Za-z_][A-Za-z0-9_]*$/u, { name: 'key', invert: false })
     .error('Use letters, numbers and _ only, starting with a letter (for example monthlyBill).')
 
-const FORMULA_HELP = `Math with the keys of the questions, constants and results above. Operators: + - * / ^ ( ), comparisons (>= == …), && || and a ? b : c. Functions: ${FORMULA_FUNCTION_NAMES.join(', ')}. Example: payment(netCost, apr, 20).`
+const FORMULA_HELP = `Math with the keys of the questions, constants and results above. Operators: + - * / ^ ( ), comparisons (>= == …), && || and a ? b : c. Text goes in quotes: roofType == "Metal" (case does not matter). Yes / No answers are 1 and 0. Functions: ${FORMULA_FUNCTION_NAMES.join(', ')}. Example: payment(netCost, apr, 20).`
 
 const solarFitOptionType = {
   name: 'solarFitOption',
@@ -4665,14 +4665,18 @@ const solarFitOptionType = {
     { name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required() },
     {
       name: 'value',
-      title: 'Value used in formulas',
+      title: 'Number (optional)',
       type: 'number',
-      validation: (Rule) => Rule.required(),
+      description:
+        'Leave blank to use the answer text itself, so a formula can say roofType == "Metal". Fill in a number to do math with it.',
     },
   ],
   preview: {
     select: { title: 'label', value: 'value' },
-    prepare: ({ title, value }) => ({ title, subtitle: `= ${value}` }),
+    prepare: ({ title, value }) => ({
+      title,
+      subtitle: typeof value === 'number' ? `= ${value}` : `= "${title}"`,
+    }),
   },
 }
 
@@ -4697,13 +4701,19 @@ const solarFitInputType = {
       options: {
         list: [
           { title: 'Number', value: 'number' },
+          { title: 'Yes / No', value: 'yesno' },
           { title: 'Pick one', value: 'select' },
         ],
         layout: 'radio',
         direction: 'horizontal',
       },
     },
-    { name: 'defaultValue', title: 'Starting value', type: 'number' },
+    {
+      name: 'defaultValue',
+      title: 'Starting value',
+      type: 'number',
+      description: 'For Yes / No: 1 starts on Yes, 0 on No. For Pick one, blank starts on the first answer.',
+    },
     {
       name: 'options',
       title: 'Answers',
@@ -4715,21 +4725,26 @@ const solarFitInputType = {
       name: 'min',
       title: 'Lowest allowed',
       type: 'number',
-      hidden: ({ parent }) => parent?.kind === 'select',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
     },
     {
       name: 'max',
       title: 'Highest allowed',
       type: 'number',
-      hidden: ({ parent }) => parent?.kind === 'select',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
     },
-    { name: 'step', title: 'Step', type: 'number', hidden: ({ parent }) => parent?.kind === 'select' },
+    {
+      name: 'step',
+      title: 'Step',
+      type: 'number',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
+    },
     {
       name: 'prefix',
       title: 'Prefix',
       type: 'string',
       description: 'Shown before the number, like $.',
-      hidden: ({ parent }) => parent?.kind === 'select',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
     },
     { name: 'help', title: 'Help text', type: 'string' },
   ],
@@ -4737,7 +4752,7 @@ const solarFitInputType = {
     select: { title: 'label', key: 'key', kind: 'kind' },
     prepare: ({ title, key, kind }) => ({
       title,
-      subtitle: `${key || '?'} · ${kind === 'select' ? 'pick one' : 'number'}`,
+      subtitle: `${key || '?'} · ${{ select: 'pick one', yesno: 'yes / no' }[kind] || 'number'}`,
     }),
   },
 }
@@ -4788,6 +4803,7 @@ const solarFitOutputType = {
           { title: 'kW', value: 'kw' },
           { title: 'Years', value: 'years' },
           { title: 'Percent (0.25 = 25%)', value: 'percent' },
+          { title: 'Text (the formula picks words, like "Battery + solar")', value: 'text' },
           { title: 'Hidden (a step for other formulas)', value: 'hidden' },
         ],
       },
