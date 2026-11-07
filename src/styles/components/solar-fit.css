@@ -93,15 +93,32 @@ select.solar-calculator__input {
   color: #62748e;
 }
 
-/* Several highlighted results stack inside the one dark tile. */
-.solar-fit__highlight {
-  display: grid;
-  gap: 0.375rem;
+/*
+ * Highlighted results share the one dark tile, side by side when there is
+ * room. Their paragraphs drop the default margins, which spaced them far apart.
+ */
+.solar-calculator__system:has(.solar-fit__highlight) {
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
 }
 
-.solar-fit__highlight + .solar-fit__highlight {
-  padding-block-start: 1rem;
-  border-block-start: 1px solid oklch(100% 0 0deg / 12%);
+.solar-fit__highlight {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+}
+
+.solar-fit__highlight > * {
+  margin: 0;
+}
+
+.solar-fit__highlight .solar-calculator__system-value {
+  font-size: clamp(1.75rem, 1.5vw + 1.25rem, 2.5rem);
+}
+
+.solar-fit__highlight .solar-calculator__system-detail {
+  font-size: var(--text-sm);
 }
 
 .solar-fit__verdict {
