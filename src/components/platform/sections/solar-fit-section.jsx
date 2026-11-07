@@ -226,19 +226,6 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
             {roof ? (
               <RoofMap roof={roof} zoom={roofState.zoom} count={panelCount} address={roofState.address} />
             ) : null}
-            {highlights.length ? (
-              <div className="solar-calculator__system">
-                {highlights.map((output) => (
-                  <div key={output.key} className="solar-fit__highlight">
-                    <p className="solar-calculator__eyebrow">{output.label}</p>
-                    <p className="solar-calculator__system-value">{formatOutput(output)}</p>
-                    {output.detail ? (
-                      <p className="solar-calculator__system-detail">{output.detail}</p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            ) : null}
             {stats.length ? (
               <dl className="solar-calculator__stats" aria-live="polite">
                 {stats.map((output) => (
@@ -253,6 +240,19 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
               </dl>
             ) : null}
 
+            {highlights.length ? (
+              <div className="solar-calculator__system">
+                {highlights.map((output) => (
+                  <div key={output.key} className="solar-fit__highlight">
+                    <p className="solar-calculator__eyebrow">{output.label}</p>
+                    <p className="solar-calculator__system-value">{formatOutput(output)}</p>
+                    {output.detail ? (
+                      <p className="solar-calculator__system-detail">{output.detail}</p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
             {fitMessage ? (
               <p
                 className={cn('solar-fit__verdict', result.qualifies && 'solar-fit__verdict--yes')}
