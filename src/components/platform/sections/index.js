@@ -24,6 +24,8 @@ import { ServiceGridSection } from './service-grid-section'
 import { SolarSwitchSection } from './solar-switch-section'
 import { StepsSection } from './steps-section'
 import { StorySection } from './story-section'
+import { TabbedPanelSection } from './tabbed-panel-section'
+import { TestimonialsSection } from './testimonials-section'
 import { VideoSection } from './video-section'
 
 /* mapbox-gl is ~1.8 MB and only reachable through this one section. */
@@ -36,7 +38,6 @@ const CostsSection = dynamic(() => import('@/components/costs-section'), { ssr: 
 const IncentivesSection = dynamic(() => import('@/components/incentives-section'), { ssr: true })
 const ResourcesSection = dynamic(() => import('@/components/resources-section'), { ssr: true })
 const SnapshotSection = dynamic(() => import('@/components/snapshot-section'), { ssr: true })
-const Testimonials = dynamic(() => import('@/components/testimonials'), { ssr: true })
 const ArticleSection = dynamic(() => import('@/components/article-section'), { ssr: true })
 const SolarAdoptionSection = dynamic(() => import('@/components/solar-adoption-section'), { ssr: true })
 const SolarBenefitsSection = dynamic(() => import('@/components/solar-benefits-section'), { ssr: true })
@@ -46,6 +47,7 @@ export const sectionRenderers = {
   aboutProfile: AboutProfileSection,
   article: ArticleSection,
   band: BandSection,
+  tabbedPanel: TabbedPanelSection,
   bannerCta: BannerCtaSection,
   calculator: CalculatorSection,
   caseStudyGrid: CaseStudyGridSection,
@@ -78,7 +80,7 @@ export const sectionRenderers = {
   solarSwitch: SolarSwitchSection,
   steps: StepsSection,
   story: StorySection,
-  testimonials: Testimonials,
+  testimonials: TestimonialsSection,
   video: VideoSection,
 }
 

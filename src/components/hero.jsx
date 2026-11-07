@@ -1,5 +1,7 @@
 // oxlint-disable func-style jsx-a11y/media-has-caption
+import { ArrowUpRight } from 'iconoir-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
@@ -7,6 +9,7 @@ import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/san
 import { cn } from '@/lib/utils'
 
 import Card from './card'
+import CloudBackground from './cloud-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import HeroActions from './hero-actions'
 import ImageFader from './image-fader'
@@ -28,6 +31,9 @@ const FALLBACK_HERO_ACTIONS = [
 ]
 
 function resolveHeroMediaMode(heroVideoSource, explicitHeroMediaMode, hasHeroSlides) {
+  if (explicitHeroMediaMode === 'clouds') {
+    return 'clouds'
+  }
   if (heroVideoSource) {
     return 'video'
   }
@@ -67,7 +73,6 @@ function getHeroTextValues(heroSection, hasHeroBackdropMedia) {
       heroSection?.body ||
       'Straight answers on Austin solar costs, incentives, and whether the math works for your home.',
     cardCopy: heroSection?.cardCopy || '',
-    eyebrow: heroSection?.eyebrow || 'Austin averages 228 sunny days a year',
     heroTextColor,
     softTextColor: heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined,
   }
@@ -80,7 +85,7 @@ function resolveRotatingHeroImages(
   heroSection,
   fallbackBackdropSrc,
 ) {
-  if (heroMediaMode === 'video') {
+  if (heroMediaMode === 'video' || heroMediaMode === 'clouds') {
     return []
   }
   const base =
@@ -129,9 +134,29 @@ function getBackdropCardValue(hasHeroBackdropMedia, lightValue, darkValue) {
   return hasHeroBackdropMedia ? lightValue : darkValue
 }
 
-function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, overlayStyle }) {
+function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, overlayStyle, cutout }) {
   const primaryHeroImage = rotatingHeroImages[0] || null
   const hasRotatingHeroImages = rotatingHeroImages.length > 1
+
+  /* Sky tone and drifting clouds come from CloudBackground; the cutout (a transparent PNG) sits over them. */
+  if (heroMediaMode === 'clouds') {
+    return (
+      <>
+        <CloudBackground density="regular" />
+        {cutout?.url ? (
+          <Image
+            src={cutout.url}
+            alt={cutout.alt || ''}
+            fill
+            priority
+            quality={90}
+            sizes="100vw"
+            className="solar-hero__cutout"
+          />
+        ) : null}
+      </>
+    )
+  }
 
   if (heroMediaMode === 'video') {
     return (
@@ -183,7 +208,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
           fill
           priority
           fetchPriority="high"
-          quality={68}
+          quality={95}
           sizes="100vw"
           className="solar-hero__media"
         />
@@ -203,23 +228,6 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
       sizes="100vw"
       className="solar-hero__media solar-hero__media--fallback"
     />
-  )
-}
-
-function HeroEyebrow({ eyebrow, heroTextColor }) {
-  return (
-    <div className="solar-hero__eyebrow">
-      <div className="solar-hero__pulse">
-        <span className="solar-hero__pulse-ring animate-ping" />
-        <span className="solar-hero__pulse-dot" />
-      </div>
-      <span
-        className="solar-hero__eyebrow-text text-size-90"
-        style={{ color: heroTextColor || 'var(--color-primary)' }}
-      >
-        {eyebrow}
-      </span>
-    </div>
   )
 }
 
@@ -355,6 +363,61 @@ function HeroAside({
   )
 }
 
+function resolveHeroCards(heroSection) {
+  return (Array.isArray(heroSection?.heroCards) ? heroSection.heroCards : [])
+    .map((card) => ({
+      ...card,
+      href: cleanRuntimeHref(card?.href),
+      imageUrl: cleanRuntimeHref(card?.imageUrl),
+    }))
+    .filter((card) => card.title)
+}
+
+/*
+ * Frosted cards along the bottom of the hero (Sanity "Glass cards"). When a
+ * card has a link, the link's ::after covers the card so the whole card is
+ * the tap target.
+ */
+function HeroCards({ cards }) {
+  return (
+    <div className="solar-hero__cards solar-fade-up solar-fade-up-delay">
+      {cards.map((card, index) => (
+        <article
+          key={buildRuntimeKey('hero-card', card.title, card._key, index)}
+          className={cn('solar-hero__glass', card.imageUrl && 'solar-hero__glass--with-image')}
+        >
+          <div className="solar-hero__glass-head">
+            <div className="solar-hero__glass-heading">
+              <h2 className="solar-hero__glass-title">{card.title}</h2>
+              {card.eyebrow ? <p className="solar-hero__glass-eyebrow">{card.eyebrow}</p> : null}
+            </div>
+            {card.stat ? <p className="solar-hero__glass-stat">{card.stat}</p> : null}
+          </div>
+          {card.body ? <p className="solar-hero__glass-body">{card.body}</p> : null}
+          {card.href ? (
+            <Link href={card.href} className="solar-hero__glass-link">
+              <span className="solar-hero__glass-link-label">{card.linkLabel || 'Learn more'}</span>
+              <span className="solar-hero__glass-link-icon" aria-hidden="true">
+                <ArrowUpRight strokeWidth={2} />
+              </span>
+            </Link>
+          ) : null}
+          {card.imageUrl ? (
+            <img
+              src={`${card.imageUrl}?w=800&h=400&fit=crop&auto=format`}
+              alt=""
+              width={400}
+              height={200}
+              loading="lazy"
+              className="solar-hero__glass-image"
+            />
+          ) : null}
+        </article>
+      ))}
+    </div>
+  )
+}
+
 export default function Hero({
   heroSection = null,
   sectionId = 'hero-homepage',
@@ -370,8 +433,9 @@ export default function Hero({
     heroSection,
     fallbackBackdropSrc,
   )
-  const hasHeroBackdropMedia = heroMediaMode === 'video' || rotatingHeroImages.length > 0
-  const { body, cardCopy, eyebrow, heroTextColor, softTextColor } = getHeroTextValues(
+  const hasHeroBackdropMedia =
+    heroMediaMode === 'video' || heroMediaMode === 'clouds' || rotatingHeroImages.length > 0
+  const { body, cardCopy, heroTextColor, softTextColor } = getHeroTextValues(
     heroSection,
     hasHeroBackdropMedia,
   )
@@ -392,11 +456,15 @@ export default function Hero({
     'var(--color-border)',
   )
   const heroActions = resolveHeroActions(heroSection)
+  const heroCards = resolveHeroCards(heroSection)
   const hasHeroAside = hasHeroMetrics || Boolean(cardCopy)
 
   return (
     <section
-      className="solar-hero radial-grid-bg"
+      className={cn(
+        'solar-hero',
+        heroMediaMode === 'clouds' ? 'solar-hero--clouds cloud-theme-section' : 'radial-grid-bg',
+      )}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/hero.jsx',
@@ -408,11 +476,11 @@ export default function Hero({
         heroVideoSource={heroVideoSource}
         rotatingHeroImages={rotatingHeroImages}
         overlayStyle={overlayStyle}
+        cutout={heroSection?.heroCutout}
       />
-      <div className="solar-hero__shell">
+      <div className={cn('solar-hero__shell', heroCards.length > 0 && 'solar-hero__shell--with-cards')}>
         <div className={cn('solar-hero__layout', hasHeroAside && 'solar-hero__layout--with-aside')}>
           <div className="solar-hero__copy solar-fade-up">
-            <HeroEyebrow eyebrow={eyebrow} heroTextColor={heroTextColor} />
             <HeroHeadline
               useSingleHeadline={useSingleHeadline}
               title={title}
@@ -428,11 +496,14 @@ export default function Hero({
                 style={{ color: softTextColor || 'var(--color-muted-foreground)' }}
               />
             ) : null}
-            <div className="solar-hero__actions">
-              <div className="solar-hero__action-group">
-                <HeroActions actions={heroActions} textColor={heroTextColor} />
+            {/* Glass cards, when set, are the hero's calls to action. */}
+            {heroCards.length === 0 ? (
+              <div className="solar-hero__actions">
+                <div className="solar-hero__action-group">
+                  <HeroActions actions={heroActions} textColor={heroTextColor} />
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
           <HeroAside
             hasHeroMetrics={hasHeroMetrics}
@@ -447,6 +518,7 @@ export default function Hero({
             heroTextColor={heroTextColor}
           />
         </div>
+        {heroCards.length > 0 ? <HeroCards cards={heroCards} /> : null}
       </div>
     </section>
   )

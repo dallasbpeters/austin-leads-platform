@@ -1,4 +1,6 @@
 // oxlint-disable func-style
+import Link from 'next/link'
+
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
@@ -46,13 +48,31 @@ export function CardGridSection({ section, sectionId }) {
                 key={buildRuntimeKey('card-grid-item', item.title, item.question, index)}
                 className={cn('card-grid__item', reverse && 'card-grid__item--reverse')}
               >
-                {Icon ? (
+                {item.logoUrl ? (
+                  <div className="card-grid__logo">
+                    <img src={item.logoUrl} alt="" loading="lazy" className="card-grid__logo-img" />
+                  </div>
+                ) : Icon ? (
                   <div className="card-grid__icon">
                     <Icon className="card-grid__icon-svg" strokeWidth={2} />
                   </div>
                 ) : null}
                 <p className="card-grid__eyebrow text-size-80">{eyebrow}</p>
-                <h3 className="card-grid__title text-fluid-300">{item.title || item.question}</h3>
+                <h3 className="card-grid__title text-fluid-300">
+                  {item.href ? (
+                    <Link
+                      href={item.href}
+                      className="card-grid__link"
+                      {...(/^https?:\/\//iu.test(item.href)
+                        ? { target: '_blank', rel: 'noopener noreferrer' }
+                        : {})}
+                    >
+                      {item.title || item.question}
+                    </Link>
+                  ) : (
+                    item.title || item.question
+                  )}
+                </h3>
                 <PortableTextContent as="div" value={item.body || item.answer} className="card-grid__body" />
               </article>
             )

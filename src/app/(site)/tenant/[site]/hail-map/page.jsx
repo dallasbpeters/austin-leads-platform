@@ -42,7 +42,7 @@ const HailMapPage = async ({ params }) => {
       <Header navigation={navigation} />
 
       <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(17,30,41,0.98),rgba(17,30,41,0.94))] pt-40">
-        <div className="mx-auto max-w-7xl px-3 py-7 md:px-6 lg:px-10">
+        <div className="page-content py-7">
           <Link
             href="/hail-damage"
             className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] text-white/62 uppercase transition-colors hover:text-white"
@@ -58,14 +58,15 @@ const HailMapPage = async ({ params }) => {
       </section>
 
       <section className="bg-gradient">
-        <div className="mx-auto max-w-7xl px-3 py-10 md:px-6 lg:px-10">
+        <div className="page-content py-10">
           <HailWeatherLookup section={hailSection} />
         </div>
       </section>
 
       <section className="bg-[linear-gradient(135deg,oklch(from_var(--color-secondary)_15%_calc(c_*_0.56)_h),oklch(from_var(--color-secondary)_12%_calc(c_*_0.46)_h))] py-20 text-white">
-        <div className="mx-auto grid max-w-7xl place-items-center gap-12 px-3 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
-          <div className="space-y-4">
+        {/* The Jobber form runs long, so the copy sticks beside it instead of centering against it. */}
+        <div className="page-content grid items-start gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-4 lg:sticky lg:top-40">
             <p className="text-sm tracking-[0.22em] text-white/58 uppercase">Roofing consultation</p>
             <h2 className="max-w-3xl text-3xl tracking-normal md:text-4xl">Request a hail damage review</h2>
             <p className="max-w-2xl text-[1rem] leading-8 text-white/78">
@@ -74,7 +75,7 @@ const HailMapPage = async ({ params }) => {
             </p>
           </div>
 
-          <Card className="gap-0 border-white/12 bg-white/6 text-white backdrop-blur">
+          <Card className="w-full max-w-md gap-0 justify-self-center border-white/12 bg-white/6 text-white backdrop-blur lg:justify-self-end">
             <CardContent>
               <LeadCaptureForm
                 context={leadContext}

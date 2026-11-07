@@ -207,6 +207,15 @@ export default [
           },
         ],
       },
+      {
+        name: 'reviewerPhotoUrl',
+        title: 'Reviewer photo (from Google)',
+        type: 'url',
+        readOnly: true,
+        description:
+          "The reviewer's Google profile photo, filled in by the sync. An uploaded Reviewer photo above takes its place.",
+        options: canvasExclude,
+      },
       { name: 'body', title: 'Review body', type: 'text', validation: (Rule) => Rule.required() },
       { name: 'site', title: 'Site', type: 'reference', to: [{ type: 'site' }] },
       {

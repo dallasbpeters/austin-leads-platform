@@ -81,7 +81,7 @@ const LogoCloud = ({ items = null }) => {
   const logos = hasCustomItems ? items.map(normalizeLogoItem).filter(Boolean) : defaultLogos
 
   return (
-    <div className="mx-auto max-w-7xl px-3 py-6 md:px-6">
+    <div className="page-content py-6">
       <Marquee
         pauseOnHover
         style={{

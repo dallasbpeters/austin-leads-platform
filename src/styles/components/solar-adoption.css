@@ -123,16 +123,17 @@
   position: absolute;
   inset-inline: 0;
   inset-block-end: 0;
-  height: 6.25rem;
+  height: 12.25rem;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, var(--color-black));
+  background: linear-gradient(to bottom, transparent, oklch(from var(--color-primary) 10% 0.05 h));
 }
 
 /* Reason cards */
+
 .adoption-reasons {
   padding-block: var(--space-section-compact);
   padding-inline: 1rem;
-  background: var(--color-black);
+  background: oklch(from var(--color-primary) 10% 0.05 h);
 }
 
 @media (width >= 40rem) {

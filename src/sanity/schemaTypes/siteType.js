@@ -53,6 +53,13 @@ export default {
           type: 'string',
           description: 'The digits from "locations/987654321". Different per storefront.',
         },
+        {
+          name: 'placeId',
+          title: 'Google Place ID',
+          type: 'string',
+          description:
+            'Starts with "ChIJ". The home page reviews load from this place through the Google Places API. Find it with Google\'s Place ID Finder.',
+        },
       ],
     },
     {
@@ -138,6 +145,52 @@ export default {
                 ],
               },
               validation: (Rule) => Rule.required(),
+            },
+            {
+              name: 'children',
+              title: 'Dropdown links',
+              type: 'array',
+              description:
+                'Optional. Add links here to show this item as a dropdown menu, each with a title, description, and image. The item link above stays as a "View all" link at the bottom.',
+              of: [
+                {
+                  type: 'object',
+                  name: 'navChild',
+                  title: 'Dropdown link',
+                  fields: [
+                    {
+                      name: 'label',
+                      title: 'Title',
+                      type: 'string',
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'href',
+                      title: 'Link',
+                      type: 'string',
+                      description: 'Internal path (e.g. /services/detach-and-reset) or full URL.',
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'description',
+                      title: 'Description',
+                      type: 'text',
+                      rows: 2,
+                      description: 'One short line under the title in the menu.',
+                      validation: (Rule) => Rule.max(120),
+                    },
+                    {
+                      name: 'image',
+                      title: 'Image',
+                      type: 'image',
+                      options: { hotspot: true },
+                    },
+                  ],
+                  preview: {
+                    select: { title: 'label', subtitle: 'href', media: 'image' },
+                  },
+                },
+              ],
             },
           ],
           preview: {

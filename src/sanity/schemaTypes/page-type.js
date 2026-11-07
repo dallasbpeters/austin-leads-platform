@@ -1325,17 +1325,26 @@ const sectionContentItemType = {
       type: 'string',
       options: canvasPurpose('Optional link target if the item should link somewhere.'),
     },
+    {
+      name: 'logo',
+      title: 'Logo',
+      type: 'image',
+      description: 'Optional. Shown in place of the icon, for example a partner company logo.',
+      options: canvasExclude,
+    },
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'body',
       eyebrow: 'eyebrow',
+      media: 'logo',
     },
-    prepare({ title, subtitle, eyebrow }) {
+    prepare({ title, subtitle, eyebrow, media }) {
       return {
         title: title || 'Section item',
         subtitle: previewText(subtitle || eyebrow, 'Supporting content'),
+        media,
       }
     },
   },
@@ -1992,6 +2001,7 @@ const heroSpecificFields = [
         { title: 'Single image', value: 'single' },
         { title: 'Slides only', value: 'slides' },
         { title: 'Video only', value: 'video' },
+        { title: 'Clouds', value: 'clouds' },
       ],
       layout: 'radio',
       ...canvasPurpose('Choose whether this hero uses one image, a slides-only background set, or a video.'),
@@ -2087,6 +2097,16 @@ const heroSpecificFields = [
     hidden: hideUnlessHeroMediaMode('single'),
   },
   {
+    name: 'heroCutout',
+    title: 'Cutout image',
+    type: 'image',
+    description:
+      'A PNG with a see-through background (for example, solar panels). It sits on top of the drifting clouds.',
+    options: { hotspot: false },
+    fields: [{ name: 'alt', title: 'Alt text', type: 'string' }],
+    hidden: hideUnlessHeroMediaMode('clouds'),
+  },
+  {
     name: 'heroSlides',
     title: 'Hero slides',
     type: 'array',
@@ -2107,6 +2127,51 @@ const heroSpecificFields = [
     type: 'array',
     options: canvasPurpose('Optional action buttons or links for hero sections.'),
     of: [{ type: 'pageAction' }],
+  },
+  {
+    name: 'heroCards',
+    title: 'Glass cards',
+    description:
+      'Up to 4 frosted cards. When a hero has cards they replace the hero buttons. With 4 cards, card 1 floats on the left and card 3 is the raised center card (best with an image).',
+    type: 'array',
+    options: canvasPurpose('Frosted feature cards along the bottom of the hero.'),
+    validation: (Rule) => Rule.max(4),
+    of: [
+      {
+        type: 'object',
+        name: 'heroCard',
+        title: 'Glass card',
+        fields: [
+          { name: 'eyebrow', title: 'Eyebrow', type: 'string', description: 'Small gold label.' },
+          { name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() },
+          { name: 'body', title: 'Text', type: 'text', rows: 3 },
+          {
+            name: 'stat',
+            title: 'Stat',
+            type: 'string',
+            description: 'Optional big number in the top-right corner, like a review score.',
+          },
+          {
+            name: 'image',
+            title: 'Image',
+            type: 'image',
+            options: { hotspot: true },
+            description: 'Optional. Fills the bottom of the card.',
+          },
+          { name: 'linkLabel', title: 'Link label', type: 'string' },
+          {
+            name: 'href',
+            title: 'Link',
+            type: 'string',
+            description:
+              'Internal path (e.g. /detach-reset), anchor, or full URL. The whole card links here.',
+          },
+        ],
+        preview: {
+          select: { title: 'title', subtitle: 'eyebrow', media: 'image' },
+        },
+      },
+    ],
   },
 ]
 
@@ -2129,7 +2194,9 @@ const heroSectionType = {
       name: 'eyebrow',
       title: 'Eyebrow',
       type: 'string',
-      options: canvasPurpose('Short overline or kicker text above the hero headline.'),
+      description: 'No longer shown on the site; hero eyebrows were removed.',
+      hidden: true,
+      options: canvasExclude,
     },
     {
       name: 'title',
@@ -4487,6 +4554,97 @@ const serviceAreaMapSectionType = {
   },
 }
 
+const panelTabType = {
+  name: 'panelTab',
+  title: 'Panel tab',
+  type: 'object',
+  fields: [
+    {
+      name: 'label',
+      title: 'Tab label',
+      type: 'string',
+      description: 'Short name on the tab button, like "Homeowners".',
+      validation: (Rule) => Rule.required().max(24),
+    },
+    { name: 'eyebrow', title: 'Eyebrow', type: 'string', description: 'Small label above the text.' },
+    {
+      name: 'body',
+      title: 'Text',
+      type: 'text',
+      rows: 3,
+      description: 'One or two sentences shown over the photo.',
+      validation: (Rule) => Rule.max(200),
+    },
+    {
+      name: 'image',
+      title: 'Photo',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [{ name: 'alt', title: 'Alt text', type: 'string' }],
+    },
+    {
+      name: 'video',
+      title: 'Video',
+      type: 'file',
+      options: { accept: 'video/mp4,video/webm' },
+      description:
+        'Optional. Plays muted on a loop in place of the photo; the photo shows while it loads. Keep it short (under 15 seconds) and small (under 10 MB).',
+    },
+    {
+      name: 'videoUrl',
+      title: 'Video URL',
+      type: 'url',
+      description: 'Or link a hosted MP4 instead of uploading one. An uploaded video wins.',
+      hidden: ({ parent }) => Boolean(parent?.video?.asset),
+    },
+    { name: 'linkLabel', title: 'Button label', type: 'string', initialValue: 'Explore' },
+    { name: 'href', title: 'Button link', type: 'string' },
+  ],
+  preview: {
+    select: { title: 'label', subtitle: 'body', media: 'image' },
+  },
+}
+
+const tabbedPanelSectionType = {
+  name: 'tabbedPanelSection',
+  title: 'Tabbed Photo Panel',
+  type: 'object',
+  initialValue: { type: 'tabbedPanel' },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      description: 'Large headline above the photo panel.',
+    },
+    {
+      name: 'panelTabs',
+      title: 'Tabs',
+      type: 'array',
+      of: [{ type: 'panelTab' }],
+      description: 'Each tab swaps the photo, text and button. One tab hides the tab switcher.',
+      validation: (Rule) => Rule.min(1).max(4),
+    },
+  ]),
+  preview: {
+    select: { title: 'title', tabs: 'panelTabs' },
+    prepare({ title, tabs }) {
+      const labels = Array.isArray(tabs)
+        ? tabs
+            .map((tab) => tab?.label)
+            .filter(Boolean)
+            .join(' / ')
+        : ''
+      return {
+        title: title || 'Tabbed photo panel',
+        subtitle: pageSectionListSubtitle('Tabbed photo panel', labels),
+        media: tabs?.[0]?.image,
+      }
+    },
+  },
+}
+
 const bandSectionType = {
   name: 'bandSection',
   title: 'Band Section',
@@ -5164,6 +5322,7 @@ export const pageSectionTypes = [
   { type: 'hailMapSection' },
   { type: 'serviceAreaMapSection' },
   { type: 'bandSection' },
+  { type: 'tabbedPanelSection' },
   { type: 'logosSection' },
   { type: 'solarSwitchSection' },
   { type: 'energyChartSection' },
@@ -5382,6 +5541,8 @@ export default [
   serviceAreaItemType,
   serviceAreaMapSectionType,
   bandSectionType,
+  panelTabType,
+  tabbedPanelSectionType,
   logosSectionType,
   solarSwitchSectionType,
   energyChartSectionType,

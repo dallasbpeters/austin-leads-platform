@@ -286,6 +286,32 @@ export const sectionProjection = `
       }
     }
   },
+  heroCutout{
+    alt,
+    "url": asset->url
+  },
+  heroCards[]{
+    _key,
+    eyebrow,
+    title,
+    body,
+    stat,
+    linkLabel,
+    href,
+    "imageUrl": image.asset->url
+  },
+  // tabbedPanelSection: each tab swaps the photo, text and button.
+  panelTabs[]{
+    _key,
+    label,
+    eyebrow,
+    body,
+    linkLabel,
+    href,
+    "imageUrl": image.asset->url,
+    "imageAlt": image.alt,
+    "videoUrl": coalesce(video.asset->url, videoUrl)
+  },
   // pricingSection: array of pricingNoteItem (title, body, variant, paymentDue, amount).
   notes[]{
     _key,
@@ -469,6 +495,8 @@ export const sectionProjection = `
     author,
     body,
     reviewerLocation,
+    source,
+    reviewerPhotoUrl,
     "stars": coalesce(stars, rating, 5),
     reviewerPhoto{
       crop,
@@ -488,6 +516,7 @@ export const sectionProjection = `
   },
   items[]{
     _key,
+    "logoUrl": logo.asset->url,
     number,
     eyebrow,
     title,
@@ -1657,11 +1686,12 @@ export const resolveSiteBySlug = async (siteSlug) => {
         aliases,
         redirectTarget,
         projectsIndex,
+        "googlePlaceId": googleBusiness.placeId,
         leadForm,
         jobber,
         seo,
         brand,
-        navigation,
+        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
         organization
       }`,
       { siteSlug },
@@ -1743,6 +1773,14 @@ export const resolveNavigationForSite = (site) => {
       href: typeof item?.href === 'string' ? item.href : '',
       isExternal: Boolean(item?.isExternal),
       variant: typeof item?.variant === 'string' ? item.variant : 'link',
+      children: (Array.isArray(item?.children) ? item.children : [])
+        .map((child) => ({
+          label: typeof child?.label === 'string' ? child.label : '',
+          href: typeof child?.href === 'string' ? child.href : '',
+          description: typeof child?.description === 'string' ? child.description : '',
+          imageUrl: typeof child?.imageUrl === 'string' ? child.imageUrl : '',
+        }))
+        .filter((child) => child.label && child.href),
     }))
     .filter((item) => item.label && item.href)
 
@@ -1786,11 +1824,12 @@ export const resolveSiteByHost = async (host) => {
         aliases,
         redirectTarget,
         projectsIndex,
+        "googlePlaceId": googleBusiness.placeId,
         leadForm,
         jobber,
         seo,
         brand,
-        navigation,
+        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
         organization
       }`,
       { host: normalizedHost },
@@ -1812,11 +1851,12 @@ export const resolveSiteByHost = async (host) => {
           aliases,
           redirectTarget,
           projectsIndex,
+          "googlePlaceId": googleBusiness.placeId,
           leadForm,
           jobber,
           seo,
           brand,
-          navigation,
+          navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
           organization
         }`,
         { siteSlug: localSite.slug },

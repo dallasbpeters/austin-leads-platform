@@ -59,6 +59,9 @@
 @import './components/guide-card.css';
 @import './components/snapshot.css';
 @import './components/site-header.css';
+@import './components/page-grid.css';
+@import './components/tabbed-panel.css';
+@import './components/testimonials.css';
 @import './components/site-footer.css';
 
 /* Utilities */

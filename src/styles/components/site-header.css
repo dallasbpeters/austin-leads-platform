@@ -10,48 +10,102 @@
  */
 
 .site-header {
-  position: sticky;
-  inset-block-start: 0;
-  inset-inline: 0;
+  --inset: 0;
+  --header-bg: oklch(16% 0.012 260deg / 72%);
+  --header-solid: oklch(16% 0.012 260deg / 96%);
+  --header-line: oklch(100% 0 0deg / 10%);
+  --header-fg: oklch(100% 0 0deg);
+  --header-muted: oklch(100% 0 0deg / 68%);
+
+  /* The navy parts of the logo vanish on the dark bar, so they flip light. */
+  --logo-navy-950: oklch(100% 0 0deg);
+  --logo-navy-900: oklch(96% 0 0deg);
+  --logo-navy-800: oklch(100% 0 0deg);
+  --logo-navy-700: oklch(90% 0 0deg);
+
+  position: fixed;
+  top: var(--inset);
+  left: var(--inset);
+  right: var(--inset);
   z-index: 50;
-  width: 100%;
-  color: var(--foreground);
+  color: var(--header-fg);
+  backdrop-filter: blur(20px);
+  border-radius: 0.5rem;
 }
 
 .site-header__bar {
-  display: flex;
+  position: relative;
   justify-content: center;
   width: 100%;
-  padding-block: 1rem;
-  padding-inline: 1.75rem;
-  background: var(--color-warm-bg);
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(8px);
-}
-
-@media (width >= 48rem) {
-  .site-header__bar {
-    border-end-start-radius: var(--radius-sm);
-    border-end-end-radius: var(--radius-sm);
-  }
+  padding-block: 0.375rem;
+  padding-inline: 0.5rem;
+  border: 1px solid var(--header-line);
+  background: var(--header-bg);
 }
 
 .site-header__inner {
   position: relative;
   display: flex;
   width: 100%;
-  max-width: 77.5rem;
   align-items: center;
   justify-content: space-between;
 }
 
-.site-header__phone-wrapper {
-  background-color: var(--primary);
-  display: grid;
-  place-content: end;
-  align-items: center;
-  padding-block: var(--spacing-medium);
-  padding-inline: var(--spacing-x-large);
+@media (width >= 48rem) {
+  .site-header {
+    --inset: calc(var(--spacing) * 3);
+
+    /* Lines up with the page gridlines (page-grid.css). */
+    left: calc((100% - var(--page-frame)) / 2);
+    right: calc((100% - var(--page-frame)) / 2);
+  }
+
+  .site-header__bar {
+    border-radius: 0.5rem;
+  }
+}
+
+/*
+ * The "not a roofing company" line. On phones and tablets it is a full-width
+ * strip across the top of the bar; on desktop it becomes a tab pinned to the
+ * top-right corner, flush above the phone link and the Free Quote pill.
+ */
+.site-header__message {
+  margin: -0.375rem -0.5rem 0.375rem;
+  padding-block: 0.375rem;
+  padding-inline: 1rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--color-white);
+  background-color: var(--header-solid);
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+@media (width >= 64rem) {
+  .site-header__message {
+    position: absolute;
+    top: 100%;
+    right: 0.75rem;
+    margin: 0;
+    padding-block: 0.25rem;
+    padding-inline: 0.75rem;
+    border-radius: 0 0 0.375rem 0.375rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.625rem;
+    letter-spacing: 0.02em;
+    text-align: end;
+    white-space: nowrap;
+  }
+}
+
+/* A small mark, like a favicon, keeps the bar thin. */
+.site-header__brand .logo {
+  width: auto;
+  height: 2.75rem;
 }
 
 .site-header__brand {
@@ -61,75 +115,66 @@
   gap: 0.5rem;
 }
 
-.site-header__nav {
+.site-header__nav,
+.site-header__cta {
   display: none;
 }
 
 @media (width >= 64rem) {
-  .site-header__nav {
+  .site-header__nav,
+  .site-header__cta {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: clamp(0rem, 1vw - 0.5rem, 0.75rem);
   }
 }
 
-/* Nav links share the .btn box model so they line up with the CTA pill. */
-.site-header__link {
+.site-header__actions {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding-block: 1rem;
-  padding-inline: 0.5rem;
-  border-radius: var(--radius-pill);
-  font-variation-settings: 'wght' 450;
-  color: var(--color-primary);
-  background: transparent;
-}
-
-/* The Sanity "button" variant: the primary pill. .btn--primary supplies the fill and shadow. */
-.site-header__link--cta {
-  height: 2.75rem;
   align-items: center;
-  justify-content: center;
-  padding-block: 0;
-  padding-inline: 1rem;
-  font-variation-settings: 'wght' 500;
-  color: var(--color-white);
-  background: var(--primary);
+  gap: 0.25rem;
 }
 
-@media (width >= 48rem) {
-  .site-header__link--cta {
-    height: 2.25rem;
-  }
-}
-
-.site-header__link-inner {
-  display: inline-flex;
-  max-width: 100%;
-  min-width: fit-content;
-  align-items: center;
-  justify-content: center;
-  gap: inherit;
-}
-
+/*
+ * Phone link in the bar. Icon-only on small screens (the full number sits in
+ * the mobile sheet); the number shows once there is room beside the nav.
+ */
 .site-header__phone {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: var(--radius-pill);
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  color: var(--primary-foreground);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-decoration-color: color-mix(in oklch, var(--primary) 40%, transparent);
-  text-underline-offset: 4px;
-  transition:
-    color 200ms ease-out,
-    text-decoration-color 200ms ease-out;
+  min-block-size: 2.25rem;
+  min-inline-size: 2.25rem;
+  justify-content: center;
+  padding-inline: 0.625rem;
+  border: 1px solid var(--header-line);
+  border-radius: 0.375rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  background: oklch(100% 0 0deg / 6%);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--header-fg);
+  transition: color 200ms ease-out;
+}
+
+.site-header__phone-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  color: var(--header-fg);
+}
+
+.site-header__phone-number {
+  display: none;
+}
+
+@media (width >= 96rem) {
+  .site-header__phone-number {
+    display: inline;
+  }
 }
 
 /* The ring is the box-shadow; the outline stays transparent (not none) so forced-colors mode can repaint it. */
@@ -142,24 +187,88 @@
   scale: 0.97;
 }
 
+/* In the mobile sheet the number is always written out. */
 .site-header__phone--sheet {
-  width: 100%;
   justify-content: flex-start;
   padding-block: 1rem;
-  border-radius: var(--radius-md);
+  font-size: var(--text-base);
 }
 
-.site-header__phone-icon {
-  width: 1.2rem;
-  height: 1.2rem;
-  flex-shrink: 0;
-  color: var(--color-voodoo);
+.site-header__phone--sheet .site-header__phone-number {
+  display: inline;
+}
+
+/* Nav links share the .btn box model so they line up with the CTA pill. */
+.site-header__link {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding-block: 1rem;
+  padding-inline: 0.5rem;
+  border-radius: 0.375rem;
+  font-variation-settings: 'wght' 450;
+  white-space: nowrap;
+  color: var(--header-fg);
+  background: transparent;
+}
+
+/* The long labels step down a size so they fit on one row at more desktop widths. */
+@media (width >= 64rem) {
+  .site-header__nav .site-header__link,
+  .site-header__link--cta {
+    padding-inline: 0.5rem;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+/* Links in the menu sheet use the same mono caps as the bar, at every width. */
+.site-header__sheet .site-header__link {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* The Sanity "button" variant: the primary pill. .btn--primary supplies the fill and shadow. */
+.site-header__link--cta {
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0;
+  padding-inline: 1rem;
+  font-variation-settings: 'wght' 500;
+  color: #0f172a;
+  background: var(--color-white);
+}
+
+@media (width >= 48rem) {
+  .site-header__link--cta {
+    height: 2.25rem;
+    padding-inline: 0.875rem;
+    border-radius: 0.375rem;
+  }
+}
+
+.site-header__link-inner {
+  display: inline-flex;
+  max-width: 100%;
+  min-width: fit-content;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
 }
 
 .site-header__toggle {
   margin-inline-start: auto;
-  padding-block: 1.375rem;
-  padding-inline: 1.5rem;
+  padding-block: 1rem;
+  padding-inline: 1rem;
+  color: var(--header-fg);
 }
 
 @media (width >= 64rem) {
@@ -170,17 +279,17 @@
 
 @media (hover: hover) and (pointer: fine) {
   .site-header__link:hover {
-    color: var(--primary);
+    color: var(--header-muted);
     background: transparent;
   }
 
   .site-header__link--cta:hover {
-    color: var(--color-white);
-    background: color-mix(in oklch, var(--primary) 80%, transparent);
+    color: #0f172a;
+    background: oklch(100% 0 0deg / 85%);
   }
 
   .site-header__phone:hover {
-    text-decoration-color: var(--primary);
+    background: oklch(100% 0 0deg / 12%);
   }
 
   .site-header__toggle:hover {
@@ -245,17 +354,11 @@
   width: 100%;
   padding-block: 0.5rem 2rem;
   padding-inline: 1rem;
-  border-block-end: 1px solid var(--border);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-}
-
-@media (width >= 48rem) {
-  .site-header__sheet-panel {
-    border: 1px solid var(--border);
-    border-end-start-radius: var(--radius-lg);
-    border-end-end-radius: var(--radius-lg);
-  }
+  border: 1px solid var(--header-line);
+  border-block-start: 0;
+  background: var(--header-solid);
+  border-end-start-radius: 0.5rem;
+  border-end-end-radius: 0.5rem;
 }
 
 .site-header__sheet-list {
@@ -291,4 +394,193 @@
       translate 200ms ease-out,
       opacity 200ms ease-out;
   }
+}
+
+/*
+ * Dropdown nav item (Sanity "Dropdown links"). The panel stays mounted and
+ * fades in, so it has an exit too; header.jsx sets `inert` while closed.
+ */
+.site-header__dropdown {
+  position: relative;
+}
+
+.site-header__dropdown-trigger {
+  align-items: center;
+  cursor: pointer;
+}
+
+.site-header__dropdown-chevron {
+  width: 1rem;
+  height: 1rem;
+}
+
+.site-header__dropdown--open .site-header__dropdown-chevron {
+  rotate: 180deg;
+}
+
+/* Starts at the trigger's bottom edge so the pointer never crosses a gap and closes it. */
+.site-header__dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  z-index: 60;
+  padding-block-start: 0.5rem;
+  opacity: 0;
+  translate: -50% -0.25rem;
+  pointer-events: none;
+}
+
+.site-header__dropdown--open .site-header__dropdown-menu {
+  opacity: 1;
+  translate: -50% 0;
+  pointer-events: auto;
+}
+
+.site-header__dropdown-panel {
+  display: grid;
+  gap: 0.25rem;
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 0.5rem;
+  border: 1px solid var(--header-line);
+  border-radius: 0.5rem;
+  background: var(--header-solid);
+  backdrop-filter: blur(20px);
+}
+
+.site-header__dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  font-variation-settings: 'wght' 450;
+  color: var(--header-fg);
+}
+
+.site-header__dropdown-image {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 3.375rem;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  outline: 1px solid oklch(100% 0 0deg / 10%);
+  outline-offset: -1px;
+}
+
+.site-header__dropdown-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.site-header__dropdown-title {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.site-header__dropdown-description {
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  color: var(--header-muted);
+  text-wrap: pretty;
+}
+
+.site-header__dropdown-link--all {
+  margin-block-start: 0.25rem;
+  padding-block: 0.625rem;
+  padding-inline: 0.75rem;
+  border-block-start: 1px solid var(--header-line);
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--header-muted);
+}
+
+.site-header__dropdown-link:focus-visible,
+.site-header__dropdown-trigger:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 2px var(--secondary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-header__dropdown-link:hover {
+    color: var(--header-fg);
+    background: oklch(100% 0 0deg / 8%);
+  }
+}
+
+/* In the mobile sheet the links sit open under a small label. */
+.site-header__dropdown-heading {
+  margin: 0;
+  padding-block: 1rem 0.25rem;
+  padding-inline: 0.5rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--header-muted);
+}
+
+.site-header__dropdown-sheet-list {
+  display: grid;
+  gap: 0.125rem;
+  padding-inline-start: 0.75rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-header__dropdown-menu {
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out;
+  }
+
+  .site-header__dropdown-chevron {
+    transition: rotate 150ms ease-out;
+  }
+}
+
+/*
+ * Desktop "priority" nav: header.jsx measures the hidden --measure copy and
+ * moves links that do not fit into the sheet. With any link moved, the bar
+ * shows the toggle (--overflow) and the sheet opens below it like on a phone.
+ */
+.site-header__nav--measure {
+  position: absolute;
+  inset-inline-start: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (width >= 64rem) {
+  .site-header__nav.site-header__nav--measure {
+    display: flex;
+  }
+
+  .site-header--overflow .site-header__toggle {
+    display: inline-flex;
+  }
+
+  .site-header--overflow .site-header__sheet {
+    display: grid;
+  }
+}
+
+/* With the sheet open, the bar takes the sheet's surface and drops its bottom corners so the two read as one panel. */
+.site-header--open .site-header__bar {
+  background: var(--header-solid);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+.site-header--open {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
 }
