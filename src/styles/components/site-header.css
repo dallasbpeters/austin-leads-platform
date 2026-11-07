@@ -105,7 +105,13 @@
 /* A small mark, like a favicon, keeps the bar thin. */
 .site-header__brand .logo {
   width: auto;
-  height: 2.75rem;
+  height: 3.25rem;
+}
+
+@media (width >= 64rem) {
+  .site-header__brand .logo {
+    height: 4rem;
+  }
 }
 
 .site-header__brand {

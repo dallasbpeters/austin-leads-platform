@@ -1,6 +1,7 @@
 import { assist } from '@sanity/assist'
 import { colorInput } from '@sanity/color-input'
 import { contextPlugin } from '@sanity/context/studio'
+import { createElement } from 'react'
 import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
 import { presentationTool } from 'sanity/presentation'
@@ -8,6 +9,7 @@ import { structureTool } from 'sanity/structure'
 import './src/sanity/studioPatches.css'
 
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
+import { isLinkField, PageLinkInput } from './src/sanity/components/page-link-input'
 import { SiteSwitcherNavigator } from './src/sanity/components/site-switcher-navigator'
 import {
   dataset,
@@ -114,6 +116,11 @@ export default defineConfig({
     },
   },
   form: {
+    // Every link field (`href`, `ctaHref`, …) gets a page picker under its text box.
+    components: {
+      input: (props) =>
+        isLinkField(props) ? createElement(PageLinkInput, props) : props.renderDefault(props),
+    },
     file: {
       assetSources: isSanityConfigured() ? undefined : [],
     },

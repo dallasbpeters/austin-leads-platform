@@ -355,7 +355,7 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
         </p>
         <div ref={innerRef} className="site-header__inner">
           <Link href="/" aria-label="Texas Solar & Roofing Pros - Home" className="site-header__brand">
-            <Logo height={44} width={63} />
+            <Logo height={64} width={91} />
             <span className="sr-only">Texas Solar & Roofing Pros</span>
           </Link>
           <div className="site-header__nav">
