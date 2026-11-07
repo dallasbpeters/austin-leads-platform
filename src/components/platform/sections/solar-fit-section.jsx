@@ -140,7 +140,9 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                 {input.help ? <p className="solar-fit__help">{input.help}</p> : null}
               </div>
             ))}
+          </div>
 
+          <div className="solar-calculator__outputs">
             {highlights.length ? (
               <div className="solar-calculator__system">
                 {highlights.map((output) => (
@@ -154,9 +156,6 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                 ))}
               </div>
             ) : null}
-          </div>
-
-          <div className="solar-calculator__outputs">
             {stats.length ? (
               <dl className="solar-calculator__stats" aria-live="polite">
                 {stats.map((output) => (
@@ -185,59 +184,59 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                 {broken.map((output) => `${output.label}: ${output.error}`).join(' · ')}
               </p>
             ) : null}
+          </div>
 
-            <div className="solar-fit__contact">
-              {status.state === 'sent' ? (
-                <p className="solar-fit__sent" role="status">
-                  {status.message}
-                </p>
-              ) : (
-                <form className="solar-fit__form" onSubmit={onSubmit}>
-                  <p className="solar-fit__form-title">Get your full estimate, free and no pressure.</p>
-                  <div className="solar-fit__form-grid">
-                    <label className="solar-fit__form-field">
-                      <span>Name</span>
-                      <input name="fullName" autoComplete="name" required />
-                    </label>
-                    <label className="solar-fit__form-field">
-                      <span>Email</span>
-                      <input name="email" type="email" autoComplete="email" required />
-                    </label>
-                    <label className="solar-fit__form-field">
-                      <span>Phone</span>
-                      <input name="phone" type="tel" autoComplete="tel" />
-                    </label>
-                  </div>
-                  {/* Hidden from people; bots fill it and get dropped. */}
-                  <input
-                    className="solar-fit__trap"
-                    name="company"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                  />
-                  <label className="solar-fit__consent">
-                    <input name="consent" type="checkbox" required />
-                    <span>It is OK to email or call me about my estimate. No spam, no commitment.</span>
+          <div className="solar-fit__contact solar-fit__contact--wide">
+            {status.state === 'sent' ? (
+              <p className="solar-fit__sent" role="status">
+                {status.message}
+              </p>
+            ) : (
+              <form className="solar-fit__form" onSubmit={onSubmit}>
+                <p className="solar-fit__form-title">Get your full estimate, free and no pressure.</p>
+                <div className="solar-fit__form-grid">
+                  <label className="solar-fit__form-field">
+                    <span>Name</span>
+                    <input name="fullName" autoComplete="name" required />
                   </label>
-                  <div className="solar-fit__actions">
-                    <button
-                      type="submit"
-                      className="solar-calculator__cta-button"
-                      disabled={status.state === 'sending'}
-                    >
-                      {status.state === 'sending' ? 'Sending…' : section?.submitLabel || 'See if you qualify'}
-                      <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
-                    </button>
-                    {status.state === 'error' ? (
-                      <p className="solar-fit__error" role="alert">
-                        {status.message}
-                      </p>
-                    ) : null}
-                  </div>
-                </form>
-              )}
-            </div>
+                  <label className="solar-fit__form-field">
+                    <span>Email</span>
+                    <input name="email" type="email" autoComplete="email" required />
+                  </label>
+                  <label className="solar-fit__form-field">
+                    <span>Phone</span>
+                    <input name="phone" type="tel" autoComplete="tel" />
+                  </label>
+                </div>
+                {/* Hidden from people; bots fill it and get dropped. */}
+                <input
+                  className="solar-fit__trap"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
+                <label className="solar-fit__consent">
+                  <input name="consent" type="checkbox" required />
+                  <span>It is OK to email or call me about my estimate. No spam, no commitment.</span>
+                </label>
+                <div className="solar-fit__actions">
+                  <button
+                    type="submit"
+                    className="solar-calculator__cta-button"
+                    disabled={status.state === 'sending'}
+                  >
+                    {status.state === 'sending' ? 'Sending…' : section?.submitLabel || 'See if you qualify'}
+                    <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
+                  </button>
+                  {status.state === 'error' ? (
+                    <p className="solar-fit__error" role="alert">
+                      {status.message}
+                    </p>
+                  ) : null}
+                </div>
+              </form>
+            )}
           </div>
         </div>
 

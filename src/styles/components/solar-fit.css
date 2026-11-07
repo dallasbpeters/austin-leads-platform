@@ -226,3 +226,19 @@ select.solar-calculator__input {
   overflow: hidden;
   clip-path: inset(50%);
 }
+
+/* Results stack in the right column; the dark tile leads instead of sinking to the bottom. */
+.solar-fit .solar-calculator__system {
+  margin-block-start: 0;
+}
+
+/* The contact step spans both columns under the questions and results. */
+.solar-fit__contact--wide {
+  grid-column: 1 / -1;
+}
+
+@media (width >= 48rem) {
+  .solar-fit__contact--wide .solar-fit__form-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
