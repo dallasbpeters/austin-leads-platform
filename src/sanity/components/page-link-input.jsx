@@ -10,19 +10,42 @@ import { set, useClient, useFormValue } from 'sanity'
  * its path, so nobody has to remember a slug.
  */
 
-// Same documents the Presentation tool treats as pages, plus case studies.
-const PAGES_QUERY = `*[
-  _type in ["page", "servicePage", "locationPage", "post", "caseStudy"]
-  && defined(slug.current)
-  && !(_id in path("drafts.**"))
-  && (!defined($siteId) || site._ref == $siteId)
-]{
-  _id,
-  _type,
-  title,
-  pageType,
-  "slug": slug.current
-} | order(title asc)`
+// Same documents the Presentation tool treats as pages, plus case studies. Drafts
+// are included so a page can be linked before it is published. The site's menu
+// comes along too: its labels become extra search words for the pages they point
+// at, so "See if solar is right for you" finds the page titled "Austin Solar Cost Guide".
+const PICKER_QUERY = `{
+  "pages": *[
+    _type in ["page", "servicePage", "locationPage", "post", "caseStudy"]
+    && defined(slug.current)
+    && (!defined($siteId) || site._ref == $siteId)
+  ]{
+    _id,
+    _type,
+    title,
+    pageType,
+    "slug": slug.current
+  } | order(title asc),
+  "nav": *[_type == "site" && _id == $siteId][0].navigation[]{
+    label,
+    href,
+    "children": children[]{ label, href }
+  }
+}`
+
+/* Routes built in code rather than as Sanity pages, so no document lists them. */
+const BUILT_IN_ROUTES = [
+  { value: '/projects', title: 'Projects' },
+  { value: '/guides', title: 'Guides' },
+  { value: '/services', title: 'Services' },
+  { value: '/about', title: 'About' },
+  { value: '/book', title: 'Book a service' },
+  { value: '/service-request', title: 'Service request' },
+  { value: '/hail-damage', title: 'Hail damage' },
+  { value: '/roofing', title: 'Roofing' },
+  { value: '/solar', title: 'Solar' },
+  { value: '#consultation', title: 'Free estimate form (on the same page)' },
+]
 
 const TYPE_LABELS = {
   caseStudy: 'Project',
@@ -59,20 +82,20 @@ export function PageLinkInput(props) {
   const { onChange, value, id } = props
   const client = useClient({ apiVersion: '2024-01-01' })
   const siteId = useSiteId()
-  const [pages, setPages] = useState([])
+  const [data, setData] = useState({ pages: [], nav: [] })
 
   useEffect(() => {
     let cancelled = false
     client
-      .fetch(PAGES_QUERY, { siteId })
-      .then((docs) => {
+      .fetch(PICKER_QUERY, { siteId })
+      .then((result) => {
         if (!cancelled) {
-          setPages(docs)
+          setData({ pages: result?.pages || [], nav: result?.nav || [] })
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setPages([])
+          setData({ pages: [], nav: [] })
         }
       })
     return () => {
@@ -81,21 +104,40 @@ export function PageLinkInput(props) {
   }, [client, siteId])
 
   const options = useMemo(() => {
-    const seen = new Set()
-    return pages
-      .map((doc) => ({
-        value: pathForDoc(doc),
-        title: doc.title || doc.slug,
-        type: TYPE_LABELS[doc._type] || 'Page',
-      }))
-      .filter((option) => {
-        if (seen.has(option.value)) {
-          return false
+    // Menu labels by path, so a page can be found by what the menu calls it.
+    const aliases = new Map()
+    for (const item of data.nav) {
+      for (const link of [item, ...(item?.children || [])]) {
+        if (link?.href && link?.label) {
+          aliases.set(link.href, [...(aliases.get(link.href) || []), link.label])
         }
-        seen.add(option.value)
-        return true
+      }
+    }
+
+    // A published page and its draft share a path; the published one wins.
+    const byPath = new Map()
+    for (const doc of data.pages) {
+      const path = pathForDoc(doc)
+      const isDraft = doc._id.startsWith('drafts.')
+      const existing = byPath.get(path)
+      if (existing && (isDraft || !existing.isDraft)) {
+        continue
+      }
+      byPath.set(path, {
+        value: path,
+        title: doc.title || doc.slug,
+        type: `${TYPE_LABELS[doc._type] || 'Page'}${isDraft ? ' (draft)' : ''}`,
+        isDraft,
       })
-  }, [pages])
+    }
+    for (const route of BUILT_IN_ROUTES) {
+      if (!byPath.has(route.value)) {
+        byPath.set(route.value, { ...route, type: 'Built-in' })
+      }
+    }
+
+    return [...byPath.values()].map((option) => ({ ...option, aliases: aliases.get(option.value) || [] }))
+  }, [data])
 
   const current = options.find((option) => option.value === value)
 
@@ -112,7 +154,9 @@ export function PageLinkInput(props) {
         value=""
         filterOption={(query, option) => {
           const needle = query.toLowerCase()
-          return option.title.toLowerCase().includes(needle) || option.value.toLowerCase().includes(needle)
+          return [option.title, option.value, ...option.aliases].some((text) =>
+            text.toLowerCase().includes(needle),
+          )
         }}
         renderOption={(option) => (
           <Card as="button" padding={2}>
@@ -121,6 +165,13 @@ export function PageLinkInput(props) {
                 <Text size={1} weight="medium" textOverflow="ellipsis">
                   {option.title}
                 </Text>
+                {option.aliases.length ? (
+                  <Box marginTop={1}>
+                    <Text size={0} muted textOverflow="ellipsis">
+                      In menu as “{option.aliases.join('”, “')}”
+                    </Text>
+                  </Box>
+                ) : null}
               </Box>
               <Text size={0} muted>
                 {option.type} · {option.value}
