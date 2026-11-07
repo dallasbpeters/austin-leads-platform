@@ -7,6 +7,7 @@ vi.mock(import('@/lib/platform/content'), () => ({ getAllSites: () => [] }))
 const db = vi.hoisted(() => ({
   listQuotesAwaitingDelivery: vi.fn(),
   applyEmailEvent: vi.fn(),
+  getQuote: vi.fn(),
 }))
 vi.mock(import('@/lib/quotes/db.js'), () => db)
 
@@ -18,7 +19,7 @@ vi.mock(import('@/lib/christmas/invoice-email-status.js'), () => resendStatus)
 vi.mock(import('node:timers/promises'), () => ({ setTimeout: vi.fn(async () => {}) }))
 
 const { proxy } = await import('@/proxy')
-const { syncQuoteEmailStatuses } = await import('@/lib/quotes/email-status')
+const { checkQuoteDeliveryAfterSend, syncQuoteEmailStatuses } = await import('@/lib/quotes/email-status')
 
 const post = (path) => new NextRequest(`https://example.com${path}`, { method: 'POST' })
 
@@ -72,5 +73,38 @@ describe('syncQuoteEmailStatuses', () => {
 
     expect(db.listQuotesAwaitingDelivery).not.toHaveBeenCalled()
     expect(result.updated).toBe(0)
+  })
+})
+
+describe('checkQuoteDeliveryAfterSend', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    resendStatus.hasResendApiKey.mockReturnValue(true)
+  })
+
+  it('marks a just-sent quote delivered when the webhook did not', async () => {
+    db.getQuote.mockResolvedValue({ id: 'qt_a', emailStatus: 'sent', resendEmailId: 're_a' })
+    resendStatus.fetchResendEmailStatus.mockResolvedValue({
+      ok: true,
+      status: 'delivered',
+      sentAt: '2026-10-13T03:09:13Z',
+    })
+
+    await checkQuoteDeliveryAfterSend('qt_a')
+
+    expect(db.applyEmailEvent).toHaveBeenCalledExactlyOnceWith({
+      resendEmailId: 're_a',
+      type: 'email.delivered',
+      occurredAt: '2026-10-13T03:09:13Z',
+    })
+  })
+
+  it('leaves a quote alone when the webhook already moved it past sent', async () => {
+    db.getQuote.mockResolvedValue({ id: 'qt_a', emailStatus: 'delivered', resendEmailId: 're_a' })
+
+    await checkQuoteDeliveryAfterSend('qt_a')
+
+    expect(resendStatus.fetchResendEmailStatus).not.toHaveBeenCalled()
+    expect(db.applyEmailEvent).not.toHaveBeenCalled()
   })
 })

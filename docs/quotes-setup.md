@@ -94,7 +94,7 @@ One-time Resend setup:
 
 The endpoint verifies the Svix signature (constant-time compare, 5-minute timestamp tolerance) before touching the database. Statuses only move forward — a late `delivered` event never downgrades an `opened` quote. The auth proxy lets this one path through without a session (`PUBLIC_API_PATHS` in `src/proxy.js`), because Resend cannot sign in.
 
-Resend does not resend events that the webhook missed. The **Refresh** button on Quote History calls `POST /api/quotes/email-status`, which asks Resend for the current state of each quote that still reads Sent or Delayed and was sent in the last 30 days (up to 20 per run). Reading state needs a full-access key — set `RESEND_READ_API_KEY` if `RESEND_API_KEY` is send-only.
+The send route also asks Resend for the state of each new quote email about 15 seconds after the send response, so a delivered quote moves to Delivered even when a webhook call fails. Resend does not resend events that the webhook missed. The **Refresh** button on Quote History calls `POST /api/quotes/email-status`, which asks Resend for the current state of each quote that still reads Sent or Delayed and was sent in the last 30 days (up to 20 per run). Reading state needs a full-access key — set `RESEND_READ_API_KEY` if `RESEND_API_KEY` is send-only.
 
 Note: open tracking relies on a tracking pixel; clients that block remote images (or Apple Mail privacy proxying) can under- or over-report opens. Treat "Opened" as a strong signal, not proof.
 

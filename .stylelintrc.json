@@ -1,5 +1,7 @@
 {
-  "extends": ["stylelint-config-standard"],
+  "extends": [
+    "stylelint-config-standard"
+  ],
   "ignoreFiles": [
     "**/.next/**",
     "**/node_modules/**",
@@ -28,10 +30,25 @@
     "property-no-unknown": [
       true,
       {
-        "ignoreProperties": ["view-transition-name"]
+        "ignoreProperties": [
+          "view-transition-name"
+        ]
       }
     ],
     "selector-class-pattern": null,
-    "import-notation": "string"
+    "import-notation": "string",
+    "at-rule-prelude-no-invalid": [
+      true,
+      {
+        "ignoreAtRules": [
+          "apply",
+          "tailwind",
+          "config",
+          "theme",
+          "custom-variant",
+          "layer"
+        ]
+      }
+    ]
   }
 }
