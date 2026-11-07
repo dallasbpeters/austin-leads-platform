@@ -338,7 +338,17 @@ export const ROOF_VALUES = [
   { key: 'roofSystemKw', label: 'System size from their roof (kW)' },
   { key: 'roofYearlyKwh', label: 'Yearly power from their roof (kWh)' },
   { key: 'roofSunHours', label: 'Sun hours per year on their roof' },
+  { key: 'roofMaxPanels', label: 'Most panels that fit' },
+  { key: 'roofKwhPerPanel', label: 'Yearly power per panel (kWh)' },
 ]
+
+/*
+ * How many panels go on the roof is up to the formula: a result with the key
+ * PANELS_WANTED_KEY (label it "Panels wanted") sets the count, worked out from
+ * roofMaxPanels and roofKwhPerPanel. Without one, the count covers the
+ * visitor's yearly usage.
+ */
+export const PANELS_WANTED_KEY = 'panelsWanted'
 
 // Solar API reports DC energy; about 85% reaches the house as AC.
 const DC_TO_AC = 0.85
@@ -346,7 +356,15 @@ const DC_TO_AC = 0.85
 /** The roof values for the best `count`-panel layout (Google lists panels best first). */
 export function roofExtras(roof, count) {
   if (!roof?.panels?.length) {
-    return { roofFound: 0, roofPanels: 0, roofSystemKw: 0, roofYearlyKwh: 0, roofSunHours: 0 }
+    return {
+      roofFound: 0,
+      roofPanels: 0,
+      roofSystemKw: 0,
+      roofYearlyKwh: 0,
+      roofSunHours: 0,
+      roofMaxPanels: 0,
+      roofKwhPerPanel: 0,
+    }
   }
   const panels = Math.max(1, Math.min(Math.round(count) || 1, roof.panels.length))
   const yearlyDc = roof.panels.slice(0, panels).reduce((sum, panel) => sum + panel.yearlyKwhDc, 0)
@@ -356,6 +374,9 @@ export function roofExtras(roof, count) {
     roofSystemKw: (panels * roof.panelWatts) / 1000,
     roofYearlyKwh: yearlyDc * DC_TO_AC,
     roofSunHours: roof.sunHoursPerYear,
+    roofMaxPanels: roof.panels.length,
+    roofKwhPerPanel:
+      (roof.panels.reduce((sum, panel) => sum + panel.yearlyKwhDc, 0) / roof.panels.length) * DC_TO_AC,
   }
 }
 
@@ -372,4 +393,32 @@ export function suggestedPanels(roof, yearlyKwh) {
     }
   }
   return roof.panels.length
+}
+
+/**
+ * Runs the model with the roof: first with every panel, to read "Panels
+ * wanted" (or the usage-based default), then again with that many panels.
+ * Returns the result and the panel count, for the page and the server alike.
+ */
+export function computeWithRoof(model, answers, roof) {
+  if (!roof?.panels?.length) {
+    return { result: computeModel(model, answers, roofExtras(null)), panelCount: 0 }
+  }
+
+  let wanted
+  if (model.outputs.some((output) => output.key === PANELS_WANTED_KEY)) {
+    const firstPass = computeModel(model, answers, roofExtras(roof, roof.panels.length))
+    wanted = firstPass.outputs.find((output) => output.key === PANELS_WANTED_KEY)?.value
+  } else {
+    const yearly =
+      Number(answers.consumption) > 0
+        ? Number(answers.consumption) * 12
+        : Number(answers.bill) > 0
+          ? (Number(answers.bill) / 0.13) * 12
+          : 0
+    wanted = yearly ? suggestedPanels(roof, yearly) : roof.panels.length
+  }
+
+  const panelCount = Math.max(1, Math.min(roof.panels.length, Math.round(Number(wanted) || 0) || 1))
+  return { result: computeModel(model, answers, roofExtras(roof, panelCount)), panelCount }
 }

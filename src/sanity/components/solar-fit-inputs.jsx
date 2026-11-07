@@ -316,7 +316,7 @@ export function FormulaInput(props) {
               onInsert={insert}
             />
             <NameButtons
-              title="Roof (from the address; 0 when no roof is found)"
+              title="Roof (from the address; 0 when no roof is found). A result labelled “Panels wanted” sets how many panels go on the roof."
               items={ROOF_VALUES.map((item) => ({ insert: item.key, label: item.label, hint: item.key }))}
               onInsert={insert}
             />

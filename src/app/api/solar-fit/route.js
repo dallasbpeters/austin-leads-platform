@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { createLeadSubmission, ensureLeadSubmissionsTable, hasLeadDatabase } from '@/lib/leads/db'
 import { isInTexas, placeLocation, roofAt } from '@/lib/solar-fit/google'
-import { computeModel, resolveModel, roofExtras } from '@/lib/solar-fit/model'
+import { computeWithRoof, resolveModel, roofExtras } from '@/lib/solar-fit/model'
 import { appendSolarFitRow, sendSolarFitEmails } from '@/lib/solar-fit/notify'
 import { sanityServerClient } from '@/sanity/client'
 
@@ -83,14 +83,13 @@ export async function POST(request) {
       console.warn('[solar-fit] roof lookup on submit failed', error)
     }
   }
-  const panelCount = roof ? Math.min(Number(payload.panelCount) || 0, roof.panels.length) : 0
+  const model = resolveModel(page?.section)
+  // The panel count comes from the formula ("Panels wanted"), the same as on the page.
+  const { result, panelCount } = computeWithRoof(model, payload.answers || {}, roof)
   const extras = roofExtras(roof, panelCount)
   lead.roofSummary = roof
     ? `${extras.roofPanels} panels, ${extras.roofSystemKw.toFixed(1)} kW, about ${Math.round(extras.roofYearlyKwh).toLocaleString('en-US')} kWh a year`
     : ''
-
-  const model = resolveModel(page?.section)
-  const result = computeModel(model, payload.answers || {}, extras)
   const siteName = page?.siteName || 'Texas Solar and Roofing Pros'
   const pagePath = clean(payload.pagePath, 200) || '/solar-costs'
 

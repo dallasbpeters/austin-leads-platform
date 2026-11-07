@@ -117,44 +117,39 @@ export function AddressSearch({ onPick, picked }) {
   )
 }
 
-const SIZE = 640
-
-/*
- * Where a point lands on the 640px photo. The photo is centred on the roof at
- * this zoom, so a point's offset in metres divided by metres-per-pixel is its
- * offset in pixels (Web Mercator, close enough over one roof).
+/**
+ * The roof photo with the first `count` panels drawn on it. The server sends
+ * the photo's size and each panel's spot in metres, so the drawing here is in
+ * metres too and lines up with the photo exactly.
  */
-function project(roof, zoom, lat, lng) {
-  const radians = (roof.center.lat * Math.PI) / 180
-  const metersPerPixel = (156_543.033_92 * Math.cos(radians)) / 2 ** zoom
-  const east = (lng - roof.center.lng) * 111_320 * Math.cos(radians)
-  const north = (lat - roof.center.lat) * 110_574
-  return { x: SIZE / 2 + east / metersPerPixel, y: SIZE / 2 - north / metersPerPixel, metersPerPixel }
-}
-
-/** The satellite photo with the first `count` panels drawn on the roof. */
-export function RoofMap({ roof, zoom, count, address }) {
+export function RoofMap({ roof, photo, count, address }) {
+  if (!photo) {
+    return null
+  }
   const shown = roof.panels.slice(0, count)
-  const { metersPerPixel } = project(roof, zoom, roof.center.lat, roof.center.lng)
 
   return (
     <figure className="solar-fit__roof">
-      <div className="solar-fit__roof-frame">
-        {/* oxlint-disable-next-line next/no-img-element -- our own proxy route, already sized */}
+      <div
+        className="solar-fit__roof-frame"
+        style={{ aspectRatio: `${photo.metersWide} / ${photo.metersTall}` }}
+      >
+        {/* oxlint-disable-next-line next/no-img-element -- a data URL or our own proxy route, already sized */}
         <img
           className="solar-fit__roof-photo"
-          src={`/api/solar-fit/roof-image?lat=${roof.center.lat}&lng=${roof.center.lng}&zoom=${zoom}`}
-          alt={`Satellite view of ${address || 'the roof'}`}
-          width={SIZE}
-          height={SIZE}
+          src={photo.src}
+          alt={`Aerial view of ${address || 'the roof'}`}
         />
-        <svg className="solar-fit__roof-panels" viewBox={`0 0 ${SIZE} ${SIZE}`} aria-hidden="true">
+        <svg
+          className="solar-fit__roof-panels"
+          viewBox={`0 0 ${photo.metersWide} ${photo.metersTall}`}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
           {shown.map((panel, index) => {
-            const { x, y } = project(roof, zoom, panel.lat, panel.lng)
-            const long = roof.panelHeight / metersPerPixel
-            const short = roof.panelWidth / metersPerPixel
-            const width = panel.landscape ? long : short
-            const height = panel.landscape ? short : long
+            const { x, y } = photo.panels[index]
+            const width = panel.landscape ? roof.panelHeight : roof.panelWidth
+            const height = panel.landscape ? roof.panelWidth : roof.panelHeight
             return (
               <rect
                 // Panels have no id; their order is fixed for a roof.

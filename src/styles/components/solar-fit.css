@@ -276,11 +276,6 @@ select.solar-calculator__input {
   background: #f4f5f5;
 }
 
-.solar-fit__slider {
-  width: 100%;
-  accent-color: #040a17;
-}
-
 /* The roof photo with the panels drawn over it. */
 .solar-fit__roof {
   display: grid;
@@ -290,7 +285,6 @@ select.solar-calculator__input {
 
 .solar-fit__roof-frame {
   position: relative;
-  aspect-ratio: 1;
   overflow: hidden;
   border-radius: 0.75rem;
   background: #040a17;
@@ -308,10 +302,11 @@ select.solar-calculator__input {
   object-fit: cover;
 }
 
+/* Drawn in metres, so the outline is a few centimetres wide. */
 .solar-fit__panel {
   fill: oklch(28% 0.06 260deg / 88%);
   stroke: #ffd06b;
-  stroke-width: 1;
+  stroke-width: 0.06;
 }
 
 .solar-fit__roof-caption {

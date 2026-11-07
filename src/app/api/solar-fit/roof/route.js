@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 
-import { hasGoogleKey, isInTexas, placeLocation, roofAt, zoomForBox } from '@/lib/solar-fit/google'
+import { hasGoogleKey, isInTexas, placeLocation, roofAt, roofPhoto } from '@/lib/solar-fit/google'
 import { overLimit } from '@/lib/solar-fit/rate-limit'
 
 /**
- * GET ?placeId=…&session=… -> the address, the roof under it, and the photo
- * zoom. `roof` is null when Google has no roof data there; the form then falls
+ * GET ?placeId=…&session=… -> the address, the roof under it, and its photo
+ * with every panel placed on it in metres. `roof` is null when Google has no roof data there; the form then falls
  * back to its questions.
  */
 export async function GET(request) {
@@ -25,11 +25,8 @@ export async function GET(request) {
       return NextResponse.json({ address: place.address, roof: null, reason: 'outside-texas' })
     }
     const roof = await roofAt(place.lat, place.lng)
-    return NextResponse.json({
-      address: place.address,
-      roof,
-      zoom: roof ? zoomForBox(roof.box, roof.center.lat) : null,
-    })
+    const photo = roof?.panels?.length ? await roofPhoto(roof) : null
+    return NextResponse.json({ address: place.address, roof, photo })
   } catch (error) {
     console.warn('[solar-fit] roof lookup failed', error)
     return NextResponse.json(
