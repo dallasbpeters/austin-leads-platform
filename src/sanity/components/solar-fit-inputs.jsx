@@ -129,17 +129,41 @@ export function FormulaKeyInput(props) {
   return props.renderDefault(props)
 }
 
+/*
+ * Button templates: "%" is replaced by the selected text, or by the
+ * placeholder when nothing is selected, so selecting "consumption" and clicking
+ * "Smaller of" gives min(consumption, b).
+ */
 const FUNCTION_HELP = [
-  { insert: 'payment(amount, apr, years)', label: 'Loan payment', hint: 'Monthly payment on a loan' },
-  { insert: 'max(a, b)', label: 'Larger of', hint: 'The bigger of two numbers' },
-  { insert: 'min(a, b)', label: 'Smaller of', hint: 'The smaller of two numbers' },
-  { insert: 'round(value, 2)', label: 'Round', hint: 'Round to some decimal places' },
   {
-    insert: 'growth(yearly, rate, years)',
+    insert: 'payment(%, apr, years)',
+    placeholder: 'amount',
+    label: 'Loan payment',
+    hint: 'Monthly payment on a loan',
+  },
+  { insert: 'max(%, b)', placeholder: 'a', label: 'Larger of', hint: 'The bigger of two numbers' },
+  { insert: 'min(%, b)', placeholder: 'a', label: 'Smaller of', hint: 'The smaller of two numbers' },
+  { insert: 'round(%, 2)', placeholder: 'value', label: 'Round', hint: 'Round to some decimal places' },
+  {
+    insert: 'growth(%, rate, years)',
+    placeholder: 'yearly',
     label: 'Grows yearly',
     hint: 'Total of a yearly amount that grows',
   },
-  { insert: 'a >= b ? yes : no', label: 'If… then… else', hint: 'Pick one of two values' },
+  { insert: '% ? yes : no', placeholder: 'a >= b', label: 'If… then… else', hint: 'Pick one of two values' },
+]
+
+const OPERATOR_HELP = [
+  { insert: ' + ', label: '+ plus' },
+  { insert: ' - ', label: '− minus' },
+  { insert: ' * ', label: '× times' },
+  { insert: ' / ', label: '÷ divided by' },
+  { insert: '(%)', placeholder: '', label: '( ) group' },
+  { insert: ' >= ', label: '≥ at least' },
+  { insert: ' <= ', label: '≤ at most' },
+  { insert: ' == ', label: '= equals' },
+  { insert: ' && ', label: 'and' },
+  { insert: ' || ', label: 'or' },
 ]
 
 /** Turns an engine message into plain words. */
@@ -151,6 +175,17 @@ function explain(message) {
   const unknownFunction = /^Unknown function "(.+)"$/u.exec(message || '')
   if (unknownFunction) {
     return `"${unknownFunction[1]}" is not one of the functions listed above.`
+  }
+  const unexpected = /^Unexpected "(.+)"$/u.exec(message || '')
+  if (unexpected) {
+    return `Something is missing before "${unexpected[1]}". Join the parts with an operator such as + − × ÷ (for example consumption * rate).`
+  }
+  const expected = /^Expected "(.+)"$/u.exec(message || '')
+  if (expected) {
+    return `A "${expected[1]}" is missing. Check that every ( has a matching ).`
+  }
+  if (message === 'Formula ended too early') {
+    return 'The formula stops too soon. Add a value after the last operator.'
   }
   return message
 }
@@ -167,13 +202,13 @@ function NameButtons({ title, items, onInsert }) {
       <Flex gap={1} wrap="wrap">
         {items.map((item) => (
           <Button
-            key={item.insert}
+            key={item.label}
             text={item.label}
             title={item.hint || item.insert}
             mode="ghost"
             fontSize={1}
             padding={2}
-            onClick={() => onInsert(item.insert)}
+            onClick={() => onInsert(item)}
           />
         ))}
       </Flex>
@@ -241,13 +276,18 @@ export function FormulaInput(props) {
     }
   }, [section, outputKey, isQualify, value])
 
-  const insert = (text) => {
+  const insert = (item) => {
     const element = textRef.current
     const current = value || ''
     const start = element ? element.selectionStart : current.length
     const end = element ? element.selectionEnd : current.length
+    const selected = current.slice(start, end)
+    const text = item.insert.includes('%')
+      ? item.insert.replace('%', selected || item.placeholder || '')
+      : item.insert
     const before = current.slice(0, start)
-    const spacer = before && !/[\s(]$/u.test(before) ? ' ' : ''
+    // Names and functions get a space after the previous text; operators bring their own.
+    const spacer = before && !/[\s(]$/u.test(before) && !text.startsWith(' ') ? ' ' : ''
     const next = `${before}${spacer}${text}${current.slice(end)}`
     onChange(set(next))
     requestAnimationFrame(() => {
@@ -274,7 +314,12 @@ export function FormulaInput(props) {
               items={results}
               onInsert={insert}
             />
-            <NameButtons title="Functions" items={FUNCTION_HELP} onInsert={insert} />
+            <NameButtons title="Math" items={OPERATOR_HELP} onInsert={insert} />
+            <NameButtons
+              title="Functions (select part of the formula first to wrap it)"
+              items={FUNCTION_HELP}
+              onInsert={insert}
+            />
           </Stack>
         </Card>
       )}

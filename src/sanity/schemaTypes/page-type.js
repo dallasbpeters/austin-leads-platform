@@ -3,7 +3,7 @@ import { BlockContentIcon } from '@sanity/icons/BlockContent'
 import { CircleIcon } from '@sanity/icons/Circle'
 import { defineArrayMember, defineField } from 'sanity'
 
-import { FORMULA_FUNCTION_NAMES, formulaSyntaxError } from '../../lib/solar-fit/formula'
+import { formulaSyntaxError } from '../../lib/solar-fit/formula'
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 import { FormulaInput, FormulaKeyInput, SolarFitSectionInput } from '../components/solar-fit-inputs'
 
@@ -4656,7 +4656,8 @@ const FORMULA_KEY_RULE = (Rule) =>
     .regex(/^[A-Za-z_][A-Za-z0-9_]*$/u, { name: 'key', invert: false })
     .error('Use letters, numbers and _ only, starting with a letter (for example monthlyBill).')
 
-const FORMULA_HELP = `Math with the keys of the questions, constants and results above. Operators: + - * / ^ ( ), comparisons (>= == …), && || and a ? b : c. Text goes in quotes: roofType == "Metal" (case does not matter). Yes / No answers are 1 and 0. Functions: ${FORMULA_FUNCTION_NAMES.join(', ')}. Example: payment(netCost, apr, 20).`
+const FORMULA_HELP =
+  'Build it with the buttons below, or type it. Each result can use the questions, constants and any result above it.'
 
 const solarFitOptionType = {
   name: 'solarFitOption',
