@@ -46,7 +46,6 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
           fullName: form.get('fullName'),
           email: form.get('email'),
           phone: form.get('phone'),
-          address: form.get('address'),
           company: form.get('company'),
           consent: form.get('consent') === 'on',
           answers,
@@ -207,10 +206,6 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                     <label className="solar-fit__form-field">
                       <span>Phone</span>
                       <input name="phone" type="tel" autoComplete="tel" />
-                    </label>
-                    <label className="solar-fit__form-field">
-                      <span>Home address</span>
-                      <input name="address" autoComplete="street-address" />
                     </label>
                   </div>
                   {/* Hidden from people; bots fill it and get dropped. */}
