@@ -2028,7 +2028,14 @@ const heroSpecificFields = [
     options: canvasPurpose('Secondary homepage hero word or phrase shown in the outlined style.'),
   },
   { name: 'heroGradient', title: 'Hero gradient', type: 'text', options: canvasExclude },
-  { name: 'heroTextColor', title: 'Hero text color', type: 'color', options: canvasExclude },
+  {
+    name: 'heroTextColor',
+    title: 'Hero text color',
+    type: 'color',
+    options: canvasExclude,
+    // Cloud heroes follow the visitor's time of day (dark by day, white at night), so a fixed color is off.
+    hidden: ({ parent }) => parent?.heroMediaMode === 'clouds',
+  },
   { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'color', options: canvasExclude },
   {
     name: 'heroOverlayStartColor',
