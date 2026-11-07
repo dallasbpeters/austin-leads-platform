@@ -108,7 +108,7 @@
   padding-block: 0.75rem;
   padding-inline: 1.25rem;
   border: 1px solid;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-button);
   font-weight: 600;
   place-self: center;
 }

@@ -163,6 +163,9 @@
    */
   --radius-pill: 999px;
 
+  /* Every button, link-button and filter chip uses this one radius. Tags and badges stay pills. */
+  --radius-button: 0.375rem;
+
   /* Section gutter. A stepped ladder, not a clamp, so edges match the prior layout exactly at every width. */
   --gutter-page: 0.75rem;
   --space-section: 6rem;

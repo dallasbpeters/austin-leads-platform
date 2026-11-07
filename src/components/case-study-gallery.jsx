@@ -107,7 +107,7 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
           <>
             <button
               aria-label="Previous photo"
-              className="border-border/60 bg-primary/80 text-primary-foreground hover:bg-primary absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-colors"
+              className="border-border/60 bg-primary/80 text-primary-foreground hover:bg-primary absolute top-1/2 left-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-(--radius-button) border backdrop-blur-sm transition-colors"
               onClick={goPrev}
               type="button"
             >
@@ -115,7 +115,7 @@ export default function CaseStudyGallery({ images = [], editAttributes = {} }) {
             </button>
             <button
               aria-label="Next photo"
-              className="border-border/60 bg-primary/80 text-primary-foreground hover:bg-primary absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-colors"
+              className="border-border/60 bg-primary/80 text-primary-foreground hover:bg-primary absolute top-1/2 right-3 flex size-10 -translate-y-1/2 items-center justify-center rounded-(--radius-button) border backdrop-blur-sm transition-colors"
               onClick={goNext}
               type="button"
             >

@@ -129,12 +129,11 @@
     padding-inline: 2rem;
   }
 
-  .btn--pill {
-    border-radius: var(--radius-pill);
-  }
-
+  /* "pill" is kept as a shape name so existing call sites still work, but
+   * every button now shares one radius. */
+  .btn--pill,
   .btn--rounded {
-    border-radius: 0.75rem;
+    border-radius: var(--radius-button);
   }
 
   .btn--full {

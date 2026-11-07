@@ -335,9 +335,36 @@ function HeroAside({
   cardBackground,
   cardBorder,
   heroTextColor,
+  glass = false,
 }) {
   if (!hasHeroMetrics && !cardCopy) {
     return null
+  }
+
+  // Over a photo or sky the snapshot matches the homepage glass cards.
+  if (glass) {
+    return (
+      <div className="solar-fade-up solar-fade-up-delay">
+        <div className="solar-hero__glass solar-hero__aside-card solar-hero__aside-card--glass">
+          {hasHeroMetrics ? (
+            <div className="solar-hero__metrics">
+              <p className="solar-hero__glass-eyebrow">Snapshot</p>
+              {heroMetrics.map((metric, index) => (
+                <div
+                  key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
+                  className="solar-hero__metric solar-hero__metric--glass"
+                >
+                  <div className="solar-hero__metric-label">{metric.label}</div>
+                  <div className="solar-hero__metric-value">{metric.value}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <HeroCardCopy cardCopy={cardCopy} heroTextColor="var(--color-white)" />
+          )}
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -516,6 +543,7 @@ export default function Hero({
             cardBackground={cardBackground}
             cardBorder={cardBorder}
             heroTextColor={heroTextColor}
+            glass={hasHeroBackdropMedia}
           />
         </div>
         {heroCards.length > 0 ? <HeroCards cards={heroCards} /> : null}

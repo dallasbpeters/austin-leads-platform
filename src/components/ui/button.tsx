@@ -24,8 +24,8 @@ const buttonVariants = cva(
       },
       shape: {
         default: 'btn--rounded',
-        pill: 'rounded-full btn--pill',
-        circle: 'rounded-full p-0',
+        pill: 'btn--pill',
+        circle: 'btn--rounded p-0',
       },
       size: {
         default: 'btn--md text-size-90 has-[svg]:px-3',
