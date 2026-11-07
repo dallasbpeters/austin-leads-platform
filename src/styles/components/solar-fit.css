@@ -26,22 +26,48 @@
   background: #ffd06b;
 }
 
+/*
+ * Number fields with a prefix ($) or suffix (kWh): the box is the wrapper and
+ * the input inside it is bare, so the units sit beside the number and can
+ * never overlap it, whatever their length.
+ */
 .solar-fit__number {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.625rem;
+  padding-inline: 1rem;
+  border: 1px solid oklch(0% 0 0deg / 6%);
+  border-radius: 0.25rem;
+  background: #f4f5f5;
+  transition:
+    border-color 150ms ease-out,
+    box-shadow 150ms ease-out;
 }
 
-.solar-fit__prefix {
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 1rem;
-  display: grid;
-  place-items: center;
+.solar-fit__number:focus-within {
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px oklch(from #ffd06b l c h / 70%);
+}
+
+.solar-fit__number-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding: 0;
+  border: 0;
+  font-size: var(--text-base);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #0f172a;
+  background: transparent;
+  outline: 2px solid transparent;
+}
+
+.solar-fit__affix {
+  flex-shrink: 0;
+  font-size: var(--text-base);
   color: #62748e;
-  pointer-events: none;
-}
-
-.solar-fit__input--prefixed {
-  padding-inline-start: 2rem;
 }
 
 select.solar-calculator__input {

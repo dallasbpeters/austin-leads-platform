@@ -26,7 +26,9 @@ function answerRows(model, result) {
   return model.inputs.map((input) => {
     const value = result.values[input.key]
     const option = input.options?.find((candidate) => candidate.value === value)
-    const text = option ? option.label : `${input.prefix || ''}${value?.toLocaleString('en-US')}`
+    const text = option
+      ? option.label
+      : `${input.prefix || ''}${value?.toLocaleString('en-US')}${input.suffix ? ` ${input.suffix}` : ''}`
     return [input.label, text]
   })
 }

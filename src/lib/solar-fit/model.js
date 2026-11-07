@@ -1,3 +1,5 @@
+import { cleanRuntimeString } from '@/lib/sanity/stega'
+
 import { evaluateFormula, FormulaError } from './formula'
 
 /*
@@ -151,7 +153,21 @@ const YES_NO_OPTIONS = [
  * Pick-one answers use their number when they have one, else their own text,
  * so formulas can say roofType == "Metal". Yes / No questions are 1 and 0.
  */
-function normalizeInput(input) {
+/*
+ * In Studio's preview, Sanity hides edit markers inside every string. Anything
+ * the form compares or computes with (types, keys, formulas, answer values) is
+ * cleaned of them; labels keep them so click-to-edit still works.
+ */
+const clean = (value) => (typeof value === 'string' ? cleanRuntimeString(value) : value)
+
+function normalizeInput(raw) {
+  const input = {
+    ...raw,
+    key: clean(raw.key),
+    kind: clean(raw.kind) || 'number',
+    prefix: clean(raw.prefix),
+    suffix: clean(raw.suffix),
+  }
   if (input.kind === 'yesno') {
     return { ...input, options: YES_NO_OPTIONS, defaultValue: toNumber(input.defaultValue, 1) === 0 ? 0 : 1 }
   }
@@ -161,7 +177,9 @@ function normalizeInput(input) {
       .map((option) => ({
         label: option.label,
         value:
-          typeof option.value === 'number' && Number.isFinite(option.value) ? option.value : option.label,
+          typeof option.value === 'number' && Number.isFinite(option.value)
+            ? option.value
+            : clean(option.label),
       }))
     const fallback = options[0]?.value ?? ''
     const listed = options.find((option) => String(option.value) === String(input.defaultValue))
@@ -178,13 +196,22 @@ function normalizeInput(input) {
  */
 export function resolveModel(section) {
   const inputs = (section?.fitInputs || []).filter((input) => input?.key)
-  const outputs = (section?.fitOutputs || []).filter((output) => output?.key && output?.formula)
+  const outputs = (section?.fitOutputs || [])
+    .filter((output) => output?.key && output?.formula)
+    .map((output) => ({
+      ...output,
+      key: clean(output.key),
+      formula: clean(output.formula),
+      format: clean(output.format),
+    }))
 
   if (!inputs.length && !outputs.length) {
     return DEFAULT_MODEL
   }
 
-  const constants = (section?.fitConstants || []).filter((constant) => constant?.key)
+  const constants = (section?.fitConstants || [])
+    .filter((constant) => constant?.key)
+    .map((constant) => ({ ...constant, key: clean(constant.key) }))
 
   return {
     inputs: (inputs.length ? inputs : DEFAULT_MODEL.inputs).map(normalizeInput),
@@ -193,7 +220,7 @@ export function resolveModel(section) {
       : DEFAULT_MODEL.constants,
     // No built-in results here: they name the built-in questions, not these.
     outputs,
-    qualifyFormula: section?.qualifyFormula || '',
+    qualifyFormula: clean(section?.qualifyFormula) || '',
     qualifiedMessage: section?.qualifiedMessage || DEFAULT_MODEL.qualifiedMessage,
     notQualifiedMessage: section?.notQualifiedMessage || DEFAULT_MODEL.notQualifiedMessage,
   }

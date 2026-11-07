@@ -18,7 +18,7 @@ const SECTION_QUERY = `*[_id == $pageId][0]{
   "siteSlug": site->slug.current,
   "sourceDomain": site->primaryDomain,
   "section": sections[_key == $sectionKey][0]{
-    fitInputs[]{ key, label, kind, defaultValue, min, max, step, prefix, options[]{ label, value } },
+    fitInputs[]{ key, label, kind, defaultValue, min, max, step, prefix, suffix, options[]{ label, value } },
     fitConstants[]{ key, label, value },
     fitOutputs[]{ key, label, formula, format, decimals, detail, highlight },
     qualifyFormula,

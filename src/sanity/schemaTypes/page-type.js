@@ -4746,6 +4746,13 @@ const solarFitInputType = {
       description: 'Shown before the number, like $.',
       hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
     },
+    {
+      name: 'suffix',
+      title: 'Suffix',
+      type: 'string',
+      description: 'Shown after the number, like kWh or %.',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
+    },
     { name: 'help', title: 'Help text', type: 'string' },
   ],
   preview: {

@@ -115,18 +115,27 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                   </select>
                 ) : (
                   <div className="solar-fit__number">
-                    {input.prefix ? <span className="solar-fit__prefix">{input.prefix}</span> : null}
+                    {input.prefix ? (
+                      <span className="solar-fit__affix" aria-hidden="true">
+                        {input.prefix}
+                      </span>
+                    ) : null}
                     <input
                       id={`${fieldId}-${input.key}`}
                       type="number"
                       inputMode="decimal"
-                      className={cn('solar-calculator__input', input.prefix && 'solar-fit__input--prefixed')}
+                      className="solar-fit__number-input"
                       value={answers[input.key]}
                       min={input.min}
                       max={input.max}
                       step={input.step || 'any'}
                       onChange={setAnswer(input.key)}
                     />
+                    {input.suffix ? (
+                      <span className="solar-fit__affix" aria-hidden="true">
+                        {input.suffix}
+                      </span>
+                    ) : null}
                   </div>
                 )}
                 {input.help ? <p className="solar-fit__help">{input.help}</p> : null}
