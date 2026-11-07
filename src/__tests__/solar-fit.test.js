@@ -69,6 +69,18 @@ describe(computeModel, () => {
     expect(outputs[1].value).toBe(200)
   })
 
+  it("shows an editor's questions before any results exist", () => {
+    const model = resolveModel({
+      fitInputs: [
+        { key: 'north', label: 'Faces north?', kind: 'select', options: [{ label: 'Yes', value: 1 }] },
+      ],
+      fitOutputs: [],
+    })
+    expect(model.inputs.map((input) => input.key)).toEqual(['north'])
+    expect(model.outputs).toEqual([])
+    expect(computeModel(model, {}).values).toEqual({ north: 1 })
+  })
+
   it('falls back to the default model when the section is empty', () => {
     expect(resolveModel(null)).toBe(DEFAULT_MODEL)
     expect(resolveModel({ fitInputs: [], fitOutputs: [] })).toBe(DEFAULT_MODEL)

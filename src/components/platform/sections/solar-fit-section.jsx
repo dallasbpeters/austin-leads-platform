@@ -16,7 +16,10 @@ import { cn } from '@/lib/utils'
  */
 export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   const model = useMemo(() => resolveModel(section), [section])
-  const [answers, setAnswers] = useState(() => defaultValues(model))
+  const [edited, setEdited] = useState({})
+  // Starting values fill in any question the visitor has not touched, so a
+  // question added in Studio shows up (with its starting value) right away.
+  const answers = useMemo(() => ({ ...defaultValues(model), ...edited }), [model, edited])
   const result = useMemo(() => computeModel(model, answers), [model, answers])
   const [status, setStatus] = useState({ state: 'idle', message: '' })
   const fieldId = useId()
@@ -28,7 +31,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   const fitMessage =
     result.qualifies === null ? '' : result.qualifies ? model.qualifiedMessage : model.notQualifiedMessage
 
-  const setAnswer = (key) => (event) => setAnswers((current) => ({ ...current, [key]: event.target.value }))
+  const setAnswer = (key) => (event) => setEdited((current) => ({ ...current, [key]: event.target.value }))
 
   async function onSubmit(event) {
     event.preventDefault()

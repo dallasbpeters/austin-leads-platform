@@ -142,17 +142,24 @@ const toNumber = (value, fallback = 0) => {
   return value === '' || value === null || value === undefined || !Number.isFinite(parsed) ? fallback : parsed
 }
 
-/** The section's model when it has one, else the default. Sanity rows are normalised here. */
+/**
+ * The section's model, filled in from DEFAULT_MODEL only where the section is
+ * empty. Questions show as soon as an editor adds them; the built-in math only
+ * runs while the section has no questions and no results of its own, since its
+ * formulas name the built-in questions.
+ */
 export function resolveModel(section) {
   const inputs = (section?.fitInputs || []).filter((input) => input?.key)
   const outputs = (section?.fitOutputs || []).filter((output) => output?.key && output?.formula)
 
-  if (!inputs.length || !outputs.length) {
+  if (!inputs.length && !outputs.length) {
     return DEFAULT_MODEL
   }
 
+  const constants = (section?.fitConstants || []).filter((constant) => constant?.key)
+
   return {
-    inputs: inputs.map((input) => ({
+    inputs: (inputs.length ? inputs : DEFAULT_MODEL.inputs).map((input) => ({
       ...input,
       defaultValue: toNumber(input.defaultValue, input.options?.[0]?.value ?? 0),
       options: (input.options || []).map((option) => ({
@@ -160,13 +167,14 @@ export function resolveModel(section) {
         value: toNumber(option.value),
       })),
     })),
-    constants: (section.fitConstants || [])
-      .filter((constant) => constant?.key)
-      .map((constant) => ({ ...constant, value: toNumber(constant.value) })),
+    constants: constants.length
+      ? constants.map((constant) => ({ ...constant, value: toNumber(constant.value) }))
+      : DEFAULT_MODEL.constants,
+    // No built-in results here: they name the built-in questions, not these.
     outputs,
-    qualifyFormula: section.qualifyFormula || '',
-    qualifiedMessage: section.qualifiedMessage || DEFAULT_MODEL.qualifiedMessage,
-    notQualifiedMessage: section.notQualifiedMessage || DEFAULT_MODEL.notQualifiedMessage,
+    qualifyFormula: section?.qualifyFormula || '',
+    qualifiedMessage: section?.qualifiedMessage || DEFAULT_MODEL.qualifiedMessage,
+    notQualifiedMessage: section?.notQualifiedMessage || DEFAULT_MODEL.notQualifiedMessage,
   }
 }
 
