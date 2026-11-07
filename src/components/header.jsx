@@ -350,19 +350,15 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
       })}
     >
       <div className="site-header__bar">
+        <p className="site-header__message">
+          Not a roofing company: We're solar specialists, working with local roofers.
+        </p>
         <div ref={innerRef} className="site-header__inner">
-          {/* The logo and the required "not a roofing company" line read as one identity. */}
           <div className="site-header__identity">
             <Link href="/" aria-label="Texas Solar & Roofing Pros - Home" className="site-header__brand">
               <Logo height={64} width={91} />
               <span className="sr-only">Texas Solar & Roofing Pros</span>
             </Link>
-            <p className="site-header__tagline">
-              <span className="site-header__tagline-lead">Not a roofing company</span>
-              <span className="site-header__tagline-text">
-                We're solar specialists, working with local roofers.
-              </span>
-            </p>
           </div>
           <div className="site-header__nav">
             <NavList items={barLinks} />

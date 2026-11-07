@@ -71,46 +71,48 @@
   }
 }
 
-/*
- * The logo plus the required "not a roofing company" line, as one identity:
- * a thin rule, then two short lines of small type beside the mark.
- */
+/* The logo; a wrapper so the priority nav measures it as one piece. */
 .site-header__identity {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
   min-width: 0;
 }
 
-.site-header__tagline {
-  display: grid;
-  gap: 0.125rem;
-  max-width: 13rem;
-  margin: 0;
-  padding-inline-start: 0.875rem;
-  border-inline-start: 1px solid var(--header-line);
-  line-height: 1.25;
-}
-
-.site-header__tagline-lead {
+/*
+ * The required "not a roofing company" line. On phones it is a dark strip
+ * across the top of the bar; from 48rem it is a dark tab sitting on the bar's
+ * top edge at the right, with the text centred in it.
+ */
+.site-header__message {
+  margin: calc(var(--bar-pad-block) * -1) calc(var(--bar-pad) * -1) var(--bar-pad-block);
+  padding: 0.375rem 1rem;
   font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
   font-size: 0.625rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #ffd06b;
-}
-
-.site-header__tagline-text {
-  font-size: 0.75rem;
-  color: var(--header-muted);
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  text-align: center;
   text-wrap: balance;
+  color: oklch(100% 0 0deg / 85%);
+  background: #040a17;
 }
 
-/* Phones: the lead line alone keeps the bar to one row. */
-@media (width < 40rem) {
-  .site-header__tagline-text {
-    display: none;
+@media (width >= 48rem) {
+  .site-header {
+    /* Room above the bar for the tab. */
+    top: calc(var(--inset) + 1.5rem);
+  }
+
+  .site-header__message {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline-end: var(--bar-pad);
+    margin: 0;
+    padding: 0.375rem 1rem;
+    border: 1px solid var(--header-line);
+    border-block-end: 0;
+    border-radius: 0.375rem 0.375rem 0 0;
+    white-space: nowrap;
   }
 }
 
