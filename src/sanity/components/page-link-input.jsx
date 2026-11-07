@@ -1,6 +1,7 @@
 'use client'
 
-import { Autocomplete, Box, Card, Flex, Stack, Text } from '@sanity/ui'
+import { Box, Card, Flex, Stack, Text } from '@sanity/ui'
+import { Autocomplete } from '@sanity/ui/autocomplete'
 import { useEffect, useMemo, useState } from 'react'
 import { set, useClient, useFormValue } from 'sanity'
 
