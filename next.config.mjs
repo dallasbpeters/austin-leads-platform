@@ -74,7 +74,6 @@ const nextConfig = {
     /* Rewrites `import { X } from 'pkg'` to the deep path, so barrel files do
      * not drag their whole package into the bundle. */
     optimizePackageImports: ['iconoir-react', 'lucide-react', '@sanity/icons'],
-    viewTransition: true,
     /* Needed with two root layouts; see src/app/global-not-found.jsx. */
     globalNotFound: true,
   },

@@ -1,6 +1,7 @@
 'use client'
 
-import { CheckCircle2, ExternalLink, LoaderCircle, Upload, Youtube } from 'lucide-react'
+import { Youtube } from 'iconoir-react'
+import { CheckCircle2, ExternalLink, LoaderCircle, Upload } from 'lucide-react'
 import { useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'

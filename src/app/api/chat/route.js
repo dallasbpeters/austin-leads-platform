@@ -6,7 +6,7 @@ import { createGroq } from '@ai-sdk/groq'
 import { createMCPClient } from '@ai-sdk/mcp'
 import { withTracing } from '@posthog/ai'
 import { sanityInsightsIntegration } from '@sanity/context/ai-sdk'
-import { convertToModelMessages, stepCountIs, streamText } from 'ai'
+import { convertToModelMessages, isStepCount, streamText } from 'ai'
 
 import { safeAuth } from '@/lib/auth/session'
 import { getPostHogClient } from '@/lib/posthog-server'
@@ -486,9 +486,9 @@ export const POST = async (request) => {
       system,
       messages: await convertToModelMessages(messages),
       tools: mcpTools,
-      stopWhen: stepCountIs(MAX_STEPS),
+      stopWhen: isStepCount(MAX_STEPS),
       experimental_telemetry: buildInsightsTelemetry(threadId, messages, mcpEndpoints),
-      onFinish: async () => {
+      onEnd: async () => {
         await Promise.allSettled([mcpClient?.close(), writeClient?.close(), posthog?.flush()])
       },
     })
