@@ -10,7 +10,9 @@
 
   position: relative;
   margin-inline: -0.5rem;
-  padding-block: var(--grid-frame-gap);
+
+  /* Cards and panels sit inset on all four sides, never touching the lines. */
+  padding: var(--grid-frame-gap);
   border-block: 1px solid var(--grid-frame-line);
 }
 
@@ -60,11 +62,6 @@
   letter-spacing: -0.02em;
   color: var(--color-primary);
   text-wrap: balance;
-}
-
-/* The photo sits inset on all four sides, so it never touches the frame lines. */
-.tabbed-panel__frame {
-  padding-inline: var(--grid-frame-gap);
 }
 
 .tabbed-panel__panel {
