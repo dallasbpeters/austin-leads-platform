@@ -32,7 +32,7 @@
 .solar-calculator__intro {
   display: grid;
   gap: 1rem;
-  max-width: 40rem;
+  max-width: 50rem;
   margin-block-end: 3rem;
 }
 
@@ -84,7 +84,8 @@
 
 .solar-calculator__label {
   font-size: var(--text-sm);
-  color: var(--calc-muted);
+  font-weight: 500;
+  color: var(--calc-ink);
 }
 
 .solar-calculator__input {
@@ -197,7 +198,7 @@
 }
 
 .solar-calculator__system .solar-calculator__eyebrow {
-  color: #ffd06b;
+  color: var(--color-amber-300);
 }
 
 .solar-calculator__system-value {

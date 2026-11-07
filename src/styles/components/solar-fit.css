@@ -59,8 +59,11 @@ select.solar-calculator__input {
   background-repeat: no-repeat;
 }
 
+/* Sits tight under its input: the field's own gap is the only space above it. */
 .solar-fit__help {
+  margin: 0;
   font-size: var(--text-sm);
+  line-height: 1.4;
   color: #62748e;
 }
 
