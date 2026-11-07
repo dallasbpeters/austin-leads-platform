@@ -3,6 +3,7 @@ import { BlockContentIcon } from '@sanity/icons/BlockContent'
 import { CircleIcon } from '@sanity/icons/Circle'
 import { defineArrayMember, defineField } from 'sanity'
 
+import { FORMULA_FUNCTION_NAMES, formulaSyntaxError } from '../../lib/solar-fit/formula'
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 
 const canvasExclude = { canvasApp: { exclude: true } }
@@ -4645,6 +4646,237 @@ const tabbedPanelSectionType = {
   },
 }
 
+/* ---- "See if solar is right for you" (solarFitSection) ---------------------
+ * The questions, constants and formulas behind the form. Formulas use the input
+ * and constant keys as names, plus any result above them. See
+ * src/lib/solar-fit/formula.js for the full syntax. */
+const FORMULA_KEY_RULE = (Rule) =>
+  Rule.required()
+    .regex(/^[A-Za-z_][A-Za-z0-9_]*$/u, { name: 'key', invert: false })
+    .error('Use letters, numbers and _ only, starting with a letter (for example monthlyBill).')
+
+const FORMULA_HELP = `Math with the keys of the questions, constants and results above. Operators: + - * / ^ ( ), comparisons (>= == …), && || and a ? b : c. Functions: ${FORMULA_FUNCTION_NAMES.join(', ')}. Example: payment(netCost, apr, 20).`
+
+const solarFitOptionType = {
+  name: 'solarFitOption',
+  title: 'Answer',
+  type: 'object',
+  fields: [
+    { name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required() },
+    {
+      name: 'value',
+      title: 'Value used in formulas',
+      type: 'number',
+      validation: (Rule) => Rule.required(),
+    },
+  ],
+  preview: {
+    select: { title: 'label', value: 'value' },
+    prepare: ({ title, value }) => ({ title, subtitle: `= ${value}` }),
+  },
+}
+
+const solarFitInputType = {
+  name: 'solarFitInput',
+  title: 'Question',
+  type: 'object',
+  fields: [
+    { name: 'label', title: 'Question', type: 'string', validation: (Rule) => Rule.required() },
+    {
+      name: 'key',
+      title: 'Key',
+      type: 'string',
+      description: 'The name formulas use for this answer, like bill or roofAge.',
+      validation: FORMULA_KEY_RULE,
+    },
+    {
+      name: 'kind',
+      title: 'Answer type',
+      type: 'string',
+      initialValue: 'number',
+      options: {
+        list: [
+          { title: 'Number', value: 'number' },
+          { title: 'Pick one', value: 'select' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    },
+    { name: 'defaultValue', title: 'Starting value', type: 'number' },
+    {
+      name: 'options',
+      title: 'Answers',
+      type: 'array',
+      of: [{ type: 'solarFitOption' }],
+      hidden: ({ parent }) => parent?.kind !== 'select',
+    },
+    {
+      name: 'min',
+      title: 'Lowest allowed',
+      type: 'number',
+      hidden: ({ parent }) => parent?.kind === 'select',
+    },
+    {
+      name: 'max',
+      title: 'Highest allowed',
+      type: 'number',
+      hidden: ({ parent }) => parent?.kind === 'select',
+    },
+    { name: 'step', title: 'Step', type: 'number', hidden: ({ parent }) => parent?.kind === 'select' },
+    {
+      name: 'prefix',
+      title: 'Prefix',
+      type: 'string',
+      description: 'Shown before the number, like $.',
+      hidden: ({ parent }) => parent?.kind === 'select',
+    },
+    { name: 'help', title: 'Help text', type: 'string' },
+  ],
+  preview: {
+    select: { title: 'label', key: 'key', kind: 'kind' },
+    prepare: ({ title, key, kind }) => ({
+      title,
+      subtitle: `${key || '?'} · ${kind === 'select' ? 'pick one' : 'number'}`,
+    }),
+  },
+}
+
+const solarFitConstantType = {
+  name: 'solarFitConstant',
+  title: 'Constant',
+  type: 'object',
+  fields: [
+    { name: 'label', title: 'What it is', type: 'string', validation: (Rule) => Rule.required() },
+    { name: 'key', title: 'Key', type: 'string', validation: FORMULA_KEY_RULE },
+    { name: 'value', title: 'Value', type: 'number', validation: (Rule) => Rule.required() },
+  ],
+  preview: {
+    select: { title: 'label', key: 'key', value: 'value' },
+    prepare: ({ title, key, value }) => ({ title, subtitle: `${key} = ${value}` }),
+  },
+}
+
+const solarFitOutputType = {
+  name: 'solarFitOutput',
+  title: 'Result',
+  type: 'object',
+  fields: [
+    { name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required() },
+    { name: 'key', title: 'Key', type: 'string', validation: FORMULA_KEY_RULE },
+    {
+      name: 'formula',
+      title: 'Formula',
+      type: 'text',
+      rows: 2,
+      description: FORMULA_HELP,
+      validation: (Rule) =>
+        Rule.required().custom((value) => {
+          const error = formulaSyntaxError(value)
+          return error ? `Formula problem: ${error}` : true
+        }),
+    },
+    {
+      name: 'format',
+      title: 'Show as',
+      type: 'string',
+      initialValue: 'currency',
+      options: {
+        list: [
+          { title: 'Dollars', value: 'currency' },
+          { title: 'Number', value: 'number' },
+          { title: 'kW', value: 'kw' },
+          { title: 'Years', value: 'years' },
+          { title: 'Percent (0.25 = 25%)', value: 'percent' },
+          { title: 'Hidden (a step for other formulas)', value: 'hidden' },
+        ],
+      },
+    },
+    { name: 'decimals', title: 'Decimal places', type: 'number', initialValue: 0 },
+    { name: 'detail', title: 'Small print', type: 'string' },
+    {
+      name: 'highlight',
+      title: 'Highlight',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Shown large in the dark summary tile.',
+    },
+  ],
+  preview: {
+    select: { title: 'label', formula: 'formula', format: 'format' },
+    prepare: ({ title, formula, format }) => ({
+      title: format === 'hidden' ? `${title} (hidden)` : title,
+      subtitle: formula,
+    }),
+  },
+}
+
+const solarFitSectionType = {
+  name: 'solarFitSection',
+  title: 'Solar Fit Form',
+  type: 'object',
+  initialValue: { type: 'solarFit' },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
+    { name: 'title', title: 'Headline', type: 'string' },
+    { name: 'body', title: 'Intro', type: 'text', rows: 3 },
+    {
+      name: 'fitInputs',
+      title: 'Questions',
+      type: 'array',
+      of: [{ type: 'solarFitInput' }],
+      description: 'Leave Questions and Results empty to use the built-in starter formula.',
+    },
+    {
+      name: 'fitConstants',
+      title: 'Constants',
+      type: 'array',
+      of: [{ type: 'solarFitConstant' }],
+      description: 'Fixed numbers the formulas use, like the utility rate or the rebate.',
+    },
+    {
+      name: 'fitOutputs',
+      title: 'Results',
+      type: 'array',
+      of: [{ type: 'solarFitOutput' }],
+      description: 'Worked out top to bottom. Each formula can use any result above it.',
+    },
+    {
+      name: 'qualifyFormula',
+      title: 'Qualifies when',
+      type: 'string',
+      description: 'A formula that is true for a good fit, like owner == 1 && roofAge < 20.',
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) {
+            return true
+          }
+          const error = formulaSyntaxError(value)
+          return error ? `Formula problem: ${error}` : true
+        }),
+    },
+    { name: 'qualifiedMessage', title: 'Message when it fits', type: 'text', rows: 2 },
+    { name: 'notQualifiedMessage', title: 'Message when it may not fit', type: 'text', rows: 2 },
+    { name: 'submitLabel', title: 'Button label', type: 'string', initialValue: 'See if you qualify' },
+    {
+      name: 'successMessage',
+      title: 'Thank-you message',
+      type: 'text',
+      rows: 2,
+      initialValue:
+        'Thanks. We sent a copy of your estimate to your email and will reach out within one business day.',
+    },
+  ]),
+  preview: {
+    select: { title: 'title' },
+    prepare: ({ title }) => ({
+      title: title || 'See if solar is right for you',
+      subtitle: pageSectionListSubtitle('Solar fit form'),
+    }),
+  },
+}
+
 const bandSectionType = {
   name: 'bandSection',
   title: 'Band Section',
@@ -5323,6 +5555,7 @@ export const pageSectionTypes = [
   { type: 'serviceAreaMapSection' },
   { type: 'bandSection' },
   { type: 'tabbedPanelSection' },
+  { type: 'solarFitSection' },
   { type: 'logosSection' },
   { type: 'solarSwitchSection' },
   { type: 'energyChartSection' },
@@ -5543,6 +5776,11 @@ export default [
   bandSectionType,
   panelTabType,
   tabbedPanelSectionType,
+  solarFitOptionType,
+  solarFitInputType,
+  solarFitConstantType,
+  solarFitOutputType,
+  solarFitSectionType,
   logosSectionType,
   solarSwitchSectionType,
   energyChartSectionType,

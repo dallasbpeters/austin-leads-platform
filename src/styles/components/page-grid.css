@@ -10,6 +10,7 @@
    * header and the hero all use this one width so their edges line up.
    */
   --page-frame: calc(min(80rem, 100%) - 2 * var(--gutter-page, 1.5rem) + 1rem);
+  --page-grid-line: oklch(55% 0.01 260deg / 14%);
 
   /* Where text and columns sit: the frame minus the 0.5rem card bleed on each side. */
   --page-content: calc(var(--page-frame) - 1rem);
@@ -46,9 +47,8 @@
   padding-inline: 0;
 }
 
-body::before {
-  --page-grid-line: oklch(55% 0.01 260deg / 14%);
-
+body::before,
+.cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::after {
   content: '';
   position: fixed;
   inset-block: 0;
@@ -60,9 +60,32 @@ body::before {
   pointer-events: none;
 }
 
+/*
+ * Over a cloud sky the grey lines vanish, so cloud sections draw the same grid
+ * in white on top. It sits one level above the page grid and lines up with it
+ * exactly, since both are centred on the viewport at the same width.
+ */
+.cloud-theme-section:not(.cloud-theme-section--clouds-hidden) {
+  position: relative;
+}
+
+.cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::after {
+  --page-grid-line: oklch(100% 0 0deg / 45%);
+
+  position: absolute;
+  z-index: 41;
+}
+
+/* Frames (and their "+" marks) inside a cloud section turn white with the grid. */
+.cloud-theme-section:not(.cloud-theme-section--clouds-hidden) .grid-frame {
+  --grid-frame-line: oklch(100% 0 0deg / 45%);
+  --grid-frame-mark: oklch(100% 0 0deg / 85%);
+}
+
 /* The inner quarter lines only show once columns have room. */
 @media (width >= 48rem) {
-  body::before {
+  body::before,
+  .cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::after {
     background-image: linear-gradient(
       to right,
       transparent calc(25% - 0.5px),
@@ -77,7 +100,8 @@ body::before {
 }
 
 @media print {
-  body::before {
+  body::before,
+  .cloud-theme-section::after {
     display: none;
   }
 }

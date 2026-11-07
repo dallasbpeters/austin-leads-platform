@@ -21,6 +21,7 @@ import { RoofingLogoCloudSection } from './roofing-logo-cloud-section'
 import { ScrollTextSection } from './scroll-text-section'
 import { SecondaryCTASection } from './secondary-cta-section'
 import { ServiceGridSection } from './service-grid-section'
+import { SolarFitSection } from './solar-fit-section'
 import { SolarSwitchSection } from './solar-switch-section'
 import { StepsSection } from './steps-section'
 import { StorySection } from './story-section'
@@ -47,6 +48,7 @@ export const sectionRenderers = {
   aboutProfile: AboutProfileSection,
   article: ArticleSection,
   band: BandSection,
+  solarFit: SolarFitSection,
   tabbedPanel: TabbedPanelSection,
   bannerCta: BannerCtaSection,
   calculator: CalculatorSection,

@@ -5,6 +5,7 @@
  */
 .grid-frame {
   --grid-frame-line: oklch(55% 0.01 260deg / 22%);
+  --grid-frame-mark: oklch(45% 0.01 260deg / 70%);
   --grid-frame-gap: 0.75rem;
 
   position: relative;
@@ -23,14 +24,10 @@
 
   /* Two "+" marks: a short cross drawn at each end of the row. */
   background:
-    linear-gradient(oklch(45% 0.01 260deg / 70%), oklch(45% 0.01 260deg / 70%)) left 0 top 50% / 1rem 1px
-      no-repeat,
-    linear-gradient(oklch(45% 0.01 260deg / 70%), oklch(45% 0.01 260deg / 70%)) left 0.5rem top 0 / 1px 1rem
-      no-repeat,
-    linear-gradient(oklch(45% 0.01 260deg / 70%), oklch(45% 0.01 260deg / 70%)) right 0 top 50% / 1rem 1px
-      no-repeat,
-    linear-gradient(oklch(45% 0.01 260deg / 70%), oklch(45% 0.01 260deg / 70%)) right 0.5rem top 0 / 1px 1rem
-      no-repeat;
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) left 0 top 50% / 1rem 1px no-repeat,
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) left 0.5rem top 0 / 1px 1rem no-repeat,
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) right 0 top 50% / 1rem 1px no-repeat,
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) right 0.5rem top 0 / 1px 1rem no-repeat;
 }
 
 .grid-frame::before {

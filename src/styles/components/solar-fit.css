@@ -1,0 +1,182 @@
+/**
+ * .solar-fit block: the "See if solar is right for you" form. It wears the
+ * .solar-calculator layout and tiles; this file only adds what the calculator
+ * lacks: the eyebrow, the $ prefix, the verdict and the contact step.
+ */
+
+.solar-fit__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.625rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: oklch(55% 0.01 260deg / 10%);
+}
+
+.solar-fit__eyebrow::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #ffd06b;
+}
+
+.solar-fit__number {
+  position: relative;
+}
+
+.solar-fit__prefix {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 1rem;
+  display: grid;
+  place-items: center;
+  color: #62748e;
+  pointer-events: none;
+}
+
+.solar-fit__input--prefixed {
+  padding-inline-start: 2rem;
+}
+
+select.solar-calculator__input {
+  appearance: none;
+  padding-inline-end: 2.5rem;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #62748e 50%),
+    linear-gradient(135deg, #62748e 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.25rem) 55%,
+    calc(100% - 0.9rem) 55%;
+  background-size:
+    0.35rem 0.35rem,
+    0.35rem 0.35rem;
+  background-repeat: no-repeat;
+}
+
+.solar-fit__help {
+  font-size: var(--text-sm);
+  color: #62748e;
+}
+
+/* Several highlighted results stack inside the one dark tile. */
+.solar-fit__highlight {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.solar-fit__highlight + .solar-fit__highlight {
+  padding-block-start: 1rem;
+  border-block-start: 1px solid oklch(100% 0 0deg / 12%);
+}
+
+.solar-fit__verdict {
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: var(--text-lg);
+  line-height: 1.4;
+  background: #f4f5f5;
+}
+
+.solar-fit__verdict--yes {
+  background: oklch(from #00bb7f l c h / 14%);
+}
+
+.solar-fit__error {
+  font-size: var(--text-sm);
+  color: #fb2c36;
+}
+
+/* The contact step sits in the Golden Sun band, like the calculator's quote band. */
+.solar-fit__contact {
+  padding: 1.5rem 2rem;
+  border-radius: 0.75rem;
+  background: #ffd06b;
+}
+
+.solar-fit__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.solar-fit__form-title {
+  font-size: clamp(1.25rem, 1vw + 1rem, 1.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.solar-fit__form-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (width >= 36rem) {
+  .solar-fit__form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.solar-fit__form-field {
+  display: grid;
+  gap: 0.375rem;
+  font-size: var(--text-sm);
+}
+
+.solar-fit__consent input[type='checkbox'] {
+  margin-block-start: 0.2rem;
+  accent-color: #040a17;
+}
+
+.solar-fit__form-field input {
+  min-height: 2.625rem;
+  padding-inline: 0.875rem;
+  border: 1px solid oklch(0% 0 0deg / 12%);
+  border-radius: 0.25rem;
+  font-size: var(--text-base);
+  color: #0f172a;
+  background: oklch(100% 0 0deg / 75%);
+}
+
+.solar-fit__form-field input:focus-visible {
+  border-color: #0f172a;
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 3px oklch(0% 0 0deg / 15%);
+}
+
+.solar-fit__consent {
+  display: flex;
+  align-items: start;
+  gap: 0.625rem;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.solar-fit__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.solar-fit__actions button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.solar-fit__sent {
+  font-size: var(--text-lg);
+  line-height: 1.4;
+}
+
+.solar-fit__trap {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
