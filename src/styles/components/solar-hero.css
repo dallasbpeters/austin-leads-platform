@@ -474,9 +474,8 @@
 }
 
 /*
- * Layering in the clouds hero, bottom to top: sky, page gridlines (40) and the
- * white cloud gridlines (41, page-grid.css), the panel cutout (42), then the
- * copy and glass cards (43). The header stays above at 50.
+ * Layering inside the clouds hero, bottom to top: sky (1), the white gridlines
+ * (2, page-grid.css), the panel cutout (42), then the copy and glass cards (43).
  */
 .solar-hero--clouds .solar-hero__shell {
   z-index: 43;

@@ -1,7 +1,7 @@
 /**
- * Page gridlines: faint fixed rules that frame the page (see --page-frame) and
- * split it into quarters, so every section sits on one visible grid. Pure
- * decoration, so it ignores the pointer and sits under the header (z 50).
+ * Page gridlines: faint rules that frame the page (see --page-frame) and split
+ * it into quarters, so every section sits on one visible grid. Each section
+ * draws them behind its own content (see below).
  */
 :root {
   /*
@@ -47,13 +47,23 @@
   padding-inline: 0;
 }
 
-body::before,
-.cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::after {
+/*
+ * Every section (and the footer) draws the page grid on its own background,
+ * behind its content: isolation makes the section a layer of its own, and the
+ * grid sits at z -1 inside it, so cards, text and images all cover the lines.
+ * :where() keeps these at zero specificity, so a section's own position wins.
+ */
+:where(main section, .site-footer) {
+  position: relative;
+  isolation: isolate;
+}
+
+:where(main section, .site-footer)::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset-block: 0;
   inset-inline: 0;
-  z-index: 40;
+  z-index: -1;
   width: var(--page-frame);
   margin-inline: auto;
   border-inline: 1px solid var(--page-grid-line);
@@ -61,19 +71,13 @@ body::before,
 }
 
 /*
- * Over a cloud sky the grey lines vanish, so cloud sections draw the same grid
- * in white on top. It sits one level above the page grid and lines up with it
- * exactly, since both are centred on the viewport at the same width.
+ * Over a cloud sky the grey lines vanish, so cloud sections draw them white,
+ * one layer above the sky (.cloud-background is z 1) and below the content.
  */
-.cloud-theme-section:not(.cloud-theme-section--clouds-hidden) {
-  position: relative;
-}
-
-.cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::after {
+.cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::before {
   --page-grid-line: oklch(100% 0 0deg / 45%);
 
-  position: absolute;
-  z-index: 41;
+  z-index: 2;
 }
 
 /* Frames (and their "+" marks) inside a cloud section turn white with the grid. */
@@ -84,8 +88,7 @@ body::before,
 
 /* The inner quarter lines only show once columns have room. */
 @media (width >= 48rem) {
-  body::before,
-  .cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::after {
+  :where(main section, .site-footer)::before {
     background-image: linear-gradient(
       to right,
       transparent calc(25% - 0.5px),
@@ -100,8 +103,7 @@ body::before,
 }
 
 @media print {
-  body::before,
-  .cloud-theme-section::after {
+  :where(main section, .site-footer)::before {
     display: none;
   }
 }
