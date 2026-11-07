@@ -1,6 +1,6 @@
 // oxlint-disable sort-keys radix eqeqeq no-eq-null
-import { resolvePixelIcon } from '@/lib/pixel-icon'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
+import { resolveServiceIcon } from '@/lib/service-icon'
 import {
   AirConditioner,
   AreaSearch,
@@ -339,14 +339,14 @@ export const ServiceGridSection = ({ section, sectionId }) => {
             style={{ '--service-columns': Math.min(Math.max(items.length, 1), 4) }}
           >
             {items.map((item) => {
-              const PixelIcon = resolvePixelIcon(
+              const ServiceIcon = resolveServiceIcon(
                 item.icon,
                 `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`,
               )
               const card = (
                 <article className="service-grid__card">
                   <span className="service-grid__chip" aria-hidden="true">
-                    <PixelIcon className="service-grid__chip-icon" />
+                    <ServiceIcon className="service-grid__chip-icon" weight="duotone" />
                   </span>
                   {item.isRecommended ? <span className="service-grid__flag">Recommended</span> : null}
                   <div className="service-grid__copy">

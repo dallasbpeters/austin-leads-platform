@@ -44,6 +44,9 @@ importers:
       '@opentelemetry/sdk-logs':
         specifier: ^3.1.0
         version: 3.1.0(@opentelemetry/api@1.10.0)
+      '@phosphor-icons/react':
+        specifier: ^2.1.10
+        version: 2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@planetary/sanity-plugin-preflight':
         specifier: ^1.1.1
         version: 1.1.1(156dcec8e7b603499f6603e98367128d)
@@ -167,9 +170,6 @@ importers:
       pg:
         specifier: ^8.23.1
         version: 8.23.1
-      pixelarticons:
-        specifier: ^2.4.2
-        version: 2.4.2(react@19.3.1)
       playwright:
         specifier: ^1.65.0
         version: 1.65.0
@@ -3382,6 +3382,13 @@ packages:
 
   '@pdf-lib/upng@1.0.1':
     resolution: {integrity: sha512-dQK2FUMQtowVP00mtIksrlZhdFXQZPC+taih1q4CvPZ5vqdxR/LKBaFg0oAfzd1GlHZXXSPdQfzQnt+ViGvEIQ==}
+
+  '@phosphor-icons/react@2.1.10':
+    resolution: {integrity: sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
 
   '@planetary/sanity-plugin-preflight@1.1.1':
     resolution: {integrity: sha512-968bw6n6S7WPNSZVJixIZ3m5vY+bOzRCrabz8Iv/20Q6dQmMaVAF2D5gOARyLUnqLSKjuY0vT/Bcci0/bQI/wg==}
@@ -9284,12 +9291,6 @@ packages:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
 
-  pixelarticons@2.4.2:
-    resolution: {integrity: sha512-BZKSU5ckLuioZCzES4fEmdQfnI8XEiQlHljdIVk+N6+KH7vTBQJNtMs+V0LQF7nC7cZbKT0qBXFOsT35sl8uhg==}
-    hasBin: true
-    peerDependencies:
-      react: '>=16'
-
   pkce-challenge@5.0.1:
     resolution: {integrity: sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==}
     engines: {node: '>=16.20.0'}
@@ -13885,6 +13886,11 @@ snapshots:
   '@pdf-lib/upng@1.0.1':
     dependencies:
       pako: 1.0.11
+
+  '@phosphor-icons/react@2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@planetary/sanity-plugin-preflight@1.1.1(156dcec8e7b603499f6603e98367128d)':
     dependencies:
@@ -20545,10 +20551,6 @@ snapshots:
   pify@4.0.1: {}
 
   pirates@4.0.7: {}
-
-  pixelarticons@2.4.2(react@19.3.1):
-    dependencies:
-      react: 19.3.1
 
   pkce-challenge@5.0.1: {}
 
