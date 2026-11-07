@@ -78,9 +78,28 @@
   background: var(--muted);
 }
 
+/* The section label: a square mono chip with a Golden Sun mark, not a pill. */
 .section-shell__badge {
-  border-color: var(--primary);
-  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0.625rem;
+  border: 0;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0f172a;
+  background: oklch(55% 0.01 260deg / 10%);
+}
+
+.section-shell__badge::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #ffd06b;
 }
 
 .section-shell__title--after-badge {

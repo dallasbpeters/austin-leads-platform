@@ -167,6 +167,9 @@ importers:
       pg:
         specifier: ^8.23.1
         version: 8.23.1
+      pixelarticons:
+        specifier: ^2.4.2
+        version: 2.4.2(react@19.3.1)
       playwright:
         specifier: ^1.65.0
         version: 1.65.0
@@ -9280,6 +9283,12 @@ packages:
   pirates@4.0.7:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
+
+  pixelarticons@2.4.2:
+    resolution: {integrity: sha512-BZKSU5ckLuioZCzES4fEmdQfnI8XEiQlHljdIVk+N6+KH7vTBQJNtMs+V0LQF7nC7cZbKT0qBXFOsT35sl8uhg==}
+    hasBin: true
+    peerDependencies:
+      react: '>=16'
 
   pkce-challenge@5.0.1:
     resolution: {integrity: sha512-wQ0b/W4Fr01qtpHlqSqspcj3EhBvimsdh0KlHhH8HRZnMsEa0ea2fTULOXOS9ccQr3om+GcGRk4e+isrZWV8qQ==}
@@ -20536,6 +20545,10 @@ snapshots:
   pify@4.0.1: {}
 
   pirates@4.0.7: {}
+
+  pixelarticons@2.4.2(react@19.3.1):
+    dependencies:
+      react: 19.3.1
 
   pkce-challenge@5.0.1: {}
 

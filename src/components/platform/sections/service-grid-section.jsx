@@ -1,4 +1,5 @@
 // oxlint-disable sort-keys radix eqeqeq no-eq-null
+import { resolvePixelIcon } from '@/lib/pixel-icon'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import {
   AirConditioner,
@@ -7,7 +8,6 @@ import {
   Car,
   Flash,
   HomeShield,
-  Star,
   Thunderstorm,
   WindowTabs,
 } from 'iconoir-react'
@@ -333,67 +333,43 @@ export const ServiceGridSection = ({ section, sectionId }) => {
           ) : null}
         </div>
 
-        <ul className="service-grid__list">
-          {items.map((item) => {
-            const Icon = getServiceIcon(item)
-            const card = (
-              <Card className="service-grid__card">
-                {item.isRecommended ? (
-                  <div className="service-grid__flag">
-                    <Badge variant="outline" className="service-grid__flag-badge">
-                      <Star className="service-grid__flag-icon" />
-                      Recommended
-                    </Badge>
+        <div className="service-grid__frame grid-frame">
+          <ul
+            className="service-grid__list"
+            style={{ '--service-columns': Math.min(Math.max(items.length, 1), 4) }}
+          >
+            {items.map((item) => {
+              const PixelIcon = resolvePixelIcon(
+                item.icon,
+                `${cleanRuntimeString(item.title) || ''} ${cleanRuntimeString(item.eyebrow) || ''}`,
+              )
+              const card = (
+                <article className="service-grid__card">
+                  <span className="service-grid__chip" aria-hidden="true">
+                    <PixelIcon className="service-grid__chip-icon" />
+                  </span>
+                  {item.isRecommended ? <span className="service-grid__flag">Recommended</span> : null}
+                  <div className="service-grid__copy">
+                    {item.eyebrow ? <p className="service-grid__eyebrow">{item.eyebrow}</p> : null}
+                    <h3 className="service-grid__title">{item.title}</h3>
+                    {item.price ? (
+                      <p className="service-grid__price">{formatServiceGridPrice(item.price)}</p>
+                    ) : null}
+                    <PortableTextContent as="div" value={item.copy} className="service-grid__body" />
                   </div>
-                ) : null}
-                <div className="service-grid__media-frame">
-                  <div className="service-grid__stack">
-                    <ServiceMedia
-                      item={item}
-                      overlayStyle={{ background: buildCardOverlay(item.cardColorHex, 'large') }}
-                    />
-                  </div>
-                  <div className="service-grid__ring" aria-hidden />
-                </div>
-                <div className="service-grid__copy">
-                  {item.icon ? (
-                    <div className="service-grid__glyph service-grid__glyph--icon">
-                      <Icon className="service-grid__glyph-icon" strokeWidth={2} />
-                    </div>
-                  ) : null}
-                  {item.number ? (
-                    <div className="service-grid__glyph">
-                      <div className="service-grid__number text-size-500">{item.number}</div>
-                    </div>
-                  ) : null}
-
-                  {item.eyebrow ? (
-                    <h3 className="service-grid__eyebrow text-size-90">{item.eyebrow}</h3>
-                  ) : null}
-                  <div className="service-grid__title text-size-400">{item.title}</div>
-                  {item.price ? (
-                    <div className="service-grid__price text-size-300">
-                      {formatServiceGridPrice(item.price)}
-                    </div>
-                  ) : null}
-                  <PortableTextContent
-                    as="div"
-                    value={item.copy}
-                    className="service-grid__body text-size-90"
-                  />
-                </div>
-              </Card>
-            )
-            return (
-              <li
-                className="service-grid__list-item"
-                key={buildRuntimeKey('service-item', item.title, item.href)}
-              >
-                <ServiceCardLink item={item}>{card}</ServiceCardLink>
-              </li>
-            )
-          })}
-        </ul>
+                </article>
+              )
+              return (
+                <li
+                  className="service-grid__list-item"
+                  key={buildRuntimeKey('service-item', item.title, item.href)}
+                >
+                  <ServiceCardLink item={item}>{card}</ServiceCardLink>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
 
         {roofingItems.length ? (
           <div className="service-grid__group">
