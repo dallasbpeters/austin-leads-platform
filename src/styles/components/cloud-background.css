@@ -16,18 +16,6 @@
   }
 }
 
-@keyframes cloud-background-puff-spin {
-  from {
-    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z)) rotateZ(var(--puff-start))
-      scale(var(--puff-scale));
-  }
-
-  to {
-    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z))
-      rotateZ(calc(var(--puff-start) + 360deg)) scale(var(--puff-scale));
-  }
-}
-
 @keyframes cloud-background-drift {
   from {
     transform: translate3d(-30%, 2%, 0) rotate(-1deg);
@@ -50,7 +38,7 @@
  */
 html:not([data-cloud-tone]),
 [data-cloud-tone='day'] {
-  --cloud-tone-opacity: 0.5;
+  --cloud-tone-opacity: 0.85;
   --cloud-tone-layer: linear-gradient(
     to bottom,
     oklab(76.461% -0.01704 -0.10761) 0%,
@@ -72,12 +60,12 @@ html:not([data-cloud-tone]),
   --cloud-image-saturation: 1;
   --cloud-lit-filter: none;
   --cloud-hero-text: #0f172a;
-  --cloud-hero-accent: #ea580c;
+  --cloud-hero-accent: #de1017;
   --cloud-hero-text-soft: rgb(15 23 42 / 78%);
 }
 
 [data-cloud-tone='dusk'] {
-  --cloud-tone-opacity: 0.2;
+  --cloud-tone-opacity: 0.4;
   --cloud-tone-layer: linear-gradient(
     to top,
     oklch(31.455% 0.14125 273.278deg / 70%) 0%,
@@ -103,7 +91,7 @@ html:not([data-cloud-tone]),
 }
 
 [data-cloud-tone='night'] {
-  --cloud-tone-opacity: 0.3;
+  --cloud-tone-opacity: 0.5;
   --cloud-tone-layer: linear-gradient(
     to bottom,
     oklab(17.949% -0.0022 -0.03) 0%,
@@ -150,7 +138,7 @@ html:not([data-cloud-tone]),
 
 /* The same sprite clouds, drawn about twice as big (the full-screen process animation). */
 .cloud-background--large .cloud-background__cloud {
-  scale: 1.9;
+  scale: 1.6;
 }
 
 /* Art drawn in daylight, dimmed to match the sky at dusk and night. */
@@ -230,29 +218,18 @@ html:not([data-cloud-tone]),
     alternate;
 }
 
-/* The shallow 3D volume the puffs are scattered through. Perspective is what
- * turns their depth offsets into a size difference, so nearer planes read as
- * closer rather than merely larger. */
-.cloud-background__puffs {
-  position: relative;
-  display: block;
-  transform-style: preserve-3d;
-  aspect-ratio: 1;
-  perspective: 520px;
-}
-
-.cloud-background__puff {
-  position: absolute;
-  display: block;
-  inset: 0;
-  opacity: var(--puff-opacity);
-  animation: cloud-background-puff-spin var(--puff-spin) linear infinite;
-}
-
-.cloud-background__puff img {
+/* One photo cloud per spot; every third is mirrored (cloud-background.jsx) so repeats are harder to spot. */
+.cloud-background__sprite {
   display: block;
   width: 100%;
   height: auto;
+
+  /* Photo clouds are wide and thin; drawn larger than their spot so they read as clouds, not wisps. */
+  scale: 1.6;
+}
+
+.cloud-background__sprite--flipped {
+  transform: scaleX(-1);
 }
 
 .cloud-background__cloud--one {
@@ -388,16 +365,8 @@ html:not([data-cloud-tone]),
 @media (prefers-reduced-motion: reduce) {
   .cloud-background__scroll,
   .cloud-background__breathe,
-  .cloud-background__motion,
-  .cloud-background__puff {
+  .cloud-background__motion {
     animation: none;
-  }
-
-  /* Without the spin animation the puffs lose the transform it carried, so
-   * their scatter has to be restated statically. */
-  .cloud-background__puff {
-    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z)) rotateZ(var(--puff-start))
-      scale(var(--puff-scale));
   }
 
   .cloud-background__scroll {

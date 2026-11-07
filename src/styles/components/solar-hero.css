@@ -111,7 +111,7 @@
   paint-order: stroke fill;
 }
 
-/* On the daytime cloud sky amber is too light to read; the day tone swaps in Sunset Orange. */
+/* On the daytime cloud sky amber is too light to read; the day tone swaps in Texas Flag Red. */
 .solar-hero--clouds .solar-hero__title-accent {
   color: var(--cloud-hero-accent, var(--color-amber-400));
 }

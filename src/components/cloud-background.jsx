@@ -6,18 +6,29 @@ import Image from 'next/image'
 
 import { cn } from '@/lib/utils'
 
-import { getCloudPuffs } from './cloud-puffs'
-
 const cloudPositionsByDensity = {
   subtle: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'],
   regular: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
   thick: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
 }
 
-/* Puffs per cloud. The source technique uses 5-15 for a single hero cloud;
- * these sections carry 8-12 clouds at once, so the count is trimmed to keep
- * the composited layer total in range. */
-const puffCountByDensity = { subtle: 6, regular: 5, thick: 4 }
+/*
+ * Photo cloud sprites (public/clouds), with their pixel sizes for next/image.
+ * Each cloud spot gets the next sprite in turn, and every third one is mirrored,
+ * so repeats are hard to spot. Add a sprite here to put it in the rotation.
+ */
+const CLOUD_SPRITES = [
+  { src: '/clouds/cloud-sprite.png', width: 1934, height: 1140 },
+  { src: '/clouds/cloud-sprite-1.png', width: 2923, height: 1202 },
+  { src: '/clouds/cloud-sprite-2.png', width: 2247, height: 823 },
+  { src: '/clouds/cloud-sprite-3.png', width: 2097, height: 1115 },
+  { src: '/clouds/cloud-sprite-4.png', width: 3033, height: 1696 },
+  { src: '/clouds/cloud-sprite-5.png', width: 1608, height: 1065 },
+  { src: '/clouds/cloud-sprite-7.png', width: 3411, height: 1746 },
+  { src: '/clouds/cloud-sprite-8.png', width: 1533, height: 796 },
+  { src: '/clouds/cloud-sprite-9.png', width: 3578, height: 2874 },
+  { src: '/clouds/cloud-sprite-10.png', width: 3113, height: 1850 },
+]
 
 const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum)
 
@@ -48,7 +59,7 @@ const getScrollScale = (scrollProgress) => 0.46 + Math.sin(scrollProgress * Math
 
 /**
  * Renders an ambient, non-interactive cloud layer behind a section's content.
- * The layer uses a single local sprite and is safe to insert into any
+ * The layer uses the photo sprites in public/clouds and is safe to insert into any
  * `relative overflow-hidden` section whose content is raised above it. The
  * tone comes from the nearest `data-cloud-tone` ancestor, which the root
  * layout stamps from the visitor's local clock before the first paint.
@@ -59,7 +70,6 @@ const getScrollScale = (scrollProgress) => 0.46 + Math.sin(scrollProgress * Math
 export default function CloudBackground({ className, density = 'subtle', tone = 'auto' }) {
   const cloudLayerRef = useRef(null)
   const cloudPositions = cloudPositionsByDensity[density] || cloudPositionsByDensity.subtle
-  const puffCount = puffCountByDensity[density] || puffCountByDensity.subtle
 
   useEffect(() => {
     const cloudLayer = cloudLayerRef.current
@@ -112,23 +122,30 @@ export default function CloudBackground({ className, density = 'subtle', tone = 
       className={cn('cloud-background', `cloud-background--${density}`, className)}
       data-cloud-tone={tone !== 'auto' ? tone : undefined}
     >
-      {cloudPositions.map((position) => (
-        <span key={position} className={`cloud-background__cloud cloud-background__cloud--${position}`}>
-          <span className="cloud-background__scroll">
-            <span className="cloud-background__breathe">
-              <span className="cloud-background__motion">
-                <span className="cloud-background__puffs">
-                  {getCloudPuffs(position, puffCount).map((puff) => (
-                    <span key={puff.key} className="cloud-background__puff" style={puff.style}>
-                      <Image alt="" src="/clouds/cloud-sprite.png" width={256} height={256} sizes="30vw" />
-                    </span>
-                  ))}
+      {cloudPositions.map((position, index) => {
+        const sprite = CLOUD_SPRITES[index % CLOUD_SPRITES.length]
+        return (
+          <span key={position} className={`cloud-background__cloud cloud-background__cloud--${position}`}>
+            <span className="cloud-background__scroll">
+              <span className="cloud-background__breathe">
+                <span className="cloud-background__motion">
+                  <Image
+                    alt=""
+                    src={sprite.src}
+                    width={sprite.width}
+                    height={sprite.height}
+                    sizes="40vw"
+                    className={cn(
+                      'cloud-background__sprite',
+                      index % 3 === 1 && 'cloud-background__sprite--flipped',
+                    )}
+                  />
                 </span>
               </span>
             </span>
           </span>
-        </span>
-      ))}
+        )
+      })}
     </div>
   )
 }
