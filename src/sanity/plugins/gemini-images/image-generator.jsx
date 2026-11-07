@@ -97,7 +97,7 @@ function ReferencePicker({ reference, onPick, onClear }) {
   const fileInputRef = useRef(null)
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       <Text size={1} weight="medium">
         Reference image (optional)
       </Text>
@@ -143,7 +143,7 @@ function ResultGrid({
   onDiscard,
 }) {
   return (
-    <Stack space={3}>
+    <Stack gap={3}>
       <Text size={1} weight="medium">
         {results.length === 1 ? 'Result' : 'Pick one'}
       </Text>
@@ -163,7 +163,7 @@ function ResultGrid({
               }}
               tone={selected ? 'primary' : 'default'}
             >
-              <Stack space={2}>
+              <Stack gap={2}>
                 <img
                   alt={result.variation || 'Generated image'}
                   src={toDataUri(result)}
@@ -346,8 +346,8 @@ export function ImageGeneratorContent({ apiEndpoint, apiKey, onImageGenerated })
   }, [client, isSaving, onImageGenerated, prompt, results, selectedIndex])
 
   return (
-    <Stack space={4}>
-      <Stack space={2}>
+    <Stack gap={4}>
+      <Stack gap={2}>
         <Text size={1} weight="medium">
           Prompt
         </Text>
@@ -360,7 +360,7 @@ export function ImageGeneratorContent({ apiEndpoint, apiKey, onImageGenerated })
       </Stack>
 
       <Grid columns={[1, 2]} gap={3}>
-        <Stack space={2}>
+        <Stack gap={2}>
           <Text size={1} weight="medium">
             Aspect ratio
           </Text>
@@ -372,7 +372,7 @@ export function ImageGeneratorContent({ apiEndpoint, apiKey, onImageGenerated })
             ))}
           </Select>
         </Stack>
-        <Stack space={2}>
+        <Stack gap={2}>
           <Text size={1} weight="medium">
             How many
           </Text>
@@ -389,7 +389,7 @@ export function ImageGeneratorContent({ apiEndpoint, apiKey, onImageGenerated })
 
       {isSeries ? (
         <Grid columns={[1, 2]} gap={3}>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1} weight="medium">
               Keep the same
             </Text>
@@ -399,7 +399,7 @@ export function ImageGeneratorContent({ apiEndpoint, apiKey, onImageGenerated })
               value={consistencyPrompt}
             />
           </Stack>
-          <Stack space={2}>
+          <Stack gap={2}>
             <Text size={1} weight="medium">
               Change one per image (first {seriesSize} lines)
             </Text>

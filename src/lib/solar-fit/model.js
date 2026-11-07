@@ -1,4 +1,5 @@
-import { cleanRuntimeString } from '@/lib/sanity/stega'
+// Imported from @sanity/client (not @/ paths) so Studio's formula builder can share this file.
+import { stegaClean } from '@sanity/client/stega'
 
 import { evaluateFormula, FormulaError } from './formula'
 
@@ -158,7 +159,7 @@ const YES_NO_OPTIONS = [
  * the form compares or computes with (types, keys, formulas, answer values) is
  * cleaned of them; labels keep them so click-to-edit still works.
  */
-const clean = (value) => (typeof value === 'string' ? cleanRuntimeString(value) : value)
+const clean = (value) => (typeof value === 'string' ? stegaClean(value) : value)
 
 function normalizeInput(raw) {
   const input = {

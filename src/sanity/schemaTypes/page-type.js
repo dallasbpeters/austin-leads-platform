@@ -5,6 +5,7 @@ import { defineArrayMember, defineField } from 'sanity'
 
 import { FORMULA_FUNCTION_NAMES, formulaSyntaxError } from '../../lib/solar-fit/formula'
 import ChartPointsJsonInput from '../components/chart-points-json-input'
+import { FormulaInput, FormulaKeyInput, SolarFitSectionInput } from '../components/solar-fit-inputs'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
@@ -4684,11 +4685,14 @@ const solarFitInputType = {
   name: 'solarFitInput',
   title: 'Question',
   type: 'object',
+  fieldsets: [{ name: 'advanced', title: 'Advanced', options: { collapsible: true, collapsed: true } }],
   fields: [
     { name: 'label', title: 'Question', type: 'string', validation: (Rule) => Rule.required() },
     {
       name: 'key',
       title: 'Key',
+      fieldset: 'advanced',
+      components: { input: FormulaKeyInput },
       type: 'string',
       description: 'The name formulas use for this answer, like bill or roofAge.',
       validation: FORMULA_KEY_RULE,
@@ -4768,9 +4772,17 @@ const solarFitConstantType = {
   name: 'solarFitConstant',
   title: 'Constant',
   type: 'object',
+  fieldsets: [{ name: 'advanced', title: 'Advanced', options: { collapsible: true, collapsed: true } }],
   fields: [
     { name: 'label', title: 'What it is', type: 'string', validation: (Rule) => Rule.required() },
-    { name: 'key', title: 'Key', type: 'string', validation: FORMULA_KEY_RULE },
+    {
+      name: 'key',
+      title: 'Key',
+      fieldset: 'advanced',
+      components: { input: FormulaKeyInput },
+      type: 'string',
+      validation: FORMULA_KEY_RULE,
+    },
     { name: 'value', title: 'Value', type: 'number', validation: (Rule) => Rule.required() },
   ],
   preview: {
@@ -4783,14 +4795,23 @@ const solarFitOutputType = {
   name: 'solarFitOutput',
   title: 'Result',
   type: 'object',
+  fieldsets: [{ name: 'advanced', title: 'Advanced', options: { collapsible: true, collapsed: true } }],
   fields: [
     { name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required() },
-    { name: 'key', title: 'Key', type: 'string', validation: FORMULA_KEY_RULE },
+    {
+      name: 'key',
+      title: 'Key',
+      fieldset: 'advanced',
+      components: { input: FormulaKeyInput },
+      type: 'string',
+      validation: FORMULA_KEY_RULE,
+    },
     {
       name: 'formula',
       title: 'Formula',
       type: 'text',
       rows: 2,
+      components: { input: FormulaInput },
       description: FORMULA_HELP,
       validation: (Rule) =>
         Rule.required().custom((value) => {
@@ -4839,6 +4860,7 @@ const solarFitSectionType = {
   title: 'Solar Fit Form',
   type: 'object',
   initialValue: { type: 'solarFit' },
+  components: { input: SolarFitSectionInput },
   fields: withSectionBackgroundFields([
     { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
     { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
@@ -4869,6 +4891,7 @@ const solarFitSectionType = {
       name: 'qualifyFormula',
       title: 'Qualifies when',
       type: 'string',
+      components: { input: FormulaInput },
       description: 'A formula that is true for a good fit, like owner == 1 && roofAge < 20.',
       validation: (Rule) =>
         Rule.custom((value) => {

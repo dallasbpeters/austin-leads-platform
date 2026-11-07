@@ -143,7 +143,7 @@ export function PageLinkInput(props) {
   const current = options.find((option) => option.value === value)
 
   return (
-    <Stack space={2}>
+    <Stack gap={2}>
       {props.renderDefault(props)}
       <Autocomplete
         id={`${id}-page-picker`}
