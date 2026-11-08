@@ -1,16 +1,48 @@
 'use client'
 
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import Lottie from 'lottie-react'
 import { useEffect, useRef, useState } from 'react'
 
 import PortableTextContent from '@/components/portable-text-content'
 import { Button } from '@/components/ui/button'
 
-const ANIMATION_PATH = '/lottie/ion-house-storm.json'
+/*
+ * The Detach & Reset story as rendered frames (scripts/house-animation), drawn
+ * to a canvas from the scroll position: panels come off and stack, a new roof
+ * sweeps across, the panels go back on. Frames are plain images, so the
+ * licensed 3D model itself never reaches the browser.
+ */
+const FRAME_COUNT = 96
+const framePath = (index) => `/animations/detach-reset/frame-${String(index + 1).padStart(3, '0')}.webp`
 // Extra scroll distance (beyond one viewport) used to scrub the animation. The
 // taller this is, the slower/smoother the playback as the section is pinned.
 const SCRUB_HEIGHT = '300vh'
+
+/** Every 8th frame first, so a rough version plays early, then the rest. */
+const loadOrder = () => {
+  const coarse = Array.from({ length: Math.ceil(FRAME_COUNT / 8) }, (_, i) => i * 8)
+  const rest = Array.from({ length: FRAME_COUNT }, (_, i) => i).filter((i) => i % 8)
+  return [...coarse, FRAME_COUNT - 1, ...rest]
+}
+
+/** Draws the nearest loaded frame, cropped to cover the canvas like object-fit: cover. */
+function drawFrame(canvas, frames, index) {
+  if (!canvas) {
+    return
+  }
+  let frame = frames[index]
+  for (let step = 1; !frame?.complete && step < FRAME_COUNT; step += 1) {
+    frame = frames[index - step]?.complete ? frames[index - step] : frames[index + step]
+  }
+  if (!frame?.complete || !frame.naturalWidth) {
+    return
+  }
+  const { width, height } = canvas
+  const scale = Math.max(width / frame.naturalWidth, height / frame.naturalHeight)
+  const w = frame.naturalWidth * scale
+  const h = frame.naturalHeight * scale
+  canvas.getContext('2d').drawImage(frame, (width - w) / 2, (height - h) / 2, w, h)
+}
 
 const InstallProcess = ({
   eyebrow,
@@ -20,12 +52,10 @@ const InstallProcess = ({
   ctaLabel = 'Get a Free Quote',
 }) => {
   const containerRef = useRef(null)
-  const lottieRef = useRef(null)
-  // layer goes out at 55, so the tail is blank — scrubbing past it would make the
-  // animation vanish. We stop at the last frame that actually has content.
-  const frameRange = useRef({ first: 0, last: 0 })
+  const canvasRef = useRef(null)
+  const frames = useRef([])
+  const current = useRef(0)
   const [shouldLoad, setShouldLoad] = useState(false)
-  const [animationData, setAnimationData] = useState(null)
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -33,16 +63,12 @@ const InstallProcess = ({
   })
 
   const seekToProgress = (progress) => {
-    const anim = lottieRef.current
-    const { first, last } = frameRange.current
-    if (!anim || last <= first) {
-      return
-    }
     const clamped = Math.min(Math.max(progress, 0), 1)
-    anim.goToAndStop(Math.round(first + clamped * (last - first)), true)
+    current.current = Math.round(clamped * (FRAME_COUNT - 1))
+    requestAnimationFrame(() => drawFrame(canvasRef.current, frames.current, current.current))
   }
 
-  // Lazy-load the heavy (~10MB) animation only when the section nears the viewport.
+  // Start loading the frames when the section nears the viewport.
   useEffect(() => {
     const node = containerRef.current
     if (!node || typeof IntersectionObserver === 'undefined') {
@@ -65,39 +91,53 @@ const InstallProcess = ({
   }, [])
 
   useEffect(() => {
-    if (!shouldLoad || animationData) {
+    if (!shouldLoad) {
       return
     }
-
-    let cancelled = false
-    const loadAnimation = async () => {
-      try {
-        const response = await fetch(ANIMATION_PATH)
-        const data = await response.json()
-        if (!cancelled) {
-          const first = data.ip ?? 0
-          const layerOut = Math.max(0, ...(data.layers ?? []).map((layer) => layer.op ?? 0))
-          const last = Math.min(data.op ?? first, layerOut || (data.op ?? first)) - 1
-          frameRange.current = { first, last: Math.max(first, last) }
-          setAnimationData(data)
+    // With reduced motion, show only the finished house.
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const order = reduced ? [FRAME_COUNT - 1] : loadOrder()
+    for (const index of order) {
+      const image = new Image()
+      image.decoding = 'async'
+      image.addEventListener('load', () => {
+        const shown = reduced ? FRAME_COUNT - 1 : current.current
+        if (Math.abs(index - shown) < 4) {
+          drawFrame(canvasRef.current, frames.current, shown)
         }
-      } catch {
-        // Leave the placeholder in place if the animation fails to load.
-      }
+      })
+      image.src = framePath(index)
+      frames.current[index] = image
     }
+  }, [shouldLoad])
 
-    void loadAnimation()
-
-    return () => {
-      cancelled = true
+  // Keep the canvas at the screen's pixel size, and redraw when it changes.
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) {
+      return
     }
-  }, [shouldLoad, animationData])
+    const resize = () => {
+      const ratio = Math.min(window.devicePixelRatio || 1, 2)
+      canvas.width = Math.round(canvas.clientWidth * ratio)
+      canvas.height = Math.round(canvas.clientHeight * ratio)
+      drawFrame(canvas, frames.current, current.current)
+    }
+    resize()
+    const observer = new ResizeObserver(resize)
+    observer.observe(canvas)
+    return () => observer.disconnect()
+  }, [])
 
   // Drive the current frame directly from scroll position (scroll-scrubbed playback).
-  useMotionValueEvent(scrollYProgress, 'change', seekToProgress)
+  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      seekToProgress(progress)
+    }
+  })
 
   return (
-    <div ref={containerRef} className="relative bg-black" style={{ height: SCRUB_HEIGHT }}>
+    <div ref={containerRef} className="relative bg-[#0b1730]" style={{ height: SCRUB_HEIGHT }}>
       {/* Header, supporting text and action buttons overlaid on top */}
 
       <div className="sticky top-0 h-screen w-full overflow-hidden">
@@ -128,20 +168,13 @@ const InstallProcess = ({
             ) : null}
           </div>
         </div>
-        {/* Scroll-scrubbed animation — contained so it always fits within the viewport */}
-        <div className="absolute top-0 right-0 left-0 z-5 h-screen overflow-hidden">
-          {animationData ? (
-            <Lottie
-              lottieRef={lottieRef}
-              animationData={animationData}
-              loop={false}
-              autoplay={false}
-              rendererSettings={{ preserveAspectRatio: 'xMidYMin slice' }}
-              style={{ display: 'block', width: '100%', height: '100%' }}
-              onDOMLoaded={() => seekToProgress(scrollYProgress.get())}
-            />
-          ) : null}
-        </div>
+        {/* Scroll-scrubbed frames, drawn to cover the viewport */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 z-5 h-screen w-full"
+          role="img"
+          aria-label="A house with solar panels: the panels come off and are stacked, a new roof goes on, and the panels go back on."
+        />
       </div>
     </div>
   )
