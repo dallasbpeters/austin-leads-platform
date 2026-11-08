@@ -111,6 +111,11 @@
   paint-order: stroke fill;
 }
 
+/* On the daytime cloud sky amber is too light to read; the day tone swaps in Sunset Orange. */
+.solar-hero--clouds .solar-hero__title-accent {
+  color: var(--cloud-hero-accent, var(--color-amber-400));
+}
+
 .solar-hero__body {
   max-width: 42rem;
   margin-block-end: 2.5rem;

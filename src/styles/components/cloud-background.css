@@ -71,6 +71,9 @@ html:not([data-cloud-tone]),
   --cloud-image-overlay-strength: 55%;
   --cloud-image-saturation: 1;
   --cloud-lit-filter: none;
+  --cloud-hero-text: #0f172a;
+  --cloud-hero-accent: #ea580c;
+  --cloud-hero-text-soft: rgb(15 23 42 / 78%);
 }
 
 [data-cloud-tone='dusk'] {
@@ -95,6 +98,8 @@ html:not([data-cloud-tone]),
   --cloud-image-overlay-strength: 72%;
   --cloud-image-saturation: 0.7;
   --cloud-lit-filter: brightness(0.8) sepia(0.2) saturate(1.1);
+  --cloud-hero-text: #fff8ef;
+  --cloud-hero-text-soft: rgb(255 248 239 / 80%);
 }
 
 [data-cloud-tone='night'] {
@@ -119,6 +124,8 @@ html:not([data-cloud-tone]),
   --cloud-image-overlay-strength: 86%;
   --cloud-image-saturation: 0.45;
   --cloud-lit-filter: brightness(0.5) saturate(0.7);
+  --cloud-hero-text: #fff;
+  --cloud-hero-text-soft: rgb(255 255 255 / 78%);
 }
 
 .cloud-background {

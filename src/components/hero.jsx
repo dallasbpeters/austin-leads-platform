@@ -57,13 +57,27 @@ function getHeroImageSources(heroSection) {
   }
 }
 
-function getHeroTextValues(heroSection, hasHeroBackdropMedia) {
+function getHeroTextValues(heroSection, hasHeroBackdropMedia, heroMediaMode) {
+  const body =
+    heroSection?.body ||
+    'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
+  const cardCopy = heroSection?.cardCopy || ''
+
+  // Over the cloud sky the text follows the visitor's time of day (cloud-background.css):
+  // dark on the daytime sky, white at dusk and night. A color set in Sanity still wins.
+  if (heroMediaMode === 'clouds' && !heroSection?.heroTextColor) {
+    return {
+      body,
+      cardCopy,
+      heroTextColor: 'var(--cloud-hero-text)',
+      softTextColor: 'var(--cloud-hero-text-soft)',
+    }
+  }
+
   const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
   return {
-    body:
-      heroSection?.body ||
-      'Straight answers on Austin solar costs, incentives, and whether the math works for your home.',
-    cardCopy: heroSection?.cardCopy || '',
+    body,
+    cardCopy,
     heroTextColor,
     softTextColor: heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined,
   }
@@ -396,6 +410,7 @@ export default function Hero({
   const { body, cardCopy, heroTextColor, softTextColor } = getHeroTextValues(
     heroSection,
     hasHeroBackdropMedia,
+    heroMediaMode,
   )
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
   const cardBackground = getBackdropCardValue(hasHeroBackdropMedia, 'rgba(255, 255, 255, 0.15)')
