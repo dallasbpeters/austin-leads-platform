@@ -11,6 +11,7 @@ import './src/sanity/studioPatches.css'
 
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
 import { isLinkField, PageLinkInput } from './src/sanity/components/page-link-input'
+import { removeBackgroundAssetSource } from './src/sanity/components/remove-background-source'
 import { SiteSwitcherNavigator } from './src/sanity/components/site-switcher-navigator'
 import {
   dataset,
@@ -127,6 +128,10 @@ export default defineConfig({
     },
     file: {
       assetSources: isSanityConfigured() ? undefined : [],
+    },
+    // "Remove background" joins Upload, Unsplash, etc. in every image field's Select menu.
+    image: {
+      assetSources: (prev) => (isSanityConfigured() ? [...prev, removeBackgroundAssetSource] : prev),
     },
   },
 })
