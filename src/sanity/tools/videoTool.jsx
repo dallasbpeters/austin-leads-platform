@@ -39,6 +39,8 @@ const sameSite = () => {
 
 const VideoTool = () => {
   const [pageId, setPageId] = useState(PAGES[0].id)
+  // Bumped by Reload, to load the frame again after signing in in another tab.
+  const [reloads, setReloads] = useState(0)
   const page = PAGES.find((item) => item.id === pageId) || PAGES[0]
   const url = `${toolApiOrigin}${page.path}`
   const inline = sameSite()
@@ -57,7 +59,10 @@ const VideoTool = () => {
               onClick={() => setPageId(item.id)}
             />
           ))}
-          <Flex flex={1} justify="flex-end">
+          <Flex flex={1} justify="flex-end" gap={2}>
+            {inline ? (
+              <Button text="Reload" mode="bleed" fontSize={1} onClick={() => setReloads((n) => n + 1)} />
+            ) : null}
             <Button
               as="a"
               href={url}
@@ -73,10 +78,11 @@ const VideoTool = () => {
       {inline ? (
         // The app's own page on the same origin: it needs its scripts and the sign-in cookie.
         <iframe
+          key={`${page.id}-${reloads}`}
           title={page.title}
           src={url}
           // oxlint-disable-next-line react/iframe-missing-sandbox
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-downloads allow-modals"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals"
           style={{ flex: 1, width: '100%', border: 0 }}
         />
       ) : (

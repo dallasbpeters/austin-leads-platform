@@ -109,7 +109,16 @@ export default function VideosClient({ initialProjects, youtubeConnected, channe
           </Badge>
         ) : (
           <Button asChild variant="outline">
-            <a href="/api/youtube/auth">
+            {/* Google will not show its sign-in inside a frame (Studio's Video tool), so there it opens a new tab. */}
+            <a
+              href="/api/youtube/auth"
+              onClick={(event) => {
+                if (window.self !== window.top) {
+                  event.preventDefault()
+                  window.open('/api/youtube/auth', '_blank', 'noopener')
+                }
+              }}
+            >
               <Youtube className="mr-2 h-4 w-4" />
               Connect YouTube
             </a>
