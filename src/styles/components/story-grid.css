@@ -65,6 +65,16 @@
   margin-block: 0;
 }
 
+/* Stacked photos share one hairline: the next frame drops its top line and "+" marks and closes the gap. */
+.story-grid__photo + .story-grid__photo {
+  margin-block-start: -2rem;
+  border-block-start: 0;
+}
+
+.story-grid__photo + .story-grid__photo::before {
+  content: none;
+}
+
 .story-grid__image {
   display: block;
   width: 100%;
@@ -107,6 +117,10 @@
     grid-row: var(--story-row);
     grid-column: 2 / 4;
     margin-inline: -0.5rem;
+  }
+
+  .story-grid__photo + .story-grid__photo {
+    margin-block-start: -1rem;
   }
 
   .story-grid__intro {
