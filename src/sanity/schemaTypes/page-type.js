@@ -190,6 +190,8 @@ const portableTextSimpleType = {
         ],
       },
     },
+    // Instagram post or reel, from sanity-plugin-sgntech-instagram-embed (see sanity.config.js).
+    { type: 'instagramPost' },
   ],
 }
 

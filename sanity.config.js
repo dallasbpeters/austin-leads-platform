@@ -4,6 +4,7 @@ import { contextPlugin } from '@sanity/context/studio'
 import { createElement } from 'react'
 import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
+import { instagramEmbed } from 'sanity-plugin-sgntech-instagram-embed'
 import { presentationTool } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
 import './src/sanity/studioPatches.css'
@@ -54,6 +55,8 @@ export default defineConfig({
      * `sanity.agentContext` document; drop it once that is migrated. The
      * "Agent Insights" tab is off: it only showed a notice that Insights moved. */
     contextPlugin({ insights: { enabled: false } }),
+    // Adds the "Instagram post" block; it is allowed in the rich text field (portableTextSimple).
+    instagramEmbed({ captionedByDefault: false, showEmbedPreview: true }),
     assist({ fieldActions: austinAssistFieldActions }),
     guideImageSyncPlugin(),
     colorInput(),

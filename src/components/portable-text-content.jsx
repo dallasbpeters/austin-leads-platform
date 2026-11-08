@@ -1,4 +1,5 @@
 import { PortableText } from '@portabletext/react'
+import { instagramPortableTextComponents } from 'sanity-plugin-sgntech-instagram-embed/render'
 
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { cn } from '@/lib/utils'
@@ -15,6 +16,9 @@ const getBlockText = (value) => {
 }
 
 const portableTextComponents = {
+  types: {
+    ...instagramPortableTextComponents.types,
+  },
   block: {
     normal: ({ children }) => <p>{children}</p>,
     h2: ({ children, value }) => (
