@@ -309,6 +309,14 @@ export const sectionProjection = `
   notQualifiedMessage,
   submitLabel,
   successMessage,
+  // storyGridSection: the big statement and the stacked photos.
+  statement,
+  storyPhotos[]{
+    _key,
+    alt,
+    hotspot,
+    "url": asset->url
+  },
   // tabbedPanelSection: each tab swaps the photo, text and button.
   panelTabs[]{
     _key,

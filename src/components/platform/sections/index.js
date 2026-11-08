@@ -24,6 +24,7 @@ import { ServiceGridSection } from './service-grid-section'
 import { SolarFitSection } from './solar-fit-section'
 import { SolarSwitchSection } from './solar-switch-section'
 import { StepsSection } from './steps-section'
+import { StoryGridSection } from './story-grid-section'
 import { StorySection } from './story-section'
 import { TabbedPanelSection } from './tabbed-panel-section'
 import { TestimonialsSection } from './testimonials-section'
@@ -82,6 +83,7 @@ export const sectionRenderers = {
   solarSwitch: SolarSwitchSection,
   steps: StepsSection,
   story: StorySection,
+  storyGrid: StoryGridSection,
   testimonials: TestimonialsSection,
   video: VideoSection,
 }

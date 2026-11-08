@@ -4649,6 +4649,83 @@ const tabbedPanelSectionType = {
   },
 }
 
+/* ---- Story grid: an editorial layout on the page's four columns ------------
+ * Headline across two columns; a short intro in one outer column, framed
+ * photos in the middle two, and a big statement in the other outer column,
+ * level with the bottom of the first photo. "Flip" mirrors it. */
+const storyGridSectionType = {
+  name: 'storyGridSection',
+  title: 'Story Grid',
+  type: 'object',
+  initialValue: { type: 'storyGrid', layout: 'introLeft' },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      description: 'Small label above the headline, e.g. "Our story".',
+    },
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      description: 'One or two sentences. Spans two columns.',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'body',
+      title: 'Intro',
+      type: 'portableTextSimple',
+      description: 'A short paragraph in the outer column, beside the first photo.',
+    },
+    {
+      name: 'statement',
+      title: 'Statement',
+      type: 'text',
+      rows: 4,
+      description: 'The big line in the other outer column, level with the bottom of the first photo.',
+    },
+    {
+      name: 'storyPhotos',
+      title: 'Photos',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [{ name: 'alt', title: 'Alt text', type: 'string' }],
+        },
+      ],
+      description: 'One to three photos, stacked in the middle two columns.',
+      validation: (Rule) => Rule.min(1).max(3),
+    },
+    {
+      name: 'layout',
+      title: 'Layout',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Intro left, statement right', value: 'introLeft' },
+          { title: 'Statement left, intro right (flipped)', value: 'introRight' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'introLeft',
+    },
+  ]),
+  preview: {
+    select: { title: 'title', eyebrow: 'eyebrow', statement: 'statement', media: 'storyPhotos.0' },
+    prepare({ title, eyebrow, statement, media }) {
+      return {
+        title: title || eyebrow || 'Story grid',
+        subtitle: pageSectionListSubtitle('Story grid', statement),
+        media,
+      }
+    },
+  },
+}
+
 /* ---- "See if solar is right for you" (solarFitSection) ---------------------
  * The questions, constants and formulas behind the form. Formulas use the input
  * and constant keys as names, plus any result above them. See
@@ -5612,6 +5689,7 @@ export const pageSectionTypes = [
   { type: 'serviceAreaMapSection' },
   { type: 'bandSection' },
   { type: 'tabbedPanelSection' },
+  { type: 'storyGridSection' },
   { type: 'solarFitSection' },
   { type: 'logosSection' },
   { type: 'solarSwitchSection' },
@@ -5833,6 +5911,7 @@ export default [
   bandSectionType,
   panelTabType,
   tabbedPanelSectionType,
+  storyGridSectionType,
   solarFitOptionType,
   solarFitInputType,
   solarFitConstantType,
