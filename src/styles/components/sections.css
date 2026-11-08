@@ -97,3 +97,15 @@
     object-position: 50% 0%;
   }
 }
+
+/*
+ * On a custom colour, the page gridlines and frame hairlines match the card border,
+ * a shade of the section colour, instead of the neutral grey made for white pages.
+ */
+.section-surface--custom:is(.section-surface--on-light, .section-surface--on-dark) {
+  --page-grid-line: var(--border);
+}
+
+.section-surface--custom:is(.section-surface--on-light, .section-surface--on-dark) .grid-frame {
+  --grid-frame-line: var(--border);
+}
