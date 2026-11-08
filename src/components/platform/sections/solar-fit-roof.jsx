@@ -118,57 +118,127 @@ export function AddressSearch({ id, onPick, picked }) {
   )
 }
 
+/*
+ * A 60-cell panel: 6 cells across its short side, 10 along its long side. The
+ * cells are drawn as lines in metres, inside a thin aluminium frame.
+ */
+const CELLS_SHORT = 6
+const CELLS_LONG = 10
+
+function SolarPanel({ x, y, width, height, landscape, glass, transform }) {
+  const columns = landscape ? CELLS_LONG : CELLS_SHORT
+  const rows = landscape ? CELLS_SHORT : CELLS_LONG
+  const lines = [
+    ...Array.from({ length: columns - 1 }, (_, i) => {
+      const lineX = x + ((i + 1) * width) / columns
+      return `M${lineX} ${y}V${y + height}`
+    }),
+    ...Array.from({ length: rows - 1 }, (_, i) => {
+      const lineY = y + ((i + 1) * height) / rows
+      return `M${x} ${lineY}H${x + width}`
+    }),
+  ].join('')
+  return (
+    <g className="solar-fit__panel" transform={transform}>
+      <rect x={x} y={y} width={width} height={height} fill={glass} />
+      <path d={lines} className="solar-fit__panel-cells" />
+      <rect x={x} y={y} width={width} height={height} className="solar-fit__panel-frame" />
+    </g>
+  )
+}
+
+/** Margin around the roof, in metres, so the panels never touch the frame edge. */
+const ROOF_MARGIN = 3
+
+/**
+ * A square view in photo metres around every panel spot on the roof (not only
+ * the ones shown), so the view stays put as the panel count changes. The photo
+ * comes wider than the roof; this zooms in on the house.
+ */
+export function roofView(photo, panelSize) {
+  if (!photo.panels.length) {
+    return { x: 0, y: 0, size: Math.min(photo.metersWide, photo.metersTall) }
+  }
+  const xs = photo.panels.map((panel) => panel.x)
+  const ys = photo.panels.map((panel) => panel.y)
+  const reach = panelSize + ROOF_MARGIN
+  const left = Math.min(...xs) - reach
+  const top = Math.min(...ys) - reach
+  const size = Math.min(
+    Math.max(Math.max(...xs) + reach - left, Math.max(...ys) + reach - top),
+    photo.metersWide,
+    photo.metersTall,
+  )
+  const centerX = (left + Math.max(...xs) + reach) / 2
+  const centerY = (top + Math.max(...ys) + reach) / 2
+  const clamp = (value, max) => Math.min(Math.max(value, 0), max - size)
+  return {
+    x: clamp(centerX - size / 2, photo.metersWide),
+    y: clamp(centerY - size / 2, photo.metersTall),
+    size,
+  }
+}
+
 /**
  * The roof photo with the first `count` panels drawn on it. The server sends
- * the photo's size and each panel's spot in metres, so the drawing here is in
- * metres too and lines up with the photo exactly.
+ * the photo's size and each panel's spot in metres, so the photo and panels are
+ * one SVG in metres, cropped to the roof (roofView).
  */
 export function RoofMap({ roof, photo, count, address }) {
+  const glassId = `${useId().replaceAll(':', '')}-glass`
   if (!photo) {
     return null
   }
   const shown = roof.panels.slice(0, count)
+  const view = roofView(photo, roof.panelHeight)
+  const label = `Aerial view of ${address || 'the roof'}${count ? ` with ${count} solar panels drawn on it` : ''}`
 
   return (
     <figure className="solar-fit__roof">
-      <div
+      <svg
         className="solar-fit__roof-frame"
-        style={{ aspectRatio: `${photo.metersWide} / ${photo.metersTall}` }}
+        viewBox={`${view.x} ${view.y} ${view.size} ${view.size}`}
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- an <img> cannot hold the drawn panels; role="img" names the whole picture
+        role="img"
+        aria-label={label}
       >
-        {/* oxlint-disable-next-line next/no-img-element -- a data URL or our own proxy route, already sized */}
-        <img
-          className="solar-fit__roof-photo"
-          src={photo.src}
-          alt={`Aerial view of ${address || 'the roof'}`}
-        />
-        <svg
-          className="solar-fit__roof-panels"
-          viewBox={`0 0 ${photo.metersWide} ${photo.metersTall}`}
+        <image
+          href={photo.src}
+          width={photo.metersWide}
+          height={photo.metersTall}
           preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          {shown.map((panel, index) => {
-            const { x, y } = photo.panels[index]
-            const width = panel.landscape ? roof.panelHeight : roof.panelWidth
-            const height = panel.landscape ? roof.panelWidth : roof.panelHeight
-            return (
-              <rect
-                // Panels have no id; their order is fixed for a roof.
-                // oxlint-disable-next-line react/no-array-index-key
-                key={index}
-                x={x - width / 2}
-                y={y - height / 2}
-                width={width}
-                height={height}
-                transform={`rotate(${panel.azimuth} ${x} ${y})`}
-                className="solar-fit__panel"
-              />
-            )
-          })}
-        </svg>
-      </div>
+        />
+        <defs>
+          {/* Dark glass with a soft sheen from the top corner, like a real panel in sun. */}
+          <linearGradient id={glassId} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="oklch(38% 0.07 255)" />
+            <stop offset="0.45" stopColor="oklch(22% 0.05 260)" />
+            <stop offset="1" stopColor="oklch(16% 0.04 262)" />
+          </linearGradient>
+        </defs>
+        {shown.map((panel, index) => {
+          const { x, y } = photo.panels[index]
+          const width = panel.landscape ? roof.panelHeight : roof.panelWidth
+          const height = panel.landscape ? roof.panelWidth : roof.panelHeight
+          return (
+            <SolarPanel
+              // Panels have no id; their order is fixed for a roof.
+              // oxlint-disable-next-line react/no-array-index-key
+              key={index}
+              x={x - width / 2}
+              y={y - height / 2}
+              width={width}
+              height={height}
+              landscape={panel.landscape}
+              glass={`url(#${glassId})`}
+              transform={`rotate(${panel.azimuth} ${x} ${y})`}
+            />
+          )
+        })}
+      </svg>
       <figcaption className="solar-fit__roof-caption">
-        {count} panels on {address || 'your roof'}. Imagery © Google.
+        {count ? `${count} panels on ` : 'Your roof at '}
+        {address || 'your address'}. Imagery © Google.
       </figcaption>
     </figure>
   )

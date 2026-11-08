@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
 import { evaluateFormula, FormulaError } from '@/lib/solar-fit/formula'
-import { computeModel, DEFAULT_MODEL, defaultValues, formatOutput, resolveModel } from '@/lib/solar-fit/model'
+import {
+  computeModel,
+  DEFAULT_MODEL,
+  defaultValues,
+  formatOutput,
+  inputsUsedBy,
+  resolveModel,
+} from '@/lib/solar-fit/model'
 
 describe(evaluateFormula, () => {
   it('follows arithmetic precedence and parentheses', () => {
@@ -130,5 +137,30 @@ describe(formatOutput, () => {
     expect(formatOutput({ value: 9.64, format: 'kw', decimals: 1 })).toBe('9.6 kW')
     expect(formatOutput({ value: 12.34, format: 'years', decimals: 1 })).toBe('12.3 yr')
     expect(formatOutput({ value: null, format: 'currency' })).toBe('—')
+  })
+})
+
+describe(inputsUsedBy, () => {
+  const model = {
+    inputs: [{ key: 'bill' }, { key: 'apr' }, { key: 'roofType' }],
+    outputs: [
+      { key: 'systemKw', formula: '(bill / rate) * 12' },
+      { key: 'payment', formula: 'payment(systemKw * 1000, apr, termYears)' },
+      { key: 'metal', formula: 'roofType == "bill" ? 1 : 0' },
+    ],
+  }
+
+  it('lists the questions a formula reads, through other outputs', () => {
+    const used = inputsUsedBy(model)
+    expect([...used.get('systemKw')]).toStrictEqual(['bill'])
+    expect([...used.get('payment')].toSorted()).toStrictEqual(['apr', 'bill'])
+  })
+
+  it('ignores words inside quoted text', () => {
+    expect([...inputsUsedBy(model).get('metal')]).toStrictEqual(['roofType'])
+  })
+
+  it('reads any formula, such as the fit check', () => {
+    expect([...inputsUsedBy(model, 'apr > 0 && systemKw > 1')].toSorted()).toStrictEqual(['apr', 'bill'])
   })
 })

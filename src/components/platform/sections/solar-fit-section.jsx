@@ -5,16 +5,23 @@ import { useId, useMemo, useRef, useState } from 'react'
 
 import { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
-import { computeWithRoof, defaultValues, formatOutput, resolveModel } from '@/lib/solar-fit/model'
+import {
+  computeWithRoof,
+  defaultValues,
+  formatOutput,
+  inputsUsedBy,
+  PANELS_WANTED_KEY,
+  resolveModel,
+} from '@/lib/solar-fit/model'
 import { cn } from '@/lib/utils'
 
 import { AddressSearch, RoofMap } from './solar-fit-roof'
 
 /**
  * "See if solar is right for you", as a one-question-at-a-time stepper (think
- * Typeform): a live readout of the estimate sits above the question and updates
- * with every answer; the last step shows the full estimate, the roof map and
- * the contact form. The questions, constants and formulas come from Sanity
+ * Typeform). The roof map sits beside the question and the estimate under them,
+ * each number showing once the questions it reads are answered; the last step
+ * adds the contact form. The questions, constants and formulas come from Sanity
  * (solarFitSection); the server reruns the same model when the form is sent.
  */
 export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
@@ -48,7 +55,13 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   const isLast = step.kind === 'results'
   const isChoice = step.kind === 'input' && (step.input.kind === 'select' || step.input.kind === 'yesno')
   const StepTag = isLast ? 'div' : 'form'
-  const go = (delta) => setStepIndex((index) => Math.min(Math.max(index + delta, 0), steps.length - 1))
+  // The furthest step reached: questions passed on the way stay answered when the visitor goes back.
+  const [reached, setReached] = useState(0)
+  const go = (delta) => {
+    const next = Math.min(Math.max(stepIndex + delta, 0), steps.length - 1)
+    setStepIndex(next)
+    setReached((furthest) => Math.max(furthest, next))
+  }
   // Each step remounts (its key changes), so focus its first field as it mounts and
   // Enter and the keyboard keep flowing. Not on first load: that would scroll the page.
   const firstStep = useRef(true)
@@ -88,12 +101,38 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   const [status, setStatus] = useState({ state: 'idle', message: '' })
   const fieldId = useId()
 
-  const shown = result.outputs.filter((output) => output.format !== 'hidden')
+  /*
+   * A number shows only once every question its formula reads has an answer: typed
+   * in, or passed with its starting value, or (for "hide when the roof is found")
+   * answered by Google's roof. Until then it would be a guess from the defaults.
+   */
+  const answered = new Set([
+    ...Object.keys(edited),
+    ...steps
+      .slice(1, Math.max(reached, stepIndex))
+      .flatMap((passed) => (passed.kind === 'input' ? [passed.input.key] : [])),
+    ...(roof ? model.inputs.filter((input) => input.hideWhenRoofFound).map((input) => input.key) : []),
+  ])
+  const usedBy = inputsUsedBy(model)
+  const isReady = (keys) => [...keys].every((key) => answered.has(key))
+  const shown = result.outputs.filter(
+    (output) => output.format !== 'hidden' && isReady(usedBy.get(output.key) || []),
+  )
   const highlights = shown.filter((output) => output.highlight)
   const stats = shown.filter((output) => !output.highlight)
   const broken = result.outputs.filter((output) => output.error)
+  const fitReady = isReady(inputsUsedBy(model, model.qualifyFormula))
   const fitMessage =
-    result.qualifies === null ? '' : result.qualifies ? model.qualifiedMessage : model.notQualifiedMessage
+    !fitReady || result.qualifies === null
+      ? ''
+      : result.qualifies
+        ? model.qualifiedMessage
+        : model.notQualifiedMessage
+  // The panels on the map come from the visitor's usage too, so they wait for it the same way.
+  const panelsReady = usedBy.has(PANELS_WANTED_KEY)
+    ? isReady(usedBy.get(PANELS_WANTED_KEY))
+    : // Without that output, computeWithRoof sizes the panels from usage, else from the bill.
+      ['consumption', 'bill'].some((key) => answered.has(key))
 
   const setAnswer = (key) => (event) => setEdited((current) => ({ ...current, [key]: event.target.value }))
 
@@ -158,31 +197,249 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
         </div>
 
         <div className="solar-calculator__frame grid-frame solar-fit-stepper">
-          {/*
-           * The readout, always on show and updated with every answer: the roof map (once an
-           * address is found), the estimate numbers, the monthly figures and the fit message.
-           */}
-          <div
-            className={cn('solar-fit-stepper__panel', roof && 'solar-fit-stepper__panel--map')}
-            aria-live="polite"
-          >
-            {roof ? (
-              <RoofMap roof={roof} photo={roofState.photo} count={panelCount} address={roofState.address} />
-            ) : null}
-            <div className="solar-fit-stepper__numbers">
-              {stats.length ? (
-                <dl className="solar-calculator__stats solar-fit-stepper__readout">
-                  {stats.map((output) => (
-                    <div key={output.key} className="solar-calculator__stat">
-                      <dt className="solar-calculator__eyebrow">{output.label}</dt>
-                      <dd className="solar-calculator__stat-value">{formatOutput(output)}</dd>
-                      {output.detail ? (
-                        <dd className="solar-calculator__stat-detail">{output.detail}</dd>
+          <div className="solar-fit-stepper__progress" aria-hidden="true">
+            <span
+              style={{ width: `${((Math.min(stepIndex, steps.length - 1) + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+
+          <div className="solar-fit-stepper__ask">
+            {/* A form, so Enter moves on as in Typeform; the last step holds the contact form instead. */}
+            <StepTag
+              ref={focusFirstField}
+              key={isLast ? 'results' : step.kind === 'address' ? 'address' : step.input.key}
+              className="solar-fit-stepper__step"
+              onSubmit={
+                isLast
+                  ? undefined
+                  : (event) => {
+                      event.preventDefault()
+                      go(1)
+                    }
+              }
+            >
+              <p className="solar-fit-stepper__count">
+                {isLast ? 'Last step' : `${Math.min(stepIndex, steps.length - 1) + 1} of ${steps.length - 1}`}
+              </p>
+
+              {step.kind === 'address' ? (
+                <div className="solar-fit-stepper__question">
+                  <label htmlFor={`${fieldId}-address`} className="solar-fit-stepper__label">
+                    What is your home address?
+                  </label>
+                  <AddressSearch
+                    id={`${fieldId}-address`}
+                    picked={roofState.address}
+                    onPick={onPickAddress}
+                  />
+                  <p className="solar-fit__help">
+                    {roofState.status === 'loading'
+                      ? 'Finding your roof…'
+                      : roofState.status === 'found'
+                        ? 'Found your roof. Next, your bill, and we will place the panels on the map.'
+                        : roofState.status === 'none'
+                          ? 'We could not map that roof from the air, so your answers set the estimate.'
+                          : roofState.status === 'error'
+                            ? roofState.message || 'We could not look that up. Your answers set the estimate.'
+                            : 'We map your roof from satellite imagery and place the panels for you. You can skip this.'}
+                  </p>
+                </div>
+              ) : null}
+
+              {step.kind === 'input' && isChoice ? (
+                <fieldset className="solar-fit-stepper__question">
+                  <legend className="solar-fit-stepper__label">{step.input.label}</legend>
+                  {step.input.help ? <p className="solar-fit__help">{step.input.help}</p> : null}
+                  <div className="solar-fit-stepper__choices">
+                    {step.input.options.map((option, index) => {
+                      const chosen = String(answers[step.input.key]) === String(option.value)
+                      return (
+                        <button
+                          key={option.label}
+                          type="button"
+                          aria-pressed={chosen}
+                          className={cn(
+                            'solar-fit-stepper__choice',
+                            chosen && 'solar-fit-stepper__choice--chosen',
+                          )}
+                          onClick={() => {
+                            setEdited((values) => ({ ...values, [step.input.key]: option.value }))
+                            // A beat to see the choice land, then on to the next question.
+                            setTimeout(() => go(1), 220)
+                          }}
+                        >
+                          <span className="solar-fit-stepper__choice-key" aria-hidden="true">
+                            {String.fromCodePoint(65 + index)}
+                          </span>
+                          {option.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </fieldset>
+              ) : null}
+
+              {step.kind === 'input' && !isChoice ? (
+                <div className="solar-fit-stepper__question">
+                  <label htmlFor={`${fieldId}-${step.input.key}`} className="solar-fit-stepper__label">
+                    {step.input.label}
+                  </label>
+                  {step.input.help ? <p className="solar-fit__help">{step.input.help}</p> : null}
+                  <div className="solar-fit__number solar-fit-stepper__number">
+                    {step.input.prefix ? (
+                      <span className="solar-fit__affix" aria-hidden="true">
+                        {step.input.prefix}
+                      </span>
+                    ) : null}
+                    <input
+                      id={`${fieldId}-${step.input.key}`}
+                      type="number"
+                      inputMode="decimal"
+                      className="solar-fit__number-input"
+                      value={answers[step.input.key]}
+                      min={step.input.min}
+                      max={step.input.max}
+                      step={step.input.step || 'any'}
+                      onChange={setAnswer(step.input.key)}
+                    />
+                    {step.input.suffix ? (
+                      <span className="solar-fit__affix" aria-hidden="true">
+                        {step.input.suffix}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {isLast ? (
+                <p className="solar-fit-stepper__label">
+                  That is your estimate. Want the full report and a real quote?
+                </p>
+              ) : null}
+
+              {broken.length ? (
+                <p className="solar-fit__error" role="alert">
+                  {broken.map((output) => `${output.label}: ${output.error}`).join(' · ')}
+                </p>
+              ) : null}
+
+              {isLast ? null : (
+                <div className="solar-fit-stepper__nav">
+                  {stepIndex > 0 ? (
+                    <button type="button" className="solar-fit-stepper__back" onClick={() => go(-1)}>
+                      <NavArrowLeft aria-hidden="true" />
+                      Back
+                    </button>
+                  ) : null}
+                  <button type="submit" className="solar-calculator__cta-button">
+                    {step.kind === 'address' && roofState.status === 'idle' ? 'Skip' : 'OK'}
+                    <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
+                  </button>
+                  <span className="solar-fit-stepper__hint" aria-hidden="true">
+                    or press <kbd>Enter ↵</kbd>
+                  </span>
+                </div>
+              )}
+            </StepTag>
+
+            {isLast ? (
+              <div className="solar-fit__contact solar-fit__contact--wide">
+                <button type="button" className="solar-fit-stepper__back" onClick={() => go(-1)}>
+                  <NavArrowLeft aria-hidden="true" />
+                  Change my answers
+                </button>
+                {status.state === 'sent' ? (
+                  <p className="solar-fit__sent" role="status">
+                    {status.message}
+                  </p>
+                ) : (
+                  <form className="solar-fit__form" onSubmit={onSubmit}>
+                    <p className="solar-fit__form-title">Get your full estimate, free and no pressure.</p>
+                    <div className="solar-fit__form-grid">
+                      <label className="solar-fit__form-field">
+                        <span>Name</span>
+                        <input name="fullName" autoComplete="name" required />
+                      </label>
+                      <label className="solar-fit__form-field">
+                        <span>Phone</span>
+                        <input name="phone" type="tel" autoComplete="tel" />
+                      </label>
+                      <label className="solar-fit__form-field solar-fit__form-field--wide">
+                        <span>Email</span>
+                        <input name="email" type="email" autoComplete="email" required />
+                      </label>
+                    </div>
+                    {/* Hidden from people; bots fill it and get dropped. */}
+                    <input
+                      className="solar-fit__trap"
+                      name="company"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                    />
+                    <label className="solar-fit__consent">
+                      <input name="consent" type="checkbox" required />
+                      <span>It is OK to email or call me about my estimate. No spam, no commitment.</span>
+                    </label>
+                    <div className="solar-fit__actions">
+                      <button
+                        type="submit"
+                        className="solar-calculator__cta-button"
+                        disabled={status.state === 'sending'}
+                      >
+                        {status.state === 'sending'
+                          ? 'Sending…'
+                          : section?.submitLabel || 'See if you qualify'}
+                        <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
+                      </button>
+                      {status.state === 'error' ? (
+                        <p className="solar-fit__error" role="alert">
+                          {status.message}
+                        </p>
                       ) : null}
                     </div>
-                  ))}
-                </dl>
-              ) : null}
+                  </form>
+                )}
+              </div>
+            ) : null}
+          </div>
+
+          {/*
+           * Wide screens: the roof map beside the question, then the numbers in a row under
+           * both (stats under the question, monthly figures and the fit message under the map).
+           * Phones: question, map, stats, monthly figures, one under the other.
+           */}
+          <div className="solar-fit-stepper__map">
+            {roof ? (
+              <RoofMap
+                roof={roof}
+                photo={roofState.photo}
+                count={panelsReady ? panelCount : 0}
+                address={roofState.address}
+              />
+            ) : null}
+            {stats.length || highlights.length || roof ? null : (
+              <p className="solar-fit-stepper__waiting">
+                Your roof and your numbers show up here as you answer.
+              </p>
+            )}
+          </div>
+
+          <div className="solar-fit-stepper__panel" aria-live="polite">
+            {stats.length ? (
+              <dl className="solar-calculator__stats solar-fit-stepper__readout">
+                {stats.map((output) => (
+                  <div key={output.key} className="solar-calculator__stat">
+                    <dt className="solar-calculator__eyebrow">{output.label}</dt>
+                    <dd className="solar-calculator__stat-value">{formatOutput(output)}</dd>
+                    {output.detail ? (
+                      <dd className="solar-calculator__stat-detail">{output.detail}</dd>
+                    ) : null}
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+            <div className="solar-fit-stepper__totals">
               {highlights.length ? (
                 <div className="solar-calculator__system">
                   {highlights.map((output) => (
@@ -203,205 +460,6 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
               ) : null}
             </div>
           </div>
-
-          <div className="solar-fit-stepper__progress" aria-hidden="true">
-            <span
-              style={{ width: `${((Math.min(stepIndex, steps.length - 1) + 1) / steps.length) * 100}%` }}
-            />
-          </div>
-
-          {/* A form, so Enter moves on as in Typeform; the last step holds the contact form instead. */}
-          <StepTag
-            ref={focusFirstField}
-            key={isLast ? 'results' : step.kind === 'address' ? 'address' : step.input.key}
-            className="solar-fit-stepper__step"
-            onSubmit={
-              isLast
-                ? undefined
-                : (event) => {
-                    event.preventDefault()
-                    go(1)
-                  }
-            }
-          >
-            <p className="solar-fit-stepper__count">
-              {isLast ? 'Last step' : `${Math.min(stepIndex, steps.length - 1) + 1} of ${steps.length - 1}`}
-            </p>
-
-            {step.kind === 'address' ? (
-              <div className="solar-fit-stepper__question">
-                <label htmlFor={`${fieldId}-address`} className="solar-fit-stepper__label">
-                  What is your home address?
-                </label>
-                <AddressSearch id={`${fieldId}-address`} picked={roofState.address} onPick={onPickAddress} />
-                <p className="solar-fit__help">
-                  {roofState.status === 'loading'
-                    ? 'Finding your roof…'
-                    : roofState.status === 'found'
-                      ? 'Found your roof. The panels are on the map above.'
-                      : roofState.status === 'none'
-                        ? 'We could not map that roof from the air, so your answers set the estimate.'
-                        : roofState.status === 'error'
-                          ? roofState.message || 'We could not look that up. Your answers set the estimate.'
-                          : 'We map your roof from satellite imagery and place the panels for you. You can skip this.'}
-                </p>
-              </div>
-            ) : null}
-
-            {step.kind === 'input' && isChoice ? (
-              <fieldset className="solar-fit-stepper__question">
-                <legend className="solar-fit-stepper__label">{step.input.label}</legend>
-                {step.input.help ? <p className="solar-fit__help">{step.input.help}</p> : null}
-                <div className="solar-fit-stepper__choices">
-                  {step.input.options.map((option, index) => {
-                    const chosen = String(answers[step.input.key]) === String(option.value)
-                    return (
-                      <button
-                        key={option.label}
-                        type="button"
-                        aria-pressed={chosen}
-                        className={cn(
-                          'solar-fit-stepper__choice',
-                          chosen && 'solar-fit-stepper__choice--chosen',
-                        )}
-                        onClick={() => {
-                          setEdited((values) => ({ ...values, [step.input.key]: option.value }))
-                          // A beat to see the choice land, then on to the next question.
-                          setTimeout(() => go(1), 220)
-                        }}
-                      >
-                        <span className="solar-fit-stepper__choice-key" aria-hidden="true">
-                          {String.fromCodePoint(65 + index)}
-                        </span>
-                        {option.label}
-                      </button>
-                    )
-                  })}
-                </div>
-              </fieldset>
-            ) : null}
-
-            {step.kind === 'input' && !isChoice ? (
-              <div className="solar-fit-stepper__question">
-                <label htmlFor={`${fieldId}-${step.input.key}`} className="solar-fit-stepper__label">
-                  {step.input.label}
-                </label>
-                {step.input.help ? <p className="solar-fit__help">{step.input.help}</p> : null}
-                <div className="solar-fit__number solar-fit-stepper__number">
-                  {step.input.prefix ? (
-                    <span className="solar-fit__affix" aria-hidden="true">
-                      {step.input.prefix}
-                    </span>
-                  ) : null}
-                  <input
-                    id={`${fieldId}-${step.input.key}`}
-                    type="number"
-                    inputMode="decimal"
-                    className="solar-fit__number-input"
-                    value={answers[step.input.key]}
-                    min={step.input.min}
-                    max={step.input.max}
-                    step={step.input.step || 'any'}
-                    onChange={setAnswer(step.input.key)}
-                  />
-                  {step.input.suffix ? (
-                    <span className="solar-fit__affix" aria-hidden="true">
-                      {step.input.suffix}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
-
-            {isLast ? (
-              <p className="solar-fit-stepper__label">
-                That is your estimate above. Want the full report and a real quote?
-              </p>
-            ) : null}
-
-            {broken.length ? (
-              <p className="solar-fit__error" role="alert">
-                {broken.map((output) => `${output.label}: ${output.error}`).join(' · ')}
-              </p>
-            ) : null}
-
-            {isLast ? null : (
-              <div className="solar-fit-stepper__nav">
-                {stepIndex > 0 ? (
-                  <button type="button" className="solar-fit-stepper__back" onClick={() => go(-1)}>
-                    <NavArrowLeft aria-hidden="true" />
-                    Back
-                  </button>
-                ) : null}
-                <button type="submit" className="solar-calculator__cta-button">
-                  {step.kind === 'address' && roofState.status === 'idle' ? 'Skip' : 'OK'}
-                  <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
-                </button>
-                <span className="solar-fit-stepper__hint" aria-hidden="true">
-                  or press <kbd>Enter ↵</kbd>
-                </span>
-              </div>
-            )}
-          </StepTag>
-
-          {isLast ? (
-            <div className="solar-fit__contact solar-fit__contact--wide">
-              <button type="button" className="solar-fit-stepper__back" onClick={() => go(-1)}>
-                <NavArrowLeft aria-hidden="true" />
-                Change my answers
-              </button>
-              {status.state === 'sent' ? (
-                <p className="solar-fit__sent" role="status">
-                  {status.message}
-                </p>
-              ) : (
-                <form className="solar-fit__form" onSubmit={onSubmit}>
-                  <p className="solar-fit__form-title">Get your full estimate, free and no pressure.</p>
-                  <div className="solar-fit__form-grid">
-                    <label className="solar-fit__form-field">
-                      <span>Name</span>
-                      <input name="fullName" autoComplete="name" required />
-                    </label>
-                    <label className="solar-fit__form-field">
-                      <span>Email</span>
-                      <input name="email" type="email" autoComplete="email" required />
-                    </label>
-                    <label className="solar-fit__form-field">
-                      <span>Phone</span>
-                      <input name="phone" type="tel" autoComplete="tel" />
-                    </label>
-                  </div>
-                  {/* Hidden from people; bots fill it and get dropped. */}
-                  <input
-                    className="solar-fit__trap"
-                    name="company"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                  />
-                  <label className="solar-fit__consent">
-                    <input name="consent" type="checkbox" required />
-                    <span>It is OK to email or call me about my estimate. No spam, no commitment.</span>
-                  </label>
-                  <div className="solar-fit__actions">
-                    <button
-                      type="submit"
-                      className="solar-calculator__cta-button"
-                      disabled={status.state === 'sending'}
-                    >
-                      {status.state === 'sending' ? 'Sending…' : section?.submitLabel || 'See if you qualify'}
-                      <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
-                    </button>
-                    {status.state === 'error' ? (
-                      <p className="solar-fit__error" role="alert">
-                        {status.message}
-                      </p>
-                    ) : null}
-                  </div>
-                </form>
-              )}
-            </div>
-          ) : null}
         </div>
 
         <p className="solar-calculator__disclaimer">

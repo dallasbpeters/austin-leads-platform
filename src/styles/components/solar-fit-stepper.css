@@ -1,7 +1,8 @@
 /**
  * .solar-fit-stepper: the estimate form as one question at a time (think
- * Typeform). The readout of the estimate so far sits above the question;
- * a thin progress bar marks the way through.
+ * Typeform). A thin progress bar marks the way through. On wide screens the
+ * question sits on the left and the readout (stats, roof map, monthly figures)
+ * on the right; on phones the readout follows the question.
  */
 
 @keyframes solar-fit-step-in {
@@ -16,11 +17,57 @@
   }
 }
 
-/* One column, top to bottom, at every width (overrides the two-column calculator frame). */
+/* One column on phones (overrides the two-column calculator frame). */
 .solar-calculator__frame.solar-fit-stepper {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
+}
+
+/*
+ * Two equal halves, so the gap sits on the page's middle gridline: the question
+ * beside the roof map, then the stats under the question and the monthly figures
+ * under the map. The panel spans both halves with the same columns.
+ */
+@media (width >= 64rem) {
+  .solar-calculator__frame.solar-fit-stepper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'progress progress'
+      'ask map'
+      'panel panel';
+    align-items: start;
+    column-gap: 2rem;
+  }
+
+  .solar-fit-stepper__progress {
+    grid-area: progress;
+  }
+
+  .solar-fit-stepper__ask {
+    grid-area: ask;
+  }
+
+  .solar-fit-stepper__map {
+    grid-area: map;
+  }
+
+  .solar-fit-stepper__panel {
+    grid-area: panel;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+
+  /* Under the question: three stats to a row. */
+  .solar-fit-stepper__panel .solar-fit-stepper__readout {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.solar-fit-stepper__ask {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
 }
 
 /*
@@ -29,13 +76,19 @@
  * land right however many tiles fit on a row, and an empty last cell stays blank.
  */
 .solar-fit-stepper__readout {
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
   gap: 1px;
 }
 
+/* Three tiles share half the width, so they are tighter than the calculator's. */
 .solar-fit-stepper__readout .solar-calculator__stat {
+  padding: 1rem;
   border: 0;
   box-shadow: 0 0 0 1px var(--calc-line);
+}
+
+.solar-fit-stepper__readout .solar-calculator__stat-value {
+  font-size: clamp(1.25rem, 0.8vw + 0.9rem, 1.75rem);
 }
 
 .solar-fit-stepper__progress {
@@ -202,24 +255,24 @@
   font-weight: 600;
 }
 
-/* The readout panel: numbers alone, or the roof map beside them once an address is found. */
-.solar-fit-stepper__panel {
-  display: grid;
-  gap: 1rem;
-}
-
-.solar-fit-stepper__numbers {
+/* The numbers: stats, then the monthly figures and the fit message. */
+.solar-fit-stepper__panel,
+.solar-fit-stepper__totals {
   display: grid;
   gap: 1rem;
   align-content: start;
   min-width: 0;
 }
 
-@media (width >= 64rem) {
-  .solar-fit-stepper__panel--map {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
-  }
+.solar-fit-stepper__map {
+  min-width: 0;
+}
+
+.solar-fit-stepper__waiting {
+  padding: 1.5rem;
+  border: 1px dashed var(--calc-line);
+  border-radius: 0.75rem;
+  color: var(--calc-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

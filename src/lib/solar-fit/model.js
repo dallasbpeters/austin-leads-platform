@@ -350,6 +350,45 @@ export const ROOF_VALUES = [
  */
 export const PANELS_WANTED_KEY = 'panelsWanted'
 
+const QUOTED = /"[^"]*"|'[^']*'/gu
+const NAME = /[A-Za-z_]\w*/gu
+
+/**
+ * The questions a formula reads, following outputs it names back to their own
+ * formulas, so the page can hold a number back until those questions are answered.
+ * With a formula: that formula's set. Without: a Map of every output key to its set.
+ */
+export function inputsUsedBy(model, formula) {
+  const inputKeys = new Set(model.inputs.map((input) => input.key))
+  const formulas = new Map(model.outputs.map((output) => [output.key, output.formula]))
+  // Output key -> the questions it reads, so a shared output is walked once.
+  const memo = new Map()
+
+  const walk = (source, seen) => {
+    const used = new Set()
+    for (const name of String(source || '')
+      .replaceAll(QUOTED, '')
+      .match(NAME) || []) {
+      if (inputKeys.has(name)) {
+        used.add(name)
+      } else if (formulas.has(name) && !seen.has(name)) {
+        if (!memo.has(name)) {
+          memo.set(name, walk(formulas.get(name), new Set([...seen, name])))
+        }
+        for (const key of memo.get(name)) {
+          used.add(key)
+        }
+      }
+    }
+    return used
+  }
+
+  if (formula !== undefined) {
+    return walk(formula, new Set())
+  }
+  return new Map(model.outputs.map((output) => [output.key, walk(output.formula, new Set([output.key]))]))
+}
+
 // Solar API reports DC energy; about 85% reaches the house as AC.
 const DC_TO_AC = 0.85
 
