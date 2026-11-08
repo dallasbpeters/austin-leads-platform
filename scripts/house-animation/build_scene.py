@@ -150,71 +150,14 @@ def panel_material():
 
 
 def world_setup():
-    """Storm sky: dark cloud banks overhead that drift across the story, a pale band at the horizon."""
-    world = bpy.data.worlds.new('storm')
+    """Soft daylight from an overcast sky. It only lights the house: the film is transparent, and
+    the page draws the sky behind the frames (the site's cloud layer, by the visitor's time of day)."""
+    world = bpy.data.worlds.new('daylight')
     bpy.context.scene.world = world
     world.use_nodes = True
-    nodes, links = world.node_tree.nodes, world.node_tree.links
-    background = nodes['Background']
-    background.inputs['Strength'].default_value = 1.0
-    coords = nodes.new('ShaderNodeTexCoord')
-    split = nodes.new('ShaderNodeSeparateXYZ')
-    links.new(coords.outputs['Generated'], split.inputs['Vector'])
-
-    # Base gradient by height: pale grey at the horizon, near black higher up.
-    remap = nodes.new('ShaderNodeMapRange')
-    remap.inputs['From Min'].default_value = -1.0
-    remap.inputs['From Max'].default_value = 1.0
-    links.new(split.outputs['Z'], remap.inputs['Value'])
-    sky = nodes.new('ShaderNodeValToRGB')
-    elements = sky.color_ramp.elements
-    elements[0].position, elements[0].color = 0.5, hex_rgb('#9aa0a8')
-    elements[1].position, elements[1].color = 0.64, hex_rgb('#0a0f17')
-    middle = elements.new(0.54)
-    middle.color = hex_rgb('#46505d')
-    links.new(remap.outputs['Result'], sky.inputs['Fac'])
-
-    # Clouds: 4D noise on the view direction, squashed so the banks lie flat. W drifts per frame.
-    squash = nodes.new('ShaderNodeVectorMath')
-    squash.operation = 'MULTIPLY'
-    squash.inputs[1].default_value = (1.0, 1.0, 5.0)
-    links.new(coords.outputs['Generated'], squash.inputs[0])
-    noise = nodes.new('ShaderNodeTexNoise')
-    noise.noise_dimensions = '4D'
-    noise.inputs['Scale'].default_value = 3.0
-    noise.inputs['Detail'].default_value = 14.0
-    noise.inputs['Roughness'].default_value = 0.6
-    noise.inputs['Distortion'].default_value = 0.5
-    links.new(squash.outputs['Vector'], noise.inputs['Vector'])
-    noise.inputs['W'].default_value = 0.0
-    noise.inputs['W'].keyframe_insert('default_value', frame=1)
-    noise.inputs['W'].default_value = 0.3
-    noise.inputs['W'].keyframe_insert('default_value', frame=FRAME_END)
-    # Dark heavy cloud bellies, with paler gaps where the light comes through.
-    shade = nodes.new('ShaderNodeValToRGB')
-    shade.color_ramp.elements[0].position, shade.color_ramp.elements[0].color = 0.38, hex_rgb('#10151d')
-    shade.color_ramp.elements[1].position, shade.color_ramp.elements[1].color = 0.66, hex_rgb('#8a939e')
-    links.new(noise.outputs['Fac'], shade.inputs['Fac'])
-
-    # Clouds fill the sky from just above the horizon; below it, plain haze.
-    above = nodes.new('ShaderNodeMapRange')
-    above.inputs['From Min'].default_value = 0.0
-    above.inputs['From Max'].default_value = 0.06
-    above.inputs['To Max'].default_value = 0.85
-    links.new(split.outputs['Z'], above.inputs['Value'])
-    mix = nodes.new('ShaderNodeMix')
-    mix.data_type = 'RGBA'
-    links.new(above.outputs['Result'], mix.inputs['Factor'])
-    links.new(sky.outputs['Color'], mix.inputs['A'])
-    links.new(shade.outputs['Color'], mix.inputs['B'])
-    # Darken the clouds with height too, so the top of the frame stays dark under the heading.
-    top = nodes.new('ShaderNodeMix')
-    top.data_type = 'RGBA'
-    top.blend_type = 'MULTIPLY'
-    links.new(remap.outputs['Result'], top.inputs['Factor'])
-    links.new(mix.outputs['Result'], top.inputs['A'])
-    links.new(sky.outputs['Color'], top.inputs['B'])
-    links.new(top.outputs['Result'], background.inputs['Color'])
+    background = world.node_tree.nodes['Background']
+    background.inputs['Color'].default_value = hex_rgb('#c9d6e8')
+    background.inputs['Strength'].default_value = 0.9
 
 
 def import_house():
@@ -460,32 +403,21 @@ def pallet(at):
 
 
 def ground():
-    """Wet dark ground after the storm: it picks up the sky and fades into haze, no lawn."""
-    bpy.ops.mesh.primitive_plane_add(size=6000, location=(0, 0, -0.02))
+    """A shadow catcher: invisible, except for the house's shadow on it."""
+    bpy.ops.mesh.primitive_plane_add(size=240, location=(0, 0, -0.02))
     plane = bpy.context.active_object
     plane.name = 'Ground'
-    mat = principled('wet ground', '#262b31', 0.6)
-    nodes, links = mat.node_tree.nodes, mat.node_tree.links
-    noise = nodes.new('ShaderNodeTexNoise')
-    noise.inputs['Scale'].default_value = 1.6
-    noise.inputs['Detail'].default_value = 6.0
-    puddles = nodes.new('ShaderNodeValToRGB')
-    puddles.color_ramp.elements[0].position = 0.45
-    puddles.color_ramp.elements[0].color = (0.35, 0.35, 0.35, 1)
-    puddles.color_ramp.elements[1].position = 0.6
-    puddles.color_ramp.elements[1].color = (0.8, 0.8, 0.8, 1)
-    links.new(noise.outputs['Fac'], puddles.inputs['Fac'])
-    links.new(puddles.outputs['Color'], nodes['Principled BSDF'].inputs['Roughness'])
-    plane.data.materials.append(mat)
+    plane.is_shadow_catcher = True
+    plane.data.materials.append(principled('ground', '#808080', 0.9))
 
 
 def lights_and_camera(target):
     bpy.ops.object.light_add(type='SUN', rotation=(math.radians(62), 0, math.radians(-38)))
     sun = bpy.context.active_object
-    # Soft, cool storm light: a low sun through cloud.
-    sun.data.energy = 1.6
-    sun.data.color = (0.86, 0.9, 1.0)
-    sun.data.angle = math.radians(12)
+    # Soft daylight: a sun through thin cloud.
+    sun.data.energy = 3.0
+    sun.data.color = (1.0, 0.96, 0.9)
+    sun.data.angle = math.radians(6)
 
     bpy.ops.object.empty_add(location=target)
     aim = bpy.context.active_object
@@ -540,14 +472,22 @@ def main():
     lights_and_camera(mathutils.Vector((0.0, -1.0, 5.4)))
 
     render = scene.render
-    engines = [item.identifier for item in render.bl_rna.properties['engine'].enum_items]
-    render.engine = 'BLENDER_EEVEE' if 'BLENDER_EEVEE' in engines else 'BLENDER_EEVEE_NEXT'
+    # Cycles, because only Cycles has a shadow catcher; the film is transparent so the page's sky shows.
+    render.engine = 'CYCLES'
+    cycles_prefs = bpy.context.preferences.addons['cycles'].preferences
+    cycles_prefs.compute_device_type = 'METAL'
+    cycles_prefs.get_devices()
+    for device in cycles_prefs.devices:
+        device.use = True
+    scene.cycles.device = 'GPU'
+    scene.cycles.samples = 24
+    scene.cycles.use_denoising = True
+    render.film_transparent = True
     width, height = (int(v) for v in opts['size'].split('x'))
     render.resolution_x, render.resolution_y = width, height
     render.image_settings.file_format = 'WEBP'
+    render.image_settings.color_mode = 'RGBA'
     render.image_settings.quality = 82
-    if hasattr(scene.eevee, 'use_raytracing'):
-        scene.eevee.use_raytracing = True
     scene.view_settings.view_transform = 'AgX'
     scene.view_settings.look = 'AgX - Medium High Contrast' if 'AgX - Medium High Contrast' in [
         i.identifier for i in scene.view_settings.bl_rna.properties['look'].enum_items

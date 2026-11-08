@@ -3,6 +3,7 @@
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 
+import CloudBackground from '@/components/cloud-background'
 import PortableTextContent from '@/components/portable-text-content'
 import { Button } from '@/components/ui/button'
 
@@ -10,7 +11,8 @@ import { Button } from '@/components/ui/button'
  * The Detach & Reset story as rendered frames (scripts/house-animation), drawn
  * to a canvas from the scroll position: panels come off and stack, a new roof
  * sweeps across, the panels go back on. Frames are plain images, so the
- * licensed 3D model itself never reaches the browser.
+ * licensed 3D model itself never reaches the browser. The frames have no sky:
+ * the site's cloud layer shows through, in the visitor's time of day.
  */
 const FRAME_COUNT = 96
 const framePath = (index) => `/animations/detach-reset/frame-${String(index + 1).padStart(3, '0')}.webp`
@@ -38,10 +40,13 @@ function drawFrame(canvas, frames, index) {
     return
   }
   const { width, height } = canvas
+  const context = canvas.getContext('2d')
+  // Frames are transparent around the house, so clear the last one first.
+  context.clearRect(0, 0, width, height)
   const scale = Math.max(width / frame.naturalWidth, height / frame.naturalHeight)
   const w = frame.naturalWidth * scale
   const h = frame.naturalHeight * scale
-  canvas.getContext('2d').drawImage(frame, (width - w) / 2, (height - h) / 2, w, h)
+  context.drawImage(frame, (width - w) / 2, (height - h) / 2, w, h)
 }
 
 const InstallProcess = ({
@@ -137,26 +142,27 @@ const InstallProcess = ({
   })
 
   return (
-    <div ref={containerRef} className="relative bg-[#0a0f17]" style={{ height: SCRUB_HEIGHT }}>
+    <div ref={containerRef} className="cloud-theme-section relative" style={{ height: SCRUB_HEIGHT }}>
       {/* Header, supporting text and action buttons overlaid on top */}
 
       <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <CloudBackground density="regular" className="cloud-background--large" />
         <div className="absolute left-[50%] z-10 w-full -translate-x-[50%] transform pt-40">
-          <div className="mx-auto w-full max-w-4xl px-6 text-center">
+          <div className="cloud-theme-section__readable mx-auto w-full max-w-4xl px-6 text-center">
             {eyebrow ? (
-              <p className="mb-5 text-xs font-semibold tracking-[0.24em] text-white/60 uppercase">
+              <p className="cloud-theme-section__eyebrow mb-5 text-xs font-semibold tracking-[0.24em] uppercase">
                 {eyebrow}
               </p>
             ) : null}
             {title ? (
-              <h2 className="type-accent m-0 text-[clamp(2.25rem,4vw,4.5rem)] leading-[0.95] font-black text-white">
+              <h2 className="type-accent cloud-theme-section__heading m-0 text-[clamp(2.25rem,4vw,4.5rem)] leading-[0.95] font-black">
                 {title}
               </h2>
             ) : null}
             {body ? (
               <PortableTextContent
                 value={body}
-                className="mx-auto mt-4 max-w-2xl text-lg leading-8 text-white/70"
+                className="cloud-theme-section__body mx-auto mt-4 max-w-2xl text-lg leading-8"
               />
             ) : null}
             {ctaHref && ctaLabel ? (
@@ -171,7 +177,7 @@ const InstallProcess = ({
         {/* Scroll-scrubbed frames, drawn to cover the viewport */}
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 z-5 h-screen w-full"
+          className="cloud-lit absolute inset-0 z-5 h-screen w-full"
           role="img"
           aria-label="A house with solar panels: the panels come off and are stacked, a new roof goes on, and the panels go back on."
         />

@@ -70,6 +70,7 @@ html:not([data-cloud-tone]),
   --gradient-sun-highlight: oklch(90.508% 0.18375 98.807deg);
   --cloud-image-overlay-strength: 55%;
   --cloud-image-saturation: 1;
+  --cloud-lit-filter: none;
 }
 
 [data-cloud-tone='dusk'] {
@@ -93,6 +94,7 @@ html:not([data-cloud-tone]),
   --gradient-sun-highlight: #ffb86b;
   --cloud-image-overlay-strength: 72%;
   --cloud-image-saturation: 0.7;
+  --cloud-lit-filter: brightness(0.8) sepia(0.2) saturate(1.1);
 }
 
 [data-cloud-tone='night'] {
@@ -116,6 +118,7 @@ html:not([data-cloud-tone]),
   --gradient-sun-highlight: #49668d;
   --cloud-image-overlay-strength: 86%;
   --cloud-image-saturation: 0.45;
+  --cloud-lit-filter: brightness(0.5) saturate(0.7);
 }
 
 .cloud-background {
@@ -136,6 +139,17 @@ html:not([data-cloud-tone]),
   width: clamp(11rem, 23vw, 24rem);
   opacity: var(--cloud-opacity);
   filter: var(--cloud-tone-sprite-filter);
+}
+
+/* The same sprite clouds, drawn about twice as big (the full-screen process animation). */
+.cloud-background--large .cloud-background__cloud {
+  scale: 1.9;
+}
+
+/* Art drawn in daylight, dimmed to match the sky at dusk and night. */
+.cloud-lit {
+  filter: var(--cloud-lit-filter);
+  transition: filter 700ms ease;
 }
 
 .cloud-theme-section {
@@ -170,6 +184,11 @@ html:not([data-cloud-tone]),
 
 .cloud-theme-section__eyebrow {
   color: var(--cloud-section-eyebrow);
+}
+
+/* Text over moving clouds: a soft shadow keeps light text readable on a white cloud. */
+.cloud-theme-section__readable {
+  text-shadow: 0 1px 0.75rem rgb(15 23 42 / 45%);
 }
 
 .cloud-theme-section__image-overlay {
