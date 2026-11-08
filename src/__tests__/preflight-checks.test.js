@@ -174,6 +174,14 @@ describe('seoChecks main heading', () => {
     ).toBeFalsy()
   })
 
+  it('counts an article that opens the page, like the privacy policy', () => {
+    expect(
+      h1Warning(
+        seoChecks({ ...base, sections: [{ _key: 'a', _type: 'articleSection', title: 'Privacy Policy' }] }),
+      ),
+    ).toBeFalsy()
+  })
+
   it('still warns when the page opens with a section that has no main heading', () => {
     expect(
       h1Warning(seoChecks({ ...base, sections: [{ _key: 'f', _type: 'faqSection', title: 'Questions' }] })),

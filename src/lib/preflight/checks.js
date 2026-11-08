@@ -165,7 +165,7 @@ export function suggestHref(href, knownPaths) {
 }
 
 /** Sections whose title becomes the page's h1 when they come first (see public-site.jsx). */
-const OPENING_H1_SECTIONS = new Set(['installProcessSection'])
+const OPENING_H1_SECTIONS = new Set(['installProcessSection', 'articleSection'])
 
 /** SEO and structure checks. */
 export function seoChecks(document) {

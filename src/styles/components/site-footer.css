@@ -14,12 +14,13 @@
   --footer-fg: oklch(100% 0 0deg);
   --footer-muted: oklch(100% 0 0deg / 55%);
   --footer-line: oklch(100% 0 0deg / 10%);
+  --footer-bg: oklch(14.555% 0.03 260.489deg);
 
   position: relative;
   width: 100%;
   overflow: clip;
   color: var(--footer-fg);
-  background-color: #040a17;
+  background-color: var(--footer-bg);
 }
 
 .site-footer__inner {
