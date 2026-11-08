@@ -1,8 +1,9 @@
 'use client'
 
-import { Badge, Box, Button, Card, Flex, Heading, Stack, Text } from '@sanity/ui'
+import { Badge, Box, Button, Card, Flex, Heading, Stack, Text, TextArea, TextInput } from '@sanity/ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useClient } from 'sanity'
+import { PatchEvent, pathToString, set, useClient } from 'sanity'
+import { useDocumentPane, usePaneRouter } from 'sanity/structure'
 
 import {
   brandChecks,
@@ -12,6 +13,7 @@ import {
   isKnownPath,
   linkKind,
   seoChecks,
+  suggestHref,
 } from '../../lib/preflight/checks'
 import { toolApiOrigin } from '../env'
 import { BUILT_IN_ROUTES, pathForDoc } from './page-link-input'
@@ -21,6 +23,10 @@ import { BUILT_IN_ROUTES, pathForDoc } from './page-link-input'
  * links, SEO and brand-voice checks on the version being edited, before it is
  * published. The checks are in src/lib/preflight/checks.js; outside links are
  * fetched by /api/preflight/links, since most sites refuse Studio's requests.
+ *
+ * Each problem can be fixed from here: "Go to field" opens the editor on it, and
+ * common ones get a one-click change or a box to type the fix in (finding.fix).
+ * Changes go into the draft like any edit, so Undo and publishing work as usual.
  */
 
 const PAGES_QUERY = `*[
@@ -32,27 +38,126 @@ const PAGES_QUERY = `*[
 const TONE = { error: 'critical', warning: 'caution', ok: 'positive' }
 const LABEL = { error: 'Fix', warning: 'Check', ok: 'OK' }
 
-const Finding = ({ finding, document }) => (
-  <Card padding={3} radius={2} tone={finding.level === 'ok' ? 'default' : TONE[finding.level]} border>
-    <Flex gap={3} align="flex-start">
-      <Box style={{ flex: 'none', width: '3.25rem' }}>
-        <Badge tone={TONE[finding.level]} fontSize={0}>
-          {LABEL[finding.level]}
-        </Badge>
-      </Box>
-      <Stack gap={2} flex={1}>
-        <Text size={1}>{finding.message}</Text>
-        {finding.path?.length ? (
-          <Text size={0} muted>
-            {describePath(finding.path, document)}
+/**
+ * The schema type at a path in the document, following array items by their
+ * _type, so a fix can see which fields an image type has (alt or altText).
+ */
+function typeAt(schemaType, document, path) {
+  let type = schemaType
+  let value = document
+  for (const step of path) {
+    if (typeof step === 'string') {
+      type = type?.fields?.find((field) => field.name === step)?.type
+      value = value?.[step]
+    } else {
+      const item = Array.isArray(value)
+        ? typeof step === 'number'
+          ? value[step]
+          : value.find((entry) => entry?._key === step._key)
+        : undefined
+      type = type?.of?.find((member) => member.name === item?._type) || type?.of?.[0]
+      value = item
+    }
+  }
+  return type
+}
+
+const altPathFor = (schemaType, document, imagePath) => {
+  const fields = typeAt(schemaType, document, imagePath)?.fields || []
+  const name = fields.find((field) => field.name === 'alt' || field.name === 'altText')?.name
+  return name ? [...imagePath, name] : null
+}
+
+/** A box to type the fix in, with a live character count when the field has a target length. */
+const TextFix = ({ fix, onSave }) => {
+  const [value, setValue] = useState(fix.value || '')
+  const length = value.trim().length
+  const inRange = (!fix.min || length >= fix.min) && (!fix.max || length <= fix.max)
+  const Input = fix.multiline ? TextArea : TextInput
+  return (
+    <Stack gap={2}>
+      <Input
+        fontSize={1}
+        rows={fix.multiline ? 3 : undefined}
+        value={value}
+        placeholder={fix.label}
+        onChange={(event) => setValue(event.currentTarget.value)}
+      />
+      <Flex align="center" gap={3}>
+        {fix.min || fix.max ? (
+          <Text
+            size={0}
+            muted={inRange}
+            style={inRange ? undefined : { color: 'var(--card-badge-caution-fg-color)' }}
+          >
+            {length} characters{fix.min && fix.max ? ` (aim for ${fix.min}–${fix.max})` : ''}
           </Text>
         ) : null}
-      </Stack>
-    </Flex>
-  </Card>
-)
+        <Box flex={1} />
+        <Button
+          text={`Save ${fix.label.toLowerCase()}`}
+          tone="primary"
+          fontSize={1}
+          padding={2}
+          disabled={!length}
+          onClick={() => onSave(value.trim())}
+        />
+      </Flex>
+    </Stack>
+  )
+}
 
-const Group = ({ title, findings, document }) => {
+const Finding = ({ finding, document, schemaType, onPatch, onGoTo }) => {
+  const fix = finding.fix
+  const altPath = fix?.type === 'alt' ? altPathFor(schemaType, document, fix.path) : null
+  return (
+    <Card padding={3} radius={2} tone={finding.level === 'ok' ? 'default' : TONE[finding.level]} border>
+      <Flex gap={3} align="flex-start">
+        <Box style={{ flex: 'none', width: '3.25rem' }}>
+          <Badge tone={TONE[finding.level]} fontSize={0}>
+            {LABEL[finding.level]}
+          </Badge>
+        </Box>
+        <Stack gap={3} flex={1}>
+          <Stack gap={2}>
+            <Text size={1}>{finding.message}</Text>
+            {finding.path?.length ? (
+              <Text size={0} muted>
+                {describePath(finding.path, document)}
+              </Text>
+            ) : null}
+          </Stack>
+          {fix?.type === 'text' ? <TextFix fix={fix} onSave={(value) => onPatch(fix.path, value)} /> : null}
+          {altPath ? <TextFix fix={fix} onSave={(value) => onPatch(altPath, value)} /> : null}
+          {finding.level !== 'ok' && (fix?.type === 'set' || finding.path?.length) ? (
+            <Flex gap={2} wrap="wrap">
+              {fix?.type === 'set' ? (
+                <Button
+                  text={fix.label}
+                  tone="primary"
+                  fontSize={1}
+                  padding={2}
+                  onClick={() => onPatch(fix.path, fix.value)}
+                />
+              ) : null}
+              {finding.path?.length ? (
+                <Button
+                  text="Go to field"
+                  mode="ghost"
+                  fontSize={1}
+                  padding={2}
+                  onClick={() => onGoTo(finding.path)}
+                />
+              ) : null}
+            </Flex>
+          ) : null}
+        </Stack>
+      </Flex>
+    </Card>
+  )
+}
+
+const Group = ({ title, findings, ...actions }) => {
   const problems = findings.filter((finding) => finding.level !== 'ok').length
   return (
     <Stack gap={2}>
@@ -65,14 +170,28 @@ const Group = ({ title, findings, document }) => {
       {findings.map((finding, index) => (
         // Findings have no id; the list is rebuilt whole on every run.
         // oxlint-disable-next-line react/no-array-index-key
-        <Finding key={index} finding={finding} document={document} />
+        <Finding key={index} finding={finding} {...actions} />
       ))}
     </Stack>
   )
 }
 
-export const PreflightView = ({ document: documentState }) => {
+export const PreflightView = ({ document: documentState, schemaType }) => {
   const document = documentState?.displayed
+  const { onChange, onFocus, onPathOpen } = useDocumentPane()
+  const { params, setParams } = usePaneRouter()
+
+  // A fix is an ordinary edit: it lands in the draft, and Undo takes it back.
+  const onPatch = useCallback((path, value) => onChange(PatchEvent.from(set(value, path))), [onChange])
+  // Back to the editor, opened and focused on the field: one change of the pane's address, so neither undoes the other.
+  const onGoTo = useCallback(
+    (path) => {
+      onPathOpen(path)
+      onFocus(path)
+      setParams({ ...params, view: undefined, path: pathToString(path) })
+    },
+    [params, setParams, onPathOpen, onFocus],
+  )
   const client = useClient({ apiVersion: '2025-02-19' })
   const [knownPaths, setKnownPaths] = useState(null)
   const [external, setExternal] = useState({ state: 'idle', results: [] })
@@ -148,18 +267,28 @@ export const PreflightView = ({ document: documentState }) => {
     for (const link of links) {
       const kind = linkKind(link.href)
       if (kind === 'invalid') {
+        const suggestion = suggestHref(link.href, knownPaths)
         findings.push({
           group: 'Links',
           level: 'error',
           message: `"${link.href}" is not a full address. Start it with / for a page here, or https:// for another site.`,
           path: link.path,
+          fix: suggestion
+            ? { type: 'set', path: link.path, value: suggestion, label: `Change to ${suggestion}` }
+            : undefined,
         })
       } else if (kind === 'internal' && knownPaths && !isKnownPath(link.href, knownPaths)) {
+        const suggestion = suggestHref(link.href, knownPaths)
         findings.push({
           group: 'Links',
           level: 'error',
-          message: `No page at ${link.href}.`,
+          message: suggestion
+            ? `No page at ${link.href}. Did you mean ${suggestion}?`
+            : `No page at ${link.href}.`,
           path: link.path,
+          fix: suggestion
+            ? { type: 'set', path: link.path, value: suggestion, label: `Change to ${suggestion}` }
+            : undefined,
         })
       } else if (kind === 'external') {
         const result = external.results.find((item) => item.url === link.href)
@@ -199,6 +328,7 @@ export const PreflightView = ({ document: documentState }) => {
   const seo = [...seoChecks(document), ...imageChecks(document)]
   const brand = brandChecks(document)
   const blocking = [...linkFindings, ...seo, ...brand].filter((finding) => finding.level === 'error').length
+  const actions = { document, schemaType, onPatch, onGoTo }
 
   return (
     <Box padding={4} style={{ maxWidth: '48rem' }}>
@@ -226,9 +356,9 @@ export const PreflightView = ({ document: documentState }) => {
             <Text size={1}>Outside links were not checked: {external.message}</Text>
           </Card>
         ) : null}
-        <Group title="Links" findings={linkFindings} document={document} />
-        <Group title="Search (SEO)" findings={seo} document={document} />
-        <Group title="Brand voice" findings={brand} document={document} />
+        <Group title="Links" findings={linkFindings} {...actions} />
+        <Group title="Search (SEO)" findings={seo} {...actions} />
+        <Group title="Brand voice" findings={brand} {...actions} />
       </Stack>
     </Box>
   )

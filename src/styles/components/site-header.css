@@ -11,7 +11,7 @@
 
 .site-header {
   --inset: 0;
-  --header-bg: oklch(19.466% 0.069 258.444deg / 90%);
+  --header-bg: oklch(8.368% 0.011 255.907deg / 85%);
   --header-solid: oklch(16% 0.012 260deg / 96%);
   --header-line: oklch(100% 0 0deg / 10%);
   --header-fg: oklch(100% 0 0deg);

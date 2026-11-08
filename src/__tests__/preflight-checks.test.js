@@ -7,6 +7,8 @@ import {
   isKnownPath,
   linkKind,
   seoChecks,
+  slugify,
+  suggestHref,
 } from '@/lib/preflight/checks'
 
 const doc = {
@@ -87,5 +89,56 @@ describe(brandChecks, () => {
   it('flags the expired tax credit and hype words', () => {
     const levels = brandChecks(doc).map((f) => f.level)
     expect(levels).toEqual(['error', 'warning'])
+  })
+})
+
+describe(slugify, () => {
+  it('turns a title into a web address', () => {
+    expect(slugify('Solar in Round Rock, Texas!')).toBe('solar-in-round-rock-texas')
+    expect(slugify('Café & Roof')).toBe('cafe-roof')
+  })
+})
+
+describe(suggestHref, () => {
+  const known = new Set(['/locations/round-rock', '/guides/how-solar-works-texas', '/contact'])
+
+  it('adds https:// to a bare web address', () => {
+    expect(suggestHref('www.austinenergy.com', known)).toBe('https://www.austinenergy.com')
+  })
+
+  it('adds the leading slash to a page path', () => {
+    expect(suggestHref('contact', known)).toBe('/contact')
+  })
+
+  it('matches a missing page to the closest real one', () => {
+    expect(suggestHref('/locations/roundrock', known)).toBe('/locations/round-rock')
+    expect(suggestHref('/how-solar-works-texas', known)).toBe('/guides/how-solar-works-texas')
+  })
+
+  it('gives up when nothing is close', () => {
+    expect(suggestHref('/totally-different-page-name-here', known)).toBeNull()
+  })
+})
+
+describe('seoChecks fixes', () => {
+  it('offers to turn off "No index" and to type a search title', () => {
+    const findings = seoChecks({ _type: 'page', title: 'Hi', slug: { current: 'x' }, seo: { noIndex: true } })
+    expect(findings.find((finding) => finding.path?.join('.') === 'seo.noIndex')?.fix).toMatchObject({
+      type: 'set',
+      value: false,
+    })
+    expect(findings.find((finding) => finding.path?.join('.') === 'seo.title')?.fix).toMatchObject({
+      type: 'text',
+      min: 30,
+      max: 60,
+    })
+  })
+
+  it('suggests a slug from the title', () => {
+    const findings = seoChecks({ _type: 'page', title: 'Solar in Kyle' })
+    expect(findings.find((finding) => finding.path?.[0] === 'slug')?.fix?.value).toStrictEqual({
+      _type: 'slug',
+      current: 'solar-in-kyle',
+    })
   })
 })

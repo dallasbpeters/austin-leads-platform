@@ -746,7 +746,8 @@ export const sectionProjection = `
     _key,
     _type,
     countyKey,
-    displayName
+    displayName,
+    "articles": articles[]->{ _id, title, "slug": slug.current }
   }
 `
 

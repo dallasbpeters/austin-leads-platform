@@ -4589,6 +4589,20 @@ const serviceAreaItemType = {
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Friendly tooltip label for this county.'),
     },
+    {
+      name: 'articles',
+      title: 'Articles for this area',
+      type: 'array',
+      description:
+        'Pages about this county, like "Solar in Austin". Tapping the county on the map lists them, and its chip links to the first one.',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'locationPage' }, { type: 'page' }, { type: 'post' }, { type: 'servicePage' }],
+        },
+      ],
+      validation: (Rule) => Rule.max(4).unique(),
+    },
   ],
   preview: {
     select: { title: 'displayName' },
