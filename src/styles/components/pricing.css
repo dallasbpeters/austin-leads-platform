@@ -1,9 +1,14 @@
 /**
  * .pricing block: a heading column beside numbered payment steps and callouts.
+ * On wide screens it sits on the page's four columns (page-grid.css): the
+ * heading in column 1, steps and callouts across columns 2-4, one step per
+ * column. With a 1rem gap, each gap's middle is a page gridline, so the
+ * gridlines divide the steps and the steps need no borders of their own.
  */
 
 .pricing {
-  padding: 3.5rem;
+  padding-block: 3.5rem;
+  padding-inline: 0;
   border-block-end: 1px solid var(--border);
   background: var(--color-white);
 }
@@ -26,12 +31,18 @@
 
 @media (width >= 64rem) {
   .pricing__layout {
-    grid-template-columns: 260px 1fr;
-    column-gap: 3.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 1rem;
   }
 
   .pricing__heading {
     grid-row: span 2;
+    padding-inline-end: 1.5rem;
+  }
+
+  .pricing__steps,
+  .pricing__callouts {
+    grid-column: 2 / -1;
   }
 }
 
@@ -60,26 +71,34 @@
   color: var(--muted-foreground);
 }
 
+/* A .grid-frame (hairlines and "+" marks out to the gridlines); the side padding
+ * matches its 0.5rem bleed, so the step columns stay on the page columns. */
 .pricing__steps {
   display: grid;
-  grid-template-columns: 1fr;
-  border-block: 1px solid var(--border);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
 }
 
-.pricing__steps--2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Beats .grid-frame's own padding (tabbed-panel.css loads later). */
+.pricing__steps.grid-frame {
+  padding-inline: 0.5rem;
 }
 
-.pricing__steps--3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+@media (width >= 40rem) {
+  .pricing__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 64rem) {
+  .pricing__steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 2rem;
+  }
 }
 
 .pricing__step {
   padding-block: 1.25rem;
-}
-
-.pricing__step + .pricing__step {
-  border-inline-start: 1px solid var(--border);
 }
 
 .pricing__step-index {
