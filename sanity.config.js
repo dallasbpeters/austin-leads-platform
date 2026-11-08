@@ -11,6 +11,7 @@ import { structureTool } from 'sanity/structure'
 import './src/sanity/studioPatches.css'
 
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
+import { CompactColorInput, isColorField } from './src/sanity/components/compact-color-input'
 import { isLinkField, PageLinkInput } from './src/sanity/components/page-link-input'
 import { PreflightView } from './src/sanity/components/preflight-view'
 import { removeBackgroundAssetSource } from './src/sanity/components/remove-background-source'
@@ -167,10 +168,18 @@ export default defineConfig({
     },
   },
   form: {
-    // Every link field (`href`, `ctaHref`, …) gets a page picker under its text box.
+    // Every link field (`href`, `ctaHref`, …) gets a page picker under its text box,
+    // and every color field starts closed, showing just its swatch.
     components: {
-      input: (props) =>
-        isLinkField(props) ? createElement(PageLinkInput, props) : props.renderDefault(props),
+      input: (props) => {
+        if (isLinkField(props)) {
+          return createElement(PageLinkInput, props)
+        }
+        if (isColorField(props)) {
+          return createElement(CompactColorInput, props)
+        }
+        return props.renderDefault(props)
+      },
     },
     file: {
       assetSources: isSanityConfigured() ? undefined : [],
