@@ -197,7 +197,7 @@ function HeroBackdrop({
           fetchPriority="high"
           quality={90}
           sizes="100vw"
-          className="solar-hero__media"
+          className="solar-hero__media solar-hero__shader-fallback"
         />
         <PixelReveal
           imageURL={primaryHeroImage.src}

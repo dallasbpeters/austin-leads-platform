@@ -571,3 +571,40 @@
     font-size: clamp(2.25rem, 10.5vw, 3rem);
   }
 }
+
+/*
+ * Shader hero: no flash of the plain photo. With WebGPU (flagged before paint,
+ * cloud-tone.js) the photo stays hidden; the dark dither color holds the space
+ * and the shader fades in when ready. Without WebGPU, without JavaScript, or
+ * when the shader can't run, the photo shows.
+ */
+html[data-webgpu='yes'] .solar-hero__shader-fallback {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+.solar-hero:has(.pixel-reveal[data-shader='unavailable']) .solar-hero__shader-fallback {
+  opacity: 1;
+}
+
+.pixel-reveal[data-shader='unavailable'] {
+  display: none;
+}
+
+.pixel-reveal__canvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 400ms ease-out;
+}
+
+.pixel-reveal[data-shader='ready'] .pixel-reveal__canvas {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-reveal__canvas,
+  html[data-webgpu='yes'] .solar-hero__shader-fallback {
+    transition: none;
+  }
+}
