@@ -60,8 +60,8 @@
 
     /* Wider than the content so more links fit before any move into the
      * menu, but capped at 100rem so it does not run edge to edge. */
-    left: max(var(--inset), calc((100% - 100rem) / 1.5));
-    right: max(var(--inset), calc((100% - 100rem) / 1.5));
+    left: max(var(--inset), calc((100% - 100rem) / 2));
+    right: max(var(--inset), calc((100% - 100rem) / 2));
   }
 
   .site-header__bar {

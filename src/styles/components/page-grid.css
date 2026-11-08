@@ -30,6 +30,7 @@
 .solar-costs__shell,
 .resources__shell,
 .consult__shell,
+.about-profile__copy,
 .about-profile__layout,
 .solar-adoption__inner,
 .guides__shell,
@@ -71,11 +72,12 @@
 }
 
 /*
- * A section inside another section (the quote banner inside its paper band)
- * is narrower than the page, so its own grid would land off the page lines.
- * The outer section already draws the grid there.
+ * The quote banner is a section inside its paper band and narrower than the
+ * page, so its own grid would land off the page lines; the band draws them.
+ * Only this one: other nested sections (the booking form) paint a background
+ * that covers the outer grid, so they keep their own.
  */
-:where(main section section)::before {
+:where(main section .quote-banner)::before {
   content: none;
 }
 

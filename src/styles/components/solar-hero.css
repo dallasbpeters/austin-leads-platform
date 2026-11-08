@@ -543,6 +543,14 @@
   object-fit: contain;
   object-position: right bottom;
   pointer-events: none;
+
+  /*
+   * Blend and opacity are set per hero in Studio (Cutout image). The hero is its
+   * own layer (isolation), so the cutout only blends with the sky and clouds.
+   * A blend is one extra compositing step per frame, not a second cloud layer.
+   */
+  mix-blend-mode: var(--cutout-blend, normal);
+  opacity: var(--cutout-opacity, 1);
 }
 
 /* Below desktop the header is a strip plus the bar, so the copy needs more room to clear it. */

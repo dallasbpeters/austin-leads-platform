@@ -57,7 +57,7 @@ function getHeroImageSources(heroSection) {
   }
 }
 
-function getHeroTextValues(heroSection, hasHeroBackdropMedia, heroMediaMode) {
+export function getHeroTextValues(heroSection, hasHeroBackdropMedia, heroMediaMode) {
   const body =
     heroSection?.body ||
     'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
@@ -159,6 +159,10 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
             quality={90}
             sizes="100vw"
             className="solar-hero__cutout"
+            style={{
+              '--cutout-blend': cleanRuntimeString(cutout.blendMode) || 'normal',
+              '--cutout-opacity': cutout.opacity ?? 1,
+            }}
           />
         ) : null}
       </>

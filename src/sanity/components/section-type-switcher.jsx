@@ -22,7 +22,7 @@ export function isPageSection(props) {
   )
 }
 
-const initialValueOf = (type) => {
+export const initialValueOf = (type) => {
   try {
     const initial = typeof type.initialValue === 'function' ? type.initialValue() : type.initialValue
     // An async initial value is skipped; the section's own `type` is derived instead.
@@ -53,19 +53,25 @@ export const SectionTypeSwitcher = (props) => {
     [target, value],
   )
 
-  if (!choices.length || !value) {
+  if (!choices.length || !value || props.readOnly) {
     return props.renderDefault(props)
   }
 
-  const moved = preview
-    ? filledFields(value).filter((name) => !preview.dropped.some((dropped) => dropped === name))
-    : []
+  // Fields dropped whole; a list that lost some items still moves across.
+  const droppedFields = new Set(
+    (preview?.dropped || []).filter((entry) => !entry.where && !entry.lost).map((entry) => entry.field),
+  )
+  const moved = preview ? filledFields(value).filter((name) => !droppedFields.has(name)) : []
 
-  // Field labels as the editor sees them ("Section background color", not sectionBackgroundColor).
-  const fieldTitle = (name) => {
-    const [field, where] = name.split(' (')
-    const title = schemaType.fields?.find((member) => member.name === field)?.type?.title || field
-    return where ? `${title} (${where}` : title
+  // Labels as the editor sees them ("Section background color", not sectionBackgroundColor).
+  // A dropped field is named by the old section; the list it sat in is named by the new one.
+  const titleIn = (type, name) => type?.fields?.find((member) => member.name === name)?.type?.title || name
+  const topTitle = (name) => titleIn(schemaType, name)
+  const describe = (entry) => {
+    if (entry.lost) {
+      return `${entry.lost} of ${entry.of} items in ${titleIn(target, entry.field)}`
+    }
+    return entry.where ? `${entry.field} (in ${titleIn(target, entry.where)})` : topTitle(entry.field)
   }
 
   const close = () => setTarget(null)
@@ -127,7 +133,7 @@ export const SectionTypeSwitcher = (props) => {
                 Moves across
               </Text>
               <Text size={1} muted>
-                {moved.length ? moved.map(fieldTitle).join(', ') : 'Nothing; the new section starts empty.'}
+                {moved.length ? moved.map(topTitle).join(', ') : 'Nothing; the new section starts empty.'}
               </Text>
             </Stack>
             {preview.dropped.length ? (
@@ -136,7 +142,7 @@ export const SectionTypeSwitcher = (props) => {
                   <Text size={1} weight="semibold">
                     Will not carry across
                   </Text>
-                  <Text size={1}>{preview.dropped.map(fieldTitle).join(', ')}</Text>
+                  <Text size={1}>{preview.dropped.map(describe).join(', ')}</Text>
                 </Stack>
               </Card>
             ) : null}

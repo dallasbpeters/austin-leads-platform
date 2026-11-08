@@ -9,6 +9,8 @@ import { at, defineMigration, set, setIfMissing, unset } from 'sanity/migrate'
  * `hex` is kept exactly as it is: it is what the site reads, so nothing changes
  * on the site. The text values are worked out from it with the same formulas
  * the picker uses, so editing a migrated color afterwards behaves as normal.
+ * A see-through color keeps its opacity: the old `alpha` (or `rgb.a`, or the
+ * last two hex digits) goes into the rgba, hsla and oklch text.
  *
  * Run:  npx sanity migration run normalize-color-values            (dry run)
  *       npx sanity migration run normalize-color-values --no-dry-run
@@ -18,12 +20,27 @@ const HEX = /^#([0-9a-f]{6}|[0-9a-f]{8})$/iu
 
 const channels = (hex: string) => [1, 3, 5].map((start) => Number.parseInt(hex.slice(start, start + 2), 16))
 
-const toRgba = (hex: string) => {
-  const [r, g, b] = channels(hex)
-  return `rgba(${r}, ${g}, ${b}, 1)`
+/** Opacity from 0 to 1, rounded like the picker (two decimals). */
+export const alphaOf = (color: Record<string, unknown>) => {
+  const hex = String(color.hex || '')
+  const rgb = color.rgb as { a?: unknown } | undefined
+  const raw =
+    typeof color.alpha === 'number'
+      ? color.alpha
+      : typeof rgb?.a === 'number'
+        ? rgb.a
+        : hex.length === 9
+          ? Number.parseInt(hex.slice(7, 9), 16) / 255
+          : 1
+  return Number(Math.min(Math.max(raw, 0), 1).toFixed(2))
 }
 
-const toHsla = (hex: string) => {
+export const toRgba = (hex: string, alpha = 1) => {
+  const [r, g, b] = channels(hex)
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
+export const toHsla = (hex: string, alpha = 1) => {
   const [r, g, b] = channels(hex).map((value) => value / 255)
   const max = Math.max(r, g, b)
   const min = Math.min(r, g, b)
@@ -42,10 +59,10 @@ const toHsla = (hex: string) => {
     }
     hue /= 6
   }
-  return `hsla(${Math.round(hue * 360)}, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%, 1)`
+  return `hsla(${Math.round(hue * 360)}, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%, ${alpha})`
 }
 
-const toOklch = (hex: string) => {
+export const toOklch = (hex: string, alpha = 1) => {
   const linear = (value: number) => (value > 0.040_45 ? ((value + 0.055) / 1.055) ** 2.4 : value / 12.92)
   const [r, g, b] = channels(hex).map((value) => linear(value / 255))
   const l = Math.cbrt(0.412_221_470_8 * r + 0.536_332_536_3 * g + 0.051_445_852_9 * b)
@@ -64,11 +81,12 @@ const toOklch = (hex: string) => {
     hue = 0
   }
   lightness = Math.min(Math.max(lightness, 0), 1)
-  return `oklch(${Number.parseFloat((lightness * 100).toFixed(1))}% ${Number.parseFloat(chroma.toFixed(3))} ${Number.parseFloat(hue.toFixed(1))})`
+  const color = `${Number((lightness * 100).toFixed(1))}% ${Number(chroma.toFixed(3))} ${Number(hue.toFixed(1))}`
+  return alpha < 1 ? `oklch(${color} / ${alpha})` : `oklch(${color})`
 }
 
 /** An old-format color: hsl/hsv/rgb stored as objects. */
-const isOldColor = (node: Record<string, unknown>) =>
+export const isOldColor = (node: Record<string, unknown>) =>
   node?._type === 'color' &&
   (typeof node.hsl === 'object' ||
     node.hsv !== undefined ||
@@ -80,17 +98,19 @@ export default defineMigration({
   migrate: {
     object(node) {
       const value = node as Record<string, unknown>
+      // No return value leaves the node unchanged.
       if (!isOldColor(value) || typeof value.hex !== 'string' || !HEX.test(value.hex)) {
-        return undefined
+        return
       }
       const hex = value.hex.slice(0, 7)
+      const alpha = alphaOf(value)
       return [
         at('hsv', unset()),
         at('rgb', unset()),
         at('alpha', unset()),
-        at('hsl', set(toHsla(hex))),
-        at('rgba', set(toRgba(hex))),
-        at('oklch', set(toOklch(hex))),
+        at('hsl', set(toHsla(hex, alpha))),
+        at('rgba', set(toRgba(hex, alpha))),
+        at('oklch', set(toOklch(hex, alpha))),
         at('isGradient', setIfMissing(false)),
       ]
     },

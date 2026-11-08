@@ -45,10 +45,10 @@ html:not([data-cloud-tone]),
     oklch(68.309% 0.13277 263.552) 100%
   );
   --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem oklch(20.768% 0.03985 265.767 / 16%));
-  --cloud-section-background: oklab(62.12% -0.01006 -0.16663);
+  --cloud-section-background: oklch(62.12% 0.16693 266.545);
   --cloud-section-foreground: oklch(98.397% 0.00632 255.755);
   --cloud-section-muted: oklch(91.99% 0.03404 263.604deg);
-  --cloud-section-eyebrow: #f0f0ef;
+  --cloud-section-eyebrow: oklch(95.486% 0.00133 106.428);
   --gradient-sky-a: oklch(88.282% 0.04208 263.03deg);
   --gradient-sky-b: oklch(83.981% 0.07972 275.157deg);
   --gradient-sky-from: oklch(91.99% 0.03404 263.604deg);
@@ -59,7 +59,7 @@ html:not([data-cloud-tone]),
   --cloud-image-overlay-strength: 55%;
   --cloud-image-saturation: 1;
   --cloud-lit-filter: none;
-  --cloud-hero-text: #0f172a;
+  --cloud-hero-text: oklch(20.768% 0.03982 265.755);
   --cloud-hero-accent: var(--gradient-sun-b);
   --cloud-hero-text-soft: oklch(20.768% 0.03985 265.767 / 78%);
 }
@@ -88,7 +88,7 @@ html:not([data-cloud-tone]),
   --cloud-image-saturation: 0.7;
   --cloud-lit-filter: brightness(0.8) sepia(0.2) saturate(1.1);
   --cloud-hero-text: oklch(98.209% 0.01397 74.303);
-  --cloud-hero-text-soft: rgb(255 248 239 / 80%);
+  --cloud-hero-text-soft: oklch(98.209% 0.01407 74.428 / 80%);
 }
 
 [data-cloud-tone='night'] {
@@ -98,10 +98,10 @@ html:not([data-cloud-tone]),
     oklch(17.949% 0.03056 265.776) 0%,
     oklch(20.849% 0.03938 267.619) 100%
   );
-  --cloud-tone-sprite-filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 38%));
-  --cloud-section-background: oklab(17.949% -0.0022 -0.03);
+  --cloud-tone-sprite-filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem oklch(20.768% 0.03982 265.755 / 38%));
+  --cloud-section-background: oklch(17.949% 0.03008 265.806);
   --cloud-section-foreground: oklch(98.23% 0.01434 213.479);
-  --cloud-section-muted: #c5e4ea;
+  --cloud-section-muted: oklch(89.822% 0.03364 210.635);
   --cloud-section-eyebrow: oklch(87.893% 0.1301 84.546);
   --gradient-sky-a: oklch(34.375% 0.06956 253.703);
   --gradient-sky-b: oklch(19.833% 0.03678 256.062);
@@ -113,8 +113,8 @@ html:not([data-cloud-tone]),
   --cloud-image-overlay-strength: 86%;
   --cloud-image-saturation: 0.45;
   --cloud-lit-filter: brightness(0.5) saturate(0.7);
-  --cloud-hero-text: oklch(100% 0.00011 271.152);
-  --cloud-hero-text-soft: oklch(100% 0.00011 271.152 / 78%);
+  --cloud-hero-text: oklch(100% 0 none);
+  --cloud-hero-text-soft: oklch(100% 0 none / 78%);
 }
 
 .cloud-background {
@@ -134,7 +134,6 @@ html:not([data-cloud-tone]),
   position: absolute;
   width: clamp(11rem, 23vw, 24rem);
   opacity: var(--cloud-opacity);
-  filter: var(--cloud-tone-sprite-filter);
 }
 
 /* The same sprite clouds, drawn about twice as big (the full-screen process animation). */
@@ -165,8 +164,8 @@ html:not([data-cloud-tone]),
 
 .cloud-theme-section--metrics.cloud-theme-section--clouds-hidden {
   --cloud-section-background: oklch(14.555% 0.03085 260.489);
-  --cloud-section-foreground: oklch(100% 0.00011 271.152);
-  --cloud-section-muted: oklch(100% 0.00011 271.152 / 70%);
+  --cloud-section-foreground: oklch(100% 0 none);
+  --cloud-section-muted: oklch(100% 0 none / 70%);
   --cloud-section-eyebrow: oklch(87.893% 0.1301 84.546);
 }
 
@@ -219,10 +218,17 @@ html:not([data-cloud-tone]),
     alternate;
 }
 
-/* One photo cloud per spot; every third is mirrored (cloud-background.jsx) so repeats are harder to spot. */
+/*
+ * One photo cloud per spot; every third is mirrored (cloud-background.jsx) so
+ * repeats are harder to spot. The tone filter (a drop shadow) sits on this still
+ * image, under the moving wrappers: on the outer wrapper the browser redrew the
+ * blurred shadow of every cloud on every frame of the drift, breathe and scroll
+ * motion, which made scrolling stutter.
+ */
 .cloud-background__sprite {
   display: block;
   width: 100%;
+  filter: var(--cloud-tone-sprite-filter);
   height: auto;
 
   /* Photo clouds are wide and thin; drawn larger than their spot so they read as clouds, not wisps. */

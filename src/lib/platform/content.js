@@ -294,6 +294,8 @@ export const sectionProjection = `
   },
   heroCutout{
     alt,
+    blendMode,
+    opacity,
     "url": asset->url
   },
   heroCards[]{

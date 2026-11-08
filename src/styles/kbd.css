@@ -1,8 +1,6 @@
 kbd {
   --kbd-color-background: var(--color-tertiary-100);
-  --kbd-color-border: {
-    color: var(--color-border);
-  };
+  --kbd-color-border: var(--color-border);
   --kbd-color-text: var(--color-primary);
 
   background-color: var(--kbd-color-background);
@@ -15,9 +13,10 @@ kbd {
   font-size: 0.75em;
   line-height: 1;
   min-width: 0.75rem;
-  display: block;
+  display: inline-block;
   text-align: center;
-  padding: 2px 5px;
+  padding-block: 0.125rem;
+  padding-inline: 0.25rem;
   position: relative;
   top: -1px;
 

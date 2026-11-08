@@ -93,7 +93,7 @@ export function AboutProfileSection({ section, sectionId }) {
 
             return (
               <li key={buildRuntimeKey('about-person', person.name, index)} className="about-profile__person">
-                <div className="about-profile__photo" style={{ background: photoBackground }}>
+                <div className="about-profile__photo" style={{ '--about-profile-photo-bg': photoBackground }}>
                   {profileImageUrl ? (
                     <Image
                       width={700}

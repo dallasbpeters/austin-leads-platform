@@ -8,7 +8,8 @@ import { portableTextToPlainText } from './portableText'
  * A field takes the source field of the same name, else the first unused field
  * of the same meaning (FIELD_GROUPS), as long as the value fits the new field.
  * List items are converted the same way, one level down. Anything left over is
- * reported, so the editor can see what will not carry across before converting.
+ * reported as { field, where } (where: the list it sat in), or { field, lost, of }
+ * for list items that could not be placed, so the editor sees it before converting.
  */
 
 /** Fields that mean the same thing under different names, in order of preference. */
@@ -59,7 +60,7 @@ const isEmpty = (value) =>
   (Array.isArray(value) && value.length === 0) ||
   (typeof value === 'object' &&
     !Array.isArray(value) &&
-    !Object.keys(value).some((key) => !key.startsWith('_')))
+    Object.keys(value).every((key) => key.startsWith('_')))
 
 /** True for `image` or any type built on it. */
 const isImageType = (type) => {
@@ -77,6 +78,14 @@ const hasImageAsset = (value) =>
 const isPortableTextType = (type) =>
   type?.jsonType === 'array' && (type.of || []).some((member) => member.name === 'block')
 
+/** A field with a fixed list of choices (options.list) only takes one of them. */
+const isAllowed = (value, type) => {
+  const list = type.options?.list
+  return (
+    !list?.length || list.some((choice) => (typeof choice === 'object' ? choice?.value : choice) === value)
+  )
+}
+
 const randomKey = () => Math.random().toString(36).slice(2, 14)
 
 const textToBlocks = (text) =>
@@ -91,6 +100,36 @@ const textToBlocks = (text) =>
       markDefs: [],
       children: [{ _type: 'span', _key: randomKey(), text: paragraph, marks: [] }],
     }))
+
+/** Image keys that carry over between any two image types. */
+const IMAGE_KEYS = ['asset', 'crop', 'hotspot']
+const ALT_NAMES = new Set(['alt', 'altText'])
+
+/**
+ * An image retyped as `type`: the picture itself, plus the alt text under the
+ * name `type` uses for it (alt or altText). Other fields are reported.
+ */
+function toImage(image, type, report, where, fallbackAlt = '') {
+  const result = { _type: type.name }
+  for (const key of IMAGE_KEYS) {
+    if (image[key] !== undefined) {
+      result[key] = image[key]
+    }
+  }
+  const alt = image.alt || image.altText || fallbackAlt
+  const altField = (type.fields || []).find((field) => ALT_NAMES.has(field.name))
+  if (alt && altField) {
+    result[altField.name] = alt
+  } else if (alt) {
+    report({ field: image.alt ? 'alt' : 'altText', where })
+  }
+  for (const [key, value] of Object.entries(image)) {
+    if (!key.startsWith('_') && !IMAGE_KEYS.includes(key) && !ALT_NAMES.has(key) && !isEmpty(value)) {
+      report({ field: key, where })
+    }
+  }
+  return result
+}
 
 /** The first image found in an item, for list items that become plain images. */
 const firstImageIn = (value) =>
@@ -112,19 +151,23 @@ function convertItem(item, members, report, where) {
   const imageMember = members.find(isImageType)
   if (imageMember) {
     if (hasImageAsset(item)) {
-      return { ...item, _type: imageMember.name, _key: key }
+      return { ...toImage(item, imageMember, report, where), _key: key }
     }
     const found = firstImageIn(item)
     if (found) {
       const [field, image] = found
-      const alt = item.alt || item.altText || portableTextToPlainText(item.title || item.label || '')
-      const leftover = Object.keys(item).filter(
-        (name) => !name.startsWith('_') && name !== field && !isEmpty(item[name]),
-      )
-      for (const name of leftover) {
-        report.add(`${name} (${where})`)
+      // The item's own alt text, else its title, describes the picture.
+      const titleText = portableTextToPlainText(item.title || item.label || '')
+      const altText = image.alt || image.altText || item.alt || item.altText || titleText
+      const usedTitle = altText === titleText && titleText !== ''
+      for (const [name, value] of Object.entries(item)) {
+        const carried =
+          name === field || ALT_NAMES.has(name) || (usedTitle && ['title', 'label'].includes(name))
+        if (!name.startsWith('_') && !carried && !isEmpty(value)) {
+          report({ field: name, where })
+        }
       }
-      return { ...image, _type: imageMember.name, _key: key, ...(alt ? { alt } : {}) }
+      return { ...toImage(image, imageMember, report, where, altText), _key: key }
     }
   }
   const objectMember = members.find(
@@ -148,11 +191,9 @@ function convertValue(value, type, report, where) {
   }
   switch (type.jsonType) {
     case 'string': {
-      if (typeof value === 'string') {
-        return value
-      }
-      const text = Array.isArray(value) ? portableTextToPlainText(value) : ''
-      return text || null
+      const text =
+        typeof value === 'string' ? value : Array.isArray(value) ? portableTextToPlainText(value) : ''
+      return text && isAllowed(text, type) ? text : null
     }
     case 'number':
     case 'boolean': {
@@ -167,6 +208,9 @@ function convertValue(value, type, report, where) {
       }
       const members = type.of || []
       const items = value.map((item) => convertItem(item, members, report, where)).filter(Boolean)
+      if (items.length < value.length) {
+        report({ field: where, lost: value.length - items.length, of: value.length })
+      }
       return items.length ? items : null
     }
     case 'object': {
@@ -174,7 +218,7 @@ function convertValue(value, type, report, where) {
         return null
       }
       if (isImageType(type)) {
-        return hasImageAsset(value) ? { ...value, _type: type.name } : null
+        return hasImageAsset(value) ? toImage(value, type, report, where) : null
       }
       if (hasImageAsset(value) || value._ref) {
         return null
@@ -194,29 +238,42 @@ function convertValue(value, type, report, where) {
   }
 }
 
-/** Builds an object of `type` from `source`, field by field. */
+/**
+ * Builds an object of `type` from `source`, field by field: every field takes its
+ * same-named source field first, then the empty ones take a field of the same meaning.
+ */
 function convertObject(source, type, report, where) {
   const result = { _type: type.name }
   const used = new Set()
-  for (const field of type.fields || []) {
-    if (SKIP_KEYS.has(field.name)) {
-      continue
+  const fields = (type.fields || []).filter((field) => !SKIP_KEYS.has(field.name))
+  const take = (field, candidate) => {
+    if (used.has(candidate) || isEmpty(source[candidate])) {
+      return false
     }
-    for (const candidate of candidatesFor(field.name)) {
-      if (used.has(candidate) || isEmpty(source[candidate])) {
-        continue
-      }
-      const value = convertValue(source[candidate], field.type, report, `in ${field.name}`)
-      if (value !== null) {
-        result[field.name] = value
-        used.add(candidate)
-        break
-      }
+    // What this attempt could not carry counts only if the attempt is kept.
+    const attempt = []
+    const value = convertValue(source[candidate], field.type, (entry) => attempt.push(entry), field.name)
+    if (value === null) {
+      return false
+    }
+    result[field.name] = value
+    used.add(candidate)
+    for (const entry of attempt) {
+      report(entry)
+    }
+    return true
+  }
+  for (const field of fields) {
+    take(field, field.name)
+  }
+  for (const field of fields) {
+    if (!(field.name in result)) {
+      candidatesFor(field.name).some((candidate) => take(field, candidate))
     }
   }
   for (const [key, value] of Object.entries(source)) {
     if (!key.startsWith('_') && !SKIP_KEYS.has(key) && !used.has(key) && !isEmpty(value)) {
-      report.add(where ? `${key} (${where})` : key)
+      report({ field: key, where })
     }
   }
   return Object.keys(result).length > 1 ? result : null
@@ -224,10 +281,12 @@ function convertObject(source, type, report, where) {
 
 /**
  * Converts a section to `targetType`. Returns { value, dropped }: the new
- * section (same _key) and the names of fields that will not carry across.
+ * section (same _key) and what will not carry across ({ field, where } for a
+ * field, { field, lost, of } for list items that could not be placed).
  */
 export function convertSection(section, targetType, initialValue = {}) {
-  const report = new Set()
+  const dropped = new Map()
+  const report = (entry) => dropped.set(JSON.stringify(entry), entry)
   const converted = convertObject(section, targetType, report, '') || { _type: targetType.name }
   const value = {
     ...initialValue,
@@ -236,7 +295,7 @@ export function convertSection(section, targetType, initialValue = {}) {
     _key: section._key,
     type: initialValue.type || targetType.name.replace(/Section$/u, ''),
   }
-  return { value, dropped: [...report] }
+  return { value, dropped: [...dropped.values()] }
 }
 
 /** The fields of `section` that hold content, for showing what will carry across. */

@@ -2114,7 +2114,39 @@ const heroSpecificFields = [
     description:
       'A PNG with a see-through background (for example, solar panels). It sits on top of the drifting clouds.',
     options: { hotspot: false },
-    fields: [{ name: 'alt', title: 'Alt text', type: 'string' }],
+    fields: [
+      { name: 'alt', title: 'Alt text', type: 'string' },
+      {
+        name: 'blendMode',
+        title: 'Blend with the sky',
+        type: 'string',
+        description:
+          'How the cutout mixes with the sky and clouds behind it. Luminosity or Soft light let the sky color and drifting clouds show in dark glass. Normal shows the photo as it is.',
+        initialValue: 'normal',
+        options: {
+          list: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'Luminosity (sky color, photo detail)', value: 'luminosity' },
+            { title: 'Soft light', value: 'soft-light' },
+            { title: 'Overlay', value: 'overlay' },
+            { title: 'Hard light', value: 'hard-light' },
+            { title: 'Multiply (darker)', value: 'multiply' },
+            { title: 'Screen (lighter)', value: 'screen' },
+            { title: 'Darken', value: 'darken' },
+            { title: 'Lighten', value: 'lighten' },
+            { title: 'Color', value: 'color' },
+          ],
+        },
+      },
+      {
+        name: 'opacity',
+        title: 'Opacity',
+        type: 'number',
+        description: 'From 0.2 (faint) to 1 (solid). Lower lets more sky through.',
+        initialValue: 1,
+        validation: (Rule) => Rule.min(0.2).max(1),
+      },
+    ],
     hidden: hideUnlessHeroMediaMode('clouds'),
   },
   {
