@@ -6,14 +6,60 @@ import PortableTextContent from '@/components/portable-text-content'
 import { Button } from '@/components/ui/button'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { shouldShowClouds } from '@/lib/platform/section-helpers'
+import { surfaceTone } from '@/lib/platform/surface-tone'
+import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 
-function BannerCtaContent({ isCloudTheme, section }) {
+const BUTTON_VARIANTS = new Set(['default', 'secondary', 'outline', 'dark'])
+
+/*
+ * The Banner style settings (Sanity bannerCtaSection). Overlay color, strength and text
+ * color only apply without clouds; with clouds on, the cloud theme sets them.
+ */
+function bannerStyle(section, isCloudTheme) {
+  const layout = cleanRuntimeString(section?.bannerLayout) === 'centered' ? 'centered' : 'split'
+  const variant = cleanRuntimeString(section?.bannerButtonVariant)
+  const overlayColor = cleanRuntimeString(section?.bannerOverlayColor) || null
+  const opacity = Number(section?.bannerOverlayOpacity)
+  const chosenTone = cleanRuntimeString(section?.bannerTextTone)
+  // "Light"/"Dark" name the text; surfaceTone names the overlay, so a light overlay means dark text.
+  const autoTone = overlayColor ? surfaceTone(overlayColor) : null
+  let textOn = null
+  if (chosenTone === 'light') {
+    textOn = 'dark'
+  } else if (chosenTone === 'dark') {
+    textOn = 'light'
+  } else if (autoTone) {
+    textOn = autoTone
+  }
+  return {
+    layout,
+    buttonVariant: BUTTON_VARIANTS.has(variant) ? variant : 'default',
+    overlay: isCloudTheme
+      ? null
+      : {
+          '--banner-overlay': cleanRuntimeString(section?.bannerOverlayGradient) || overlayColor || undefined,
+          '--banner-overlay-opacity': Number.isFinite(opacity)
+            ? Math.min(Math.max(opacity, 0), 100) / 100
+            : undefined,
+        },
+    textOn: isCloudTheme ? null : textOn,
+  }
+}
+
+function BannerCtaContent({ isCloudTheme, section, style }) {
   const ctaLabel = String(section?.ctaLabel || '').trim()
   const ctaHref = section?.ctaHref || '#consultation'
 
   return (
-    <div className={cn('banner-cta__content', !isCloudTheme && 'banner-cta__content--solid')}>
+    <div
+      className={cn(
+        'banner-cta__content',
+        !isCloudTheme && 'banner-cta__content--solid',
+        style.layout === 'centered' && 'banner-cta__content--centered',
+        style.textOn && `banner-cta__content--on-${style.textOn}`,
+      )}
+    >
       <div className="banner-cta__copy">
         {section?.eyebrow ? (
           <p
@@ -38,7 +84,15 @@ function BannerCtaContent({ isCloudTheme, section }) {
         ) : null}
       </div>
       {ctaLabel ? (
-        <Button href={ctaHref} shape="pill" size="md" className="banner-cta__button">
+        <Button
+          href={ctaHref}
+          variant={style.buttonVariant}
+          size="md"
+          className={cn(
+            'banner-cta__button',
+            style.buttonVariant === 'outline' && 'banner-cta__button--outline',
+          )}
+        >
           {ctaLabel}
         </Button>
       ) : null}
@@ -51,6 +105,7 @@ export function BannerCtaSection({ section, sectionId }) {
     getImageUrl(section?.imageAsset, section?.image, { width: 1600 }) || '/images/solar-install.png'
   const imageAlt = getImageAlt(section?.imageAsset, section?.image, section?.title || 'Consultation banner')
   const showClouds = shouldShowClouds(section?.cloudVisibility)
+  const style = bannerStyle(section, showClouds)
 
   return (
     <CloudSectionBackground
@@ -79,8 +134,9 @@ export function BannerCtaSection({ section, sectionId }) {
             'banner-cta__overlay',
             showClouds ? 'cloud-theme-section__image-overlay' : 'banner-cta__overlay--solid',
           )}
+          style={style.overlay || undefined}
         />
-        <BannerCtaContent isCloudTheme={showClouds} section={section} />
+        <BannerCtaContent isCloudTheme={showClouds} section={section} style={style} />
       </div>
     </CloudSectionBackground>
   )

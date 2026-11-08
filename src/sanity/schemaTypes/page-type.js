@@ -4324,7 +4324,82 @@ const bannerCtaSectionType = {
       ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
     cloudVisibilityField,
+    {
+      name: 'bannerLayout',
+      title: 'Layout',
+      type: 'string',
+      fieldset: 'bannerStyle',
+      initialValue: 'split',
+      options: {
+        list: [
+          { title: 'Copy left, button right', value: 'split' },
+          { title: 'Centered', value: 'centered' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    },
+    {
+      name: 'bannerOverlayColor',
+      title: 'Overlay color',
+      type: 'color',
+      fieldset: 'bannerStyle',
+      description: 'Laid over the photo. Gradients work here. Leave empty for the theme color.',
+      hidden: ({ parent }) => parent?.cloudVisibility !== 'hide',
+    },
+    {
+      name: 'bannerOverlayOpacity',
+      title: 'Overlay strength (%)',
+      type: 'number',
+      fieldset: 'bannerStyle',
+      description: 'How much the overlay covers the photo: 0 shows the photo as is, 100 hides it.',
+      initialValue: 70,
+      validation: (Rule) => Rule.min(0).max(100),
+      hidden: ({ parent }) => parent?.cloudVisibility !== 'hide',
+    },
+    {
+      name: 'bannerTextTone',
+      title: 'Text color',
+      type: 'string',
+      fieldset: 'bannerStyle',
+      initialValue: 'auto',
+      options: {
+        list: [
+          { title: 'Automatic (contrasts with the overlay)', value: 'auto' },
+          { title: 'Light', value: 'light' },
+          { title: 'Dark', value: 'dark' },
+        ],
+        layout: 'radio',
+      },
+      hidden: ({ parent }) => parent?.cloudVisibility !== 'hide',
+    },
+    {
+      name: 'bannerButtonVariant',
+      title: 'Button style',
+      type: 'string',
+      fieldset: 'bannerStyle',
+      initialValue: 'default',
+      options: {
+        list: [
+          { title: 'Red (primary)', value: 'default' },
+          { title: 'Secondary', value: 'secondary' },
+          { title: 'Outline', value: 'outline' },
+          { title: 'Dark', value: 'dark' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    },
   ]),
+  fieldsets: [
+    {
+      name: 'bannerStyle',
+      title: 'Banner style',
+      description:
+        'Overlay and text color apply when the cloud background is hidden; with clouds on, the cloud theme sets them.',
+      options: { collapsible: true, collapsed: false },
+    },
+  ],
   preview: {
     select: {
       title: 'title',

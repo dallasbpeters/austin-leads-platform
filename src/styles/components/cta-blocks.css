@@ -190,8 +190,10 @@
   inset: 0;
 }
 
+/* Overlay color (or gradient) and strength come from Sanity (Banner style); default: the theme color at 70%. */
 .banner-cta__overlay--solid {
-  background: color-mix(in oklch, var(--secondary) 70%, transparent);
+  background: var(--banner-overlay, var(--secondary));
+  opacity: var(--banner-overlay-opacity, 0.7);
 }
 
 .banner-cta__content {
@@ -258,6 +260,58 @@
   .banner-cta__button {
     justify-self: center;
   }
+}
+
+/* Banner style: Centered stacks the copy over the button, centered. */
+.banner-cta__content--centered {
+  justify-items: center;
+  text-align: center;
+}
+
+@media (width >= 48rem) {
+  .banner-cta__content--centered {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.banner-cta__content--centered .banner-cta__copy,
+.banner-cta__content--centered .banner-cta__body {
+  margin-inline: auto;
+}
+
+.banner-cta__content--centered .banner-cta__button {
+  justify-self: center;
+}
+
+/* Banner style: text color, set by hand or worked out from the overlay color. */
+.banner-cta__content--on-dark {
+  --banner-ink: #fff;
+}
+
+.banner-cta__content--on-light {
+  --banner-ink: #0f172a;
+}
+
+.banner-cta__content--on-dark,
+.banner-cta__content--on-light {
+  color: var(--banner-ink);
+}
+
+.banner-cta__content--on-dark .banner-cta__eyebrow,
+.banner-cta__content--on-light .banner-cta__eyebrow {
+  color: color-mix(in oklch, var(--banner-ink) 70%, transparent);
+}
+
+.banner-cta__content--on-dark .banner-cta__body,
+.banner-cta__content--on-light .banner-cta__body {
+  color: color-mix(in oklch, var(--banner-ink) 82%, transparent);
+}
+
+/* An outline button takes the banner's text color, so it reads on any overlay. */
+.banner-cta__content .banner-cta__button--outline {
+  border-color: currentcolor;
+  color: inherit;
+  background: transparent;
 }
 
 /* ---- cross-lead cta banner ---- */
