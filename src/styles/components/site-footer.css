@@ -125,7 +125,9 @@
   align-content: start;
   gap: 1.25rem;
   padding-block: 0 2.5rem;
-  padding-inline-end: 1.5rem;
+
+  /* Inset from the gridlines on both sides, so no link sits on a line. */
+  padding-inline: 1rem;
 }
 
 .site-footer__group:nth-child(n + 3) {
