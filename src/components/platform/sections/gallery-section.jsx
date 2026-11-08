@@ -1,7 +1,7 @@
 'use client'
 
+import Image from '@/components/site-image'
 import { MultiplePages, NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
-import Image from 'next/image'
 import { Dialog } from 'radix-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 

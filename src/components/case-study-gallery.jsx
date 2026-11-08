@@ -1,7 +1,7 @@
 'use client'
 
+import Image from '@/components/site-image'
 import { NavArrowLeft, NavArrowRight } from 'iconoir-react'
-import Image from 'next/image'
 import { useCallback, useEffect, useId, useState } from 'react'
 
 /**

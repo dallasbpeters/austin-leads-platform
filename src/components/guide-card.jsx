@@ -13,7 +13,7 @@ import {
   WindowTabs,
 } from 'iconoir-react'
 
-import Image from 'next/image'
+import Image from '@/components/site-image'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 

@@ -1,5 +1,5 @@
 // oxlint-disable func-style
-import Image from 'next/image'
+import Image from '@/components/site-image'
 
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'

@@ -1,4 +1,5 @@
 // oxlint-disable sort-keys radix eqeqeq no-eq-null
+import Image from '@/components/site-image'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import { resolveServiceIcon } from '@/lib/service-icon'
 import {
@@ -11,7 +12,6 @@ import {
   Thunderstorm,
   WindowTabs,
 } from 'iconoir-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'

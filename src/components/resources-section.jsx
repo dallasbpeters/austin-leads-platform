@@ -1,6 +1,6 @@
+import Image from '@/components/site-image'
 import { resolveIconoirIcon } from '@/lib/resolve-icon'
 import { HomeShield, SunLight, Thunderstorm } from 'iconoir-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'

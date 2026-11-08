@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from '@/components/site-image'
 
 import CloudSectionBackground from '@/components/cloud-section-background'
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'

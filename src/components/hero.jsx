@@ -1,6 +1,6 @@
 // oxlint-disable func-style jsx-a11y/media-has-caption
+import Image from '@/components/site-image'
 import { ArrowUpRight } from 'iconoir-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'

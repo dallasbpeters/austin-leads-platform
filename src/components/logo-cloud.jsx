@@ -1,5 +1,5 @@
 // oxlint-disable func-style
-import Image from 'next/image'
+import Image from '@/components/site-image'
 
 import { Marquee } from '@/components/magicui/marquee'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
