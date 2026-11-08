@@ -87,6 +87,8 @@ export default defineConfig({
         '#ffffff',
         '#000000',
       ],
+      // The HEX/RGBA/HSL/OKLCH readouts below the picker take space and nobody copies from them.
+      disableCopyValues: true,
     }),
     structureTool({
       structure: studioStructure,
