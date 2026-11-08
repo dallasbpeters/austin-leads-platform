@@ -24,20 +24,18 @@
 }
 
 /*
- * The readout reuses the calculator's stat tiles (solar-calculator.css), in one
- * row that wraps. The 1px gap over a line-colored background draws the dividers,
- * so they land right however many tiles fit on a row.
+ * The readout reuses the calculator's stat tiles (solar-calculator.css), in a
+ * grid that wraps. Each tile draws a 1px ring into the 1px gap, so the dividers
+ * land right however many tiles fit on a row, and an empty last cell stays blank.
  */
 .solar-fit-stepper__readout {
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   gap: 1px;
-  background: var(--calc-line);
-  box-shadow: inset 0 0 0 1px var(--calc-line);
 }
 
 .solar-fit-stepper__readout .solar-calculator__stat {
   border: 0;
-  background: var(--calc-tile);
+  box-shadow: 0 0 0 1px var(--calc-line);
 }
 
 .solar-fit-stepper__progress {
@@ -204,14 +202,22 @@
   font-weight: 600;
 }
 
-.solar-fit-stepper__results {
+/* The readout panel: numbers alone, or the roof map beside them once an address is found. */
+.solar-fit-stepper__panel {
   display: grid;
   gap: 1rem;
 }
 
+.solar-fit-stepper__numbers {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  min-width: 0;
+}
+
 @media (width >= 64rem) {
-  .solar-fit-stepper__results {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  .solar-fit-stepper__panel--map {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     align-items: start;
   }
 }
@@ -226,7 +232,7 @@
   }
 }
 
-/* The estimate step sizes to its content; only the question steps keep a steady height. */
-.solar-fit-stepper__step:has(.solar-fit-stepper__results) {
+/* The last step (the contact form follows it) sizes to its content; question steps keep a steady height. */
+.solar-fit-stepper__step:not(form) {
   min-height: 0;
 }

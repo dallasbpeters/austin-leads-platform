@@ -158,18 +158,51 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
         </div>
 
         <div className="solar-calculator__frame grid-frame solar-fit-stepper">
-          {/* The readout: the estimate so far, updated with every answer. */}
-          {stats.length ? (
-            <dl className="solar-calculator__stats solar-fit-stepper__readout" aria-live="polite">
-              {stats.map((output) => (
-                <div key={output.key} className="solar-calculator__stat">
-                  <dt className="solar-calculator__eyebrow">{output.label}</dt>
-                  <dd className="solar-calculator__stat-value">{formatOutput(output)}</dd>
-                  {output.detail ? <dd className="solar-calculator__stat-detail">{output.detail}</dd> : null}
+          {/*
+           * The readout, always on show and updated with every answer: the roof map (once an
+           * address is found), the estimate numbers, the monthly figures and the fit message.
+           */}
+          <div
+            className={cn('solar-fit-stepper__panel', roof && 'solar-fit-stepper__panel--map')}
+            aria-live="polite"
+          >
+            {roof ? (
+              <RoofMap roof={roof} photo={roofState.photo} count={panelCount} address={roofState.address} />
+            ) : null}
+            <div className="solar-fit-stepper__numbers">
+              {stats.length ? (
+                <dl className="solar-calculator__stats solar-fit-stepper__readout">
+                  {stats.map((output) => (
+                    <div key={output.key} className="solar-calculator__stat">
+                      <dt className="solar-calculator__eyebrow">{output.label}</dt>
+                      <dd className="solar-calculator__stat-value">{formatOutput(output)}</dd>
+                      {output.detail ? (
+                        <dd className="solar-calculator__stat-detail">{output.detail}</dd>
+                      ) : null}
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+              {highlights.length ? (
+                <div className="solar-calculator__system">
+                  {highlights.map((output) => (
+                    <div key={output.key} className="solar-fit__highlight">
+                      <p className="solar-calculator__eyebrow">{output.label}</p>
+                      <p className="solar-calculator__system-value">{formatOutput(output)}</p>
+                      {output.detail ? (
+                        <p className="solar-calculator__system-detail">{output.detail}</p>
+                      ) : null}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </dl>
-          ) : null}
+              ) : null}
+              {fitMessage ? (
+                <p className={cn('solar-fit__verdict', result.qualifies && 'solar-fit__verdict--yes')}>
+                  {fitMessage}
+                </p>
+              ) : null}
+            </div>
+          </div>
 
           <div className="solar-fit-stepper__progress" aria-hidden="true">
             <span
@@ -192,9 +225,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
             }
           >
             <p className="solar-fit-stepper__count">
-              {isLast
-                ? 'Your estimate'
-                : `${Math.min(stepIndex, steps.length - 1) + 1} of ${steps.length - 1}`}
+              {isLast ? 'Last step' : `${Math.min(stepIndex, steps.length - 1) + 1} of ${steps.length - 1}`}
             </p>
 
             {step.kind === 'address' ? (
@@ -207,7 +238,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                   {roofState.status === 'loading'
                     ? 'Finding your roof…'
                     : roofState.status === 'found'
-                      ? 'Found your roof. We placed the panels for you; you will see them at the end.'
+                      ? 'Found your roof. The panels are on the map above.'
                       : roofState.status === 'none'
                         ? 'We could not map that roof from the air, so your answers set the estimate.'
                         : roofState.status === 'error'
@@ -283,34 +314,9 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
             ) : null}
 
             {isLast ? (
-              <div className="solar-fit-stepper__results">
-                {roof ? (
-                  <RoofMap
-                    roof={roof}
-                    photo={roofState.photo}
-                    count={panelCount}
-                    address={roofState.address}
-                  />
-                ) : null}
-                {highlights.length ? (
-                  <div className="solar-calculator__system">
-                    {highlights.map((output) => (
-                      <div key={output.key} className="solar-fit__highlight">
-                        <p className="solar-calculator__eyebrow">{output.label}</p>
-                        <p className="solar-calculator__system-value">{formatOutput(output)}</p>
-                        {output.detail ? (
-                          <p className="solar-calculator__system-detail">{output.detail}</p>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-                {fitMessage ? (
-                  <p className={cn('solar-fit__verdict', result.qualifies && 'solar-fit__verdict--yes')}>
-                    {fitMessage}
-                  </p>
-                ) : null}
-              </div>
+              <p className="solar-fit-stepper__label">
+                That is your estimate above. Want the full report and a real quote?
+              </p>
             ) : null}
 
             {broken.length ? (
