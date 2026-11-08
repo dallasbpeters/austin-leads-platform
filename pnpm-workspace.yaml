@@ -5,4 +5,5 @@ allowBuilds:
   protobufjs: true
   sharp: false
 patchedDependencies:
+  '@overpunch/deploy-vercel-from-sanity@1.6.0': patches/@overpunch__deploy-vercel-from-sanity@1.6.0.patch
   sanity-plugin-color-input@1.4.1: patches/sanity-plugin-color-input@1.4.1.patch

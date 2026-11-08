@@ -1,6 +1,5 @@
 import { vercelDeploy } from '@overpunch/deploy-vercel-from-sanity'
 import { assist } from '@sanity/assist'
-import { contextPlugin } from '@sanity/context/studio'
 import { RocketIcon } from '@sanity/icons/Rocket'
 import { createElement } from 'react'
 import { defineConfig } from 'sanity'
@@ -57,12 +56,6 @@ export default defineConfig({
   // encode `{ tool, structure }` routes and crash with "Unable to find matching route for state".
   releases: { enabled: false },
   plugins: [
-    /* Renamed in @sanity/context v2. The plugin itself is deprecated: endpoint
-     * config and Insights now live in the Context app (Sanity Dashboard ->
-     * Apps -> Sanity Labs). Kept registered because the dataset still holds a
-     * `sanity.agentContext` document; drop it once that is migrated. The
-     * "Agent Insights" tab is off: it only showed a notice that Insights moved. */
-    contextPlugin({ insights: { enabled: false } }),
     // Adds the "Instagram post" block; it is allowed in the rich text field (portableTextSimple).
     instagramEmbed({ captionedByDefault: false, showEmbedPreview: true }),
     /* Deploy tab: start and watch Vercel deploys. Proxy mode, because the dataset is public:
