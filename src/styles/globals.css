@@ -64,6 +64,7 @@
 @import './components/story-grid.css';
 @import './components/testimonials.css';
 @import './components/solar-fit.css';
+@import './components/solar-fit-stepper.css';
 @import './components/site-footer.css';
 
 /* Utilities */

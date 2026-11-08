@@ -1,7 +1,7 @@
 'use client'
 
-import { NavArrowRight } from 'iconoir-react'
-import { useId, useMemo, useState } from 'react'
+import { NavArrowLeft, NavArrowRight } from 'iconoir-react'
+import { useId, useMemo, useRef, useState } from 'react'
 
 import { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
@@ -11,10 +11,11 @@ import { cn } from '@/lib/utils'
 import { AddressSearch, RoofMap } from './solar-fit-roof'
 
 /**
- * "See if solar is right for you": questions on the left, live results on the
- * right, and a contact step that sends the estimate. The questions, constants
- * and formulas come from Sanity (solarFitSection); the server reruns the same
- * model when the form is sent.
+ * "See if solar is right for you", as a one-question-at-a-time stepper (think
+ * Typeform): a live readout of the estimate sits above the question and updates
+ * with every answer; the last step shows the full estimate, the roof map and
+ * the contact form. The questions, constants and formulas come from Sanity
+ * (solarFitSection); the server reruns the same model when the form is sent.
  */
 export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   const model = useMemo(() => resolveModel(section), [section])
@@ -28,7 +29,39 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   // The panel count comes from the formula ("Panels wanted"), not from the visitor.
   const { result, panelCount } = useMemo(() => computeWithRoof(model, answers, roof), [model, answers, roof])
   // Questions marked "hide when the roof is found" (like shade) step aside once Google has the roof.
-  const visibleInputs = model.inputs.filter((input) => !(roof && input.hideWhenRoofFound))
+  const visibleInputs = useMemo(
+    () => model.inputs.filter((input) => !(roof && input.hideWhenRoofFound)),
+    [model, roof],
+  )
+
+  // Steps: the address, one per question, then the estimate (with the contact form).
+  const steps = useMemo(
+    () => [
+      { kind: 'address' },
+      ...visibleInputs.map((input) => ({ kind: 'input', input })),
+      { kind: 'results' },
+    ],
+    [visibleInputs],
+  )
+  const [stepIndex, setStepIndex] = useState(0)
+  const step = steps[Math.min(stepIndex, steps.length - 1)]
+  const isLast = step.kind === 'results'
+  const isChoice = step.kind === 'input' && (step.input.kind === 'select' || step.input.kind === 'yesno')
+  const StepTag = isLast ? 'div' : 'form'
+  const go = (delta) => setStepIndex((index) => Math.min(Math.max(index + delta, 0), steps.length - 1))
+  // Each step remounts (its key changes), so focus its first field as it mounts and
+  // Enter and the keyboard keep flowing. Not on first load: that would scroll the page.
+  const firstStep = useRef(true)
+  const focusFirstField = (node) => {
+    if (!node) {
+      return
+    }
+    if (firstStep.current) {
+      firstStep.current = false
+      return
+    }
+    node.querySelector('input, button[aria-pressed]')?.focus({ preventScroll: true })
+  }
 
   async function onPickAddress({ placeId, text, session }) {
     setRoofState({ status: 'loading', address: text })
@@ -124,107 +157,160 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
           </p>
         </div>
 
-        <div className="solar-calculator__frame grid-frame">
-          <div className="solar-calculator__inputs">
-            <div className="solar-calculator__field">
-              <label className="solar-calculator__label">Your home address</label>
-              <AddressSearch picked={roofState.address} onPick={onPickAddress} />
-              <p className="solar-fit__help">
-                {roofState.status === 'loading'
-                  ? 'Finding your roof…'
-                  : roofState.status === 'none'
-                    ? 'We could not map that roof from the air, so the answers below set the estimate.'
-                    : roofState.status === 'error'
-                      ? roofState.message || 'We could not look that up. The answers below set the estimate.'
-                      : 'We map your roof from satellite imagery and place the panels for you.'}
-              </p>
-            </div>
-            {visibleInputs.map((input) => (
-              <div key={input.key} className="solar-calculator__field">
-                <label htmlFor={`${fieldId}-${input.key}`} className="solar-calculator__label">
-                  {input.label}
-                </label>
-                {input.kind === 'select' || input.kind === 'yesno' ? (
-                  <select
-                    id={`${fieldId}-${input.key}`}
-                    className="solar-calculator__input"
-                    value={answers[input.key]}
-                    onChange={setAnswer(input.key)}
-                  >
-                    {input.options.map((option) => (
-                      <option key={option.label} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <div className="solar-fit__number">
-                    {input.prefix ? (
-                      <span className="solar-fit__affix" aria-hidden="true">
-                        {input.prefix}
-                      </span>
-                    ) : null}
-                    <input
-                      id={`${fieldId}-${input.key}`}
-                      type="number"
-                      inputMode="decimal"
-                      className="solar-fit__number-input"
-                      value={answers[input.key]}
-                      min={input.min}
-                      max={input.max}
-                      step={input.step || 'any'}
-                      onChange={setAnswer(input.key)}
-                    />
-                    {input.suffix ? (
-                      <span className="solar-fit__affix" aria-hidden="true">
-                        {input.suffix}
-                      </span>
-                    ) : null}
-                  </div>
-                )}
-                {input.help ? <p className="solar-fit__help">{input.help}</p> : null}
-              </div>
-            ))}
+        <div className="solar-calculator__frame grid-frame solar-fit-stepper">
+          {/* The readout: the estimate so far, updated with every answer. */}
+          {stats.length ? (
+            <dl className="solar-calculator__stats solar-fit-stepper__readout" aria-live="polite">
+              {stats.map((output) => (
+                <div key={output.key} className="solar-calculator__stat">
+                  <dt className="solar-calculator__eyebrow">{output.label}</dt>
+                  <dd className="solar-calculator__stat-value">{formatOutput(output)}</dd>
+                  {output.detail ? <dd className="solar-calculator__stat-detail">{output.detail}</dd> : null}
+                </div>
+              ))}
+            </dl>
+          ) : null}
+
+          <div className="solar-fit-stepper__progress" aria-hidden="true">
+            <span
+              style={{ width: `${((Math.min(stepIndex, steps.length - 1) + 1) / steps.length) * 100}%` }}
+            />
           </div>
 
-          <div className="solar-calculator__outputs">
-            {roof ? (
-              <RoofMap roof={roof} photo={roofState.photo} count={panelCount} address={roofState.address} />
-            ) : null}
-            {stats.length ? (
-              <dl className="solar-calculator__stats" aria-live="polite">
-                {stats.map((output) => (
-                  <div key={output.key} className="solar-calculator__stat">
-                    <dt className="solar-calculator__eyebrow">{output.label}</dt>
-                    <dd className="solar-calculator__stat-value">{formatOutput(output)}</dd>
-                    {output.detail ? (
-                      <dd className="solar-calculator__stat-detail">{output.detail}</dd>
-                    ) : null}
-                  </div>
-                ))}
-              </dl>
-            ) : null}
+          {/* A form, so Enter moves on as in Typeform; the last step holds the contact form instead. */}
+          <StepTag
+            ref={focusFirstField}
+            key={isLast ? 'results' : step.kind === 'address' ? 'address' : step.input.key}
+            className="solar-fit-stepper__step"
+            onSubmit={
+              isLast
+                ? undefined
+                : (event) => {
+                    event.preventDefault()
+                    go(1)
+                  }
+            }
+          >
+            <p className="solar-fit-stepper__count">
+              {isLast
+                ? 'Your estimate'
+                : `${Math.min(stepIndex, steps.length - 1) + 1} of ${steps.length - 1}`}
+            </p>
 
-            {highlights.length ? (
-              <div className="solar-calculator__system">
-                {highlights.map((output) => (
-                  <div key={output.key} className="solar-fit__highlight">
-                    <p className="solar-calculator__eyebrow">{output.label}</p>
-                    <p className="solar-calculator__system-value">{formatOutput(output)}</p>
-                    {output.detail ? (
-                      <p className="solar-calculator__system-detail">{output.detail}</p>
-                    ) : null}
-                  </div>
-                ))}
+            {step.kind === 'address' ? (
+              <div className="solar-fit-stepper__question">
+                <label htmlFor={`${fieldId}-address`} className="solar-fit-stepper__label">
+                  What is your home address?
+                </label>
+                <AddressSearch id={`${fieldId}-address`} picked={roofState.address} onPick={onPickAddress} />
+                <p className="solar-fit__help">
+                  {roofState.status === 'loading'
+                    ? 'Finding your roof…'
+                    : roofState.status === 'found'
+                      ? 'Found your roof. We placed the panels for you; you will see them at the end.'
+                      : roofState.status === 'none'
+                        ? 'We could not map that roof from the air, so your answers set the estimate.'
+                        : roofState.status === 'error'
+                          ? roofState.message || 'We could not look that up. Your answers set the estimate.'
+                          : 'We map your roof from satellite imagery and place the panels for you. You can skip this.'}
+                </p>
               </div>
             ) : null}
-            {fitMessage ? (
-              <p
-                className={cn('solar-fit__verdict', result.qualifies && 'solar-fit__verdict--yes')}
-                aria-live="polite"
-              >
-                {fitMessage}
-              </p>
+
+            {step.kind === 'input' && isChoice ? (
+              <fieldset className="solar-fit-stepper__question">
+                <legend className="solar-fit-stepper__label">{step.input.label}</legend>
+                {step.input.help ? <p className="solar-fit__help">{step.input.help}</p> : null}
+                <div className="solar-fit-stepper__choices">
+                  {step.input.options.map((option, index) => {
+                    const chosen = String(answers[step.input.key]) === String(option.value)
+                    return (
+                      <button
+                        key={option.label}
+                        type="button"
+                        aria-pressed={chosen}
+                        className={cn(
+                          'solar-fit-stepper__choice',
+                          chosen && 'solar-fit-stepper__choice--chosen',
+                        )}
+                        onClick={() => {
+                          setEdited((values) => ({ ...values, [step.input.key]: option.value }))
+                          // A beat to see the choice land, then on to the next question.
+                          setTimeout(() => go(1), 220)
+                        }}
+                      >
+                        <span className="solar-fit-stepper__choice-key" aria-hidden="true">
+                          {String.fromCodePoint(65 + index)}
+                        </span>
+                        {option.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </fieldset>
+            ) : null}
+
+            {step.kind === 'input' && !isChoice ? (
+              <div className="solar-fit-stepper__question">
+                <label htmlFor={`${fieldId}-${step.input.key}`} className="solar-fit-stepper__label">
+                  {step.input.label}
+                </label>
+                {step.input.help ? <p className="solar-fit__help">{step.input.help}</p> : null}
+                <div className="solar-fit__number solar-fit-stepper__number">
+                  {step.input.prefix ? (
+                    <span className="solar-fit__affix" aria-hidden="true">
+                      {step.input.prefix}
+                    </span>
+                  ) : null}
+                  <input
+                    id={`${fieldId}-${step.input.key}`}
+                    type="number"
+                    inputMode="decimal"
+                    className="solar-fit__number-input"
+                    value={answers[step.input.key]}
+                    min={step.input.min}
+                    max={step.input.max}
+                    step={step.input.step || 'any'}
+                    onChange={setAnswer(step.input.key)}
+                  />
+                  {step.input.suffix ? (
+                    <span className="solar-fit__affix" aria-hidden="true">
+                      {step.input.suffix}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+
+            {isLast ? (
+              <div className="solar-fit-stepper__results">
+                {roof ? (
+                  <RoofMap
+                    roof={roof}
+                    photo={roofState.photo}
+                    count={panelCount}
+                    address={roofState.address}
+                  />
+                ) : null}
+                {highlights.length ? (
+                  <div className="solar-calculator__system">
+                    {highlights.map((output) => (
+                      <div key={output.key} className="solar-fit__highlight">
+                        <p className="solar-calculator__eyebrow">{output.label}</p>
+                        <p className="solar-calculator__system-value">{formatOutput(output)}</p>
+                        {output.detail ? (
+                          <p className="solar-calculator__system-detail">{output.detail}</p>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {fitMessage ? (
+                  <p className={cn('solar-fit__verdict', result.qualifies && 'solar-fit__verdict--yes')}>
+                    {fitMessage}
+                  </p>
+                ) : null}
+              </div>
             ) : null}
 
             {broken.length ? (
@@ -232,60 +318,84 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                 {broken.map((output) => `${output.label}: ${output.error}`).join(' · ')}
               </p>
             ) : null}
-          </div>
 
-          <div className="solar-fit__contact solar-fit__contact--wide">
-            {status.state === 'sent' ? (
-              <p className="solar-fit__sent" role="status">
-                {status.message}
-              </p>
-            ) : (
-              <form className="solar-fit__form" onSubmit={onSubmit}>
-                <p className="solar-fit__form-title">Get your full estimate, free and no pressure.</p>
-                <div className="solar-fit__form-grid">
-                  <label className="solar-fit__form-field">
-                    <span>Name</span>
-                    <input name="fullName" autoComplete="name" required />
-                  </label>
-                  <label className="solar-fit__form-field">
-                    <span>Email</span>
-                    <input name="email" type="email" autoComplete="email" required />
-                  </label>
-                  <label className="solar-fit__form-field">
-                    <span>Phone</span>
-                    <input name="phone" type="tel" autoComplete="tel" />
-                  </label>
-                </div>
-                {/* Hidden from people; bots fill it and get dropped. */}
-                <input
-                  className="solar-fit__trap"
-                  name="company"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  aria-hidden="true"
-                />
-                <label className="solar-fit__consent">
-                  <input name="consent" type="checkbox" required />
-                  <span>It is OK to email or call me about my estimate. No spam, no commitment.</span>
-                </label>
-                <div className="solar-fit__actions">
-                  <button
-                    type="submit"
-                    className="solar-calculator__cta-button"
-                    disabled={status.state === 'sending'}
-                  >
-                    {status.state === 'sending' ? 'Sending…' : section?.submitLabel || 'See if you qualify'}
-                    <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
+            {isLast ? null : (
+              <div className="solar-fit-stepper__nav">
+                {stepIndex > 0 ? (
+                  <button type="button" className="solar-fit-stepper__back" onClick={() => go(-1)}>
+                    <NavArrowLeft aria-hidden="true" />
+                    Back
                   </button>
-                  {status.state === 'error' ? (
-                    <p className="solar-fit__error" role="alert">
-                      {status.message}
-                    </p>
-                  ) : null}
-                </div>
-              </form>
+                ) : null}
+                <button type="submit" className="solar-calculator__cta-button">
+                  {step.kind === 'address' && roofState.status === 'idle' ? 'Skip' : 'OK'}
+                  <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
+                </button>
+                <span className="solar-fit-stepper__hint" aria-hidden="true">
+                  or press <kbd>Enter ↵</kbd>
+                </span>
+              </div>
             )}
-          </div>
+          </StepTag>
+
+          {isLast ? (
+            <div className="solar-fit__contact solar-fit__contact--wide">
+              <button type="button" className="solar-fit-stepper__back" onClick={() => go(-1)}>
+                <NavArrowLeft aria-hidden="true" />
+                Change my answers
+              </button>
+              {status.state === 'sent' ? (
+                <p className="solar-fit__sent" role="status">
+                  {status.message}
+                </p>
+              ) : (
+                <form className="solar-fit__form" onSubmit={onSubmit}>
+                  <p className="solar-fit__form-title">Get your full estimate, free and no pressure.</p>
+                  <div className="solar-fit__form-grid">
+                    <label className="solar-fit__form-field">
+                      <span>Name</span>
+                      <input name="fullName" autoComplete="name" required />
+                    </label>
+                    <label className="solar-fit__form-field">
+                      <span>Email</span>
+                      <input name="email" type="email" autoComplete="email" required />
+                    </label>
+                    <label className="solar-fit__form-field">
+                      <span>Phone</span>
+                      <input name="phone" type="tel" autoComplete="tel" />
+                    </label>
+                  </div>
+                  {/* Hidden from people; bots fill it and get dropped. */}
+                  <input
+                    className="solar-fit__trap"
+                    name="company"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
+                  <label className="solar-fit__consent">
+                    <input name="consent" type="checkbox" required />
+                    <span>It is OK to email or call me about my estimate. No spam, no commitment.</span>
+                  </label>
+                  <div className="solar-fit__actions">
+                    <button
+                      type="submit"
+                      className="solar-calculator__cta-button"
+                      disabled={status.state === 'sending'}
+                    >
+                      {status.state === 'sending' ? 'Sending…' : section?.submitLabel || 'See if you qualify'}
+                      <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
+                    </button>
+                    {status.state === 'error' ? (
+                      <p className="solar-fit__error" role="alert">
+                        {status.message}
+                      </p>
+                    ) : null}
+                  </div>
+                </form>
+              )}
+            </div>
+          ) : null}
         </div>
 
         <p className="solar-calculator__disclaimer">

@@ -15,7 +15,7 @@ const newSession = () =>
   typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())
 
 /** Address box with suggestions as you type. Calls onPick({ placeId, text, session }). */
-export function AddressSearch({ onPick, picked }) {
+export function AddressSearch({ id, onPick, picked }) {
   const [query, setQuery] = useState(picked || '')
   const [suggestions, setSuggestions] = useState([])
   const [open, setOpen] = useState(false)
@@ -79,6 +79,7 @@ export function AddressSearch({ onPick, picked }) {
   return (
     <div className="solar-fit__address">
       <input
+        id={id}
         type="text"
         className="solar-calculator__input"
         placeholder="Start typing your street address"
