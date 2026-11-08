@@ -30,10 +30,9 @@ const resolveOAuthErrorMessage = (authError) => {
   return ''
 }
 
-const isOAuthProviderEnabled = (idKey, altIdKey, secretKey, altSecretKey) =>
-  Boolean(
-    (process.env[idKey] || process.env[altIdKey]) && (process.env[secretKey] || process.env[altSecretKey]),
-  )
+/** True when any of the id names and any of the secret names are set (same names as src/auth.js). */
+const isOAuthProviderEnabled = (idKeys, secretKeys) =>
+  idKeys.some((key) => process.env[key]) && secretKeys.some((key) => process.env[key])
 
 export default async function SignInPage({ searchParams }) {
   const session = await safeAuth()
@@ -45,16 +44,12 @@ export default async function SignInPage({ searchParams }) {
     redirect(callbackUrl)
   }
   const googleAuthEnabled = isOAuthProviderEnabled(
-    'AUTH_GOOGLE_ID',
-    'GOOGLE_CLIENT_ID',
-    'AUTH_GOOGLE_SECRET',
-    'GOOGLE_CLIENT_SECRET',
+    ['AUTH_GOOGLE_ID', 'GOOGLE_CLIENT_ID', 'GOOGLE_BUSINESS_CLIENT_ID'],
+    ['AUTH_GOOGLE_SECRET', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_BUSINESS_CLIENT_SECRET'],
   )
   const zohoAuthEnabled = isOAuthProviderEnabled(
-    'AUTH_ZOHO_ID',
-    'ZOHO_CLIENT_ID',
-    'AUTH_ZOHO_SECRET',
-    'ZOHO_CLIENT_SECRET',
+    ['AUTH_ZOHO_ID', 'ZOHO_CLIENT_ID'],
+    ['AUTH_ZOHO_SECRET', 'ZOHO_CLIENT_SECRET'],
   )
   const authError = typeof params?.error === 'string' ? params.error : ''
   const oauthErrorMessage = resolveOAuthErrorMessage(authError)
