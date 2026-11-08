@@ -2,10 +2,12 @@ import { ChevronDownIcon } from '@sanity/icons/ChevronDown'
 import { ChevronUpIcon } from '@sanity/icons/ChevronUp'
 import { Box, Button, Card, Flex, Stack, Text } from '@sanity/ui'
 import { useState } from 'react'
+import { unset } from 'sanity'
 
 /*
  * Every `color` field (sanity-plugin-color-input) starts closed: one row with
- * the current swatch and hex. "Change" opens the full picker below it.
+ * the current swatch and hex. "Change" opens the full picker below it; "Clear"
+ * empties the field, so the page falls back to its default color.
  */
 
 /** True for a `color` field, or a type built on `color`. */
@@ -22,7 +24,7 @@ const swatchBackground = (value) =>
   value?.isGradient && value?.css ? value.css : value?.hex || 'transparent'
 
 export const CompactColorInput = (props) => {
-  const { value } = props
+  const { value, onChange, readOnly } = props
   const [open, setOpen] = useState(false)
   const label = value?.hex
     ? value.isGradient && value.hex2
@@ -44,6 +46,19 @@ export const CompactColorInput = (props) => {
               {label}
             </Text>
           </Box>
+          {value?.hex && !readOnly ? (
+            <Button
+              mode="bleed"
+              tone="critical"
+              fontSize={1}
+              padding={2}
+              text="Clear"
+              onClick={() => {
+                onChange(unset())
+                setOpen(false)
+              }}
+            />
+          ) : null}
           <Button
             mode="ghost"
             fontSize={1}
