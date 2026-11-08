@@ -9,6 +9,7 @@ import { roofingServices } from '@/lib/platform/service-catalog'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 
+import { resolveHeaderMessage } from '@/lib/platform/header-message'
 import { ChristmasFaviconBlinker } from './christmas-favicon-blinker'
 import { getSectionDomId, getSiteBrandStyleVars } from './public-site-utils'
 import { CtaSection, RoofingLogoCloudSection, sectionRenderers } from './sections'
@@ -132,7 +133,7 @@ export default function PublicSite({
 
       {site.slug === 'txchristmaslights' && <ChristmasFaviconBlinker />}
       {flags.useSolarShell ? (
-        <Header navigation={navigation} />
+        <Header navigation={navigation} message={resolveHeaderMessage(site)} />
       ) : (
         <GenericHeader site={site} navigation={navigation} />
       )}

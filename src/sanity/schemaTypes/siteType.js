@@ -103,6 +103,25 @@ export default {
       ],
     },
     {
+      name: 'headerMessage',
+      title: 'Header message',
+      type: 'object',
+      description: 'The small tab on the top edge of the header bar, on every page.',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        { name: 'show', title: 'Show the message', type: 'boolean', initialValue: true },
+        {
+          name: 'text',
+          title: 'Message',
+          type: 'string',
+          description:
+            'Keep it to one short line, e.g. "We are not a roofing company. We\'re solar specialists."',
+          hidden: ({ parent }) => !parent?.show,
+          validation: (Rule) => Rule.max(110).warning('Long messages wrap on phones and crowd the bar.'),
+        },
+      ],
+    },
+    {
       name: 'navigation',
       title: 'Navigation',
       type: 'array',

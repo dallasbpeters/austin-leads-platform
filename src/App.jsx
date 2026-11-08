@@ -6,6 +6,7 @@ import { getSectionDomId } from '@/components/platform/public-site-utils'
 import { sectionRenderers } from '@/components/platform/sections'
 import SectionSurface from '@/components/platform/sections/section-surface'
 
+import { resolveHeaderMessage } from '@/lib/platform/header-message'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 import ConsultationSection from './components/consultation-section'
 import DevTrace from './components/dev/dev-trace'
@@ -62,7 +63,7 @@ export default function App({
         note="ViewTransition wraps main content only (header/footer excluded)"
       />
       <DevTrace markup="src/components/header.jsx" content="Sanity site navigation with fallback links" />
-      <Header navigation={navigation} />
+      <Header navigation={navigation} message={resolveHeaderMessage(site)} />
       <main id="main-content" {...getSanityPageEditAttributes(homepage, 'title')}>
         {/* Hero: render first ONLY if it is NOT already in the sections array */}
         {!heroAlreadyInSections && heroSection ? (

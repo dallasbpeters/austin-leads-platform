@@ -1709,6 +1709,7 @@ export const resolveSiteBySlug = async (siteSlug) => {
         seo,
         brand,
         navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
+        headerMessage,
         organization
       }`,
       { siteSlug },
@@ -1847,6 +1848,7 @@ export const resolveSiteByHost = async (host) => {
         seo,
         brand,
         navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
+        headerMessage,
         organization
       }`,
       { host: normalizedHost },
@@ -1874,6 +1876,7 @@ export const resolveSiteByHost = async (host) => {
           seo,
           brand,
           navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
+          headerMessage,
           organization
         }`,
         { siteSlug: localSite.slug },

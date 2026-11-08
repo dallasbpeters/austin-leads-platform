@@ -98,8 +98,8 @@
 }
 
 @media (width >= 48rem) {
-  .site-header {
-    /* Room above the bar for the part of the tab that sits above it. */
+  /* Room above the bar for the part of the message tab that sits above it (only when it shows). */
+  .site-header:has(.site-header__message) {
     top: calc(var(--inset) + 0.75rem);
   }
 

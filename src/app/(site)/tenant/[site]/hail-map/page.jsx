@@ -6,6 +6,7 @@ import Header from '@/components/header'
 import LeadCaptureForm from '@/components/lead-capture-form'
 import { Card, CardContent } from '@/components/ui/card'
 import { resolveNavigationForSite, resolveSiteBySlug } from '@/lib/platform/content'
+import { resolveHeaderMessage } from '@/lib/platform/header-message'
 
 export const metadata = {
   title: 'Hail Map | Texas Solar and Roofing Pros',
@@ -39,7 +40,7 @@ const HailMapPage = async ({ params }) => {
 
   return (
     <main className="bg-background min-h-screen">
-      <Header navigation={navigation} />
+      <Header navigation={navigation} message={resolveHeaderMessage(site)} />
 
       <section className="border-border/60 border-b bg-[linear-gradient(180deg,rgba(17,30,41,0.98),rgba(17,30,41,0.94))] pt-40">
         <div className="page-content py-7">

@@ -4,6 +4,7 @@ import Footer from '@/components/footer'
 import Header from '@/components/header'
 import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
 import { resolveNavigationForSite, resolveSiteBySlug } from '@/lib/platform/content'
+import { resolveHeaderMessage } from '@/lib/platform/header-message'
 import { buildMetadataForSite } from '@/lib/platform/site-page'
 
 /** @returns {Promise<import('next').Metadata>} Metadata for the service request page. */
@@ -22,7 +23,7 @@ const ServiceRequestPage = async ({ params }) => {
 
   return (
     <>
-      <Header navigation={navigation} />
+      <Header navigation={navigation} message={resolveHeaderMessage(site)} />
       <main className="mx-auto w-full max-w-4xl px-4 pt-36">
         {/* The request form is a third-party embed with no heading of its own,
             so the page needs one to be navigable. */}

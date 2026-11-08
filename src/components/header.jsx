@@ -259,7 +259,7 @@ const PhoneLink = ({ inSheet = false }) => (
   </Link>
 )
 
-const Header = ({ navigation = EMPTY_NAVIGATION }) => {
+const Header = ({ navigation = EMPTY_NAVIGATION, message = '' }) => {
   const [openNav, setOpenNav] = React.useState(false)
   const navItems = React.useMemo(() => resolveNavItems(navigation), [navigation])
   /* Button-variant items (the CTA pill) sit at the far right, after the phone link. */
@@ -350,9 +350,8 @@ const Header = ({ navigation = EMPTY_NAVIGATION }) => {
       })}
     >
       <div className="site-header__bar">
-        <p className="site-header__message">
-          Not a roofing company: We're solar specialists, working with local roofers.
-        </p>
+        {/* Site settings → Header message (resolveHeaderMessage); nothing when it is off. */}
+        {message ? <p className="site-header__message">{message}</p> : null}
         <div ref={innerRef} className="site-header__inner">
           <div className="site-header__identity">
             <Link href="/" aria-label="Texas Solar & Roofing Pros - Home" className="site-header__brand">
