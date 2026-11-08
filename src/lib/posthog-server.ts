@@ -55,6 +55,10 @@ const clientCache = new Map<string, PostHog>()
  * don't depend on the app being publicly routable.
  */
 export const getPostHogClient = (siteSlug?: string | null): PostHog | null => {
+  // Off in local development unless NEXT_PUBLIC_POSTHOG_IN_DEV=true (same switch as instrumentation-client.ts).
+  if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_POSTHOG_IN_DEV !== 'true') {
+    return null
+  }
   const key = resolveKey(siteSlug)
   if (!key) {
     if (process.env.NODE_ENV === 'development') {
