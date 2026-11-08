@@ -53,12 +53,12 @@
  * grid sits at z -1 inside it, so cards, text and images all cover the lines.
  * :where() keeps these at zero specificity, so a section's own position wins.
  */
-:where(main section, .site-footer) {
+:where(main section, .site-footer, .adoption-reasons) {
   position: relative;
   isolation: isolate;
 }
 
-:where(main section, .site-footer)::before {
+:where(main section, .site-footer, .adoption-reasons)::before {
   content: '';
   position: absolute;
   inset-block: 0;
@@ -90,6 +90,15 @@
   z-index: 11;
 }
 
+/*
+ * Blocks inside a section that paint their own solid background (the dark
+ * reasons list under Solar Adoption) cover the section's grid, so they draw
+ * their own, in faint white on the dark.
+ */
+.adoption-reasons {
+  --page-grid-line: oklch(100% 0 0deg / 10%);
+}
+
 /* Frames (and their "+" marks) inside a cloud section turn white with the grid. */
 .cloud-theme-section:not(.cloud-theme-section--clouds-hidden) .grid-frame {
   --grid-frame-line: oklch(100% 0 0deg / 20%);
@@ -98,7 +107,7 @@
 
 /* The inner quarter lines only show once columns have room. */
 @media (width >= 48rem) {
-  :where(main section, .site-footer)::before {
+  :where(main section, .site-footer, .adoption-reasons)::before {
     background-image: linear-gradient(
       to right,
       transparent calc(25% - 0.5px),
@@ -113,7 +122,7 @@
 }
 
 @media print {
-  :where(main section, .site-footer)::before {
+  :where(main section, .site-footer, .adoption-reasons)::before {
     display: none;
   }
 }
