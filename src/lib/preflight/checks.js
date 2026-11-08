@@ -164,6 +164,9 @@ export function suggestHref(href, knownPaths) {
   return bestScore <= Math.max(3, Math.floor(withSlash.length / 5)) ? best : null
 }
 
+/** Sections whose title becomes the page's h1 when they come first (see public-site.jsx). */
+const OPENING_H1_SECTIONS = new Set(['installProcessSection'])
+
 /** SEO and structure checks. */
 export function seoChecks(document) {
   const findings = []
@@ -253,9 +256,11 @@ export function seoChecks(document) {
   const sections = Array.isArray(document.sections) ? document.sections : []
   if (sections.length) {
     const hero = sections.find((section) => section?._type === 'heroSection')
-    if (!hero) {
+    // Sections that render their title as the page's h1 when they open the page.
+    const opensWithHeading = OPENING_H1_SECTIONS.has(sections[0]?._type) && Boolean(sections[0]?.title)
+    if (!hero && !opensWithHeading) {
       add('warning', 'No hero section, so the page has no main heading (H1).', ['sections'])
-    } else if (!(hero.title || hero.titlePrimary)) {
+    } else if (hero && !(hero.title || hero.titlePrimary)) {
       add('warning', 'The hero has no headline, so the page has no main heading (H1).', [
         'sections',
         { _key: hero._key },
@@ -265,7 +270,23 @@ export function seoChecks(document) {
   return findings
 }
 
-/** Images with no alt text, which screen readers and Google both rely on. */
+/** The object a path points into, e.g. the card that holds a logo. */
+function parentAt(document, path) {
+  let node = document
+  for (const step of path.slice(0, -1)) {
+    node = Array.isArray(node)
+      ? typeof step === 'number'
+        ? node[step]
+        : node.find((item) => item?._key === step?._key)
+      : node?.[step]
+  }
+  return node
+}
+
+/**
+ * Images with no alt text, which screen readers and Google both rely on. A logo
+ * on a card with a title is fine: the site names it "Logo of {title}".
+ */
 export function imageChecks(document) {
   const findings = []
   walk(document, (value, path) => {
@@ -276,6 +297,9 @@ export function imageChecks(document) {
       return
     }
     const alt = value.alt || value.altText || value.caption
+    if (path.at(-1) === 'logo' && parentAt(document, path)?.title) {
+      return
+    }
     if (!alt?.trim?.()) {
       // The view picks alt or altText, whichever this image type has.
       findings.push({

@@ -542,6 +542,7 @@ export const sectionProjection = `
   items[]{
     _key,
     "logoUrl": logo.asset->url,
+    "logoAlt": coalesce(logo.alt, logo.altText),
     number,
     eyebrow,
     title,

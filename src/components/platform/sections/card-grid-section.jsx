@@ -50,7 +50,13 @@ export function CardGridSection({ section, sectionId }) {
               >
                 {item.logoUrl ? (
                   <div className="card-grid__logo">
-                    <img src={item.logoUrl} alt="" loading="lazy" className="card-grid__logo-img" />
+                    {/* Without its own alt text, a logo is named from the card: "Logo of Birdcreek". */}
+                    <img
+                      src={item.logoUrl}
+                      alt={item.logoAlt || (item.title ? `Logo of ${item.title}` : '')}
+                      loading="lazy"
+                      className="card-grid__logo-img"
+                    />
                   </div>
                 ) : Icon ? (
                   <div className="card-grid__icon">

@@ -62,6 +62,30 @@ function typeAt(schemaType, document, path) {
   return type
 }
 
+/** The value at a path in the document, following array items by _key. */
+function valueAt(document, path) {
+  let value = document
+  for (const step of path) {
+    value = Array.isArray(value)
+      ? typeof step === 'number'
+        ? value[step]
+        : value.find((item) => item?._key === step?._key)
+      : value?.[step]
+  }
+  return value
+}
+
+/**
+ * A small preview URL for an image asset, built from its id
+ * ("image-<hash>-<width>x<height>-<ext>"), so you can see what you are describing.
+ */
+const thumbnailUrl = (image, { projectId, dataset }) => {
+  const match = /^image-(\w+)-(\d+x\d+)-(\w+)$/u.exec(image?.asset?._ref || '')
+  return match
+    ? `https://cdn.sanity.io/images/${projectId}/${dataset}/${match[1]}-${match[2]}.${match[3]}?w=480&fit=max&auto=format`
+    : null
+}
+
 const altPathFor = (schemaType, document, imagePath) => {
   const fields = typeAt(schemaType, document, imagePath)?.fields || []
   const name = fields.find((field) => field.name === 'alt' || field.name === 'altText')?.name
@@ -107,9 +131,10 @@ const TextFix = ({ fix, onSave }) => {
   )
 }
 
-const Finding = ({ finding, document, schemaType, onPatch, onGoTo }) => {
+const Finding = ({ finding, document, schemaType, onPatch, onGoTo, clientConfig }) => {
   const fix = finding.fix
   const altPath = fix?.type === 'alt' ? altPathFor(schemaType, document, fix.path) : null
+  const preview = fix?.type === 'alt' ? thumbnailUrl(valueAt(document, fix.path), clientConfig) : null
   return (
     <Card padding={3} radius={2} tone={finding.level === 'ok' ? 'default' : TONE[finding.level]} border>
       <Flex gap={3} align="flex-start">
@@ -127,8 +152,28 @@ const Finding = ({ finding, document, schemaType, onPatch, onGoTo }) => {
               </Text>
             ) : null}
           </Stack>
-          {fix?.type === 'text' ? <TextFix fix={fix} onSave={(value) => onPatch(fix.path, value)} /> : null}
-          {altPath ? <TextFix fix={fix} onSave={(value) => onPatch(altPath, value)} /> : null}
+          {/* Keyed by field and value, so a box starts over when its problem changes. */}
+          {fix?.type === 'text' ? (
+            <TextFix
+              key={`${pathToString(fix.path)}:${fix.value}`}
+              fix={fix}
+              onSave={(value) => onPatch(fix.path, value)}
+            />
+          ) : null}
+          {preview ? (
+            <Card radius={2} overflow="hidden" border tone="transparent" style={{ maxWidth: '20rem' }}>
+              {/* oxlint-disable-next-line next/no-img-element -- Studio is not a Next page; Sanity's CDN sizes it */}
+              <img
+                src={preview}
+                alt=""
+                loading="lazy"
+                style={{ display: 'block', width: '100%', maxHeight: '12rem', objectFit: 'contain' }}
+              />
+            </Card>
+          ) : null}
+          {altPath ? (
+            <TextFix key={pathToString(altPath)} fix={fix} onSave={(value) => onPatch(altPath, value)} />
+          ) : null}
           {finding.level !== 'ok' && (fix?.type === 'set' || finding.path?.length) ? (
             <Flex gap={2} wrap="wrap">
               {fix?.type === 'set' ? (
@@ -328,7 +373,7 @@ export const PreflightView = ({ document: documentState, schemaType }) => {
   const seo = [...seoChecks(document), ...imageChecks(document)]
   const brand = brandChecks(document)
   const blocking = [...linkFindings, ...seo, ...brand].filter((finding) => finding.level === 'error').length
-  const actions = { document, schemaType, onPatch, onGoTo }
+  const actions = { document, schemaType, onPatch, onGoTo, clientConfig: client.config() }
 
   return (
     <Box padding={4} style={{ maxWidth: '48rem' }}>

@@ -88,6 +88,8 @@ function renderSectionItem(section, index, flags, page, site, pathname, reviews,
           caseStudies={caseStudies}
           sectionId={sectionId}
           editAttributes={sectionEditAttrs}
+          // The first section carries the page's main heading (h1) when there is no hero.
+          isFirstSection={index === 0}
         />
       </SectionSurface>
       {flags.isGuidePost && index === flags.guideShareAfterIndex ? (

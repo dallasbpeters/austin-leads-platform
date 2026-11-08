@@ -142,3 +142,41 @@ describe('seoChecks fixes', () => {
     })
   })
 })
+
+describe('imageChecks logos', () => {
+  const logo = { _type: 'image', asset: { _ref: 'image-abc-204x63-svg' } }
+
+  it('does not flag a logo on a card with a title, which the site names itself', () => {
+    const findings = imageChecks({
+      sections: [{ _key: 's', items: [{ _key: 'i', title: 'Birdcreek', logo }] }],
+    })
+    expect(findings).toStrictEqual([])
+  })
+
+  it('still flags a logo with no title to name it from', () => {
+    const findings = imageChecks({ sections: [{ _key: 's', items: [{ _key: 'i', logo }] }] })
+    expect(findings).toHaveLength(1)
+  })
+})
+
+describe('seoChecks main heading', () => {
+  const base = { _type: 'page', title: 'Detach and reset for solar roofs', slug: { current: 'detach-reset' } }
+  const h1Warning = (findings) => findings.some((finding) => /main heading/u.test(finding.message))
+
+  it('counts a process section that opens the page as its main heading', () => {
+    expect(
+      h1Warning(
+        seoChecks({
+          ...base,
+          sections: [{ _key: 'p', _type: 'installProcessSection', title: 'How it works' }],
+        }),
+      ),
+    ).toBeFalsy()
+  })
+
+  it('still warns when the page opens with a section that has no main heading', () => {
+    expect(
+      h1Warning(seoChecks({ ...base, sections: [{ _key: 'f', _type: 'faqSection', title: 'Questions' }] })),
+    ).toBeTruthy()
+  })
+})

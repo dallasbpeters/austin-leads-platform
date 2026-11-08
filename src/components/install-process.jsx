@@ -53,6 +53,8 @@ const InstallProcess = ({
   eyebrow,
   title,
   body,
+  // h1 when this section opens the page (no hero above it), so the page has a main heading.
+  titleTag: TitleTag = 'h2',
   ctaHref = '#consultation',
   ctaLabel = 'Get a Free Quote',
 }) => {
@@ -155,9 +157,9 @@ const InstallProcess = ({
               </p>
             ) : null}
             {title ? (
-              <h2 className="type-accent cloud-theme-section__heading m-0 text-[clamp(2.25rem,4vw,4.5rem)] leading-[0.95] font-black">
+              <TitleTag className="type-accent cloud-theme-section__heading m-0 text-[clamp(2.25rem,4vw,4.5rem)] leading-[0.95] font-black">
                 {title}
-              </h2>
+              </TitleTag>
             ) : null}
             {body ? (
               <PortableTextContent
