@@ -148,3 +148,8 @@
     text-decoration-color: currentcolor;
   }
 }
+
+/* On a dark custom section the navy icon would vanish; it takes the brand's Golden Sun instead. */
+.section-surface--on-dark .card-grid__icon {
+  color: #ffd06b;
+}

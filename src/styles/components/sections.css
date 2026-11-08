@@ -36,6 +36,11 @@
   --testimonials-ink: #0f172a;
   --testimonials-muted: #475569;
 
+  /* Cards on a custom colour are a shade of it, so they belong to the section and keep its text readable. */
+  --card: color-mix(in oklch, var(--surface-bg, white) 94%, black);
+  --card-foreground: #0f172a;
+  --border: color-mix(in oklch, var(--surface-bg, white) 82%, black);
+
   color: #0f172a;
 }
 
@@ -52,6 +57,9 @@
   --consult-soft: oklch(100% 0 0deg / 70%);
   --testimonials-ink: #fff;
   --testimonials-muted: oklch(100% 0 0deg / 72%);
+  --card: color-mix(in oklch, var(--surface-bg, black) 88%, white);
+  --card-foreground: #fff;
+  --border: color-mix(in oklch, var(--surface-bg, black) 72%, white);
 
   color: #fff;
 }
