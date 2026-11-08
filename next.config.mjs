@@ -24,15 +24,6 @@ const asExactHostPattern = (host) => {
   return `^${escaped}$`
 }
 
-/*
- * Pages whose address changed, so old links and search results still land.
- * Permanent (308), so Google moves the listing to the new address.
- */
-const PAGE_REDIRECTS = [
-  // Renamed 2026-11-08 ("Solar Repairs" in the menu).
-  { source: '/services/orphaned-solar-systems', destination: '/services/solar-maintenance', permanent: true },
-]
-
 const getSanityRedirects = async () => {
   const query = `*[_type == "redirectRule"]{
     "source": coalesce(source, domain),
@@ -225,9 +216,9 @@ const nextConfig = {
         rule.missing.push({ type: 'header', key: 'access-control-request-method' })
       }
 
-      return [...redirectRules, ...PAGE_REDIRECTS]
+      return redirectRules
     } catch {
-      return PAGE_REDIRECTS
+      return []
     }
   },
 }
