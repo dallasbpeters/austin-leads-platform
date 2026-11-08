@@ -1,9 +1,11 @@
+import { vercelDeploy } from '@overpunch/deploy-vercel-from-sanity'
 import { assist } from '@sanity/assist'
-import { colorInput } from '@sanity/color-input'
 import { contextPlugin } from '@sanity/context/studio'
+import { RocketIcon } from '@sanity/icons/Rocket'
 import { createElement } from 'react'
 import { defineConfig } from 'sanity'
 import { unsplashImageAsset } from 'sanity-plugin-asset-source-unsplash'
+import { customColorPicker } from 'sanity-plugin-color-input'
 import { instagramEmbed } from 'sanity-plugin-sgntech-instagram-embed'
 import { presentationTool } from 'sanity/presentation'
 import { structureTool } from 'sanity/structure'
@@ -11,6 +13,7 @@ import './src/sanity/studioPatches.css'
 
 import { austinAssistFieldActions } from './src/sanity/assist/fieldActions'
 import { isLinkField, PageLinkInput } from './src/sanity/components/page-link-input'
+import { PreflightView } from './src/sanity/components/preflight-view'
 import { removeBackgroundAssetSource } from './src/sanity/components/remove-background-source'
 import { SiteSwitcherNavigator } from './src/sanity/components/site-switcher-navigator'
 import {
@@ -24,6 +27,7 @@ import {
   studioDeploymentAppId,
   studioPreviewOrigin,
   studioUrl,
+  toolApiOrigin,
 } from './src/sanity/env'
 import { geminiImages } from './src/sanity/plugins/gemini-images'
 import { guideImageSyncPlugin } from './src/sanity/plugins/guideImageSyncPlugin'
@@ -39,6 +43,8 @@ const previewModeRoutes = {
   enable: '/api/draft-mode/enable',
   disable: '/api/draft-mode/disable',
 }
+
+const PREFLIGHT_TYPES = new Set(['page', 'servicePage', 'locationPage', 'post', 'caseStudy'])
 
 export default defineConfig({
   name: 'default',
@@ -59,10 +65,47 @@ export default defineConfig({
     contextPlugin({ insights: { enabled: false } }),
     // Adds the "Instagram post" block; it is allowed in the rich text field (portableTextSimple).
     instagramEmbed({ captionedByDefault: false, showEmbedPreview: true }),
+    /* Deploy tab: start and watch Vercel deploys. Proxy mode, because the dataset is public:
+     * the Vercel token and deploy hooks stay on the server (src/app/api/vercel-deploy),
+     * and the Studio only holds the status key (public by design; it can read and cancel). */
+    vercelDeploy({
+      title: 'Deploy',
+      name: 'vercel-deploy',
+      mode: 'proxy',
+      proxyUrl: `${toolApiOrigin}/api/vercel-deploy`,
+      statusKey: process.env.SANITY_STUDIO_DEPLOY_STATUS_KEY,
+    }),
     assist({ fieldActions: austinAssistFieldActions }),
     guideImageSyncPlugin(),
-    colorInput(),
-    structureTool({ structure: studioStructure }),
+    /* The `color` field type (replaces @sanity/color-input). Swatches are the brand colors;
+     * colors still save a `hex`, which is what the site reads (resolveSanityColorValue). */
+    customColorPicker({
+      colors: [
+        '#de1017', // Texas Flag Red
+        '#ea580c', // Sunset Orange
+        '#ffd06b', // Golden Sun
+        '#00bb7f', // Savings Green
+        '#082f43', // Deep Sky
+        '#040a17', // Night Sky
+        '#0f172a', // Midnight Slate
+        '#62748e', // Steel Muted
+        '#f9f7f4', // Warm Paper
+        '#f8fafc', // Cool Mist
+        '#ffffff',
+        '#000000',
+      ],
+    }),
+    structureTool({
+      structure: studioStructure,
+      // A "Preflight" view beside the editor on page-like documents (links, SEO, brand voice).
+      defaultDocumentNode: (S, { schemaType }) =>
+        PREFLIGHT_TYPES.has(schemaType)
+          ? S.document().views([
+              S.view.form(),
+              S.view.component(PreflightView).title('Preflight').icon(RocketIcon).id('preflight'),
+            ])
+          : S.document(),
+    }),
     unsplashImageAsset(),
     // Adds "Generate with AI" alongside Unsplash on every image field. The standalone
     // "AI Image Studio" tool stays off — the AI Drafting tool already embeds the suite.
@@ -114,7 +157,15 @@ export default defineConfig({
       },
     ],
   },
-  tools: (prev) => [...prev, contextChatTool(), aiDraftingTool(), pageSpeedTool(), videoTool()],
+  // The Deploy plugin adds its tool first, which would make Studio open on it; keep it last.
+  tools: (prev) => [
+    ...prev.filter((tool) => tool.name !== 'vercel-deploy'),
+    contextChatTool(),
+    aiDraftingTool(),
+    pageSpeedTool(),
+    videoTool(),
+    ...prev.filter((tool) => tool.name === 'vercel-deploy'),
+  ],
   studio: {
     components: {
       layout: (props) => props.renderDefault(props),

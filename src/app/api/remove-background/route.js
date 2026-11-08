@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 
+import { bearerToken, SANITY_API, sanityUser } from '@/lib/sanity/studio-user'
 import { overLimit } from '@/lib/solar-fit/rate-limit'
 import { dataset, projectId } from '@/sanity/env'
 
@@ -14,7 +15,6 @@ import { dataset, projectId } from '@/sanity/env'
  */
 
 const FAL_ENDPOINT = 'https://fal.run/fal-ai/birefnet/v2'
-const SANITY_API = `https://${projectId}.api.sanity.io/v2021-06-07`
 
 const corsHeaders = (request) => ({
   'Access-Control-Allow-Origin': request.headers.get('origin') || '*',
@@ -31,22 +31,6 @@ export function OPTIONS(request) {
   return new NextResponse(null, { status: 204, headers: corsHeaders(request) })
 }
 
-/** The Sanity user behind a token, or null when the token is missing or not valid. */
-async function sanityUser(token) {
-  if (!token) {
-    return null
-  }
-  const response = await fetch(`${SANITY_API}/users/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: 'no-store',
-  })
-  if (!response.ok) {
-    return null
-  }
-  const user = await response.json()
-  return user?.id ? user : null
-}
-
 /* Only images already in this project's CDN, or an image the editor picked from their computer. */
 const isAllowedSource = (value) =>
   typeof value === 'string' &&
@@ -58,7 +42,7 @@ export async function POST(request) {
     return reply(request, { error: 'Too many requests. Wait a minute and try again.' }, 429)
   }
 
-  const token = request.headers.get('authorization')?.replace(/^Bearer\s+/iu, '')
+  const token = bearerToken(request)
   if (!(await sanityUser(token))) {
     return reply(request, { error: 'Sign in to Studio to remove backgrounds.' }, 401)
   }

@@ -35,7 +35,7 @@ const PICKER_QUERY = `{
 }`
 
 /* Routes built in code rather than as Sanity pages, so no document lists them. */
-const BUILT_IN_ROUTES = [
+export const BUILT_IN_ROUTES = [
   { value: '/projects', title: 'Projects' },
   { value: '/guides', title: 'Guides' },
   { value: '/services', title: 'Services' },
@@ -57,7 +57,7 @@ const TYPE_LABELS = {
 }
 
 /** Mirrors hrefForDoc in presentation.js, plus the /projects route for case studies. */
-function pathForDoc(doc) {
+export function pathForDoc(doc) {
   if (doc.pageType === 'home' || doc.slug === '/') {
     return '/'
   }
