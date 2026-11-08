@@ -23,7 +23,7 @@
   content: '';
   width: 0.5rem;
   height: 0.5rem;
-  background: #ffd06b;
+  background: var(--color-yellow-200);
 }
 
 /*
@@ -47,7 +47,7 @@
 
 .solar-fit__number:focus-within {
   border-color: #0f172a;
-  box-shadow: 0 0 0 3px oklch(from #ffd06b l c h / 70%);
+  box-shadow: 0 0 0 3px oklch(from var(--color-yellow-200) l c h / 70%);
 }
 
 .solar-fit__number-input {
@@ -142,7 +142,7 @@ select.solar-calculator__input {
 .solar-fit__contact {
   padding: 1.5rem 2rem;
   border-radius: 0.75rem;
-  background: #ffd06b;
+  background: var(--color-yellow-300);
 }
 
 .solar-fit__form {
@@ -305,7 +305,7 @@ select.solar-calculator__input {
 /* Drawn in metres, so the outline is a few centimetres wide. */
 .solar-fit__panel {
   fill: oklch(28% 0.06 260deg / 88%);
-  stroke: #ffd06b;
+  stroke: var(--color-yellow-200);
   stroke-width: 0.06;
 }
 

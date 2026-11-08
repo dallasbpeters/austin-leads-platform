@@ -63,7 +63,7 @@ export default function Footer() {
     >
       <div className="site-footer__inner">
         <div className="site-footer__cta">
-          <h2 className="site-footer__title">Get real numbers for your roof.</h2>
+          <h2 className="site-footer__title">A system that pays you back.</h2>
           <p className="site-footer__intro">
             Free estimate, no pressure, no commitment. We serve homeowners across Central Texas.
           </p>

@@ -147,7 +147,7 @@ const InstallProcess = ({
 
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <CloudBackground density="regular" className="cloud-background--large" />
-        <div className="absolute left-[50%] z-10 w-full -translate-x-[50%] transform pt-40">
+        <div className="absolute left-[50%] z-10 w-full translate-x-[-50%] transform pt-40">
           <div className="cloud-theme-section__readable mx-auto w-full max-w-4xl px-6 text-center">
             {eyebrow ? (
               <p className="cloud-theme-section__eyebrow mb-5 text-xs font-semibold tracking-[0.24em] uppercase">

@@ -528,7 +528,6 @@
 .solar-hero--clouds {
   overflow: clip;
   min-height: 100svh;
-  padding-block-start: 0;
 }
 
 /*
@@ -549,7 +548,7 @@
 /* Below desktop the header is a strip plus the bar, so the copy needs more room to clear it. */
 @media (width < 64rem) {
   .solar-hero--clouds .solar-hero__shell {
-    padding-block-start: 9rem;
+    padding-block-start: 10rem;
   }
 
   /* The stacked cards would hide the cutout, so it gets its own band under them. */

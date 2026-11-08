@@ -25,6 +25,7 @@
 
 /* Element defaults */
 @import './base.css';
+@import './kbd.css';
 
 /* Component blocks (BEM) */
 @import './components/typography.css';

@@ -372,10 +372,6 @@ const Header = ({ navigation = EMPTY_NAVIGATION, message = '' }) => {
             <NavList items={linkItems} />
           </div>
           <div className="site-header__actions">
-            <PhoneLink />
-            <div className="site-header__cta">
-              <NavList items={ctaItems} />
-            </div>
             <Button
               variant="ghost"
               size="sm"
@@ -395,6 +391,10 @@ const Header = ({ navigation = EMPTY_NAVIGATION, message = '' }) => {
                 />
               </span>
             </Button>
+            <PhoneLink />
+            <div className="site-header__cta">
+              <NavList items={ctaItems} />
+            </div>
           </div>
         </div>
       </div>
