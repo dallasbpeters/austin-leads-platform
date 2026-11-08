@@ -75,15 +75,15 @@
  * one layer above the sky (.cloud-background is z 1) and below the content.
  */
 .cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::before {
-  --page-grid-line: oklch(100% 0 0deg / 45%);
+  --page-grid-line: oklch(100% 0 0deg / 20%);
 
   z-index: 2;
 }
 
 /* Frames (and their "+" marks) inside a cloud section turn white with the grid. */
 .cloud-theme-section:not(.cloud-theme-section--clouds-hidden) .grid-frame {
-  --grid-frame-line: oklch(100% 0 0deg / 45%);
-  --grid-frame-mark: oklch(100% 0 0deg / 85%);
+  --grid-frame-line: oklch(100% 0 0deg / 20%);
+  --grid-frame-mark: oklch(100% 0 0deg / 50%);
 }
 
 /* The inner quarter lines only show once columns have room. */

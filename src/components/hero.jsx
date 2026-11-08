@@ -333,28 +333,27 @@ function HeroAside({
     return null
   }
 
-  // Over a photo or sky the snapshot matches the homepage glass cards.
+  // Over a photo or sky: one dark glass card per metric, big number over a small mono label.
   if (glass) {
     return (
       <div className="solar-fade-up solar-fade-up-delay">
-        <div className="solar-hero__glass solar-hero__aside-card solar-hero__aside-card--glass">
-          {hasHeroMetrics ? (
-            <div className="solar-hero__metrics">
-              <p className="solar-hero__glass-eyebrow">Snapshot</p>
-              {heroMetrics.map((metric, index) => (
-                <div
-                  key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-                  className="solar-hero__metric solar-hero__metric--glass"
-                >
-                  <div className="solar-hero__metric-label">{metric.label}</div>
-                  <div className="solar-hero__metric-value">{metric.value}</div>
-                </div>
-              ))}
-            </div>
-          ) : (
+        {hasHeroMetrics ? (
+          <dl className="solar-hero__stat-stack">
+            {heroMetrics.map((metric, index) => (
+              <div
+                key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
+                className="solar-hero__stat-card"
+              >
+                <dt className="solar-hero__stat-label">{metric.label}</dt>
+                <dd className="solar-hero__stat-value">{metric.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <div className="solar-hero__glass solar-hero__aside-card solar-hero__aside-card--glass">
             <HeroCardCopy cardCopy={cardCopy} heroTextColor="var(--color-white)" />
-          )}
-        </div>
+          </div>
+        )}
       </div>
     )
   }
