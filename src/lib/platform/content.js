@@ -260,6 +260,8 @@ export const sectionProjection = `
     hotspot,
     altText,
     alt,
+    "shaderColorA": shaderColorA.hex,
+    "shaderColorB": shaderColorB.hex,
     asset->{
       _id,
       url,
@@ -306,7 +308,8 @@ export const sectionProjection = `
     stat,
     linkLabel,
     href,
-    "imageUrl": image.asset->url
+    "imageUrl": image.asset->url,
+    "imageAlt": image.altText
   },
   // solarFitSection: the "See if solar is right for you" questions and formulas.
   fitInputs[]{ _key, key, label, kind, defaultValue, min, max, step, prefix, suffix, hideWhenRoofFound, help, options[]{ label, value } },
@@ -716,6 +719,8 @@ export const sectionProjection = `
       }
     }
   },
+  // jobberRequestSection fields
+  jobberShareUrl,
   // videoSection fields
   videoUrl,
   caption,
@@ -1731,7 +1736,7 @@ export const resolveSiteBySlug = async (siteSlug) => {
         jobber,
         seo,
         brand,
-        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
+        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url, "imageAlt": image.altText } },
         headerMessage,
         organization
       }`,
@@ -1870,7 +1875,7 @@ export const resolveSiteByHost = async (host) => {
         jobber,
         seo,
         brand,
-        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
+        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url, "imageAlt": image.altText } },
         headerMessage,
         organization
       }`,
@@ -1898,7 +1903,7 @@ export const resolveSiteByHost = async (host) => {
           jobber,
           seo,
           brand,
-          navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url } },
+          navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url, "imageAlt": image.altText } },
           headerMessage,
           organization
         }`,

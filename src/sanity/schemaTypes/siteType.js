@@ -203,6 +203,14 @@ export default {
                       title: 'Image',
                       type: 'image',
                       options: { hotspot: true },
+                      fields: [
+                        {
+                          name: 'altText',
+                          title: 'Alt text',
+                          type: 'string',
+                          description: 'What the image shows, for screen readers and Google.',
+                        },
+                      ],
                     },
                   ],
                   preview: {
@@ -229,7 +237,19 @@ export default {
       title: 'Brand',
       type: 'object',
       fields: [
-        { name: 'logo', title: 'Logo', type: 'image' },
+        {
+          name: 'logo',
+          title: 'Logo',
+          type: 'image',
+          fields: [
+            {
+              name: 'altText',
+              title: 'Alt text',
+              type: 'string',
+              description: 'What the image shows, for screen readers and Google.',
+            },
+          ],
+        },
         { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
       ],
     },

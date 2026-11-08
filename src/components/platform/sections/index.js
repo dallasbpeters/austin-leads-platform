@@ -15,6 +15,7 @@ import { GuideGridSection } from './guide-grid-section'
 import { HailMapSection } from './hail-map-section'
 import { HeroSection } from './hero-section'
 import { HyperframesSection } from './hyperframes-section'
+import { JobberRequestSection } from './jobber-request-section'
 import { PricingSection } from './pricing-section'
 import { QuoteBannerSection } from './quote-banner-section'
 import { RoofingLogoCloudSection } from './roofing-logo-cloud-section'
@@ -65,6 +66,7 @@ export const sectionRenderers = {
   hailMap: HailMapSection,
   hero: HeroSection,
   hyperframes: HyperframesSection,
+  jobberRequest: JobberRequestSection,
   installProcess: InstallProcessSection,
   highlights: CardGridSection,
   incentives: IncentivesSection,

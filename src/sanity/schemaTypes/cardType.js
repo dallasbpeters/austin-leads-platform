@@ -94,6 +94,14 @@ export default {
       type: 'image',
       group: 'media',
       options: { hotspot: true },
+      fields: [
+        {
+          name: 'altText',
+          title: 'Alt text',
+          type: 'string',
+          description: 'What the image shows, for screen readers and Google.',
+        },
+      ],
     },
     {
       name: 'logo',
@@ -101,6 +109,14 @@ export default {
       type: 'image',
       group: 'media',
       options: { hotspot: true },
+      fields: [
+        {
+          name: 'altText',
+          title: 'Alt text',
+          type: 'string',
+          description: 'What the image shows, for screen readers and Google.',
+        },
+      ],
       description: 'Optional. Defaults to the organization’s brand logo when empty.',
     },
     {
@@ -109,6 +125,14 @@ export default {
       type: 'image',
       group: 'media',
       options: { hotspot: true },
+      fields: [
+        {
+          name: 'altText',
+          title: 'Alt text',
+          type: 'string',
+          description: 'What the image shows, for screen readers and Google.',
+        },
+      ],
     },
 
     {

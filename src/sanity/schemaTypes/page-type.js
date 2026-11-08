@@ -1335,6 +1335,15 @@ const sectionContentItemType = {
       type: 'image',
       description: 'Optional. Shown in place of the icon, for example a partner company logo.',
       options: canvasExclude,
+      // Left empty, the site names it "Logo of {title}".
+      fields: [
+        {
+          name: 'altText',
+          title: 'Alt text',
+          type: 'string',
+          description: 'What the image shows, for screen readers and Google.',
+        },
+      ],
     },
   ],
   preview: {
@@ -2005,6 +2014,7 @@ const heroSpecificFields = [
         { title: 'Single image', value: 'single' },
         { title: 'Slides only', value: 'slides' },
         { title: 'Video only', value: 'video' },
+        { title: 'Shader', value: 'shader' },
         { title: 'Clouds', value: 'clouds' },
       ],
       layout: 'radio',
@@ -2103,10 +2113,37 @@ const heroSpecificFields = [
     options: canvasExclude,
     hidden: hideUnlessHeroMediaMode('video'),
   },
-  {
-    ...defineUploadedImage('heroAsset', 'Uploaded hero image', canvasExclude),
-    hidden: hideUnlessHeroMediaMode('single'),
-  },
+  (() => {
+    const image = defineUploadedImage('heroAsset', 'Uploaded hero image', canvasExclude)
+    // Shader mode draws this image as a two-color dither; these pick the two colors.
+    const shaderColor = (name, title, description) => ({
+      name,
+      title,
+      type: 'color',
+      description,
+      hidden: ({ document, path }) => {
+        const section = document?.sections?.find((item) => item?._key === path?.[1]?._key)
+        return section?.heroMediaMode !== 'shader'
+      },
+    })
+    return {
+      ...image,
+      fields: [
+        ...image.fields,
+        shaderColor(
+          'shaderColorA',
+          'Shader dark color',
+          'The dark dots of the dither. Leave empty for deep blue.',
+        ),
+        shaderColor(
+          'shaderColorB',
+          'Shader light color',
+          'The light dots of the dither. Leave empty for pale blue.',
+        ),
+      ],
+      hidden: hideUnlessHeroMediaMode('single', 'shader'),
+    }
+  })(),
   {
     name: 'heroCutout',
     title: 'Cutout image',
@@ -2200,6 +2237,14 @@ const heroSpecificFields = [
             type: 'image',
             options: { hotspot: true },
             description: 'Optional. Fills the bottom of the card.',
+            fields: [
+              {
+                name: 'altText',
+                title: 'Alt text',
+                type: 'string',
+                description: 'What the image shows, for screen readers and Google.',
+              },
+            ],
           },
           { name: 'linkLabel', title: 'Link label', type: 'string' },
           {
@@ -4615,6 +4660,46 @@ const serviceAreaItemType = {
   },
 }
 
+/** A Jobber request form link (share or embed), the same check as Site settings → Jobber. */
+const isJobberRequestFormUrl = (value) =>
+  /^https:\/\/clienthub\.getjobber\.com\/(hubs|client_hubs)\/[0-9a-f-]+\//iu.test(value) &&
+  /(\/public\/requests\/\d+\/new|form_id=\d+)/iu.test(value)
+
+const jobberRequestSectionType = {
+  name: 'jobberRequestSection',
+  title: 'Jobber Request Form',
+  type: 'object',
+  initialValue: {
+    type: 'jobberRequest',
+  },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
+    { name: 'title', title: 'Title', type: 'string' },
+    { name: 'description', title: 'Description', type: 'text', rows: 3 },
+    {
+      name: 'jobberShareUrl',
+      title: 'Jobber request form link',
+      type: 'url',
+      description:
+        'Optional. Leave empty to use the form in Site settings → Jobber. Paste a different share link (Jobber → Settings → Requests) to show another form here. Requests go straight into Jobber.',
+      validation: (Rule) =>
+        Rule.uri({ scheme: ['https'] }).custom(
+          (value) =>
+            !value ||
+            isJobberRequestFormUrl(value) ||
+            'Paste a Jobber request form link from clienthub.getjobber.com.',
+        ),
+    },
+  ]),
+  preview: {
+    select: { title: 'title', url: 'jobberShareUrl' },
+    prepare({ title, url }) {
+      return { title: title || 'Jobber request form', subtitle: url || 'Form from Site settings' }
+    },
+  },
+}
+
 const serviceAreaMapSectionType = {
   name: 'serviceAreaMapSection',
   title: 'Service Area Map Section',
@@ -5824,6 +5909,7 @@ export const pageSectionTypes = [
   { type: 'energyChartSection' },
   { type: 'videoSection' },
   { type: 'hyperframesSection' },
+  { type: 'jobberRequestSection' },
   { type: 'serviceGridSection' },
   { type: 'resourceGridSection' },
   { type: 'guideGridSection' },
@@ -6050,6 +6136,7 @@ export default [
   energyChartSectionType,
   videoSectionType,
   hyperframesSectionType,
+  jobberRequestSectionType,
   serviceGridSectionType,
   resourceGridSectionType,
   guideGridSectionType,

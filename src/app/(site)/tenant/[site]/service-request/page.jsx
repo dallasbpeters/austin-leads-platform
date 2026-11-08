@@ -5,7 +5,7 @@ import Header from '@/components/header'
 import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
 import { resolveNavigationForSite, resolveSiteBySlug } from '@/lib/platform/content'
 import { resolveHeaderMessage } from '@/lib/platform/header-message'
-import { buildMetadataForSite } from '@/lib/platform/site-page'
+import { buildMetadataForSite, renderSanityPageIfAny } from '@/lib/platform/site-page'
 
 /** @returns {Promise<import('next').Metadata>} Metadata for the service request page. */
 export const generateMetadata = async ({ params }) => {
@@ -15,6 +15,12 @@ export const generateMetadata = async ({ params }) => {
 
 const ServiceRequestPage = async ({ params }) => {
   const { site: siteSlug } = await params
+  // A "service-request" page made in Studio (hero, Jobber section, FAQ…) wins over the plain form below.
+  const sanityPage = await renderSanityPageIfAny(siteSlug, ['service-request'])
+  if (sanityPage) {
+    return sanityPage
+  }
+
   const site = await resolveSiteBySlug(siteSlug).catch(() => null)
   if (!site) {
     notFound()

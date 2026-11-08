@@ -14,6 +14,7 @@ import { getDevSectionAttributes } from './dev/dev-trace'
 import HeroActions from './hero-actions'
 import ImageFader from './image-fader'
 import PortableTextContent from './portable-text-content'
+import PixelReveal from './shaders/PixelReveal1'
 
 /*
  * The calculator link is root-relative so it works from any page, and carries
@@ -24,6 +25,9 @@ import PortableTextContent from './portable-text-content'
 function resolveHeroMediaMode(heroVideoSource, explicitHeroMediaMode, hasHeroSlides) {
   if (explicitHeroMediaMode === 'clouds') {
     return 'clouds'
+  }
+  if (explicitHeroMediaMode === 'shader') {
+    return 'shader'
   }
   if (heroVideoSource) {
     return 'video'
@@ -141,7 +145,14 @@ function getBackdropCardValue(hasHeroBackdropMedia, lightValue, darkValue) {
   return hasHeroBackdropMedia ? lightValue : darkValue
 }
 
-function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, overlayStyle, cutout }) {
+function HeroBackdrop({
+  heroMediaMode,
+  heroVideoSource,
+  rotatingHeroImages,
+  overlayStyle,
+  cutout,
+  shaderColors,
+}) {
   const primaryHeroImage = rotatingHeroImages[0] || null
   const hasRotatingHeroImages = rotatingHeroImages.length > 1
 
@@ -165,6 +176,37 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
             }}
           />
         ) : null}
+      </>
+    )
+  }
+  /*
+   * The hero image run through a WebGPU shader (dither, moved by the cursor). The
+   * plain photo sits underneath: browsers without WebGPU draw no canvas and show it.
+   */
+  if (heroMediaMode === 'shader') {
+    if (!primaryHeroImage?.src) {
+      return null
+    }
+    return (
+      <>
+        <Image
+          src={primaryHeroImage.src}
+          alt={primaryHeroImage.alt || ''}
+          fill
+          priority
+          fetchPriority="high"
+          quality={90}
+          sizes="100vw"
+          className="solar-hero__media"
+        />
+        <PixelReveal
+          imageURL={primaryHeroImage.src}
+          className="solar-hero__media solar-hero__media--shader"
+          // The dither's two colors are set on the uploaded hero image in Studio (Shader mode).
+          colorA={cleanRuntimeString(shaderColors?.shaderColorA)}
+          colorB={cleanRuntimeString(shaderColors?.shaderColorB)}
+        />
+        <div className="solar-hero__overlay" style={overlayStyle} />
       </>
     )
   }
@@ -382,7 +424,7 @@ function HeroCards({ cards }) {
           {card.imageUrl ? (
             <img
               src={`${card.imageUrl}?w=800&h=400&fit=crop&auto=format`}
-              alt=""
+              alt={card.imageAlt || ''}
               width={400}
               height={200}
               loading="lazy"
@@ -445,6 +487,7 @@ export default function Hero({
         rotatingHeroImages={rotatingHeroImages}
         overlayStyle={overlayStyle}
         cutout={heroSection?.heroCutout}
+        shaderColors={heroSection?.heroAsset}
       />
       <div className={cn('solar-hero__shell', heroCards.length > 0 && 'solar-hero__shell--with-cards')}>
         <div className={cn('solar-hero__layout', hasHeroAside && 'solar-hero__layout--with-aside')}>

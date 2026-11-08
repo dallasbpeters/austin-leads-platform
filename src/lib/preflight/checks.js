@@ -102,6 +102,12 @@ export function linkKind(href) {
   return 'invalid'
 }
 
+/**
+ * Files every site serves that are not pages: the built routes (src/app/robots.txt,
+ * src/app/sitemap.xml) and files in public/. Links to them are fine.
+ */
+export const SITE_FILES = ['/robots.txt', '/sitemap.xml', '/llms.txt', '/ai.txt']
+
 /** Internal paths that resolve: the site's pages, built-in routes, and their sub-pages. */
 export function isKnownPath(href, knownPaths) {
   const path = href.split(/[?#]/u)[0].replace(/\/$/u, '') || '/'

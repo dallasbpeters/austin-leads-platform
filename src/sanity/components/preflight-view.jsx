@@ -13,6 +13,7 @@ import {
   isKnownPath,
   linkKind,
   seoChecks,
+  SITE_FILES,
   suggestHref,
 } from '../../lib/preflight/checks'
 import { toolApiOrigin } from '../env'
@@ -259,6 +260,7 @@ export const PreflightView = ({ document: documentState, schemaType }) => {
             new Set([
               ...pages.map(pathForDoc),
               ...BUILT_IN_ROUTES.map((route) => route.value).filter((value) => value.startsWith('/')),
+              ...SITE_FILES,
             ]),
           )
         }

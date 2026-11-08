@@ -52,6 +52,7 @@ const resolveNavItems = (navigation) => {
           label: cleanRuntimeString(child.label),
           description: cleanRuntimeString(child.description),
           imageUrl: cleanRuntimeHref(child.imageUrl),
+          imageAlt: cleanRuntimeString(child.imageAlt) || '',
         }))
         .filter((child) => child.href && child.label),
     }))
@@ -115,7 +116,8 @@ const NavDropdown = ({ item, inSheet, onNavigate }) => {
           {child.imageUrl ? (
             <img
               src={`${child.imageUrl}?w=192&h=144&fit=crop&auto=format`}
-              alt=""
+              // Empty alt text keeps it decorative: the link's label already names it.
+              alt={child.imageAlt}
               width={96}
               height={72}
               loading="lazy"
