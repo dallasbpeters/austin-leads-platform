@@ -206,11 +206,13 @@
 .solar-hero__stat-stack {
   display: grid;
   gap: 0.5rem;
+  min-width: 0;
   margin: 0;
 }
 
 .solar-hero__stat-card {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: 0.5rem;
   padding: 1.25rem 1.5rem;
@@ -222,7 +224,11 @@
 }
 
 .solar-hero__stat-value {
+  min-width: 0;
   margin: 0;
+
+  /* Long values (an email address) wrap inside the card instead of widening it. */
+  overflow-wrap: anywhere;
   font-size: clamp(1.25rem, 1.6vw, 1.625rem);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -238,6 +244,22 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgb(255 255 255 / 68%);
+}
+
+/* On a plain light hero the same cards are light paper with dark text. */
+.solar-hero__stat-stack--light .solar-hero__stat-card {
+  border-color: var(--color-border, oklch(90% 0.01 260deg));
+  background: var(--color-warm-bg, #f9f7f4);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+  backdrop-filter: none;
+}
+
+.solar-hero__stat-stack--light .solar-hero__stat-label {
+  color: var(--color-text-muted, #62748e);
+}
+
+.solar-hero__stat-stack--light .solar-hero__stat-value {
+  color: var(--color-text-strong, #0f172a);
 }
 
 .solar-hero__card-copy {
@@ -323,7 +345,7 @@
   }
 
   .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(3) .solar-hero__glass-head {
-    justify-content: center;
+    justify-content: start;
   }
 
   .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(3) .solar-hero__glass-title {
@@ -393,6 +415,7 @@
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: var(--text-xs);
   font-weight: 600;
+  text-align: left;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-orange-600);
@@ -474,8 +497,8 @@
   display: block;
   width: calc(100% + var(--glass-pad) * 2);
   max-width: none;
-  height: 8rem;
-  margin: 0 calc(var(--glass-pad) * -1) calc(var(--glass-pad) * -1);
+  height: 10rem;
+  margin: 12px calc(var(--glass-pad) * -1) calc(var(--glass-pad) * -1);
   object-fit: cover;
   mask-image: linear-gradient(to bottom, transparent, black 45%);
 }

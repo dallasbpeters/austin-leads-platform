@@ -247,57 +247,6 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
   )
 }
 
-function HeroMetricTile({
-  metric,
-  index,
-  metricTileBackground,
-  metricTileBorder,
-  metricLabelColor,
-  metricValueColor,
-}) {
-  return (
-    <div
-      key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-      className="solar-hero__metric"
-      style={{ backgroundColor: metricTileBackground, borderColor: metricTileBorder }}
-    >
-      <div className="solar-hero__metric-label text-size-80" style={{ color: metricLabelColor }}>
-        {metric.label}
-      </div>
-      <div className="solar-hero__metric-value text-size-200" style={{ color: metricValueColor }}>
-        {metric.value}
-      </div>
-    </div>
-  )
-}
-
-function HeroMetrics({
-  heroMetrics,
-  metricTileBackground,
-  metricTileBorder,
-  metricLabelColor,
-  metricValueColor,
-}) {
-  return (
-    <div className="solar-hero__metrics">
-      <div className="solar-hero__metrics-heading text-size-80" style={{ color: metricLabelColor }}>
-        Snapshot
-      </div>
-      {heroMetrics.map((metric, index) => (
-        <HeroMetricTile
-          key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-          metric={metric}
-          index={index}
-          metricTileBackground={metricTileBackground}
-          metricTileBorder={metricTileBorder}
-          metricLabelColor={metricLabelColor}
-          metricValueColor={metricValueColor}
-        />
-      ))}
-    </div>
-  )
-}
-
 function HeroCardCopy({ cardCopy, heroTextColor }) {
   return (
     <>
@@ -319,10 +268,6 @@ function HeroCardCopy({ cardCopy, heroTextColor }) {
 function HeroAside({
   hasHeroMetrics,
   heroMetrics,
-  metricTileBackground,
-  metricTileBorder,
-  metricLabelColor,
-  metricValueColor,
   cardCopy,
   cardBackground,
   cardBorder,
@@ -333,27 +278,32 @@ function HeroAside({
     return null
   }
 
-  // Over a photo or sky: one dark glass card per metric, small mono label over the value.
+  // One card per metric, small mono label over the value: dark glass over a photo or
+  // sky, light paper on a plain hero.
+  if (hasHeroMetrics) {
+    return (
+      <div className="solar-fade-up solar-fade-up-delay">
+        <dl className={cn('solar-hero__stat-stack', !glass && 'solar-hero__stat-stack--light')}>
+          {heroMetrics.map((metric, index) => (
+            <div
+              key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
+              className="solar-hero__stat-card"
+            >
+              <dt className="solar-hero__stat-label">{metric.label}</dt>
+              <dd className="solar-hero__stat-value">{metric.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    )
+  }
+
   if (glass) {
     return (
       <div className="solar-fade-up solar-fade-up-delay">
-        {hasHeroMetrics ? (
-          <dl className="solar-hero__stat-stack">
-            {heroMetrics.map((metric, index) => (
-              <div
-                key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-                className="solar-hero__stat-card"
-              >
-                <dt className="solar-hero__stat-label">{metric.label}</dt>
-                <dd className="solar-hero__stat-value">{metric.value}</dd>
-              </div>
-            ))}
-          </dl>
-        ) : (
-          <div className="solar-hero__glass solar-hero__aside-card solar-hero__aside-card--glass">
-            <HeroCardCopy cardCopy={cardCopy} heroTextColor="var(--color-white)" />
-          </div>
-        )}
+        <div className="solar-hero__glass solar-hero__aside-card solar-hero__aside-card--glass">
+          <HeroCardCopy cardCopy={cardCopy} heroTextColor="var(--color-white)" />
+        </div>
       </div>
     )
   }
@@ -365,17 +315,7 @@ function HeroAside({
         radius="lg"
         style={{ backgroundColor: cardBackground, borderColor: cardBorder }}
       >
-        {hasHeroMetrics ? (
-          <HeroMetrics
-            heroMetrics={heroMetrics}
-            metricTileBackground={metricTileBackground}
-            metricTileBorder={metricTileBorder}
-            metricLabelColor={metricLabelColor}
-            metricValueColor={metricValueColor}
-          />
-        ) : (
-          <HeroCardCopy cardCopy={cardCopy} heroTextColor={heroTextColor} />
-        )}
+        <HeroCardCopy cardCopy={cardCopy} heroTextColor={heroTextColor} />
       </Card>
     </div>
   )
@@ -463,16 +403,6 @@ export default function Hero({
   const { useSingleHeadline, title, titlePrimary, titleAccent } = resolveHeadline(heroSection)
   const heroMetrics = resolveHeroMetrics(heroSection)
   const hasHeroMetrics = heroMetrics.length > 0
-  const metricTileBackground = getBackdropCardValue(
-    hasHeroBackdropMedia,
-    'rgba(255, 255, 255, 0.20)',
-    'var(--color-card, var(--color-surface-elevated))',
-  )
-  const metricTileBorder = getBackdropCardValue(
-    hasHeroBackdropMedia,
-    'rgba(255, 255, 255, 0.18)',
-    'var(--color-border)',
-  )
   const heroActions = resolveHeroActions(heroSection)
   const heroCards = resolveHeroCards(heroSection)
   const hasHeroAside = hasHeroMetrics || Boolean(cardCopy)
@@ -526,10 +456,6 @@ export default function Hero({
           <HeroAside
             hasHeroMetrics={hasHeroMetrics}
             heroMetrics={heroMetrics}
-            metricTileBackground={metricTileBackground}
-            metricTileBorder={metricTileBorder}
-            metricLabelColor={softTextColor || 'var(--color-slate-500)'}
-            metricValueColor={heroTextColor || 'var(--color-text-strong)'}
             cardCopy={cardCopy}
             cardBackground={cardBackground}
             cardBorder={cardBorder}
