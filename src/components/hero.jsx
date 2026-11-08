@@ -279,7 +279,7 @@ function HeroAside({
   }
 
   // One card per metric, small mono label over the value: dark glass over a photo or
-  // sky, light paper on a plain hero.
+  // sky, solid Midnight Slate on a plain hero.
   if (hasHeroMetrics) {
     return (
       <div className="solar-fade-up solar-fade-up-delay">
