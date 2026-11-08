@@ -80,6 +80,16 @@
   z-index: 2;
 }
 
+/*
+ * A photo or video hero covers its own background, so its grid draws in
+ * white above the photo and its overlay (z 10) and below the copy (z 20).
+ */
+.solar-hero:not(.solar-hero--clouds)::before {
+  --page-grid-line: oklch(100% 0 0deg / 16%);
+
+  z-index: 11;
+}
+
 /* Frames (and their "+" marks) inside a cloud section turn white with the grid. */
 .cloud-theme-section:not(.cloud-theme-section--clouds-hidden) .grid-frame {
   --grid-frame-line: oklch(100% 0 0deg / 20%);
