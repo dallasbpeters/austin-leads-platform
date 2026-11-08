@@ -758,6 +758,16 @@ const sanitizeAction = (action) => {
   }
 }
 
+/**
+ * The CSS gradient of a color set to Gradient Mode in the picker
+ * (sanity-plugin-color-input saves it as `css`), or null for a solid color.
+ * Only backgrounds can use it; everywhere else reads the solid first color.
+ */
+const resolveSanityGradientValue = (value) =>
+  value?.isGradient && typeof value.css === 'string' && value.css.trim()
+    ? cleanRuntimeString(value.css)
+    : null
+
 const resolveSanityColorValue = (value) => {
   if (!value) {
     return value
@@ -939,6 +949,7 @@ const sanitizeSection = (section) => {
     accentColor: resolveSanityColorValue(s.accentColor),
     backgroundColor: resolveSanityColorValue(s.backgroundColor),
     sectionBackgroundColor: resolveSanityColorValue(s.sectionBackgroundColor),
+    sectionBackgroundGradient: resolveSanityGradientValue(s.sectionBackgroundColor),
     sectionBackgroundImage: s.sectionBackgroundImage,
     theme: cleanRuntimeString(s.theme),
     ctaHref: cleanRuntimeString(s.ctaHref),

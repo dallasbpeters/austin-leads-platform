@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils'
 
 const getSectionSurfaceBackground = (section) => {
   const backgroundColor = cleanRuntimeString(section?.sectionBackgroundColor) || null
+  // Gradient Mode in the color picker: painted over the solid first color.
+  const backgroundGradient = cleanRuntimeString(section?.sectionBackgroundGradient) || null
   const backgroundImage = section?.sectionBackgroundImage || null
   const imageUrl = backgroundImage ? buildSanityImageUrl(backgroundImage, { width: 2400 }) : ''
 
@@ -16,6 +18,7 @@ const getSectionSurfaceBackground = (section) => {
 
   return {
     backgroundColor,
+    backgroundGradient,
     backgroundImage,
     imageUrl,
   }
@@ -28,7 +31,8 @@ const SectionSurface = ({ section, children }) => {
     return children
   }
 
-  // Text on a custom colour flips to whichever of dark or light contrasts with it.
+  // Text on a custom colour flips to whichever of dark or light contrasts with it
+  // (for a gradient, its first colour).
   const tone = background.backgroundColor ? surfaceTone(background.backgroundColor) : null
 
   return (
@@ -36,6 +40,7 @@ const SectionSurface = ({ section, children }) => {
       className={cn('section-surface section-surface--custom', tone && `section-surface--on-${tone}`)}
       style={{
         backgroundColor: background.backgroundColor || undefined,
+        backgroundImage: background.backgroundGradient || undefined,
         '--surface-bg': background.backgroundColor || undefined,
       }}
     >
