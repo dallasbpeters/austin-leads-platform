@@ -137,7 +137,7 @@ const InstallProcess = ({
   })
 
   return (
-    <div ref={containerRef} className="relative bg-[#0b1730]" style={{ height: SCRUB_HEIGHT }}>
+    <div ref={containerRef} className="relative bg-[#0a0f17]" style={{ height: SCRUB_HEIGHT }}>
       {/* Header, supporting text and action buttons overlaid on top */}
 
       <div className="sticky top-0 h-screen w-full overflow-hidden">

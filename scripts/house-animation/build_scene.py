@@ -150,8 +150,8 @@ def panel_material():
 
 
 def world_setup():
-    """Dusk gradient: deep navy overhead, warm at the horizon, so white text reads at the top."""
-    world = bpy.data.worlds.new('dusk')
+    """Storm sky: dark cloud banks overhead that drift across the story, a pale band at the horizon."""
+    world = bpy.data.worlds.new('storm')
     bpy.context.scene.world = world
     world.use_nodes = True
     nodes, links = world.node_tree.nodes, world.node_tree.links
@@ -160,18 +160,61 @@ def world_setup():
     coords = nodes.new('ShaderNodeTexCoord')
     split = nodes.new('ShaderNodeSeparateXYZ')
     links.new(coords.outputs['Generated'], split.inputs['Vector'])
-    ramp = nodes.new('ShaderNodeValToRGB')
-    elements = ramp.color_ramp.elements
-    elements[0].position, elements[0].color = 0.5, hex_rgb('#f0b07a')
-    elements[1].position, elements[1].color = 0.6, hex_rgb('#0b1730')
-    middle = elements.new(0.53)
-    middle.color = hex_rgb('#6f7fa6')
+
+    # Base gradient by height: pale grey at the horizon, near black higher up.
     remap = nodes.new('ShaderNodeMapRange')
     remap.inputs['From Min'].default_value = -1.0
     remap.inputs['From Max'].default_value = 1.0
     links.new(split.outputs['Z'], remap.inputs['Value'])
-    links.new(remap.outputs['Result'], ramp.inputs['Fac'])
-    links.new(ramp.outputs['Color'], background.inputs['Color'])
+    sky = nodes.new('ShaderNodeValToRGB')
+    elements = sky.color_ramp.elements
+    elements[0].position, elements[0].color = 0.5, hex_rgb('#9aa0a8')
+    elements[1].position, elements[1].color = 0.64, hex_rgb('#0a0f17')
+    middle = elements.new(0.54)
+    middle.color = hex_rgb('#46505d')
+    links.new(remap.outputs['Result'], sky.inputs['Fac'])
+
+    # Clouds: 4D noise on the view direction, squashed so the banks lie flat. W drifts per frame.
+    squash = nodes.new('ShaderNodeVectorMath')
+    squash.operation = 'MULTIPLY'
+    squash.inputs[1].default_value = (1.0, 1.0, 5.0)
+    links.new(coords.outputs['Generated'], squash.inputs[0])
+    noise = nodes.new('ShaderNodeTexNoise')
+    noise.noise_dimensions = '4D'
+    noise.inputs['Scale'].default_value = 3.0
+    noise.inputs['Detail'].default_value = 14.0
+    noise.inputs['Roughness'].default_value = 0.6
+    noise.inputs['Distortion'].default_value = 0.5
+    links.new(squash.outputs['Vector'], noise.inputs['Vector'])
+    noise.inputs['W'].default_value = 0.0
+    noise.inputs['W'].keyframe_insert('default_value', frame=1)
+    noise.inputs['W'].default_value = 0.3
+    noise.inputs['W'].keyframe_insert('default_value', frame=FRAME_END)
+    # Dark heavy cloud bellies, with paler gaps where the light comes through.
+    shade = nodes.new('ShaderNodeValToRGB')
+    shade.color_ramp.elements[0].position, shade.color_ramp.elements[0].color = 0.38, hex_rgb('#10151d')
+    shade.color_ramp.elements[1].position, shade.color_ramp.elements[1].color = 0.66, hex_rgb('#8a939e')
+    links.new(noise.outputs['Fac'], shade.inputs['Fac'])
+
+    # Clouds fill the sky from just above the horizon; below it, plain haze.
+    above = nodes.new('ShaderNodeMapRange')
+    above.inputs['From Min'].default_value = 0.0
+    above.inputs['From Max'].default_value = 0.06
+    above.inputs['To Max'].default_value = 0.85
+    links.new(split.outputs['Z'], above.inputs['Value'])
+    mix = nodes.new('ShaderNodeMix')
+    mix.data_type = 'RGBA'
+    links.new(above.outputs['Result'], mix.inputs['Factor'])
+    links.new(sky.outputs['Color'], mix.inputs['A'])
+    links.new(shade.outputs['Color'], mix.inputs['B'])
+    # Darken the clouds with height too, so the top of the frame stays dark under the heading.
+    top = nodes.new('ShaderNodeMix')
+    top.data_type = 'RGBA'
+    top.blend_type = 'MULTIPLY'
+    links.new(remap.outputs['Result'], top.inputs['Factor'])
+    links.new(mix.outputs['Result'], top.inputs['A'])
+    links.new(sky.outputs['Color'], top.inputs['B'])
+    links.new(top.outputs['Result'], background.inputs['Color'])
 
 
 def import_house():
@@ -385,8 +428,31 @@ def animate_panels(spots, mat, stack_at):
         ease(panel)
 
 
+def flat_deck(house, min_x, min_y):
+    """The front-most flat roof (the porch deck): downward raycasts, keeping level hits 2-5 m up."""
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    box = [house.matrix_world @ mathutils.Vector(corner) for corner in house.bound_box]
+    max_x = max(p.x for p in box)
+    max_y = max(p.y for p in box)
+    hits = []
+    for i in range(60):
+        for j in range(60):
+            x = min_x + (max_x - min_x) * (i + 0.5) / 60
+            y = min_y + (max_y - min_y) * (j + 0.5) / 60
+            ok, where, normal, _, obj, _ = bpy.context.scene.ray_cast(depsgraph, (x, y, 50), (0, 0, -1))
+            if ok and obj == house and normal.z > 0.98 and 2.0 < where.z < 5.0:
+                hits.append(where.copy())
+    if not hits:
+        return mathutils.Vector((min_x + 6.5, min_y - 0.2, 0.0))
+    front = min(p.y for p in hits)
+    near_front = [p for p in hits if p.y < front + 2.0]
+    # The middle of the front strip, stepped back from the edge so the pallet sits fully on the deck.
+    middle = sum((p for p in near_front), mathutils.Vector()) / len(near_front)
+    return mathutils.Vector((middle.x, front + 1.4, max(p.z for p in near_front)))
+
+
 def pallet(at):
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(at.x, at.y, 0.07))
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(at.x, at.y, at.z - 0.07))
     base = bpy.context.active_object
     base.name = 'Pallet'
     base.scale = (PANEL_W + 0.2, PANEL_H + 0.2, 0.14)
@@ -394,39 +460,44 @@ def pallet(at):
 
 
 def ground():
-    bpy.ops.mesh.primitive_plane_add(size=240, location=(0, 0, -0.02))
+    """Wet dark ground after the storm: it picks up the sky and fades into haze, no lawn."""
+    bpy.ops.mesh.primitive_plane_add(size=6000, location=(0, 0, -0.02))
     plane = bpy.context.active_object
     plane.name = 'Ground'
-    mat = principled('lawn', '#5f7a3a', 0.95)
+    mat = principled('wet ground', '#262b31', 0.6)
     nodes, links = mat.node_tree.nodes, mat.node_tree.links
     noise = nodes.new('ShaderNodeTexNoise')
-    noise.inputs['Scale'].default_value = 0.4
-    ramp = nodes.new('ShaderNodeValToRGB')
-    ramp.color_ramp.elements[0].color = hex_rgb('#4f6a2f')
-    ramp.color_ramp.elements[1].color = hex_rgb('#7d9550')
-    links.new(noise.outputs['Fac'], ramp.inputs['Fac'])
-    links.new(ramp.outputs['Color'], nodes['Principled BSDF'].inputs['Base Color'])
+    noise.inputs['Scale'].default_value = 1.6
+    noise.inputs['Detail'].default_value = 6.0
+    puddles = nodes.new('ShaderNodeValToRGB')
+    puddles.color_ramp.elements[0].position = 0.45
+    puddles.color_ramp.elements[0].color = (0.35, 0.35, 0.35, 1)
+    puddles.color_ramp.elements[1].position = 0.6
+    puddles.color_ramp.elements[1].color = (0.8, 0.8, 0.8, 1)
+    links.new(noise.outputs['Fac'], puddles.inputs['Fac'])
+    links.new(puddles.outputs['Color'], nodes['Principled BSDF'].inputs['Roughness'])
     plane.data.materials.append(mat)
 
 
 def lights_and_camera(target):
     bpy.ops.object.light_add(type='SUN', rotation=(math.radians(62), 0, math.radians(-38)))
     sun = bpy.context.active_object
-    sun.data.energy = 3.2
-    sun.data.color = (1.0, 0.86, 0.7)
-    sun.data.angle = math.radians(1.5)
+    # Soft, cool storm light: a low sun through cloud.
+    sun.data.energy = 1.6
+    sun.data.color = (0.86, 0.9, 1.0)
+    sun.data.angle = math.radians(12)
 
     bpy.ops.object.empty_add(location=target)
     aim = bpy.context.active_object
     aim.name = 'Aim'
     bpy.ops.object.camera_add()
     camera = bpy.context.active_object
-    camera.data.lens = 32
+    camera.data.lens = 52
     track = camera.constraints.new('TRACK_TO')
     track.target = aim
     bpy.context.scene.camera = camera
     # A slow quarter-orbit across the whole story, from the front-left corner.
-    radius, height = 36.0, 9.5
+    radius, height = 34.0, 8.0
     for frame, angle in ((1, -128), (FRAME_END, -104)):
         a = math.radians(angle)
         camera.location = (target.x + radius * math.cos(a), target.y + radius * math.sin(a), height)
@@ -451,8 +522,9 @@ def main():
     box = [house.matrix_world @ mathutils.Vector(corner) for corner in house.bound_box]
     min_x = min(p.x for p in box)
     min_y = min(p.y for p in box)
-    # The stack sits on a pallet on the front lawn, in view of the camera ("stored safely").
-    stack_at = mathutils.Vector((min_x + 1.5, min_y - 1.8, 0.14))
+    # The stack sits on a pallet on the flat porch roof, in clear view of the camera ("stored safely").
+    deck = flat_deck(house, min_x, min_y)
+    stack_at = mathutils.Vector((deck.x, deck.y, deck.z + 0.14))
     pallet(stack_at)
     animate_panels(spots, panel_material(), stack_at=stack_at)
 
@@ -465,7 +537,7 @@ def main():
     ground()
     world_setup()
     # Aim above the ridge so the house sits low and the sky fills the top, under the heading.
-    lights_and_camera(mathutils.Vector((0, 1.5, 5.0)))
+    lights_and_camera(mathutils.Vector((0.0, -1.0, 5.4)))
 
     render = scene.render
     engines = [item.identifier for item in render.bl_rna.properties['engine'].enum_items]
