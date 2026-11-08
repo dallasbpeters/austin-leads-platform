@@ -32,6 +32,7 @@ import { studioStructure } from './src/sanity/studioStructure'
 import { aiDraftingTool } from './src/sanity/tools/aiDraftingTool'
 import { contextChatTool } from './src/sanity/tools/contextChatTool'
 import { pageSpeedTool } from './src/sanity/tools/pageSpeedTool'
+import { videoTool } from './src/sanity/tools/videoTool'
 
 const previewModeRoutes = {
   enable: '/api/draft-mode/enable',
@@ -112,7 +113,7 @@ export default defineConfig({
       },
     ],
   },
-  tools: (prev) => [...prev, contextChatTool(), aiDraftingTool(), pageSpeedTool()],
+  tools: (prev) => [...prev, contextChatTool(), aiDraftingTool(), pageSpeedTool(), videoTool()],
   studio: {
     components: {
       layout: (props) => props.renderDefault(props),
