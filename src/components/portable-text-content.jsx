@@ -1,6 +1,6 @@
 import { PortableText } from '@portabletext/react'
-import { instagramPortableTextComponents } from 'sanity-plugin-sgntech-instagram-embed/render'
 
+import { InstagramGrid, InstagramPost } from '@/components/instagram-posts'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { cn } from '@/lib/utils'
 
@@ -15,9 +15,37 @@ const getBlockText = (value) => {
   return value?.children?.map((child) => child.text).join('') || ''
 }
 
+/*
+ * Two or more Instagram posts in a row become one grid block, so they sit side by
+ * side instead of stacking down the page. A lone post stays a normal block.
+ */
+const groupInstagramPosts = (blocks) => {
+  const grouped = []
+  for (const block of blocks) {
+    const previous = grouped.at(-1)
+    if (block?._type !== 'instagramPost') {
+      grouped.push(block)
+    } else if (previous?._type === 'instagramGrid') {
+      previous.posts.push(block)
+    } else if (previous?._type === 'instagramPost') {
+      grouped[grouped.length - 1] = {
+        _type: 'instagramGrid',
+        _key: `${previous._key}-grid`,
+        posts: [previous, block],
+      }
+    } else {
+      grouped.push(block)
+    }
+  }
+  return grouped
+}
+
 const portableTextComponents = {
   types: {
-    ...instagramPortableTextComponents.types,
+    // Pass only the data: these are client components, and PortableText also hands
+    // over functions (renderNode) that cannot cross from a server component.
+    instagramPost: ({ value }) => <InstagramPost value={value} />,
+    instagramGrid: ({ value }) => <InstagramGrid value={value} />,
   },
   block: {
     normal: ({ children }) => <p>{children}</p>,
@@ -73,7 +101,7 @@ const PortableTextContent = ({ value, className, as: Tag = 'div', style }) => {
   if (Array.isArray(value)) {
     return (
       <Tag className={cn('portable-text-content [&>*+*]:mt-4', className)} style={style}>
-        <PortableText value={value} components={portableTextComponents} />
+        <PortableText value={groupInstagramPosts(value)} components={portableTextComponents} />
       </Tag>
     )
   }

@@ -226,3 +226,15 @@
     font-size: var(--text-size-90);
   }
 }
+
+/*
+ * Instagram posts placed one after another in rich text (portable-text-content.jsx):
+ * a grid, as many across as fit. Instagram's embed is at least 326px wide, so
+ * columns start at 20.5rem and drop to one on phones.
+ */
+.instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20.5rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
