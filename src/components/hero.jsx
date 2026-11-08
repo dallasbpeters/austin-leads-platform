@@ -333,7 +333,7 @@ function HeroAside({
     return null
   }
 
-  // Over a photo or sky: one dark glass card per metric, big number over a small mono label.
+  // Over a photo or sky: one dark glass card per metric, small mono label over the value.
   if (glass) {
     return (
       <div className="solar-fade-up solar-fade-up-delay">
