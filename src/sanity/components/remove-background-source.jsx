@@ -9,7 +9,7 @@ import { toolApiOrigin } from '../env'
 /*
  * "Remove background" in every image field's Select menu. The cut is done by
  * BiRefNet on fal.ai through our /api/remove-background route, which checks
- * the editor's Sanity login, keeps FAL_KEY on the server, and saves the
+ * the editor's Sanity login, keeps FAL_API_KEY on the server, and saves the
  * transparent PNG to Sanity as a new asset. The original stays untouched.
  */
 

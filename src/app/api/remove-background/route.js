@@ -10,7 +10,7 @@ import { dataset, projectId } from '@/sanity/env'
  *
  * The caller sends their own Sanity login (Authorization: Bearer <token>).
  * It is checked with Sanity before any fal credit is spent, and the upload
- * runs as that editor, with their permissions. FAL_KEY stays on the server.
+ * runs as that editor, with their permissions. FAL_API_KEY stays on the server.
  */
 
 const FAL_ENDPOINT = 'https://fal.run/fal-ai/birefnet/v2'
@@ -63,11 +63,11 @@ export async function POST(request) {
     return reply(request, { error: 'Sign in to Studio to remove backgrounds.' }, 401)
   }
 
-  const falKey = process.env.FAL_KEY?.trim()
+  const falKey = (process.env.FAL_API_KEY || process.env.FAL_KEY)?.trim()
   if (!falKey) {
     return reply(
       request,
-      { error: 'Background removal is not set up yet: add FAL_KEY to the server environment.' },
+      { error: 'Background removal is not set up yet: add FAL_API_KEY to the server environment.' },
       503,
     )
   }
