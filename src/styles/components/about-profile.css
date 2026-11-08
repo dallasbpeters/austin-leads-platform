@@ -1,65 +1,67 @@
 /**
- * .about-profile block: team cards beside the About copy. Each card is a
- * two-color gradient with a grain texture, a grayscale portrait, and copy
- * pinned to the top and bottom over a dark wash.
+ * .about-profile block: the About copy over a framed row of team members.
+ * Each member is a grayscale portrait on a two-color gradient (it turns to
+ * color on hover), with the name, role, blurb and certification below it.
+ * The members sit one per page column, on the gridlines (page-grid.css).
  */
 
 .about-profile {
   background: var(--gradient-sky-paper);
-  margin-inline: auto;
   padding-block: var(--space-section-compact);
-  padding-inline: 0.75rem;
-  display: grid;
-  place-content: center;
-}
-
-.about-profile__layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  gap: 1.5rem;
-  max-width: 80rem;
-  margin-inline: auto;
-  padding-block: 1rem;
-  padding-inline: 0.75rem;
 }
 
 .about-profile__copy {
-  padding: var(--spacing-xx-large);
+  width: var(--page-content);
+  margin-inline: auto;
+  padding-block-end: 2rem;
+}
+
+.about-profile__title,
+.about-profile__body {
   max-width: 48rem;
 }
 
-@media (width >= 64rem) {
-  .about-profile__layout {
-    padding-inline: var(--spacing-xx-large);
-  }
+.about-profile__layout {
+  padding-block: 1rem;
 }
 
+/* One member per page column: the 1rem gap is where each gridline runs. */
 .about-profile__people {
   display: grid;
   grid-template-columns: 1fr;
-  align-content: start;
-  gap: 1.5rem;
-  max-width: 80rem;
+  gap: 2rem 1rem;
+  margin-block: 0;
+  list-style: none;
 }
 
-@media (width >= 48rem) {
+/* The frame bleeds 0.5rem to the gridlines; this puts the columns back on the content edge. */
+.about-profile__people.grid-frame {
+  padding-inline: 0.5rem;
+}
+
+@media (width >= 40rem) {
   .about-profile__people {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    align-content: start;
-    gap: 1.5rem;
-    max-width: 80rem;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-.about-profile__card {
+@media (width >= 64rem) {
+  .about-profile__people {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.about-profile__person {
   display: grid;
-  grid-template-columns: 1fr;
-  align-content: space-between;
-  align-items: end;
-  padding-block-start: var(--spacing-xx-large);
-  height: 500px;
+  grid-template-rows: auto 1fr;
+  gap: 1rem;
+}
+
+.about-profile__photo {
+  position: relative;
+  overflow: clip;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-card, 1rem);
   background-blend-mode: multiply;
 }
 
@@ -69,86 +71,86 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 15%;
   filter: grayscale(1);
+  transition: filter 300ms ease;
 }
 
-.about-profile__head,
-.about-profile__content {
-  position: relative;
-  z-index: 10;
+.about-profile__person:hover .about-profile__portrait,
+.about-profile__person:focus-within .about-profile__portrait {
+  filter: grayscale(0);
 }
 
-.about-profile__head {
+@media (prefers-reduced-motion: reduce) {
+  .about-profile__portrait {
+    transition: none;
+  }
+}
+
+.about-profile__text {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.about-profile__name-group {
-  display: grid;
-  gap: var(--spacing-small);
-}
-
-.about-profile__label {
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-white);
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .about-profile__name {
-  line-height: 2.5rem;
-  letter-spacing: normal;
-  color: var(--color-white);
+  margin: 0;
+  line-height: 1.2;
+  color: var(--foreground);
 }
 
 .about-profile__role {
   margin: 0;
-  font-weight: 600;
-  line-height: 1rem;
-  color: var(--color-white);
-}
-
-.about-profile__content {
-  display: grid;
-  grid-template-columns: 1fr;
-  align-content: end;
-  gap: 1rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
 .about-profile__blurb {
-  line-height: 1.5rem;
-  color: color-mix(in oklch, var(--color-white) 88%, transparent);
+  margin-block-start: 0.75rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.about-profile__label {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
 .about-profile__cert {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  /* Pushed to the bottom, so every member's certification lines up whatever the blurb length. */
+  margin-block-start: auto;
+  padding-block-start: 1rem;
 }
 
 .about-profile__cert-badge {
-  width: 4.5rem;
-  height: 4.5rem;
+  flex: none;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: var(--radius-pill);
   object-fit: contain;
   background: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--border);
 }
 
 .about-profile__cert-text {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 
 .about-profile__cert-title {
   font-weight: 600;
-  line-height: 1.5rem;
-  color: var(--color-white);
-}
-
-.about-profile__wash {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, var(--color-primary) 15%, var(--wash-deep), transparent);
+  line-height: 1.35;
+  color: var(--foreground);
 }
 
 .about-profile__badge {

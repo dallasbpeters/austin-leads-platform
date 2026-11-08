@@ -71,6 +71,15 @@
 }
 
 /*
+ * A section inside another section (the quote banner inside its paper band)
+ * is narrower than the page, so its own grid would land off the page lines.
+ * The outer section already draws the grid there.
+ */
+:where(main section section)::before {
+  content: none;
+}
+
+/*
  * Over a cloud sky the grey lines vanish, so cloud sections draw them white,
  * one layer above the sky (.cloud-background is z 1) and below the content.
  */
