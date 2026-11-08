@@ -15,6 +15,7 @@ import { CompactColorInput, isColorField } from './src/sanity/components/compact
 import { isLinkField, PageLinkInput } from './src/sanity/components/page-link-input'
 import { PreflightView } from './src/sanity/components/preflight-view'
 import { removeBackgroundAssetSource } from './src/sanity/components/remove-background-source'
+import { isPageSection, SectionTypeSwitcher } from './src/sanity/components/section-type-switcher'
 import { SiteSwitcherNavigator } from './src/sanity/components/site-switcher-navigator'
 import {
   dataset,
@@ -169,9 +170,13 @@ export default defineConfig({
   },
   form: {
     // Every link field (`href`, `ctaHref`, …) gets a page picker under its text box,
-    // and every color field starts closed, showing just its swatch.
+    // every color field starts closed, showing just its swatch, and every page
+    // section gets a "Change type" menu that carries its content across.
     components: {
       input: (props) => {
+        if (isPageSection(props)) {
+          return createElement(SectionTypeSwitcher, props)
+        }
         if (isLinkField(props)) {
           return createElement(PageLinkInput, props)
         }

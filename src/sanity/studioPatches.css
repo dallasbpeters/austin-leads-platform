@@ -69,3 +69,8 @@
 .compact-color__value {
   font-family: monospace;
 }
+
+/* section-type-switcher.jsx: the "Change type" menu above each page section. */
+.section-type-switcher__select {
+  min-width: 14rem;
+}
