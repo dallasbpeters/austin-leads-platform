@@ -64,9 +64,9 @@ function getHeroTextValues(heroSection, hasHeroBackdropMedia, heroMediaMode) {
   const cardCopy = heroSection?.cardCopy || ''
 
   // Over the cloud sky the text follows the visitor's time of day (cloud-background.css):
-  // dark on the daytime sky, white at dusk and night. A fixed Sanity color would be
-  // unreadable half the day, so it is ignored here (Studio hides the field).
-  if (heroMediaMode === 'clouds') {
+  // dark on the daytime sky, white at dusk and night. A Sanity text color still wins,
+  // for cutouts (a dark roof) that sit behind the text.
+  if (heroMediaMode === 'clouds' && !heroSection?.heroTextColor) {
     return {
       body,
       cardCopy,
@@ -149,7 +149,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
   if (heroMediaMode === 'clouds') {
     return (
       <>
-        <CloudBackground density="regular" />
+        <CloudBackground density="thick" />
         {cutout?.url ? (
           <Image
             src={cutout.url}

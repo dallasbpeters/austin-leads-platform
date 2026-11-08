@@ -2033,8 +2033,8 @@ const heroSpecificFields = [
     title: 'Hero text color',
     type: 'color',
     options: canvasExclude,
-    // Cloud heroes follow the visitor's time of day (dark by day, white at night), so a fixed color is off.
-    hidden: ({ parent }) => parent?.heroMediaMode === 'clouds',
+    description:
+      'Cloud heroes: leave empty to follow the time of day (dark by day, white at night). Set it when a cutout sits behind the text.',
   },
   { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'color', options: canvasExclude },
   {
