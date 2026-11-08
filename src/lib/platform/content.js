@@ -2363,42 +2363,8 @@ export const getPageBySlug = async (siteSlug, slug) => {
   return getPageForRequest(site, slug === '/' ? [] : slug.split('/').filter(Boolean))
 }
 
-export const getLaunchChecklist = async () => {
-  const { client } = await getSanityReadContext({ stega: false })
-
-  if (!client) {
-    return defaultLaunchChecklist
-  }
-
-  try {
-    const checklist = await client.fetch(
-      groq`*[_type == "launchChecklist"] | order(_updatedAt desc)[0]{
-        _id,
-        title,
-        summary,
-        sections[]{
-          _key,
-          title,
-          description,
-          tasks[]{
-            _key,
-            title,
-            notes,
-            status,
-            owner,
-            priority
-          }
-        }
-      }`,
-      {},
-      { cache: 'no-store' },
-    )
-
-    return checklist ?? defaultLaunchChecklist
-  } catch {
-    return defaultLaunchChecklist
-  }
-}
+/** The admin dashboard's launch checklist. It lives in code (launchChecklist.js), not in Sanity. */
+export const getLaunchChecklist = async () => defaultLaunchChecklist
 
 export const getHeroHomepageForSite = async (siteSlug) => {
   const heroPages = await getHeroPages({ stega: true, fresh: false })
