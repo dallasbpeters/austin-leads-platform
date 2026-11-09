@@ -3,10 +3,12 @@ import { describe, expect, it } from 'vitest'
 import { evaluateFormula, FormulaError } from '@/lib/solar-fit/formula'
 import {
   computeModel,
+  computeWithRoof,
   DEFAULT_MODEL,
   defaultValues,
   formatOutput,
   inputsUsedBy,
+  isAsked,
   resolveModel,
 } from '@/lib/solar-fit/model'
 
@@ -162,5 +164,49 @@ describe(inputsUsedBy, () => {
 
   it('reads any formula, such as the fit check', () => {
     expect([...inputsUsedBy(model, 'apr > 0 && systemKw > 1')].toSorted()).toStrictEqual(['apr', 'bill'])
+  })
+})
+
+describe(computeWithRoof, () => {
+  const roof = {
+    panelWatts: 400,
+    sunHoursPerYear: 1600,
+    panels: Array.from({ length: 30 }, () => ({ yearlyKwhDc: 500 })),
+  }
+  const model = resolveModel({
+    fitInputs: [{ key: 'bill', label: 'Bill', kind: 'number', defaultValue: 200 }],
+    fitConstants: [{ key: 'costPerWatt', label: 'Cost per watt', value: 3 }],
+    fitOutputs: [
+      { key: 'panelsWanted', label: 'Panels wanted', formula: '10' },
+      { key: 'cost', label: 'Cost', formula: 'roofSystemKw * 1000 * costPerWatt' },
+    ],
+  })
+  const cost = ({ result }) => result.outputs.find((output) => output.key === 'cost').value
+
+  it('uses the suggested panel count until the visitor picks one', () => {
+    const suggested = computeWithRoof(model, { bill: 200 }, roof)
+    expect(suggested.panelCount).toBe(10)
+    expect(cost(suggested)).toBe(12_000)
+  })
+
+  it('prices the panels the visitor added, within what fits on the roof', () => {
+    const added = computeWithRoof(model, { bill: 200 }, roof, 12)
+    expect(added.panelCount).toBe(12)
+    expect(cost(added)).toBe(14_400)
+    expect(computeWithRoof(model, { bill: 200 }, roof, 99).panelCount).toBe(30)
+  })
+})
+
+describe(isAsked, () => {
+  const batteries = { key: 'batteries', showWhen: 'batteryType > 0' }
+
+  it('asks a follow-up question only when its formula is true', () => {
+    expect(isAsked(batteries, { batteryType: 0 })).toBeFalsy()
+    expect(isAsked(batteries, { batteryType: 2 })).toBeTruthy()
+  })
+
+  it('always asks a question with no formula or a broken one', () => {
+    expect(isAsked({ key: 'bill' }, {})).toBeTruthy()
+    expect(isAsked({ key: 'x', showWhen: 'batteryType >' }, {})).toBeTruthy()
   })
 })

@@ -5117,7 +5117,8 @@ const solarFitInputType = {
       name: 'step',
       title: 'Step',
       type: 'number',
-      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
+      // Kept for old documents only: answers take any amount now (solar-fit-section.jsx).
+      hidden: true,
     },
     {
       name: 'prefix',
@@ -5141,6 +5142,22 @@ const solarFitInputType = {
       initialValue: false,
       description:
         'For questions Google answers from the address, like shade or roof direction. They show only when the roof cannot be mapped.',
+    },
+    {
+      name: 'showWhen',
+      title: 'Ask only when',
+      type: 'string',
+      components: { input: FormulaInput },
+      description:
+        'Optional. A formula on earlier answers, like batteryType > 0. The question is skipped (and keeps its starting value) until it is true.',
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) {
+            return true
+          }
+          const error = formulaSyntaxError(value)
+          return error ? `Formula problem: ${error}` : true
+        }),
     },
   ],
   preview: {
@@ -5288,7 +5305,7 @@ const solarFitSectionType = {
     },
     { name: 'qualifiedMessage', title: 'Message when it fits', type: 'text', rows: 2 },
     { name: 'notQualifiedMessage', title: 'Message when it may not fit', type: 'text', rows: 2 },
-    { name: 'submitLabel', title: 'Button label', type: 'string', initialValue: 'See if you qualify' },
+    { name: 'submitLabel', title: 'Button label', type: 'string', initialValue: 'Talk to Kathie' },
     {
       name: 'successMessage',
       title: 'Thank-you message',

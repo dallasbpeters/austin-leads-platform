@@ -19,7 +19,7 @@ const SECTION_QUERY = `*[_id == $pageId][0]{
   "siteSlug": site->slug.current,
   "sourceDomain": site->primaryDomain,
   "section": sections[_key == $sectionKey][0]{
-    fitInputs[]{ key, label, kind, defaultValue, min, max, step, prefix, suffix, hideWhenRoofFound, options[]{ label, value } },
+    fitInputs[]{ key, label, kind, defaultValue, min, max, step, prefix, suffix, hideWhenRoofFound, showWhen, options[]{ label, value } },
     fitConstants[]{ key, label, value },
     fitOutputs[]{ key, label, formula, format, decimals, detail, highlight },
     qualifyFormula,
@@ -84,8 +84,9 @@ export async function POST(request) {
     }
   }
   const model = resolveModel(page?.section)
-  // The panel count comes from the formula ("Panels wanted"), the same as on the page.
-  const { result, panelCount } = computeWithRoof(model, payload.answers || {}, roof)
+  // The panel count comes from the formula ("Panels wanted"), or the count the visitor
+  // chose on the map, the same as on the page. computeWithRoof keeps it within the roof.
+  const { result, panelCount } = computeWithRoof(model, payload.answers || {}, roof, payload.panelCount)
   const extras = roofExtras(roof, panelCount)
   lead.roofSummary = roof
     ? `${extras.roofPanels} panels, ${extras.roofSystemKw.toFixed(1)} kW, about ${Math.round(extras.roofYearlyKwh).toLocaleString('en-US')} kWh a year`

@@ -10,6 +10,7 @@ import {
   defaultValues,
   formatOutput,
   inputsUsedBy,
+  isAsked,
   PANELS_WANTED_KEY,
   resolveModel,
 } from '@/lib/solar-fit/model'
@@ -33,12 +34,17 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   // The roof step: { placeId, address, roof, photo } once an address is picked.
   const [roofState, setRoofState] = useState({ status: 'idle' })
   const roof = roofState.roof || null
-  // The panel count comes from the formula ("Panels wanted"), not from the visitor.
-  const { result, panelCount } = useMemo(() => computeWithRoof(model, answers, roof), [model, answers, roof])
+  // The panel count comes from the formula ("Panels wanted") until the visitor sets it
+  // with the map's +/- buttons; a new address goes back to the suggestion.
+  const [chosenPanels, setChosenPanels] = useState(null)
+  const { result, panelCount } = useMemo(
+    () => computeWithRoof(model, answers, roof, chosenPanels),
+    [model, answers, roof, chosenPanels],
+  )
   // Questions marked "hide when the roof is found" (like shade) step aside once Google has the roof.
   const visibleInputs = useMemo(
-    () => model.inputs.filter((input) => !(roof && input.hideWhenRoofFound)),
-    [model, roof],
+    () => model.inputs.filter((input) => !(roof && input.hideWhenRoofFound) && isAsked(input, answers)),
+    [model, roof, answers],
   )
 
   // Steps: the address, one per question, then the estimate (with the contact form).
@@ -78,6 +84,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
 
   async function onPickAddress({ placeId, text, session }) {
     setRoofState({ status: 'loading', address: text })
+    setChosenPanels(null)
     try {
       const response = await fetch(
         `/api/solar-fit/roof?placeId=${encodeURIComponent(placeId)}&session=${session}`,
@@ -112,6 +119,8 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
       .slice(1, Math.max(reached, stepIndex))
       .flatMap((passed) => (passed.kind === 'input' ? [passed.input.key] : [])),
     ...(roof ? model.inputs.filter((input) => input.hideWhenRoofFound).map((input) => input.key) : []),
+    // A skipped question ("Ask only when" is false) keeps its starting value, so it counts as answered.
+    ...model.inputs.filter((input) => !isAsked(input, answers)).map((input) => input.key),
   ])
   const usedBy = inputsUsedBy(model)
   const isReady = (keys) => [...keys].every((key) => answered.has(key))
@@ -129,10 +138,12 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
         ? model.qualifiedMessage
         : model.notQualifiedMessage
   // The panels on the map come from the visitor's usage too, so they wait for it the same way.
-  const panelsReady = usedBy.has(PANELS_WANTED_KEY)
-    ? isReady(usedBy.get(PANELS_WANTED_KEY))
-    : // Without that output, computeWithRoof sizes the panels from usage, else from the bill.
-      ['consumption', 'bill'].some((key) => answered.has(key))
+  const panelsReady =
+    chosenPanels !== null ||
+    (usedBy.has(PANELS_WANTED_KEY)
+      ? isReady(usedBy.get(PANELS_WANTED_KEY))
+      : // Without that output, computeWithRoof sizes the panels from usage, else from the bill.
+        ['consumption', 'bill'].some((key) => answered.has(key)))
 
   const setAnswer = (key) => (event) => setEdited((current) => ({ ...current, [key]: event.target.value }))
 
@@ -153,6 +164,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
           consent: form.get('consent') === 'on',
           answers,
           placeId: roofState.placeId || '',
+          panelCount: chosenPanels,
           pageId: page?._id || page?.id || '',
           sectionKey: section?._key || '',
           pagePath: typeof window === 'undefined' ? '' : window.location.pathname,
@@ -299,7 +311,8 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                       value={answers[step.input.key]}
                       min={step.input.min}
                       max={step.input.max}
-                      step={step.input.step || 'any'}
+                      // Any amount, cents included: a Studio step of 10 made the browser refuse a bill like $152.50.
+                      step="any"
                       onChange={setAnswer(step.input.key)}
                     />
                     {step.input.suffix ? (
@@ -387,9 +400,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                         className="solar-calculator__cta-button"
                         disabled={status.state === 'sending'}
                       >
-                        {status.state === 'sending'
-                          ? 'Sending…'
-                          : section?.submitLabel || 'See if you qualify'}
+                        {status.state === 'sending' ? 'Sending…' : section?.submitLabel || 'Talk to Kathie'}
                         <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
                       </button>
                       {status.state === 'error' ? (
@@ -416,6 +427,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                 photo={roofState.photo}
                 count={panelsReady ? panelCount : 0}
                 address={roofState.address}
+                onCountChange={panelsReady ? setChosenPanels : null}
               />
             ) : null}
             {stats.length || highlights.length || roof ? null : (

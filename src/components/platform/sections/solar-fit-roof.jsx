@@ -184,7 +184,7 @@ export function roofView(photo, panelSize) {
  * the photo's size and each panel's spot in metres, so the photo and panels are
  * one SVG in metres, cropped to the roof (roofView).
  */
-export function RoofMap({ roof, photo, count, address }) {
+export function RoofMap({ roof, photo, count, address, onCountChange }) {
   const glassId = `${useId().replaceAll(':', '')}-glass`
   if (!photo) {
     return null
@@ -240,6 +240,31 @@ export function RoofMap({ roof, photo, count, address }) {
         {count ? `${count} panels on ` : 'Your roof at '}
         {address || 'your address'}. Imagery © Google.
       </figcaption>
+      {onCountChange && count ? (
+        <div className="solar-fit__panel-count" role="group" aria-label="Number of panels">
+          <button
+            type="button"
+            className="solar-fit__panel-step"
+            onClick={() => onCountChange(Math.max(1, count - 1))}
+            disabled={count <= 1}
+            aria-label="Remove a panel"
+          >
+            −
+          </button>
+          <output className="solar-fit__panel-total" aria-live="polite">
+            {count} panels
+          </output>
+          <button
+            type="button"
+            className="solar-fit__panel-step"
+            onClick={() => onCountChange(Math.min(roof.panels.length, count + 1))}
+            disabled={count >= roof.panels.length}
+            aria-label="Add a panel"
+          >
+            +
+          </button>
+        </div>
+      ) : null}
     </figure>
   )
 }

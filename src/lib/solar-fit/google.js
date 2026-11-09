@@ -158,32 +158,16 @@ export function staticMapUrl(lat, lng, zoom) {
   return url.toString()
 }
 
-const STALE_IMAGERY_YEARS = 2
-
-/** True when the Solar API's aerial photo ({ year, month, day }) is missing or over two years old. */
-export function isImageryStale(date, now = new Date()) {
-  if (!date?.year) {
-    return true
-  }
-  const taken = new Date(Date.UTC(date.year, (date.month || 1) - 1, date.day || 1))
-  const cutoff = new Date(now)
-  cutoff.setUTCFullYear(cutoff.getUTCFullYear() - STALE_IMAGERY_YEARS)
-  return taken < cutoff
-}
-
 /*
  * The roof photo, with every panel placed on it in metres from the photo's
- * top-left corner. The Solar API's own aerial image is used when it can be,
- * because Google's panel positions are measured on that image; Maps satellite
- * tiles can be years apart and several metres out. But an aerial over two years
- * old can predate the house (a new build shows as a bare lot), so then the newer
- * Maps photo wins, even if the panels may sit a little off. The image comes as a
- * GeoTIFF in UTM metres, so it is decoded here and sent on as a PNG.
+ * top-left corner. The Solar API's own aerial image is always used when it
+ * loads, because Google measured the panel positions on that image: Maps
+ * satellite tiles are taken at other times and sit metres off, so panels drawn
+ * on them hung off the roof. The aerial may be a few years old, but a roof with
+ * panels mapped on it is in it. The image comes as a GeoTIFF in UTM metres, so
+ * it is decoded here and sent on as a PNG. The Maps photo is only the fallback.
  */
 export async function roofPhoto(roof) {
-  if (isImageryStale(roof.imageryDate)) {
-    return mapPhoto(roof)
-  }
   try {
     return await solarPhoto(roof)
   } catch (error) {

@@ -23,7 +23,6 @@ export const DEFAULT_MODEL = {
       defaultValue: 200,
       min: 30,
       max: 1500,
-      step: 10,
       prefix: '$',
     },
     {
@@ -350,6 +349,21 @@ export const ROOF_VALUES = [
  */
 export const PANELS_WANTED_KEY = 'panelsWanted'
 
+/**
+ * Whether a question is asked, given the answers so far: its "Ask only when"
+ * formula (showWhen) must be true. No formula, or a broken one, asks it.
+ */
+export function isAsked(input, answers) {
+  if (!input.showWhen) {
+    return true
+  }
+  try {
+    return Boolean(evaluateFormula(input.showWhen, answers))
+  } catch {
+    return true
+  }
+}
+
 const QUOTED = /"[^"]*"|'[^']*'/gu
 const NAME = /[A-Za-z_]\w*/gu
 
@@ -437,15 +451,19 @@ export function suggestedPanels(roof, yearlyKwh) {
 /**
  * Runs the model with the roof: first with every panel, to read "Panels
  * wanted" (or the usage-based default), then again with that many panels.
- * Returns the result and the panel count, for the page and the server alike.
+ * `chosenPanels`, when the visitor set the count with the map's +/- buttons,
+ * replaces that suggestion. Returns the result and the panel count, for the
+ * page and the server alike.
  */
-export function computeWithRoof(model, answers, roof) {
+export function computeWithRoof(model, answers, roof, chosenPanels = null) {
   if (!roof?.panels?.length) {
     return { result: computeModel(model, answers, roofExtras(null)), panelCount: 0 }
   }
 
   let wanted
-  if (model.outputs.some((output) => output.key === PANELS_WANTED_KEY)) {
+  if (Number(chosenPanels) > 0) {
+    wanted = Number(chosenPanels)
+  } else if (model.outputs.some((output) => output.key === PANELS_WANTED_KEY)) {
     const firstPass = computeModel(model, answers, roofExtras(roof, roof.panels.length))
     wanted = firstPass.outputs.find((output) => output.key === PANELS_WANTED_KEY)?.value
   } else {

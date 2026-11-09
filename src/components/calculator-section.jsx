@@ -164,7 +164,7 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
 
         <div className="solar-calculator__frame grid-frame">
           <div className="solar-calculator__inputs">
-            {field('bill', 'Monthly electricity bill ($)', { min: 0, step: 10 })}
+            {field('bill', 'Monthly electricity bill ($)', { min: 0, step: 'any' })}
 
             <details className="solar-calculator__advanced" open>
               <summary className="solar-calculator__summary">
