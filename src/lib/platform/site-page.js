@@ -380,6 +380,17 @@ async function resolvePageSectionData(site, page, slugParts) {
   return { pathname, reviews, caseStudies }
 }
 
+/**
+ * A site page from Sanity (hero and sections), or null when there is none, so a
+ * built-in route (/service-request) can use a page made in Studio and keep its
+ * own fallback otherwise.
+ */
+export async function renderSanityPageIfAny(siteSlug, slugParts) {
+  const site = await resolveSiteForPage(siteSlug)
+  const page = site ? await getPageForRequest(site, slugParts) : null
+  return page ? renderPage(site, page, slugParts) : null
+}
+
 async function renderGenericSitePage(site, slugParts) {
   const page = await getPageForRequest(site, slugParts)
 
@@ -387,6 +398,10 @@ async function renderGenericSitePage(site, slugParts) {
     notFound()
   }
 
+  return renderPage(site, page, slugParts)
+}
+
+async function renderPage(site, page, slugParts) {
   const { pathname, reviews, caseStudies } = await resolvePageSectionData(site, page, slugParts)
 
   return (

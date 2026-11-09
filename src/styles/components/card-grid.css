@@ -93,3 +93,63 @@
   line-height: 1.75rem;
   color: var(--muted-foreground);
 }
+
+/* Partner logo (Sanity item "Logo"), shown in place of the icon. */
+.card-grid__logo {
+  display: flex;
+  align-items: center;
+  height: 4.5rem;
+  margin-block-end: 1rem;
+}
+
+.card-grid__logo-img {
+  max-width: 10rem;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media (width >= 48rem) {
+  .card-grid__item--reverse .card-grid__logo {
+    margin-inline-end: auto;
+  }
+}
+
+/* A linked item: the title link stretches over the whole card. */
+.card-grid__item:has(.card-grid__link) {
+  position: relative;
+}
+
+.card-grid__link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 200ms ease-out;
+}
+
+.card-grid__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card-grid__link:focus-visible {
+  outline: none;
+}
+
+.card-grid__link:focus-visible::after {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-grid__item:hover .card-grid__link {
+    text-decoration-color: currentcolor;
+  }
+}
+
+/* On a dark custom section the navy icon would vanish; it takes the brand's Golden Sun instead. */
+.section-surface--on-dark .card-grid__icon {
+  color: #ffd06b;
+}

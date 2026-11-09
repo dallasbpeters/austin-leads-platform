@@ -16,18 +16,6 @@
   }
 }
 
-@keyframes cloud-background-puff-spin {
-  from {
-    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z)) rotateZ(var(--puff-start))
-      scale(var(--puff-scale));
-  }
-
-  to {
-    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z))
-      rotateZ(calc(var(--puff-start) + 360deg)) scale(var(--puff-scale));
-  }
-}
-
 @keyframes cloud-background-drift {
   from {
     transform: translate3d(-30%, 2%, 0) rotate(-1deg);
@@ -50,17 +38,17 @@
  */
 html:not([data-cloud-tone]),
 [data-cloud-tone='day'] {
-  --cloud-tone-opacity: 0.5;
+  --cloud-tone-opacity: 0.85;
   --cloud-tone-layer: linear-gradient(
     to bottom,
-    oklab(76.461% -0.01704 -0.10761) 0%,
-    oklab(68.309% -0.01491 -0.13193) 100%
+    oklch(76.461% 0.10895 261.004) 0%,
+    oklch(68.309% 0.13277 263.552) 100%
   );
-  --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 16%));
-  --cloud-section-background: oklab(62.12% -0.01006 -0.16663);
+  --cloud-tone-sprite-filter: drop-shadow(0 0.8rem 1.3rem oklch(20.768% 0.03985 265.767 / 16%));
+  --cloud-section-background: oklch(62.12% 0.16693 266.545);
   --cloud-section-foreground: oklch(98.397% 0.00632 255.755);
   --cloud-section-muted: oklch(91.99% 0.03404 263.604deg);
-  --cloud-section-eyebrow: #f0f0ef;
+  --cloud-section-eyebrow: oklch(95.486% 0.00133 106.428);
   --gradient-sky-a: oklch(88.282% 0.04208 263.03deg);
   --gradient-sky-b: oklch(83.981% 0.07972 275.157deg);
   --gradient-sky-from: oklch(91.99% 0.03404 263.604deg);
@@ -70,19 +58,24 @@ html:not([data-cloud-tone]),
   --gradient-sun-highlight: oklch(90.508% 0.18375 98.807deg);
   --cloud-image-overlay-strength: 55%;
   --cloud-image-saturation: 1;
+  --cloud-lit-filter: none;
+  --cloud-hero-text: oklch(20.768% 0.03982 265.755);
+  --cloud-hero-accent: var(--gradient-sun-b);
+  --cloud-hero-text-soft: oklch(20.768% 0.03985 265.767 / 78%);
 }
 
 [data-cloud-tone='dusk'] {
-  --cloud-tone-opacity: 0.2;
+  --cloud-tone-opacity: 0.4;
   --cloud-tone-layer: linear-gradient(
     to top,
     oklch(31.455% 0.14125 273.278deg / 70%) 0%,
     oklch(55.579% 0.165 275.669deg / 50%) 100%
   );
-  --cloud-tone-sprite-filter: sepia(0.04) saturate(0.15) drop-shadow(0 0.8rem 1.3rem rgb(120 53 15 / 22%));
+  --cloud-tone-sprite-filter: sepia(0.04) saturate(0.15)
+    drop-shadow(0 0.8rem 1.3rem oklch(41.37% 0.10534 45.89 / 22%));
   --cloud-section-background: oklch(43.3% 0.13749 269.251deg);
-  --cloud-section-foreground: #fff8ef;
-  --cloud-section-muted: #f0deec;
+  --cloud-section-foreground: oklch(98.209% 0.01397 74.303);
+  --cloud-section-muted: oklch(91.911% 0.02702 333.082);
   --cloud-section-eyebrow: oklch(77.751% 0.16415 72.838deg);
   --gradient-sky-a: oklch(55.579% 0.165 275.669deg);
   --gradient-sky-b: oklch(29.309% 0.13619 272.663deg);
@@ -90,32 +83,38 @@ html:not([data-cloud-tone]),
   --gradient-sky-to: oklch(47.71% 0.12 266.24deg);
   --gradient-sun-a: oklch(77.751% 0.16415 72.838deg);
   --gradient-sun-b: oklch(55.921% 0.22738 28.172deg);
-  --gradient-sun-highlight: #ffb86b;
+  --gradient-sun-highlight: var(--cloud-section-eyebrow);
   --cloud-image-overlay-strength: 72%;
   --cloud-image-saturation: 0.7;
+  --cloud-lit-filter: brightness(0.8) sepia(0.2) saturate(1.1);
+  --cloud-hero-text: oklch(98.209% 0.01397 74.303);
+  --cloud-hero-text-soft: oklch(98.209% 0.01407 74.428 / 80%);
 }
 
 [data-cloud-tone='night'] {
-  --cloud-tone-opacity: 0.3;
+  --cloud-tone-opacity: 0.5;
   --cloud-tone-layer: linear-gradient(
     to bottom,
-    oklab(17.949% -0.0022 -0.03) 0%,
-    oklab(20.768% -0.002 -0.039) 100%
+    oklch(17.949% 0.03056 265.776) 0%,
+    oklch(20.849% 0.03938 267.619) 100%
   );
-  --cloud-tone-sprite-filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem rgb(15 23 42 / 38%));
-  --cloud-section-background: oklab(17.949% -0.0022 -0.03);
-  --cloud-section-foreground: #effcff;
-  --cloud-section-muted: #c5e4ea;
-  --cloud-section-eyebrow: #ffd06b;
-  --gradient-sky-a: #1d3a5c;
-  --gradient-sky-b: #0a1626;
-  --gradient-sky-from: #14293f;
-  --gradient-sky-to: #6b86b8;
-  --gradient-sun-a: #6584b0;
-  --gradient-sun-b: #4668a1;
-  --gradient-sun-highlight: #49668d;
+  --cloud-tone-sprite-filter: saturate(0.78) drop-shadow(0 0.8rem 1.3rem oklch(20.768% 0.03982 265.755 / 38%));
+  --cloud-section-background: oklch(17.949% 0.03008 265.806);
+  --cloud-section-foreground: oklch(98.23% 0.01434 213.479);
+  --cloud-section-muted: oklch(89.822% 0.03364 210.635);
+  --cloud-section-eyebrow: oklch(87.893% 0.1301 84.546);
+  --gradient-sky-a: oklch(34.375% 0.06956 253.703);
+  --gradient-sky-b: oklch(19.833% 0.03678 256.062);
+  --gradient-sky-from: oklch(26.497% 0.06145 252.637);
+  --gradient-sky-to: oklch(61.929% 0.08241 262.355);
+  --gradient-sun-a: oklch(68.172% 0.13557 256.68);
+  --gradient-sun-b: oklch(56.871% 0.13585 260.582);
+  --gradient-sun-highlight: oklch(66.385% 0.13271 255.661);
   --cloud-image-overlay-strength: 86%;
   --cloud-image-saturation: 0.45;
+  --cloud-lit-filter: brightness(0.5) saturate(0.7);
+  --cloud-hero-text: oklch(100% 0 none);
+  --cloud-hero-text-soft: oklch(100% 0 none / 78%);
 }
 
 .cloud-background {
@@ -135,7 +134,17 @@ html:not([data-cloud-tone]),
   position: absolute;
   width: clamp(11rem, 23vw, 24rem);
   opacity: var(--cloud-opacity);
-  filter: var(--cloud-tone-sprite-filter);
+}
+
+/* The same sprite clouds, drawn about twice as big (the full-screen process animation). */
+.cloud-background--large .cloud-background__cloud {
+  scale: 1.6;
+}
+
+/* Art drawn in daylight, dimmed to match the sky at dusk and night. */
+.cloud-lit {
+  filter: var(--cloud-lit-filter);
+  transition: filter 700ms ease;
 }
 
 .cloud-theme-section {
@@ -154,10 +163,10 @@ html:not([data-cloud-tone]),
 }
 
 .cloud-theme-section--metrics.cloud-theme-section--clouds-hidden {
-  --cloud-section-background: #040a17;
-  --cloud-section-foreground: #fff;
-  --cloud-section-muted: rgb(255 255 255 / 70%);
-  --cloud-section-eyebrow: #ffd06b;
+  --cloud-section-background: oklch(14.555% 0.03085 260.489);
+  --cloud-section-foreground: oklch(100% 0 none);
+  --cloud-section-muted: oklch(100% 0 none / 70%);
+  --cloud-section-eyebrow: oklch(87.893% 0.1301 84.546);
 }
 
 .cloud-theme-section__heading {
@@ -170,6 +179,11 @@ html:not([data-cloud-tone]),
 
 .cloud-theme-section__eyebrow {
   color: var(--cloud-section-eyebrow);
+}
+
+/* Text over moving clouds: a soft shadow keeps light text readable on a white cloud. */
+.cloud-theme-section__readable {
+  text-shadow: 0 1px 0.75rem oklch(20.768% 0.03985 265.767 / 45%);
 }
 
 .cloud-theme-section__image-overlay {
@@ -204,29 +218,25 @@ html:not([data-cloud-tone]),
     alternate;
 }
 
-/* The shallow 3D volume the puffs are scattered through. Perspective is what
- * turns their depth offsets into a size difference, so nearer planes read as
- * closer rather than merely larger. */
-.cloud-background__puffs {
-  position: relative;
-  display: block;
-  transform-style: preserve-3d;
-  aspect-ratio: 1;
-  perspective: 520px;
-}
-
-.cloud-background__puff {
-  position: absolute;
-  display: block;
-  inset: 0;
-  opacity: var(--puff-opacity);
-  animation: cloud-background-puff-spin var(--puff-spin) linear infinite;
-}
-
-.cloud-background__puff img {
+/*
+ * One photo cloud per spot; every third is mirrored (cloud-background.jsx) so
+ * repeats are harder to spot. The tone filter (a drop shadow) sits on this still
+ * image, under the moving wrappers: on the outer wrapper the browser redrew the
+ * blurred shadow of every cloud on every frame of the drift, breathe and scroll
+ * motion, which made scrolling stutter.
+ */
+.cloud-background__sprite {
   display: block;
   width: 100%;
+  filter: var(--cloud-tone-sprite-filter);
   height: auto;
+
+  /* Photo clouds are wide and thin; drawn larger than their spot so they read as clouds, not wisps. */
+  scale: 1.6;
+}
+
+.cloud-background__sprite--flipped {
+  transform: scaleX(-1);
 }
 
 .cloud-background__cloud--one {
@@ -362,16 +372,8 @@ html:not([data-cloud-tone]),
 @media (prefers-reduced-motion: reduce) {
   .cloud-background__scroll,
   .cloud-background__breathe,
-  .cloud-background__motion,
-  .cloud-background__puff {
+  .cloud-background__motion {
     animation: none;
-  }
-
-  /* Without the spin animation the puffs lose the transform it carried, so
-   * their scatter has to be restated statically. */
-  .cloud-background__puff {
-    transform: translate3d(var(--puff-x), var(--puff-y), var(--puff-z)) rotateZ(var(--puff-start))
-      scale(var(--puff-scale));
   }
 
   .cloud-background__scroll {
@@ -389,4 +391,20 @@ html:not([data-cloud-tone]),
 .cloud-theme-section.radial-grid-bg,
 .cloud-theme-section .radial-grid-bg {
   background-image: none;
+}
+
+/* Each cloud fades in when its image arrives (cloud-background.jsx sets data-loaded). */
+.cloud-background__cloud .cloud-background__sprite {
+  opacity: 0;
+  transition: opacity 500ms ease-out;
+}
+
+.cloud-background__cloud[data-loaded] .cloud-background__sprite {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-background__cloud .cloud-background__sprite {
+    transition: none;
+  }
 }

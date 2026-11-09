@@ -233,7 +233,7 @@
 
 .guide-grid__filter-button {
   min-height: 2.25rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-button);
   cursor: pointer;
 }
 

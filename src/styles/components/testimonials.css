@@ -1,0 +1,258 @@
+/**
+ * .testimonials block: customer stories as one large quote at a time. The
+ * eyebrow and portrait take the first page-grid column; the counter, arrows
+ * and quote take the other three.
+ */
+
+.testimonials {
+  --testimonials-ink: #0f172a;
+  --testimonials-muted: #62748e;
+  --testimonials-chip: oklch(55% 0.01 260deg / 10%);
+  --testimonials-mono: var(--font-mono, 'JetBrains Mono', monospace);
+
+  padding-block: var(--space-section);
+  color: var(--testimonials-ink);
+  background: #f8fafc;
+}
+
+.testimonials__inner {
+  display: grid;
+  gap: 2rem;
+
+  /* The frame (and its "+" marks) sits on the page gridlines; the text sits 0.5rem in. */
+  width: var(--page-frame);
+  margin-inline: auto;
+  padding-inline: 0.5rem;
+  padding-block: clamp(3rem, 6vw, 5rem);
+}
+
+@media (width >= 64rem) {
+  .testimonials__inner {
+    grid-template-columns: 1fr 3fr;
+    gap: 0;
+  }
+}
+
+.testimonials__aside {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (width >= 64rem) {
+  .testimonials__aside {
+    flex-direction: column;
+    align-items: start;
+    gap: 3rem;
+  }
+}
+
+.testimonials__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.25rem;
+  font-family: var(--testimonials-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--testimonials-chip);
+}
+
+.testimonials__eyebrow::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  background: currentcolor;
+}
+
+.testimonials__portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: clamp(5rem, 12vw, 9.5rem);
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #082f43;
+}
+
+.testimonials__photo {
+  object-fit: cover;
+  outline: 1px solid oklch(0% 0 0deg / 10%);
+  outline-offset: -1px;
+}
+
+.testimonials__initials {
+  font-family: var(--testimonials-mono), monospace;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 2rem);
+  font-weight: 500;
+  color: #ffd06b;
+}
+
+.testimonials__main {
+  display: grid;
+  align-content: start;
+  gap: 2.5rem;
+}
+
+.testimonials__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.testimonials__count {
+  font-family: var(--testimonials-mono), monospace;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--testimonials-muted);
+}
+
+.testimonials__count span {
+  color: var(--testimonials-ink);
+}
+
+.testimonials__arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.testimonials__arrow {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 2.75rem;
+  border-radius: 0.375rem;
+  color: var(--testimonials-ink);
+  background: var(--testimonials-chip);
+  cursor: pointer;
+}
+
+.testimonials__arrow svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.testimonials__arrow:focus-visible {
+  outline: 2px solid var(--testimonials-ink);
+  outline-offset: 2px;
+}
+
+.testimonials__slide {
+  display: grid;
+  gap: 3rem;
+  min-height: clamp(16rem, 28vw, 24rem);
+  align-content: space-between;
+}
+
+/* The open quote hangs in the margin, so the text edge stays on the gridline. */
+.testimonials__quote {
+  position: relative;
+  max-width: 24ch;
+  font-size: clamp(2rem, 3.4vw + 0.75rem, 4.25rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: pretty;
+}
+
+.testimonials__quote::before {
+  content: '\201C';
+  position: absolute;
+  inset-inline-end: 100%;
+  padding-inline-end: 0.08em;
+}
+
+/* Phones have no margin to hang it in. */
+@media (width < 64rem) {
+  .testimonials__quote::before {
+    position: static;
+  }
+}
+
+.testimonials__quote--long {
+  max-width: 40ch;
+  font-size: clamp(1.25rem, 1.2vw + 0.875rem, 2rem);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.testimonials__by {
+  display: grid;
+  justify-items: start;
+  gap: 0.375rem;
+}
+
+.testimonials__stars {
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  color: #ea580c;
+}
+
+.testimonials__stars-off {
+  color: var(--testimonials-chip);
+}
+
+.testimonials__author {
+  font-size: var(--text-lg);
+  font-weight: 500;
+}
+
+.testimonials__meta {
+  font-family: var(--testimonials-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--testimonials-muted);
+}
+
+a.testimonials__author {
+  text-decoration: underline;
+  text-decoration-color: var(--testimonials-chip);
+  text-underline-offset: 0.2em;
+}
+
+/* Google's terms ask for a visible credit beside its reviews. */
+.testimonials__credit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding-block-start: 1.5rem;
+  border-block-start: 1px solid var(--testimonials-chip);
+  font-family: var(--testimonials-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--testimonials-muted);
+}
+
+.testimonials__credit a {
+  color: var(--testimonials-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .testimonials__arrow:hover {
+    background: oklch(55% 0.01 260deg / 18%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .testimonials__slide,
+  .testimonials__portrait {
+    animation: testimonials-in 350ms ease-out;
+  }
+}
+
+@keyframes testimonials-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}

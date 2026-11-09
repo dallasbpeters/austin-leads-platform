@@ -9,7 +9,8 @@ import { sanityWriteClient } from '@/sanity/client'
 export const runtime = 'nodejs'
 
 const extractHeroAppearance = (body) => {
-  const heroTextColor = body?.heroTextColor?.trim() || '#ffffff'
+  // Empty means no fixed color: the hero picks white over a photo and the time-of-day color over clouds.
+  const heroTextColor = body?.heroTextColor?.trim() || ''
   const heroOverlayStartColor =
     body?.heroOverlayStartColor?.trim() || body?.heroOverlayColor?.trim() || '#0f172a'
   const heroOverlayEndColor = body?.heroOverlayEndColor?.trim() || heroOverlayStartColor
@@ -70,10 +71,15 @@ const saveHeroAppearanceToSanity = async (pageId, heroAppearance) => {
     heroOverlayOpacity,
   } = heroAppearance
 
-  await sanityWriteClient
-    .patch(pageId)
+  const patch = sanityWriteClient.patch(pageId)
+  // No color sent clears the field, so the hero goes back to its own default.
+  if (heroTextColor) {
+    patch.set({ [sectionPath('heroTextColor')]: heroTextColor })
+  } else {
+    patch.unset([sectionPath('heroTextColor')])
+  }
+  await patch
     .set({
-      [sectionPath('heroTextColor')]: heroTextColor,
       [sectionPath('heroOverlayColor')]: heroOverlayStartColor,
       [sectionPath('heroOverlayStartColor')]: heroOverlayStartColor,
       [sectionPath('heroOverlayEndColor')]: heroOverlayEndColor,

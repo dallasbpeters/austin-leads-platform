@@ -1,27 +1,19 @@
 /**
- * .service-grid block: photo cards for services. The large tier fills a square
- * with an image, a color wash and copy pinned to the bottom. Roofing and
- * secondary tiers are smaller versions of the same card.
- *
- * The animated rim is an out-of-flow ring so hovering never shifts layout:
- * conic fill plus a mask that keeps only the padded border visible.
+ * .service-grid block: service cards on the page grid. The main tier is a row
+ * of light cards (Phosphor duotone icon chip at the top, title and copy at the bottom) inside a
+ * .grid-frame, one card per page-grid column. Roofing and secondary tiers below
+ * are smaller photo cards.
  */
 
-@property --border-angle {
-  inherits: true;
-  initial-value: 0deg;
-  syntax: '<angle>';
-}
-
-@keyframes border {
-  to {
-    --border-angle: 360deg;
-  }
+.service-grid__frame {
+  margin-block-start: 2rem;
 }
 
 .service-grid__list {
+  --service-gap: 1.5rem;
+
   display: grid;
-  gap: 1.5rem;
+  gap: var(--service-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -33,84 +25,109 @@
   }
 }
 
+/* One card per page-grid column, so the gaps fall on the gridlines. */
 @media (width >= 64rem) {
   .service-grid__list {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  }
-}
-
-@media (width <= 900px) {
-  .service-grid__list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(var(--service-columns, 3), minmax(0, 1fr));
   }
 }
 
 .service-grid__link,
 .service-grid__link-wrap {
   display: block;
-  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  color: inherit;
 }
 
-.service-grid__link {
-  border-radius: 1rem;
-  corner-shape: squircle;
-}
-
-/* The animated ring is the focus indicator; the outline stays transparent so forced-colors mode can repaint it. */
 .service-grid__link:focus-visible {
-  outline: 2px solid transparent;
-}
-
-.service-grid__link:active {
-  scale: 0.98;
+  outline: 2px solid #0f172a;
+  outline-offset: 3px;
 }
 
 .service-grid__card {
   position: relative;
-  aspect-ratio: 1;
-  overflow: clip;
-  border: 0;
-  border-radius: 1rem;
-  background: transparent;
-  box-shadow: none;
-  contain: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4rem;
+  height: 100%;
+  min-height: 18rem;
+  padding: 1.75rem;
+  border-radius: 0.75rem;
+  color: #0f172a;
+  background: oklch(99% 0.002 260deg);
+}
+
+.service-grid__chip {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 0.375rem;
+  background: oklch(55% 0.01 260deg / 10%);
+}
+
+.service-grid__chip-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #0f172a;
+}
+
+/* Phosphor duotone draws its fill layer at 20% of the line colour; it becomes Golden Sun. */
+.service-grid__chip-icon [opacity] {
+  fill: #ffd06b;
+  opacity: 1;
 }
 
 .service-grid__flag {
   position: absolute;
-  inset-block-start: 0.75rem;
-  inset-inline-end: 1.25rem;
-  z-index: 10;
+  inset-block-start: 1.75rem;
+  inset-inline-end: 1.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0f172a;
+  background: #ffd06b;
 }
 
-.service-grid__flag-badge {
-  border-color: var(--secondary);
-  color: var(--color-white);
-  background: var(--secondary);
+.service-grid__copy {
+  display: grid;
+  gap: 0.5rem;
 }
 
-.service-grid__flag-icon {
-  width: 1rem;
-  height: 1rem;
+.service-grid__eyebrow {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #62748e;
 }
 
-.service-grid__media-frame {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: clip;
-  border-radius: inherit;
+.service-grid__title {
+  font-size: clamp(1.25rem, 0.5vw + 1.1rem, 1.5rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
-.service-grid__stack {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow: clip;
-  border-radius: inherit;
+.service-grid__price {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
+  font-variant-numeric: tabular-nums;
 }
 
+.service-grid__body {
+  font-size: var(--text-lg);
+  line-height: 1.4;
+  color: #62748e;
+  text-wrap: pretty;
+}
+
+/* Smaller photo cards in the roofing and secondary tiers. */
 .service-grid__image {
   position: absolute;
   inset: 0;
@@ -119,136 +136,10 @@
   object-fit: cover;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .service-grid__card:hover .service-grid__image,
-  .service-grid__mini:hover .service-grid__image {
-    transform: scale(1.05);
-  }
-}
-
 .service-grid__wash {
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-
-.service-grid__ring {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  padding: 6px;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  background: conic-gradient(
-    from var(--border-angle),
-    color-mix(in oklch, var(--color-secondary) 50%, white),
-    var(--color-secondary),
-    color-mix(in oklch, var(--color-secondary) 72%, transparent),
-    var(--color-secondary),
-    color-mix(in oklch, var(--color-secondary) 72%, white)
-  );
-  background-origin: border-box;
-  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
-  mask-clip: content-box, border-box;
-  mask-origin: border-box;
-  mask-composite: exclude;
-  mask-repeat: no-repeat;
-}
-
-.service-grid__link:focus-visible .service-grid__ring {
-  opacity: 1;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .service-grid__link:hover .service-grid__ring,
-  .service-grid__link-wrap:hover .service-grid__ring {
-    opacity: 1;
-  }
-}
-
-/* The photo zoom and the spinning rim only run when motion is welcome. */
-@media (prefers-reduced-motion: no-preference) {
-  .service-grid__image {
-    transition: transform 500ms ease-out;
-  }
-
-  .service-grid__link:focus-visible .service-grid__ring {
-    animation: border 2s cubic-bezier(0.55, 0.08, 0.68, 0.53) infinite;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .service-grid__link:hover .service-grid__ring,
-    .service-grid__link-wrap:hover .service-grid__ring {
-      animation: border 2s cubic-bezier(0.55, 0.08, 0.68, 0.53) infinite;
-    }
-  }
-}
-
-.service-grid__copy {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
-  z-index: 2;
-  padding: 2rem;
-  border-radius: inherit;
-  color: var(--color-white);
-}
-
-.service-grid__glyph {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 4rem;
-  height: 4rem;
-  margin-block-end: 1rem;
-  border-radius: var(--radius-pill);
-  background: color-mix(in oklch, var(--color-white) 20%, transparent);
-  backdrop-filter: blur(4px);
-}
-
-.service-grid__glyph--icon {
-  color: var(--color-tidal);
-}
-
-.service-grid__glyph-icon {
-  width: 2rem;
-  height: 2rem;
-}
-
-.service-grid__number {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.service-grid__eyebrow {
-  margin-block: 1em;
-  margin-inline: 0;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-
-.service-grid__title {
-  margin-block-end: 0.75rem;
-  font-family: var(--font-accent);
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.service-grid__price {
-  margin-block-end: 0.75rem;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.service-grid__body {
-  margin-block-start: 0.25rem;
-  font-weight: 400;
-  color: var(--color-white);
 }
 
 /* Roofing and secondary tiers */

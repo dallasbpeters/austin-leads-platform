@@ -37,4 +37,5 @@ export const getMillisecondsUntilNextHour = (date) => {
  * frame. It mirrors `getLocalCloudTone`. The server cannot know the visitor's
  * clock, and reading a cookie there would stop every public page from caching.
  */
-export const CLOUD_TONE_INLINE_SCRIPT = `(function(){try{var h=new Date().getHours();document.documentElement.dataset.cloudTone=h>=7&&h<18?'day':h===5||h===6||h===18||h===19?'dusk':'night'}catch(e){}})()`
+// Also flags WebGPU before paint, so a shader hero can hide its fallback photo without a flash (solar-hero.css).
+export const CLOUD_TONE_INLINE_SCRIPT = `(function(){try{var d=document.documentElement;var h=new Date().getHours();d.dataset.cloudTone=h>=7&&h<18?'day':h===5||h===6||h===18||h===19?'dusk':'night';d.dataset.webgpu='gpu' in navigator?'yes':'no'}catch(e){}})()`

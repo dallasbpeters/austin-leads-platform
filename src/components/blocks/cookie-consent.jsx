@@ -127,10 +127,15 @@ const CookieConsent = React.forwardRef(
               <CardDescription className="text-sm">{description}</CardDescription>
             </CardContent>
             <CardFooter className="flex h-0 gap-2 px-4 py-2">
-              <Button onClick={handleDecline} variant="secondary" size="sm" className="flex-1 rounded-full">
+              <Button
+                onClick={handleDecline}
+                variant="secondary"
+                size="sm"
+                className="flex-1 rounded-(--radius-button)"
+              >
                 Decline
               </Button>
-              <Button onClick={handleAccept} size="sm" className="flex-1 rounded-full">
+              <Button onClick={handleAccept} size="sm" className="flex-1 rounded-(--radius-button)">
                 Accept
               </Button>
             </CardFooter>

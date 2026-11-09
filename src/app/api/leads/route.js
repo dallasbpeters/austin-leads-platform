@@ -80,8 +80,6 @@ export async function POST(request) {
     serviceInterest: leadInput.serviceInterest || null,
     sourceSection: leadInput.sourceSection || null,
     sourceType: leadInput.sourceType,
-    email: leadInput.email,
-    phone: leadInput.phone || null,
   })
 
   let notification = { status: 'skipped' }

@@ -29,7 +29,16 @@ const SITES_QUERY = groq`*[_type == "site" && defined(googleBusiness.locationId)
 }`
 
 /** Fields the sync owns. Anything else on the document is an editor's to keep. */
-const SYNCED_FIELDS = ['author', 'stars', 'body', 'site', 'source', 'sourceId', 'sourceUpdatedAt']
+const SYNCED_FIELDS = [
+  'author',
+  'reviewerPhotoUrl',
+  'stars',
+  'body',
+  'site',
+  'source',
+  'sourceId',
+  'sourceUpdatedAt',
+]
 
 function pickSyncedFields(doc) {
   return Object.fromEntries(

@@ -9,6 +9,7 @@ import { roofingServices } from '@/lib/platform/service-catalog'
 import { buildRuntimeKey, cleanRuntimeString } from '@/lib/sanity/stega'
 import { getSanityPageEditAttributes, getSanitySectionEditAttributes } from '@/lib/sanity/visualEditing'
 
+import { resolveHeaderMessage } from '@/lib/platform/header-message'
 import { ChristmasFaviconBlinker } from './christmas-favicon-blinker'
 import { getSectionDomId, getSiteBrandStyleVars } from './public-site-utils'
 import { CtaSection, RoofingLogoCloudSection, sectionRenderers } from './sections'
@@ -87,6 +88,8 @@ function renderSectionItem(section, index, flags, page, site, pathname, reviews,
           caseStudies={caseStudies}
           sectionId={sectionId}
           editAttributes={sectionEditAttrs}
+          // The first section carries the page's main heading (h1) when there is no hero.
+          isFirstSection={index === 0}
         />
       </SectionSurface>
       {flags.isGuidePost && index === flags.guideShareAfterIndex ? (
@@ -132,7 +135,7 @@ export default function PublicSite({
 
       {site.slug === 'txchristmaslights' && <ChristmasFaviconBlinker />}
       {flags.useSolarShell ? (
-        <Header navigation={navigation} />
+        <Header navigation={navigation} message={resolveHeaderMessage(site)} />
       ) : (
         <GenericHeader site={site} navigation={navigation} />
       )}

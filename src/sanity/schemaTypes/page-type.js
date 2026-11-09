@@ -3,7 +3,11 @@ import { BlockContentIcon } from '@sanity/icons/BlockContent'
 import { CircleIcon } from '@sanity/icons/Circle'
 import { defineArrayMember, defineField } from 'sanity'
 
+import { TIKTOK_VIDEO_URL } from '../../lib/platform/tiktok'
+import { formulaSyntaxError } from '../../lib/solar-fit/formula'
 import ChartPointsJsonInput from '../components/chart-points-json-input'
+import { FormulaInput, FormulaKeyInput, SolarFitSectionInput } from '../components/solar-fit-inputs'
+import { TikTokIcon } from '../components/tiktok-icon'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
@@ -188,7 +192,37 @@ const portableTextSimpleType = {
         ],
       },
     },
+    // Instagram post or reel, from sanity-plugin-sgntech-instagram-embed (see sanity.config.js).
+    { type: 'instagramPost' },
+    { type: 'tiktokPost' },
   ],
+}
+
+/* A TikTok video in rich text (tiktok-posts.jsx). Two or more in a row sit side by side. */
+const tiktokPostType = {
+  name: 'tiktokPost',
+  title: 'TikTok post',
+  type: 'object',
+  icon: TikTokIcon,
+  fields: [
+    {
+      name: 'url',
+      title: 'TikTok video link',
+      type: 'url',
+      description: 'Open the video on TikTok, click Share → Copy link, and paste it here.',
+      validation: (Rule) =>
+        Rule.required().custom(
+          (value) =>
+            !value ||
+            TIKTOK_VIDEO_URL.test(value) ||
+            'Paste a TikTok video link, like https://www.tiktok.com/@name/video/123….',
+        ),
+    },
+  ],
+  preview: {
+    select: { url: 'url' },
+    prepare: ({ url }) => ({ title: 'TikTok post', subtitle: url || 'No link yet' }),
+  },
 }
 
 const publicSiteServiceIconOptions = [
@@ -1325,17 +1359,35 @@ const sectionContentItemType = {
       type: 'string',
       options: canvasPurpose('Optional link target if the item should link somewhere.'),
     },
+    {
+      name: 'logo',
+      title: 'Logo',
+      type: 'image',
+      description: 'Optional. Shown in place of the icon, for example a partner company logo.',
+      options: canvasExclude,
+      // Left empty, the site names it "Logo of {title}".
+      fields: [
+        {
+          name: 'altText',
+          title: 'Alt text',
+          type: 'string',
+          description: 'What the image shows, for screen readers and Google.',
+        },
+      ],
+    },
   ],
   preview: {
     select: {
       title: 'title',
       subtitle: 'body',
       eyebrow: 'eyebrow',
+      media: 'logo',
     },
-    prepare({ title, subtitle, eyebrow }) {
+    prepare({ title, subtitle, eyebrow, media }) {
       return {
         title: title || 'Section item',
         subtitle: previewText(subtitle || eyebrow, 'Supporting content'),
+        media,
       }
     },
   },
@@ -1992,6 +2044,8 @@ const heroSpecificFields = [
         { title: 'Single image', value: 'single' },
         { title: 'Slides only', value: 'slides' },
         { title: 'Video only', value: 'video' },
+        { title: 'Shader', value: 'shader' },
+        { title: 'Clouds', value: 'clouds' },
       ],
       layout: 'radio',
       ...canvasPurpose('Choose whether this hero uses one image, a slides-only background set, or a video.'),
@@ -2014,7 +2068,14 @@ const heroSpecificFields = [
     options: canvasPurpose('Secondary homepage hero word or phrase shown in the outlined style.'),
   },
   { name: 'heroGradient', title: 'Hero gradient', type: 'text', options: canvasExclude },
-  { name: 'heroTextColor', title: 'Hero text color', type: 'color', options: canvasExclude },
+  {
+    name: 'heroTextColor',
+    title: 'Hero text color',
+    type: 'color',
+    options: canvasExclude,
+    description:
+      'Cloud heroes: leave empty to follow the time of day (dark by day, white at night). Set it when a cutout sits behind the text.',
+  },
   { name: 'heroOverlayColor', title: 'Hero overlay color', type: 'color', options: canvasExclude },
   {
     name: 'heroOverlayStartColor',
@@ -2082,9 +2143,78 @@ const heroSpecificFields = [
     options: canvasExclude,
     hidden: hideUnlessHeroMediaMode('video'),
   },
+  (() => {
+    const image = defineUploadedImage('heroAsset', 'Uploaded hero image', canvasExclude)
+    // Shader mode draws this image as a two-color dither; these pick the two colors.
+    const shaderColor = (name, title, description) => ({
+      name,
+      title,
+      type: 'color',
+      description,
+      hidden: ({ document, path }) => {
+        const section = document?.sections?.find((item) => item?._key === path?.[1]?._key)
+        return section?.heroMediaMode !== 'shader'
+      },
+    })
+    return {
+      ...image,
+      fields: [
+        ...image.fields,
+        shaderColor(
+          'shaderColorA',
+          'Shader dark color',
+          'The dark dots of the dither. Leave empty for deep blue.',
+        ),
+        shaderColor(
+          'shaderColorB',
+          'Shader light color',
+          'The light dots of the dither. Leave empty for pale blue.',
+        ),
+      ],
+      hidden: hideUnlessHeroMediaMode('single', 'shader'),
+    }
+  })(),
   {
-    ...defineUploadedImage('heroAsset', 'Uploaded hero image', canvasExclude),
-    hidden: hideUnlessHeroMediaMode('single'),
+    name: 'heroCutout',
+    title: 'Cutout image',
+    type: 'image',
+    description:
+      'A PNG with a see-through background (for example, solar panels). It sits on top of the drifting clouds.',
+    options: { hotspot: false },
+    fields: [
+      { name: 'alt', title: 'Alt text', type: 'string' },
+      {
+        name: 'blendMode',
+        title: 'Blend with the sky',
+        type: 'string',
+        description:
+          'How the cutout mixes with the sky and clouds behind it. Luminosity or Soft light let the sky color and drifting clouds show in dark glass. Normal shows the photo as it is.',
+        initialValue: 'normal',
+        options: {
+          list: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'Luminosity (sky color, photo detail)', value: 'luminosity' },
+            { title: 'Soft light', value: 'soft-light' },
+            { title: 'Overlay', value: 'overlay' },
+            { title: 'Hard light', value: 'hard-light' },
+            { title: 'Multiply (darker)', value: 'multiply' },
+            { title: 'Screen (lighter)', value: 'screen' },
+            { title: 'Darken', value: 'darken' },
+            { title: 'Lighten', value: 'lighten' },
+            { title: 'Color', value: 'color' },
+          ],
+        },
+      },
+      {
+        name: 'opacity',
+        title: 'Opacity',
+        type: 'number',
+        description: 'From 0.2 (faint) to 1 (solid). Lower lets more sky through.',
+        initialValue: 1,
+        validation: (Rule) => Rule.min(0.2).max(1),
+      },
+    ],
+    hidden: hideUnlessHeroMediaMode('clouds'),
   },
   {
     name: 'heroSlides',
@@ -2108,6 +2238,59 @@ const heroSpecificFields = [
     options: canvasPurpose('Optional action buttons or links for hero sections.'),
     of: [{ type: 'pageAction' }],
   },
+  {
+    name: 'heroCards',
+    title: 'Glass cards',
+    description:
+      'Up to 4 frosted cards. When a hero has cards they replace the hero buttons. With 4 cards, card 1 floats on the left and card 3 is the raised center card (best with an image).',
+    type: 'array',
+    options: canvasPurpose('Frosted feature cards along the bottom of the hero.'),
+    validation: (Rule) => Rule.max(4),
+    of: [
+      {
+        type: 'object',
+        name: 'heroCard',
+        title: 'Glass card',
+        fields: [
+          { name: 'eyebrow', title: 'Eyebrow', type: 'string', description: 'Small gold label.' },
+          { name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() },
+          { name: 'body', title: 'Text', type: 'text', rows: 3 },
+          {
+            name: 'stat',
+            title: 'Stat',
+            type: 'string',
+            description: 'Optional big number in the top-right corner, like a review score.',
+          },
+          {
+            name: 'image',
+            title: 'Image',
+            type: 'image',
+            options: { hotspot: true },
+            description: 'Optional. Fills the bottom of the card.',
+            fields: [
+              {
+                name: 'altText',
+                title: 'Alt text',
+                type: 'string',
+                description: 'What the image shows, for screen readers and Google.',
+              },
+            ],
+          },
+          { name: 'linkLabel', title: 'Link label', type: 'string' },
+          {
+            name: 'href',
+            title: 'Link',
+            type: 'string',
+            description:
+              'Internal path (e.g. /detach-reset), anchor, or full URL. The whole card links here.',
+          },
+        ],
+        preview: {
+          select: { title: 'title', subtitle: 'eyebrow', media: 'image' },
+        },
+      },
+    ],
+  },
 ]
 
 const heroSectionType = {
@@ -2129,7 +2312,9 @@ const heroSectionType = {
       name: 'eyebrow',
       title: 'Eyebrow',
       type: 'string',
-      options: canvasPurpose('Short overline or kicker text above the hero headline.'),
+      description: 'No longer shown on the site; hero eyebrows were removed.',
+      hidden: true,
+      options: canvasExclude,
     },
     {
       name: 'title',
@@ -3813,7 +3998,46 @@ const quoteSectionType = {
       type: 'string',
       options: canvasPurpose('Name or attribution shown under the quote.'),
     },
+    // Blank colors keep the brand look; each one overrides a single part of the card.
+    {
+      name: 'quotePanelColor',
+      title: 'Card color',
+      type: 'color',
+      fieldset: 'colors',
+      options: canvasExclude,
+    },
+    {
+      name: 'textColor',
+      title: 'Quote text color',
+      type: 'color',
+      fieldset: 'colors',
+      description: 'The words once they have faded in.',
+      options: canvasExclude,
+    },
+    {
+      name: 'quoteFadedColor',
+      title: 'Faded text color',
+      type: 'color',
+      fieldset: 'colors',
+      description: 'The words before they fade in as you scroll.',
+      options: canvasExclude,
+    },
+    {
+      name: 'quoteEyebrowColor',
+      title: 'Eyebrow color',
+      type: 'color',
+      fieldset: 'colors',
+      options: canvasExclude,
+    },
+    {
+      name: 'quoteAttributionColor',
+      title: 'Attribution color',
+      type: 'color',
+      fieldset: 'colors',
+      options: canvasExclude,
+    },
   ]),
+  fieldsets: [{ name: 'colors', title: 'Colors', options: { collapsible: true, collapsed: false } }],
   preview: {
     select: {
       title: 'title',
@@ -3858,6 +4082,22 @@ const ctaSectionType = {
       type: 'string',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Label for the primary CTA button or link.'),
+    },
+    {
+      name: 'ctaForm',
+      title: 'Form',
+      type: 'string',
+      initialValue: 'jobber',
+      description:
+        'What the button does. Introduction asks for a name and email and emails info@texassolarandroofing.com.',
+      options: {
+        list: [
+          { title: 'Jobber request form', value: 'jobber' },
+          { title: 'Introduction (name and email)', value: 'introduction' },
+        ],
+        layout: 'radio',
+        ...canvasExclude,
+      },
     },
     {
       name: 'theme',
@@ -4246,7 +4486,82 @@ const bannerCtaSectionType = {
       ...defineUploadedImage('imageAsset', 'Uploaded image', canvasExclude),
     },
     cloudVisibilityField,
+    {
+      name: 'bannerLayout',
+      title: 'Layout',
+      type: 'string',
+      fieldset: 'bannerStyle',
+      initialValue: 'split',
+      options: {
+        list: [
+          { title: 'Copy left, button right', value: 'split' },
+          { title: 'Centered', value: 'centered' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    },
+    {
+      name: 'bannerOverlayColor',
+      title: 'Overlay color',
+      type: 'color',
+      fieldset: 'bannerStyle',
+      description: 'Laid over the photo. Gradients work here. Leave empty for the theme color.',
+      hidden: ({ parent }) => parent?.cloudVisibility !== 'hide',
+    },
+    {
+      name: 'bannerOverlayOpacity',
+      title: 'Overlay strength (%)',
+      type: 'number',
+      fieldset: 'bannerStyle',
+      description: 'How much the overlay covers the photo: 0 shows the photo as is, 100 hides it.',
+      initialValue: 70,
+      validation: (Rule) => Rule.min(0).max(100),
+      hidden: ({ parent }) => parent?.cloudVisibility !== 'hide',
+    },
+    {
+      name: 'bannerTextTone',
+      title: 'Text color',
+      type: 'string',
+      fieldset: 'bannerStyle',
+      initialValue: 'auto',
+      options: {
+        list: [
+          { title: 'Automatic (contrasts with the overlay)', value: 'auto' },
+          { title: 'Light', value: 'light' },
+          { title: 'Dark', value: 'dark' },
+        ],
+        layout: 'radio',
+      },
+      hidden: ({ parent }) => parent?.cloudVisibility !== 'hide',
+    },
+    {
+      name: 'bannerButtonVariant',
+      title: 'Button style',
+      type: 'string',
+      fieldset: 'bannerStyle',
+      initialValue: 'default',
+      options: {
+        list: [
+          { title: 'Red (primary)', value: 'default' },
+          { title: 'Secondary', value: 'secondary' },
+          { title: 'Outline', value: 'outline' },
+          { title: 'Dark', value: 'dark' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    },
   ]),
+  fieldsets: [
+    {
+      name: 'bannerStyle',
+      title: 'Banner style',
+      description:
+        'Overlay and text color apply when the cloud background is hidden; with clouds on, the cloud theme sets them.',
+      options: { collapsible: true, collapsed: false },
+    },
+  ],
   preview: {
     select: {
       title: 'title',
@@ -4404,6 +4719,20 @@ const serviceAreaItemType = {
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Friendly tooltip label for this county.'),
     },
+    {
+      name: 'articles',
+      title: 'Articles for this area',
+      type: 'array',
+      description:
+        'Pages about this county, like "Solar in Austin". Tapping the county on the map lists them, and its chip links to the first one.',
+      of: [
+        {
+          type: 'reference',
+          to: [{ type: 'locationPage' }, { type: 'page' }, { type: 'post' }, { type: 'servicePage' }],
+        },
+      ],
+      validation: (Rule) => Rule.max(4).unique(),
+    },
   ],
   preview: {
     select: { title: 'displayName' },
@@ -4412,6 +4741,46 @@ const serviceAreaItemType = {
         title: title || 'Unnamed area',
         subtitle: 'Service area',
       }
+    },
+  },
+}
+
+/** A Jobber request form link (share or embed), the same check as Site settings → Jobber. */
+const isJobberRequestFormUrl = (value) =>
+  /^https:\/\/clienthub\.getjobber\.com\/(hubs|client_hubs)\/[0-9a-f-]+\//iu.test(value) &&
+  /(\/public\/requests\/\d+\/new|form_id=\d+)/iu.test(value)
+
+const jobberRequestSectionType = {
+  name: 'jobberRequestSection',
+  title: 'Jobber Request Form',
+  type: 'object',
+  initialValue: {
+    type: 'jobberRequest',
+  },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
+    { name: 'title', title: 'Title', type: 'string' },
+    { name: 'description', title: 'Description', type: 'text', rows: 3 },
+    {
+      name: 'jobberShareUrl',
+      title: 'Jobber request form link',
+      type: 'url',
+      description:
+        'Optional. Leave empty to use the form in Site settings → Jobber. Paste a different share link (Jobber → Settings → Requests) to show another form here. Requests go straight into Jobber.',
+      validation: (Rule) =>
+        Rule.uri({ scheme: ['https'] }).custom(
+          (value) =>
+            !value ||
+            isJobberRequestFormUrl(value) ||
+            'Paste a Jobber request form link from clienthub.getjobber.com.',
+        ),
+    },
+  ]),
+  preview: {
+    select: { title: 'title', url: 'jobberShareUrl' },
+    prepare({ title, url }) {
+      return { title: title || 'Jobber request form', subtitle: url || 'Form from Site settings' }
     },
   },
 }
@@ -4484,6 +4853,476 @@ const serviceAreaMapSectionType = {
         subtitle: pageSectionListSubtitle('Service area map', tail),
       }
     },
+  },
+}
+
+const panelTabType = {
+  name: 'panelTab',
+  title: 'Panel tab',
+  type: 'object',
+  fields: [
+    {
+      name: 'label',
+      title: 'Tab label',
+      type: 'string',
+      description: 'Short name on the tab button, like "Homeowners".',
+      validation: (Rule) => Rule.required().max(24),
+    },
+    { name: 'eyebrow', title: 'Eyebrow', type: 'string', description: 'Small label above the text.' },
+    {
+      name: 'body',
+      title: 'Text',
+      type: 'text',
+      rows: 3,
+      description: 'One or two sentences shown over the photo.',
+      validation: (Rule) => Rule.max(200),
+    },
+    {
+      name: 'image',
+      title: 'Photo',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [{ name: 'alt', title: 'Alt text', type: 'string' }],
+    },
+    {
+      name: 'video',
+      title: 'Video',
+      type: 'file',
+      options: { accept: 'video/mp4,video/webm' },
+      description:
+        'Optional. Plays muted on a loop in place of the photo; the photo shows while it loads. Keep it short (under 15 seconds) and small (under 10 MB).',
+    },
+    {
+      name: 'videoUrl',
+      title: 'Video URL',
+      type: 'url',
+      description: 'Or link a hosted MP4 instead of uploading one. An uploaded video wins.',
+      hidden: ({ parent }) => Boolean(parent?.video?.asset),
+    },
+    { name: 'linkLabel', title: 'Button label', type: 'string', initialValue: 'Explore' },
+    { name: 'href', title: 'Button link', type: 'string' },
+  ],
+  preview: {
+    select: { title: 'label', subtitle: 'body', media: 'image' },
+  },
+}
+
+const tabbedPanelSectionType = {
+  name: 'tabbedPanelSection',
+  title: 'Tabbed Photo Panel',
+  type: 'object',
+  initialValue: { type: 'tabbedPanel' },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      description: 'Large headline above the photo panel.',
+    },
+    {
+      name: 'panelTabs',
+      title: 'Tabs',
+      type: 'array',
+      of: [{ type: 'panelTab' }],
+      description: 'Each tab swaps the photo, text and button. One tab hides the tab switcher.',
+      validation: (Rule) => Rule.min(1).max(4),
+    },
+  ]),
+  preview: {
+    select: { title: 'title', tabs: 'panelTabs' },
+    prepare({ title, tabs }) {
+      const labels = Array.isArray(tabs)
+        ? tabs
+            .map((tab) => tab?.label)
+            .filter(Boolean)
+            .join(' / ')
+        : ''
+      return {
+        title: title || 'Tabbed photo panel',
+        subtitle: pageSectionListSubtitle('Tabbed photo panel', labels),
+        media: tabs?.[0]?.image,
+      }
+    },
+  },
+}
+
+/* ---- Story grid: an editorial layout on the page's four columns ------------
+ * Headline across two columns; a short intro in one outer column, framed
+ * photos in the middle two, and a big statement in the other outer column,
+ * level with the bottom of the first photo. "Flip" mirrors it. */
+const storyGridSectionType = {
+  name: 'storyGridSection',
+  title: 'Story Grid',
+  type: 'object',
+  initialValue: { type: 'storyGrid', layout: 'introLeft' },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    {
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      description: 'Small label above the headline, e.g. "Our story".',
+    },
+    {
+      name: 'title',
+      title: 'Headline',
+      type: 'string',
+      description: 'One or two sentences. Spans two columns.',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'body',
+      title: 'Intro',
+      type: 'portableTextSimple',
+      description: 'A short paragraph in the outer column, beside the first photo.',
+    },
+    {
+      name: 'statement',
+      title: 'Statement',
+      type: 'text',
+      rows: 4,
+      description: 'The big line in the other outer column, level with the bottom of the first photo.',
+    },
+    {
+      name: 'storyPhotos',
+      title: 'Photos',
+      type: 'array',
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [{ name: 'alt', title: 'Alt text', type: 'string' }],
+        },
+      ],
+      description: 'One to three photos, stacked in the middle two columns.',
+      validation: (Rule) => Rule.min(1).max(3),
+    },
+    {
+      name: 'layout',
+      title: 'Layout',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Intro left, statement right', value: 'introLeft' },
+          { title: 'Statement left, intro right (flipped)', value: 'introRight' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'introLeft',
+    },
+  ]),
+  preview: {
+    select: { title: 'title', eyebrow: 'eyebrow', statement: 'statement', media: 'storyPhotos.0' },
+    prepare({ title, eyebrow, statement, media }) {
+      return {
+        title: title || eyebrow || 'Story grid',
+        subtitle: pageSectionListSubtitle('Story grid', statement),
+        media,
+      }
+    },
+  },
+}
+
+/* ---- "See if solar is right for you" (solarFitSection) ---------------------
+ * The questions, constants and formulas behind the form. Formulas use the input
+ * and constant keys as names, plus any result above them. See
+ * src/lib/solar-fit/formula.js for the full syntax. */
+const FORMULA_KEY_RULE = (Rule) =>
+  Rule.required()
+    .regex(/^[A-Za-z_][A-Za-z0-9_]*$/u, { name: 'key', invert: false })
+    .error('Use letters, numbers and _ only, starting with a letter (for example monthlyBill).')
+
+const FORMULA_HELP =
+  'Build it with the buttons below, or type it. Each result can use the questions, constants and any result above it.'
+
+const solarFitOptionType = {
+  name: 'solarFitOption',
+  title: 'Answer',
+  type: 'object',
+  fields: [
+    { name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required() },
+    {
+      name: 'value',
+      title: 'Number (optional)',
+      type: 'number',
+      description:
+        'Leave blank to use the answer text itself, so a formula can say roofType == "Metal". Fill in a number to do math with it.',
+    },
+  ],
+  preview: {
+    select: { title: 'label', value: 'value' },
+    prepare: ({ title, value }) => ({
+      title,
+      subtitle: typeof value === 'number' ? `= ${value}` : `= "${title}"`,
+    }),
+  },
+}
+
+const solarFitInputType = {
+  name: 'solarFitInput',
+  title: 'Question',
+  type: 'object',
+  fieldsets: [{ name: 'advanced', title: 'Advanced', options: { collapsible: true, collapsed: true } }],
+  fields: [
+    { name: 'label', title: 'Question', type: 'string', validation: (Rule) => Rule.required() },
+    {
+      name: 'key',
+      title: 'Key',
+      fieldset: 'advanced',
+      components: { input: FormulaKeyInput },
+      type: 'string',
+      description: 'The name formulas use for this answer, like bill or roofAge.',
+      validation: FORMULA_KEY_RULE,
+    },
+    {
+      name: 'kind',
+      title: 'Answer type',
+      type: 'string',
+      initialValue: 'number',
+      options: {
+        list: [
+          { title: 'Number', value: 'number' },
+          { title: 'Yes / No', value: 'yesno' },
+          { title: 'Pick one', value: 'select' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    },
+    {
+      name: 'defaultValue',
+      title: 'Starting value',
+      type: 'number',
+      description: 'For Yes / No: 1 starts on Yes, 0 on No. For Pick one, blank starts on the first answer.',
+    },
+    {
+      name: 'options',
+      title: 'Answers',
+      type: 'array',
+      of: [{ type: 'solarFitOption' }],
+      hidden: ({ parent }) => parent?.kind !== 'select',
+    },
+    {
+      name: 'min',
+      title: 'Lowest allowed',
+      type: 'number',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
+    },
+    {
+      name: 'max',
+      title: 'Highest allowed',
+      type: 'number',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
+    },
+    {
+      name: 'step',
+      title: 'Step',
+      type: 'number',
+      // Kept for old documents only: answers take any amount now (solar-fit-section.jsx).
+      hidden: true,
+    },
+    {
+      name: 'prefix',
+      title: 'Prefix',
+      type: 'string',
+      description: 'Shown before the number, like $.',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
+    },
+    {
+      name: 'suffix',
+      title: 'Suffix',
+      type: 'string',
+      description: 'Shown after the number, like kWh or %.',
+      hidden: ({ parent }) => Boolean(parent?.kind) && parent.kind !== 'number',
+    },
+    { name: 'help', title: 'Help text', type: 'string' },
+    {
+      name: 'hideWhenRoofFound',
+      title: 'Hide when the roof is found',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'For questions Google answers from the address, like shade or roof direction. They show only when the roof cannot be mapped.',
+    },
+    {
+      name: 'showWhen',
+      title: 'Ask only when',
+      type: 'string',
+      components: { input: FormulaInput },
+      description:
+        'Optional. A formula on earlier answers, like batteryType > 0. The question is skipped (and keeps its starting value) until it is true.',
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) {
+            return true
+          }
+          const error = formulaSyntaxError(value)
+          return error ? `Formula problem: ${error}` : true
+        }),
+    },
+  ],
+  preview: {
+    select: { title: 'label', key: 'key', kind: 'kind' },
+    prepare: ({ title, key, kind }) => ({
+      title,
+      subtitle: `${key || '?'} · ${{ select: 'pick one', yesno: 'yes / no' }[kind] || 'number'}`,
+    }),
+  },
+}
+
+const solarFitConstantType = {
+  name: 'solarFitConstant',
+  title: 'Constant',
+  type: 'object',
+  fieldsets: [{ name: 'advanced', title: 'Advanced', options: { collapsible: true, collapsed: true } }],
+  fields: [
+    { name: 'label', title: 'What it is', type: 'string', validation: (Rule) => Rule.required() },
+    {
+      name: 'key',
+      title: 'Key',
+      fieldset: 'advanced',
+      components: { input: FormulaKeyInput },
+      type: 'string',
+      validation: FORMULA_KEY_RULE,
+    },
+    { name: 'value', title: 'Value', type: 'number', validation: (Rule) => Rule.required() },
+  ],
+  preview: {
+    select: { title: 'label', key: 'key', value: 'value' },
+    prepare: ({ title, key, value }) => ({ title, subtitle: `${key} = ${value}` }),
+  },
+}
+
+const solarFitOutputType = {
+  name: 'solarFitOutput',
+  title: 'Result',
+  type: 'object',
+  fieldsets: [{ name: 'advanced', title: 'Advanced', options: { collapsible: true, collapsed: true } }],
+  fields: [
+    { name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required() },
+    {
+      name: 'key',
+      title: 'Key',
+      fieldset: 'advanced',
+      components: { input: FormulaKeyInput },
+      type: 'string',
+      validation: FORMULA_KEY_RULE,
+    },
+    {
+      name: 'formula',
+      title: 'Formula',
+      type: 'text',
+      rows: 2,
+      components: { input: FormulaInput },
+      description: FORMULA_HELP,
+      validation: (Rule) =>
+        Rule.required().custom((value) => {
+          const error = formulaSyntaxError(value)
+          return error ? `Formula problem: ${error}` : true
+        }),
+    },
+    {
+      name: 'format',
+      title: 'Show as',
+      type: 'string',
+      initialValue: 'currency',
+      options: {
+        list: [
+          { title: 'Dollars', value: 'currency' },
+          { title: 'Number', value: 'number' },
+          { title: 'kW', value: 'kw' },
+          { title: 'Years', value: 'years' },
+          { title: 'Percent (0.25 = 25%)', value: 'percent' },
+          { title: 'Text (the formula picks words, like "Battery + solar")', value: 'text' },
+          { title: 'Hidden (a step for other formulas)', value: 'hidden' },
+        ],
+      },
+    },
+    { name: 'decimals', title: 'Decimal places', type: 'number', initialValue: 0 },
+    { name: 'detail', title: 'Small print', type: 'string' },
+    {
+      name: 'highlight',
+      title: 'Highlight',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Shown large in the dark summary tile.',
+    },
+  ],
+  preview: {
+    select: { title: 'label', formula: 'formula', format: 'format' },
+    prepare: ({ title, formula, format }) => ({
+      title: format === 'hidden' ? `${title} (hidden)` : title,
+      subtitle: formula,
+    }),
+  },
+}
+
+const solarFitSectionType = {
+  name: 'solarFitSection',
+  title: 'Solar Fit Form',
+  type: 'object',
+  initialValue: { type: 'solarFit' },
+  components: { input: SolarFitSectionInput },
+  fields: withSectionBackgroundFields([
+    { name: 'type', title: 'Section type', type: 'string', hidden: true, options: canvasExclude },
+    { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
+    { name: 'title', title: 'Headline', type: 'string' },
+    { name: 'body', title: 'Intro', type: 'text', rows: 3 },
+    {
+      name: 'fitInputs',
+      title: 'Questions',
+      type: 'array',
+      of: [{ type: 'solarFitInput' }],
+      description: 'Leave Questions and Results empty to use the built-in starter formula.',
+    },
+    {
+      name: 'fitConstants',
+      title: 'Constants',
+      type: 'array',
+      of: [{ type: 'solarFitConstant' }],
+      description: 'Fixed numbers the formulas use, like the utility rate or the rebate.',
+    },
+    {
+      name: 'fitOutputs',
+      title: 'Results',
+      type: 'array',
+      of: [{ type: 'solarFitOutput' }],
+      description: 'Worked out top to bottom. Each formula can use any result above it.',
+    },
+    {
+      name: 'qualifyFormula',
+      title: 'Qualifies when',
+      type: 'string',
+      components: { input: FormulaInput },
+      description: 'A formula that is true for a good fit, like owner == 1 && roofAge < 20.',
+      validation: (Rule) =>
+        Rule.custom((value) => {
+          if (!value) {
+            return true
+          }
+          const error = formulaSyntaxError(value)
+          return error ? `Formula problem: ${error}` : true
+        }),
+    },
+    { name: 'qualifiedMessage', title: 'Message when it fits', type: 'text', rows: 2 },
+    { name: 'notQualifiedMessage', title: 'Message when it may not fit', type: 'text', rows: 2 },
+    { name: 'submitLabel', title: 'Button label', type: 'string', initialValue: 'Talk to Kathie' },
+    {
+      name: 'successMessage',
+      title: 'Thank-you message',
+      type: 'text',
+      rows: 2,
+      initialValue:
+        'Thanks. We sent a copy of your estimate to your email and will reach out within one business day.',
+    },
+  ]),
+  preview: {
+    select: { title: 'title' },
+    prepare: ({ title }) => ({
+      title: title || 'See if solar is right for you',
+      subtitle: pageSectionListSubtitle('Solar fit form'),
+    }),
   },
 }
 
@@ -5164,11 +6003,15 @@ export const pageSectionTypes = [
   { type: 'hailMapSection' },
   { type: 'serviceAreaMapSection' },
   { type: 'bandSection' },
+  { type: 'tabbedPanelSection' },
+  { type: 'storyGridSection' },
+  { type: 'solarFitSection' },
   { type: 'logosSection' },
   { type: 'solarSwitchSection' },
   { type: 'energyChartSection' },
   { type: 'videoSection' },
   { type: 'hyperframesSection' },
+  { type: 'jobberRequestSection' },
   { type: 'serviceGridSection' },
   { type: 'resourceGridSection' },
   { type: 'guideGridSection' },
@@ -5382,11 +6225,20 @@ export default [
   serviceAreaItemType,
   serviceAreaMapSectionType,
   bandSectionType,
+  panelTabType,
+  tabbedPanelSectionType,
+  storyGridSectionType,
+  solarFitOptionType,
+  solarFitInputType,
+  solarFitConstantType,
+  solarFitOutputType,
+  solarFitSectionType,
   logosSectionType,
   solarSwitchSectionType,
   energyChartSectionType,
   videoSectionType,
   hyperframesSectionType,
+  jobberRequestSectionType,
   serviceGridSectionType,
   resourceGridSectionType,
   guideGridSectionType,
@@ -5395,5 +6247,6 @@ export default [
   installProcessStepType,
   installProcessSectionType,
   pageSectionType,
+  tiktokPostType,
   ...pageDocuments,
 ]

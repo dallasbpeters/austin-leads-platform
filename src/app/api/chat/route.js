@@ -6,7 +6,7 @@ import { createGroq } from '@ai-sdk/groq'
 import { createMCPClient } from '@ai-sdk/mcp'
 import { withTracing } from '@posthog/ai'
 import { sanityInsightsIntegration } from '@sanity/context/ai-sdk'
-import { convertToModelMessages, stepCountIs, streamText } from 'ai'
+import { convertToModelMessages, isStepCount, streamText } from 'ai'
 
 import { safeAuth } from '@/lib/auth/session'
 import { getPostHogClient } from '@/lib/posthog-server'
@@ -94,7 +94,7 @@ const BASE_SYSTEM_PROMPT = `You are a **Sanity CMS assistant** for the Austin Le
 
 ## Domain facts (when interpreting or summarizing public content)
 - The federal residential solar tax credit is **not** available; it expired December 31, 2025. Do not recommend it in savings or eligibility copy.
-- Austin Energy: **$2,500** one-time rebate and **Value of Solar** bill credits at **9.91¢/kWh** (confirm against current CMS fields when relevant).
+- Austin Energy: **$4,000** one-time rebate and **Value of Solar** bill credits at **9.91¢/kWh** (confirm against current CMS fields when relevant).
 
 ## Tools (Agent Context)
 - **initial_context** — schema overview, types, counts. Use when exploring the model or starting a task.
@@ -486,9 +486,9 @@ export const POST = async (request) => {
       system,
       messages: await convertToModelMessages(messages),
       tools: mcpTools,
-      stopWhen: stepCountIs(MAX_STEPS),
+      stopWhen: isStepCount(MAX_STEPS),
       experimental_telemetry: buildInsightsTelemetry(threadId, messages, mcpEndpoints),
-      onFinish: async () => {
+      onEnd: async () => {
         await Promise.allSettled([mcpClient?.close(), writeClient?.close(), posthog?.flush()])
       },
     })

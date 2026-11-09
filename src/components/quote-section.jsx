@@ -50,6 +50,8 @@ export default function QuoteSection({
   eyebrow = DEFAULT_EYEBROW,
   attribution = DEFAULT_ATTRIBUTION,
   sectionId = 'quote-homepage',
+  /** Studio colors; each blank one keeps the variant's color. */
+  colors = {},
 }) {
   const sectionRef = useRef(null)
   const [revealedCount, setRevealedCount] = useState(0)
@@ -57,7 +59,11 @@ export default function QuoteSection({
   // Split per word for the reveal, so the invisible edit markers have to come off first.
   const words = String(cleanRuntimeString(quoteText) || '').split(/\s+/)
   const totalWords = words.length
-  const wordColors = quoteWordColors[variant] || quoteWordColors.default
+  const variantColors = quoteWordColors[variant] || quoteWordColors.default
+  const wordColors = {
+    active: colors.text || variantColors.active,
+    inactive: colors.faded || variantColors.inactive,
+  }
 
   useEffect(() => {
     const section = sectionRef.current
@@ -122,9 +128,16 @@ export default function QuoteSection({
         content: 'quote text passed by section or local defaults',
       })}
     >
-      <div data-variant={variant} className={cn(quoteVariants({ variant, size, className }))}>
+      <div
+        data-variant={variant}
+        className={cn(quoteVariants({ variant, size, className }))}
+        style={colors.panel ? { background: colors.panel } : undefined}
+      >
         <div className="quote-banner__eyebrow-row">
-          <span className="quote-banner__eyebrow text-size-80">
+          <span
+            className="quote-banner__eyebrow text-size-80"
+            style={colors.eyebrow ? { color: colors.eyebrow } : undefined}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -159,7 +172,10 @@ export default function QuoteSection({
           </p>
         </div>
 
-        <div className="quote-banner__attribution text-size-100">
+        <div
+          className="quote-banner__attribution text-size-100"
+          style={colors.attribution ? { color: colors.attribution } : undefined}
+        >
           <span>{attribution}</span>
         </div>
       </div>
