@@ -48,9 +48,9 @@ const section = {
   ],
 }
 
-// The label starts with the caption as shown on the tile (title, then the meta line).
-const JOHNSON = 'Open The Johnson home Round Rock · 2025 · Full Property 3 photos'
-const HUTTO = 'Open Hutto roofline'
+// Tiles are named by what they show: "Open", the cover's alt, the caption, the photo count.
+const JOHNSON = 'Open Front of the Johnson home The Johnson home Round Rock · 2025 · Full Property 3 photos'
+const HUTTO = 'Open Roofline in Hutto Hutto roofline'
 
 const renderGallery = (value = section) => render(createElement(GallerySection, { section: value }))
 
@@ -111,7 +111,9 @@ describe(GallerySection, () => {
       })
       const [westLake, unnamed] = tiles()
       expect(tiles()).toHaveLength(2)
-      expect(screen.getByRole('button', { name: 'Open West Lake Roofline' })).toBe(westLake)
+      expect(
+        screen.getByRole('button', { name: 'Open Roofline install in West Lake West Lake Roofline' }),
+      ).toBe(westLake)
       expect(within(westLake).getByText('Roofline')).toBeTruthy()
       expect(within(unnamed).getByRole('img').getAttribute('alt')).toBe('Legacy photo 2')
       expect(document.querySelector('.gallery__count')).toBeNull()

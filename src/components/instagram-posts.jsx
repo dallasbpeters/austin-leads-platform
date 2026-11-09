@@ -8,7 +8,8 @@ import { InstagramEmbed } from 'sanity-plugin-sgntech-instagram-embed/render'
  * embed uses effects but ships without "use client", so it is wrapped here to
  * work inside server components too. Instagram's script swaps the post for an
  * <iframe> with no title, so the wrapper names each frame as it appears
- * (screen readers announce frames by title).
+ * (screen readers announce frames by title). What is inside that frame is
+ * Instagram's, so it is marked as a third-party embed.
  */
 
 /** One post (a portable text `instagramPost` block). */
@@ -32,7 +33,7 @@ export const InstagramPost = ({ value }) => {
   }, [])
 
   return value?.url ? (
-    <div ref={containerRef} className="instagram-post">
+    <div ref={containerRef} className="instagram-post" data-third-party-embed="instagram">
       <InstagramEmbed url={value.url} captioned={value.captioned} />
     </div>
   ) : null
