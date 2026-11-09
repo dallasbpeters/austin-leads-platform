@@ -16,7 +16,8 @@ export const GET = async () => {
 
   const body = isIndexableHost
     ? `User-agent: facebookexternalhit\nAllow: /\nAllow: /api/og/\nAllow: /api/og-image/\n\nUser-agent: Facebot\nAllow: /\nAllow: /api/og/\nAllow: /api/og-image/\n\nUser-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /studio/\nDisallow: /style-guide\nDisallow: /style-guide/\n\nUser-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nSitemap: ${getPrimaryUrl(site, '/sitemap.xml')}\n\n# Structured content index for language models: ${getPrimaryUrl(site, '/llms.txt')}\n# AI crawler policy: ${getPrimaryUrl(site, '/ai.txt')}\n# Developer and agent resources: ${getPrimaryUrl(site, '/developers')}\n# Contact: ${getPrimaryUrl(site, '/contact')}\n# Markdown: send Accept: text/markdown to any public page.\n`
-    : `User-agent: *\nDisallow: /\n`
+    : // Preview hosts stay out of search, but Facebook's link bot may read them so share cards can be checked before launch.
+      `User-agent: facebookexternalhit\nAllow: /\n\nUser-agent: Facebot\nAllow: /\n\nUser-agent: *\nDisallow: /\n`
 
   return new Response(body, {
     headers: {
