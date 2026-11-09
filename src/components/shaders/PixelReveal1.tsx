@@ -54,14 +54,18 @@ const PixelReveal = ({ imageURL, className, colorA, colorB }: PixelRevealProps) 
           colorA={dark}
           colorB={colorB || DEFAULT_COLOR_B}
           pattern="bayer4"
+          // The cursor layer is opaque where the mouse hasn't been. At a threshold of 1
+          // every dot went dark, so the light color only showed along the mouse path
+          // (and never on phones). Capped at 0.55, the photo always shows in both colors;
+          // the cursor still opens it up further, down to 0.15.
           threshold={{
             type: 'map',
             source: 'idmostv5d9xi2rmvn45',
             channel: 'alpha',
             inputMax: 1,
             inputMin: 0.4,
-            outputMax: 1,
-            outputMin: 0,
+            outputMax: 0.55,
+            outputMin: 0.15,
           }}
         />
       </Shader>
