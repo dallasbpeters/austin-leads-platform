@@ -100,6 +100,13 @@ export default async function RootDocument({ children, publicSite = null, analyt
       <head>
         {/* oxlint-disable-next-line react/no-danger -- sets the sky phase before first paint */}
         <script dangerouslySetInnerHTML={{ __html: CLOUD_TONE_INLINE_SCRIPT }} />
+        {/*
+         * Inline, not in globals.css. Chrome reads this opt-in when the new page first
+         * paints. If the stylesheet is not there yet, or fails to load, Chrome rejects a
+         * transition promise no page code can catch: "ViewTransition opt-in disabled".
+         */}
+        {/* oxlint-disable-next-line shadcn/no-inline-styles -- must be in place before first paint */}
+        <style>{'@view-transition{navigation:auto}'}</style>
         <link
           rel="preload"
           href="/fonts/Switzer-Variable.woff2"
