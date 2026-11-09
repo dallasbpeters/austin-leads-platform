@@ -245,13 +245,14 @@ test.describe('gallery projects lightbox', () => {
     const singles = tiles.filter({ hasNot: page.locator('.gallery__count') })
     test.skip((await singles.count()) === 0, 'no one-photo project in the live content')
     const single = singles.first()
-    const singleName = (await single.getAttribute('aria-label')) ?? ''
 
     const { dialog } = await openProjectTile(page, pageErrors, single)
     const start = await parseCount(dialog)
     expect(start.total).toBe(1)
     expect(start.projects).toBe(tileCount)
     const title = dialog.locator('.gallery-lightbox__title')
+    // The opened project's own title, to check the next button leaves it.
+    const singleTitle = (await title.textContent())?.trim() ?? ''
     await expect(dialog.locator('.gallery-lightbox__position')).toHaveText(
       `Project ${start.project} of ${tileCount}`,
     )
@@ -260,7 +261,7 @@ test.describe('gallery projects lightbox', () => {
     await dialog.getByRole('button', { name: 'Next photo' }).click()
     await expectPosition(dialog, next, 1)
     await expect(dialog.locator('.gallery-lightbox__position')).toHaveText(`Project ${next} of ${tileCount}`)
-    await expect(title).not.toHaveText(singleName.replace(/^Open /, ''))
+    await expect(title).not.toHaveText(singleTitle)
 
     await page.keyboard.press('ArrowLeft')
     await expectPosition(dialog, start.project, 1)

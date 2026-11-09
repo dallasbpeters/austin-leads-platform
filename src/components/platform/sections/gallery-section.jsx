@@ -3,7 +3,7 @@
 import Image from '@/components/site-image'
 import { MultiplePages, NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
 import { Dialog } from 'radix-ui'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
@@ -72,14 +72,36 @@ function ProjectTile({ project, index, onClick }) {
   const photoCount = project.photos.length
   const hasCaption = Boolean(project.title || meta)
   const countLabel = `${photoCount} photo${photoCount === 1 ? '' : 's'}`
-  // The label carries the caption as shown, so a speech user can say what they see.
-  const shownName = [project.title, meta].filter(Boolean).join(' ') || project.name
+  const labelId = useId()
 
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={photoCount > 1 ? `Open ${shownName}, ${countLabel}` : `Open ${shownName}`}
+      /*
+       * With a caption, the name is read from it (plus a hidden "Open" and the photo
+       * count), so it always matches what is shown and a speech user can say it.
+       * Without one, the project name is the label.
+       */
+      aria-labelledby={
+        hasCaption
+          ? [
+              `${labelId}-open`,
+              project.title && `${labelId}-title`,
+              meta && `${labelId}-meta`,
+              photoCount > 1 && `${labelId}-count`,
+            ]
+              .filter(Boolean)
+              .join(' ')
+          : undefined
+      }
+      aria-label={
+        hasCaption
+          ? undefined
+          : photoCount > 1
+            ? `Open ${project.name}, ${countLabel}`
+            : `Open ${project.name}`
+      }
       aria-haspopup="dialog"
       className="gallery__tile"
       style={{ height }}
@@ -104,8 +126,24 @@ function ProjectTile({ project, index, onClick }) {
         <>
           <div className="gallery__fade" />
           <div className="gallery__caption">
-            {project.title ? <p className="gallery__caption-title text-size-100">{project.title}</p> : null}
-            {meta ? <p className="gallery__caption-meta text-size-80">{meta}</p> : null}
+            <span id={`${labelId}-open`} className="sr-only">
+              Open
+            </span>
+            {project.title ? (
+              <p id={`${labelId}-title`} className="gallery__caption-title text-size-100">
+                {project.title}
+              </p>
+            ) : null}
+            {meta ? (
+              <p id={`${labelId}-meta`} className="gallery__caption-meta text-size-80">
+                {meta}
+              </p>
+            ) : null}
+            {photoCount > 1 ? (
+              <span id={`${labelId}-count`} className="sr-only">
+                {countLabel}
+              </span>
+            ) : null}
           </div>
         </>
       ) : null}
