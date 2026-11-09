@@ -392,3 +392,19 @@ html:not([data-cloud-tone]),
 .cloud-theme-section .radial-grid-bg {
   background-image: none;
 }
+
+/* Each cloud fades in when its image arrives (cloud-background.jsx sets data-loaded). */
+.cloud-background__cloud .cloud-background__sprite {
+  opacity: 0;
+  transition: opacity 500ms ease-out;
+}
+
+.cloud-background__cloud[data-loaded] .cloud-background__sprite {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-background__cloud .cloud-background__sprite {
+    transition: none;
+  }
+}

@@ -2,8 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 
-import Image from 'next/image'
-
 import { cn } from '@/lib/utils'
 
 const cloudPositionsByDensity = {
@@ -13,22 +11,28 @@ const cloudPositionsByDensity = {
 }
 
 /*
- * Photo cloud sprites (public/clouds), with their pixel sizes for next/image.
- * Each cloud spot gets the next sprite in turn, and every third one is mirrored,
- * so repeats are hard to spot. Add a sprite here to put it in the rotation.
+ * Photo cloud sprites (public/clouds). Each loads from its ready-made web copies,
+ * <name>-640.webp and <name>-1280.webp (scripts/optimize-cloud-sprites.mjs), not
+ * through the image optimizer, which made the first view of each cloud wait
+ * seconds. Width and height keep the aspect ratio. Each cloud spot gets the next
+ * sprite in turn, and every third one is mirrored, so repeats are hard to spot.
  */
 const CLOUD_SPRITES = [
-  { src: '/clouds/cloud-sprite.png', width: 1934, height: 1140 },
-  { src: '/clouds/cloud-sprite-1.png', width: 2923, height: 1202 },
-  { src: '/clouds/cloud-sprite-2.png', width: 2247, height: 823 },
-  { src: '/clouds/cloud-sprite-3.png', width: 2097, height: 1115 },
-  { src: '/clouds/cloud-sprite-4.png', width: 3033, height: 1696 },
-  { src: '/clouds/cloud-sprite-5.png', width: 1608, height: 1065 },
-  { src: '/clouds/cloud-sprite-7.png', width: 3411, height: 1746 },
-  { src: '/clouds/cloud-sprite-8.png', width: 1533, height: 796 },
-  { src: '/clouds/cloud-sprite-9.png', width: 3578, height: 2874 },
-  { src: '/clouds/cloud-sprite-10.png', width: 3113, height: 1850 },
+  { name: 'cloud-sprite', width: 1934, height: 1140 },
+  { name: 'cloud-sprite-1', width: 2923, height: 1202 },
+  { name: 'cloud-sprite-2', width: 2247, height: 823 },
+  { name: 'cloud-sprite-3', width: 2097, height: 1115 },
+  { name: 'cloud-sprite-4', width: 3033, height: 1696 },
+  { name: 'cloud-sprite-5', width: 1608, height: 1065 },
+  { name: 'cloud-sprite-7', width: 3411, height: 1746 },
+  { name: 'cloud-sprite-8', width: 1533, height: 796 },
+  { name: 'cloud-sprite-9', width: 3578, height: 2874 },
+  { name: 'cloud-sprite-10', width: 3113, height: 1850 },
 ]
+
+const spriteSrcSet = (name) => `/clouds/${name}-640.webp 640w, /clouds/${name}-1280.webp 1280w`
+// A cloud is drawn at clamp(11rem, 23vw, 24rem) and scaled 1.6x (cloud-background.css): at most ~615px.
+const SPRITE_SIZES = 'min(37vw, 615px)'
 
 const clamp = (value, minimum, maximum) => Math.min(Math.max(value, minimum), maximum)
 
@@ -67,8 +71,33 @@ const getScrollScale = (scrollProgress) => 0.46 + Math.sin(scrollProgress * Math
  * @param {{ className?: string, density?: 'subtle' | 'regular' | 'thick', tone?: 'auto' | 'day' | 'dusk' | 'night' }} props - Visual treatment for the cloud layer.
  * @returns {JSX.Element} A decorative cloud background.
  */
-export default function CloudBackground({ className, density = 'subtle', tone = 'auto' }) {
+export default function CloudBackground({ className, density = 'subtle', tone = 'auto', eager = false }) {
   const cloudLayerRef = useRef(null)
+
+  /*
+   * Each cloud fades in once its image has arrived, so clouds don't pop in.
+   * Images that finished before this ran (from the cache) are shown at once.
+   */
+  useEffect(() => {
+    const layer = cloudLayerRef.current
+    if (!layer) {
+      return
+    }
+    const show = (image) => {
+      const cloud = image.closest('.cloud-background__cloud')
+      if (cloud) {
+        cloud.dataset.loaded = ''
+      }
+    }
+    const images = [...layer.querySelectorAll('.cloud-background__sprite')]
+    for (const image of images) {
+      if (image.complete && image.naturalWidth) {
+        show(image)
+      } else {
+        image.addEventListener('load', () => show(image), { once: true })
+      }
+    }
+  }, [])
   const cloudPositions = cloudPositionsByDensity[density] || cloudPositionsByDensity.subtle
 
   useEffect(() => {
@@ -129,12 +158,18 @@ export default function CloudBackground({ className, density = 'subtle', tone = 
             <span className="cloud-background__scroll">
               <span className="cloud-background__breathe">
                 <span className="cloud-background__motion">
-                  <Image
+                  {/* oxlint-disable-next-line next/no-img-element -- ready-made WebP sizes (srcSet); the optimizer is what made clouds slow */}
+                  <img
                     alt=""
-                    src={sprite.src}
+                    src={`/clouds/${sprite.name}-640.webp`}
+                    srcSet={spriteSrcSet(sprite.name)}
+                    sizes={SPRITE_SIZES}
                     width={sprite.width}
                     height={sprite.height}
-                    sizes="40vw"
+                    // Hero clouds are on screen at once; others wait until scrolled near.
+                    loading={eager ? 'eager' : 'lazy'}
+                    fetchPriority={eager && index < 4 ? 'high' : 'auto'}
+                    decoding="async"
                     className={cn(
                       'cloud-background__sprite',
                       index % 3 === 1 && 'cloud-background__sprite--flipped',

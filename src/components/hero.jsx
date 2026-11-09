@@ -160,7 +160,7 @@ function HeroBackdrop({
   if (heroMediaMode === 'clouds') {
     return (
       <>
-        <CloudBackground density="thick" />
+        <CloudBackground density="thick" eager />
         {cutout?.url ? (
           <Image
             src={cutout.url}
