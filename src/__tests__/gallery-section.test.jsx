@@ -48,7 +48,8 @@ const section = {
   ],
 }
 
-const JOHNSON = 'Open The Johnson home, 3 photos'
+// The label starts with the caption as shown on the tile (title, then the meta line).
+const JOHNSON = 'Open The Johnson home Round Rock · 2025 · Full Property, 3 photos'
 const HUTTO = 'Open Hutto roofline'
 
 const renderGallery = (value = section) => render(createElement(GallerySection, { section: value }))
@@ -108,7 +109,7 @@ describe(GallerySection, () => {
       })
       const [westLake, unnamed] = tiles()
       expect(tiles()).toHaveLength(2)
-      expect(westLake.getAttribute('aria-label')).toBe('Open West Lake')
+      expect(westLake.getAttribute('aria-label')).toBe('Open West Lake Roofline')
       expect(within(westLake).getByText('Roofline')).toBeTruthy()
       expect(within(unnamed).getByRole('img').getAttribute('alt')).toBe('Legacy photo 2')
       expect(document.querySelector('.gallery__count')).toBeNull()

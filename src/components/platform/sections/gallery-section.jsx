@@ -72,12 +72,14 @@ function ProjectTile({ project, index, onClick }) {
   const photoCount = project.photos.length
   const hasCaption = Boolean(project.title || meta)
   const countLabel = `${photoCount} photo${photoCount === 1 ? '' : 's'}`
+  // The label carries the caption as shown, so a speech user can say what they see.
+  const shownName = [project.title, meta].filter(Boolean).join(' ') || project.name
 
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={photoCount > 1 ? `Open ${project.name}, ${countLabel}` : `Open ${project.name}`}
+      aria-label={photoCount > 1 ? `Open ${shownName}, ${countLabel}` : `Open ${shownName}`}
       aria-haspopup="dialog"
       className="gallery__tile"
       style={{ height }}
