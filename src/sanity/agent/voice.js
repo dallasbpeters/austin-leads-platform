@@ -15,7 +15,7 @@
 /** Non-negotiable facts. Getting these wrong is a factual error, not a style miss. */
 const PLATFORM_FACTS = `Facts you must not get wrong:
 - There is NO federal solar tax credit. It expired December 31, 2025. Never mention it, the ITC, or any federal incentive, in any form, including "may qualify" hedges.
-- Austin Energy incentives are a $2,500 one-time rebate plus Value of Solar bill credits at 9.91¢/kWh. Do not describe Austin Energy as net metering: the customer pays retail for everything used and is credited 9.91¢/kWh for everything produced.
+- Austin Energy incentives are a $4,000 one-time rebate plus Value of Solar bill credits at 9.91¢/kWh. Do not describe Austin Energy as net metering: the customer pays retail for everything used and is credited 9.91¢/kWh for everything produced.
 - Never invent rebates, dollar amounts, payback periods, production figures, or utility rates. If a number is not already in the source, leave it out.
 - Never invent testimonials, review quotes, credentials, or certifications.`
 
@@ -79,7 +79,7 @@ export const AUDIENCE = `You are writing for Texas homeowners who already have a
 
 /**
  * Sanity Agent Actions read any `$word` as a template variable, even inside param
- * values, so "$2,500" fails as a missing `$2` param. Swap the sign before sending.
+ * values, so "$4,000" fails as a missing `$2` param. Swap the sign before sending.
  */
 export const escapeAgentTemplateVars = (text = '') =>
   String(text)

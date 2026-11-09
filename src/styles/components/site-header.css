@@ -375,10 +375,16 @@
   }
 }
 
-/* Stays `hidden`: the clip is the moving edge of the sheet and must also contain a focused link. */
+/* The clip is the moving edge of the sheet and must also contain a focused link. */
 .site-header__sheet-clip {
   min-height: 0;
   overflow: hidden;
+}
+
+/* A menu taller than the screen scrolls inside the sheet, under a bar that stays put. */
+.site-header__sheet--open .site-header__sheet-clip {
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .site-header__sheet-panel {
@@ -606,12 +612,28 @@
 
 /* With the sheet open, the bar takes the sheet's surface and drops its bottom corners so the two read as one panel. */
 .site-header--open .site-header__bar {
+  flex: none;
   background: var(--header-solid);
   border-end-start-radius: 0;
   border-end-end-radius: 0;
 }
 
 .site-header--open {
+  display: flex;
+  flex-direction: column;
+  max-block-size: 100dvh;
   border-end-start-radius: 0;
   border-end-end-radius: 0;
+}
+
+/* Kept apart from the rule above: phones set --inset to a bare 0, which calc() rejects. */
+@media (width >= 48rem) {
+  .site-header--open {
+    max-block-size: calc(100dvh - 2 * var(--inset));
+  }
+}
+
+/* The header is capped at the screen height, so the sheet takes what the bar leaves. */
+.site-header--open .site-header__sheet {
+  min-block-size: 0;
 }

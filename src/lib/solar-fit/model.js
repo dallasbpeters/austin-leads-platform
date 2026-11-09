@@ -77,7 +77,7 @@ export const DEFAULT_MODEL = {
     { key: 'sunHours', label: 'Peak sun hours per day', value: 5.5 },
     { key: 'performance', label: 'System performance ratio', value: 0.8 },
     { key: 'offset', label: 'Share of the bill to cover', value: 0.85 },
-    { key: 'rebate', label: 'Austin Energy rebate ($)', value: 2500 },
+    { key: 'rebate', label: 'Austin Energy rebate ($)', value: 4000 },
     { key: 'fixedCosts', label: 'Permits and design ($)', value: 1800 },
     { key: 'increase', label: 'Yearly rate increase', value: 0.025 },
     { key: 'termYears', label: 'Loan term (years)', value: 20 },
@@ -103,7 +103,7 @@ export const DEFAULT_MODEL = {
       label: 'Estimated cost after rebate',
       formula: 'max(0, systemKw * 1000 * costPerWatt + fixedCosts - rebate)',
       format: 'currency',
-      detail: 'After the $2,500 Austin Energy rebate',
+      detail: 'After the $4,000 Austin Energy rebate',
     },
     {
       key: 'monthlySavings',

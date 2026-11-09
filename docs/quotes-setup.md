@@ -8,7 +8,7 @@ All calculations live in `src/lib/quotes/calc.js` and run server-side (the form 
 
 - **No federal tax credit.** It expired Dec 31, 2025 and appears nowhere in the math or documents.
 - **Utility rebate:** each provider has a default one-time rebate in `UTILITY_REBATE_DEFAULTS` (`src/lib/quotes/calc.js`). The quote form prefills it when you change provider and lets you edit per quote (including custom “Other” utilities). Only shown on the PDF when > $0.
-- **Austin Energy customers:** default rebate $2,500; savings modeled as Value of Solar bill credits at 9.91¢/kWh on all production.
+- **Austin Energy customers:** default rebate $4,000; savings modeled as Value of Solar bill credits at 9.91¢/kWh on all production.
 - **Other utilities:** savings = self-consumed kWh × retail rate, plus optional buyback rate on exported excess.
 - 25-year projection uses rate escalation (default 4%/yr) and 0.5%/yr panel degradation.
 - If annual production isn't provided, it's estimated at 1,350 kWh per kW DC (Austin-area yield).

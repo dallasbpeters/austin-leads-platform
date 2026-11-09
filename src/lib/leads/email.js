@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 
 import { getLeadRoutingSettings } from './settings'
+import { ROOFER_INTRODUCTION } from './source-types'
 
 const getResendApiKey = () => {
   return process.env.RESEND_API_KEY?.trim() || ''
@@ -117,8 +118,24 @@ const formatFromAddress = (settings) => {
   return settings.fromName ? `${settings.fromName} <${settings.fromEmail}>` : settings.fromEmail
 }
 
+/*
+ * Lead types that go to their own inbox instead of the usual lead recipient.
+ * Chosen on the server by type, so a form can never pick where mail goes.
+ */
+const RECIPIENT_BY_SOURCE_TYPE = {
+  [ROOFER_INTRODUCTION]: 'info@texassolarandroofing.com',
+}
+const SUBJECT_BY_SOURCE_TYPE = {
+  [ROOFER_INTRODUCTION]: 'Roofer introduction request',
+}
+
 export const sendLeadNotificationEmail = async (lead) => {
-  const settings = await getLeadRoutingSettings()
+  const routing = await getLeadRoutingSettings()
+  const settings = {
+    ...routing,
+    notificationToEmail: RECIPIENT_BY_SOURCE_TYPE[lead.sourceType] || routing.notificationToEmail,
+    subjectPrefix: SUBJECT_BY_SOURCE_TYPE[lead.sourceType] || routing.subjectPrefix,
+  }
   const logContext = {
     leadId: lead.id || null,
     siteSlug: lead.siteSlug,

@@ -19,7 +19,13 @@ const DEGRADATION = 0.995
 // Permits, design and interconnection, added when the $/watt is our tiered estimate.
 const FIXED_COSTS = 1800
 
-// Austin Energy's one-time solar rebate. Other utilities differ, so it stays editable.
+// The rebate comes from the electric company, never typed in. Austin Energy pays
+// a fixed $4,000; Oncor's varies, so it is left out and checked at the estimate.
+const UTILITIES = [
+  { value: 'austin-energy', label: 'Austin Energy ($4,000 rebate)', rebate: 4000 },
+  { value: 'oncor', label: 'Oncor (rebate varies)', rebate: 0 },
+]
+
 const DEFAULTS = {
   bill: 200,
   rate: 0.11,
@@ -27,7 +33,7 @@ const DEFAULTS = {
   systemKw: '',
   costPerWatt: '',
   offset: 85,
-  incentives: 2500,
+  utility: 'austin-energy',
 }
 
 const toNumber = (value, fallback) => {
@@ -42,7 +48,7 @@ function calculate(inputs) {
   const rate = Math.max(0.01, toNumber(inputs.rate, DEFAULTS.rate))
   const increase = toNumber(inputs.increase, DEFAULTS.increase) / 100
   const offset = Math.min(100, Math.max(0, toNumber(inputs.offset, DEFAULTS.offset))) / 100
-  const incentives = Math.max(0, toNumber(inputs.incentives, 0))
+  const incentives = UTILITIES.find((utility) => utility.value === inputs.utility)?.rebate ?? 0
 
   const yearlyKwhPerKw = SUN_HOURS * 365 * PERFORMANCE_RATIO
   const autoKw = ((bill / rate) * 12 * offset) / yearlyKwhPerKw
@@ -179,11 +185,27 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
                   placeholder: 'auto',
                 })}
                 {field('offset', '% of bill offset', { min: 0, max: 100, step: 5 })}
-                {field('incentives', 'Incentives / rebates ($)', { min: 0, step: 100 })}
+                <div className="solar-calculator__field">
+                  <label htmlFor={`${fieldId}-utility`} className="solar-calculator__label">
+                    Electric company
+                  </label>
+                  <select
+                    id={`${fieldId}-utility`}
+                    value={inputs.utility}
+                    onChange={setField('utility')}
+                    className="solar-calculator__input"
+                  >
+                    {UTILITIES.map((utility) => (
+                      <option key={utility.value} value={utility.value}>
+                        {utility.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <p className="solar-calculator__hint">
-                Austin Energy offers a $2,500 one-time solar rebate. Not on Austin Energy? Enter your
-                utility&apos;s rebate as a flat dollar amount, or 0.
+                Austin Energy pays a $4,000 one-time solar rebate. Oncor rebates vary, so we leave them out
+                here and check yours at your free estimate.
               </p>
             </details>
 

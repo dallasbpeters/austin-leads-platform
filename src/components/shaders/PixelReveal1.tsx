@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ChromaFlow, Dither, ImageTexture, Shader } from 'shaders/react'
 
 interface PixelRevealProps {
@@ -13,6 +13,8 @@ interface PixelRevealProps {
 
 const DEFAULT_COLOR_B = '#c3d5e3'
 const DEFAULT_COLOR_A = '#055ba6'
+/** A browser that says it has WebGPU but never starts the shader gets the photo after this long. */
+const READY_TIMEOUT_MS = 4000
 
 /*
  * The wrapper says how far the shader got (data-shader: loading, ready or
@@ -24,11 +26,19 @@ const PixelReveal = ({ imageURL, className, colorA, colorB }: PixelRevealProps) 
   const [state, setState] = useState<'loading' | 'ready' | 'unavailable'>('loading')
   const dark = colorA || DEFAULT_COLOR_A
 
+  useEffect(() => {
+    if (state !== 'loading') {
+      return
+    }
+    const timer = window.setTimeout(() => setState('unavailable'), READY_TIMEOUT_MS)
+    return () => window.clearTimeout(timer)
+  }, [state])
+
   return (
     <div className={`pixel-reveal ${className || ''}`} data-shader={state} style={{ backgroundColor: dark }}>
       <Shader
         className="pixel-reveal__canvas"
-        onReady={() => setState('ready')}
+        onReady={() => setState((current) => (current === 'loading' ? 'ready' : current))}
         onUnavailable={() => setState('unavailable')}
       >
         <ChromaFlow

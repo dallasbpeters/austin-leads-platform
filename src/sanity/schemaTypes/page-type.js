@@ -3968,7 +3968,46 @@ const quoteSectionType = {
       type: 'string',
       options: canvasPurpose('Name or attribution shown under the quote.'),
     },
+    // Blank colors keep the brand look; each one overrides a single part of the card.
+    {
+      name: 'quotePanelColor',
+      title: 'Card color',
+      type: 'color',
+      fieldset: 'colors',
+      options: canvasExclude,
+    },
+    {
+      name: 'textColor',
+      title: 'Quote text color',
+      type: 'color',
+      fieldset: 'colors',
+      description: 'The words once they have faded in.',
+      options: canvasExclude,
+    },
+    {
+      name: 'quoteFadedColor',
+      title: 'Faded text color',
+      type: 'color',
+      fieldset: 'colors',
+      description: 'The words before they fade in as you scroll.',
+      options: canvasExclude,
+    },
+    {
+      name: 'quoteEyebrowColor',
+      title: 'Eyebrow color',
+      type: 'color',
+      fieldset: 'colors',
+      options: canvasExclude,
+    },
+    {
+      name: 'quoteAttributionColor',
+      title: 'Attribution color',
+      type: 'color',
+      fieldset: 'colors',
+      options: canvasExclude,
+    },
   ]),
+  fieldsets: [{ name: 'colors', title: 'Colors', options: { collapsible: true, collapsed: false } }],
   preview: {
     select: {
       title: 'title',
@@ -4013,6 +4052,22 @@ const ctaSectionType = {
       type: 'string',
       validation: (Rule) => Rule.required(),
       options: canvasPurpose('Label for the primary CTA button or link.'),
+    },
+    {
+      name: 'ctaForm',
+      title: 'Form',
+      type: 'string',
+      initialValue: 'jobber',
+      description:
+        'What the button does. Introduction asks for a name and email and emails info@texassolarandroofing.com.',
+      options: {
+        list: [
+          { title: 'Jobber request form', value: 'jobber' },
+          { title: 'Introduction (name and email)', value: 'introduction' },
+        ],
+        layout: 'radio',
+        ...canvasExclude,
+      },
     },
     {
       name: 'theme',
