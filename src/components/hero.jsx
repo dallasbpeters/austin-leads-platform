@@ -1,5 +1,7 @@
 // oxlint-disable func-style jsx-a11y/media-has-caption
-import Image from 'next/image'
+import Image from '@/components/site-image'
+import { ArrowUpRight } from 'iconoir-react'
+import Link from 'next/link'
 
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
@@ -7,10 +9,12 @@ import { buildRuntimeKey, cleanRuntimeHref, cleanRuntimeString } from '@/lib/san
 import { cn } from '@/lib/utils'
 
 import Card from './card'
+import CloudBackground from './cloud-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import HeroActions from './hero-actions'
 import ImageFader from './image-fader'
 import PortableTextContent from './portable-text-content'
+import PixelReveal from './shaders/PixelReveal1'
 
 /*
  * The calculator link is root-relative so it works from any page, and carries
@@ -18,16 +22,13 @@ import PortableTextContent from './portable-text-content'
  * the section type plus its slugified title ("See what solar could save"), so
  * a bare `#calculator` matched nothing on the rendered page.
  */
-const FALLBACK_HERO_ACTIONS = [
-  { label: 'Talk to a Solar Pro', href: '#consultation', variant: 'default' },
-  {
-    label: 'See how the math works',
-    href: '/#calculator-see-what-solar-could-save',
-    variant: 'secondary',
-  },
-]
-
 function resolveHeroMediaMode(heroVideoSource, explicitHeroMediaMode, hasHeroSlides) {
+  if (explicitHeroMediaMode === 'clouds') {
+    return 'clouds'
+  }
+  if (explicitHeroMediaMode === 'shader') {
+    return 'shader'
+  }
   if (heroVideoSource) {
     return 'video'
   }
@@ -60,14 +61,28 @@ function getHeroImageSources(heroSection) {
   }
 }
 
-function getHeroTextValues(heroSection, hasHeroBackdropMedia) {
+export function getHeroTextValues(heroSection, hasHeroBackdropMedia, heroMediaMode) {
+  const body =
+    heroSection?.body ||
+    'Straight answers on Austin solar costs, incentives, and whether the math works for your home.'
+  const cardCopy = heroSection?.cardCopy || ''
+
+  // Over the cloud sky the text follows the visitor's time of day (cloud-background.css):
+  // dark on the daytime sky, white at dusk and night. A Sanity text color still wins,
+  // for cutouts (a dark roof) that sit behind the text.
+  if (heroMediaMode === 'clouds' && !heroSection?.heroTextColor) {
+    return {
+      body,
+      cardCopy,
+      heroTextColor: 'var(--cloud-hero-text)',
+      softTextColor: 'var(--cloud-hero-text-soft)',
+    }
+  }
+
   const heroTextColor = heroSection?.heroTextColor || (hasHeroBackdropMedia ? '#ffffff' : undefined)
   return {
-    body:
-      heroSection?.body ||
-      'Straight answers on Austin solar costs, incentives, and whether the math works for your home.',
-    cardCopy: heroSection?.cardCopy || '',
-    eyebrow: heroSection?.eyebrow || 'Austin averages 228 sunny days a year',
+    body,
+    cardCopy,
     heroTextColor,
     softTextColor: heroTextColor ? hexToRgba(heroTextColor, 0.78) : undefined,
   }
@@ -80,7 +95,7 @@ function resolveRotatingHeroImages(
   heroSection,
   fallbackBackdropSrc,
 ) {
-  if (heroMediaMode === 'video') {
+  if (heroMediaMode === 'video' || heroMediaMode === 'clouds') {
     return []
   }
   const base =
@@ -116,7 +131,8 @@ function resolveHeroActions(heroSection) {
   const configured = (Array.isArray(heroSection?.actions) ? heroSection.actions : [])
     .map((action) => ({ ...action, href: cleanRuntimeHref(action?.href) }))
     .filter((action) => action.href && action.label)
-  return configured.length ? configured : FALLBACK_HERO_ACTIONS
+  // No fallback buttons: a hero without actions in Sanity shows none.
+  return configured
 }
 
 function resolveHeroMetrics(heroSection) {
@@ -129,9 +145,71 @@ function getBackdropCardValue(hasHeroBackdropMedia, lightValue, darkValue) {
   return hasHeroBackdropMedia ? lightValue : darkValue
 }
 
-function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, overlayStyle }) {
+function HeroBackdrop({
+  heroMediaMode,
+  heroVideoSource,
+  rotatingHeroImages,
+  overlayStyle,
+  cutout,
+  shaderColors,
+}) {
   const primaryHeroImage = rotatingHeroImages[0] || null
   const hasRotatingHeroImages = rotatingHeroImages.length > 1
+
+  /* Sky tone and drifting clouds come from CloudBackground; the cutout (a transparent PNG) sits over them. */
+  if (heroMediaMode === 'clouds') {
+    return (
+      <>
+        <CloudBackground density="thick" eager />
+        {cutout?.url ? (
+          <Image
+            src={cutout.url}
+            alt={cutout.alt || ''}
+            fill
+            priority
+            quality={90}
+            sizes="100vw"
+            className="solar-hero__cutout"
+            style={{
+              '--cutout-blend': cleanRuntimeString(cutout.blendMode) || 'normal',
+              '--cutout-opacity': cutout.opacity ?? 1,
+            }}
+          />
+        ) : null}
+      </>
+    )
+  }
+  /*
+   * The hero image run through a WebGPU shader (dither, moved by the cursor). The
+   * plain photo sits underneath: browsers without WebGPU draw no canvas and show it.
+   */
+  if (heroMediaMode === 'shader') {
+    if (!primaryHeroImage?.src) {
+      return null
+    }
+    return (
+      <>
+        <Image
+          src={primaryHeroImage.src}
+          alt={primaryHeroImage.alt || ''}
+          fill
+          priority
+          fetchPriority="high"
+          quality={90}
+          sizes="100vw"
+          className="solar-hero__media solar-hero__shader-fallback"
+        />
+        <PixelReveal
+          imageURL={primaryHeroImage.src}
+          className="solar-hero__media solar-hero__media--shader"
+          // The dither's two colors are set on the uploaded hero image in Studio (Shader mode).
+          colorA={cleanRuntimeString(shaderColors?.shaderColorA)}
+          colorB={cleanRuntimeString(shaderColors?.shaderColorB)}
+        />
+        <div className="solar-hero__overlay" style={overlayStyle} />
+      </>
+    )
+  }
 
   if (heroMediaMode === 'video') {
     return (
@@ -183,7 +261,7 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
           fill
           priority
           fetchPriority="high"
-          quality={68}
+          quality={95}
           sizes="100vw"
           className="solar-hero__media"
         />
@@ -203,23 +281,6 @@ function HeroBackdrop({ heroMediaMode, heroVideoSource, rotatingHeroImages, over
       sizes="100vw"
       className="solar-hero__media solar-hero__media--fallback"
     />
-  )
-}
-
-function HeroEyebrow({ eyebrow, heroTextColor }) {
-  return (
-    <div className="solar-hero__eyebrow">
-      <div className="solar-hero__pulse">
-        <span className="solar-hero__pulse-ring animate-ping" />
-        <span className="solar-hero__pulse-dot" />
-      </div>
-      <span
-        className="solar-hero__eyebrow-text text-size-90"
-        style={{ color: heroTextColor || 'var(--color-primary)' }}
-      >
-        {eyebrow}
-      </span>
-    </div>
   )
 }
 
@@ -247,57 +308,6 @@ function HeroHeadline({ useSingleHeadline, title, titlePrimary, titleAccent, her
   )
 }
 
-function HeroMetricTile({
-  metric,
-  index,
-  metricTileBackground,
-  metricTileBorder,
-  metricLabelColor,
-  metricValueColor,
-}) {
-  return (
-    <div
-      key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-      className="solar-hero__metric"
-      style={{ backgroundColor: metricTileBackground, borderColor: metricTileBorder }}
-    >
-      <div className="solar-hero__metric-label text-size-80" style={{ color: metricLabelColor }}>
-        {metric.label}
-      </div>
-      <div className="solar-hero__metric-value text-size-200" style={{ color: metricValueColor }}>
-        {metric.value}
-      </div>
-    </div>
-  )
-}
-
-function HeroMetrics({
-  heroMetrics,
-  metricTileBackground,
-  metricTileBorder,
-  metricLabelColor,
-  metricValueColor,
-}) {
-  return (
-    <div className="solar-hero__metrics">
-      <div className="solar-hero__metrics-heading text-size-80" style={{ color: metricLabelColor }}>
-        Snapshot
-      </div>
-      {heroMetrics.map((metric, index) => (
-        <HeroMetricTile
-          key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
-          metric={metric}
-          index={index}
-          metricTileBackground={metricTileBackground}
-          metricTileBorder={metricTileBorder}
-          metricLabelColor={metricLabelColor}
-          metricValueColor={metricValueColor}
-        />
-      ))}
-    </div>
-  )
-}
-
 function HeroCardCopy({ cardCopy, heroTextColor }) {
   return (
     <>
@@ -319,17 +329,44 @@ function HeroCardCopy({ cardCopy, heroTextColor }) {
 function HeroAside({
   hasHeroMetrics,
   heroMetrics,
-  metricTileBackground,
-  metricTileBorder,
-  metricLabelColor,
-  metricValueColor,
   cardCopy,
   cardBackground,
   cardBorder,
   heroTextColor,
+  glass = false,
 }) {
   if (!hasHeroMetrics && !cardCopy) {
     return null
+  }
+
+  // One card per metric, small mono label over the value: dark glass over a photo or
+  // sky, solid Midnight Slate on a plain hero.
+  if (hasHeroMetrics) {
+    return (
+      <div className="solar-fade-up solar-fade-up-delay">
+        <dl className={cn('solar-hero__stat-stack', !glass && 'solar-hero__stat-stack--light')}>
+          {heroMetrics.map((metric, index) => (
+            <div
+              key={buildRuntimeKey('hero-metric', metric.label, metric.value, index)}
+              className="solar-hero__stat-card"
+            >
+              <dt className="solar-hero__stat-label">{metric.label}</dt>
+              <dd className="solar-hero__stat-value">{metric.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    )
+  }
+
+  if (glass) {
+    return (
+      <div className="solar-fade-up solar-fade-up-delay">
+        <div className="solar-hero__glass solar-hero__aside-card solar-hero__aside-card--glass">
+          <HeroCardCopy cardCopy={cardCopy} heroTextColor="var(--color-white)" />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -339,18 +376,63 @@ function HeroAside({
         radius="lg"
         style={{ backgroundColor: cardBackground, borderColor: cardBorder }}
       >
-        {hasHeroMetrics ? (
-          <HeroMetrics
-            heroMetrics={heroMetrics}
-            metricTileBackground={metricTileBackground}
-            metricTileBorder={metricTileBorder}
-            metricLabelColor={metricLabelColor}
-            metricValueColor={metricValueColor}
-          />
-        ) : (
-          <HeroCardCopy cardCopy={cardCopy} heroTextColor={heroTextColor} />
-        )}
+        <HeroCardCopy cardCopy={cardCopy} heroTextColor={heroTextColor} />
       </Card>
+    </div>
+  )
+}
+
+function resolveHeroCards(heroSection) {
+  return (Array.isArray(heroSection?.heroCards) ? heroSection.heroCards : [])
+    .map((card) => ({
+      ...card,
+      href: cleanRuntimeHref(card?.href),
+      imageUrl: cleanRuntimeHref(card?.imageUrl),
+    }))
+    .filter((card) => card.title)
+}
+
+/*
+ * Frosted cards along the bottom of the hero (Sanity "Glass cards"). When a
+ * card has a link, the link's ::after covers the card so the whole card is
+ * the tap target.
+ */
+function HeroCards({ cards }) {
+  return (
+    <div className="solar-hero__cards solar-fade-up solar-fade-up-delay">
+      {cards.map((card, index) => (
+        <article
+          key={buildRuntimeKey('hero-card', card.title, card._key, index)}
+          className={cn('solar-hero__glass', card.imageUrl && 'solar-hero__glass--with-image')}
+        >
+          <div className="solar-hero__glass-head">
+            <div className="solar-hero__glass-heading">
+              <h2 className="solar-hero__glass-title">{card.title}</h2>
+              {card.eyebrow ? <p className="solar-hero__glass-eyebrow">{card.eyebrow}</p> : null}
+            </div>
+            {card.stat ? <p className="solar-hero__glass-stat">{card.stat}</p> : null}
+          </div>
+          {card.body ? <p className="solar-hero__glass-body">{card.body}</p> : null}
+          {card.href ? (
+            <Link href={card.href} className="solar-hero__glass-link">
+              <span className="solar-hero__glass-link-label">{card.linkLabel || 'Learn more'}</span>
+              <span className="solar-hero__glass-link-icon" aria-hidden="true">
+                <ArrowUpRight strokeWidth={2} />
+              </span>
+            </Link>
+          ) : null}
+          {card.imageUrl ? (
+            <img
+              src={`${card.imageUrl}?w=800&h=400&fit=crop&auto=format`}
+              alt={card.imageAlt || ''}
+              width={400}
+              height={200}
+              loading="lazy"
+              className="solar-hero__glass-image"
+            />
+          ) : null}
+        </article>
+      ))}
     </div>
   )
 }
@@ -370,10 +452,12 @@ export default function Hero({
     heroSection,
     fallbackBackdropSrc,
   )
-  const hasHeroBackdropMedia = heroMediaMode === 'video' || rotatingHeroImages.length > 0
-  const { body, cardCopy, eyebrow, heroTextColor, softTextColor } = getHeroTextValues(
+  const hasHeroBackdropMedia =
+    heroMediaMode === 'video' || heroMediaMode === 'clouds' || rotatingHeroImages.length > 0
+  const { body, cardCopy, heroTextColor, softTextColor } = getHeroTextValues(
     heroSection,
     hasHeroBackdropMedia,
+    heroMediaMode,
   )
   const { overlayStyle } = getHeroOverlayAppearance(heroSection)
   const cardBackground = getBackdropCardValue(hasHeroBackdropMedia, 'rgba(255, 255, 255, 0.15)')
@@ -381,22 +465,16 @@ export default function Hero({
   const { useSingleHeadline, title, titlePrimary, titleAccent } = resolveHeadline(heroSection)
   const heroMetrics = resolveHeroMetrics(heroSection)
   const hasHeroMetrics = heroMetrics.length > 0
-  const metricTileBackground = getBackdropCardValue(
-    hasHeroBackdropMedia,
-    'rgba(255, 255, 255, 0.20)',
-    'var(--color-card, var(--color-surface-elevated))',
-  )
-  const metricTileBorder = getBackdropCardValue(
-    hasHeroBackdropMedia,
-    'rgba(255, 255, 255, 0.18)',
-    'var(--color-border)',
-  )
   const heroActions = resolveHeroActions(heroSection)
+  const heroCards = resolveHeroCards(heroSection)
   const hasHeroAside = hasHeroMetrics || Boolean(cardCopy)
 
   return (
     <section
-      className="solar-hero radial-grid-bg"
+      className={cn(
+        'solar-hero',
+        heroMediaMode === 'clouds' ? 'solar-hero--clouds cloud-theme-section' : 'radial-grid-bg',
+      )}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/hero.jsx',
@@ -408,11 +486,12 @@ export default function Hero({
         heroVideoSource={heroVideoSource}
         rotatingHeroImages={rotatingHeroImages}
         overlayStyle={overlayStyle}
+        cutout={heroSection?.heroCutout}
+        shaderColors={heroSection?.heroAsset}
       />
-      <div className="solar-hero__shell">
+      <div className={cn('solar-hero__shell', heroCards.length > 0 && 'solar-hero__shell--with-cards')}>
         <div className={cn('solar-hero__layout', hasHeroAside && 'solar-hero__layout--with-aside')}>
           <div className="solar-hero__copy solar-fade-up">
-            <HeroEyebrow eyebrow={eyebrow} heroTextColor={heroTextColor} />
             <HeroHeadline
               useSingleHeadline={useSingleHeadline}
               title={title}
@@ -428,25 +507,26 @@ export default function Hero({
                 style={{ color: softTextColor || 'var(--color-muted-foreground)' }}
               />
             ) : null}
-            <div className="solar-hero__actions">
-              <div className="solar-hero__action-group">
-                <HeroActions actions={heroActions} textColor={heroTextColor} />
+            {/* Glass cards, when set, are the hero's calls to action. */}
+            {heroCards.length === 0 && heroActions.length > 0 ? (
+              <div className="solar-hero__actions">
+                <div className="solar-hero__action-group">
+                  <HeroActions actions={heroActions} textColor={heroTextColor} />
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
           <HeroAside
             hasHeroMetrics={hasHeroMetrics}
             heroMetrics={heroMetrics}
-            metricTileBackground={metricTileBackground}
-            metricTileBorder={metricTileBorder}
-            metricLabelColor={softTextColor || 'var(--color-slate-500)'}
-            metricValueColor={heroTextColor || 'var(--color-text-strong)'}
             cardCopy={cardCopy}
             cardBackground={cardBackground}
             cardBorder={cardBorder}
             heroTextColor={heroTextColor}
+            glass={hasHeroBackdropMedia}
           />
         </div>
+        {heroCards.length > 0 ? <HeroCards cards={heroCards} /> : null}
       </div>
     </section>
   )

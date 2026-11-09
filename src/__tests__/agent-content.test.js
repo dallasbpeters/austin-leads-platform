@@ -138,6 +138,13 @@ describe('Accept negotiation', () => {
         getHeader: headersOf({ accept: 'text/x-component', rsc: '1' }),
       }),
     ).toBe('page')
+    // router.refresh() as the proxy sees it: no Next-Url, flight headers stripped.
+    expect(
+      resolvePublicRepresentation({
+        method: 'GET',
+        getHeader: headersOf({ 'user-agent': CHROME_UA, accept: '*/*', 'x-nextjs-request-id': '96dc1363' }),
+      }),
+    ).toBe('page')
     expect(
       resolvePublicRepresentation({ method: 'POST', getHeader: headersOf({ accept: 'text/markdown' }) }),
     ).toBe('page')

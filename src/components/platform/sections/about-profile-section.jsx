@@ -1,10 +1,9 @@
 // oxlint-disable func-style
-import Image from 'next/image'
+import Image from '@/components/site-image'
 
 import DevTrace, { getDevSectionAttributes } from '@/components/dev/dev-trace'
 import PortableTextContent from '@/components/portable-text-content'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cardToneCssVar } from '@/lib/platform/card-tones'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { buildRuntimeKey } from '@/lib/sanity/stega'
@@ -66,7 +65,7 @@ export function AboutProfileSection({ section, sectionId }) {
         ) : null}
       </div>
       <div className="about-profile__layout">
-        <div className="about-profile__people">
+        <ul className="about-profile__people grid-frame">
           {people.map((person, index) => {
             const profileImageUrl = getImageUrl(person.profileImageAsset, person.profileImage)
             const profileImageAlt = getImageAlt(
@@ -90,72 +89,55 @@ export function AboutProfileSection({ section, sectionId }) {
             const gradientStart =
               cardToneCssVar(person.cardGradientStart) || cardToneCssVar(defaultGradient.start)
             const gradientEnd = cardToneCssVar(person.cardGradientEnd) || cardToneCssVar(defaultGradient.end)
-            const profileCardBackground = `linear-gradient(45deg, ${gradientStart}, ${gradientEnd}), url('https://grainy-gradients.vercel.app/noise.svg')`
+            const photoBackground = `linear-gradient(45deg, ${gradientStart}, ${gradientEnd})`
 
             return (
-              <Card
-                key={buildRuntimeKey('about-person', person.name, index)}
-                radius="lg"
-                className="about-profile__card"
-                style={{ background: profileCardBackground, backgroundBlendMode: 'multiply' }}
-              >
-                <Image
-                  width={700}
-                  height={700}
-                  src={profileImageUrl}
-                  alt={profileImageAlt}
-                  className="about-profile__portrait"
-                />
-                <CardHeader className="about-profile__head">
-                  <div>
-                    <div className="about-profile__name-group">
-                      <div className="about-profile__label text-size-90">{person.label || 'Profile'}</div>
-                      <CardTitle className="about-profile__name text-size-400">{person.name}</CardTitle>
-                      {person.role ? (
-                        <p className="about-profile__role text-size-200">{person.role}</p>
-                      ) : null}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="about-profile__content">
+              <li key={buildRuntimeKey('about-person', person.name, index)} className="about-profile__person">
+                <div className="about-profile__photo" style={{ '--about-profile-photo-bg': photoBackground }}>
+                  {profileImageUrl ? (
+                    <Image
+                      width={700}
+                      height={875}
+                      src={profileImageUrl}
+                      alt={profileImageAlt}
+                      className="about-profile__portrait"
+                    />
+                  ) : null}
+                </div>
+                <div className="about-profile__text">
+                  <h3 className="about-profile__name text-size-300">{person.name}</h3>
+                  {person.role ? <p className="about-profile__role">{person.role}</p> : null}
                   {person.blurb ? (
                     <PortableTextContent
                       as="div"
                       value={person.blurb}
-                      className="about-profile__blurb text-size-90"
+                      className="about-profile__blurb text-size-100"
                     />
                   ) : null}
                   {person.certificationTitle ? (
-                    <div>
-                      <div className="about-profile__cert">
-                        {resolvedBadgeImageUrl ? (
-                          <Image
-                            width={100}
-                            height={100}
-                            src={resolvedBadgeImageUrl}
-                            alt={resolvedBadgeImageAlt}
-                            className="about-profile__cert-badge"
-                          />
+                    <div className="about-profile__cert">
+                      {resolvedBadgeImageUrl ? (
+                        <Image
+                          width={100}
+                          height={100}
+                          src={resolvedBadgeImageUrl}
+                          alt={resolvedBadgeImageAlt}
+                          className="about-profile__cert-badge"
+                        />
+                      ) : null}
+                      <div className="about-profile__cert-text">
+                        {person.certificationLabel ? (
+                          <div className="about-profile__label">{person.certificationLabel}</div>
                         ) : null}
-                        <div className="about-profile__cert-text">
-                          {person.certificationLabel ? (
-                            <div className="about-profile__label text-size-90">
-                              {person.certificationLabel}
-                            </div>
-                          ) : null}
-                          <div className="about-profile__cert-title text-size-100">
-                            {person.certificationTitle}
-                          </div>
-                        </div>
+                        <div className="about-profile__cert-title">{person.certificationTitle}</div>
                       </div>
                     </div>
                   ) : null}
-                </CardContent>
-                <div className="about-profile__wash" />
-              </Card>
+                </div>
+              </li>
             )
           })}
-        </div>
+        </ul>
       </div>
     </section>
   )

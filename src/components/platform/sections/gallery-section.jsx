@@ -1,7 +1,7 @@
 'use client'
 
+import Image from '@/components/site-image'
 import { MultiplePages, NavArrowLeft, NavArrowRight, Xmark } from 'iconoir-react'
-import Image from 'next/image'
 import { Dialog } from 'radix-ui'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -77,12 +77,29 @@ function ProjectTile({ project, index, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      aria-label={photoCount > 1 ? `Open ${project.name}, ${countLabel}` : `Open ${project.name}`}
+      /*
+       * With a caption, the tile is named by what it shows (a hidden "Open", the
+       * photo's alt, the caption and a hidden photo count), so the name always
+       * matches the screen; axe flagged every built label as a mismatch. Without
+       * a caption, the project name is the label.
+       */
+      aria-label={
+        hasCaption
+          ? undefined
+          : photoCount > 1
+            ? `Open ${project.name}, ${countLabel}`
+            : `Open ${project.name}`
+      }
       aria-haspopup="dialog"
       className="gallery__tile"
       style={{ height }}
       data-gallery-project={project.key}
     >
+      {hasCaption ? (
+        <>
+          <span className="sr-only">Open</span>{' '}
+        </>
+      ) : null}
       <Image
         src={src}
         alt={project.cover.alt}
@@ -104,6 +121,7 @@ function ProjectTile({ project, index, onClick }) {
           <div className="gallery__caption">
             {project.title ? <p className="gallery__caption-title text-size-100">{project.title}</p> : null}
             {meta ? <p className="gallery__caption-meta text-size-80">{meta}</p> : null}
+            {photoCount > 1 ? <span className="sr-only">{countLabel}</span> : null}
           </div>
         </>
       ) : null}

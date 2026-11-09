@@ -13,7 +13,7 @@
  *    plus optional buyback rate on exported excess
  */
 
-export const AUSTIN_ENERGY_REBATE = 2500
+export const AUSTIN_ENERGY_REBATE = 4000
 export const VALUE_OF_SOLAR_RATE = 0.0991 // $/kWh
 export const DEFAULT_UTILITY_RATE = 0.12 // $/kWh retail
 export const DEFAULT_RATE_ESCALATION = 0.04 // 4%/yr energy cost increase

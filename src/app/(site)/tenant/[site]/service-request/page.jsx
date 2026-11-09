@@ -4,7 +4,8 @@ import Footer from '@/components/footer'
 import Header from '@/components/header'
 import JobberWorkRequestEmbed from '@/components/jobber-work-request-embed'
 import { resolveNavigationForSite, resolveSiteBySlug } from '@/lib/platform/content'
-import { buildMetadataForSite } from '@/lib/platform/site-page'
+import { resolveHeaderMessage } from '@/lib/platform/header-message'
+import { buildMetadataForSite, renderSanityPageIfAny } from '@/lib/platform/site-page'
 
 /** @returns {Promise<import('next').Metadata>} Metadata for the service request page. */
 export const generateMetadata = async ({ params }) => {
@@ -14,6 +15,12 @@ export const generateMetadata = async ({ params }) => {
 
 const ServiceRequestPage = async ({ params }) => {
   const { site: siteSlug } = await params
+  // A "service-request" page made in Studio (hero, Jobber section, FAQ…) wins over the plain form below.
+  const sanityPage = await renderSanityPageIfAny(siteSlug, ['service-request'])
+  if (sanityPage) {
+    return sanityPage
+  }
+
   const site = await resolveSiteBySlug(siteSlug).catch(() => null)
   if (!site) {
     notFound()
@@ -22,7 +29,7 @@ const ServiceRequestPage = async ({ params }) => {
 
   return (
     <>
-      <Header navigation={navigation} />
+      <Header navigation={navigation} message={resolveHeaderMessage(site)} />
       <main className="mx-auto w-full max-w-4xl px-4 pt-36">
         {/* The request form is a third-party embed with no heading of its own,
             so the page needs one to be navigable. */}

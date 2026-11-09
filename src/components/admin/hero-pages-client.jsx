@@ -211,9 +211,10 @@ function HeroAppearanceForm({
                 }))
               }
               type="color"
-              value={appearanceForm.heroTextColor}
+              value={appearanceForm.heroTextColor || '#ffffff'}
             />
             <Input
+              placeholder="Automatic"
               onChange={(event) =>
                 setAppearanceForm((current) => ({
                   ...current,

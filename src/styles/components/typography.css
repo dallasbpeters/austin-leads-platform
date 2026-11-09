@@ -226,3 +226,33 @@
     font-size: var(--text-size-90);
   }
 }
+
+/*
+ * Social posts (Instagram and TikTok) placed one after another in rich text
+ * (portable-text-content.jsx): one grid, as many across as fit. Instagram's embed is at least 326px wide, so
+ * columns start at 20.5rem and drop to one on phones.
+ */
+.embed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20.5rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+/* TikTok videos (tiktok-posts.jsx): TikTok's embed card is a fixed 740px tall at its 325px width. */
+.tiktok-post {
+  max-width: 20.5rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.embed-grid .tiktok-post {
+  max-width: none;
+}
+
+.tiktok-post__frame {
+  display: block;
+  width: 100%;
+  height: 46.25rem;
+  border: 0;
+}

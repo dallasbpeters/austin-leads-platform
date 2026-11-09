@@ -1,0 +1,42 @@
+/** .jobber-request: Jobber's online request form as a page section (jobber-request-section.jsx). */
+
+.jobber-request {
+  padding-block: var(--space-section-compact, 4rem);
+}
+
+.jobber-request__inner {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.jobber-request__head {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 48rem;
+}
+
+.jobber-request__eyebrow {
+  margin: 0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.jobber-request__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  line-height: 1.1;
+  color: var(--foreground);
+}
+
+.jobber-request__body {
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.jobber-request__form {
+  max-width: 48rem;
+  border: 1px solid var(--border);
+}

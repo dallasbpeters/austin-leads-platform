@@ -127,6 +127,9 @@ const AGENT_SAFE_METHODS = new Set(['GET', 'HEAD'])
  * restores them afterwards, and it also drops the `_rsc` query. The router
  * sends `Next-Url` with every navigation and prefetch, and that header is
  * left alone, so it is the signal that works both self-hosted and on Vercel.
+ * `router.refresh()` (what Sanity's live preview calls on every edit) sends no
+ * `Next-Url`, but every router fetch carries `X-Nextjs-Request-Id`, which is
+ * also left alone. Without it each Studio edit became a full page reload.
  * The stripped headers are still checked for callers outside the proxy.
  *
  * @param {(name: string) => string | null | undefined} getHeader
@@ -134,6 +137,7 @@ const AGENT_SAFE_METHODS = new Set(['GET', 'HEAD'])
 export function isNextRouterRequest(getHeader) {
   return Boolean(
     getHeader('next-url') ||
+    getHeader('x-nextjs-request-id') ||
     getHeader('rsc') ||
     getHeader('next-router-prefetch') ||
     getHeader('next-router-segment-prefetch') ||

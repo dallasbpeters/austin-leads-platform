@@ -330,6 +330,8 @@ export const POST = async (request, { params }) => {
 
   const { requestId } = await params
   const body = await request.json().catch(() => ({}))
+  // The signing time is the server's, never the browser's, so nobody can back- or post-date a signature.
+  body.completedAt = new Date().toISOString()
   const recipientId = String(body?.recipientId || '').trim()
 
   if (!recipientId) {

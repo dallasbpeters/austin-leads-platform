@@ -32,6 +32,7 @@ export default function JobberWorkRequestEmbed({
   className = '',
   formId = JOBBER_FORM_IDS.default,
   requestFormUrl = null,
+  title = 'Request a free estimate',
 }) {
   const containerRef = useRef(null)
   const hasLoadedRef = useRef(false)
@@ -64,6 +65,26 @@ export default function JobberWorkRequestEmbed({
     script.setAttribute('form_url', formUrl)
     document.body.append(script)
   }, [formUrl, targetId])
+
+  /*
+   * Jobber's script adds the form's <iframe> with no title, so screen readers
+   * announce an unnamed frame. Name it as soon as it appears.
+   */
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+    const nameFrames = () => {
+      for (const frame of container.querySelectorAll('iframe:not([title])')) {
+        frame.setAttribute('title', title)
+      }
+    }
+    nameFrames()
+    const observer = new MutationObserver(nameFrames)
+    observer.observe(container, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [title])
 
   return (
     <div

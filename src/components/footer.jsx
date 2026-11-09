@@ -1,39 +1,60 @@
 'use client'
 
-import { DotArrowUp, Facebook, Instagram, Mail, Phone } from 'iconoir-react'
+import { DotArrowUp, NavArrowRight } from 'iconoir-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { AutoSizedText } from '@/components/auto-sized-text'
-import { SITE_EMAIL, SITE_FACEBOOK_URL, SITE_PHONE_DISPLAY, SITE_PHONE_HREF } from '@/lib/platform/contact'
+import {
+  SITE_EMAIL,
+  SITE_FACEBOOK_URL,
+  SITE_PHONE_DISPLAY,
+  SITE_PHONE_HREF,
+  SITE_TIKTOK_URL,
+} from '@/lib/platform/contact'
 import { mainServices, roofingServices } from '@/lib/platform/service-catalog'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
-import Logo from './logo'
 
 const footerServices = [
   ...roofingServices,
   ...mainServices.filter((service) => service.slug === 'solar-and-battery-installations'),
-]
+].map((service) => ({ href: `/services/${service.slug}`, label: service.title }))
 
-const contactLinks = [
-  { href: SITE_PHONE_HREF, icon: Phone, label: SITE_PHONE_DISPLAY },
-  { href: `mailto:${SITE_EMAIL}`, icon: Mail, label: SITE_EMAIL },
+const linkGroups = [
+  { heading: 'Services', links: footerServices },
   {
-    href: `https://www.instagram.com/texassolarandroofingpros/`,
-    icon: Instagram,
-    label: 'Follow us on Instagram',
-    external: true,
+    heading: 'Company',
+    links: [
+      { href: '/about', label: 'Why Texas Solar & Roofing Pros' },
+      { href: '/roofing-partners', label: 'Our roofing pros' },
+      { href: '/projects', label: 'Projects' },
+      { href: '/guides', label: 'Guides' },
+    ],
   },
-  { href: SITE_FACEBOOK_URL, icon: Facebook, label: 'Follow us on Facebook', external: true },
+  {
+    heading: 'Get started',
+    links: [
+      { href: '/solar-costs', label: 'See if solar is right for you' },
+      { href: '/hail-damage', label: 'Hail & storm damage' },
+      { href: '#consultation', label: 'Free estimate' },
+    ],
+  },
+  {
+    heading: 'Follow',
+    links: [
+      { href: 'https://www.instagram.com/texassolarandroofingpros/', label: 'Instagram', external: true },
+      { href: SITE_FACEBOOK_URL, label: 'Facebook', external: true },
+      { href: SITE_TIKTOK_URL, label: 'TikTok', external: true },
+    ],
+  },
 ]
 
 const metaLinks = [
-  { href: '/services', label: 'Services' },
-  { href: '/guides', label: 'Guides' },
-  { href: '/terms', label: 'Terms' },
   { href: '/privacy-policy', label: 'Privacy' },
+  { href: '/terms', label: 'Terms' },
 ]
+
+const externalProps = (external) => (external ? { target: '_blank', rel: 'noopener noreferrer' } : {})
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -48,96 +69,93 @@ export default function Footer() {
       })}
     >
       <div className="site-footer__inner">
-        <div className="site-footer__grid">
-          <div className="site-footer__col--wide">
-            <Link href="/" className="site-footer__brand text-size-200 site-footer__link">
-              <Logo className="site-footer__brand-mark" />
-              Texas Solar & Roofing Pros
+        <div className="site-footer__cta">
+          <h2 className="site-footer__title">A system that pays you back.</h2>
+          <p className="site-footer__intro">
+            Free estimate, no pressure, no commitment. We serve homeowners across Central Texas.
+          </p>
+          <div className="site-footer__actions">
+            <Link href="#consultation" className="site-footer__button site-footer__button--light">
+              Get a free estimate
+              <NavArrowRight className="site-footer__button-icon" aria-hidden="true" />
             </Link>
-            <p className="site-footer__tagline">
-              Full-service solar installation and energy efficiency upgrades for Texas homeowners.
-            </p>
-            <a
-              href="https://www.bbb.org/us/tx/cedar-park/profile/solar-energy-contractors/texas-solar-and-roofing-pros-llc-0825-1000263664/#sealclick"
-              target="_blank"
-              rel="nofollow"
-              style={{ marginTop: '1em', display: 'block' }}
-            >
-              <Image
-                src="https://m.bbb.org/brand/seals/Accredited_Business_Seal_Rating_RGB.svg?tx=w_340,dpr_2.0"
-                style={{ border: 0 }}
-                height={130}
-                width={220}
-                alt="Texas Solar and Roofing Pros LLC BBB Business Review"
-              />
-            </a>
-          </div>
-          <div className="site-footer__col--services">
-            <h2 className="site-footer__heading text-size-200">Contact</h2>
-            <ul className="site-footer__list">
-              {contactLinks.map(({ href, icon: Icon, label, external }) => (
-                <li key={href}>
-                  <a
-                    href={href}
-                    className="site-footer__link site-footer__link--icon"
-                    {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  >
-                    <Icon className="site-footer__link-icon" aria-hidden="true" />
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <h2 className="site-footer__heading text-size-200">Services</h2>
-            <ul className="site-footer__list">
-              {footerServices.map((service) => (
-                <li key={service.slug}>
-                  <Link
-                    href={`/services/${service.slug}`}
-                    className="site-footer__link site-footer__link--service"
-                  >
-                    {service.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <Link href="/solar-costs" className="site-footer__button">
+              Run the numbers
+              <NavArrowRight className="site-footer__button-icon" aria-hidden="true" />
+            </Link>
           </div>
         </div>
-        <div className="site-footer__grid site-footer__grid--meta">
-          <div className="site-footer__col--wide">
-            <p className="site-footer__copyright">
-              © {year} Texas Solar & Roofing Pros. All rights reserved.
-            </p>
-            <p className="site-footer__crawlers text-size-90">
-              For AI and LLM crawlers:{' '}
-              {/* Static files in /public, not routes -- next/link cannot navigate to them. */}
-              {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-              <a href="/llms.txt" className="site-footer__link site-footer__link--inline">
-                llms.txt
-              </a>
-              {' · '}
-              {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-              <a href="/ai.txt" className="site-footer__link site-footer__link--inline">
-                ai.txt
-              </a>
-            </p>
+
+        <nav className="site-footer__groups" aria-label="Footer">
+          {linkGroups.map((group) => (
+            <div key={group.heading} className="site-footer__group">
+              <h3 className="site-footer__heading">{group.heading}</h3>
+              <ul className="site-footer__list">
+                {group.links.map(({ href, label, external }) => (
+                  <li key={href}>
+                    <Link href={href} className="site-footer__link" {...externalProps(external)}>
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        <div className="site-footer__contact">
+          <a href={`mailto:${SITE_EMAIL}`} className="site-footer__link site-footer__email">
+            {SITE_EMAIL}
+          </a>
+          <div className="site-footer__contact-meta">
+            <a href={SITE_PHONE_HREF} className="site-footer__link site-footer__phone">
+              {SITE_PHONE_DISPLAY}
+            </a>
+            <p className="site-footer__muted">TECL 41840 · TDRL Residential Solar Retailer #46</p>
           </div>
+          <a
+            href="https://www.bbb.org/us/tx/cedar-park/profile/solar-energy-contractors/texas-solar-and-roofing-pros-llc-0825-1000263664/#sealclick"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            className="site-footer__seal"
+          >
+            <Image
+              src="https://m.bbb.org/brand/seals/Accredited_Business_Seal_Rating_RGB.svg?tx=w_340,dpr_2.0"
+              height={65}
+              width={110}
+              alt="Texas Solar and Roofing Pros LLC BBB Business Review"
+            />
+          </a>
+        </div>
+
+        <p className="site-footer__wordmark" aria-hidden="true">
+          <span className="site-footer__wordmark-text">Texas Solar & Roofing Pros</span>
+        </p>
+
+        <div className="site-footer__meta">
           <div className="site-footer__meta-links">
             {metaLinks.map(({ href, label }) => (
-              <Link key={href} href={href} className="site-footer__link site-footer__link--meta">
+              <Link key={href} href={href} className="site-footer__link">
                 {label}
               </Link>
             ))}
-            <Link href="#site-top" className="site-footer__link site-footer__link--meta">
-              Back to top
-              <DotArrowUp className="site-footer__meta-icon" aria-hidden="true" />
-            </Link>
+            {/* Static files in /public, not routes -- next/link cannot navigate to them. */}
+            {/* oxlint-disable-next-line next/no-html-link-for-pages */}
+            <a href="/llms.txt" className="site-footer__link">
+              llms.txt
+            </a>
+            {/* oxlint-disable-next-line next/no-html-link-for-pages */}
+            <a href="/ai.txt" className="site-footer__link">
+              ai.txt
+            </a>
           </div>
+          <p className="site-footer__muted">© {year} Texas Solar & Roofing Pros. All rights reserved.</p>
+          <Link href="#site-top" className="site-footer__link site-footer__top">
+            Back to top
+            <DotArrowUp className="site-footer__button-icon" aria-hidden="true" />
+          </Link>
         </div>
       </div>
-      <AutoSizedText aria-hidden="true" tabIndex={-1} className="site-footer__watermark">
-        Texas Solar & Roofing
-      </AutoSizedText>
     </footer>
   )
 }

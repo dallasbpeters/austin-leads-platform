@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import Image from '@/components/site-image'
 import { useEffect, useRef, useState } from 'react'
 
 import PortableTextContent from '@/components/portable-text-content'

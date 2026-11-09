@@ -25,8 +25,8 @@ const NavList = ({ items, onNavigate }) => (
       const isExternal = Boolean(item.isExternal) || isAbsolute
       const isContact = item.kind === 'contact'
       const className = isContact
-        ? `font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-full px-6 py-5.5 ${CONTACT_LINK_CLASSES}`
-        : 'font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-full px-2 py-4 hover:bg-transparent'
+        ? `font-wght-450 medium text-foreground text-md btn flex items-start justify-start gap-2 rounded-(--radius-button) px-6 py-5.5 ${CONTACT_LINK_CLASSES}`
+        : 'font-wght-450 medium text-foreground text-md hover:text-primary btn flex items-start justify-start gap-2 rounded-(--radius-button) px-2 py-4 hover:bg-transparent'
 
       const key = buildRuntimeKey('generic-nav-item', href, label, index)
 

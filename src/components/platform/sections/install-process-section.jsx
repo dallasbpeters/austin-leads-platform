@@ -5,7 +5,7 @@ import InstallProcess from '@/components/install-process'
 
 import InstallProcessTimelineClient from './install-process-timeline-client'
 
-export function InstallProcessSection({ section, sectionId }) {
+export function InstallProcessSection({ section, sectionId, isFirstSection = false }) {
   const items = section.items ?? []
 
   return (
@@ -17,7 +17,12 @@ export function InstallProcessSection({ section, sectionId }) {
         content: `install process section from ${section._type || 'page section'}`,
       })}
     >
-      <InstallProcess eyebrow={section.eyebrow} title={section.title} body={section.subtitle} />
+      <InstallProcess
+        eyebrow={section.eyebrow}
+        title={section.title}
+        body={section.subtitle}
+        titleTag={isFirstSection ? 'h1' : 'h2'}
+      />
       <DevTrace
         markup="src/components/platform/sections/install-process-section.jsx"
         content={`install process section from ${section._type || 'page section'}`}

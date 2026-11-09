@@ -1,7 +1,7 @@
 'use client'
 
+import Image from '@/components/site-image'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import Image from 'next/image'
 import { useRef } from 'react'
 
 import AdoptionReasonCards from '@/components/adoption-reason-cards'

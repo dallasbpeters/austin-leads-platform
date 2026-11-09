@@ -22,6 +22,13 @@ export const QuoteBannerSection = ({ section, sectionId }) => {
         quoteText={portableTextToPlainText(section.body) || section.title || ''}
         attribution={section.title || 'Texas Solar and Roofing Pros'}
         sectionId={`${sectionId}-content`}
+        colors={{
+          panel: section.quotePanelColor,
+          text: section.textColor,
+          faded: section.quoteFadedColor,
+          eyebrow: section.quoteEyebrowColor,
+          attribution: section.quoteAttributionColor,
+        }}
       />
     </section>
   )

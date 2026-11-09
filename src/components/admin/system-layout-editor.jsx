@@ -1,9 +1,9 @@
 'use client'
 
+import Image from '@/components/site-image'
 import { ImagePlus, Map as MapIcon, RotateCw, Trash2 } from 'lucide-react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import Image from 'next/image'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'

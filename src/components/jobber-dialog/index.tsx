@@ -10,7 +10,7 @@ import type { ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // Floating-action-button positioning for the bottom-right corner.
-const FAB_CLASSES = 'fixed right-5 bottom-5 z-50 size-14 rounded-full sm:right-6 sm:bottom-6'
+const FAB_CLASSES = 'fixed right-5 bottom-5 z-50 size-14 rounded-(--radius-button) sm:right-6 sm:bottom-6'
 
 interface JobberDialogProps {
   buttonLabel?: string

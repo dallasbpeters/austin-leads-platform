@@ -84,7 +84,24 @@ export default function SignInForm({
     })
   }
 
+  /*
+   * Google and Zoho refuse to show their sign-in pages inside a frame (Studio's
+   * Video tool shows these pages in one). There, open this sign-in page in a new
+   * tab instead; the session cookie it sets is shared with the frame.
+   */
+  function openInNewTabIfFramed() {
+    if (window.self === window.top) {
+      return false
+    }
+    window.open(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`, '_blank', 'noopener')
+    setError('Sign in in the new tab, then come back and click Reload.')
+    return true
+  }
+
   async function handleGoogleSignIn() {
+    if (openInNewTabIfFramed()) {
+      return
+    }
     setError('')
     setIsGoogleLoading(true)
     try {
@@ -96,6 +113,9 @@ export default function SignInForm({
   }
 
   async function handleZohoSignIn() {
+    if (openInNewTabIfFramed()) {
+      return
+    }
     setError('')
     setIsZohoLoading(true)
     try {

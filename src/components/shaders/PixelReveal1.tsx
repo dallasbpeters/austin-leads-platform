@@ -1,0 +1,86 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { ChromaFlow, Dither, ImageTexture, Shader } from 'shaders/react'
+
+interface PixelRevealProps {
+  imageURL?: string
+  /** Sizes the canvas: <Shader> has no size of its own. */
+  className?: string
+  /** The dither's dark and light colors (Studio: the hero image's shader colors). */
+  colorA?: string | null
+  colorB?: string | null
+}
+
+const DEFAULT_COLOR_B = '#c3d5e3'
+const DEFAULT_COLOR_A = '#055ba6'
+/** A browser that says it has WebGPU but never starts the shader gets the photo after this long. */
+const READY_TIMEOUT_MS = 4000
+
+/*
+ * The wrapper says how far the shader got (data-shader: loading, ready or
+ * unavailable). While it loads, the dark dither color fills the space; the
+ * canvas fades in when ready; if this browser can't run it, the wrapper steps
+ * aside and the hero's photo shows instead (solar-hero.css).
+ */
+const PixelReveal = ({ imageURL, className, colorA, colorB }: PixelRevealProps) => {
+  const [state, setState] = useState<'loading' | 'ready' | 'unavailable'>('loading')
+  const dark = colorA || DEFAULT_COLOR_A
+
+  useEffect(() => {
+    if (state !== 'loading') {
+      return
+    }
+    const timer = window.setTimeout(() => setState('unavailable'), READY_TIMEOUT_MS)
+    return () => window.clearTimeout(timer)
+  }, [state])
+
+  return (
+    <div className={`pixel-reveal ${className || ''}`} data-shader={state} style={{ backgroundColor: dark }}>
+      <Shader
+        className="pixel-reveal__canvas"
+        onReady={() => setState((current) => (current === 'loading' ? 'ready' : current))}
+        onUnavailable={() => setState('unavailable')}
+      >
+        <ChromaFlow
+          id="idmostv5d9xi2rmvn45"
+          baseColor="#ffffff"
+          downColor="#ffffff"
+          intensity={0.6}
+          leftColor="#ffffff"
+          momentum={37}
+          radius={2.9}
+          rightColor="#ffffff"
+          upColor="#ffffff"
+          visible={false}
+        />
+        <ImageTexture
+          objectFit="cover"
+          url={
+            imageURL ||
+            'https://data.shaders.com/storage/v1/object/public/user-uploaded-images/user_3E93x1BOQFIvRduMb5kBj66tBhe/dlbedLK6w8Ax.jpg'
+          }
+        />
+        <Dither
+          colorA={dark}
+          colorB={colorB || DEFAULT_COLOR_B}
+          pattern="bayer4"
+          // The cursor layer is opaque where the mouse hasn't been. At a threshold of 1
+          // every dot went dark, so the light color only showed along the mouse path
+          // (and never on phones). Capped at 0.55, the photo always shows in both colors;
+          // the cursor still opens it up further, down to 0.15.
+          threshold={{
+            type: 'map',
+            source: 'idmostv5d9xi2rmvn45',
+            channel: 'alpha',
+            inputMax: 1,
+            inputMin: 0.4,
+            outputMax: 0.55,
+            outputMin: 0.15,
+          }}
+        />
+      </Shader>
+    </div>
+  )
+}
+
+export default PixelReveal

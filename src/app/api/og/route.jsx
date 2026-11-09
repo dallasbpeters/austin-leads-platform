@@ -1,8 +1,30 @@
+import { readFileSync } from 'node:fs'
+import nodePath from 'node:path'
+
 import { ImageResponse } from 'next/og'
 
 import { SHARE_DESCRIPTION_MAX, SHARE_TITLE_MAX, truncateForShare } from '@/lib/platform/social-share-text'
 
 export const runtime = 'nodejs'
+
+/*
+ * Logos are read from public/ and embedded as data URLs. The renderer refuses to
+ * download images from a private address (SSRF protection), which includes
+ * localhost, and embedding also saves a request per image. If the file is not
+ * on disk (a trimmed deployment), the public URL is used instead.
+ */
+const embeddedImages = new Map()
+function publicImageSrc(file, origin) {
+  if (!embeddedImages.has(file)) {
+    try {
+      const data = readFileSync(nodePath.join(process.cwd(), 'public', file))
+      embeddedImages.set(file, `data:image/png;base64,${data.toString('base64')}`)
+    } catch {
+      embeddedImages.set(file, null)
+    }
+  }
+  return embeddedImages.get(file) || new URL(`/${file}`, origin).toString()
+}
 
 const OG_IMAGE_SIZE = {
   width: 1200,
@@ -282,23 +304,6 @@ function getFontFamily(requestUrl) {
   return fontFamilyPromise
 }
 
-function BrandLogo({ color = '#ffffff' }) {
-  return (
-    <svg width="48" height="48" viewBox="0 0 483 491" aria-hidden="true" style={{ display: 'flex', color }}>
-      <g transform="matrix(1,0,0,1,-1117.520132,-20.022941)">
-        <g transform="matrix(1,0,0,1,551.679288,0)">
-          <g transform="matrix(1.122079,0,-0.363049,1.122079,-617.643357,-79.842122)">
-            <path
-              d="M1320.761,404.637L1152.178,301.201L1155.057,207.401L1221.488,248.161L1221.488,89L1321,89L1321,157.702L1493.193,158.064L1554.281,252.808L1381.996,252.445L1321,157.845L1321,252.808L1229.062,252.808L1325.627,312.056L1322.846,402.659L1381.781,346.744L1480.789,405.149L1419.879,311.178L1481.587,252.808L1587.731,416.563L1526.022,474.934L1481.017,405.502L1374.555,506.509L1275.177,447.885L1320.761,404.637Z"
-              fill="currentColor"
-            />
-          </g>
-        </g>
-      </g>
-    </svg>
-  )
-}
-
 const GuideHeroBackground = ({ image, guideBackground }) => (
   <>
     {image ? (
@@ -515,9 +520,9 @@ function extractOgParams(searchParams, requestUrl) {
   )
   const isGuideLayout = isGuideParam || layout === 'guide' || path.startsWith('/guides/')
   const christmasLogoSrc = isChristmasOg
-    ? new URL('/images/tx-christmas-logo-full.png', requestUrl.origin).toString()
+    ? publicImageSrc('images/tx-christmas-logo-full.png', requestUrl.origin)
     : ''
-  const logoSrc = new URL('/logo.png', requestUrl.origin).toString()
+  const logoSrc = publicImageSrc('logo.png', requestUrl.origin)
 
   return {
     isChristmasOg,
@@ -617,7 +622,6 @@ export async function GET(request) {
     cta,
     category,
     path,
-    primary,
     christmasLogoSrc,
     logoSrc,
   } = og
@@ -787,27 +791,33 @@ export async function GET(request) {
                   alt=""
                   src={christmasLogoSrc}
                   height={52}
-                  width={220}
+                  width={129}
                   style={{
                     height: 52,
-                    width: 'auto',
+                    width: 129,
                     maxWidth: 240,
                     objectFit: 'contain',
                   }}
                 />
               ) : (
-                <img
-                  alt=""
-                  src={logoSrc}
-                  height={56}
-                  width={68}
+                // The full logo on a white plate: its navy lettering would vanish on the blue card.
+                <div
                   style={{
-                    height: 56,
-                    width: 'auto',
-                    maxWidth: 200,
-                    objectFit: 'contain',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '6px 12px',
+                    borderRadius: 14,
+                    backgroundColor: '#ffffff',
                   }}
-                />
+                >
+                  <img
+                    alt=""
+                    src={logoSrc}
+                    height={56}
+                    width={67}
+                    style={{ height: 56, width: 67, objectFit: 'contain' }}
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -894,30 +904,33 @@ export async function GET(request) {
                           alt=""
                           src={christmasLogoSrc}
                           height={56}
-                          width={260}
+                          width={139}
                           style={{
                             height: 56,
-                            width: 'auto',
+                            width: 139,
                             maxWidth: 300,
                             objectFit: 'contain',
                           }}
                         />
                       ) : (
-                        <>
-                          <BrandLogo color={primary} />
-                          <div
-                            style={{
-                              display: 'flex',
-                              fontSize: 30,
-                              fontWeight: 700,
-                              letterSpacing: '-0.03em',
-                              whiteSpace: 'nowrap',
-                              color: '#ffffff',
-                            }}
-                          >
-                            {site}
-                          </div>
-                        </>
+                        // The full logo (name included) on a white plate: its navy lettering would vanish on the dark card.
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '8px 14px',
+                            borderRadius: 16,
+                            backgroundColor: '#ffffff',
+                          }}
+                        >
+                          <img
+                            alt=""
+                            src={logoSrc}
+                            height={64}
+                            width={77}
+                            style={{ height: 64, width: 77, objectFit: 'contain' }}
+                          />
+                        </div>
                       )}
                     </div>
                     {path ? (

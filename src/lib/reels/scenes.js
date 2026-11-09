@@ -131,13 +131,13 @@ const THEME_COPY = {
       hint: 'One statement on a brand panel.',
       placeholders: {
         eyebrow: 'Austin Energy',
-        headline: '$2,500 back, then 9.91 cents a kWh',
+        headline: '$4,000 back, then 9.91 cents a kWh',
         sub: 'The credit shows up as a line on the same bill.',
       },
       defaults: {
         duration: 5,
         eyebrow: 'Austin Energy',
-        headline: '$2,500 back, then 9.91 cents a kWh',
+        headline: '$4,000 back, then 9.91 cents a kWh',
         sub: 'The credit shows up as a line on the same bill.',
       },
     },

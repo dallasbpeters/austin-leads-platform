@@ -7,6 +7,7 @@ import { getSectionDomId } from '@/components/platform/public-site-utils'
 import { sectionRenderers } from '@/components/platform/sections'
 import SectionSurface from '@/components/platform/sections/section-surface'
 import { resolveNavigationForSite, resolveSiteBySlug } from '@/lib/platform/content'
+import { resolveHeaderMessage } from '@/lib/platform/header-message'
 import { getImageUrl } from '@/lib/platform/imageSource'
 import { getCaseStudyBySlug } from '@/sanity/lib/caseStudies'
 
@@ -62,7 +63,7 @@ const CaseStudyPage = async ({ params }) => {
   // its own header and footer — same as /hail-map, /guides and the rest.
   return (
     <main className="bg-background min-h-screen">
-      <Header navigation={resolveNavigationForSite(site)} />
+      <Header navigation={resolveNavigationForSite(site)} message={resolveHeaderMessage(site)} />
       <CaseStudyArticle caseStudy={caseStudy} site={site} />
 
       {/* Editor-added page-builder blocks, appended below the structured story. */}

@@ -71,6 +71,12 @@ export const sectionProjection = `
   "featuredIds": featured[]._ref,
   heroMediaMode,
   cloudVisibility,
+  // bannerCtaSection: the Banner style fieldset.
+  bannerLayout,
+  bannerOverlayColor,
+  bannerOverlayOpacity,
+  bannerTextTone,
+  bannerButtonVariant,
   eyebrow,
   title,
   titlePrimary,
@@ -254,6 +260,8 @@ export const sectionProjection = `
     hotspot,
     altText,
     alt,
+    "shaderColorA": shaderColorA.hex,
+    "shaderColorB": shaderColorB.hex,
     asset->{
       _id,
       url,
@@ -285,6 +293,52 @@ export const sectionProjection = `
         }
       }
     }
+  },
+  heroCutout{
+    alt,
+    blendMode,
+    opacity,
+    "url": asset->url
+  },
+  heroCards[]{
+    _key,
+    eyebrow,
+    title,
+    body,
+    stat,
+    linkLabel,
+    href,
+    "imageUrl": image.asset->url,
+    "imageAlt": image.altText
+  },
+  // solarFitSection: the "See if solar is right for you" questions and formulas.
+  fitInputs[]{ _key, key, label, kind, defaultValue, min, max, step, prefix, suffix, hideWhenRoofFound, showWhen, help, options[]{ label, value } },
+  fitConstants[]{ _key, key, label, value },
+  fitOutputs[]{ _key, key, label, formula, format, decimals, detail, highlight },
+  qualifyFormula,
+  qualifiedMessage,
+  notQualifiedMessage,
+  submitLabel,
+  successMessage,
+  // storyGridSection: the big statement and the stacked photos.
+  statement,
+  storyPhotos[]{
+    _key,
+    alt,
+    hotspot,
+    "url": asset->url
+  },
+  // tabbedPanelSection: each tab swaps the photo, text and button.
+  panelTabs[]{
+    _key,
+    label,
+    eyebrow,
+    body,
+    linkLabel,
+    href,
+    "imageUrl": image.asset->url,
+    "imageAlt": image.alt,
+    "videoUrl": coalesce(video.asset->url, videoUrl)
   },
   // pricingSection: array of pricingNoteItem (title, body, variant, paymentDue, amount).
   notes[]{
@@ -469,6 +523,8 @@ export const sectionProjection = `
     author,
     body,
     reviewerLocation,
+    source,
+    reviewerPhotoUrl,
     "stars": coalesce(stars, rating, 5),
     reviewerPhoto{
       crop,
@@ -488,6 +544,8 @@ export const sectionProjection = `
   },
   items[]{
     _key,
+    "logoUrl": logo.asset->url,
+    "logoAlt": coalesce(logo.alt, logo.altText),
     number,
     eyebrow,
     title,
@@ -598,6 +656,11 @@ export const sectionProjection = `
     }
   },
   ctaLabel,
+  ctaForm,
+  quotePanelColor,
+  quoteFadedColor,
+  quoteEyebrowColor,
+  quoteAttributionColor,
   color,
   theme,
   sectionBackgroundColor,
@@ -661,6 +724,8 @@ export const sectionProjection = `
       }
     }
   },
+  // jobberRequestSection fields
+  jobberShareUrl,
   // videoSection fields
   videoUrl,
   caption,
@@ -692,7 +757,8 @@ export const sectionProjection = `
     _key,
     _type,
     countyKey,
-    displayName
+    displayName,
+    "articles": articles[]->{ _id, title, "slug": slug.current }
   }
 `
 
@@ -711,6 +777,16 @@ const sanitizeAction = (action) => {
     variant: cleanRuntimeString(action.variant),
   }
 }
+
+/**
+ * The CSS gradient of a color set to Gradient Mode in the picker
+ * (sanity-plugin-color-input saves it as `css`), or null for a solid color.
+ * Only backgrounds can use it; everywhere else reads the solid first color.
+ */
+const resolveSanityGradientValue = (value) =>
+  value?.isGradient && typeof value.css === 'string' && value.css.trim()
+    ? cleanRuntimeString(value.css)
+    : null
 
 const resolveSanityColorValue = (value) => {
   if (!value) {
@@ -891,8 +967,15 @@ const sanitizeSection = (section) => {
     ctaLabel: s.ctaLabel,
     color: resolveSanityColorValue(s.color),
     accentColor: resolveSanityColorValue(s.accentColor),
+    quotePanelColor: resolveSanityColorValue(s.quotePanelColor),
+    quoteFadedColor: resolveSanityColorValue(s.quoteFadedColor),
+    quoteEyebrowColor: resolveSanityColorValue(s.quoteEyebrowColor),
+    quoteAttributionColor: resolveSanityColorValue(s.quoteAttributionColor),
     backgroundColor: resolveSanityColorValue(s.backgroundColor),
     sectionBackgroundColor: resolveSanityColorValue(s.sectionBackgroundColor),
+    sectionBackgroundGradient: resolveSanityGradientValue(s.sectionBackgroundColor),
+    bannerOverlayColor: resolveSanityColorValue(s.bannerOverlayColor),
+    bannerOverlayGradient: resolveSanityGradientValue(s.bannerOverlayColor),
     sectionBackgroundImage: s.sectionBackgroundImage,
     theme: cleanRuntimeString(s.theme),
     ctaHref: cleanRuntimeString(s.ctaHref),
@@ -1657,11 +1740,13 @@ export const resolveSiteBySlug = async (siteSlug) => {
         aliases,
         redirectTarget,
         projectsIndex,
+        "googlePlaceId": googleBusiness.placeId,
         leadForm,
         jobber,
         seo,
         brand,
-        navigation,
+        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url, "imageAlt": image.altText } },
+        headerMessage,
         organization
       }`,
       { siteSlug },
@@ -1743,6 +1828,14 @@ export const resolveNavigationForSite = (site) => {
       href: typeof item?.href === 'string' ? item.href : '',
       isExternal: Boolean(item?.isExternal),
       variant: typeof item?.variant === 'string' ? item.variant : 'link',
+      children: (Array.isArray(item?.children) ? item.children : [])
+        .map((child) => ({
+          label: typeof child?.label === 'string' ? child.label : '',
+          href: typeof child?.href === 'string' ? child.href : '',
+          description: typeof child?.description === 'string' ? child.description : '',
+          imageUrl: typeof child?.imageUrl === 'string' ? child.imageUrl : '',
+        }))
+        .filter((child) => child.label && child.href),
     }))
     .filter((item) => item.label && item.href)
 
@@ -1786,11 +1879,13 @@ export const resolveSiteByHost = async (host) => {
         aliases,
         redirectTarget,
         projectsIndex,
+        "googlePlaceId": googleBusiness.placeId,
         leadForm,
         jobber,
         seo,
         brand,
-        navigation,
+        navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url, "imageAlt": image.altText } },
+        headerMessage,
         organization
       }`,
       { host: normalizedHost },
@@ -1812,11 +1907,13 @@ export const resolveSiteByHost = async (host) => {
           aliases,
           redirectTarget,
           projectsIndex,
+          "googlePlaceId": googleBusiness.placeId,
           leadForm,
           jobber,
           seo,
           brand,
-          navigation,
+          navigation[]{ ..., children[]{ label, href, description, "imageUrl": image.asset->url, "imageAlt": image.altText } },
+          headerMessage,
           organization
         }`,
         { siteSlug: localSite.slug },
@@ -2314,42 +2411,8 @@ export const getPageBySlug = async (siteSlug, slug) => {
   return getPageForRequest(site, slug === '/' ? [] : slug.split('/').filter(Boolean))
 }
 
-export const getLaunchChecklist = async () => {
-  const { client } = await getSanityReadContext({ stega: false })
-
-  if (!client) {
-    return defaultLaunchChecklist
-  }
-
-  try {
-    const checklist = await client.fetch(
-      groq`*[_type == "launchChecklist"] | order(_updatedAt desc)[0]{
-        _id,
-        title,
-        summary,
-        sections[]{
-          _key,
-          title,
-          description,
-          tasks[]{
-            _key,
-            title,
-            notes,
-            status,
-            owner,
-            priority
-          }
-        }
-      }`,
-      {},
-      { cache: 'no-store' },
-    )
-
-    return checklist ?? defaultLaunchChecklist
-  } catch {
-    return defaultLaunchChecklist
-  }
-}
+/** The admin dashboard's launch checklist. It lives in code (launchChecklist.js), not in Sanity. */
+export const getLaunchChecklist = async () => defaultLaunchChecklist
 
 export const getHeroHomepageForSite = async (siteSlug) => {
   const heroPages = await getHeroPages({ stega: true, fresh: false })

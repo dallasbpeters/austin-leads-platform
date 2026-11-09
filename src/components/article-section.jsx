@@ -37,8 +37,11 @@ const ArticleSection = ({
   page = null,
   site = null,
   pathname = '',
+  isFirstSection = false,
 }) => {
   const title = section?.title || ''
+  // h1 when the article opens the page (Privacy Policy, Terms), so the page has a main heading.
+  const TitleTag = isFirstSection ? 'h1' : 'h2'
   const eyebrow = section?.eyebrow || ''
   const guideShare = resolveGuideShare(page, site, pathname, title)
 
@@ -56,9 +59,9 @@ const ArticleSection = ({
         {eyebrow ? (
           <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">{eyebrow}</p>
         ) : null}
-        <h2 className="font-500 type-accent m-0 max-w-210 text-[clamp(1.85rem,4vw,3.25rem)] tracking-[-0.02em] text-neutral-800">
+        <TitleTag className="font-500 type-accent m-0 max-w-210 text-[clamp(1.85rem,4vw,3.25rem)] tracking-[-0.02em] text-neutral-800">
           {title ? `${title} ` : null}
-        </h2>
+        </TitleTag>
         {guideShare ? (
           <div className="mt-6">
             <GuideShareBar url={guideShare.url} title={guideShare.title} align="start" background={false} />

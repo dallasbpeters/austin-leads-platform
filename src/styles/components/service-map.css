@@ -1,0 +1,55 @@
+/**
+ * .service-map-chip / .service-map-popup: the county chips beside the service
+ * area map and the card a county opens (src/components/map-box.tsx).
+ */
+
+.service-map-chip {
+  color: oklch(100% 0 none / 80%);
+  background: oklch(100% 0 none / 7%);
+  border: 1px solid oklch(100% 0 none / 12%);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+@media (hover: hover) {
+  a.service-map-chip:hover {
+    background: oklch(100% 0 none / 16%);
+  }
+}
+
+a.service-map-chip:focus-visible {
+  outline: 2px solid oklch(100% 0 none);
+  outline-offset: 2px;
+}
+
+.service-map-popup {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.service-map-popup__hint {
+  color: oklch(50% 0.02 260deg);
+  font-size: 0.75rem;
+}
+
+.service-map-popup__links {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.service-map-popup__links a {
+  color: var(--color-primary, #de1017);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Room for Mapbox's close button on the pinned card. */
+.mapboxgl-popup-content:has(.service-map-popup__links) {
+  padding-inline-end: 1.75rem;
+}

@@ -9,9 +9,17 @@ import geoJson from './texasCounties.json'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+interface AreaArticle {
+  _id: string
+  title?: string
+  slug?: string
+}
+
 interface ServiceArea {
   countyKey: string
   displayName: string
+  /** Pages written for this county (Studio: "Articles for this area"). */
+  articles?: AreaArticle[] | null
 }
 
 export interface ServiceAreaMapProps {
@@ -73,6 +81,48 @@ const LOAD_AHEAD_MARGIN = '400px'
 const CENTER_OFFSET_PADDING = { top: 48, bottom: 48, left: 48, right: 48 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const articleHref = (article: AreaArticle) => (article?.slug ? `/${article.slug.replace(/^\/+/u, '')}` : null)
+
+const linkedArticles = (area?: ServiceArea) =>
+  (area?.articles || []).filter((article) => article && articleHref(article))
+
+/**
+ * Popup content built as DOM nodes, so titles from Sanity are text, never HTML.
+ * With `withLinks`, each article for the county is a link; otherwise a hint says
+ * there is more on click.
+ */
+function popupContent(name: string, area: ServiceArea | undefined, withLinks: boolean) {
+  const root = document.createElement('div')
+  root.className = 'service-map-popup'
+  const heading = document.createElement('strong')
+  heading.className = 'service-map-popup__name'
+  heading.textContent = name
+  root.append(heading)
+  const articles = linkedArticles(area)
+  if (!articles.length) {
+    return root
+  }
+  if (!withLinks) {
+    const hint = document.createElement('span')
+    hint.className = 'service-map-popup__hint'
+    hint.textContent = 'Click for local guides'
+    root.append(hint)
+    return root
+  }
+  const list = document.createElement('ul')
+  list.className = 'service-map-popup__links'
+  for (const article of articles) {
+    const item = document.createElement('li')
+    const link = document.createElement('a')
+    link.href = articleHref(article) as string
+    link.textContent = article.title || 'Read more'
+    item.append(link)
+    list.append(item)
+  }
+  root.append(list)
+  return root
+}
 function extractCoords(geometry: Geometry): [number, number][] {
   if (geometry.type === 'Polygon') {
     return geometry.coordinates[0] as [number, number][]
@@ -144,6 +194,8 @@ export const MapBox = ({
     configuredFipsRef.current = configuredFips
   }, [configuredFips])
 
+  // The map's event handlers are set once, so they read the county list through a ref.
+  const fipsToAreaRef = useRef<Map<string, ServiceArea>>(new Map())
   const fipsToArea = useMemo(() => {
     const m = new Map<string, ServiceArea>()
     areas.forEach((a) => {
@@ -154,6 +206,10 @@ export const MapBox = ({
     })
     return m
   }, [areas])
+
+  useEffect(() => {
+    fipsToAreaRef.current = fipsToArea
+  }, [fipsToArea])
 
   // ── Map initialisation (mount only) ─────────────────────────────────────────
   useEffect(() => {
@@ -194,7 +250,14 @@ export const MapBox = ({
       map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right')
       map.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-right')
 
+      // Hover shows the county name; a click or tap pins a card with its articles.
       const popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false, offset: 12 })
+      const pinned = new mapboxgl.Popup({
+        closeButton: true,
+        closeOnClick: true,
+        offset: 12,
+        maxWidth: '260px',
+      })
 
       // This is a flat choropleth, so terrain is pure overhead — turn it off.
       //
@@ -268,25 +331,41 @@ export const MapBox = ({
             map.fitBounds(TX_BOUNDS, { padding: CENTER_OFFSET_PADDING, duration: 0 })
           }
 
-          // Tooltip
+          const countyAt = (e: mapboxgl.MapLayerMouseEvent) => {
+            const countyFips = (e.features?.[0] as unknown as Feature | undefined)?.properties?.fips as
+              string | undefined
+            const area = countyFips ? fipsToAreaRef.current.get(countyFips) : undefined
+            const meta = countyFips ? FIPS_TO_META.get(countyFips) : undefined
+            return { area, name: area?.displayName ?? meta?.city ?? meta?.name ?? 'County' }
+          }
+
           map.on('mouseenter', 'counties-fill', (e) => {
             map.getCanvas().style.cursor = 'pointer'
-            if (!e.features?.length) {
+            if (!e.features?.length || pinned.isOpen()) {
               return
             }
-            const f = (e.features[0] as unknown as Feature).properties?.fips as string
-            const area = fipsToArea.get(f)
-            const meta = FIPS_TO_META.get(f)
-            const name = area?.displayName ?? meta?.city ?? meta?.name ?? 'County'
+            const { area, name } = countyAt(e)
             popup
               .setLngLat(e.lngLat)
-              .setHTML(`<strong style="font-size:0.8125rem">${name}</strong>`)
+              .setDOMContent(popupContent(name, area, false))
               .addTo(map)
           })
           map.on('mousemove', 'counties-fill', (e) => popup.setLngLat(e.lngLat))
           map.on('mouseleave', 'counties-fill', () => {
             map.getCanvas().style.cursor = ''
             popup.remove()
+          })
+          // Click (or tap, where there is no hover) pins the card so its links can be used.
+          map.on('click', 'counties-fill', (e) => {
+            if (!e.features?.length) {
+              return
+            }
+            const { area, name } = countyAt(e)
+            popup.remove()
+            pinned
+              .setLngLat(e.lngLat)
+              .setDOMContent(popupContent(name, area, true))
+              .addTo(map)
           })
         } catch (error) {
           console.error('[MapBox] Failed to load counties GeoJSON:', error)
@@ -374,23 +453,24 @@ export const MapBox = ({
                 Service counties
               </p>
               <div className="flex flex-wrap gap-1.5">
-                {areas.map((area) => (
-                  <span
-                    key={area.countyKey}
-                    className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                    style={{
-                      color: 'rgba(255,255,255,0.80)',
-                      background: 'rgba(255,255,255,0.07)',
-                      border: '1px solid rgba(255,255,255,0.12)',
-                    }}
-                  >
-                    <span
-                      className="h-1.5 w-1.5 shrink-0 rounded-full"
-                      style={{ background: 'var(--color-tertiary)' }}
-                    />
-                    {area.displayName}
-                  </span>
-                ))}
+                {areas.map((area) => {
+                  // A county with articles links its chip to the first one.
+                  const first = linkedArticles(area)[0]
+                  const Chip = first ? 'a' : 'span'
+                  return (
+                    <Chip
+                      key={area.countyKey}
+                      {...(first ? { href: articleHref(first) as string } : {})}
+                      className="service-map-chip inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                    >
+                      <span
+                        className="h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ background: 'var(--color-tertiary)' }}
+                      />
+                      {area.displayName}
+                    </Chip>
+                  )
+                })}
               </div>
             </>
           )}
