@@ -55,3 +55,6 @@ public/reels/
 
 # Licensed 3D source files (CGTrader royalty-free): never commit or serve them.
 /art-source/
+
+# 3D source files for the house animation (313 MB): kept out of git, render with scripts/house-animation
+art-source/
