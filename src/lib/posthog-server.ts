@@ -3,14 +3,15 @@ import { PostHog } from 'posthog-node'
 /*
  * Server-side PostHog clients for the multi-tenant platform.
  *
- * The browser SDK in `src/app/providers.jsx` resolves a per-site project key
+ * The browser SDK (`instrumentation-client.ts`, via
+ * `src/lib/analytics/posthog-browser-config.js`) resolves a per-site project key
  * from `NEXT_PUBLIC_POSTHOG_KEYS` (a JSON map keyed by site slug) — we mirror
  * that here so server events (Stripe webhooks, sign-in audits, etc.) reach
  * the same project as the corresponding browser session.
  *
- * The original `getPostHogClient()` from the PostHog install wizard read
- * `NEXT_PUBLIC_POSTHOG_KEY`, which isn't set in this codebase — it caused
- * server events to silently capture against `undefined`. The new signature
+ * The original `getPostHogClient()` from the PostHog install wizard read only
+ * `NEXT_PUBLIC_POSTHOG_KEY` and did not check it, so an unset value made
+ * server events silently capture against `undefined`. The new signature
  * accepts an optional `siteSlug`; callers must pass it to route events to
  * the right project. When omitted, we fall back to the legacy single-key
  * env var so any external integration that still uses it keeps working.
