@@ -57,8 +57,12 @@ export async function POST(request) {
   if (payload.consent !== true) {
     return fail('Please agree to be contacted so we can send your estimate.')
   }
-  // Bots fill every field, people never see this one.
-  if (clean(payload.company)) {
+  // Bots fill every field, people never see this one. Logged, so a real visitor
+  // dropped by mistake shows up in the logs instead of vanishing.
+  if (clean(payload.trap)) {
+    console.warn('[solar-fit] dropped a send with the bot trap filled', {
+      pagePath: clean(payload.pagePath, 200),
+    })
     return NextResponse.json({ ok: true })
   }
 

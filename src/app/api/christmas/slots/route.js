@@ -1,6 +1,15 @@
+import { safeAuth } from '@/lib/auth/session'
 import { deleteSlot, upsertSlot } from '@/lib/christmas/db'
 
+// Staff only: these change the install calendar. Visitors read open dates from slots/available.
+const unauthorized = async () =>
+  (await safeAuth())?.user ? null : Response.json({ error: 'Unauthorized' }, { status: 401 })
+
 export const DELETE = async (req) => {
+  const denied = await unauthorized()
+  if (denied) {
+    return denied
+  }
   try {
     const { installDate } = await req.json()
     if (!installDate) {
@@ -15,6 +24,10 @@ export const DELETE = async (req) => {
 }
 
 export const POST = async (req) => {
+  const denied = await unauthorized()
+  if (denied) {
+    return denied
+  }
   try {
     const { installDate, originalDate, capacity, isActive, notes } = await req.json()
 

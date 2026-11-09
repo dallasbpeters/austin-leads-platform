@@ -207,7 +207,6 @@ export const sendLeadNotificationEmail = async (lead) => {
     ...logContext,
     from: basePayload.from,
     to: basePayload.to,
-    replyTo: basePayload.replyTo,
     subject: basePayload.subject,
   })
 
