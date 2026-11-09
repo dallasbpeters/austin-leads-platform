@@ -89,7 +89,7 @@ export function AboutProfileSection({ section, sectionId }) {
             const gradientStart =
               cardToneCssVar(person.cardGradientStart) || cardToneCssVar(defaultGradient.start)
             const gradientEnd = cardToneCssVar(person.cardGradientEnd) || cardToneCssVar(defaultGradient.end)
-            const photoBackground = `linear-gradient(45deg, ${gradientStart}, ${gradientEnd}), url('https://grainy-gradients.vercel.app/noise.svg')`
+            const photoBackground = `linear-gradient(45deg, ${gradientStart}, ${gradientEnd})`
 
             return (
               <li key={buildRuntimeKey('about-person', person.name, index)} className="about-profile__person">

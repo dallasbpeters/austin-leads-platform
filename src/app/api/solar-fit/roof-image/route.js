@@ -1,3 +1,5 @@
+import sharp from 'sharp'
+
 import { hasGoogleKey, isInTexas, staticMapUrl } from '@/lib/solar-fit/google'
 import { overLimit } from '@/lib/solar-fit/rate-limit'
 
@@ -26,9 +28,18 @@ export async function GET(request) {
     return new Response('Photo unavailable', { status: 502 })
   }
 
-  return new Response(response.body, {
+  // Google's satellite tiles come out hazy and soft once blown up to fill the map, so
+  // they get a light sharpen, a touch more contrast and colour, and a WebP re-encode.
+  const photo = await sharp(Buffer.from(await response.arrayBuffer()))
+    .sharpen({ sigma: 0.8 })
+    .linear(1.08, -8)
+    .modulate({ saturation: 1.12 })
+    .webp({ quality: 86 })
+    .toBuffer()
+
+  return new Response(photo, {
     headers: {
-      'Content-Type': response.headers.get('content-type') || 'image/png',
+      'Content-Type': 'image/webp',
       'Cache-Control': 'public, max-age=86400',
     },
   })

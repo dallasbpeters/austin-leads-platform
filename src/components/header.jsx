@@ -189,7 +189,9 @@ const NavList = ({ items, inSheet = false, onNavigate }) => (
       const isAnchor = href.startsWith('#')
       const isAbsolute = /^https?:\/\//iu.test(href)
       const shouldOpenExternal = isExternal || isAbsolute
-      const itemClassName = variant === 'button' ? CTA_LINK_CLASSES : className
+      // The white quote button comes from the Studio "button" variant, wherever it links
+      // (an anchor like #consultation or a page like /solar-costs).
+      const itemClassName = variant === 'button' ? cn(CTA_LINK_CLASSES, 'site-header__link--cta') : className
       const key = buildRuntimeKey('solar-nav-item', href, label, index)
 
       if (children.length > 0) {
@@ -204,7 +206,7 @@ const NavList = ({ items, inSheet = false, onNavigate }) => (
             href={href}
             onClick={onNavigate}
             scroll={true}
-            className={cn('btn site-header__link text-size-100 site-header__link--cta', itemClassName)}
+            className={cn('btn site-header__link text-size-100', itemClassName)}
           >
             <LinkInner>{label}</LinkInner>
           </Link>

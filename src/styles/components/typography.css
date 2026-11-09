@@ -228,39 +228,31 @@
 }
 
 /*
- * Instagram posts placed one after another in rich text (portable-text-content.jsx):
- * a grid, as many across as fit. Instagram's embed is at least 326px wide, so
+ * Social posts (Instagram and TikTok) placed one after another in rich text
+ * (portable-text-content.jsx): one grid, as many across as fit. Instagram's embed is at least 326px wide, so
  * columns start at 20.5rem and drop to one on phones.
  */
-.instagram-grid {
+.embed-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 20.5rem), 1fr));
   gap: 1rem;
   align-items: start;
 }
 
-/* TikTok videos (tiktok-posts.jsx): the player at TikTok's tall 9:16, side by side like .instagram-grid. */
-.tiktok-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
-  gap: 1rem;
-  align-items: start;
-}
-
+/* TikTok videos (tiktok-posts.jsx): TikTok's embed card is a fixed 740px tall at its 325px width. */
 .tiktok-post {
   max-width: 20.5rem;
   overflow: hidden;
   border-radius: 0.75rem;
-  background: #000;
 }
 
-.tiktok-grid .tiktok-post {
+.embed-grid .tiktok-post {
   max-width: none;
 }
 
 .tiktok-post__frame {
   display: block;
   width: 100%;
-  aspect-ratio: 9 / 16;
+  height: 46.25rem;
   border: 0;
 }

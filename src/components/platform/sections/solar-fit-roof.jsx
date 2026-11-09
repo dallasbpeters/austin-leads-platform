@@ -14,8 +14,19 @@ import { cn } from '@/lib/utils'
 const newSession = () =>
   typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())
 
-/** Address box with suggestions as you type. Calls onPick({ placeId, text, session }). */
-export function AddressSearch({ id, onPick, picked }) {
+/** The best match for a typed address, as a suggestion ({ placeId, text }), or null. */
+export async function findAddress(text) {
+  const response = await fetch(`/api/solar-fit/address?q=${encodeURIComponent(text)}&session=${newSession()}`)
+  const body = await response.json().catch(() => ({}))
+  return body.suggestions?.[0] || null
+}
+
+/**
+ * Address box with suggestions as you type. Calls onPick({ placeId, text, session }).
+ * onTyped(text) reports text typed but not picked yet, so the step's button can look
+ * it up (findAddress) instead of skipping: people type the whole address and tap OK.
+ */
+export function AddressSearch({ id, onPick, onTyped, picked }) {
   const [query, setQuery] = useState(picked || '')
   const [suggestions, setSuggestions] = useState([])
   const [open, setOpen] = useState(false)
@@ -68,9 +79,10 @@ export function AddressSearch({ id, onPick, picked }) {
       event.preventDefault()
       const step = event.key === 'ArrowDown' ? 1 : -1
       setActive((current) => (current + step + suggestions.length) % suggestions.length)
-    } else if (event.key === 'Enter' && active >= 0) {
+    } else if (event.key === 'Enter') {
+      // Enter with nothing highlighted takes the best match, the first suggestion.
       event.preventDefault()
-      pick(suggestions[active])
+      pick(suggestions[Math.max(active, 0)])
     } else if (event.key === 'Escape') {
       setOpen(false)
     }
@@ -90,7 +102,10 @@ export function AddressSearch({ id, onPick, picked }) {
         aria-autocomplete="list"
         aria-activedescendant={active >= 0 ? `${listId}-${active}` : undefined}
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => {
+          setQuery(event.target.value)
+          onTyped?.(event.target.value === pickedText.current ? '' : event.target.value.trim())
+        }}
         onFocus={() => suggestions.length && setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         onKeyDown={onKeyDown}
@@ -150,32 +165,44 @@ function SolarPanel({ x, y, width, height, landscape, glass, transform }) {
 /** Margin around the roof, in metres, so the panels never touch the frame edge. */
 const ROOF_MARGIN = 3
 
+/** The map's width over its height; it matches .solar-fit__roof-frame's aspect-ratio. */
+export const ROOF_VIEW_ASPECT = 6 / 5
+
 /**
- * A square view in photo metres around every panel spot on the roof (not only
- * the ones shown), so the view stays put as the panel count changes. The photo
- * comes wider than the roof; this zooms in on the house.
+ * A view in photo metres, ROOF_VIEW_ASPECT wide, around every panel spot on the
+ * roof (not only the ones shown), so the view stays put as the panel count
+ * changes. The photo comes wider than the roof; this zooms in on the house.
  */
-export function roofView(photo, panelSize) {
+export function roofView(photo, panelSize, aspect = ROOF_VIEW_ASPECT) {
   if (!photo.panels.length) {
-    return { x: 0, y: 0, size: Math.min(photo.metersWide, photo.metersTall) }
+    const height = Math.min(photo.metersTall, photo.metersWide / aspect)
+    return {
+      x: (photo.metersWide - height * aspect) / 2,
+      y: (photo.metersTall - height) / 2,
+      width: height * aspect,
+      height,
+    }
   }
   const xs = photo.panels.map((panel) => panel.x)
   const ys = photo.panels.map((panel) => panel.y)
   const reach = panelSize + ROOF_MARGIN
   const left = Math.min(...xs) - reach
+  const right = Math.max(...xs) + reach
   const top = Math.min(...ys) - reach
-  const size = Math.min(
-    Math.max(Math.max(...xs) + reach - left, Math.max(...ys) + reach - top),
-    photo.metersWide,
+  const bottom = Math.max(...ys) + reach
+  // Wide enough for the panels across and down, then cut to the photo.
+  const height = Math.min(
+    Math.max(bottom - top, (right - left) / aspect),
     photo.metersTall,
+    photo.metersWide / aspect,
   )
-  const centerX = (left + Math.max(...xs) + reach) / 2
-  const centerY = (top + Math.max(...ys) + reach) / 2
-  const clamp = (value, max) => Math.min(Math.max(value, 0), max - size)
+  const width = height * aspect
+  const clamp = (value, size, max) => Math.min(Math.max(value, 0), max - size)
   return {
-    x: clamp(centerX - size / 2, photo.metersWide),
-    y: clamp(centerY - size / 2, photo.metersTall),
-    size,
+    x: clamp((left + right) / 2 - width / 2, width, photo.metersWide),
+    y: clamp((top + bottom) / 2 - height / 2, height, photo.metersTall),
+    width,
+    height,
   }
 }
 
@@ -197,7 +224,7 @@ export function RoofMap({ roof, photo, count, address, onCountChange }) {
     <figure className="solar-fit__roof">
       <svg
         className="solar-fit__roof-frame"
-        viewBox={`${view.x} ${view.y} ${view.size} ${view.size}`}
+        viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
         // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- an <img> cannot hold the drawn panels; role="img" names the whole picture
         role="img"
         aria-label={label}

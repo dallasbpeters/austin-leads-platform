@@ -20,10 +20,11 @@ const DEGRADATION = 0.995
 const FIXED_COSTS = 1800
 
 // The rebate comes from the electric company, never typed in. Austin Energy pays
-// a fixed $4,000; Oncor's varies, so it is left out and checked at the estimate.
+// a fixed $4,000; Oncor's and PEC's vary, so they are left out and checked at the estimate.
 const UTILITIES = [
   { value: 'austin-energy', label: 'Austin Energy ($4,000 rebate)', rebate: 4000 },
   { value: 'oncor', label: 'Oncor (rebate varies)', rebate: 0 },
+  { value: 'pec', label: 'Pedernales Electric, PEC (rebate varies)', rebate: 0 },
 ]
 
 const DEFAULTS = {
@@ -204,8 +205,8 @@ export default function CalculatorSection({ section = null, sectionId = 'solar-c
                 </div>
               </div>
               <p className="solar-calculator__hint">
-                Austin Energy pays a $4,000 one-time solar rebate. Oncor rebates vary, so we leave them out
-                here and check yours at your free estimate.
+                Austin Energy pays a $4,000 one-time solar rebate. Oncor and PEC rebates vary, so we leave
+                them out here and check yours at your free estimate.
               </p>
             </details>
 

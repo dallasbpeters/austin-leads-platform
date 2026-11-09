@@ -212,11 +212,20 @@
   scale: 0.97;
 }
 
-/* In the mobile sheet the number is always written out. */
+/*
+ * In the mobile sheet the number is always written out. It pairs with the quote
+ * button above it: same height and corners, outlined instead of filled, centered.
+ */
 .site-header__phone--sheet {
-  justify-content: flex-start;
-  padding-block: 1rem;
-  font-size: var(--text-base);
+  height: 2.75rem;
+  justify-content: center;
+  padding-block: 0;
+  border: 1px solid var(--header-line);
+  border-radius: 0.5rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  background: transparent;
 }
 
 .site-header__phone--sheet .site-header__phone-number {
@@ -284,6 +293,13 @@
 /* The white quote button skips .btn--primary's navy hover sweep, which hid its dark label. */
 .site-header__link--cta::after {
   display: none;
+}
+
+/* The quote button in the sheet: the same size as the phone pill under it, with room above. */
+.site-header__sheet .site-header__link--cta {
+  height: 2.75rem;
+  margin-block: 1rem 0.25rem;
+  border-radius: 0.5rem;
 }
 
 .site-header__link-inner {

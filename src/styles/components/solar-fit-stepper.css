@@ -25,17 +25,19 @@
 }
 
 /*
- * Two equal halves, so the gap sits on the page's middle gridline: the question
- * beside the roof map, then the stats under the question and the monthly figures
- * under the map. The panel spans both halves with the same columns.
+ * Two equal halves, so the gap sits on the page's middle gridline: the stats in
+ * one row across the top, then the question beside the roof map, and the monthly
+ * banner under the question while the map runs down the right.
  */
 @media (width >= 64rem) {
   .solar-calculator__frame.solar-fit-stepper {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
       'progress progress'
+      'stats stats'
       'ask map'
-      'panel panel';
+      'totals map';
+    grid-template-rows: auto auto auto 1fr;
+    grid-auto-columns: minmax(0, 1fr);
     align-items: start;
     column-gap: 2rem;
   }
@@ -52,15 +54,18 @@
     grid-area: map;
   }
 
-  .solar-fit-stepper__panel {
-    grid-area: panel;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 2rem;
+  .solar-fit-stepper__stats {
+    grid-area: stats;
   }
 
-  /* Under the question: three stats to a row. */
-  .solar-fit-stepper__panel .solar-fit-stepper__readout {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .solar-fit-stepper__totals {
+    grid-area: totals;
+  }
+
+  /* Across the top: every stat in one row. */
+  .solar-fit-stepper__stats .solar-fit-stepper__readout {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    grid-auto-flow: column;
   }
 }
 
@@ -255,8 +260,8 @@
   font-weight: 600;
 }
 
-/* The numbers: stats, then the monthly figures and the fit message. */
-.solar-fit-stepper__panel,
+/* The numbers: the stats, then the monthly figures and the fit message. */
+.solar-fit-stepper__stats,
 .solar-fit-stepper__totals {
   display: grid;
   gap: 1rem;

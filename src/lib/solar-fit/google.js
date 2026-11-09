@@ -14,6 +14,9 @@
 import { encode } from 'fast-png'
 import { fromArrayBuffer } from 'geotiff'
 import proj4 from 'proj4'
+import sharp from 'sharp'
+
+import { findOffset, pixelAt, toGray } from './align'
 
 const PLACES = 'https://places.googleapis.com/v1'
 const SOLAR = 'https://solar.googleapis.com/v1/buildingInsights:findClosest'
@@ -160,23 +163,87 @@ export function staticMapUrl(lat, lng, zoom) {
 
 /*
  * The roof photo, with every panel placed on it in metres from the photo's
- * top-left corner. The Solar API's own aerial image is always used when it
- * loads, because Google measured the panel positions on that image: Maps
- * satellite tiles are taken at other times and sit metres off, so panels drawn
- * on them hung off the roof. The aerial may be a few years old, but a roof with
- * panels mapped on it is in it. The image comes as a GeoTIFF in UTM metres, so
- * it is decoded here and sent on as a PNG. The Maps photo is only the fallback.
+ * top-left corner. Google measured the panels on the Solar API's own aerial,
+ * but that image is only 10 cm a pixel, so blown up to fill the map it looked
+ * smeared. The Maps satellite photo is sharper and newer, yet sits a few metres
+ * off the aerial, so the panels hung off the roof. So both are loaded: the
+ * aerial lines the Maps photo up (align.js), and the Maps photo is shown with
+ * the panels shifted to match. When the two can't be matched with confidence
+ * the aerial is shown as is; the plain Maps photo is the last fallback.
  */
 export async function roofPhoto(roof) {
   try {
-    return await solarPhoto(roof)
+    const imagery = await loadSolarImagery(roof)
+    try {
+      const aligned = await alignedMapPhoto(roof, imagery)
+      if (aligned) {
+        return aligned
+      }
+    } catch (error) {
+      console.warn('[solar-fit] could not line up the map photo, using the aerial', error)
+    }
+    return solarPhoto(imagery, roof)
   } catch (error) {
     console.warn('[solar-fit] Solar imagery unavailable, using the map photo', error)
     return mapPhoto(roof)
   }
 }
 
-async function solarPhoto(roof) {
+/** The lowest edge correlation that counts as a confident match between the two photos. */
+const MIN_ALIGN_SCORE = 0.25
+
+async function alignedMapPhoto(roof, imagery) {
+  const base = mapPhoto(roof)
+  const response = await fetch(staticMapUrl(roof.center.lat, roof.center.lng, base.zoom), {
+    next: { revalidate: 60 * 60 * 24 },
+  })
+  if (!response.ok) {
+    throw new Error(`Map photo download failed (${response.status})`)
+  }
+  // Down to the aerial's 10 cm a pixel, so both are compared at the same detail.
+  const size = Math.round(base.metersWide / 0.1)
+  const { data, info } = await sharp(Buffer.from(await response.arrayBuffer()))
+    .greyscale()
+    .resize(size, size)
+    .raw()
+    .toBuffer({ resolveWithObject: true })
+
+  const solarGray = toGray(imagery.rgb)
+  const solarMppX = imagery.metersWide / imagery.width
+  const solarMppY = imagery.metersTall / imagery.height
+  const center = imagery.place(roof.center.lat, roof.center.lng)
+  const mapMpp = base.metersWide / info.width
+  const { dx, dy, score } = findOffset(
+    (x, y) =>
+      pixelAt(
+        solarGray,
+        imagery.width,
+        imagery.height,
+        (center.x + x) / solarMppX,
+        (center.y + y) / solarMppY,
+      ),
+    (x, y) =>
+      pixelAt(
+        data,
+        info.width,
+        info.height,
+        (base.metersWide / 2 + x) / mapMpp,
+        (base.metersWide / 2 + y) / mapMpp,
+      ),
+  )
+  if (score < MIN_ALIGN_SCORE) {
+    console.info('[solar-fit] map photo match too weak, using the aerial', { score })
+    return null
+  }
+  return {
+    ...base,
+    source: 'maps-aligned',
+    panels: base.panels.map((panel) => ({ x: panel.x + dx, y: panel.y + dy })),
+  }
+}
+
+/** The Solar API's aerial as pixels, with a way to place a lat/lng on it in metres. */
+async function loadSolarImagery(roof) {
   const halfWide =
     ((roof.box.east - roof.box.west) * 111_320 * Math.cos((roof.center.lat * Math.PI) / 180)) / 2
   const halfTall = ((roof.box.north - roof.box.south) * 110_574) / 2
@@ -206,8 +273,7 @@ async function solarPhoto(roof) {
   const [minX, minY, maxX, maxY] = image.getBoundingBox()
   const width = image.getWidth()
   const height = image.getHeight()
-  const rgb = await image.readRasters({ interleave: true, samples: [0, 1, 2] })
-  const png = encode({ width, height, data: new Uint8Array(rgb), channels: 3, depth: 8 })
+  const rgb = new Uint8Array(await image.readRasters({ interleave: true, samples: [0, 1, 2] }))
 
   // EPSG 326xx is UTM north zone xx (Texas is 13-15), 327xx the southern zones.
   const epsg = image.getGeoKeys().ProjectedCSTypeGeoKey
@@ -217,12 +283,23 @@ async function solarPhoto(roof) {
     return { x: x - minX, y: maxY - y }
   }
 
+  return { width, height, rgb, metersWide: maxX - minX, metersTall: maxY - minY, place }
+}
+
+function solarPhoto(imagery, roof) {
+  const png = encode({
+    width: imagery.width,
+    height: imagery.height,
+    data: imagery.rgb,
+    channels: 3,
+    depth: 8,
+  })
   return {
     src: `data:image/png;base64,${Buffer.from(png).toString('base64')}`,
     source: 'solar',
-    metersWide: maxX - minX,
-    metersTall: maxY - minY,
-    panels: roof.panels.map((panel) => place(panel.lat, panel.lng)),
+    metersWide: imagery.metersWide,
+    metersTall: imagery.metersTall,
+    panels: roof.panels.map((panel) => imagery.place(panel.lat, panel.lng)),
   }
 }
 
@@ -234,6 +311,7 @@ function mapPhoto(roof) {
   return {
     src: `/api/solar-fit/roof-image?lat=${roof.center.lat}&lng=${roof.center.lng}&zoom=${zoom}`,
     source: 'maps',
+    zoom,
     metersWide,
     metersTall: metersWide,
     panels: roof.panels.map((panel) => ({

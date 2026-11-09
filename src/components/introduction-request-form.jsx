@@ -6,7 +6,8 @@ import { useLeadForm } from '@/hooks/useLeadForm'
 
 /*
  * The roofer introduction form (Studio: Call to Action Section → Form →
- * Introduction). Name and email only; the lead route stores it and emails it to
+ * Introduction). Name, email and a note about the roof, so Kathie can match the
+ * homeowner with the right roofer; the lead route stores it and emails it to
  * info@texassolarandroofing.com (leads/email.js picks the inbox by lead type).
  */
 export default function IntroductionRequestForm({ buttonLabel, context }) {
@@ -51,6 +52,19 @@ export default function IntroductionRequestForm({ buttonLabel, context }) {
           required
           value={form.email}
           onChange={setField('email')}
+        />
+      </div>
+      <div className="intro-form__field intro-form__field--wide">
+        <label htmlFor={`${fieldId}-notes`} className="intro-form__label">
+          Tell us about your roof
+        </label>
+        <textarea
+          id={`${fieldId}-notes`}
+          className="intro-form__input intro-form__textarea"
+          rows={3}
+          placeholder="Age, material, leaks or storm damage, and whether you want metal or shingles."
+          value={form.notes}
+          onChange={setField('notes')}
         />
       </div>
       <button type="submit" className="consult__button intro-form__submit" disabled={disabled}>

@@ -1,7 +1,7 @@
 'use client'
 
 import Image from '@/components/site-image'
-import { NavArrowRight } from 'iconoir-react'
+import { NavArrowRight, SoundHigh, SoundOff } from 'iconoir-react'
 import Link from 'next/link'
 import { useEffect, useId, useRef, useState } from 'react'
 
@@ -36,6 +36,15 @@ export function TabbedPanelSection({ section, sectionId }) {
   const tabRefs = useRef([])
   const baseId = useId()
   const reducedMotion = usePrefersReducedMotion()
+  // Videos start muted (browsers only autoplay silent video); the button turns sound on.
+  const [soundOn, setSoundOn] = useState(false)
+  const videoRef = useRef(null)
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = !soundOn
+    }
+  }, [soundOn, active])
 
   if (!tabs.length) {
     return null
@@ -86,6 +95,7 @@ export function TabbedPanelSection({ section, sectionId }) {
 
               {current.videoUrl && !reducedMotion ? (
                 <video
+                  ref={videoRef}
                   key={current.videoUrl}
                   className="tabbed-panel__video"
                   src={current.videoUrl}
@@ -99,6 +109,18 @@ export function TabbedPanelSection({ section, sectionId }) {
                 />
               ) : null}
             </div>
+
+            {current.videoUrl && !reducedMotion ? (
+              <button
+                type="button"
+                className="tabbed-panel__sound"
+                aria-pressed={soundOn}
+                aria-label={soundOn ? 'Turn video sound off' : 'Turn video sound on'}
+                onClick={() => setSoundOn((on) => !on)}
+              >
+                {soundOn ? <SoundHigh aria-hidden="true" /> : <SoundOff aria-hidden="true" />}
+              </button>
+            ) : null}
 
             {tabs.length > 1 ? (
               <div className="tabbed-panel__tabs" role="tablist" aria-label={section.title || 'Panel tabs'}>

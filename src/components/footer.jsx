@@ -4,7 +4,13 @@ import { DotArrowUp, NavArrowRight } from 'iconoir-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { SITE_EMAIL, SITE_FACEBOOK_URL, SITE_PHONE_DISPLAY, SITE_PHONE_HREF } from '@/lib/platform/contact'
+import {
+  SITE_EMAIL,
+  SITE_FACEBOOK_URL,
+  SITE_PHONE_DISPLAY,
+  SITE_PHONE_HREF,
+  SITE_TIKTOK_URL,
+} from '@/lib/platform/contact'
 import { mainServices, roofingServices } from '@/lib/platform/service-catalog'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -38,6 +44,7 @@ const linkGroups = [
     links: [
       { href: 'https://www.instagram.com/texassolarandroofingpros/', label: 'Instagram', external: true },
       { href: SITE_FACEBOOK_URL, label: 'Facebook', external: true },
+      { href: SITE_TIKTOK_URL, label: 'TikTok', external: true },
     ],
   },
 ]

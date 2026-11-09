@@ -206,6 +206,20 @@ html:not([data-cloud-tone]) .consult {
   backdrop-filter: blur(12px);
 }
 
+.intro-form__field--wide {
+  grid-column: 1 / -1;
+}
+
+.intro-form__textarea {
+  min-height: 5.5rem;
+  padding-block: 0.625rem;
+  resize: vertical;
+}
+
+.intro-form__input::placeholder {
+  color: var(--consult-soft);
+}
+
 .intro-form__input:focus-visible {
   outline: 2px solid var(--consult-fg);
   outline-offset: 2px;

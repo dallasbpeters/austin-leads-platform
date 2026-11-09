@@ -287,7 +287,10 @@ select.solar-calculator__input {
 .solar-fit__roof-frame {
   display: block;
   width: 100%;
-  aspect-ratio: 1;
+
+  /* ROOF_VIEW_ASPECT in solar-fit-roof.jsx: a little wider than tall, so the map
+   * stands about 100px shorter than a square beside the question. */
+  aspect-ratio: 6 / 5;
   border-radius: 0.75rem;
   background: #040a17;
 }

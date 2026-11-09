@@ -7,6 +7,7 @@ import { TIKTOK_VIDEO_URL } from '../../lib/platform/tiktok'
 import { formulaSyntaxError } from '../../lib/solar-fit/formula'
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 import { FormulaInput, FormulaKeyInput, SolarFitSectionInput } from '../components/solar-fit-inputs'
+import { TikTokIcon } from '../components/tiktok-icon'
 
 const canvasExclude = { canvasApp: { exclude: true } }
 const canvasPurpose = (purpose) => ({ canvasApp: { purpose } })
@@ -202,6 +203,7 @@ const tiktokPostType = {
   name: 'tiktokPost',
   title: 'TikTok post',
   type: 'object',
+  icon: TikTokIcon,
   fields: [
     {
       name: 'url',

@@ -16,7 +16,7 @@ import {
 } from '@/lib/solar-fit/model'
 import { cn } from '@/lib/utils'
 
-import { AddressSearch, RoofMap } from './solar-fit-roof'
+import { AddressSearch, findAddress, RoofMap } from './solar-fit-roof'
 
 /**
  * "See if solar is right for you", as a one-question-at-a-time stepper (think
@@ -33,6 +33,8 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
   const answers = useMemo(() => ({ ...defaultValues(model), ...edited }), [model, edited])
   // The roof step: { placeId, address, roof, photo } once an address is picked.
   const [roofState, setRoofState] = useState({ status: 'idle' })
+  // An address typed in the box but not picked from the list.
+  const [typedAddress, setTypedAddress] = useState('')
   const roof = roofState.roof || null
   // The panel count comes from the formula ("Panels wanted") until the visitor sets it
   // with the map's +/- buttons; a new address goes back to the suggestion.
@@ -160,7 +162,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
           fullName: form.get('fullName'),
           email: form.get('email'),
           phone: form.get('phone'),
-          company: form.get('company'),
+          trap: form.get('hp_check'),
           consent: form.get('consent') === 'on',
           answers,
           placeId: roofState.placeId || '',
@@ -224,8 +226,16 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
               onSubmit={
                 isLast
                   ? undefined
-                  : (event) => {
+                  : async (event) => {
                       event.preventDefault()
+                      // A typed address nobody picked from the list: look it up rather than skip.
+                      if (step.kind === 'address' && typedAddress && roofState.status === 'idle') {
+                        const match = await findAddress(typedAddress).catch(() => null)
+                        if (match) {
+                          setTypedAddress('')
+                          await onPickAddress({ ...match, session: '' })
+                        }
+                      }
                       go(1)
                     }
               }
@@ -242,7 +252,11 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                   <AddressSearch
                     id={`${fieldId}-address`}
                     picked={roofState.address}
-                    onPick={onPickAddress}
+                    onPick={(suggestion) => {
+                      setTypedAddress('')
+                      onPickAddress(suggestion)
+                    }}
+                    onTyped={setTypedAddress}
                   />
                   <p className="solar-fit__help">
                     {roofState.status === 'loading'
@@ -345,7 +359,7 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                     </button>
                   ) : null}
                   <button type="submit" className="solar-calculator__cta-button">
-                    {step.kind === 'address' && roofState.status === 'idle' ? 'Skip' : 'OK'}
+                    {step.kind === 'address' && roofState.status === 'idle' && !typedAddress ? 'Skip' : 'OK'}
                     <NavArrowRight className="solar-calculator__cta-icon" aria-hidden="true" />
                   </button>
                   <span className="solar-fit-stepper__hint" aria-hidden="true">
@@ -382,10 +396,14 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                         <input name="email" type="email" autoComplete="email" required />
                       </label>
                     </div>
-                    {/* Hidden from people; bots fill it and get dropped. */}
+                    {/*
+                     * Hidden from people; bots fill it and get dropped. Not named like a
+                     * real field ("company" was): browser autofill filled it for real
+                     * visitors, and their requests were dropped without a word.
+                     */}
                     <input
                       className="solar-fit__trap"
-                      name="company"
+                      name="hp_check"
                       tabIndex={-1}
                       autoComplete="off"
                       aria-hidden="true"
@@ -437,7 +455,8 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
             )}
           </div>
 
-          <div className="solar-fit-stepper__panel" aria-live="polite">
+          {/* Wide screens: the stats across the top, the monthly banner under the question (solar-fit-stepper.css). */}
+          <div className="solar-fit-stepper__stats" aria-live="polite">
             {stats.length ? (
               <dl className="solar-calculator__stats solar-fit-stepper__readout">
                 {stats.map((output) => (
@@ -451,26 +470,26 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                 ))}
               </dl>
             ) : null}
-            <div className="solar-fit-stepper__totals">
-              {highlights.length ? (
-                <div className="solar-calculator__system">
-                  {highlights.map((output) => (
-                    <div key={output.key} className="solar-fit__highlight">
-                      <p className="solar-calculator__eyebrow">{output.label}</p>
-                      <p className="solar-calculator__system-value">{formatOutput(output)}</p>
-                      {output.detail ? (
-                        <p className="solar-calculator__system-detail">{output.detail}</p>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-              {fitMessage ? (
-                <p className={cn('solar-fit__verdict', result.qualifies && 'solar-fit__verdict--yes')}>
-                  {fitMessage}
-                </p>
-              ) : null}
-            </div>
+          </div>
+          <div className="solar-fit-stepper__totals" aria-live="polite">
+            {highlights.length ? (
+              <div className="solar-calculator__system">
+                {highlights.map((output) => (
+                  <div key={output.key} className="solar-fit__highlight">
+                    <p className="solar-calculator__eyebrow">{output.label}</p>
+                    <p className="solar-calculator__system-value">{formatOutput(output)}</p>
+                    {output.detail ? (
+                      <p className="solar-calculator__system-detail">{output.detail}</p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {fitMessage ? (
+              <p className={cn('solar-fit__verdict', result.qualifies && 'solar-fit__verdict--yes')}>
+                {fitMessage}
+              </p>
+            ) : null}
           </div>
         </div>
 

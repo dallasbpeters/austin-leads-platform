@@ -1,7 +1,7 @@
 import { PortableText } from '@portabletext/react'
 
-import { InstagramGrid, InstagramPost } from '@/components/instagram-posts'
-import { TikTokGrid, TikTokPost } from '@/components/tiktok-posts'
+import { InstagramPost } from '@/components/instagram-posts'
+import { TikTokPost } from '@/components/tiktok-posts'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { cn } from '@/lib/utils'
 
@@ -16,25 +16,25 @@ const getBlockText = (value) => {
   return value?.children?.map((child) => child.text).join('') || ''
 }
 
-/* Each embed block type and the grid block that two or more in a row turn into. */
-const EMBED_GRIDS = { instagramPost: 'instagramGrid', tiktokPost: 'tiktokGrid' }
+/* Social post blocks: Instagram and TikTok. */
+const EMBED_TYPES = new Set(['instagramPost', 'tiktokPost'])
 
 /*
- * Two or more Instagram (or TikTok) posts in a row become one grid block, so they
- * sit side by side instead of stacking down the page. A lone post stays a normal block.
+ * Two or more social posts in a row (Instagram, TikTok, or both) become one grid
+ * block, so they sit side by side in one row instead of stacking down the page.
+ * A lone post stays a normal block.
  */
 const groupEmbeds = (blocks) => {
   const grouped = []
   for (const block of blocks) {
     const previous = grouped.at(-1)
-    const gridType = EMBED_GRIDS[block?._type]
-    if (!gridType) {
+    if (!EMBED_TYPES.has(block?._type)) {
       grouped.push(block)
-    } else if (previous?._type === gridType) {
+    } else if (previous?._type === 'embedGrid') {
       previous.posts.push(block)
-    } else if (previous?._type === block._type) {
+    } else if (EMBED_TYPES.has(previous?._type)) {
       grouped[grouped.length - 1] = {
-        _type: gridType,
+        _type: 'embedGrid',
         _key: `${previous._key}-grid`,
         posts: [previous, block],
       }
@@ -45,14 +45,22 @@ const groupEmbeds = (blocks) => {
   return grouped
 }
 
+const SocialPost = ({ value }) =>
+  value._type === 'tiktokPost' ? <TikTokPost value={value} /> : <InstagramPost value={value} />
+
 const portableTextComponents = {
   types: {
     // Pass only the data: these are client components, and PortableText also hands
     // over functions (renderNode) that cannot cross from a server component.
     instagramPost: ({ value }) => <InstagramPost value={value} />,
-    instagramGrid: ({ value }) => <InstagramGrid value={value} />,
     tiktokPost: ({ value }) => <TikTokPost value={value} />,
-    tiktokGrid: ({ value }) => <TikTokGrid value={value} />,
+    embedGrid: ({ value }) => (
+      <div className="embed-grid">
+        {value.posts.map((post) => (
+          <SocialPost key={post._key} value={post} />
+        ))}
+      </div>
+    ),
   },
   block: {
     normal: ({ children }) => <p>{children}</p>,
