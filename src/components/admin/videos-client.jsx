@@ -1,6 +1,7 @@
 'use client'
 
-import { CheckCircle2, ExternalLink, LoaderCircle, Upload, Youtube } from 'lucide-react'
+import { Youtube } from 'iconoir-react'
+import { CheckCircle2, ExternalLink, LoaderCircle, Upload } from 'lucide-react'
 import { useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
@@ -108,7 +109,16 @@ export default function VideosClient({ initialProjects, youtubeConnected, channe
           </Badge>
         ) : (
           <Button asChild variant="outline">
-            <a href="/api/youtube/auth">
+            {/* Google will not show its sign-in inside a frame (Studio's Video tool), so there it opens a new tab. */}
+            <a
+              href="/api/youtube/auth"
+              onClick={(event) => {
+                if (window.self !== window.top) {
+                  event.preventDefault()
+                  window.open('/api/youtube/auth', '_blank', 'noopener')
+                }
+              }}
+            >
               <Youtube className="mr-2 h-4 w-4" />
               Connect YouTube
             </a>

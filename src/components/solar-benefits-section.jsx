@@ -34,7 +34,7 @@ const SolarBenefitsSection = ({ section = null, sectionId = 'solar-benefits' }) 
         content: 'dark solar benefits grid',
       })}
     >
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="page-content">
         {title || body ? (
           <div className="mb-16 max-w-4xl">
             {title ? (

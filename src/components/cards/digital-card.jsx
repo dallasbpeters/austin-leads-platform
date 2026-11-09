@@ -84,7 +84,7 @@ const ActionButton = ({ href, label, icon, buttonBg, external }) => (
     <a
       href={href}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-      className="flex size-14 items-center justify-center rounded-full text-white shadow-sm transition-transform hover:scale-105"
+      className="flex size-14 items-center justify-center rounded-(--radius-button) text-white shadow-sm transition-transform hover:scale-105"
       style={{ backgroundColor: buttonBg }}
       aria-label={label}
     >

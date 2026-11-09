@@ -1,11 +1,16 @@
 // oxlint-disable func-style
+import { Phone } from 'iconoir-react'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ROOFER_INTRODUCTION } from '@/lib/leads/source-types'
+import { SITE_PHONE_DISPLAY, SITE_PHONE_HREF } from '@/lib/platform/contact'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { shouldShowClouds } from '@/lib/platform/section-helpers'
 import { cleanRuntimeString } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
+import IntroductionRequestForm from './introduction-request-form'
 import { JobberDialog } from './jobber-dialog'
 import PortableTextContent from './portable-text-content'
 
@@ -34,6 +39,16 @@ const SECTION_VARIANTS = {
     serviceInterest: 'roofing',
     sourceSection: 'roofing-consultation',
   },
+  /* Studio: Form → Introduction. A name-and-email request for a roofer introduction. */
+  introduction: {
+    buttonLabel: 'Ask for an introduction',
+    copy: "Tell us who you are and we'll introduce you to a roofer we trust.",
+    heading: <>Ask for a roofer introduction</>,
+    metadata: { entryPoint: 'roofer-introduction' },
+    serviceInterest: 'roofing',
+    sourceSection: 'roofer-introduction',
+    sourceType: ROOFER_INTRODUCTION,
+  },
 }
 
 function getSectionContent(section, variant) {
@@ -45,6 +60,7 @@ function getSectionContent(section, variant) {
     metadata: content.metadata,
     serviceInterest: content.serviceInterest,
     sourceSection: content.sourceSection,
+    sourceType: content.sourceType,
   }
 }
 
@@ -58,7 +74,7 @@ function buildLeadContext(site, content, pagePath, pageTitle) {
     siteSlug: site?.slug || 'texas-solar-and-roofing-pros',
     sourceDomain: site?.primaryDomain || 'texassolarandroofingpros.com',
     sourceSection: content.sourceSection,
-    sourceType: 'consultation',
+    sourceType: content.sourceType || 'consultation',
     jobberRequestFormUrl: site?.jobber?.requestFormUrl || '',
   }
 }
@@ -117,10 +133,8 @@ function getAvatarData(section) {
 const CLASS_NAMES = {
   avatarClassName: 'consult__avatar',
   blurbClassName: 'consult__person-blurb text-size-90',
-  copy: 'consult__copy text-size-100',
   eyebrowClassName: 'consult__person-eyebrow text-size-80',
   fallbackClassName: 'consult__avatar-fallback text-size-100',
-  heading: 'consult__heading text-fluid-600',
   nameClassName: 'consult__person-name text-size-200',
   roleClassName: 'consult__person-role text-size-90',
 }
@@ -175,7 +189,8 @@ export default function ConsultationSection({
 }) {
   const isChristmasTheme = theme === 'christmasLights'
   const showClouds = shouldShowClouds(section?.cloudVisibility)
-  const content = getSectionContent(section, variant)
+  const isIntroduction = cleanRuntimeString(section?.ctaForm) === 'introduction'
+  const content = getSectionContent(section, isIntroduction ? 'introduction' : variant)
   const leadContext = buildLeadContext(site, content, pagePath, pageTitle)
 
   return (
@@ -190,14 +205,35 @@ export default function ConsultationSection({
       })}
     >
       <div className="consult__shell">
-        {/* The card is what holds contrast steady: the sky behind it runs from
-            midday bright to near black, the card does not. */}
-        <div className="consult__card">
-          <h2 className={CLASS_NAMES.heading}>{content.headline}</h2>
-          <PortableTextContent as="div" value={content.copy} className={CLASS_NAMES.copy} />
-          <AvatarSection section={section} />
-          <div className="consult__cta">
-            <JobberDialog variant="inverse" buttonLabel={content.buttonLabel} context={leadContext} />
+        <div className="consult__frame grid-frame">
+          <div className="consult__lead">
+            <p className="consult__eyebrow">{section?.eyebrow || 'Ready when you are'}</p>
+            <h2 className="consult__heading">{content.headline}</h2>
+            <ul className="consult__assurances">
+              <li>Free estimate</li>
+              <li>No pressure</li>
+              <li>No commitment</li>
+            </ul>
+          </div>
+          <div className="consult__action">
+            <PortableTextContent as="div" value={content.copy} className="consult__copy" />
+            <AvatarSection section={section} />
+            <div className="consult__cta">
+              {isIntroduction ? (
+                <IntroductionRequestForm buttonLabel={content.buttonLabel} context={leadContext} />
+              ) : (
+                <JobberDialog
+                  variant="inverse"
+                  buttonLabel={content.buttonLabel}
+                  context={leadContext}
+                  triggerClassName="consult__button"
+                />
+              )}
+              <a href={SITE_PHONE_HREF} className="consult__phone">
+                <Phone className="consult__phone-icon" aria-hidden="true" />
+                {SITE_PHONE_DISPLAY}
+              </a>
+            </div>
           </div>
         </div>
       </div>

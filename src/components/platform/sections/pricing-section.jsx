@@ -16,9 +16,6 @@ export function PricingSection({ section, sectionId }) {
   const stepNotes = notes.filter((n) => n?.variant !== 'callout')
   const calloutNotes = notes.filter((n) => n?.variant === 'callout')
 
-  const stepCols =
-    stepNotes.length === 2 ? 'pricing__steps--2' : stepNotes.length >= 3 ? 'pricing__steps--3' : ''
-
   return (
     <section
       className="pricing"
@@ -41,7 +38,7 @@ export function PricingSection({ section, sectionId }) {
           </div>
 
           {stepNotes.length > 0 ? (
-            <div className={`pricing__steps ${stepCols}`}>
+            <div className="pricing__steps grid-frame">
               {stepNotes.map((note, i) => {
                 const noteTitle = note?.title
                 const noteBody = note?.body
@@ -51,14 +48,7 @@ export function PricingSection({ section, sectionId }) {
                 const key = buildRuntimeKey('pricing-step', note?._key, noteTitle, i)
 
                 return (
-                  <div
-                    key={key}
-                    className="pricing__step"
-                    style={{
-                      paddingLeft: i > 0 ? '1.25rem' : 0,
-                      paddingRight: i < stepNotes.length - 1 ? '1.25rem' : 0,
-                    }}
-                  >
+                  <div key={key} className="pricing__step">
                     <p className="pricing__step-index text-size-90">0{i + 1}</p>
                     {noteTitle ? <h3 className="pricing__step-title text-size-200">{noteTitle}</h3> : null}
                     <p className="pricing__step-due text-size-90">{paymentDue}</p>

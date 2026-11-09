@@ -25,6 +25,7 @@
 
 /* Element defaults */
 @import './base.css';
+@import './kbd.css';
 
 /* Component blocks (BEM) */
 @import './components/typography.css';
@@ -37,6 +38,8 @@
 @import './components/gallery.css';
 @import './components/video-section.css';
 @import './components/about-profile.css';
+@import './components/service-map.css';
+@import './components/jobber-request.css';
 @import './components/pricing.css';
 @import './components/card-grid.css';
 @import './components/solar-difference.css';
@@ -59,6 +62,12 @@
 @import './components/guide-card.css';
 @import './components/snapshot.css';
 @import './components/site-header.css';
+@import './components/page-grid.css';
+@import './components/tabbed-panel.css';
+@import './components/story-grid.css';
+@import './components/testimonials.css';
+@import './components/solar-fit.css';
+@import './components/solar-fit-stepper.css';
 @import './components/site-footer.css';
 
 /* Utilities */

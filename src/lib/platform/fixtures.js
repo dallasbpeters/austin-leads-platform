@@ -1969,7 +1969,7 @@ We aim to reply to every call and email within one business day. During hail sea
           {
             question: 'Which facts change most often?',
             answer:
-              'Utility export rates and local rebates. Austin Energy currently offers a one-time $2,500 solar rebate plus Value of Solar bill credits at 9.91 cents per kWh; verify both with the utility at quote time. The federal residential solar tax credit expired December 31, 2025 and should not appear in current estimates.',
+              'Utility export rates and local rebates. Austin Energy currently offers a one-time $4,000 solar rebate plus Value of Solar bill credits at 9.91 cents per kWh; verify both with the utility at quote time. The federal residential solar tax credit expired December 31, 2025 and should not appear in current estimates.',
           },
         ],
       },

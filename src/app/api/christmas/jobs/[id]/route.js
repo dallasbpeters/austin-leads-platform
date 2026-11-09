@@ -1,6 +1,15 @@
+import { safeAuth } from '@/lib/auth/session'
 import { deleteJob, updateJob } from '@/lib/christmas/db'
 
+// Staff only: a job holds the customer's contact details and deposit status.
+const unauthorized = async () =>
+  (await safeAuth())?.user ? null : Response.json({ error: 'Unauthorized' }, { status: 401 })
+
 export const PATCH = async (req, { params }) => {
+  const denied = await unauthorized()
+  if (denied) {
+    return denied
+  }
   try {
     const { id } = await params
     const body = await req.json()
@@ -16,6 +25,10 @@ export const PATCH = async (req, { params }) => {
 }
 
 export const DELETE = async (req, { params }) => {
+  const denied = await unauthorized()
+  if (denied) {
+    return denied
+  }
   try {
     const { id } = await params
     await deleteJob(id)

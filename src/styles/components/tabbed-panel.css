@@ -1,0 +1,296 @@
+/**
+ * .grid-frame: hairlines across the top and bottom of a block, with a small
+ * "+" at each corner where they cross the page gridlines (page-grid.css).
+ * It bleeds 0.5rem past the text, out to the page frame (--page-frame).
+ */
+.grid-frame {
+  --grid-frame-line: oklch(55% 0.01 260deg / 22%);
+  --grid-frame-mark: oklch(45% 0.01 260deg / 70%);
+  --grid-frame-gap: 0.75rem;
+
+  position: relative;
+  margin-inline: -0.5rem;
+
+  /* Cards and panels sit inset on all four sides, never touching the lines. */
+  padding: var(--grid-frame-gap);
+  border-block: 1px solid var(--grid-frame-line);
+}
+
+.grid-frame::before,
+.grid-frame::after {
+  content: '';
+  position: absolute;
+  inset-inline: -0.5rem;
+  height: 1rem;
+  pointer-events: none;
+
+  /* Two "+" marks: a short cross drawn at each end of the row. */
+  background:
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) left 0 top 50% / 1rem 1px no-repeat,
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) left 0.5rem top 0 / 1px 1rem no-repeat,
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) right 0 top 50% / 1rem 1px no-repeat,
+    linear-gradient(var(--grid-frame-mark), var(--grid-frame-mark)) right 0.5rem top 0 / 1px 1rem no-repeat;
+}
+
+.grid-frame::before {
+  top: calc(-0.5rem - 0.5px);
+}
+
+.grid-frame::after {
+  bottom: calc(-0.5rem - 0.5px);
+}
+
+/* .tabbed-panel block: big headline over a framed, tabbed photo panel. */
+.tabbed-panel {
+  overflow-x: clip;
+}
+
+.tabbed-panel__inner {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-block: 5rem;
+  padding-inline: var(--gutter-page, 1.5rem);
+}
+
+.tabbed-panel__title {
+  max-width: 22ch;
+  margin-block-end: 3rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 4vw + 1rem, 2rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+  text-wrap: balance;
+}
+
+.tabbed-panel__panel {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: clamp(28rem, 60vw, 44rem);
+  padding: clamp(1.25rem, 3vw, 3rem);
+  overflow: hidden;
+  border-radius: 0.75rem;
+  color: var(--color-white);
+  background: #040a17;
+  isolation: isolate;
+}
+
+/* Darkens the photo toward the bottom-left, where the text sits. */
+.tabbed-panel__panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to top, oklch(10% 0.02 260deg / 85%), oklch(10% 0.02 260deg / 15%) 65%),
+    linear-gradient(to right, oklch(10% 0.02 260deg / 50%), transparent 60%);
+}
+
+/* Fills the panel behind the text; the photos and video are drawn in DOM order inside it. */
+.tabbed-panel__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.tabbed-panel__image {
+  object-fit: cover;
+  opacity: 0;
+}
+
+.tabbed-panel__image--active {
+  opacity: 1;
+}
+
+/* Sits over the photo, which doubles as its poster while it loads. */
+.tabbed-panel__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tabbed-panel__tabs {
+  display: flex;
+  place-self: start center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid oklch(100% 0 0deg / 12%);
+  border-radius: 0.5rem;
+  background: oklch(16% 0.012 260deg / 72%);
+  backdrop-filter: blur(12px);
+}
+
+.tabbed-panel__tab {
+  min-height: 2.5rem;
+  padding-inline: 1rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: oklch(100% 0 0deg / 85%);
+  cursor: pointer;
+}
+
+.tabbed-panel__tab--active {
+  color: #0f172a;
+  background: var(--color-white);
+}
+
+.tabbed-panel__tab:focus-visible {
+  outline: 2px solid #ffd06b;
+  outline-offset: 2px;
+}
+
+.tabbed-panel__content {
+  display: grid;
+  align-content: end;
+  justify-items: start;
+  gap: 1.5rem;
+  max-width: 36rem;
+  padding-block-start: 4rem;
+}
+
+.tabbed-panel__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tabbed-panel__eyebrow::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #ffd06b;
+}
+
+.tabbed-panel__body {
+  font-size: clamp(1.25rem, 1.5vw + 0.75rem, 2rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.tabbed-panel__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding-inline: 1.25rem 1rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  background: oklch(100% 0 0deg / 14%);
+  backdrop-filter: blur(12px);
+}
+
+.tabbed-panel__button-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.tabbed-panel__button:focus-visible {
+  outline: 2px solid #ffd06b;
+  outline-offset: 2px;
+}
+
+/*
+ * Phones: a tall panel cropped the wide photo and video down to a sliver. The
+ * media gets its own full-width 16:9 row, uncropped, with the tabs and text
+ * on the dark panel below it instead of over the picture.
+ */
+@media (width < 48rem) {
+  .tabbed-panel__panel {
+    grid-template-rows: auto auto auto;
+    gap: 1.25rem;
+    min-height: 0;
+    padding: 0 0 1.5rem;
+  }
+
+  .tabbed-panel__panel::after {
+    content: none;
+  }
+
+  .tabbed-panel__media {
+    position: relative;
+    z-index: 0;
+    aspect-ratio: 16 / 9;
+  }
+
+  .tabbed-panel__tabs,
+  .tabbed-panel__content {
+    margin-inline: 1.25rem;
+  }
+
+  .tabbed-panel__tabs {
+    place-self: start;
+    max-width: calc(100% - 2.5rem);
+    overflow-x: auto;
+  }
+
+  .tabbed-panel__tab {
+    flex: none;
+  }
+
+  .tabbed-panel__content {
+    padding-block-start: 0;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tabbed-panel__tab:not(.tabbed-panel__tab--active):hover {
+    color: var(--color-white);
+    background: oklch(100% 0 0deg / 8%);
+  }
+
+  .tabbed-panel__button:hover {
+    background: oklch(100% 0 0deg / 22%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tabbed-panel__image {
+    transition: opacity 500ms ease-out;
+  }
+
+  .tabbed-panel__content {
+    animation: tabbed-panel-rise 400ms ease-out;
+  }
+
+  .tabbed-panel__video {
+    animation: tabbed-panel-fade 500ms ease-out;
+  }
+
+  .tabbed-panel__tab {
+    transition:
+      color 150ms ease-out,
+      background-color 150ms ease-out;
+  }
+}
+
+@keyframes tabbed-panel-rise {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}
+
+@keyframes tabbed-panel-fade {
+  from {
+    opacity: 0;
+  }
+}

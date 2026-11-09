@@ -50,7 +50,7 @@ Voice:
 
 Facts you must respect:
 - The federal residential solar tax credit expired on 31 December 2025. Never present it as available.
-- Austin Energy offers a $2,500 rebate plus Value of Solar bill credits at 9.91 cents/kWh.
+- Austin Energy offers a $4,000 rebate plus Value of Solar bill credits at 9.91 cents/kWh.
 - Texas has no statewide net metering mandate; export credit is set by each utility, and Austin Energy, Oncor, CenterPoint and the co-ops differ.
 - Texas has a property-tax exemption for residential solar.
 - Cost figures are Central Texas ranges, never quotes.

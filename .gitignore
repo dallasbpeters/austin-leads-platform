@@ -52,3 +52,6 @@ videos/**/.DS_Store
 # Staged copy of the reel composition for the /reels live preview (built by scripts/sync-reel-assets.mjs)
 public/reels/
 .env.production.local
+
+# Licensed 3D source files (CGTrader royalty-free): never commit or serve them.
+/art-source/

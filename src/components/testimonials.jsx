@@ -1,42 +1,187 @@
-// oxlint-disable func-style no-nested-ternary unicorn/no-array-for-each
-import Image from 'next/image'
+'use client'
 
-import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
+import Image from '@/components/site-image'
+import { ArrowLeft, ArrowRight } from 'iconoir-react'
+import { useState } from 'react'
+
+import { cn } from '@/lib/utils'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
-import ElfsightReviewsEmbed from './elfsight-reviews-embed'
 
-export default function Testimonials({ section = null, sectionId = 'testimonials-homepage' }) {
-  // The same review referenced twice in a section renders two cards keyed alike,
-  // which React rejects. Schema validation now blocks new duplicates, but existing
+// Long reviews step down a size so a 400-character review still fits the stage.
+const LONG_QUOTE = 180
 
-  const backgroundImage = getImageUrl(section?.backgroundImageAsset, section?.backgroundImage, {
-    width: 1800,
+const pad = (value) => String(value).padStart(2, '0')
+
+const initials = (name = '') =>
+  name
+    .split(/\s+/u)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
+
+/** Drops repeats: the same review referenced twice would render two cards keyed alike. */
+function uniqueReviews(list) {
+  const seen = new Set()
+  return (Array.isArray(list) ? list : []).filter((review) => {
+    const key = review?._id || review?.id || review?.body
+    if (!review?.body || seen.has(key)) {
+      return false
+    }
+    seen.add(key)
+    return true
   })
-  const backgroundImageAlt = getImageAlt(
-    section?.backgroundImageAsset,
-    section?.backgroundImage,
-    'Customer reviews background',
+}
+
+/**
+ * Customer stories: one big quote at a time, with a counter and arrows.
+ * Live Google reviews (`google`, from the Places API) come first; without them
+ * it shows the section's picked Sanity reviews, else the site's reviews.
+ */
+export default function Testimonials({
+  section = null,
+  reviews = [],
+  google = null,
+  sectionId = 'testimonials-homepage',
+}) {
+  const fromGoogle = Boolean(google?.reviews?.length)
+  const list = uniqueReviews(
+    fromGoogle ? google.reviews : section?.reviews?.length ? section.reviews : reviews,
   )
+  const [index, setIndex] = useState(0)
+
+  if (!list.length) {
+    return null
+  }
+
+  const review = list[index % list.length]
+  const stars = Math.round(Number(review.stars) || 5)
+  const uploadedPhoto = review.reviewerPhoto?.asset?.url
+  // Google avatars end in a size flag such as "=s128-c0x00000000-cc-rp-mo"; ask for one big enough for the portrait.
+  const googlePhoto = review.reviewerPhotoUrl?.replace(/[=]s\d+[^/]*$/u, '')
+  const photoUrl = uploadedPhoto
+    ? `${uploadedPhoto}?w=480&h=640&fit=crop&auto=format`
+    : googlePhoto
+      ? `${googlePhoto}=s640-c`
+      : null
+  const eyebrow = section?.eyebrow || 'Customer stories'
+  const go = (step) => setIndex((current) => (current + step + list.length) % list.length)
 
   return (
     <section
-      className="bg-secondary-100 radial-grid-bg relative overflow-hidden py-24"
+      className="testimonials"
+      aria-roledescription="carousel"
+      aria-label={section?.title || 'Customer stories'}
       {...getDevSectionAttributes({
         id: sectionId,
         markup: 'src/components/testimonials.jsx',
+        content: 'Google reviews (Places API), else Sanity reviews',
       })}
     >
-      {backgroundImage ? (
-        <Image
-          src={backgroundImage}
-          alt={backgroundImageAlt}
-          fill
-          sizes="100vw"
-          className="mask-t-to-75% object-cover object-[0_-s100%]"
-        />
-      ) : null}
-      <ElfsightReviewsEmbed appId="a47faa40-0d7d-4ae2-bf46-e4e63e4bf10a" />
+      <div className="testimonials__inner grid-frame">
+        <div className="testimonials__aside">
+          <p className="testimonials__eyebrow">{eyebrow}</p>
+          <div className="testimonials__portrait" key={`photo-${index}`}>
+            {photoUrl ? (
+              <Image
+                src={photoUrl}
+                alt={review.reviewerPhoto?.alt || review.author || ''}
+                fill
+                sizes="12rem"
+                className="testimonials__photo"
+              />
+            ) : (
+              <span className="testimonials__initials" aria-hidden="true">
+                {initials(review.author)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="testimonials__main">
+          <div className="testimonials__bar">
+            <p className="testimonials__count" aria-hidden="true">
+              <span>{pad(index + 1)}</span>/{pad(list.length)}
+            </p>
+            {list.length > 1 ? (
+              <div className="testimonials__arrows">
+                <button
+                  type="button"
+                  className="testimonials__arrow"
+                  onClick={() => go(-1)}
+                  aria-label="Previous review"
+                >
+                  <ArrowLeft aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className="testimonials__arrow"
+                  onClick={() => go(1)}
+                  aria-label="Next review"
+                >
+                  <ArrowRight aria-hidden="true" />
+                </button>
+              </div>
+            ) : null}
+          </div>
+
+          <figure
+            key={review._id || index}
+            className="testimonials__slide"
+            aria-live="polite"
+            aria-label={`Review ${index + 1} of ${list.length}`}
+          >
+            <blockquote
+              className={cn(
+                'testimonials__quote',
+                review.body.length > LONG_QUOTE && 'testimonials__quote--long',
+              )}
+            >
+              {review.body}
+            </blockquote>
+            <figcaption className="testimonials__by">
+              <span className="testimonials__stars" role="img" aria-label={`${stars} out of 5 stars`}>
+                {'★'.repeat(stars)}
+                <span className="testimonials__stars-off">{'★'.repeat(5 - stars)}</span>
+              </span>
+              {review.authorUri ? (
+                <a
+                  href={review.authorUri}
+                  className="testimonials__author"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {review.author}
+                </a>
+              ) : (
+                <span className="testimonials__author">{review.author}</span>
+              )}
+              {review.reviewerLocation || review.when ? (
+                <span className="testimonials__meta">
+                  {review.source === 'google' ? 'Google review · ' : ''}
+                  {review.reviewerLocation || review.when}
+                </span>
+              ) : null}
+            </figcaption>
+          </figure>
+
+          {fromGoogle ? (
+            <p className="testimonials__credit">
+              <span>
+                {google.rating ? `${google.rating.toFixed(1)} ★ on Google` : 'Reviews from Google'}
+                {google.count ? ` · ${google.count.toLocaleString('en-US')} reviews` : ''}
+              </span>
+              {google.mapsUri ? (
+                <a href={google.mapsUri} target="_blank" rel="noopener noreferrer">
+                  Read all on Google
+                </a>
+              ) : null}
+            </p>
+          ) : null}
+        </div>
+      </div>
     </section>
   )
 }

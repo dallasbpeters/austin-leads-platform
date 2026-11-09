@@ -53,6 +53,13 @@ export default {
           type: 'string',
           description: 'The digits from "locations/987654321". Different per storefront.',
         },
+        {
+          name: 'placeId',
+          title: 'Google Place ID',
+          type: 'string',
+          description:
+            'Starts with "ChIJ". The home page reviews load from this place through the Google Places API. Find it with Google\'s Place ID Finder.',
+        },
       ],
     },
     {
@@ -92,6 +99,25 @@ export default {
           description: 'Shown in place of the cards while this site has no published case studies.',
           initialValue:
             'Write-ups from recent roofing and solar jobs are on the way. In the meantime, reach out and we will walk you through comparable work in your area.',
+        },
+      ],
+    },
+    {
+      name: 'headerMessage',
+      title: 'Header message',
+      type: 'object',
+      description: 'The small tab on the top edge of the header bar, on every page.',
+      options: { collapsible: true, collapsed: false },
+      fields: [
+        { name: 'show', title: 'Show the message', type: 'boolean', initialValue: true },
+        {
+          name: 'text',
+          title: 'Message',
+          type: 'string',
+          description:
+            'Keep it to one short line, e.g. "We are not a roofing company. We\'re solar specialists."',
+          hidden: ({ parent }) => !parent?.show,
+          validation: (Rule) => Rule.max(110).warning('Long messages wrap on phones and crowd the bar.'),
         },
       ],
     },
@@ -139,6 +165,60 @@ export default {
               },
               validation: (Rule) => Rule.required(),
             },
+            {
+              name: 'children',
+              title: 'Dropdown links',
+              type: 'array',
+              description:
+                'Optional. Add links here to show this item as a dropdown menu, each with a title, description, and image. The item link above stays as a "View all" link at the bottom.',
+              of: [
+                {
+                  type: 'object',
+                  name: 'navChild',
+                  title: 'Dropdown link',
+                  fields: [
+                    {
+                      name: 'label',
+                      title: 'Title',
+                      type: 'string',
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'href',
+                      title: 'Link',
+                      type: 'string',
+                      description: 'Internal path (e.g. /services/detach-and-reset) or full URL.',
+                      validation: (Rule) => Rule.required(),
+                    },
+                    {
+                      name: 'description',
+                      title: 'Description',
+                      type: 'text',
+                      rows: 2,
+                      description: 'One short line under the title in the menu.',
+                      validation: (Rule) => Rule.max(120),
+                    },
+                    {
+                      name: 'image',
+                      title: 'Image',
+                      type: 'image',
+                      options: { hotspot: true },
+                      fields: [
+                        {
+                          name: 'altText',
+                          title: 'Alt text',
+                          type: 'string',
+                          description: 'What the image shows, for screen readers and Google.',
+                        },
+                      ],
+                    },
+                  ],
+                  preview: {
+                    select: { title: 'label', subtitle: 'href', media: 'image' },
+                  },
+                },
+              ],
+            },
           ],
           preview: {
             select: { title: 'label', href: 'href', variant: 'variant' },
@@ -157,7 +237,19 @@ export default {
       title: 'Brand',
       type: 'object',
       fields: [
-        { name: 'logo', title: 'Logo', type: 'image' },
+        {
+          name: 'logo',
+          title: 'Logo',
+          type: 'image',
+          fields: [
+            {
+              name: 'altText',
+              title: 'Alt text',
+              type: 'string',
+              description: 'What the image shows, for screen readers and Google.',
+            },
+          ],
+        },
         { name: 'eyebrow', title: 'Eyebrow', type: 'string' },
       ],
     },

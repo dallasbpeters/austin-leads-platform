@@ -91,10 +91,7 @@ const SolarSwitch = ({
   const TRAILING_RESTING_OPACITY = 0.5
 
   return (
-    <section
-      ref={sectionRef}
-      className="mx-auto grid w-full max-w-7xl grid-cols-1 place-items-center px-4 py-14 sm:px-3 md:px-6 lg:px-8"
-    >
+    <section ref={sectionRef} className="page-content grid grid-cols-1 place-items-center py-14">
       <div className="text-foreground relative max-w-5xl text-center text-[clamp(2rem,4.9vw,2.75rem)] leading-[1.25em] font-bold tracking-[-0.02em]">
         {leadingWords.map((word) => (
           <span

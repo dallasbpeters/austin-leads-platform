@@ -1,4 +1,4 @@
-import Image from 'next/image'
+import Image from '@/components/site-image'
 
 import { Button } from '@/components/ui/button'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'

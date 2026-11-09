@@ -1,0 +1,44 @@
+diff --git a/dist/index.js b/dist/index.js
+index d558fe34030d928eff70c3211b1b3cdd4e03f16b..fe67c52f6f9f5d67a96aa652a191484e3612b7db 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1310,7 +1310,7 @@ function DeployItem({ target, token, onDelete, onEdit }) {
+                 branch,
+                 /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("svg", { width: "12", height: "12", viewBox: "0 0 16 16", fill: "currentColor", "aria-hidden": "true", style: { marginLeft: "-0.1em", opacity: 0.5 }, children: /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("path", { d: "M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878zm3.75 7.378a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm3-8.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z" }) })
+               ] }) }),
+-              token && !loadingInitial && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(import_jsx_runtime10.Fragment, { children: [
++              (token || pluginConfig.mode === "proxy") && !loadingInitial && /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(import_jsx_runtime10.Fragment, { children: [
+                 isPending ? /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(StatusBadge, { state: "QUEUED" }) : /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(StatusBadge, { state: latest?.state }),
+                 isActiveState(latest?.state) && /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+                   Button,
+@@ -1350,7 +1350,7 @@ function DeployItem({ target, token, onDelete, onEdit }) {
+             )
+           ] }),
+           /* @__PURE__ */ (0, import_jsx_runtime10.jsx)("hr", { style: { border: "none", borderTop: "1px solid currentColor", opacity: 0.1, margin: 0 } }),
+-          !token ? /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Text, { size: 1, muted: true, children: pluginConfig.mode === "proxy" ? target.proxyKey ? "Waiting for status from the deploy proxy." : "Set a Proxy Key on this target to see deployment status." : "Connect a Vercel API token to see deployment status." }) : loadingInitial ? /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(Flex, { align: "center", gap: 2, children: [
++          !token && pluginConfig.mode !== "proxy" ? /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Text, { size: 1, muted: true, children: pluginConfig.mode === "proxy" ? target.proxyKey ? "Waiting for status from the deploy proxy." : "Set a Proxy Key on this target to see deployment status." : "Connect a Vercel API token to see deployment status." }) : loadingInitial ? /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(Flex, { align: "center", gap: 2, children: [
+             /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Spinner, { muted: true }),
+             /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(Text, { size: 1, muted: true, children: "Loading\u2026" })
+           ] }) : /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(Stack, { space: 2, children: [
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 8c2f54bfb55ee22c077d25884d7842fe11194516..7fb35d653ed78c0733e9278345659407db2837f4 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1275,7 +1275,7 @@ function DeployItem({ target, token, onDelete, onEdit }) {
+                 branch,
+                 /* @__PURE__ */ jsx10("svg", { width: "12", height: "12", viewBox: "0 0 16 16", fill: "currentColor", "aria-hidden": "true", style: { marginLeft: "-0.1em", opacity: 0.5 }, children: /* @__PURE__ */ jsx10("path", { d: "M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878zm3.75 7.378a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm3-8.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z" }) })
+               ] }) }),
+-              token && !loadingInitial && /* @__PURE__ */ jsxs6(Fragment, { children: [
++              (token || pluginConfig.mode === "proxy") && !loadingInitial && /* @__PURE__ */ jsxs6(Fragment, { children: [
+                 isPending ? /* @__PURE__ */ jsx10(StatusBadge, { state: "QUEUED" }) : /* @__PURE__ */ jsx10(StatusBadge, { state: latest?.state }),
+                 isActiveState(latest?.state) && /* @__PURE__ */ jsx10(
+                   Button,
+@@ -1315,7 +1315,7 @@ function DeployItem({ target, token, onDelete, onEdit }) {
+             )
+           ] }),
+           /* @__PURE__ */ jsx10("hr", { style: { border: "none", borderTop: "1px solid currentColor", opacity: 0.1, margin: 0 } }),
+-          !token ? /* @__PURE__ */ jsx10(Text, { size: 1, muted: true, children: pluginConfig.mode === "proxy" ? target.proxyKey ? "Waiting for status from the deploy proxy." : "Set a Proxy Key on this target to see deployment status." : "Connect a Vercel API token to see deployment status." }) : loadingInitial ? /* @__PURE__ */ jsxs6(Flex, { align: "center", gap: 2, children: [
++          !token && pluginConfig.mode !== "proxy" ? /* @__PURE__ */ jsx10(Text, { size: 1, muted: true, children: pluginConfig.mode === "proxy" ? target.proxyKey ? "Waiting for status from the deploy proxy." : "Set a Proxy Key on this target to see deployment status." : "Connect a Vercel API token to see deployment status." }) : loadingInitial ? /* @__PURE__ */ jsxs6(Flex, { align: "center", gap: 2, children: [
+             /* @__PURE__ */ jsx10(Spinner, { muted: true }),
+             /* @__PURE__ */ jsx10(Text, { size: 1, muted: true, children: "Loading\u2026" })
+           ] }) : /* @__PURE__ */ jsxs6(Stack, { space: 2, children: [

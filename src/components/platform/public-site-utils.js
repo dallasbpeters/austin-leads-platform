@@ -50,7 +50,7 @@ function siteUsesThemeOwnedColorRamp(site) {
 }
 
 /**
- * Convert a Sanity color object (from @sanity/color-input) into a CSS variable
+ * Convert a Sanity color object (sanity-plugin-color-input; only `hex` is read) into a CSS variable
  * override for the one base token that drives the whole color cascade. Theme
  * files derive every numbered shade and shadcn slot (--color-primary-700,
  * --primary, --ring, ...) from that base with `oklch(from var(--color-primary)

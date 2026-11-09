@@ -75,7 +75,7 @@
   --color-charade: var(--color-chalet-green);
   --color-wattle: var(--color-tidal);
   --color-ceramic: oklch(92.365% 0.034 235.98deg);
-  --color-tapa-green: oklch(38.503% 0.1751 262.128deg);
+  --color-tapa-green: oklch(50.329% 0.09414 227.722);
   --color-sea-mist: oklch(83.691% 0.023 272.015deg);
   --color-sweetcorn: var(--color-tidal);
   --color-black-current: var(--color-chalet-green);
@@ -162,6 +162,9 @@
    * `var()` inside a custom property resolves on the declaring element.
    */
   --radius-pill: 999px;
+
+  /* Every button, link-button and filter chip uses this one radius. Tags and badges stay pills. */
+  --radius-button: 0.375rem;
 
   /* Section gutter. A stepped ladder, not a clamp, so edges match the prior layout exactly at every width. */
   --gutter-page: 0.75rem;

@@ -1,8 +1,8 @@
 // oxlint-disable no-nested-ternary
 'use client'
 
+import Image from '@/components/site-image'
 import { AnimatePresence, motion } from 'framer-motion'
-import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'

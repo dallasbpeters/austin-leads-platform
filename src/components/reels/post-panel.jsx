@@ -8,7 +8,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import { AlertTriangle, CheckCircle2, ExternalLink, Instagram, Loader2 } from 'lucide-react'
+import { Instagram } from 'iconoir-react'
+import { AlertTriangle, CheckCircle2, ExternalLink, Loader2 } from 'lucide-react'
 
 const POLL_MS = 4000
 /* Instagram usually finishes in under a minute; give up after five. */

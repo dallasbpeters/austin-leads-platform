@@ -27,7 +27,8 @@ function overlayOpacity(section, primary, fallbackKey, defaultValue) {
 function buildDefaultAppearance(selectedPage) {
   const section = selectedPage?.heroSection
   return {
-    heroTextColor: section?.heroTextColor || '#ffffff',
+    // Empty: no fixed color (white over a photo, time of day over clouds).
+    heroTextColor: section?.heroTextColor || '',
     heroOverlayStartColor: overlayColor(section, 'heroOverlayStartColor', 'heroOverlayColor', '#0f172a'),
     heroOverlayEndColor: overlayColor(section, 'heroOverlayEndColor', 'heroOverlayColor', '#0f172a'),
     heroOverlayDirection: section?.heroOverlayDirection || '180deg',
@@ -54,7 +55,7 @@ export function useHeroPagesManager({ initialPages, heroSites }) {
   const [creating, setCreating] = useState(false)
   const [deletingPageId, setDeletingPageId] = useState('')
   const [appearanceForm, setAppearanceForm] = useState({
-    heroTextColor: '#ffffff',
+    heroTextColor: '',
     heroOverlayStartColor: '#0f172a',
     heroOverlayEndColor: '#0f172a',
     heroOverlayDirection: '180deg',

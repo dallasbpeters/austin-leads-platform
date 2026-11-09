@@ -1,0 +1,140 @@
+/**
+ * Page gridlines: faint rules that frame the page (see --page-frame) and split
+ * it into quarters, so every section sits on one visible grid. Each section
+ * draws them behind its own content (see below).
+ */
+:root {
+  /*
+   * The page frame: the 80rem section shell minus its page gutter, plus the
+   * 0.5rem that cards and panels bleed past the text. The gridlines, the
+   * header and the hero all use this one width so their edges line up.
+   */
+  --page-frame: calc(min(80rem, 100%) - 2 * var(--gutter-page, 1.5rem) + 1rem);
+  --page-grid-line: oklch(55% 0.01 260deg / 14%);
+
+  /* Where text and columns sit: the frame minus the 0.5rem card bleed on each side. */
+  --page-content: calc(var(--page-frame) - 1rem);
+}
+
+/*
+ * One content width for every section container, so each column lines up
+ * with the header and the gridlines. Imported after the section stylesheets,
+ * so this wins over their own max-width and side padding.
+ */
+.page-content,
+.solar-shell,
+.solar-shell-narrow,
+.section-shell__inner,
+.section-shell__inner--narrow,
+.incentives__layout,
+.solar-costs__shell,
+.resources__shell,
+.consult__shell,
+.about-profile__copy,
+.jobber-request__inner,
+.about-profile__layout,
+.solar-adoption__inner,
+.guides__shell,
+.secondary-cta__inner,
+.banner-cta__frame,
+.cta-banner__inner,
+.quote-banner,
+.pricing__inner,
+.solar-difference__inner,
+.snapshot__shell,
+.adoption-reasons__grid {
+  width: var(--page-content);
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+/*
+ * Every section (and the footer) draws the page grid on its own background,
+ * behind its content: isolation makes the section a layer of its own, and the
+ * grid sits at z -1 inside it, so cards, text and images all cover the lines.
+ * :where() keeps these at zero specificity, so a section's own position wins.
+ */
+:where(main section, .site-footer, .adoption-reasons) {
+  position: relative;
+  isolation: isolate;
+}
+
+:where(main section, .site-footer, .adoption-reasons)::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline: 0;
+  z-index: -1;
+  width: var(--page-frame);
+  margin-inline: auto;
+  border-inline: 1px solid var(--page-grid-line);
+  pointer-events: none;
+}
+
+/*
+ * The quote banner is a section inside its paper band and narrower than the
+ * page, so its own grid would land off the page lines; the band draws them.
+ * Only this one: other nested sections (the booking form) paint a background
+ * that covers the outer grid, so they keep their own.
+ */
+:where(main section .quote-banner)::before {
+  content: none;
+}
+
+/*
+ * Over a cloud sky the grey lines vanish, so cloud sections draw them white,
+ * one layer above the sky (.cloud-background is z 1) and below the content.
+ */
+.cloud-theme-section:not(.cloud-theme-section--clouds-hidden)::before {
+  --page-grid-line: oklch(100% 0 0deg / 20%);
+
+  z-index: 2;
+}
+
+/*
+ * A photo or video hero covers its own background, so its grid draws in
+ * white above the photo and its overlay (z 10) and below the copy (z 20).
+ */
+.solar-hero:not(.solar-hero--clouds)::before {
+  --page-grid-line: oklch(100% 0 0deg / 16%);
+
+  z-index: 11;
+}
+
+/*
+ * Blocks inside a section that paint their own solid background (the dark
+ * reasons list under Solar Adoption) cover the section's grid, so they draw
+ * their own, in faint white on the dark.
+ */
+.adoption-reasons {
+  --page-grid-line: oklch(100% 0 0deg / 10%);
+}
+
+/* Frames (and their "+" marks) inside a cloud section turn white with the grid. */
+.cloud-theme-section:not(.cloud-theme-section--clouds-hidden) .grid-frame {
+  --grid-frame-line: oklch(100% 0 0deg / 20%);
+  --grid-frame-mark: oklch(100% 0 0deg / 50%);
+}
+
+/* The inner quarter lines only show once columns have room. */
+@media (width >= 48rem) {
+  :where(main section, .site-footer, .adoption-reasons)::before {
+    background-image: linear-gradient(
+      to right,
+      transparent calc(25% - 0.5px),
+      var(--page-grid-line) 0 calc(25% + 0.5px),
+      transparent 0 calc(50% - 0.5px),
+      var(--page-grid-line) 0 calc(50% + 0.5px),
+      transparent 0 calc(75% - 0.5px),
+      var(--page-grid-line) 0 calc(75% + 0.5px),
+      transparent 0
+    );
+  }
+}
+
+@media print {
+  :where(main section, .site-footer, .adoption-reasons)::before {
+    display: none;
+  }
+}

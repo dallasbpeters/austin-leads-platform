@@ -1,6 +1,7 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data'
 
 import { getGoogleAnalyticsConfig } from '@/lib/analytics/google'
+import { safeAuth } from '@/lib/auth/session'
 
 export const runtime = 'nodejs'
 
@@ -84,6 +85,10 @@ export const OPTIONS = (request: Request) => {
 }
 
 export const GET = async (request: Request) => {
+  // Staff only: the reports show the site's traffic and spend the Google quota.
+  if (!(await safeAuth())?.user) {
+    return withCors(Response.json({ error: 'Unauthorized' }, { status: 401 }), request)
+  }
   const config = resolveAnalyticsConfig()
 
   if (!config.propertyId) {

@@ -11,6 +11,8 @@
   overflow-x: clip;
   font-family: var(--font-accent);
   color: var(--color-text);
+  padding-block-start: 120px;
+  min-height: 70vh;
 }
 
 .solar-hero__media {
@@ -50,7 +52,9 @@
   z-index: 20;
   display: flex;
   align-items: end;
-  width: min(80rem, calc(100% - 3rem));
+
+  /* Same edges as the header and the page gridlines (page-grid.css). */
+  width: var(--page-frame);
   margin-inline: auto;
 
   /* Clear a fixed header (generic shell) while keeping the 5rem floor of the sticky solar shell. */
@@ -86,43 +90,6 @@
   max-width: 56rem;
 }
 
-/* Eyebrow with the pulsing dot */
-.solar-hero__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 1rem;
-  margin-block-end: 1em;
-}
-
-.solar-hero__pulse {
-  position: relative;
-  display: flex;
-  width: 0.75rem;
-  height: 0.75rem;
-}
-
-.solar-hero__pulse-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-pill);
-  background: var(--color-wattle);
-  opacity: 0.75;
-}
-
-.solar-hero__pulse-dot {
-  position: relative;
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-wattle);
-}
-
-.solar-hero__eyebrow-text {
-  font-weight: 700;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-}
-
 /* Headline */
 .solar-hero__title {
   margin-block: 0 2.5rem;
@@ -142,6 +109,11 @@
 .solar-hero__title-accent {
   color: var(--color-amber-400);
   paint-order: stroke fill;
+}
+
+/* On the daytime cloud sky amber is too light to read; the day tone swaps in Texas Flag Red. */
+.solar-hero--clouds .solar-hero__title-accent {
+  color: var(--cloud-hero-accent, var(--color-amber-400));
 }
 
 .solar-hero__body {
@@ -205,6 +177,88 @@
   letter-spacing: normal;
 }
 
+/* The glass snapshot: the aside wears .solar-hero__glass, and its rows match the glass cards. */
+.solar-hero__aside-card--glass {
+  min-block-size: 0;
+}
+
+.solar-hero__metric--glass {
+  display: grid;
+  gap: 0.25rem;
+  padding-block: 0.75rem 0;
+  padding-inline: 0;
+  border: 0;
+  border-block-start: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 0;
+}
+
+.solar-hero__metric--glass .solar-hero__metric-label {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgb(255 255 255 / 72%);
+}
+
+.solar-hero__metric--glass .solar-hero__metric-value {
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-white);
+}
+
+/* Hero stats over a photo: a stack of dark glass cards, small mono label over the value. */
+.solar-hero__stat-stack {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.solar-hero__stat-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 0.5rem;
+  background: linear-gradient(160deg, rgb(255 255 255 / 6%), rgb(255 255 255 / 0%) 55%), rgb(23 20 18 / 42%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 6%);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+.solar-hero__stat-value {
+  min-width: 0;
+  margin: 0;
+
+  /* Long values (an email address) wrap inside the card instead of widening it. */
+  overflow-wrap: anywhere;
+  font-size: clamp(1.25rem, 1.6vw, 1.625rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-white);
+}
+
+.solar-hero__stat-label {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace), monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 68%);
+}
+
+/* On a plain light hero there is no photo to blur, so the cards are solid Midnight Slate. */
+.solar-hero__stat-stack--light .solar-hero__stat-card {
+  border-color: rgb(255 255 255 / 6%);
+  background: linear-gradient(160deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 0%) 55%), #0f172a;
+  box-shadow: 0 12px 28px -18px rgb(4 10 23 / 55%);
+  backdrop-filter: none;
+}
+
 .solar-hero__card-copy {
   margin: 0;
   font-variation-settings: 'wght' 650;
@@ -226,4 +280,331 @@
 
 .solar-hero__card-bar--long {
   width: 2rem;
+}
+
+/*
+ * Glass cards (Sanity "Glass cards" on the hero section): a row of frosted
+ * cards along the bottom of the hero, over the photo.
+ */
+.solar-hero__shell--with-cards {
+  flex-direction: column;
+  align-items: stretch;
+  padding-block-end: 2rem;
+}
+
+.solar-hero__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+
+/*
+ * Four cards get the staggered layout from the reference, sized to fit one
+ * screen: card 1 floats beside the headline, card 3 is the raised center
+ * card, and cards 2 and 4 flank it. The cards wrapper turns into
+ * `display: contents` so the copy and all four cards share the shell grid.
+ */
+@media (width >= 64rem) {
+  .solar-hero__shell--with-cards:has(.solar-hero__cards > :nth-child(4):last-child) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-areas:
+      'copy copy float'
+      'left center right';
+    align-items: end;
+    gap: 1.5rem 1rem;
+  }
+
+  .solar-hero__shell--with-cards:has(.solar-hero__cards > :nth-child(4):last-child) .solar-hero__layout {
+    grid-area: copy;
+    align-self: center;
+    padding-block-end: 0;
+  }
+
+  .solar-hero__cards:has(> :nth-child(4):last-child) {
+    display: contents;
+  }
+
+  .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(1) {
+    grid-area: float;
+    align-self: center;
+  }
+
+  .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(2) {
+    grid-area: left;
+  }
+
+  .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(3) {
+    grid-area: center;
+    min-block-size: 15rem;
+    margin-block-start: -2rem;
+    text-align: center;
+  }
+
+  .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(3) .solar-hero__glass-head {
+    justify-content: start;
+  }
+
+  .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(3) .solar-hero__glass-title {
+    font-size: var(--text-2xl);
+  }
+
+  .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(4) {
+    grid-area: right;
+  }
+}
+
+/* Thin arc across the top of the center card, as in the reference. */
+.solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(3)::before {
+  content: '';
+  position: absolute;
+  inset: -40% 8% auto;
+  z-index: -1;
+  aspect-ratio: 1;
+  border-block-end: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.solar-hero__glass {
+  --glass-pad: 1.5rem;
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-block-size: 12rem;
+  padding: var(--glass-pad);
+  overflow: hidden;
+  border-radius: 0.35rem;
+  color: var(--color-white);
+  background: linear-gradient(160deg, rgb(255 255 255 / 50%), rgb(255 255 255 / 6%) 60%), rgb(15 23 42 / 18%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 25%),
+    0 20px 40px -24px rgb(4 10 23 / 60%);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+
+.solar-hero__glass-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.solar-hero__glass-heading {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.solar-hero__glass-title {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+/* Golden Sun Eyebrow from the brand palette. */
+.solar-hero__glass-eyebrow {
+  margin: 0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-align: left;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-orange-600);
+}
+
+.solar-hero__glass-stat {
+  flex-shrink: 0;
+  margin: 0;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: var(--text-2xl);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.solar-hero__glass-body {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: rgb(255 255 255 / 82%);
+}
+
+.solar-hero__glass-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-start: auto;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-white);
+}
+
+/* Stretches the link over the whole card. */
+.solar-hero__glass-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.solar-hero__glass-link:focus-visible {
+  outline: none;
+}
+
+.solar-hero__glass-link:focus-visible::after {
+  outline: 2px solid var(--color-white);
+  outline-offset: -4px;
+}
+
+.solar-hero__glass-link-label {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.solar-hero__glass-link-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.375rem;
+  color: var(--color-black);
+  background: var(--color-white);
+}
+
+.solar-hero__glass-link-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* The image bleeds to the card edges and fades in from the glass above it. */
+.solar-hero__glass-image {
+  display: block;
+  width: calc(100% + var(--glass-pad) * 2);
+  max-width: none;
+  height: 10rem;
+  margin: 12px calc(var(--glass-pad) * -1) calc(var(--glass-pad) * -1);
+  object-fit: cover;
+  mask-image: linear-gradient(to bottom, transparent, black 45%);
+}
+
+.solar-hero__glass--with-image .solar-hero__glass-link {
+  margin-block-start: 0;
+}
+
+.solar-hero__glass--with-image .solar-hero__glass-image {
+  margin-block-start: auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .solar-hero__glass-link-icon {
+    transition: scale 200ms ease-out;
+  }
+
+  .solar-hero__glass:hover .solar-hero__glass-link-icon {
+    scale: 1.08;
+  }
+}
+
+/*
+ * Clouds mode (Sanity "Hero media mode: Clouds"): CloudBackground paints the
+ * sky and clouds; .cloud-theme-section supplies the sky color. The cutout
+ * image sits over the clouds and under the copy and cards.
+ */
+
+/* Fits one screen on desktop: no extra top padding beyond what clears the fixed header. */
+.solar-hero--clouds {
+  overflow: clip;
+  min-height: 100svh;
+}
+
+/*
+ * Layering inside the clouds hero, bottom to top: sky (1), the white gridlines
+ * (2, page-grid.css), the panel cutout (42), then the copy and glass cards (43).
+ */
+.solar-hero--clouds .solar-hero__shell {
+  z-index: 43;
+}
+
+.solar-hero__cutout {
+  z-index: 42;
+  object-fit: contain;
+  object-position: right bottom;
+  pointer-events: none;
+
+  /*
+   * Blend and opacity are set per hero in Studio (Cutout image). The hero is its
+   * own layer (isolation), so the cutout only blends with the sky and clouds.
+   * A blend is one extra compositing step per frame, not a second cloud layer.
+   */
+  mix-blend-mode: var(--cutout-blend, normal);
+  opacity: var(--cutout-opacity, 1);
+}
+
+/* Below desktop the header is a strip plus the bar, so the copy needs more room to clear it. */
+@media (width < 64rem) {
+  .solar-hero--clouds .solar-hero__shell {
+    padding-block-start: 10rem;
+  }
+
+  /* The stacked cards would hide the cutout, so it gets its own band under them. */
+  .solar-hero--clouds:has(.solar-hero__cutout) {
+    padding-block-end: 15rem;
+  }
+}
+
+/* The fluid display size runs too large for a phone column. */
+@media (width < 48rem) {
+  .solar-hero__title {
+    font-size: clamp(2.25rem, 10.5vw, 3rem);
+  }
+}
+
+/*
+ * Shader hero: no flash of the plain photo. With WebGPU (flagged before paint,
+ * cloud-tone.js) the photo stays hidden; the dark dither color holds the space
+ * and the shader fades in when ready. Without WebGPU, without JavaScript, or
+ * when the shader can't run, the photo shows.
+ */
+html[data-webgpu='yes'] .solar-hero__shader-fallback {
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+.solar-hero:has(.pixel-reveal[data-shader='unavailable']) .solar-hero__shader-fallback {
+  opacity: 1;
+}
+
+.pixel-reveal[data-shader='unavailable'] {
+  display: none;
+}
+
+.pixel-reveal__canvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 400ms ease-out;
+}
+
+.pixel-reveal[data-shader='ready'] .pixel-reveal__canvas {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-reveal__canvas,
+  html[data-webgpu='yes'] .solar-hero__shader-fallback {
+    transition: none;
+  }
 }

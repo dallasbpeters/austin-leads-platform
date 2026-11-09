@@ -28,12 +28,25 @@ function readFlag(name, fallback) {
 const nextPort = readFlag('port', Number.parseInt(process.env.PORT || '3000', 10))
 const studioPort = readFlag('studio-port', Number.parseInt(process.env.SANITY_STUDIO_PORT || '3334', 10))
 
+// Node 25+ ships an experimental global localStorage and warns each time a
+// library probes for it ("--localstorage-file was not provided"). Neither
+// server needs it, so it is switched off. Node before 22 does not know the flag.
+const nodeMajor = Number.parseInt(process.versions.node, 10)
+const nodeOptions = [process.env.NODE_OPTIONS, nodeMajor >= 22 ? '--no-experimental-webstorage' : '']
+  .filter(Boolean)
+  .join(' ')
+
 const env = {
   ...process.env,
+  NODE_OPTIONS: nodeOptions,
   PORT: String(nextPort),
   NEXT_PUBLIC_LOCAL_SANITY_STUDIO_URL: `http://localhost:${studioPort}`,
   SANITY_STUDIO_PREVIEW_ORIGIN: `http://localhost:${nextPort}`,
 }
+
+// A shell-wide NODE_ENV=production makes `next dev` warn and run oddly; each
+// tool sets the right value itself when it is left unset.
+delete env.NODE_ENV
 
 stopDevServers([nextPort, studioPort])
 

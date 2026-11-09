@@ -99,6 +99,8 @@ export function toSanityReview(googleReview, { siteId }) {
     _id: `review-google-${reviewId}`,
     _type: 'review',
     author: googleReview.reviewer?.displayName || 'Google reviewer',
+    // Google's avatar URL; it ends in a size flag (=s120) that the site rewrites.
+    reviewerPhotoUrl: googleReview.reviewer?.profilePhotoUrl || undefined,
     stars: stars ?? 5,
     body,
     site: siteId ? { _type: 'reference', _ref: siteId } : undefined,

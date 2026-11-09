@@ -51,7 +51,6 @@ function buildHeroPageSections(site, title, description) {
       eyebrow: site.name,
       title,
       body: description || `Add hero copy for ${title}.`,
-      heroTextColor: '#ffffff',
       heroOverlayColor: '#0f172a',
       heroOverlayStartColor: '#0f172a',
       heroOverlayEndColor: '#0f172a',

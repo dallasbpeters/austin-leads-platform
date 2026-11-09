@@ -10,8 +10,15 @@ import {
   zohoScopeAllowsContactSearch,
 } from '@/lib/zoho/user-auth'
 
-const googleClientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID
-const googleClientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET
+// Google login. Falls back to the Google Business client that YouTube and the
+// reviews sync already use; that client needs the /api/auth/callback/google
+// redirect URI registered in Google Cloud.
+const googleClientId =
+  process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_BUSINESS_CLIENT_ID
+const googleClientSecret =
+  process.env.AUTH_GOOGLE_SECRET ||
+  process.env.GOOGLE_CLIENT_SECRET ||
+  process.env.GOOGLE_BUSINESS_CLIENT_SECRET
 
 // Zoho login. Prefer dedicated AUTH_ZOHO_* vars; fall back to the API
 // client credentials if the same Zoho client is used for both (it must be a

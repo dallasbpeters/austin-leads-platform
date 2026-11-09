@@ -43,7 +43,7 @@
   height: 2.5rem;
   padding-inline: 3rem;
   border: 1px solid var(--primary);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-button);
   font-family: var(--font-accent);
   font-weight: 600;
   letter-spacing: 0.18em;
