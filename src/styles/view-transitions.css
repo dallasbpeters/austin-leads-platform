@@ -1,7 +1,8 @@
-/* View Transitions - separate file to prevent Tailwind stripping */
-@view-transition {
-  navigation: auto;
-}
+/*
+ * View Transitions - separate file to prevent Tailwind stripping.
+ * The `@view-transition` opt-in is inline in root-document.jsx and global-error.jsx,
+ * so it is in place before the first paint.
+ */
 
 /* The zoom-and-blur is motion. Without it the new page simply replaces the old one. */
 @media (prefers-reduced-motion: no-preference) {
