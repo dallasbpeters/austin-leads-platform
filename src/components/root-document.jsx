@@ -73,7 +73,8 @@ const Agentation =
  * @param {object} props - Layout props.
  * @param {import('react').ReactNode} props.children - The page tree.
  * @param {string | null} [props.publicSite] - Tenant theme key for `data-public-site`.
- * @param {string | null} [props.analyticsSiteSlug] - Which PostHog project to report to.
+ * @param {string | null} [props.analyticsSiteSlug] - Which PostHog project to report to. `instrumentation-client.ts`
+ *   reads it from `data-analytics-site` before hydration.
  */
 export default async function RootDocument({ children, publicSite = null, analyticsSiteSlug = null }) {
   // oxlint-disable-next-line unicorn/no-await-expression-member
@@ -96,6 +97,7 @@ export default async function RootDocument({ children, publicSite = null, analyt
       suppressHydrationWarning
       data-scroll-behavior="smooth"
       {...(publicSite ? { 'data-public-site': publicSite } : {})}
+      {...(analyticsSiteSlug ? { 'data-analytics-site': analyticsSiteSlug } : {})}
     >
       <head>
         {/* oxlint-disable-next-line react/no-danger -- sets the sky phase before first paint */}

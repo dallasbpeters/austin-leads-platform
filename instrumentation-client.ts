@@ -1,21 +1,23 @@
 import posthog from 'posthog-js'
 
-const projectToken = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim()
-const apiHost = process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim()
+import { resolveBrowserPostHogConfig } from '@/lib/analytics/posthog-browser-config'
 
-const missingVariable = !projectToken
-  ? 'NEXT_PUBLIC_POSTHOG_KEY'
-  : !apiHost
-    ? 'NEXT_PUBLIC_POSTHOG_HOST'
-    : null
+const { token, apiHost, missing } = resolveBrowserPostHogConfig({
+  siteSlug: document.documentElement.dataset.analyticsSite,
+  keyMap: process.env.NEXT_PUBLIC_POSTHOG_KEYS,
+  key: process.env.NEXT_PUBLIC_POSTHOG_KEY,
+  host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+})
 
-if (!projectToken || !apiHost) {
-  if (process.env.NODE_ENV === 'development') {
-    throw new Error(
-      `${missingVariable} variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once ${missingVariable} is configured`,
-    )
-  }
+const missingMessage = `${missing.join(' and ')} required by PostHog is missing or un-configured. Set it in the deploy environment.`
+
+if (missing.length > 0 && process.env.NODE_ENV === 'development') {
+  throw new Error(`${missingMessage} This error stops appearing once it is configured.`)
 } else {
+  if (missing.length > 0) {
+    console.error(`[posthog] ${missingMessage} Events go to the default project through /ingest until then.`)
+  }
+
   /*
    * Off in local development unless NEXT_PUBLIC_POSTHOG_IN_DEV=true: local clicks would
    * land in the real project, and debug logging floods the console. It still
@@ -23,7 +25,7 @@ if (!projectToken || !apiHost) {
    */
   const offInDev = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_POSTHOG_IN_DEV !== 'true'
 
-  posthog.init(projectToken, {
+  posthog.init(token, {
     api_host: apiHost,
     defaults: '2026-05-30',
     ...(offInDev
