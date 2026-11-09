@@ -69,33 +69,36 @@ export function TabbedPanelSection({ section, sectionId }) {
 
         <div className="tabbed-panel__frame grid-frame">
           <div className="tabbed-panel__panel">
-            {tabs.map((tab, index) =>
-              tab.imageUrl ? (
-                <Image
-                  key={tab._key || index}
-                  src={`${tab.imageUrl}?w=2000&auto=format`}
-                  alt={index === active ? tab.imageAlt || '' : ''}
-                  fill
-                  sizes="(width >= 80rem) 78rem, 100vw"
-                  className={cn('tabbed-panel__image', index === active && 'tabbed-panel__image--active')}
-                />
-              ) : null,
-            )}
+            {/* Behind the text on wide screens; its own uncropped row on phones (tabbed-panel.css). */}
+            <div className="tabbed-panel__media">
+              {tabs.map((tab, index) =>
+                tab.imageUrl ? (
+                  <Image
+                    key={tab._key || index}
+                    src={`${tab.imageUrl}?w=2000&auto=format`}
+                    alt={index === active ? tab.imageAlt || '' : ''}
+                    fill
+                    sizes="(width >= 80rem) 78rem, 100vw"
+                    className={cn('tabbed-panel__image', index === active && 'tabbed-panel__image--active')}
+                  />
+                ) : null,
+              )}
 
-            {current.videoUrl && !reducedMotion ? (
-              <video
-                key={current.videoUrl}
-                className="tabbed-panel__video"
-                src={current.videoUrl}
-                poster={current.imageUrl ? `${current.imageUrl}?w=2000&auto=format` : undefined}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-hidden="true"
-              />
-            ) : null}
+              {current.videoUrl && !reducedMotion ? (
+                <video
+                  key={current.videoUrl}
+                  className="tabbed-panel__video"
+                  src={current.videoUrl}
+                  poster={current.imageUrl ? `${current.imageUrl}?w=2000&auto=format` : undefined}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-hidden="true"
+                />
+              ) : null}
+            </div>
 
             {tabs.length > 1 ? (
               <div className="tabbed-panel__tabs" role="tablist" aria-label={section.title || 'Panel tabs'}>

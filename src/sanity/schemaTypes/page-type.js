@@ -3,6 +3,7 @@ import { BlockContentIcon } from '@sanity/icons/BlockContent'
 import { CircleIcon } from '@sanity/icons/Circle'
 import { defineArrayMember, defineField } from 'sanity'
 
+import { TIKTOK_VIDEO_URL } from '../../lib/platform/tiktok'
 import { formulaSyntaxError } from '../../lib/solar-fit/formula'
 import ChartPointsJsonInput from '../components/chart-points-json-input'
 import { FormulaInput, FormulaKeyInput, SolarFitSectionInput } from '../components/solar-fit-inputs'
@@ -192,7 +193,34 @@ const portableTextSimpleType = {
     },
     // Instagram post or reel, from sanity-plugin-sgntech-instagram-embed (see sanity.config.js).
     { type: 'instagramPost' },
+    { type: 'tiktokPost' },
   ],
+}
+
+/* A TikTok video in rich text (tiktok-posts.jsx). Two or more in a row sit side by side. */
+const tiktokPostType = {
+  name: 'tiktokPost',
+  title: 'TikTok post',
+  type: 'object',
+  fields: [
+    {
+      name: 'url',
+      title: 'TikTok video link',
+      type: 'url',
+      description: 'Open the video on TikTok, click Share → Copy link, and paste it here.',
+      validation: (Rule) =>
+        Rule.required().custom(
+          (value) =>
+            !value ||
+            TIKTOK_VIDEO_URL.test(value) ||
+            'Paste a TikTok video link, like https://www.tiktok.com/@name/video/123….',
+        ),
+    },
+  ],
+  preview: {
+    select: { url: 'url' },
+    prepare: ({ url }) => ({ title: 'TikTok post', subtitle: url || 'No link yet' }),
+  },
 }
 
 const publicSiteServiceIconOptions = [
@@ -6200,5 +6228,6 @@ export default [
   installProcessStepType,
   installProcessSectionType,
   pageSectionType,
+  tiktokPostType,
   ...pageDocuments,
 ]

@@ -238,3 +238,29 @@
   gap: 1rem;
   align-items: start;
 }
+
+/* TikTok videos (tiktok-posts.jsx): the player at TikTok's tall 9:16, side by side like .instagram-grid. */
+.tiktok-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.tiktok-post {
+  max-width: 20.5rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: #000;
+}
+
+.tiktok-grid .tiktok-post {
+  max-width: none;
+}
+
+.tiktok-post__frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border: 0;
+}

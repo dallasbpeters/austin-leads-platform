@@ -1,6 +1,7 @@
 import { PortableText } from '@portabletext/react'
 
 import { InstagramGrid, InstagramPost } from '@/components/instagram-posts'
+import { TikTokGrid, TikTokPost } from '@/components/tiktok-posts'
 import { portableTextToPlainText } from '@/lib/sanity/portableText'
 import { cn } from '@/lib/utils'
 
@@ -15,21 +16,25 @@ const getBlockText = (value) => {
   return value?.children?.map((child) => child.text).join('') || ''
 }
 
+/* Each embed block type and the grid block that two or more in a row turn into. */
+const EMBED_GRIDS = { instagramPost: 'instagramGrid', tiktokPost: 'tiktokGrid' }
+
 /*
- * Two or more Instagram posts in a row become one grid block, so they sit side by
- * side instead of stacking down the page. A lone post stays a normal block.
+ * Two or more Instagram (or TikTok) posts in a row become one grid block, so they
+ * sit side by side instead of stacking down the page. A lone post stays a normal block.
  */
-const groupInstagramPosts = (blocks) => {
+const groupEmbeds = (blocks) => {
   const grouped = []
   for (const block of blocks) {
     const previous = grouped.at(-1)
-    if (block?._type !== 'instagramPost') {
+    const gridType = EMBED_GRIDS[block?._type]
+    if (!gridType) {
       grouped.push(block)
-    } else if (previous?._type === 'instagramGrid') {
+    } else if (previous?._type === gridType) {
       previous.posts.push(block)
-    } else if (previous?._type === 'instagramPost') {
+    } else if (previous?._type === block._type) {
       grouped[grouped.length - 1] = {
-        _type: 'instagramGrid',
+        _type: gridType,
         _key: `${previous._key}-grid`,
         posts: [previous, block],
       }
@@ -46,6 +51,8 @@ const portableTextComponents = {
     // over functions (renderNode) that cannot cross from a server component.
     instagramPost: ({ value }) => <InstagramPost value={value} />,
     instagramGrid: ({ value }) => <InstagramGrid value={value} />,
+    tiktokPost: ({ value }) => <TikTokPost value={value} />,
+    tiktokGrid: ({ value }) => <TikTokGrid value={value} />,
   },
   block: {
     normal: ({ children }) => <p>{children}</p>,
@@ -101,7 +108,7 @@ const PortableTextContent = ({ value, className, as: Tag = 'div', style }) => {
   if (Array.isArray(value)) {
     return (
       <Tag className={cn('portable-text-content [&>*+*]:mt-4', className)} style={style}>
-        <PortableText value={groupInstagramPosts(value)} components={portableTextComponents} />
+        <PortableText value={groupEmbeds(value)} components={portableTextComponents} />
       </Tag>
     )
   }

@@ -12,7 +12,7 @@ import { InstagramEmbed } from 'sanity-plugin-sgntech-instagram-embed/render'
 export const InstagramPost = ({ value }) =>
   value?.url ? <InstagramEmbed url={value.url} captioned={value.captioned} /> : null
 
-/** Two or more posts in a row, side by side (see groupInstagramPosts in portable-text-content.jsx). */
+/** Two or more posts in a row, side by side (see groupEmbeds in portable-text-content.jsx). */
 export const InstagramGrid = ({ value }) => (
   <div className="instagram-grid">
     {value.posts.map((post) => (
