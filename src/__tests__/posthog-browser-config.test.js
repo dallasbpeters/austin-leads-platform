@@ -46,6 +46,25 @@ describe('browser PostHog config', () => {
     expect(config.missing).toStrictEqual(['NEXT_PUBLIC_POSTHOG_KEY'])
   })
 
+  it('does not report a missing key on a page with no tenant when the map is set', () => {
+    const config = resolveBrowserPostHogConfig({
+      siteSlug: null,
+      keyMap: '{"txchristmaslights":"phc_site"}',
+      host: '/ingest',
+    })
+    expect(config).toStrictEqual({ token: DEFAULT_POSTHOG_KEY, apiHost: '/ingest', missing: [] })
+  })
+
+  it('still reports a missing key for a tenant that is not in the map', () => {
+    const config = resolveBrowserPostHogConfig({
+      siteSlug: 'other-site',
+      keyMap: '{"txchristmaslights":"phc_site"}',
+      host: '/ingest',
+    })
+    expect(config.token).toBe(DEFAULT_POSTHOG_KEY)
+    expect(config.missing).toStrictEqual(['NEXT_PUBLIC_POSTHOG_KEY'])
+  })
+
   it('reports a missing host when only the key is set', () => {
     const config = resolveBrowserPostHogConfig({ key: 'phc_single', host: '  ' })
     expect(config.apiHost).toBe(DEFAULT_POSTHOG_HOST)

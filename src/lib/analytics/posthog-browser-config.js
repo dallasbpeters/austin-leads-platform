@@ -31,12 +31,20 @@ const parseKeyMap = (raw) => {
  * @returns {{ token: string, apiHost: string, missing: string[] }} `missing` names each variable that fell back.
  */
 export const resolveBrowserPostHogConfig = ({ siteSlug, keyMap, key, host }) => {
-  const mappedToken = siteSlug ? parseKeyMap(keyMap)[siteSlug] : undefined
+  const sites = parseKeyMap(keyMap)
+  const mappedToken = siteSlug ? sites[siteSlug] : undefined
   const token = (typeof mappedToken === 'string' && mappedToken.trim()) || key?.trim()
   const apiHost = host?.trim()
 
+  /*
+   * A page with no tenant, such as the global 404, cannot use the per-site map.
+   * When the map is set, that is not a missing variable, so it takes the default
+   * project without an error. A tenant page with no key still reports one.
+   */
+  const noTenantWithMap = !siteSlug && Object.keys(sites).length > 0
+
   const missing = []
-  if (!token) {
+  if (!token && !noTenantWithMap) {
     missing.push('NEXT_PUBLIC_POSTHOG_KEY')
   }
   if (!apiHost) {
