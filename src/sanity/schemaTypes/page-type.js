@@ -4089,7 +4089,7 @@ const ctaSectionType = {
       type: 'string',
       initialValue: 'jobber',
       description:
-        'What the button does. Introduction asks for a name and email and emails info@texassolarandroofing.com.',
+        'What the button does. Introduction asks for a name and email and emails info@texassolarandroofingpros.com.',
       options: {
         list: [
           { title: 'Jobber request form', value: 'jobber' },

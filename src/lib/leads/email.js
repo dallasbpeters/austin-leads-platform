@@ -123,7 +123,7 @@ const formatFromAddress = (settings) => {
  * Chosen on the server by type, so a form can never pick where mail goes.
  */
 const RECIPIENT_BY_SOURCE_TYPE = {
-  [ROOFER_INTRODUCTION]: 'info@texassolarandroofing.com',
+  [ROOFER_INTRODUCTION]: 'info@texassolarandroofingpros.com',
 }
 const SUBJECT_BY_SOURCE_TYPE = {
   [ROOFER_INTRODUCTION]: 'Roofer introduction request',

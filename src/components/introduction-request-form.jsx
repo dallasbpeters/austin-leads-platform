@@ -8,7 +8,7 @@ import { useLeadForm } from '@/hooks/useLeadForm'
  * The roofer introduction form (Studio: Call to Action Section → Form →
  * Introduction). Name, email and a note about the roof, so Kathie can match the
  * homeowner with the right roofer; the lead route stores it and emails it to
- * info@texassolarandroofing.com (leads/email.js picks the inbox by lead type).
+ * info@texassolarandroofingpros.com (leads/email.js picks the inbox by lead type).
  */
 export default function IntroductionRequestForm({ buttonLabel, context }) {
   const fieldId = useId()

@@ -26,7 +26,7 @@ vi.mock(import('@/lib/leads/settings'), () => ({
     emailNotificationsEnabled: true,
     fromEmail: 'leads@texassolarandroofingpros.com',
     fromName: 'Texas Solar and Roofing Pros',
-    notificationToEmail: 'kathy@texassolarandroofing.com',
+    notificationToEmail: 'kathy@texassolarandroofingpros.com',
     resendTemplateId: '',
     subjectPrefix: 'New lead',
   }),
@@ -47,14 +47,14 @@ describe(sendLeadNotificationEmail, () => {
 
   it('sends a roofer introduction request to info@', async () => {
     await sendLeadNotificationEmail(lead(ROOFER_INTRODUCTION))
-    expect(sent[0].to).toStrictEqual(['info@texassolarandroofing.com'])
+    expect(sent[0].to).toStrictEqual(['info@texassolarandroofingpros.com'])
     expect(sent[0].replyTo).toBe('pat@example.com')
     expect(sent[0].subject).toBe('Roofer introduction request: Pat Homeowner (Texas Solar and Roofing Pros)')
   })
 
   it('sends other leads to the usual recipient', async () => {
     await sendLeadNotificationEmail(lead('consultation'))
-    expect(sent[0].to).toStrictEqual(['kathy@texassolarandroofing.com'])
+    expect(sent[0].to).toStrictEqual(['kathy@texassolarandroofingpros.com'])
     expect(sent[0].subject).toBe('New lead: Pat Homeowner (Texas Solar and Roofing Pros)')
   })
 })

@@ -234,7 +234,7 @@ const LeadSettingsClient = ({ initialSettings }) => {
                   id="notificationToEmail"
                   value={form.notificationToEmail}
                   onChange={(event) => updateField('notificationToEmail', event.target.value)}
-                  placeholder="kathy@texassolarandroofing.com"
+                  placeholder="kathy@texassolarandroofingpros.com"
                 />
               </div>
               <div className="grid gap-2">
@@ -271,7 +271,7 @@ const LeadSettingsClient = ({ initialSettings }) => {
                   id="fromEmail"
                   value={form.fromEmail}
                   onChange={(event) => updateField('fromEmail', event.target.value)}
-                  placeholder="leads@texassolarandroofing.com"
+                  placeholder="leads@texassolarandroofingpros.com"
                 />
               </div>
             </div>

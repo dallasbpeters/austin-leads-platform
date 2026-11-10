@@ -1,6 +1,6 @@
 import { getLeadRoutingSettingsRow, hasLeadDatabase, upsertLeadRoutingSettingsRow } from './db.mjs'
 
-const DEFAULT_RECIPIENT = 'kathy@texassolarandroofing.com'
+const DEFAULT_RECIPIENT = 'kathy@texassolarandroofingpros.com'
 const DEFAULT_FROM_NAME = 'Texas Solar and Roofing Pros'
 const DEFAULT_SUBJECT_PREFIX = 'New lead'
 
