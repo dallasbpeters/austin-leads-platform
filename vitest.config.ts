@@ -1,6 +1,9 @@
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
+// A shell with NODE_ENV=production loads React's production build, which has no act(). Tests always run as test.
+process.env.NODE_ENV = 'test'
+
 export default defineConfig({
   test: {
     environment: 'node',
