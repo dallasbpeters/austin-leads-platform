@@ -90,6 +90,7 @@ export default function JobberWorkRequestEmbed({
     <div
       ref={containerRef}
       className={`jobber-inline-work-request max-w-4 overflow-hidden rounded-md bg-white ${className}`}
+      data-third-party-embed="jobber"
       id={targetId}
     />
   )

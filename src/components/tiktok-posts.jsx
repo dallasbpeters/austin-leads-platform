@@ -14,7 +14,7 @@ const TikTokEmbed = ({ url }) => {
     return null
   }
   return (
-    <div className="tiktok-post">
+    <div className="tiktok-post" data-third-party-embed="tiktok">
       <iframe
         className="tiktok-post__frame"
         src={`https://www.tiktok.com/embed/v2/${videoId}`}
