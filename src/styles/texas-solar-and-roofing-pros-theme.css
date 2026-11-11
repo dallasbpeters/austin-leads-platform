@@ -13,6 +13,8 @@
  */
 
 [data-public-site='texas-solar-and-roofing-pros'] {
+  /* Links inside rich text (portable-text-content.jsx). Texas Flag Red, 5:1 on white. */
+  --color-link: var(--logo-flag-red);
   --color-primary: oklch(29.093% 0.0487 243.873);
   --color-tertiary: oklch(48.73% 0.03 260.31);
   --color-secondary: oklch(62.686% 0.185 257.772);

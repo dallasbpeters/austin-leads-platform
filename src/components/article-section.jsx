@@ -55,7 +55,7 @@ const ArticleSection = ({
         note: 'karaoke text reveal section',
       })}
     >
-      <div className="mx-auto w-[min(72rem,calc(100%-3rem))] py-32 text-left">
+      <div className="page-content py-32 text-left">
         {eyebrow ? (
           <p className="text-muted-foreground mb-2 text-[0.65rem] tracking-[0.22em] uppercase">{eyebrow}</p>
         ) : null}

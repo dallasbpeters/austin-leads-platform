@@ -100,7 +100,6 @@ const portableTextComponents = {
         href={value?.href}
         target={value?.blank ? '_blank' : undefined}
         rel={value?.blank ? 'noopener noreferrer' : undefined}
-        className="underline underline-offset-2 opacity-90 hover:opacity-100"
       >
         {children}
       </a>
