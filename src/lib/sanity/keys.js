@@ -496,6 +496,7 @@ function normalizeEnergyChartSection(section) {
     chartSecondaryLabel: section.chartSecondaryLabel,
     chartUnitLabel: section.chartUnitLabel,
     chartLineUnitLabel: section.chartLineUnitLabel,
+    chartValuePrefix: section.chartValuePrefix,
     chartYAxisMax: section.chartYAxisMax,
     chartBarColor: section.chartBarColor,
     chartLineColor: section.chartLineColor,

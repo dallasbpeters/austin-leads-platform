@@ -75,6 +75,23 @@ const chartColorTokenMap = {
   confetti: 'var(--color-confetti)',
 }
 
+function formatChartValue(value, prefix = '', unit = '') {
+  const n = Number(value)
+  const text = Number.isFinite(n) ? n.toLocaleString(undefined, { maximumFractionDigits: 2 }) : String(value)
+  return `${prefix}${text}${unit ? ` ${unit}` : ''}`
+}
+
+function seriesName(label, unit) {
+  return unit ? `${label} (${unit})` : label
+}
+
+function percentChange(base, total) {
+  if (!Number.isFinite(base) || base <= 0 || !Number.isFinite(total)) {
+    return null
+  }
+  return ((total - base) / base) * 100
+}
+
 function buildYAxisTicks(maxValue) {
   if (!Number.isFinite(maxValue) || maxValue <= 0) {
     return [0, 1]
@@ -133,6 +150,12 @@ function buildChartData(points, chartType, multiAreaCount) {
       scatterX: Number.isFinite(Number(point?.barValue)) ? Math.max(Number(point?.barValue), 0) : 0,
       scatterY: Number.isFinite(Number(point?.lineValue)) ? Number(point?.lineValue) : 0,
     }
+    if (chartType === 'stackedBarHorizontal') {
+      const total = Number.isFinite(Number(point?.lineValue)) ? Number(point.lineValue) : row.barValue
+      row.totalValue = Math.max(total, row.barValue)
+      row.extraValue = Math.max(total - row.barValue, 0)
+      row.percentChange = percentChange(row.barValue, total)
+    }
     if (chartType === 'area' && multiAreaCount > 0) {
       for (let i = 0; i < multiAreaCount; i += 1) {
         row[`area_${i}`] = resolveAreaPointValue(point, i, multiAreaCount)
@@ -167,7 +190,10 @@ function computeYAxisMax(
     }, 0)
     return Math.max(configuredYAxisMax, peak, 1)
   }
-  const maxBarValue = chartData.reduce((max, point) => Math.max(max, Number(point?.barValue || 0)), 0)
+  const maxBarValue = chartData.reduce(
+    (max, point) => Math.max(max, Number(point?.totalValue ?? point?.barValue ?? 0)),
+    0,
+  )
   return Math.max(configuredYAxisMax, maxBarValue || 0, 1)
 }
 
@@ -175,6 +201,7 @@ function ChartAxes({
   yAxisMax,
   yTicks,
   unitLabel,
+  valuePrefix = '',
   axisLineProps,
   tickLineProps,
   axisTickColor,
@@ -197,7 +224,9 @@ function ChartAxes({
         domain={[0, yAxisMax]}
         ticks={yTicks}
         tickFormatter={(value) =>
-          value === yAxisMax ? `${value.toLocaleString()} ${unitLabel}` : value.toLocaleString()
+          value === yAxisMax
+            ? formatChartValue(value, valuePrefix, unitLabel)
+            : formatChartValue(value, valuePrefix)
         }
         tick={{ fill: axisTickColor, fontSize: 12 }}
         axisLine={axisLineProps}
@@ -228,18 +257,19 @@ function ChartTooltipWithLegend({
   isComposed,
   secondaryLabel,
   lineUnitLabel,
+  valuePrefix = '',
 }) {
   const handleFormatter = isComposed
     ? (value, name) => {
         if (name === 'barValue') {
-          return [`${value} ${unitLabel}`, `${primaryLabel} (${unitLabel})`]
+          return [formatChartValue(value, valuePrefix, unitLabel), primaryLabel]
         }
         if (name === 'lineValue') {
-          return [`${value}${lineUnitLabel || ''}`, `${secondaryLabel || ''} (${lineUnitLabel || ''})`]
+          return [`${value}${lineUnitLabel || ''}`, secondaryLabel || '']
         }
         return [value, name]
       }
-    : formatter || ((value) => [`${value} ${unitLabel}`, primaryLabel])
+    : formatter || ((value) => [formatChartValue(value, valuePrefix, unitLabel), primaryLabel])
 
   return (
     <>
@@ -291,7 +321,7 @@ function AreaSeriesRenderer({
           key={seriesDef?._key || `area-series-${index}`}
           type="monotone"
           dataKey={`area_${index}`}
-          name={`${seriesTitle} (${unitLabel})`}
+          name={seriesName(seriesTitle, unitLabel)}
           stroke={seriesColor}
           fill={seriesColor}
           fillOpacity={areaFillOpacity}
@@ -305,7 +335,7 @@ function AreaSeriesRenderer({
     <Area
       type="monotone"
       dataKey="barValue"
-      name={`${primaryLabel} (${unitLabel})`}
+      name={seriesName(primaryLabel, unitLabel)}
       stroke={barColor}
       fill={barColor}
       fillOpacity={areaFillOpacity}
@@ -327,6 +357,7 @@ function renderBarChart(
   axisTickColor,
   axisLineProps,
   tickLineProps,
+  valuePrefix,
 ) {
   return (
     <BarChart data={chartData} margin={{ top: 22, right: 20, left: 8, bottom: 44 }}>
@@ -335,6 +366,7 @@ function renderBarChart(
           yAxisMax,
           yTicks,
           unitLabel,
+          valuePrefix,
           axisLineProps,
           tickLineProps,
           axisTickColor,
@@ -345,16 +377,127 @@ function renderBarChart(
       <ChartTooltipWithLegend
         showLegend={showLegend}
         unitLabel={unitLabel}
+        valuePrefix={valuePrefix}
         primaryLabel={primaryLabel}
-        formatter={(value) => [`${value} ${unitLabel}`, primaryLabel]}
+        formatter={(value) => [formatChartValue(value, valuePrefix, unitLabel), primaryLabel]}
       />
       <Bar
         dataKey="barValue"
-        name={`${primaryLabel} (${unitLabel})`}
+        name={seriesName(primaryLabel, unitLabel)}
         fill={barColor}
         radius={[2, 2, 0, 0]}
         maxBarSize={56}
       />
+    </BarChart>
+  )
+}
+
+function renderStackedBarLabel({ x, y, width, height, value }, valuePrefix) {
+  if (!Number.isFinite(Number(value)) || width < 44) {
+    return null
+  }
+  return (
+    <text
+      x={x + width / 2}
+      y={y + height / 2}
+      textAnchor="middle"
+      dominantBaseline="central"
+      fill="#ffffff"
+      fontSize="12"
+      fontWeight="600"
+    >
+      {formatChartValue(value, valuePrefix)}
+    </text>
+  )
+}
+
+function renderPercentChangeLabel({ x, y, width, height, index }, chartData, axisTickColor) {
+  const change = chartData[index]?.percentChange
+  if (!Number.isFinite(change)) {
+    return null
+  }
+  return (
+    <text
+      x={x + width + 6}
+      y={y + height / 2}
+      dominantBaseline="central"
+      fill={axisTickColor}
+      fontSize="12"
+      fontWeight="600"
+    >
+      {`${change > 0 ? '+' : ''}${change.toFixed(1)}%`}
+    </text>
+  )
+}
+
+function renderStackedHorizontalBarChart(
+  chartData,
+  yAxisMax,
+  yTicks,
+  unitLabel,
+  valuePrefix,
+  primaryLabel,
+  secondaryLabel,
+  barColor,
+  lineColor,
+  showGrid,
+  showLegend,
+  gridStroke,
+  axisTickColor,
+  axisLineProps,
+  tickLineProps,
+) {
+  return (
+    <BarChart
+      data={chartData}
+      layout="vertical"
+      margin={{ top: 8, right: 56, left: 8, bottom: 8 }}
+      barCategoryGap="18%"
+    >
+      <CartesianGrid stroke={gridStroke} strokeOpacity={1} vertical={showGrid} horizontal={false} />
+      <XAxis
+        type="number"
+        domain={[0, yAxisMax]}
+        ticks={yTicks}
+        tickFormatter={(value) => formatChartValue(value, valuePrefix)}
+        tick={{ fill: axisTickColor, fontSize: 12 }}
+        axisLine={axisLineProps}
+        tickLine={tickLineProps}
+      />
+      <YAxis
+        type="category"
+        dataKey="label"
+        width={150}
+        tick={{ fill: axisTickColor, fontSize: 12 }}
+        axisLine={axisLineProps}
+        tickLine={tickLineProps}
+      />
+      <Tooltip
+        cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+        formatter={(value, name, item) => {
+          if (name === secondaryLabel) {
+            return [formatChartValue(item?.payload?.totalValue, valuePrefix, unitLabel), secondaryLabel]
+          }
+          return [formatChartValue(value, valuePrefix, unitLabel), primaryLabel]
+        }}
+      />
+      {showLegend ? <Legend /> : null}
+      <Bar dataKey="barValue" name={primaryLabel} stackId="stack" fill={barColor} isAnimationActive={false}>
+        <LabelList dataKey="barValue" content={(props) => renderStackedBarLabel(props, valuePrefix)} />
+      </Bar>
+      <Bar
+        dataKey="extraValue"
+        name={secondaryLabel}
+        stackId="stack"
+        fill={lineColor}
+        radius={[0, 2, 2, 0]}
+        isAnimationActive={false}
+      >
+        <LabelList
+          dataKey="extraValue"
+          content={(props) => renderPercentChangeLabel(props, chartData, axisTickColor)}
+        />
+      </Bar>
     </BarChart>
   )
 }
@@ -372,6 +515,7 @@ function renderLineChart(
   axisTickColor,
   axisLineProps,
   tickLineProps,
+  valuePrefix,
 ) {
   return (
     <LineChart data={chartData} margin={{ top: 22, right: 20, left: 8, bottom: 44 }}>
@@ -380,6 +524,7 @@ function renderLineChart(
           yAxisMax,
           yTicks,
           unitLabel,
+          valuePrefix,
           axisLineProps,
           tickLineProps,
           axisTickColor,
@@ -390,13 +535,14 @@ function renderLineChart(
       <ChartTooltipWithLegend
         showLegend={showLegend}
         unitLabel={unitLabel}
+        valuePrefix={valuePrefix}
         primaryLabel={primaryLabel}
-        formatter={(value) => [`${value} ${unitLabel}`, primaryLabel]}
+        formatter={(value) => [formatChartValue(value, valuePrefix, unitLabel), primaryLabel]}
       />
       <Line
         type="monotone"
         dataKey="barValue"
-        name={`${primaryLabel} (${unitLabel})`}
+        name={seriesName(primaryLabel, unitLabel)}
         stroke={barColor}
         strokeWidth={3}
         dot={{ r: 4.5, fill: barColor, strokeWidth: 0 }}
@@ -423,6 +569,7 @@ function renderAreaChart(
   multiAreaCount,
   areaFillOpacity,
   chartAreaStacked,
+  valuePrefix,
 ) {
   const stackId = chartAreaStacked && multiAreaCount > 1 ? 'energy-areas' : undefined
   return (
@@ -432,6 +579,7 @@ function renderAreaChart(
           yAxisMax,
           yTicks,
           unitLabel,
+          valuePrefix,
           axisLineProps,
           tickLineProps,
           axisTickColor,
@@ -442,8 +590,9 @@ function renderAreaChart(
       <ChartTooltipWithLegend
         showLegend={showLegend}
         unitLabel={unitLabel}
+        valuePrefix={valuePrefix}
         primaryLabel={primaryLabel}
-        formatter={(value, name) => [`${value} ${unitLabel}`, name]}
+        formatter={(value, name) => [formatChartValue(value, valuePrefix, unitLabel), name]}
       />
       <AreaSeriesRenderer
         {...{ areaSeriesDefs, multiAreaCount, areaFillOpacity, unitLabel, stackId, barColor, primaryLabel }}
@@ -510,7 +659,7 @@ function renderScatterChart(
       />
       <Tooltip cursor={{ fill: 'rgba(0,0,0,0.04)' }} formatter={(value, name) => [value, name]} />
       {showLegend ? <Legend /> : null}
-      <Scatter name={`${secondaryLabel} (${lineUnitLabel})`} data={chartData} fill={lineColor} />
+      <Scatter name={seriesName(secondaryLabel, lineUnitLabel)} data={chartData} fill={lineColor} />
     </ScatterChart>
   )
 }
@@ -533,6 +682,7 @@ function renderComposedChart(
   tickLineProps,
   hasSecondaryData,
   chartHeight,
+  valuePrefix,
 ) {
   return (
     <ComposedChart data={chartData} margin={{ top: 22, right: 20, left: 8, bottom: 44 }}>
@@ -541,6 +691,7 @@ function renderComposedChart(
           yAxisMax,
           yTicks,
           unitLabel,
+          valuePrefix,
           axisLineProps,
           tickLineProps,
           axisTickColor,
@@ -552,6 +703,7 @@ function renderComposedChart(
       <ChartTooltipWithLegend
         showLegend={showLegend}
         unitLabel={unitLabel}
+        valuePrefix={valuePrefix}
         primaryLabel={primaryLabel}
         isComposed
         secondaryLabel={secondaryLabel}
@@ -560,7 +712,7 @@ function renderComposedChart(
       <Bar
         yAxisId="bars"
         dataKey="barValue"
-        name={`${primaryLabel} (${unitLabel})`}
+        name={seriesName(primaryLabel, unitLabel)}
         fill={barColor}
         radius={[2, 2, 0, 0]}
         maxBarSize={56}
@@ -570,7 +722,7 @@ function renderComposedChart(
           yAxisId="line"
           type="monotone"
           dataKey="lineValue"
-          name={`${secondaryLabel} (${lineUnitLabel})`}
+          name={seriesName(secondaryLabel, lineUnitLabel)}
           stroke={lineColor}
           strokeWidth={3}
           dot={{ r: 4.5, fill: lineColor, strokeWidth: 0 }}
@@ -623,10 +775,12 @@ function buildEnergyChartConfig(section) {
   const secondaryLabel = sec.chartSecondaryLabel || 'Secondary'
   const barColor = resolveChartColor(sec.chartBarColor, 'var(--color-primary)')
   const lineColor = resolveChartColor(sec.chartLineColor, 'var(--color-secondary)')
-  const unitLabel = sec.chartUnitLabel || 'kWh'
-  const lineUnitLabel = sec.chartLineUnitLabel || 'deg'
+  // Empty means no unit. Studio unsets a cleared field, so a non-empty fallback here could never be removed.
+  const unitLabel = sec.chartUnitLabel || ''
+  const lineUnitLabel = sec.chartLineUnitLabel || ''
+  const valuePrefix = sec.chartValuePrefix || ''
   const periodLabel = sec.chartPeriodLabel || 'Jul 2024 - Jul 2025'
-  const chartHeight = 400
+  const chartHeight = chartType === 'stackedBarHorizontal' ? Math.max(240, points.length * 40 + 48) : 400
   const chartAreaStacked = sec.chartAreaStacked === true
 
   const { areaSeriesDefs, multiAreaCount } = inferAreaSeries(
@@ -659,6 +813,7 @@ function buildEnergyChartConfig(section) {
     lineColor,
     unitLabel,
     lineUnitLabel,
+    valuePrefix,
     periodLabel,
     areaSeriesDefs,
     multiAreaCount,
@@ -692,6 +847,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
     showAxisLines,
     unitLabel,
     lineUnitLabel,
+    valuePrefix,
     primaryLabel,
     secondaryLabel,
     barColor,
@@ -730,6 +886,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
         axisTickColor,
         axisLineProps,
         tickLineProps,
+        valuePrefix,
       ),
     line: () =>
       renderLineChart(
@@ -745,6 +902,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
         axisTickColor,
         axisLineProps,
         tickLineProps,
+        valuePrefix,
       ),
     area: () =>
       renderAreaChart(
@@ -764,6 +922,25 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
         multiAreaCount,
         areaFillOpacity,
         chartAreaStacked,
+        valuePrefix,
+      ),
+    stackedBarHorizontal: () =>
+      renderStackedHorizontalBarChart(
+        chartData,
+        yAxisMax,
+        yTicks,
+        unitLabel,
+        valuePrefix,
+        primaryLabel,
+        secondaryLabel,
+        barColor,
+        lineColor,
+        showGrid,
+        showLegend,
+        gridStroke,
+        axisTickColor,
+        axisLineProps,
+        tickLineProps,
       ),
     pie: () => renderPieChart(pieData, unitLabel, primaryLabel, showLegend),
     scatter: () =>
@@ -799,6 +976,7 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
         tickLineProps,
         hasSecondaryData,
         chartHeight,
+        valuePrefix,
       ),
   }
   const renderChart = () => (chartRenderers[chartType] || chartRenderers.composed)()
@@ -830,7 +1008,12 @@ export default function EnergyChartSection({ section = null, sectionId = 'energy
                 aria-label={`${titleValue} chart showing ${periodLabel}`}
                 style={{ width: '100%', height: `${chartHeight}px`, minHeight: `${chartHeight}px` }}
               >
-                <ResponsiveContainer width="100%" aspect={1.2} maxHeight={450}>
+                <ResponsiveContainer
+                  width="100%"
+                  {...(chartType === 'stackedBarHorizontal'
+                    ? { height: chartHeight }
+                    : { aspect: 1.2, maxHeight: 450 })}
+                >
                   {renderChart()}
                 </ResponsiveContainer>
               </div>

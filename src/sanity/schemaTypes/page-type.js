@@ -5604,6 +5604,7 @@ const energyChartSectionType = {
         list: [
           { title: 'Composed (bar + line)', value: 'composed' },
           { title: 'Bar', value: 'bar' },
+          { title: 'Stacked bar (horizontal)', value: 'stackedBarHorizontal' },
           { title: 'Line', value: 'line' },
           { title: 'Area (filled)', value: 'area' },
           { title: 'Pie', value: 'pie' },
@@ -5691,7 +5692,15 @@ const energyChartSectionType = {
       name: 'chartLineUnitLabel',
       title: 'Line unit suffix',
       type: 'string',
+      description: 'Leave empty for no suffix.',
       options: canvasPurpose('Suffix shown on line values, e.g. deg.'),
+    },
+    {
+      name: 'chartValuePrefix',
+      title: 'Value prefix',
+      type: 'string',
+      description: 'Shown before every value, e.g. $. Leave empty for none.',
+      options: canvasPurpose('Prefix shown before chart values, e.g. $ for prices.'),
     },
     {
       name: 'chartYAxisMax',
@@ -5729,7 +5738,7 @@ const energyChartSectionType = {
         input: ChartPointsJsonInput,
       },
       options: canvasPurpose(
-        'Ordered chart data. Label = category, Bar value = primary metric, Line value = secondary metric/x-y coordinate.',
+        'Ordered chart data. Label = category, Bar value = primary metric, Line value = secondary metric/x-y coordinate. For Stacked bar (horizontal), Bar value = base amount and Line value = total amount; the bar shows the gap and the % change.',
       ),
     },
   ]),
@@ -6112,6 +6121,8 @@ const baseFields = [
     name: 'sections',
     title: 'Sections',
     type: 'array',
+    description:
+      'All page and post copy goes here. There is no top-level body field. For long article or blog text, add an Article Section and put the rich text in its body.',
     options: canvasPurpose(
       'Structured page sections. Map headings, body copy, calls to action, proof points, and FAQ items into the relevant section.',
     ),

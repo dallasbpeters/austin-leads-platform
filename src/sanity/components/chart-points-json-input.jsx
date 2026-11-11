@@ -162,6 +162,7 @@ function extractChartConfig(parsed) {
     'chartSecondaryLabel',
     'chartUnitLabel',
     'chartLineUnitLabel',
+    'chartValuePrefix',
     'chartYAxisMax',
     'chartBarColor',
     'chartLineColor',
