@@ -18,7 +18,7 @@
     "studio:deploy": "sanity deploy",
     "dev:stop": "node scripts/stop-dev.mjs",
     "prebuild": "node scripts/sync-reel-assets.mjs",
-    "build": "next build --webpack",
+    "build": "next build --webpack && node scripts/check-pdf-trace.mjs",
     "analyze": "ANALYZE=true NODE_OPTIONS=--max-old-space-size=16384 next build --webpack",
     "start": "next start",
     "seed:pages": "node --env-file=.env.local scripts/seed-public-pages.mjs",

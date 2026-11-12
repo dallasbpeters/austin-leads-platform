@@ -64,6 +64,14 @@ const getSanityRedirects = async () => {
     })
 }
 
+// Both pnpm layouts: isolated (.pnpm store, what Vercel used) and hoisted (.npmrc).
+const PDFKIT_DIRS = ['./node_modules/.pnpm/pdfkit@*/node_modules/pdfkit', './node_modules/pdfkit']
+const PDFKIT_RUNTIME_FILES = PDFKIT_DIRS.flatMap((dir) => [
+  `${dir}/js/standard-fonts/**`,
+  `${dir}/js/data/**`,
+  `${dir}/lib/**`,
+])
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: PROJECT_ROOT,
@@ -82,8 +90,18 @@ const nextConfig = {
   serverExternalPackages: ['@react-pdf/renderer'],
   // Brand assets read from disk by the quote PDF renderer must be traced
   // into the serverless bundle on Vercel.
+  // pdfkit (under @react-pdf) loads its fonts and helpers through package
+  // "imports" such as require('#standard-fonts/Helvetica'), which the tracer
+  // can't follow. Without these files the PDF routes fail on Vercel with
+  // "Cannot find module .../pdfkit/js/standard-fonts/Helvetica.cjs".
+  // Guarded by src/__tests__/pdf-route-tracing.test.js and scripts/check-pdf-trace.mjs.
   outputFileTracingIncludes: {
-    '/api/quotes/**': ['./public/images/quote-assets/**', './public/images/tx-solar-logo.png'],
+    '/api/quotes/**': [
+      './public/images/quote-assets/**',
+      './public/images/tx-solar-logo.png',
+      ...PDFKIT_RUNTIME_FILES,
+    ],
+    '/api/christmas/invoices/**': PDFKIT_RUNTIME_FILES,
   },
   transpilePackages: ['sanity', 'next-sanity', '@sanity/ui', '@sanity/icons'],
   images: {
