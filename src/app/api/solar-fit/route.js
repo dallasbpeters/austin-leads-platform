@@ -61,13 +61,17 @@ export async function POST(request) {
   if (payload.consent !== true) {
     return fail('Please agree to be contacted so we can send your estimate.')
   }
-  // Bots fill every field, people never see this one. Logged, so a real visitor
-  // dropped by mistake shows up in the logs instead of vanishing.
-  if (clean(payload.trap)) {
-    console.warn('[solar-fit] dropped a send with the bot trap filled', {
+  // Bots fill every field; people never see this one. A filled trap used to drop
+  // the request, but browser autofill filled it for real visitors and their
+  // estimates vanished. Now the lead is still saved, marked as a possible bot,
+  // and only the emails, sheet row and draft quote are skipped.
+  const trapValue = clean(payload.trap)
+  const possibleBot = Boolean(trapValue)
+  if (possibleBot) {
+    console.warn('[solar-fit] bot trap filled; saving the lead marked as a possible bot', {
       pagePath: clean(payload.pagePath, 200),
+      trapLength: trapValue.length,
     })
-    return NextResponse.json({ ok: true })
   }
 
   const pageId = clean(payload.pageId, 120)
@@ -121,9 +125,15 @@ export async function POST(request) {
         results: Object.fromEntries(result.outputs.map((output) => [output.key, output.value])),
         qualifies: result.qualifies,
         roof: roof ? { placeId, ...extras } : null,
+        ...(possibleBot ? { possibleBot: true } : {}),
       },
     })
     leadId = submission.id
+  }
+
+  if (possibleBot) {
+    console.info('Solar fit request saved as a possible bot.', { leadId })
+    return NextResponse.json({ ok: true, qualifies: result.qualifies })
   }
 
   const [email, sheet] = await Promise.all([

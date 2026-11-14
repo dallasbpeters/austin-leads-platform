@@ -397,17 +397,12 @@ export function SolarFitSection({ page, section, sectionId = 'solar-fit' }) {
                       </label>
                     </div>
                     {/*
-                     * Hidden from people; bots fill it and get dropped. Not named like a
-                     * real field ("company" was): browser autofill filled it for real
-                     * visitors, and their requests were dropped without a word.
+                     * A bot trap: simple bots fill every input in the page. `hidden`
+                     * (display: none) keeps browser autofill out of it; Chrome ignored
+                     * autoComplete="off" and filled the old off-screen version for real
+                     * visitors. A filled trap marks the lead, it never drops it.
                      */}
-                    <input
-                      className="solar-fit__trap"
-                      name="hp_check"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      aria-hidden="true"
-                    />
+                    <input name="hp_check" type="text" hidden tabIndex={-1} autoComplete="off" />
                     <label className="solar-fit__consent">
                       <input name="consent" type="checkbox" required />
                       <span>It is OK to email or call me about my estimate. No spam, no commitment.</span>

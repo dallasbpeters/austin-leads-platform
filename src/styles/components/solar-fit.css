@@ -226,14 +226,6 @@ select.solar-calculator__input {
   line-height: 1.4;
 }
 
-.solar-fit__trap {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-
 /* Results stack in the right column; the dark tile leads instead of sinking to the bottom. */
 .solar-fit .solar-calculator__system {
   margin-block-start: 0;
