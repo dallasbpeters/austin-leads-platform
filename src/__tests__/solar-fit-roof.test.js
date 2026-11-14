@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { roofView } from '@/components/platform/sections/solar-fit-roof'
+import { roofView } from '@/lib/solar-fit/roof-view'
 
 const photo = (panels) => ({ metersWide: 80, metersTall: 80, panels })
 
