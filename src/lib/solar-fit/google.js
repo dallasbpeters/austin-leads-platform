@@ -161,6 +161,24 @@ export function staticMapUrl(lat, lng, zoom) {
   return url.toString()
 }
 
+/**
+ * The Maps satellite photo as WebP. Google's tiles come out hazy and soft once
+ * blown up to fill the map, so they get a light sharpen, a touch more contrast
+ * and colour. Used by the photo route and by the picture saved on draft quotes.
+ */
+export async function mapPhotoWebp(lat, lng, zoom) {
+  const response = await fetch(staticMapUrl(lat, lng, zoom), { next: { revalidate: DAY } })
+  if (!response.ok) {
+    throw new Error(`Map photo download failed (${response.status})`)
+  }
+  return sharp(Buffer.from(await response.arrayBuffer()))
+    .sharpen({ sigma: 0.8 })
+    .linear(1.08, -8)
+    .modulate({ saturation: 1.12 })
+    .webp({ quality: 86 })
+    .toBuffer()
+}
+
 /*
  * The roof photo, with every panel placed on it in metres from the photo's
  * top-left corner. Google measured the panels on the Solar API's own aerial,

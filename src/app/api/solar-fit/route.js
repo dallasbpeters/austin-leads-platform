@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 
 import { createLeadSubmission, ensureLeadSubmissionsTable, hasLeadDatabase } from '@/lib/leads/db'
+import { createDraftQuoteFromEstimate } from '@/lib/quotes/from-estimate'
 import { isInTexas, placeLocation, roofAt } from '@/lib/solar-fit/google'
 import { computeWithRoof, resolveModel, roofExtras } from '@/lib/solar-fit/model'
 import { appendSolarFitRow, sendSolarFitEmails } from '@/lib/solar-fit/notify'
@@ -27,6 +28,9 @@ const SECTION_QUERY = `*[_id == $pageId][0]{
     notQualifiedMessage
   }
 }`
+
+// The draft quote's roof picture loads the Solar aerial and runs after the response.
+export const maxDuration = 60
 
 const clean = (value, max = 300) =>
   String(value ?? '')
@@ -132,6 +136,22 @@ export async function POST(request) {
   ])
 
   console.info('Solar fit request handled.', { leadId, email, sheet, qualifies: result.qualifies })
+
+  // A draft quote for the team to finish in /quotes. After the response, so the
+  // roof picture never slows the visitor down.
+  after(async () => {
+    const quote = await createDraftQuoteFromEstimate({
+      lead,
+      model,
+      answers: result.values,
+      results: Object.fromEntries(result.outputs.map((output) => [output.key, output.value])),
+      roof: extras,
+      fullRoof: roof,
+      panelCount,
+      leadId,
+    })
+    console.info('Solar fit draft quote.', { leadId, ...quote })
+  })
 
   return NextResponse.json({ ok: true, qualifies: result.qualifies })
 }
