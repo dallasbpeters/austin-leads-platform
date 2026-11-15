@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { trackAnalyticsEvent } from '@/lib/analytics/client'
 import { cn } from '@/lib/utils'
 import type { ReactNode } from 'react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Floating-action-button positioning for the bottom-right corner.
 const FAB_CLASSES = 'fixed right-5 bottom-5 z-50 size-14 rounded-(--radius-button) sm:right-6 sm:bottom-6'
@@ -42,6 +42,7 @@ export function JobberDialog({
 }: JobberDialogProps) {
   const [open, setOpen] = useState(false)
   const [isReady, setIsReady] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   const analyticsParams = useMemo(
     () => ({
@@ -67,6 +68,25 @@ export function JobberDialog({
     [analyticsParams],
   )
 
+  /*
+   * While the dialog is open, the overlay covers the trigger. On a phone, a quick
+   * second tap on the trigger lands on the overlay, and Radix closes the dialog.
+   * Keep the dialog open when a tap outside it lands on the trigger.
+   */
+  const handlePointerDownOutside = useCallback((event: CustomEvent<{ originalEvent: PointerEvent }>) => {
+    const trigger = triggerRef.current?.getBoundingClientRect()
+    const { clientX, clientY } = event.detail.originalEvent
+    if (
+      trigger &&
+      clientX >= trigger.left &&
+      clientX <= trigger.right &&
+      clientY >= trigger.top &&
+      clientY <= trigger.bottom
+    ) {
+      event.preventDefault()
+    }
+  }, [])
+
   useEffect(() => {
     if (open && !isReady) {
       const timer = setTimeout(() => setIsReady(true), 50)
@@ -76,7 +96,7 @@ export function JobberDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
+      <DialogTrigger ref={triggerRef} asChild>
         <Button
           variant={variant}
           size={iconOnly ? 'icon' : 'default'}
@@ -87,7 +107,10 @@ export function JobberDialog({
           {iconOnly ? null : buttonLabel}
         </Button>
       </DialogTrigger>
-      <DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-4 sm:max-w-3xl sm:p-6">
+      <DialogContent
+        onPointerDownOutside={handlePointerDownOutside}
+        className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] overflow-hidden p-4 sm:max-w-3xl sm:p-6"
+      >
         <DialogHeader className="mb-2 pr-8">
           <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
         </DialogHeader>
