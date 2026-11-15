@@ -18,14 +18,15 @@ test('a quick second tap on the quote button keeps the dialog open', async ({ pa
   expect(box, 'quote button should render').not.toBeNull()
   const { x, y, width, height } = box as { x: number; y: number; width: number; height: number }
   const center = { x: x + width / 2, y: y + height / 2 }
+  const dialog = page.getByRole('dialog', { name: 'Get a free quote' })
 
   await page.touchscreen.tap(center.x, center.y)
-  await expect(page.getByRole('dialog', { name: 'Get a free quote' })).toBeVisible()
+  await expect(dialog).toBeVisible()
   await page.touchscreen.tap(center.x, center.y)
   await page.waitForTimeout(1000)
-  await expect(page.getByRole('dialog', { name: 'Get a free quote' })).toBeVisible()
+  await expect(dialog).toBeVisible()
 
   // A tap on the overlay away from the button still closes the dialog.
   await page.touchscreen.tap(4, 4)
-  await expect(page.getByRole('dialog')).toBeHidden()
+  await expect(dialog).toBeHidden()
 })
