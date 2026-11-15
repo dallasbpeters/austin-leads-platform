@@ -44,6 +44,13 @@ const normalizeDegrees = (deg) => {
 const pointerAngleDeg = (centerX, centerY, clientX, clientY) =>
   (Math.atan2(clientY - centerY, clientX - centerX) * 180) / Math.PI
 
+/*
+ * Texas, as west,south,east,north. Quotes are for Texas homes only, and the map
+ * looks addresses up while they are being typed: without a box, a half-typed
+ * street matched anywhere in the US (once, Alaska) and the map flew there.
+ */
+const TEXAS_BBOX = '-106.65,25.84,-93.51,36.5'
+
 const geocodeAddress = async (address, token) => {
   const query = String(address || '').trim()
   if (!query || !token) {
@@ -52,6 +59,7 @@ const geocodeAddress = async (address, token) => {
   const url = new URL(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`)
   url.searchParams.set('access_token', token)
   url.searchParams.set('country', 'US')
+  url.searchParams.set('bbox', TEXAS_BBOX)
   url.searchParams.set('limit', '1')
   url.searchParams.set('proximity', '-97.7431,30.2672')
   const response = await fetch(url.toString())
@@ -325,6 +333,10 @@ export default function SystemLayoutEditor({ address = '', mode = 'map', layout,
       console.error('[SystemLayoutEditor]', event?.error || event)
     }
 
+    // Set by Mapbox's own 'load' event. map.loaded() is false whenever tiles are
+    // still coming in or the map is moving, so it can't tell "never loaded" apart
+    // from "loaded and busy", and it raised a false "taking too long" error.
+    let hasLoaded = false
     const finishReady = () => {
       if (cancelled || !map) {
         return
@@ -334,13 +346,21 @@ export default function SystemLayoutEditor({ address = '', mode = 'map', layout,
       bumpView()
     }
 
+    const handleLoad = () => {
+      hasLoaded = true
+      if (!cancelled) {
+        setMapError('')
+      }
+      finishReady()
+    }
+
     const handleIdle = () => {
       if (!cancelled && map) {
         map.resize()
       }
     }
 
-    map.on('load', finishReady)
+    map.on('load', handleLoad)
     map.once('idle', handleIdle)
     map.on('error', handleError)
     map.on('move', handleView)
@@ -368,7 +388,7 @@ export default function SystemLayoutEditor({ address = '', mode = 'map', layout,
 
     const resizeTimer = window.setTimeout(finishReady, 250)
     const failSafe = window.setTimeout(() => {
-      if (!cancelled && !mapRef.current?.loaded()) {
+      if (!cancelled && !hasLoaded) {
         setMapError('Map is taking too long to load. Check the Mapbox token and network.')
       }
     }, 8000)
@@ -384,7 +404,7 @@ export default function SystemLayoutEditor({ address = '', mode = 'map', layout,
       window.clearTimeout(resizeTimer)
       window.clearTimeout(failSafe)
       resizeObserver?.disconnect()
-      map.off('load', finishReady)
+      map.off('load', handleLoad)
       map.off('error', handleError)
       map.off('move', handleView)
       map.off('zoom', handleView)
