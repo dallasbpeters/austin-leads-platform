@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 
 .admin-theme {
+  color-scheme: light dark;
+
   --background: oklch(99.11% 0 0deg);
   --foreground: oklch(20.46% 0 0deg);
   --card: oklch(99.11% 0 0deg);
@@ -27,7 +29,7 @@
   --chart-5: oklch(69.59% 0.1491 162.4796deg);
   --sidebar: oklch(28.01% 0.06 273.7deg);
   --sidebar-foreground: oklch(97.015% 0.0001 271.152deg);
-  --sidebar-primary: oklch(28.01% 0.06 273.7deg);
+  --sidebar-primary: oklch(10.01% 0.06 273.7deg);
   --sidebar-primary-foreground: oklch(26.26% 0.0147 166.4589deg);
   --sidebar-accent: oklch(94.61% 0 0deg);
   --sidebar-accent-foreground: oklch(24.35% 0 0deg);
@@ -193,15 +195,9 @@
 }
 
 @layer base {
-  * {
-    /* eslint-disable-next-line css/no-invalid-at-rules */
-    @apply border-border outline-ring/50;
-  }
-
   body {
-    /* eslint-disable-next-line css/no-invalid-at-rules */
-    @apply bg-background text-foreground;
-
+    background-color: var(--background);
+    color: var(--foreground);
     letter-spacing: var(--tracking-normal);
   }
 }

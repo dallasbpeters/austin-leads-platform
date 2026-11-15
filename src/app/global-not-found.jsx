@@ -1,4 +1,8 @@
-import RootDocument from '@/components/root-document'
+import '@/styles/globals.css'
+
+import { bodyClassName, fontSans } from '@/app/fonts'
+import { AnalyticsProvider } from '@/app/providers'
+import { RootHead, RootTools, SkipLink } from '@/app/root-parts'
 
 import NotFound from './(site)/tenant/[site]/not-found'
 
@@ -15,8 +19,17 @@ export const metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <RootDocument>
-      <NotFound />
-    </RootDocument>
+    <html lang="en" className={fontSans.variable} suppressHydrationWarning data-scroll-behavior="smooth">
+      <head>
+        <RootHead />
+      </head>
+      <body className={bodyClassName}>
+        <SkipLink />
+        <AnalyticsProvider siteSlug={null}>
+          <NotFound />
+        </AnalyticsProvider>
+        <RootTools />
+      </body>
+    </html>
   )
 }

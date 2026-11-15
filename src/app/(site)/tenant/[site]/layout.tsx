@@ -2,10 +2,14 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Mail } from 'iconoir-react'
 import type { Metadata } from 'next'
 
+import '@/styles/globals.css'
+
+import { bodyClassName, fontSans } from '@/app/fonts'
+import { AnalyticsProvider } from '@/app/providers'
+import { RootHead, RootTools, SkipLink } from '@/app/root-parts'
 import DevTrace from '@/components/dev/dev-trace'
 import { JobberDialog } from '@/components/jobber-dialog'
 import { getPublicDataSiteAttribute } from '@/components/platform/public-site-utils'
-import RootDocument from '@/components/root-document'
 import { getGoogleAnalyticsConfig, shouldLoadAnalyticsTags } from '@/lib/analytics/google'
 import { resolveSiteBySlug } from '@/lib/platform/content'
 import { rootMetadata as sharedRootMetadata } from '@/lib/root-metadata'
@@ -60,26 +64,45 @@ const TenantRootLayout = async ({ children, params }: TenantLayoutProps) => {
   const { measurementId, gtmId } = getGoogleAnalyticsConfig(site?.slug)
   const analyticsEnabled = shouldLoadAnalyticsTags()
 
+  const publicSite = getPublicDataSiteAttribute(site)
+  const analyticsSiteSlug = site?.slug ?? null
+
   return (
-    <RootDocument publicSite={getPublicDataSiteAttribute(site)} analyticsSiteSlug={site?.slug ?? null}>
-      <div className="bg-background text-foreground min-h-screen">
-        <DevTrace markup="src/app/(site)/tenant/[site]/layout.tsx" content="site route shell" />
-        {analyticsEnabled && gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
-        {analyticsEnabled && !gtmId && measurementId ? <GoogleAnalytics gaId={measurementId} /> : null}
-        {children}
-        <JobberDialog
-          fixed
-          iconOnly
-          icon={<Mail className="size-8" width={48} height={48} aria-hidden />}
-          buttonLabel="Get a free quote"
-          title="Get a free quote"
-          context={{
-            sourceSection: 'contact_fab',
-            ...(site?.jobber?.requestFormUrl ? { jobberRequestFormUrl: site.jobber.requestFormUrl } : {}),
-          }}
-        />
-      </div>
-    </RootDocument>
+    <html
+      lang="en"
+      className={fontSans.variable}
+      suppressHydrationWarning
+      data-scroll-behavior="smooth"
+      {...(publicSite ? { 'data-public-site': publicSite } : {})}
+      {...(analyticsSiteSlug ? { 'data-analytics-site': analyticsSiteSlug } : {})}
+    >
+      <head>
+        <RootHead />
+      </head>
+      <body className={bodyClassName}>
+        <SkipLink />
+        <AnalyticsProvider siteSlug={analyticsSiteSlug}>
+          <div className="bg-background text-foreground min-h-screen">
+            <DevTrace markup="src/app/(site)/tenant/[site]/layout.tsx" content="site route shell" />
+            {analyticsEnabled && gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
+            {analyticsEnabled && !gtmId && measurementId ? <GoogleAnalytics gaId={measurementId} /> : null}
+            {children}
+            <JobberDialog
+              fixed
+              iconOnly
+              icon={<Mail className="size-8" width={48} height={48} aria-hidden />}
+              buttonLabel="Get a free quote"
+              title="Get a free quote"
+              context={{
+                sourceSection: 'contact_fab',
+                ...(site?.jobber?.requestFormUrl ? { jobberRequestFormUrl: site.jobber.requestFormUrl } : {}),
+              }}
+            />
+          </div>
+        </AnalyticsProvider>
+        <RootTools />
+      </body>
+    </html>
   )
 }
 

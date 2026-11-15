@@ -85,6 +85,9 @@ export default defineConfig({
     // (e.g. ui/calendar) are accepted patterns here.
     'react/no-object-type-as-default-prop': 'off',
     'react/no-unstable-nested-components': 'off',
+    // Same reason as func-style above: components are `function` declarations
+    // throughout (403 of them), and this rule would make every one an arrow.
+    'react/function-component-definition': 'off',
 
     // @shadcn/lint design-system rules. All at `warn` while the backlog is
     // measured (see DESIGN.md). `shadcn/no-unknown-classes` is intentionally NOT

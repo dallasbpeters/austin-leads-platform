@@ -93,7 +93,7 @@ export default async function AdminLayout({ children }) {
               <SidebarTrigger />
               <div className="text-muted-foreground hidden items-center text-sm font-medium md:flex">
                 <span>Austin Leads</span>
-                <span className="mx-2 text-neutral-300">/</span>
+                <span className="mx-2">/</span>
                 <span className="text-foreground">{quotesOnly ? 'Quotes' : 'Overview'}</span>
               </div>
             </div>

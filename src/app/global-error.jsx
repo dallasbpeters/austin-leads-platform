@@ -12,7 +12,7 @@ export default function GlobalError({ error, reset }) {
   return (
     <html lang="en">
       <head>
-        {/* This page has no RootDocument. Without the opt-in, arriving here rejects the transition. */}
+        {/* This page renders without the root layouts' shared head. Without the opt-in, arriving here rejects the transition. */}
         {/* oxlint-disable-next-line shadcn/no-inline-styles -- must be in place before first paint */}
         <style>{'@view-transition{navigation:auto}'}</style>
       </head>

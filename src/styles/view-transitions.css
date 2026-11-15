@@ -1,6 +1,6 @@
 /*
  * View Transitions - separate file to prevent Tailwind stripping.
- * The `@view-transition` opt-in is inline in root-document.jsx and global-error.jsx,
+ * The `@view-transition` opt-in is inline in src/app/root-parts.jsx (RootHead) and global-error.jsx,
  * so it is in place before the first paint.
  */
 
