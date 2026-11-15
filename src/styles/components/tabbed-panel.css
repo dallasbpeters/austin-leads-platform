@@ -95,6 +95,15 @@
   z-index: -2;
 }
 
+tabbed-panel__sound {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  background: oklch(0% 0 0deg / 64%);
+  padding: 12px;
+  border-radius: 24px;
+}
+
 .tabbed-panel__image {
   object-fit: cover;
   opacity: 0;
