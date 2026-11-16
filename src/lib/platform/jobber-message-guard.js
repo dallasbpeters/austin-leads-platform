@@ -23,7 +23,7 @@ let installed = false
  * @param {MessageEvent} event A message posted to the window.
  * @returns {boolean} True when Jobber's listener can handle the message without throwing.
  */
-export const jobberListenerCanRun = (frame, event) => {
+const jobberListenerCanRun = (frame, event) => {
   if (!frame.isConnected || event.source !== frame.contentWindow) {
     return false
   }
