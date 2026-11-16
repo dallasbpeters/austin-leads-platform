@@ -22,6 +22,18 @@ const parseKeyMap = (raw) => {
   }
 }
 
+/*
+ * `/ingest` rewrites to PostHog US cloud on the same domain, so ad blockers do
+ * not drop the events. A US cloud host in the env skips that proxy, so it
+ * resolves to `/ingest`. Other hosts, such as EU cloud, stay as set.
+ */
+const US_CLOUD_HOST = /^(https?:\/\/)?(us|us\.i|app)\.posthog\.com\/?$/iu
+
+const resolveApiHost = (host) => {
+  const value = host?.trim()
+  return value && US_CLOUD_HOST.test(value) ? DEFAULT_POSTHOG_HOST : value
+}
+
 /**
  * @param {object} env
  * @param {string | null | undefined} env.siteSlug - The tenant from `data-analytics-site`.
@@ -34,7 +46,7 @@ export const resolveBrowserPostHogConfig = ({ siteSlug, keyMap, key, host }) => 
   const sites = parseKeyMap(keyMap)
   const mappedToken = siteSlug ? sites[siteSlug] : undefined
   const token = (typeof mappedToken === 'string' && mappedToken.trim()) || key?.trim()
-  const apiHost = host?.trim()
+  const apiHost = resolveApiHost(host)
 
   /*
    * A page with no tenant, such as the global 404, cannot use the per-site map.
