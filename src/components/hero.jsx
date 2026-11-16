@@ -1,7 +1,5 @@
 // oxlint-disable func-style jsx-a11y/media-has-caption
 import Image from '@/components/site-image'
-import { ArrowUpRight } from 'iconoir-react'
-import Link from 'next/link'
 
 import { getHeroOverlayAppearance, hexToRgba } from '@/lib/platform/heroAppearance'
 import { getHeroImageUrl, getHeroVideoSource, getImageAlt } from '@/lib/platform/imageSource'
@@ -11,6 +9,7 @@ import { cn } from '@/lib/utils'
 import Card from './card'
 import CloudBackground from './cloud-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
+import GlassCard from './glass-card'
 import HeroActions from './hero-actions'
 import ImageFader from './image-fader'
 import PortableTextContent from './portable-text-content'
@@ -401,37 +400,7 @@ function HeroCards({ cards }) {
   return (
     <div className="solar-hero__cards solar-fade-up solar-fade-up-delay">
       {cards.map((card, index) => (
-        <article
-          key={buildRuntimeKey('hero-card', card.title, card._key, index)}
-          className={cn('solar-hero__glass', card.imageUrl && 'solar-hero__glass--with-image')}
-        >
-          <div className="solar-hero__glass-head">
-            <div className="solar-hero__glass-heading">
-              <h2 className="solar-hero__glass-title">{card.title}</h2>
-              {card.eyebrow ? <p className="solar-hero__glass-eyebrow">{card.eyebrow}</p> : null}
-            </div>
-            {card.stat ? <p className="solar-hero__glass-stat">{card.stat}</p> : null}
-          </div>
-          {card.body ? <p className="solar-hero__glass-body">{card.body}</p> : null}
-          {card.href ? (
-            <Link href={card.href} className="solar-hero__glass-link">
-              <span className="solar-hero__glass-link-label">{card.linkLabel || 'Learn more'}</span>
-              <span className="solar-hero__glass-link-icon" aria-hidden="true">
-                <ArrowUpRight strokeWidth={2} />
-              </span>
-            </Link>
-          ) : null}
-          {card.imageUrl ? (
-            <img
-              src={`${card.imageUrl}?w=800&h=400&fit=crop&auto=format`}
-              alt={card.imageAlt || ''}
-              width={400}
-              height={200}
-              loading="lazy"
-              className="solar-hero__glass-image"
-            />
-          ) : null}
-        </article>
+        <GlassCard key={buildRuntimeKey('hero-card', card.title, card._key, index)} card={card} />
       ))}
     </div>
   )

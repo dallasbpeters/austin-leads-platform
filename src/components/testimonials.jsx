@@ -4,6 +4,7 @@ import Image from '@/components/site-image'
 import { ArrowLeft, ArrowRight } from 'iconoir-react'
 import { useState } from 'react'
 
+import GlassCard from '@/components/glass-card'
 import { REVIEWS_ANCHOR_ID } from '@/components/platform/public-site-utils'
 import { cn } from '@/lib/utils'
 
@@ -52,9 +53,21 @@ export default function Testimonials({
     fromGoogle ? google.reviews : section?.reviews?.length ? section.reviews : reviews,
   )
   const [index, setIndex] = useState(0)
+  // Optional glass banner above the reviews (Sanity: Testimonials → Glass banner).
+  const banner = section?.glassBanner?.title ? section.glassBanner : null
+  const bannerBlock = banner ? (
+    <div className="testimonials__banner grid-frame">
+      <GlassCard card={banner} />
+    </div>
+  ) : null
 
   if (!list.length) {
-    return null
+    // No reviews to show; the banner still stands on its own.
+    return banner ? (
+      <section className="testimonials testimonials--banner-only" id={sectionId}>
+        {bannerBlock}
+      </section>
+    ) : null
   }
 
   const review = list[index % list.length]
@@ -81,6 +94,7 @@ export default function Testimonials({
         content: 'Google reviews (Places API), else Sanity reviews',
       })}
     >
+      {bannerBlock}
       <div className="testimonials__inner grid-frame">
         <div className="testimonials__aside">
           <p className="testimonials__eyebrow">{eyebrow}</p>
@@ -90,7 +104,7 @@ export default function Testimonials({
                 src={photoUrl}
                 alt={review.reviewerPhoto?.alt || review.author || ''}
                 fill
-                sizes="12rem"
+                sizes="(width < 48rem) 100vw, 16.5rem"
                 className="testimonials__photo"
               />
             ) : (

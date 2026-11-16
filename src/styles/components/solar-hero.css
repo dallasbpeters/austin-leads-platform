@@ -392,8 +392,14 @@
   padding: var(--glass-pad);
   overflow: hidden;
   border-radius: 0.35rem;
-  color: var(--color-white);
-  background: linear-gradient(160deg, rgb(255 255 255 / 50%), rgb(255 255 255 / 6%) 60%), rgb(15 23 42 / 18%);
+
+  /*
+   * --glass-bg and --glass-text come from the card's Sanity design (glass-card.jsx).
+   * Unset, the card is the original dark frosted glass with white text.
+   */
+  color: var(--glass-text, var(--color-white));
+  background-color: var(--glass-bg, rgb(15 23 42 / 18%));
+  background-image: linear-gradient(160deg, rgb(255 255 255 / 50%), rgb(255 255 255 / 6%) 60%);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 25%),
     0 20px 40px -24px rgb(4 10 23 / 60%);
@@ -429,7 +435,7 @@
   text-align: left;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--color-orange-600);
+  color: var(--glass-eyebrow, var(--color-orange-600));
 }
 
 .solar-hero__glass-stat {
@@ -446,7 +452,7 @@
   font-size: var(--text-sm);
   line-height: 1.5;
   text-wrap: pretty;
-  color: rgb(255 255 255 / 82%);
+  color: color-mix(in srgb, currentcolor 82%, transparent);
 }
 
 .solar-hero__glass-link {
@@ -460,7 +466,7 @@
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--color-white);
+  color: inherit;
 }
 
 /* Stretches the link over the whole card. */
@@ -621,4 +627,15 @@ html[data-webgpu='yes'] .solar-hero__shader-fallback {
   html[data-webgpu='yes'] .solar-hero__shader-fallback {
     transition: none;
   }
+}
+
+/* A light background color picked in Sanity: dark text so it stays readable. */
+.solar-hero__glass--light {
+  --glass-text: var(--color-slate-900);
+}
+
+/* "Frosted glass" switched off in Sanity: a flat card in the picked color. */
+.solar-hero__glass--flat {
+  background-image: none;
+  backdrop-filter: none;
 }

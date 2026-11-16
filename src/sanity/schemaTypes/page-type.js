@@ -2033,6 +2033,71 @@ const legacyPageSectionFields = [
   },
 ]
 
+/*
+ * What a glass card says: shared by the hero's "Glass cards" and the glass banner
+ * above the reviews, so both are edited the same way.
+ */
+const glassCardContentFields = [
+  { name: 'eyebrow', title: 'Eyebrow', type: 'string', description: 'Small gold label.' },
+  { name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() },
+  { name: 'body', title: 'Text', type: 'text', rows: 3 },
+  {
+    name: 'stat',
+    title: 'Stat',
+    type: 'string',
+    description: 'Optional big number in the top-right corner, like a review score.',
+  },
+  {
+    name: 'image',
+    title: 'Image',
+    type: 'image',
+    options: { hotspot: true },
+    description: 'Optional. Fills the bottom of the card.',
+    fields: [
+      {
+        name: 'altText',
+        title: 'Alt text',
+        type: 'string',
+        description: 'What the image shows, for screen readers and Google.',
+      },
+    ],
+  },
+  { name: 'linkLabel', title: 'Link label', type: 'string' },
+  {
+    name: 'href',
+    title: 'Link',
+    type: 'string',
+    description: 'Internal path (e.g. /detach-reset), anchor, or full URL. The whole card links here.',
+  },
+]
+
+/*
+ * How a glass card looks. The text color is not a field: it turns dark or light
+ * to contrast with the background color (surfaceTone in glass-card.jsx).
+ */
+const glassCardDesignFields = [
+  {
+    name: 'backgroundColor',
+    title: 'Background color',
+    type: 'color',
+    description:
+      "Leave empty for the dark frosted glass. Lower the color's opacity to let the background show through. The text turns dark or light to stay readable.",
+  },
+  {
+    name: 'eyebrowColor',
+    title: 'Eyebrow color',
+    type: 'color',
+    description: 'The small label above the title. Leave empty for gold.',
+  },
+  {
+    name: 'frosted',
+    title: 'Frosted glass',
+    type: 'boolean',
+    initialValue: true,
+    description: 'Blur and shine like the hero cards. Turn off for a flat card in the background color.',
+  },
+]
+
 const heroSpecificFields = [
   {
     name: 'heroMediaMode',
@@ -2251,40 +2316,7 @@ const heroSpecificFields = [
         type: 'object',
         name: 'heroCard',
         title: 'Glass card',
-        fields: [
-          { name: 'eyebrow', title: 'Eyebrow', type: 'string', description: 'Small gold label.' },
-          { name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() },
-          { name: 'body', title: 'Text', type: 'text', rows: 3 },
-          {
-            name: 'stat',
-            title: 'Stat',
-            type: 'string',
-            description: 'Optional big number in the top-right corner, like a review score.',
-          },
-          {
-            name: 'image',
-            title: 'Image',
-            type: 'image',
-            options: { hotspot: true },
-            description: 'Optional. Fills the bottom of the card.',
-            fields: [
-              {
-                name: 'altText',
-                title: 'Alt text',
-                type: 'string',
-                description: 'What the image shows, for screen readers and Google.',
-              },
-            ],
-          },
-          { name: 'linkLabel', title: 'Link label', type: 'string' },
-          {
-            name: 'href',
-            title: 'Link',
-            type: 'string',
-            description:
-              'Internal path (e.g. /detach-reset), anchor, or full URL. The whole card links here.',
-          },
-        ],
+        fields: glassCardContentFields,
         preview: {
           select: { title: 'title', subtitle: 'eyebrow', media: 'image' },
         },
@@ -3292,6 +3324,21 @@ const testimonialsSectionType = {
         'Background image',
         canvasPurpose('Optional full-section background image behind the review cards.'),
       ),
+    },
+    {
+      name: 'glassBanner',
+      title: 'Glass banner',
+      description:
+        'Optional frosted banner above the reviews, like the hero glass cards. Leave the title empty to hide it.',
+      type: 'object',
+      options: { collapsible: true, collapsed: true, ...canvasExclude },
+      fields: [
+        // The title is only required once someone starts the banner, so an empty one stays hidden.
+        ...glassCardContentFields.map((field) =>
+          field.name === 'title' ? { ...field, validation: undefined } : field,
+        ),
+        ...glassCardDesignFields,
+      ],
     },
     {
       name: 'reviews',

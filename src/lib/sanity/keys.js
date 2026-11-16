@@ -246,6 +246,7 @@ function normalizeTestimonialsSection(section) {
     title: section.title,
     body: section.body,
     reviews: Array.isArray(section.reviews) ? section.reviews : undefined,
+    glassBanner: section.glassBanner,
   })
 }
 

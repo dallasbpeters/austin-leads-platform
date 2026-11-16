@@ -312,6 +312,20 @@ export const sectionProjection = `
     "imageUrl": image.asset->url,
     "imageAlt": image.altText
   },
+  // testimonialsSection: the optional glass banner above the reviews.
+  glassBanner{
+    eyebrow,
+    title,
+    body,
+    stat,
+    linkLabel,
+    href,
+    "imageUrl": image.asset->url,
+    "imageAlt": image.altText,
+    backgroundColor,
+    eyebrowColor,
+    frosted
+  },
   // solarFitSection: the "See if solar is right for you" questions and formulas.
   fitInputs[]{ _key, key, label, kind, defaultValue, min, max, step, prefix, suffix, hideWhenRoofFound, showWhen, help, options[]{ label, value } },
   fitConstants[]{ _key, key, label, value },
@@ -816,6 +830,15 @@ const resolveSanityColorValue = (value) => {
   return value
 }
 
+/** Like resolveSanityColorValue, but keeps the color's opacity (rgba) when it is below 100%. */
+const resolveSanityColorWithAlpha = (value) => {
+  const rgb = value?.rgb ?? value?.color?.rgb
+  if (rgb && Number.isFinite(rgb.a) && rgb.a < 1) {
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`
+  }
+  return resolveSanityColorValue(value)
+}
+
 const sanitizeItem = (item) => {
   if (!item) {
     return item
@@ -972,6 +995,14 @@ const sanitizeSection = (section) => {
     quotePanelColor: resolveSanityColorValue(s.quotePanelColor),
     quoteFadedColor: resolveSanityColorValue(s.quoteFadedColor),
     quoteEyebrowColor: resolveSanityColorValue(s.quoteEyebrowColor),
+    glassBanner: s.glassBanner
+      ? {
+          ...s.glassBanner,
+          href: cleanRuntimeString(s.glassBanner.href),
+          backgroundColor: resolveSanityColorWithAlpha(s.glassBanner.backgroundColor),
+          eyebrowColor: resolveSanityColorValue(s.glassBanner.eyebrowColor),
+        }
+      : s.glassBanner,
     quoteAttributionColor: resolveSanityColorValue(s.quoteAttributionColor),
     backgroundColor: resolveSanityColorValue(s.backgroundColor),
     sectionBackgroundColor: resolveSanityColorValue(s.sectionBackgroundColor),
