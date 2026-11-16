@@ -311,8 +311,11 @@
     grid-template-areas:
       'copy copy float'
       'left center right';
+
+    --hero-cards-row-gap: 1.5rem;
+
     align-items: end;
-    gap: 1.5rem 1rem;
+    gap: var(--hero-cards-row-gap) 1rem;
   }
 
   .solar-hero__shell--with-cards:has(.solar-hero__cards > :nth-child(4):last-child) .solar-hero__layout {
@@ -325,9 +328,17 @@
     display: contents;
   }
 
+  /*
+   * Cards 1 and 4 share the right column and stack with no gap: card 1 sits on
+   * the bottom of its row and pulls down by the row gap, card 4 fills its row so
+   * its top meets card 1. The corners where they meet are square.
+   */
   .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(1) {
     grid-area: float;
-    align-self: center;
+    align-self: end;
+    margin-block-end: calc(-1 * var(--hero-cards-row-gap));
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
   }
 
   .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(2) {
@@ -351,6 +362,9 @@
 
   .solar-hero__cards:has(> :nth-child(4):last-child) > :nth-child(4) {
     grid-area: right;
+    align-self: stretch;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
   }
 }
 
