@@ -4089,15 +4089,32 @@ const ctaSectionType = {
       type: 'string',
       initialValue: 'jobber',
       description:
-        'What the button does. Introduction asks for a name and email and emails info@texassolarandroofingpros.com.',
+        'What the button does. Introduction asks for a name and email and emails info@texassolarandroofingpros.com. Link to a page goes to the page you pick below, such as Get a free quote.',
       options: {
         list: [
           { title: 'Jobber request form', value: 'jobber' },
           { title: 'Introduction (name and email)', value: 'introduction' },
+          { title: 'Link to a page', value: 'link' },
         ],
         layout: 'radio',
         ...canvasExclude,
       },
+    },
+    {
+      // Named ctaHref so Studio shows the page picker under it (see page-link-input.jsx).
+      name: 'ctaHref',
+      title: 'Button link',
+      type: 'string',
+      description:
+        'The page the button goes to, such as the Get a free quote page. Pick a page or paste a URL.',
+      hidden: ({ parent }) => parent?.ctaForm !== 'link',
+      validation: (Rule) =>
+        Rule.custom((value, context) =>
+          context.parent?.ctaForm === 'link' && !String(value || '').trim()
+            ? 'Pick the page this button goes to.'
+            : true,
+        ),
+      options: canvasExclude,
     },
     {
       name: 'theme',

@@ -1,12 +1,14 @@
 // oxlint-disable func-style
 import { Phone } from 'iconoir-react'
+import Link from 'next/link'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import { ROOFER_INTRODUCTION } from '@/lib/leads/source-types'
 import { SITE_PHONE_DISPLAY, SITE_PHONE_HREF } from '@/lib/platform/contact'
 import { getImageAlt, getImageUrl } from '@/lib/platform/imageSource'
 import { shouldShowClouds } from '@/lib/platform/section-helpers'
-import { cleanRuntimeString } from '@/lib/sanity/stega'
+import { cleanRuntimeHref, cleanRuntimeString } from '@/lib/sanity/stega'
 import { cn } from '@/lib/utils'
 import CloudSectionBackground from './cloud-section-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -189,7 +191,10 @@ export default function ConsultationSection({
 }) {
   const isChristmasTheme = theme === 'christmasLights'
   const showClouds = shouldShowClouds(section?.cloudVisibility)
-  const isIntroduction = cleanRuntimeString(section?.ctaForm) === 'introduction'
+  const ctaForm = cleanRuntimeString(section?.ctaForm)
+  const isIntroduction = ctaForm === 'introduction'
+  // "Link to a page" (e.g. Get a free quote). With no link picked, the button opens the Jobber form.
+  const ctaHref = ctaForm === 'link' ? cleanRuntimeHref(section?.ctaHref).trim() : ''
   const content = getSectionContent(section, isIntroduction ? 'introduction' : variant)
   const leadContext = buildLeadContext(site, content, pagePath, pageTitle)
 
@@ -219,7 +224,11 @@ export default function ConsultationSection({
             <PortableTextContent as="div" value={content.copy} className="consult__copy" />
             <AvatarSection section={section} />
             <div className="consult__cta">
-              {isIntroduction ? (
+              {ctaHref ? (
+                <Button asChild variant="inverse" className="consult__button">
+                  <Link href={ctaHref}>{content.buttonLabel}</Link>
+                </Button>
+              ) : isIntroduction ? (
                 <IntroductionRequestForm buttonLabel={content.buttonLabel} context={leadContext} />
               ) : (
                 <JobberDialog

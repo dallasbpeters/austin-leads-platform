@@ -288,6 +288,8 @@ function normalizeCtaSection(section) {
     title: section.title,
     body: section.body,
     ctaLabel: section.ctaLabel,
+    ctaForm: section.ctaForm,
+    ctaHref: section.ctaHref,
     theme: section.theme,
     cloudVisibility: section.cloudVisibility,
     avatarEyebrow: section.avatarEyebrow || section.personLabel,

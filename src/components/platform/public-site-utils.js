@@ -116,12 +116,19 @@ function slugifySectionToken(value) {
   return toRuntimeToken(value)
 }
 
+/** The Google Reviews (testimonials) section's id: link to it with `#reviews`. */
+export const REVIEWS_ANCHOR_ID = 'reviews'
+
 export function getSectionDomId(section, index) {
   if (section?.anchor) {
     return slugifySectionToken(section.anchor)
   }
   if (section?.id) {
     return slugifySectionToken(section.id)
+  }
+  // A fixed id, so "#reviews" links keep working when the section title changes.
+  if (section?.type === 'testimonials') {
+    return REVIEWS_ANCHOR_ID
   }
 
   const token = slugifySectionToken(section?.title || section?.eyebrow || section?.question || '')

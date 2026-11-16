@@ -4,6 +4,7 @@ import Image from '@/components/site-image'
 import { ArrowLeft, ArrowRight } from 'iconoir-react'
 import { useState } from 'react'
 
+import { REVIEWS_ANCHOR_ID } from '@/components/platform/public-site-utils'
 import { cn } from '@/lib/utils'
 
 import { getDevSectionAttributes } from './dev/dev-trace'
@@ -44,7 +45,7 @@ export default function Testimonials({
   section = null,
   reviews = [],
   google = null,
-  sectionId = 'testimonials-homepage',
+  sectionId = REVIEWS_ANCHOR_ID,
 }) {
   const fromGoogle = Boolean(google?.reviews?.length)
   const list = uniqueReviews(
