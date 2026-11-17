@@ -11,9 +11,9 @@ import CloudBackground from './cloud-background'
 import { getDevSectionAttributes } from './dev/dev-trace'
 import GlassCard from './glass-card'
 import HeroActions from './hero-actions'
+import PixelReveal from './hero-pixel-reveal'
 import ImageFader from './image-fader'
 import PortableTextContent from './portable-text-content'
-import PixelReveal from './shaders/PixelReveal1'
 
 /*
  * The calculator link is root-relative so it works from any page, and carries
