@@ -3,6 +3,7 @@
 
 import { useEffect, useId, useRef } from 'react'
 
+import { installJobberMessageGuard } from '@/lib/platform/jobber-message-guard'
 import { buildJobberEmbedUrl, parseJobberRequestFormUrl } from '@/lib/platform/jobber-request-form'
 
 const JOBBER_CLIENT_HUB_ID = 'e25e6086-5e48-4c5d-8588-8aa08968b7d6'
@@ -48,6 +49,7 @@ export default function JobberWorkRequestEmbed({
     }
 
     hasLoadedRef.current = true
+    installJobberMessageGuard()
 
     if (!document.querySelector(`#${JOBBER_STYLESHEET_ID}`)) {
       const link = document.createElement('link')
