@@ -70,4 +70,19 @@ describe('browser PostHog config', () => {
     expect(config.apiHost).toBe(DEFAULT_POSTHOG_HOST)
     expect(config.missing).toStrictEqual(['NEXT_PUBLIC_POSTHOG_HOST'])
   })
+
+  it.each([
+    'https://us.i.posthog.com',
+    'https://us.posthog.com/',
+    'us.i.posthog.com',
+    'https://app.posthog.com',
+  ])('sends a direct US cloud host (%s) through /ingest', (host) => {
+    const config = resolveBrowserPostHogConfig({ key: 'phc_single', host })
+    expect(config).toStrictEqual({ token: 'phc_single', apiHost: DEFAULT_POSTHOG_HOST, missing: [] })
+  })
+
+  it('keeps a host that /ingest does not proxy', () => {
+    const config = resolveBrowserPostHogConfig({ key: 'phc_single', host: 'https://eu.i.posthog.com' })
+    expect(config.apiHost).toBe('https://eu.i.posthog.com')
+  })
 })
