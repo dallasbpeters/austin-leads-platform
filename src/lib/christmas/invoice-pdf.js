@@ -717,8 +717,8 @@ function buildLineItemsTable(computed) {
 /**
  * Materials + sales tax, leading into the Total Contract Cost. Per-line
  * regular/early pricing already lives in the line items table (PRICE / EARLY
- * PRICE columns), so this only needs the one aggregate MATERIALS figure
- * rather than repeating a full regular-vs-early breakdown.
+ * PRICE columns). The contract total uses early pricing, so its materials and
+ * tax rows must use the same discounted amounts.
  */
 function buildPricingBreakdown(computed) {
   return h(
@@ -727,14 +727,18 @@ function buildPricingBreakdown(computed) {
     h(
       View,
       { style: s.pricingLine },
-      h(Text, { style: s.pricingLabel }, 'MATERIALS'),
-      h(Text, { style: s.pricingValue }, money(computed.materialsTotalCents)),
+      h(
+        Text,
+        { style: s.pricingLabel },
+        computed.earlyPaymentDiscountPercent > 0 ? 'EARLY PRICE MATERIALS' : 'MATERIALS',
+      ),
+      h(Text, { style: s.pricingValue }, money(computed.earlyMaterialsTotalCents)),
     ),
     h(
       View,
       { style: s.pricingLine },
       h(Text, { style: s.pricingLabel }, `SALES TAX (${computed.salesTaxRatePercent}%)`),
-      h(Text, { style: s.pricingValue }, money(computed.salesTaxCents)),
+      h(Text, { style: s.pricingValue }, money(computed.earlySalesTaxCents)),
     ),
     h(
       View,
