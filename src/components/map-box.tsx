@@ -3,7 +3,7 @@
 import type { Feature, FeatureCollection, Geometry } from 'geojson'
 import type mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import geoJson from './texasCounties.json'
 
@@ -154,6 +154,26 @@ function boundsFromFeatures(features: Feature[]): mapboxgl.LngLatBoundsLike | nu
   ]
 }
 
+/**
+ * mapbox-gl v3 draws with WebGL2 uniform blocks. A browser with no usable GPU (software
+ * rendering, a blocked GPU, a lost context) can still give a WebGL2 context whose largest
+ * uniform block is 0 bytes, and then every map frame throws. This check runs before the
+ * library loads, so those browsers also skip the download.
+ */
+function hasUsableWebGL2() {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl2')
+    if (!gl) {
+      return false
+    }
+    const usable = !gl.isContextLost() && Number(gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE)) > 0
+    gl.getExtension('WEBGL_lose_context')?.loseContext()
+    return usable
+  } catch {
+    return false
+  }
+}
+
 function buildFilter(fipsList: string[]): mapboxgl.FilterSpecification {
   if (fipsList.length === 0) {
     return ['==', ['literal', false], true] as unknown as mapboxgl.FilterSpecification
@@ -173,6 +193,7 @@ export const MapBox = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const txFeaturesRef = useRef<Feature[]>([])
+  const [mapUnavailable, setMapUnavailable] = useState(false)
 
   // Keep a ref so the map.on('load') closure always sees the latest FIPS list
   // even if areas arrive after mount but before the style finishes loading.
@@ -227,22 +248,43 @@ export const MapBox = ({
     let cancelled = false
     let mapInstance: mapboxgl.Map | null = null
 
+    const showFallback = () => {
+      if (!cancelled) {
+        setMapUnavailable(true)
+      }
+    }
+
     const initMap = async () => {
+      if (!hasUsableWebGL2()) {
+        showFallback()
+        return
+      }
       const { default: mapboxgl } = await import('mapbox-gl')
       if (cancelled) {
+        return
+      }
+      if (!mapboxgl.supported()) {
+        showFallback()
         return
       }
 
       mapboxgl.accessToken = token
 
-      const map = new mapboxgl.Map({
-        container,
-        style: MAP_STYLE,
-        center: TX_CENTER,
-        zoom: TX_ZOOM,
-        attributionControl: false,
-        scrollZoom: false,
-      })
+      let map: mapboxgl.Map
+      try {
+        map = new mapboxgl.Map({
+          container,
+          style: MAP_STYLE,
+          center: TX_CENTER,
+          zoom: TX_ZOOM,
+          attributionControl: false,
+          scrollZoom: false,
+        })
+      } catch (error) {
+        console.warn('[MapBox] The map could not start:', error)
+        showFallback()
+        return
+      }
 
       mapInstance = map
       mapRef.current = map
@@ -479,6 +521,7 @@ export const MapBox = ({
         {/* Right: map */}
         <div
           ref={containerRef}
+          hidden={mapUnavailable}
           className="h-80 lg:h-auto"
           role="application"
           aria-label={
@@ -487,6 +530,14 @@ export const MapBox = ({
               : 'Interactive service area map of Texas'
           }
         />
+        {mapUnavailable && (
+          <div className="flex h-80 items-center justify-center px-10 text-center lg:h-auto">
+            <p className="max-w-xs text-sm leading-relaxed text-white/55">
+              This browser cannot show the interactive map.
+              {areas.length > 0 && ' The service counties list has every county we cover.'}
+            </p>
+          </div>
+        )}
       </div>
     </section>
   )
