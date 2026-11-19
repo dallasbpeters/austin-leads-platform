@@ -4,6 +4,12 @@ const ICON_VERSION = '2'
 export const rootMetadata = {
   description: 'Multi-tenant Next.js platform for Austin and Texas local service domains.',
   /*
+   * iOS Safari wraps plain-text phone numbers in its own links before React
+   * hydrates, so the page no longer matches the client render and React throws
+   * error #418. Tap-to-call links use explicit `tel:` hrefs instead.
+   */
+  formatDetection: { address: false, date: false, email: false, telephone: false },
+  /*
    * ICON_VERSION busts browser favicon caches. Bump it when the icon files in public/ change.
    */
   icons: {
