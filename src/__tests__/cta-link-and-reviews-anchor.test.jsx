@@ -2,7 +2,12 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
 import ConsultationSection from '@/components/consultation-section'
-import { getSectionDomId, REVIEWS_ANCHOR_ID } from '@/components/platform/public-site-utils'
+import {
+  CALCULATOR_ANCHOR_ID,
+  getSectionDomId,
+  resolveSectionAnchor,
+  REVIEWS_ANCHOR_ID,
+} from '@/components/platform/public-site-utils'
 
 const ctaSection = (extra) => ({
   type: 'cta',
@@ -47,5 +52,33 @@ describe('Google Reviews section id', () => {
 
   it('leaves other sections alone', () => {
     expect(getSectionDomId({ type: 'faq', title: 'Questions' }, 0)).toBe('faq-questions')
+  })
+})
+
+describe('Calculator section id', () => {
+  it('is always "calculator", whatever the title', () => {
+    expect(CALCULATOR_ANCHOR_ID).toBe('calculator')
+    expect(getSectionDomId({ type: 'calculator', title: 'See what solar could save' }, 2)).toBe('calculator')
+  })
+})
+
+describe(resolveSectionAnchor, () => {
+  const pageIds = ['hero-1', 'tabbedPanel-about-us', 'reviews', 'calculator', 'faq-questions']
+
+  it('keeps an id that is on the page', () => {
+    expect(resolveSectionAnchor('faq-questions', pageIds)).toBe('faq-questions')
+  })
+
+  it('sends an old title-based id to the fixed id of its section type', () => {
+    expect(resolveSectionAnchor('testimonials-what-customers-are-saying-about', pageIds)).toBe('reviews')
+    expect(resolveSectionAnchor('calculator-see-what-solar-could-save', pageIds)).toBe('calculator')
+  })
+
+  it('sends a renamed section to the section of the same type', () => {
+    expect(resolveSectionAnchor('faq-common-questions', pageIds)).toBe('faq-questions')
+  })
+
+  it('returns null when the page has no section of that type', () => {
+    expect(resolveSectionAnchor('calculator-see-what-solar-could-save', ['hero-1', 'reviews'])).toBeNull()
   })
 })

@@ -509,6 +509,27 @@
   height: 1rem;
 }
 
+/* While the linked page loads (useLinkStatus in glass-card-link.jsx), the arrow becomes a spinner. */
+.solar-hero__glass-link-icon[data-pending] svg {
+  display: none;
+}
+
+.solar-hero__glass-link-icon[data-pending]::before {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentcolor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  animation: solar-hero-glass-spin 700ms linear infinite;
+}
+
+@keyframes solar-hero-glass-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
 /* The image bleeds to the card edges and fades in from the glass above it. */
 .solar-hero__glass-image {
   display: block;

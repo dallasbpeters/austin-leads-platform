@@ -1,8 +1,7 @@
-import { ArrowUpRight } from 'iconoir-react'
-import Link from 'next/link'
-
 import { surfaceTone } from '@/lib/platform/surface-tone'
 import { cn } from '@/lib/utils'
+
+import GlassCardLink from './glass-card-link'
 
 /*
  * A frosted glass card: the hero's "Glass cards" and the glass banner above the
@@ -60,14 +59,7 @@ export default function GlassCard({ card, className, as: Tag = 'article' }) {
         {card.stat ? <p className="solar-hero__glass-stat">{card.stat}</p> : null}
       </div>
       {card.body ? <p className="solar-hero__glass-body">{card.body}</p> : null}
-      {card.href ? (
-        <Link href={card.href} className="solar-hero__glass-link">
-          <span className="solar-hero__glass-link-label">{card.linkLabel || 'Learn more'}</span>
-          <span className="solar-hero__glass-link-icon" aria-hidden="true">
-            <ArrowUpRight strokeWidth={2} />
-          </span>
-        </Link>
-      ) : null}
+      {card.href ? <GlassCardLink href={card.href} label={card.linkLabel || 'Learn more'} /> : null}
       {card.imageUrl ? (
         // oxlint-disable-next-line next/no-img-element -- Sanity's CDN sizes the image (?w=800&h=400)
         <img

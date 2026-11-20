@@ -15,12 +15,6 @@ import PixelReveal from './hero-pixel-reveal'
 import ImageFader from './image-fader'
 import PortableTextContent from './portable-text-content'
 
-/*
- * The calculator link is root-relative so it works from any page, and carries
- * the calculator section's real DOM id. getSectionDomId() builds that id from
- * the section type plus its slugified title ("See what solar could save"), so
- * a bare `#calculator` matched nothing on the rendered page.
- */
 function resolveHeroMediaMode(heroVideoSource, explicitHeroMediaMode, hasHeroSlides) {
   if (explicitHeroMediaMode === 'clouds') {
     return 'clouds'

@@ -119,6 +119,15 @@ function slugifySectionToken(value) {
 /** The Google Reviews (testimonials) section's id: link to it with `#reviews`. */
 export const REVIEWS_ANCHOR_ID = 'reviews'
 
+/** The savings calculator section's id: link to it with `#calculator`. */
+export const CALCULATOR_ANCHOR_ID = 'calculator'
+
+/* Fixed ids, so "#reviews" and "#calculator" links keep working when the section title changes. */
+const FIXED_SECTION_IDS = {
+  testimonials: REVIEWS_ANCHOR_ID,
+  calculator: CALCULATOR_ANCHOR_ID,
+}
+
 export function getSectionDomId(section, index) {
   if (section?.anchor) {
     return slugifySectionToken(section.anchor)
@@ -126,11 +135,28 @@ export function getSectionDomId(section, index) {
   if (section?.id) {
     return slugifySectionToken(section.id)
   }
-  // A fixed id, so "#reviews" links keep working when the section title changes.
-  if (section?.type === 'testimonials') {
-    return REVIEWS_ANCHOR_ID
+  if (FIXED_SECTION_IDS[section?.type]) {
+    return FIXED_SECTION_IDS[section.type]
   }
 
   const token = slugifySectionToken(section?.title || section?.eyebrow || section?.question || '')
   return token ? `${section.type}-${token}` : `${section.type}-${index + 1}`
+}
+
+/**
+ * The id on the page that a section link should go to, or null. A link saved
+ * with an older title-based id ("calculator-see-what-solar-could-save",
+ * "testimonials-what-customers-are-saying-about") goes to the section of the
+ * same type: its fixed id, else the first id with the same type prefix.
+ */
+export function resolveSectionAnchor(id, pageIds) {
+  if (pageIds.includes(id)) {
+    return id
+  }
+  const type = id.split('-')[0]
+  const fixedId = FIXED_SECTION_IDS[type]
+  if (fixedId && pageIds.includes(fixedId)) {
+    return fixedId
+  }
+  return pageIds.find((pageId) => pageId.startsWith(`${type}-`)) ?? null
 }
