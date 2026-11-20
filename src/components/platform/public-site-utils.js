@@ -119,13 +119,10 @@ function slugifySectionToken(value) {
 /** The Google Reviews (testimonials) section's id: link to it with `#reviews`. */
 export const REVIEWS_ANCHOR_ID = 'reviews'
 
-/** The savings calculator section's id: link to it with `#calculator`. */
-export const CALCULATOR_ANCHOR_ID = 'calculator'
-
 /* Fixed ids, so "#reviews" and "#calculator" links keep working when the section title changes. */
 const FIXED_SECTION_IDS = {
   testimonials: REVIEWS_ANCHOR_ID,
-  calculator: CALCULATOR_ANCHOR_ID,
+  calculator: 'calculator',
 }
 
 export function getSectionDomId(section, index) {
@@ -135,8 +132,9 @@ export function getSectionDomId(section, index) {
   if (section?.id) {
     return slugifySectionToken(section.id)
   }
-  if (FIXED_SECTION_IDS[section?.type]) {
-    return FIXED_SECTION_IDS[section.type]
+  const fixedId = FIXED_SECTION_IDS[section?.type]
+  if (fixedId) {
+    return fixedId
   }
 
   const token = slugifySectionToken(section?.title || section?.eyebrow || section?.question || '')

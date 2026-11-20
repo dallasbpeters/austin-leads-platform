@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 
 import ConsultationSection from '@/components/consultation-section'
 import {
-  CALCULATOR_ANCHOR_ID,
   getSectionDomId,
   resolveSectionAnchor,
   REVIEWS_ANCHOR_ID,
@@ -57,7 +56,6 @@ describe('Google Reviews section id', () => {
 
 describe('Calculator section id', () => {
   it('is always "calculator", whatever the title', () => {
-    expect(CALCULATOR_ANCHOR_ID).toBe('calculator')
     expect(getSectionDomId({ type: 'calculator', title: 'See what solar could save' }, 2)).toBe('calculator')
   })
 })
