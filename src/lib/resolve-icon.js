@@ -1,4 +1,8 @@
+import { createElement } from 'react'
+
+import IconoirLazyIcon from '../components/iconoir-lazy-icon'
 import { iconoirRegistry } from '../components/iconoir-registry'
+import { iconoirIconNames } from './iconoir-icon-names'
 
 /*
  * Single place that turns an icon name stored in Sanity into an Iconoir
@@ -50,21 +54,22 @@ export const legacyIconNameMap = {
 }
 
 /*
- * Lowercased, punctuation-stripped index of every registry name, so
+ * Lowercased, punctuation-stripped index of every Iconoir name, so
  * `sun-light`, `sunlight`, and `Sun Light` all reach `SunLight`. Built once on
- * first use; the registry names collide with nothing when normalized this way.
+ * first use; the names collide with nothing when normalized this way.
  */
-let normalizedRegistryIndex = null
+const iconNameSet = new Set(iconoirIconNames)
+let normalizedNameIndex = null
 
-function getNormalizedRegistryIndex() {
-  if (!normalizedRegistryIndex) {
-    normalizedRegistryIndex = new Map()
-    for (const name of Object.keys(iconoirRegistry)) {
-      normalizedRegistryIndex.set(normalizeIconName(name), name)
+function getNormalizedNameIndex() {
+  if (!normalizedNameIndex) {
+    normalizedNameIndex = new Map()
+    for (const name of iconoirIconNames) {
+      normalizedNameIndex.set(normalizeIconName(name), name)
     }
   }
 
-  return normalizedRegistryIndex
+  return normalizedNameIndex
 }
 
 function normalizeIconName(value) {
@@ -75,6 +80,22 @@ function normalizeIconName(value) {
 
 function toComponent(value) {
   return typeof value === 'function' || (typeof value === 'object' && value !== null) ? value : null
+}
+
+/* One stable component per name, so React does not remount the icon on each render. */
+const lazyIconComponents = new Map()
+
+function toIconComponent(name) {
+  const registered = toComponent(iconoirRegistry[name])
+  if (registered) {
+    return registered
+  }
+
+  if (!lazyIconComponents.has(name)) {
+    lazyIconComponents.set(name, (props) => createElement(IconoirLazyIcon, { ...props, name }))
+  }
+
+  return lazyIconComponents.get(name)
 }
 
 /**
@@ -93,18 +114,17 @@ export function resolveIconoirIcon(iconName) {
     return null
   }
 
-  // Exact registry name wins, so `Windows` stays the Windows logo while the
+  // Exact Iconoir name wins, so `Windows` stays the Windows logo while the
   // `windows` service slug below stays the home-window icon.
-  const exact = toComponent(iconoirRegistry[name])
-  if (exact) {
-    return exact
+  if (iconNameSet.has(name)) {
+    return toIconComponent(name)
   }
 
   const aliased = serviceIconNameMap[name.toLowerCase()] || legacyIconNameMap[name.toLowerCase()]
   if (aliased) {
-    return toComponent(iconoirRegistry[aliased])
+    return toIconComponent(aliased)
   }
 
-  const normalized = getNormalizedRegistryIndex().get(normalizeIconName(name))
-  return normalized ? toComponent(iconoirRegistry[normalized]) : null
+  const normalized = getNormalizedNameIndex().get(normalizeIconName(name))
+  return normalized ? toIconComponent(normalized) : null
 }

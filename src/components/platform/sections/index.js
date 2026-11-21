@@ -16,6 +16,7 @@ import { HailMapSection } from './hail-map-section'
 import { HeroSection } from './hero-section'
 import { HyperframesSection } from './hyperframes-section'
 import { JobberRequestSection } from './jobber-request-section'
+import { ArticleSection, CalculatorSection, EnergyChartSection } from './lazy-client-sections'
 import { PricingSection } from './pricing-section'
 import { QuoteBannerSection } from './quote-banner-section'
 import { RoofingLogoCloudSection } from './roofing-logo-cloud-section'
@@ -35,13 +36,10 @@ import { VideoSection } from './video-section'
 const ServiceAreaMapSection = dynamic(() => import('./service-area-map-section'), { ssr: true })
 /* Pulls in lottie-web (~298 KB) through <InstallProcess>. */
 const InstallProcessSection = dynamic(() => import('./install-process-section'), { ssr: true })
-const EnergyChartSection = dynamic(() => import('@/components/energy-chart-section'), { ssr: true })
-const CalculatorSection = dynamic(() => import('@/components/calculator-section'), { ssr: true })
 const CostsSection = dynamic(() => import('@/components/costs-section'), { ssr: true })
 const IncentivesSection = dynamic(() => import('@/components/incentives-section'), { ssr: true })
 const ResourcesSection = dynamic(() => import('@/components/resources-section'), { ssr: true })
 const SnapshotSection = dynamic(() => import('@/components/snapshot-section'), { ssr: true })
-const ArticleSection = dynamic(() => import('@/components/article-section'), { ssr: true })
 const SolarAdoptionSection = dynamic(() => import('@/components/solar-adoption-section'), { ssr: true })
 const SolarBenefitsSection = dynamic(() => import('@/components/solar-benefits-section'), { ssr: true })
 const SolarDifferenceSection = dynamic(() => import('@/components/solar-difference-section'), { ssr: true })
